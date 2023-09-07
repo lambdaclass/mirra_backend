@@ -27,3 +27,6 @@ lambda_game_engine-*.tar
 
 # Remove DS_Store files created by macOS
 .DS_Store
+
+# Rustler creates a .so file for the NIFs
+/priv/native/
