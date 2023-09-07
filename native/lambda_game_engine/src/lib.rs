@@ -1,6 +1,11 @@
+mod config;
+mod effect;
+
+use crate::config::Config;
+
 #[rustler::nif]
-fn add(a: i64, b: i64) -> i64 {
-    a + b
+fn parse_config(data: String) -> Config {
+    config::parse_config(&data)
 }
 
-rustler::init!("Elixir.LambdaGameEngine", [add]);
+rustler::init!("Elixir.LambdaGameEngine", [parse_config]);

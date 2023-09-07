@@ -1,0 +1,16 @@
+{
+    "effects": [
+        {
+            "name": "poison",
+            "duration_ms": 5000,
+            "trigger_interval_ms": 1000,
+            "mechanic": {"HealthChange": -10}
+        },
+        {
+            "name": "disarm",
+            "duration_ms": 4000,
+            "trigger_interval_ms": 0,
+            "mechanic": "Disarm"
+        }
+    ]
+}
