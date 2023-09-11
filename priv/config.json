@@ -1,16 +1,168 @@
 {
-    "effects": [
+  "effects": [
+    {
+      "name": "heal_30",
+      "duration_ms": 0,
+      "trigger_interval_ms": 0,
+      "mechanic": {
+        "HealthChange": 30
+      }
+    },
+    {
+      "name": "disarm",
+      "duration_ms": 4000,
+      "trigger_interval_ms": 0,
+      "mechanic": "Disarm"
+    },
+    {
+      "name": "dos_pierce",
+      "duration_ms": 6000,
+      "trigger_interval_ms": 0,
+      "mechanic": "Piercing"
+    },
+    {
+      "name": "dos_projectile_speed",
+      "duration_ms": 6000,
+      "trigger_interval_ms": 0,
+      "mechanic": {
+        "ProjectileSpeedPercentageChange": 20
+      }
+    },
+    {
+      "name": "dos_cooldown_decrease",
+      "duration_ms": 0,
+      "trigger_interval_ms": 0,
+      "mechanic": {
+        "CooldownMaxPercentageChange": -30
+      }
+    }
+  ],
+  "loots": [
+    {
+      "name": "loot_health",
+      "effects": ["heal_30"]
+    }
+  ],
+  "projectiles": [
+    {
+      "name": "projectile_slingshot",
+      "damage": 10,
+      "speed": 120,
+      "size": 50,
+      "on_hit_effect": "",
+      "duration_ms": 99999,
+      "max_distance": 99999
+    },
+    {
+      "name": "projectile_multishot",
+      "damage": 10,
+      "speed": 100,
+      "size": 50,
+      "on_hit_effect": "",
+      "duration_ms": 99999,
+      "max_distance": 99999
+    },
+    {
+      "name": "projectile_disarm",
+      "damage": 0,
+      "speed": 100,
+      "size": 50,
+      "on_hit_effect": "Disarm",
+      "duration_ms": 99999,
+      "max_distance": 99999
+    }
+  ],
+  "skills": [
+    {
+      "name": "slingshot",
+      "cooldown_ms": 800,
+      "is_passive": false,
+      "mechanics": [
         {
-            "name": "poison",
-            "duration_ms": 5000,
-            "trigger_interval_ms": 1000,
-            "mechanic": {"HealthChange": -10}
-        },
-        {
-            "name": "disarm",
-            "duration_ms": 4000,
-            "trigger_interval_ms": 0,
-            "mechanic": "Disarm"
+          "Shoot": {
+            "projectile": "projectile_slingshot",
+            "autotarget": true,
+            "autotarget_range": 350,
+            "autotarget_cone_angle": 360,
+            "multishot": false,
+            "multishot_count": 0,
+            "multishot_cone_angle": 0
+          }
         }
-    ]
+      ]
+    },
+    {
+      "name": "multishot",
+      "cooldown_ms": 4500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "Shoot": {
+            "projectile": "projectile_multishot",
+            "autotarget": false,
+            "autotarget_range": 0,
+            "autotarget_cone_angle": 0,
+            "multishot": true,
+            "multishot_count": 5,
+            "multishot_cone_angle": 90
+          }
+        }
+      ]
+    },
+    {
+      "name": "disarm",
+      "cooldown_ms": 6500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "Shoot": {
+            "projectile": "projectile_disarm",
+            "autotarget": false,
+            "autotarget_range": 0,
+            "autotarget_cone_angle": 0,
+            "multishot": false,
+            "multishot_count": 0,
+            "multishot_cone_angle": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "neon crash",
+      "cooldown_ms": 5000,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "MoveToTarget": {
+            "duration_ms": 1000,
+            "max_range": 500,
+            "collision_damage": 3
+          }
+        }
+      ]
+    },
+    {
+      "name": "denial_of_service",
+      "cooldown_ms": 20000,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "GiveEffect": ["dos_pierce", "dos_projectile_speed", "dos_cooldown_decrease"]
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "name": "h4ck",
+      "active": true,
+      "base_speed": 25,
+      "size": 80,
+      "skill_1": "slingshot",
+      "skill_2": "multishot",
+      "skill_3": "disarm",
+      "skill_4": "neon_crash",
+      "skill_5": "denial_of_service"
+    }
+  ]
 }

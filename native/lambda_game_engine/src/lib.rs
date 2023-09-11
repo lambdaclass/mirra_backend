@@ -1,5 +1,9 @@
 mod config;
 mod effect;
+mod loot;
+mod projectile;
+mod character;
+mod skill;
 
 use crate::config::Config;
 

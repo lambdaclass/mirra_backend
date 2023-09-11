@@ -17,7 +17,8 @@ pub enum Mechanic {
     DefensePercentageChange(i64),
     SpeedPercentageChange(i64),
     SizePercentageChange(i64),
-    CooldownPercentageChange(i64),
+    CooldownMaxPercentageChange(i64),
+    ProjectileSpeedPercentageChange(i64),
     Piercing,
     Disarm,
 }
