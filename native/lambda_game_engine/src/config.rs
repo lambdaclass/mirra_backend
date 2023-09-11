@@ -1,7 +1,13 @@
 use rustler::NifMap;
 use serde::Deserialize;
 
-use crate::{effect::Effect, loot::{LootConfig, LootFileConfig}, skill::{SkillConfig, SkillConfigFile}, projectile::{ProjectileConfig, ProjectileConfigFile}, character::{CharacterConfig, CharacterConfigFile}};
+use crate::{
+    character::{CharacterConfig, CharacterConfigFile},
+    effect::Effect,
+    loot::{LootConfig, LootFileConfig},
+    projectile::{ProjectileConfig, ProjectileConfigFile},
+    skill::{SkillConfig, SkillConfigFile},
+};
 
 #[derive(Deserialize)]
 pub struct ConfigFile {
@@ -35,5 +41,5 @@ pub fn parse_config(data: &str) -> Config {
         projectiles,
         skills,
         characters,
-     }
+    }
 }

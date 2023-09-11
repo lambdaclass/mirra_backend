@@ -30,26 +30,76 @@ pub struct CharacterConfig {
 }
 
 impl CharacterConfig {
-    pub(crate) fn from_config_file(characters: Vec<CharacterConfigFile>, skills: &Vec<SkillConfig>) -> Vec<CharacterConfig> {
-        characters.into_iter().map(|config| {
-            let skill_1 = skills.iter().find(|skill| config.skill_1 == skill.name).expect(format!("Character `{}` skill_1 `{}` does not exist in skills config", config.name, config.skill_1).as_str());
-            let skill_2 = skills.iter().find(|skill| config.skill_2 == skill.name).expect(format!("Character `{}` skill_2 `{}` does not exist in skills config", config.name, config.skill_2).as_str());
-            let skill_3 = skills.iter().find(|skill| config.skill_3 == skill.name).expect(format!("Character `{}` skill_3 `{}` does not exist in skills config", config.name, config.skill_3).as_str());
-            let skill_4 = skills.iter().find(|skill| config.skill_4 == skill.name).expect(format!("Character `{}` skill_4 `{}` does not exist in skills config", config.name, config.skill_4).as_str());
-            let skill_5 = skills.iter().find(|skill| config.skill_5 == skill.name).expect(format!("Character `{}` skill_5 `{}` does not exist in skills config", config.name, config.skill_5).as_str());
+    pub(crate) fn from_config_file(
+        characters: Vec<CharacterConfigFile>,
+        skills: &Vec<SkillConfig>,
+    ) -> Vec<CharacterConfig> {
+        characters
+            .into_iter()
+            .map(|config| {
+                let skill_1 = skills
+                    .iter()
+                    .find(|skill| config.skill_1 == skill.name)
+                    .expect(
+                        format!(
+                            "Character `{}` skill_1 `{}` does not exist in skills config",
+                            config.name, config.skill_1
+                        )
+                        .as_str(),
+                    );
+                let skill_2 = skills
+                    .iter()
+                    .find(|skill| config.skill_2 == skill.name)
+                    .expect(
+                        format!(
+                            "Character `{}` skill_2 `{}` does not exist in skills config",
+                            config.name, config.skill_2
+                        )
+                        .as_str(),
+                    );
+                let skill_3 = skills
+                    .iter()
+                    .find(|skill| config.skill_3 == skill.name)
+                    .expect(
+                        format!(
+                            "Character `{}` skill_3 `{}` does not exist in skills config",
+                            config.name, config.skill_3
+                        )
+                        .as_str(),
+                    );
+                let skill_4 = skills
+                    .iter()
+                    .find(|skill| config.skill_4 == skill.name)
+                    .expect(
+                        format!(
+                            "Character `{}` skill_4 `{}` does not exist in skills config",
+                            config.name, config.skill_4
+                        )
+                        .as_str(),
+                    );
+                let skill_5 = skills
+                    .iter()
+                    .find(|skill| config.skill_5 == skill.name)
+                    .expect(
+                        format!(
+                            "Character `{}` skill_5 `{}` does not exist in skills config",
+                            config.name, config.skill_5
+                        )
+                        .as_str(),
+                    );
 
-            CharacterConfig {
-                name: config.name,
-                active: config.active,
-                base_speed: config.base_speed,
-                size: config.size,
-                skill_1: skill_1.clone(),
-                skill_2: skill_2.clone(),
-                skill_3: skill_3.clone(),
-                skill_4: skill_4.clone(),
-                skill_5: skill_5.clone(),
-            }
-        })
-        .collect()
+                CharacterConfig {
+                    name: config.name,
+                    active: config.active,
+                    base_speed: config.base_speed,
+                    size: config.size,
+                    skill_1: skill_1.clone(),
+                    skill_2: skill_2.clone(),
+                    skill_3: skill_3.clone(),
+                    skill_4: skill_4.clone(),
+                    skill_5: skill_5.clone(),
+                }
+            })
+            .collect()
     }
 }

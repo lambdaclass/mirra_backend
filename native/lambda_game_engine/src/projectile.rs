@@ -41,7 +41,10 @@ pub struct Projectile {
 }
 
 impl ProjectileConfig {
-    pub(crate) fn from_config_file(projectiles: Vec<ProjectileConfigFile>, effects: &Vec<Effect>) -> Vec<ProjectileConfig> {
+    pub(crate) fn from_config_file(
+        projectiles: Vec<ProjectileConfigFile>,
+        effects: &Vec<Effect>,
+    ) -> Vec<ProjectileConfig> {
         projectiles.into_iter().map(|config| {
             let effect = match config.on_hit_effect {
                 None => None,

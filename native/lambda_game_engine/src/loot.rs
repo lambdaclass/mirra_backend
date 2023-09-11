@@ -25,14 +25,23 @@ pub struct Loot {
 }
 
 impl LootConfig {
-    pub(crate) fn from_config_file(loots: Vec<LootFileConfig>, effects: &Vec<Effect>) -> Vec<LootConfig> {
-        loots.into_iter().map(|config| {
-            let effects = effects.into_iter().filter(|effect| config.effects.contains(&effect.name)).cloned().collect();
-            LootConfig {
-                name: config.name,
-                effects,
-            }
-        })
-        .collect()
+    pub(crate) fn from_config_file(
+        loots: Vec<LootFileConfig>,
+        effects: &Vec<Effect>,
+    ) -> Vec<LootConfig> {
+        loots
+            .into_iter()
+            .map(|config| {
+                let effects = effects
+                    .into_iter()
+                    .filter(|effect| config.effects.contains(&effect.name))
+                    .cloned()
+                    .collect();
+                LootConfig {
+                    name: config.name,
+                    effects,
+                }
+            })
+            .collect()
     }
 }
