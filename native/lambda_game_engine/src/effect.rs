@@ -1,15 +1,15 @@
 use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
-#[derive(Deserialize, NifMap)]
+#[derive(Deserialize, NifMap, Clone)]
 pub struct Effect {
-    name: String,
+    pub name: String,
     duration_ms: u64,
     trigger_interval_ms: u64,
     mechanic: Mechanic,
 }
 
-#[derive(Deserialize, NifTaggedEnum)]
+#[derive(Deserialize, NifTaggedEnum, Clone)]
 pub enum Mechanic {
     HealthChange(i64),
     MaxHealthPercentageChange(i64),
