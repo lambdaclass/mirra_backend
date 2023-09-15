@@ -19,7 +19,7 @@ defmodule LambdaGameEngine do
   def parse_config(_data), do: :erlang.nif_error(:nif_not_loaded)
 
   ############################
-  # Myra engine functions    #
+  # Myrra engine functions   #
   # remove after refactoring #
   ############################
   def new(%{
