@@ -1,0 +1,6 @@
+[book]
+authors = ["Amin Arria"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Lambda Game Engine"
