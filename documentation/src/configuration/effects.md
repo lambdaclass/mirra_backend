@@ -7,15 +7,14 @@ Effects are mostly buffs and debuffs players can have. They will given by skills
 Configurable fields:
 - `name`: unique name for the effect, this will be referenced by other configurations
 - `effect_time_type`: This determines how the effect is applied, see below ["Effect time type"](#effect-time-type)
-- `character_attributes`: Attributes changes that will be applied over the character having this effect
-- `skill_attributes`: Attributes changes that will be applied over the skills of the character having this effect
-- `projectile_attributes`: Attributes changes that will be applied over the projectiles of the character having this effect
+- `player_attributes`: Attributes changes that will be applied over the player having this effect
+- `projectile_attributes`: Attributes changes that will be applied over the projectiles of the player having this effect
 
 ### Effect time type
 
 It can be any of:
 - `Instant`: Effect is executed once and removed
-- `Duration`: Effect is stuck on the character for a duration
+- `Duration`: Effect is stuck on the player for a duration
   - `duration_ms`
 - `Permanent`: Effect lasts forever and can only be removed by other effects
 - `Periodic`: Like an Instant, but the effect is applied many times over a period of time
@@ -42,14 +41,13 @@ For `Duration` and `Periodic` the configuration expects a JSON object with a `ty
 
 ### Attributes changes
 
-For the exact attributes you can modify in a character look at their specific documentation
+To learn more about attributes see the [Attributes](../attributes/attributes.md) section, below you can find quick links to the documentation for each entity with changeable attributes
 
-- [Character attributes]()
-- [Skill attributes]()
+- [Player attributes](../attributes/players.md)
 - [Projectile attributes]()
 
 An attribute change is comprised of the following:
-- `attribute`: Attribute to modify, the exact values allowed depend on the entity you are modifying
+- `attribute`: Attribute to modify, the exact values allowed depend on the entity you are modifying. If the attribute is a map you can either provide the attribute to modify all or use `.` syntax to only target a key in it
 - `modifier`: Determines how `value` interacts with the current value of the attribute, it can be one of
   - `additive`: Given value is added to current value
   - `multiplicative`: Given value is multiplied to current value
@@ -79,7 +77,7 @@ Examples of the JSON defining effects
       "interval_ms": 1000
       "trigger_count": 3
     },
-    "character_attributes: [
+    "player_attributes: [
       {
         "attribute": "Health",
         "modifier": additive,
@@ -93,7 +91,7 @@ Examples of the JSON defining effects
       "type": "Duration",
       "duration_ms": 5000
     },
-    "character_attributes: [
+    "player_attributes: [
       {
         "attribute": "Size",
         "modifier": multiplicative,

@@ -8,3 +8,7 @@
 - [Skills](./configuration/skills.md)
 - [Characters](./configuration/characters.md)
 - [Game](./configuration/game.md)
+
+# Attributes
+- [Attributes](./attributes/attributes.md)
+- [Player attributes](./attributes/players.md)

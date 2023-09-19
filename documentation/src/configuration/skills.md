@@ -14,9 +14,10 @@ This are the mechanics so far. Every mechanic will add a configuration field wit
 - `GiveEffect`: This makes the skill give a certain effect
   * `effects`: List of effects given
 - `Hit`: Player will hit all things in area of target
+  * `damage`: Damage done to targets
   * `range`: Up to how far away can things be hit
   * `cone_angle`: Defines how the cone of hit is generated, see [Explaining cone_angle](#explaining-cone_angle)
-  * `on_hit_effects`: Effects given to target hit by skill
+  * `on_hit_effects`: Effects given to targets hit by skill
 - `SimpleShoot`: Player will shoot a projectile
   * `projectile`: Projectile to shoot
 - `MultiShoot`: Player will shoot multiple shots of a projectile
@@ -93,9 +94,9 @@ Some example configurations
         }
       },
       "Hit": {
+        "damage": 25
         "range": 100
-        "cone_angle": 360,
-        "on_hit_effects": ["damage_25"]
+        "cone_angle": 360
       }
     ],
   }

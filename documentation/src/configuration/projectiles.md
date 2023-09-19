@@ -4,6 +4,7 @@
 
 Configurable fields:
 - `name`: Unique name for the projectile, this will be referenced by other configurations
+- `base_damage`: Damage done by the projectile on collision
 - `base_speed`: Travel speed of the projectile
 - `base_size`: Size of the projectile for collision math
 - `player_collision`: Determines if the projectile is removed from game after colliding with a player, default is `true`
@@ -20,24 +21,28 @@ Some example configurations
 ```
 [
   {
-    "name": "some_projectile"
+    "name": "some_projectile",
+    "base_damage": 10,
     "base_speed": 123,
     "base_size": 50,
-    "on_hit_effects": ["projectile_damage"]
+    "player_collision": false,
+    "on_hit_effects": []
   },
   {
     "name": "poison_dart"
-    "damage": 24,
+    "base_damage": 25,
     "base_speed": 70,
     "base_size": 50,
-    "on_hit_effect": ["projectile_damage", "poison"],
+    "on_hit_effect": ["poison"],
     "max_distance": 1200
   },
   {
-     "base_speed": 120,
-     "base_size": 50,
-     "on_hit_effect": ["freeze"],
-     "duration_ms": 2000
+    "name": "poison_dart"
+    "base_damage": 0,
+    "base_speed": 120,
+    "base_size": 50,
+    "on_hit_effect": ["freeze"],
+    "duration_ms": 2000
   },
 ]
 ```
