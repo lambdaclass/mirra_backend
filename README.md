@@ -1,6 +1,10 @@
 # lambda_game_engine
 Open source engine developed by LambdaClass
 
+## Documentation
+
+You can find our documentation in [documentation](./documentation/src/README.md) folder
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
