@@ -3,7 +3,7 @@ Open source engine developed by LambdaClass
 
 ## Documentation
 
-You can find our documentation in [documentation](./documentation/src/README.md) folder
+You can find our documentation in [docs](./docs/README.md) folder
 
 ## Installation
 
