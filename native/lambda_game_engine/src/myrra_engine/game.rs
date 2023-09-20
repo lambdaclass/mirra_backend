@@ -813,10 +813,10 @@ impl GameState {
                     ap.modify_health(-attack_dmg);
 
                     match extra_effect {
-                        Some((effect, false, effect_data)) => {
+                        Some((effect, effect_data)) => {
                             let mut effect_data = effect_data.clone();
                             effect_data.caused_to = ap.id;
-                            ap.add_effect(effect, effect_data);
+                            ap.add_effect(effect, false, effect_data);
                         }
                         None => (),
                     }
