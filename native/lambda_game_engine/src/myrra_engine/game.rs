@@ -419,6 +419,7 @@ impl GameState {
                         GameState::get_player_mut(&mut self.players, attacked_player_id)?;
                     attacked_player.add_effect(
                         Effect::ElnarMark,
+                        true,
                         EffectData {
                             time_left: attacking_player.character.duration_basic_skill(),
                             ends_at: add_millis(
@@ -433,7 +434,7 @@ impl GameState {
                             caused_to: attacked_player.id,
                             damage: 0,
                         },
-                    )
+                    );
                 }
                 Ok(attacked_players_ids)
             }
@@ -591,7 +592,7 @@ impl GameState {
                     Some((effect, effect_data)) => {
                         let mut effect_data = effect_data.clone();
                         effect_data.caused_to = attacked_player.id;
-                        attacked_player.add_effect(effect, effect_data);
+                        attacked_player.add_effect(effect, false, effect_data);
                     }
                     None => (),
                 }
@@ -618,6 +619,7 @@ impl GameState {
                 let now = time_now();
                 attacking_player.add_effect(
                     Effect::Scherzo.clone(),
+                    false,
                     EffectData {
                         time_left: attacking_player.character.duration_basic_skill(),
                         ends_at: add_millis(now, attacking_player.character.duration_basic_skill()),
@@ -691,6 +693,7 @@ impl GameState {
 
                         attacked_player.add_effect(
                             Effect::YugenMark,
+                            false,
                             EffectData {
                                 time_left: duration,
                                 ends_at: add_millis(now, duration),
@@ -705,6 +708,7 @@ impl GameState {
                         );
                         attacked_player.add_effect(
                             Effect::Poisoned,
+                            false,
                             EffectData {
                                 time_left: duration,
                                 ends_at: add_millis(now, duration),
@@ -812,7 +816,7 @@ impl GameState {
                         Some((effect, effect_data)) => {
                             let mut effect_data = effect_data.clone();
                             effect_data.caused_to = ap.id;
-                            ap.add_effect(effect, effect_data);
+                            ap.add_effect(effect, false, effect_data);
                         }
                         None => (),
                     }
@@ -850,6 +854,7 @@ impl GameState {
 
             attacked_player.add_effect(
                 Effect::DanseMacabre.clone(),
+                false,
                 EffectData {
                     time_left: duration,
                     ends_at: add_millis(now, duration),
@@ -910,6 +915,7 @@ impl GameState {
                     Some((player_id, _position)) => {
                         attacking_player.add_effect(
                             Effect::XandaMarkOwner,
+                            false,
                             EffectData {
                                 time_left: duration,
                                 ends_at: add_millis(now, duration),
@@ -927,6 +933,7 @@ impl GameState {
                             GameState::get_player_mut(&mut self.players, player_id)?;
                         attacked_player.add_effect(
                             Effect::XandaMark,
+                            false,
                             EffectData {
                                 time_left: duration,
                                 ends_at: add_millis(now, duration),
@@ -1008,6 +1015,7 @@ impl GameState {
             Name::H4ck => {
                 attacking_player.add_effect(
                     Effect::NeonCrashing,
+                    false,
                     EffectData {
                         time_left: attacking_player.character.duration_skill_3(),
                         ends_at: add_millis(now, attacking_player.character.duration_skill_3()),
@@ -1036,6 +1044,7 @@ impl GameState {
                 attacking_player.action = PlayerAction::STARTINGSKILL3;
                 attacking_player.add_effect(
                     Effect::Leaping,
+                    false,
                     EffectData {
                         time_left: MillisTime {
                             high: 0,
@@ -1074,6 +1083,7 @@ impl GameState {
         let now = time_now();
         attacking_player.add_effect(
             Effect::Raged,
+            false,
             EffectData {
                 time_left: attacking_player.character.duration_skill_2(),
                 ends_at: add_millis(now, attacking_player.character.duration_skill_2()),
@@ -1111,6 +1121,7 @@ impl GameState {
             Name::H4ck => {
                 attacking_player.add_effect(
                     Effect::DenialOfService,
+                    false,
                     EffectData {
                         time_left: attacking_player.character.duration_skill_4(),
                         ends_at: add_millis(now, attacking_player.character.duration_skill_4()),
@@ -1144,6 +1155,7 @@ impl GameState {
             Name::Muflus => {
                 attacking_player.add_effect(
                     Effect::FieryRampage,
+                    false,
                     EffectData {
                         time_left: attacking_player.character.duration_skill_4(),
                         ends_at: add_millis(now, attacking_player.character.duration_skill_4()),
@@ -1201,6 +1213,8 @@ impl GameState {
     pub fn world_tick(self: &mut Self, out_of_area_damage: i64) -> Result<(), String> {
         let now = time_now();
         let pys = self.players.clone();
+
+        // Status effects
         let mut neon_crash_affected_players: HashMap<
             u64,
             (Vec<(u64, i64)>, Option<(Effect, MillisTime)>),
@@ -1374,6 +1388,7 @@ impl GameState {
                         ProjectileType::DISARMINGBULLET => {
                             attacked_player.add_effect(
                                 Effect::Paralyzed,
+                                false,
                                 EffectData {
                                     time_left: MillisTime { high: 0, low: 5000 },
                                     ends_at: add_millis(now, MillisTime { high: 0, low: 5000 }),
@@ -1504,7 +1519,7 @@ impl GameState {
                                     caused_to: ap.id,
                                     damage: 0,
                                 };
-                                ap.add_effect(effect.clone(), effect_data.clone());
+                                ap.add_effect(effect.clone(), false, effect_data.clone());
                             }
                             None => {}
                         }
