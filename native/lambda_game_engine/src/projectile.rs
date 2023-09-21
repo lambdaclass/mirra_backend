@@ -45,23 +45,25 @@ impl ProjectileConfig {
         projectiles: Vec<ProjectileConfigFile>,
         effects: &Vec<Effect>,
     ) -> Vec<ProjectileConfig> {
-        projectiles.into_iter().map(|config| {
-            let effects = effects
+        projectiles
+            .into_iter()
+            .map(|config| {
+                let effects = effects
                     .into_iter()
                     .filter(|effect| config.on_hit_effects.contains(&effect.name))
                     .cloned()
                     .collect();
 
-            ProjectileConfig {
-                name: config.name,
-                base_damage: config.base_damage,
-                base_speed: config.base_speed,
-                base_size: config.base_size,
-                on_hit_effects: effects,
-                duration_ms: config.duration_ms,
-                max_distance: config.max_distance,
-            }
-        })
-        .collect()
+                ProjectileConfig {
+                    name: config.name,
+                    base_damage: config.base_damage,
+                    base_speed: config.base_speed,
+                    base_size: config.base_size,
+                    on_hit_effects: effects,
+                    duration_ms: config.duration_ms,
+                    max_distance: config.max_distance,
+                }
+            })
+            .collect()
     }
 }

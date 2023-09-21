@@ -1,17 +1,23 @@
 mod character;
 mod config;
 mod effect;
+mod game;
 mod loot;
+mod myrra_engine;
 mod projectile;
 mod skill;
-mod myrra_engine;
-mod game;
 
 use std::collections::HashMap;
 
 use rustler::Binary;
 
-use crate::{config::Config, myrra_engine::{game::{GameState, Direction}, utils::RelativePosition}};
+use crate::{
+    config::Config,
+    myrra_engine::{
+        game::{Direction, GameState},
+        utils::RelativePosition,
+    },
+};
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn parse_config(data: String) -> Config {
@@ -32,7 +38,15 @@ fn new_game(
     raw_characters_config: Vec<HashMap<Binary, Binary>>,
     raw_skills_config: Vec<HashMap<Binary, Binary>>,
 ) -> Result<GameState, String> {
-    myrra_engine::new_game(selected_players, number_of_players, board_width, board_height, build_walls, raw_characters_config, raw_skills_config)
+    myrra_engine::new_game(
+        selected_players,
+        number_of_players,
+        board_width,
+        board_height,
+        build_walls,
+        raw_characters_config,
+        raw_skills_config,
+    )
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
@@ -120,4 +134,22 @@ fn spawn_loot(game: GameState) -> Result<GameState, String> {
     myrra_engine::spawn_loot(game)
 }
 
-rustler::init!("Elixir.LambdaGameEngine", [parse_config, new_game, move_player, world_tick, disconnect, move_with_joystick, spawn_player, basic_attack, skill_1, skill_2, skill_3, skill_4, shrink_map, spawn_loot]);
+rustler::init!(
+    "Elixir.LambdaGameEngine",
+    [
+        parse_config,
+        new_game,
+        move_player,
+        world_tick,
+        disconnect,
+        move_with_joystick,
+        spawn_player,
+        basic_attack,
+        skill_1,
+        skill_2,
+        skill_3,
+        skill_4,
+        shrink_map,
+        spawn_loot
+    ]
+);

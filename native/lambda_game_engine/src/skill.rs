@@ -124,9 +124,7 @@ impl SkillMechanic {
                         on_hit_effects: effects,
                     }
                 }
-                SkillMechanicConfigFile::SimpleShoot {
-                    projectile,
-                } => {
+                SkillMechanicConfigFile::SimpleShoot { projectile } => {
                     let projectile = projectiles
                         .iter()
                         .find(|projectile_config| projectile == projectile_config.name)
