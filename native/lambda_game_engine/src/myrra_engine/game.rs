@@ -434,7 +434,7 @@ impl GameState {
                             caused_to: attacked_player.id,
                             damage: 0,
                         },
-                    )
+                    );
                 }
                 Ok(attacked_players_ids)
             }
@@ -1214,6 +1214,8 @@ impl GameState {
     pub fn world_tick(self: &mut Self, out_of_area_damage: i64) -> Result<(), String> {
         let now = time_now();
         let pys = self.players.clone();
+
+        // Status effects
         let mut neon_crash_affected_players: HashMap<
             u64,
             (Vec<(u64, i64)>, Option<(Effect, MillisTime)>),
