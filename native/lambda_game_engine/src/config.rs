@@ -6,7 +6,7 @@ use crate::{
     effect::Effect,
     loot::{LootConfig, LootFileConfig},
     projectile::{ProjectileConfig, ProjectileConfigFile},
-    skill::{SkillConfig, SkillConfigFile},
+    skill::{SkillConfig, SkillConfigFile}, game::{GameConfig, GameConfigFile},
 };
 
 #[derive(Deserialize)]
@@ -16,6 +16,7 @@ pub struct ConfigFile {
     projectiles: Vec<ProjectileConfigFile>,
     skills: Vec<SkillConfigFile>,
     characters: Vec<CharacterConfigFile>,
+    game: GameConfigFile,
 }
 
 #[derive(NifMap)]
@@ -25,6 +26,7 @@ pub struct Config {
     projectiles: Vec<ProjectileConfig>,
     skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
+    game: GameConfig,
 }
 
 pub fn parse_config(data: &str) -> Config {
@@ -34,6 +36,7 @@ pub fn parse_config(data: &str) -> Config {
     let projectiles = ProjectileConfig::from_config_file(config_file.projectiles, &effects);
     let skills = SkillConfig::from_config_file(config_file.skills, &effects, &projectiles);
     let characters = CharacterConfig::from_config_file(config_file.characters, &skills);
+    let game = GameConfig::from_config_file(config_file.game, &effects);
 
     Config {
         effects,
@@ -41,5 +44,6 @@ pub fn parse_config(data: &str) -> Config {
         projectiles,
         skills,
         characters,
+        game,
     }
 }
