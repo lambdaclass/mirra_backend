@@ -6,6 +6,8 @@ mod loot;
 mod myrra_engine;
 mod projectile;
 mod skill;
+mod map;
+mod player;
 
 use std::collections::HashMap;
 

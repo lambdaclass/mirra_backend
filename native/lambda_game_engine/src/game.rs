@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::config::Config;
 use crate::loot::Loot;
 use crate::effect::Effect;
+use crate::player::Player;
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
@@ -51,6 +52,7 @@ pub enum MapModificationModifier {
 #[derive(NifMap)]
 pub struct GameState {
   pub config: Config,
+  pub players: Vec<Player>,
   pub loots: Vec<Loot>,
   pub myrra_state: crate::myrra_engine::game::GameState,
   next_id: u64,
@@ -86,7 +88,7 @@ impl GameConfig {
 
 impl GameState {
   pub fn new(config: Config) -> Self {
-    Self { config, loots: Vec::new(), next_id: 0, myrra_state: crate::myrra_engine::game::GameState::placeholder_new() }
+    Self { config, players: Vec::new(), loots: Vec::new(), next_id: 0, myrra_state: crate::myrra_engine::game::GameState::placeholder_new() }
   }
 
   pub fn next_id(&mut self) -> u64 {
