@@ -1,6 +1,6 @@
 use rustler::NifStruct;
 
-#[derive(NifStruct)]
+#[derive(NifStruct, Clone)]
 #[module = "LambdaGameEngine.MyrraEngine.Board"]
 pub struct Board {
     pub width: usize,

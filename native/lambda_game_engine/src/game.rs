@@ -1,6 +1,8 @@
 use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
+use crate::config::Config;
+use crate::loot::Loot;
 use crate::effect::Effect;
 
 #[derive(Deserialize)]
@@ -46,6 +48,14 @@ pub enum MapModificationModifier {
     Multiplicative(f64),
 }
 
+#[derive(NifMap)]
+pub struct GameState {
+  pub config: Config,
+  pub loots: Vec<Loot>,
+  pub myrra_state: crate::myrra_engine::game::GameState,
+  next_id: u64,
+}
+
 impl GameConfig {
     pub(crate) fn from_config_file(
         game_config: GameConfigFile,
@@ -72,6 +82,26 @@ impl GameConfig {
             },
         }
     }
+}
+
+impl GameState {
+  pub fn new(config: Config) -> Self {
+    Self { config, loots: Vec::new(), next_id: 0, myrra_state: crate::myrra_engine::game::GameState::placeholder_new() }
+  }
+
+  pub fn next_id(&mut self) -> u64 {
+    let id = self.next_id;
+    self.next_id += 1;
+    id
+  }
+
+  pub fn push_loot(&mut self, loot: Loot) {
+    self.loots.push(loot);
+  }
+
+  pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
+    self.myrra_state = myrra_state;
+  }
 }
 
 fn find_effects(config_effects_names: &Vec<String>, effects: &Vec<Effect>) -> Vec<Effect> {

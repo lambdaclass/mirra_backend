@@ -23,6 +23,7 @@ defmodule LambdaGameEngine do
   # remove after refactoring #
   ############################
   def new(%{
+
         selected_players: selected_players,
         number_of_players: number_of_players,
         board: {width, height},
