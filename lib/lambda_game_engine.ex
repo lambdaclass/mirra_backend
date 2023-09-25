@@ -17,22 +17,35 @@ defmodule LambdaGameEngine do
   # NIF dummies usually just error out when called when the NIF is not loaded, as that should never normally happen.
   @spec parse_config(binary()) :: map()
   def parse_config(_data), do: :erlang.nif_error(:nif_not_loaded)
+  @spec engine_new_game(map()) :: map()
+  def engine_new_game(_config), do: :erlang.nif_error(:nif_not_loaded)
+  @spec add_player(map(), binary()) :: {map(), nil | pos_integer()}
+  def add_player(_game, _character_name), do: :erlang.nif_error(:nif_not_loaded)
 
   ############################
   # Myrra engine functions   #
   # remove after refactoring #
   ############################
   def new(%{
-
         selected_players: selected_players,
         number_of_players: number_of_players,
         board: {width, height},
         build_walls: build_walls,
         characters: character_info,
-        skills: skills_info
+        skills: skills_info,
+        engine_config: engine_config
       })
       when is_list(character_info) do
-    new_game(selected_players, number_of_players, width, height, build_walls, character_info, skills_info)
+    new_game(
+      selected_players,
+      number_of_players,
+      width,
+      height,
+      build_walls,
+      character_info,
+      skills_info,
+      engine_config
+    )
   end
 
   def new_game(
@@ -42,7 +55,8 @@ defmodule LambdaGameEngine do
         _height,
         _build_walls,
         _characters_config_list,
-        _skills_config_list
+        _skills_config_list,
+        _engine_config
       ),
       do: :erlang.nif_error(:nif_not_loaded)
 

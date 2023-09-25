@@ -1,9 +1,12 @@
-use rustler::{NifMap, NifTaggedEnum};
+use std::collections::HashMap;
+
+use rustler::NifMap;
+use rustler::NifTaggedEnum;
 use serde::Deserialize;
 
 use crate::config::Config;
-use crate::loot::Loot;
 use crate::effect::Effect;
+use crate::loot::Loot;
 use crate::player::Player;
 
 #[derive(Deserialize)]
@@ -26,10 +29,10 @@ pub struct MapModificationConfigFile {
 
 #[derive(NifMap)]
 pub struct GameConfig {
-    width: u64,
-    height: u64,
-    loot_interval_ms: u64,
-    map_modification: MapModificationConfig,
+    pub width: u64,
+    pub height: u64,
+    pub loot_interval_ms: u64,
+    pub map_modification: MapModificationConfig,
 }
 
 #[derive(NifMap)]
@@ -51,11 +54,11 @@ pub enum MapModificationModifier {
 
 #[derive(NifMap)]
 pub struct GameState {
-  pub config: Config,
-  pub players: Vec<Player>,
-  pub loots: Vec<Loot>,
-  pub myrra_state: crate::myrra_engine::game::GameState,
-  next_id: u64,
+    pub config: Config,
+    pub players: HashMap<u64, Player>,
+    pub loots: Vec<Loot>,
+    pub myrra_state: crate::myrra_engine::game::GameState,
+    next_id: u64,
 }
 
 impl GameConfig {
@@ -87,23 +90,29 @@ impl GameConfig {
 }
 
 impl GameState {
-  pub fn new(config: Config) -> Self {
-    Self { config, players: Vec::new(), loots: Vec::new(), next_id: 0, myrra_state: crate::myrra_engine::game::GameState::placeholder_new() }
-  }
+    pub fn new(config: Config) -> Self {
+        Self {
+            config,
+            players: HashMap::new(),
+            loots: Vec::new(),
+            next_id: 1,
+            myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
+        }
+    }
 
-  pub fn next_id(&mut self) -> u64 {
-    let id = self.next_id;
-    self.next_id += 1;
-    id
-  }
+    pub fn next_id(&mut self) -> u64 {
+        let id = self.next_id;
+        self.next_id += 1;
+        id
+    }
 
-  pub fn push_loot(&mut self, loot: Loot) {
-    self.loots.push(loot);
-  }
+    pub fn push_player(&mut self, player_id: u64, player: Player) {
+        self.players.insert(player_id, player);
+    }
 
-  pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
-    self.myrra_state = myrra_state;
-  }
+    pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
+        self.myrra_state = myrra_state;
+    }
 }
 
 fn find_effects(config_effects_names: &Vec<String>, effects: &Vec<Effect>) -> Vec<Effect> {

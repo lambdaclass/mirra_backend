@@ -2,6 +2,7 @@ use rustler::NifMap;
 use serde::Deserialize;
 
 use crate::effect::Effect;
+use crate::map::Position;
 
 #[derive(Deserialize, NifMap)]
 pub struct LootFileConfig {
@@ -23,7 +24,7 @@ pub struct Loot {
     size: u64,
     effects: Vec<Effect>,
     id: u64,
-    position: (u64, u64),
+    position: Position,
 }
 
 impl LootConfig {
