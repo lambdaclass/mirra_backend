@@ -26,21 +26,19 @@ pub enum SkillMechanicConfigFile {
         damage: u64,
         range: u64,
         cone_angle: u64,
-        on_hit_effect: String,
+        on_hit_effects: Vec<String>,
     },
-    Shoot {
+    SimpleShoot {
         projectile: String,
-        autotarget: bool,
-        autotarget_range: u64,
-        autotarget_cone_angle: u64,
-        multishot: bool,
-        multishot_count: u64,
-        multishot_cone_angle: u64,
+    },
+    MultiShoot {
+        projectile: String,
+        count: u64,
+        cone_angle: u64,
     },
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
-        collision_damage: u64,
     },
 }
 
@@ -51,21 +49,19 @@ pub enum SkillMechanic {
         damage: u64,
         range: u64,
         cone_angle: u64,
-        on_hit_effect: Effect,
+        on_hit_effects: Vec<Effect>,
     },
-    Shoot {
+    SimpleShoot {
         projectile: ProjectileConfig,
-        autotarget: bool,
-        autotarget_range: u64,
-        autotarget_cone_angle: u64,
-        multishot: bool,
-        multishot_count: u64,
-        multishot_cone_angle: u64,
+    },
+    MultiShoot {
+        projectile: ProjectileConfig,
+        count: u64,
+        cone_angle: u64,
     },
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
-        collision_damage: u64,
     },
 }
 
@@ -113,33 +109,41 @@ impl SkillMechanic {
                     damage,
                     range,
                     cone_angle,
-                    on_hit_effect,
+                    on_hit_effects,
                 } => {
-                    let effect = effects
-                        .iter()
-                        .find(|effect| on_hit_effect == effect.name)
-                        .expect(
-                            format!(
-                                "Hit.on_hit_effect `{}` does not exist in effects config",
-                                on_hit_effect
-                            )
-                            .as_str(),
-                        );
+                    let effects = effects
+                        .into_iter()
+                        .filter(|effect| on_hit_effects.contains(&effect.name))
+                        .cloned()
+                        .collect();
+
                     SkillMechanic::Hit {
                         damage,
                         range,
                         cone_angle,
-                        on_hit_effect: effect.clone(),
+                        on_hit_effects: effects,
                     }
                 }
-                SkillMechanicConfigFile::Shoot {
+                SkillMechanicConfigFile::SimpleShoot { projectile } => {
+                    let projectile = projectiles
+                        .iter()
+                        .find(|projectile_config| projectile == projectile_config.name)
+                        .expect(
+                            format!(
+                                "Shoot.projectile `{}` does not exist in projectiles config",
+                                projectile
+                            )
+                            .as_str(),
+                        );
+
+                    SkillMechanic::SimpleShoot {
+                        projectile: projectile.clone(),
+                    }
+                }
+                SkillMechanicConfigFile::MultiShoot {
                     projectile,
-                    autotarget,
-                    autotarget_range,
-                    autotarget_cone_angle,
-                    multishot,
-                    multishot_count,
-                    multishot_cone_angle,
+                    count,
+                    cone_angle,
                 } => {
                     let projectile = projectiles
                         .iter()
@@ -152,24 +156,18 @@ impl SkillMechanic {
                             .as_str(),
                         );
 
-                    SkillMechanic::Shoot {
+                    SkillMechanic::MultiShoot {
                         projectile: projectile.clone(),
-                        autotarget,
-                        autotarget_range,
-                        autotarget_cone_angle,
-                        multishot,
-                        multishot_count,
-                        multishot_cone_angle,
+                        count,
+                        cone_angle,
                     }
                 }
                 SkillMechanicConfigFile::MoveToTarget {
                     duration_ms,
                     max_range,
-                    collision_damage,
                 } => SkillMechanic::MoveToTarget {
                     duration_ms,
                     max_range,
-                    collision_damage,
                 },
             })
             .collect()

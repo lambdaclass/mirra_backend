@@ -1,6 +1,7 @@
 mod character;
 mod config;
 mod effect;
+mod game;
 mod loot;
 mod myrra_engine;
 mod projectile;

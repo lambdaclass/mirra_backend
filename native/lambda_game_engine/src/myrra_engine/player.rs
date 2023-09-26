@@ -292,17 +292,31 @@ impl Player {
     }
 
     #[inline]
-    pub fn add_effect(&mut self, e: Effect, ed: EffectData) {
-        if !self.effects.contains_key(&e) {
+    pub fn add_effect(&mut self, effect: Effect, reset_countdown: bool, effect_data: EffectData) {
+        if !self.effects.contains_key(&effect) {
             match self.character.name {
                 Name::Muflus => {
-                    if !(self.muflus_partial_immunity(&e)) {
-                        self.effects.insert(e, ed);
+                    if !(self.muflus_partial_immunity(&effect)) {
+                        self.effects.insert(effect, effect_data);
                     }
                 }
                 _ => {
-                    self.effects.insert(e, ed);
+                    self.effects.insert(effect, effect_data);
                 }
+            }
+        }
+        // Only resets effect countdown if both effects were caused by the same attacking player
+        // TODO: reset_countdown should probably be another field in the EffectData struct
+        // TODO: add field "non_unique": if different sources apply the same effect on the target, target should receive multiple instances of the same effect.
+        else if reset_countdown == true {
+            let current_effect = self.effects.get(&effect);
+            match current_effect {
+                Some(current_effect) => {
+                    if current_effect.caused_by == effect_data.caused_by {
+                        self.effects.insert(effect, effect_data); // resets countdown
+                    }
+                }
+                None => return (),
             }
         }
     }
@@ -412,7 +426,7 @@ impl Player {
             + self.has_mark(&Effect::XandaMark, attacking_player_id)
     }
 
-    fn has_mark(self: &Self, e: &Effect, attacking_player_id: u64) -> u64 {
+    pub fn has_mark(self: &Self, e: &Effect, attacking_player_id: u64) -> u64 {
         let mark = self.effects.get(e);
         return if matches!(
             mark,
