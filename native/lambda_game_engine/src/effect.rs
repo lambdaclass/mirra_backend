@@ -6,7 +6,7 @@ pub struct Effect {
     pub name: String,
     effect_time_type: TimeType,
     player_attributes: Vec<AttributeChange>,
-    projectile_attributes: Vec<AttributeChange>
+    projectile_attributes: Vec<AttributeChange>,
 }
 
 #[derive(Deserialize, NifMap, Clone)]
@@ -18,13 +18,21 @@ pub struct AttributeChange {
 
 #[derive(Deserialize, NifTaggedEnum, Clone)]
 pub enum AttributeModifier {
-    Additive, Multiplicative, Override
+    Additive,
+    Multiplicative,
+    Override,
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone)]
 pub enum TimeType {
     Instant,
     Permanent,
-    Duration{duration_ms: u64},
-    Periodic{instant_applicaiton: bool, interval_ms: u64, trigger_count: u64},
+    Duration {
+        duration_ms: u64,
+    },
+    Periodic {
+        instant_applicaiton: bool,
+        interval_ms: u64,
+        trigger_count: u64,
+    },
 }

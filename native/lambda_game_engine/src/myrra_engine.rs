@@ -48,7 +48,11 @@ pub fn new_game(
     )
 }
 
-pub fn move_player(game: GameState, player_id: u64, direction: Direction) -> Result<GameState, String> {
+pub fn move_player(
+    game: GameState,
+    player_id: u64,
+    direction: Direction,
+) -> Result<GameState, String> {
     let mut game = game;
     game.move_player(player_id, direction)?;
     Ok(game)

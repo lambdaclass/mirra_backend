@@ -4,9 +4,10 @@ use serde::Deserialize;
 use crate::{
     character::{CharacterConfig, CharacterConfigFile},
     effect::Effect,
+    game::{GameConfig, GameConfigFile},
     loot::{LootConfig, LootFileConfig},
     projectile::{ProjectileConfig, ProjectileConfigFile},
-    skill::{SkillConfig, SkillConfigFile}, game::{GameConfig, GameConfigFile},
+    skill::{SkillConfig, SkillConfigFile},
 };
 
 #[derive(Deserialize)]
