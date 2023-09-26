@@ -1,7 +1,7 @@
 use super::board::Board;
 use super::character::{Character, Name};
 use super::loot::{self, Loot, LootType};
-use super::player::{Effect, EffectData, Player, PlayerAction, Position, Status};
+use super::player::{self, Effect, EffectData, Player, PlayerAction, Position, Status};
 use super::projectile::{Projectile, ProjectileStatus, ProjectileType};
 use super::skills::{self, Skill};
 use super::time_utils::{
@@ -321,6 +321,32 @@ impl GameState {
             }
         }
         players_in_range
+    }
+
+    pub fn players_in_range_and_angle(
+        players: &[Player],
+        direction: &RelativePosition,
+        attacking_position: &Position,
+        range: f64,
+        angle: u64,
+    ) -> Vec<(u64, f64)> {
+        let mut players_in_angle: Vec<(u64, f64)> = vec![];
+        for player in players {
+            let v1 = RelativePosition::new(
+                player.position.y as f32 - attacking_position.y as f32,
+                -(player.position.x as f32 - attacking_position.x as f32),
+            );
+            let angle_between_players = angle_between_vectors(v1, *direction);
+
+            let distance = distance_between_positions(&player.position, attacking_position);
+            if distance <= range
+                && angle_between_players <= angle / 2
+                && !matches!(player.status, Status::DEAD)
+            {
+                players_in_angle.push((player.id, distance));
+            }
+        }
+        players_in_angle
     }
 
     pub fn players_in_projectile_movement(
@@ -676,51 +702,62 @@ impl GameState {
                 let attacking_player = GameState::get_player(&self.players, attacking_player_id)?;
                 let attacking_player_id = attacking_player.id;
                 let duration = attacking_player.character.duration_skill_1();
-                match Self::nearest_player(
-                    &pys,
-                    &attacking_player.position,
-                    &attacking_player.direction,
-                    attacking_player.id,
-                    1000.,
-                    attack_angle,
-                ) {
-                    Some((player_id, _position)) => {
-                        let damage = attacking_player.skill_1_damage();
-                        let attacked_player =
-                            GameState::get_player_mut(&mut self.players, player_id)?;
+                let damage = attacking_player.skill_1_damage();
 
-                        attacked_player.add_effect(
-                            Effect::YugenMark,
-                            EffectData {
-                                time_left: duration,
-                                ends_at: add_millis(now, duration),
-                                duration: duration,
-                                direction: None,
-                                position: None,
-                                triggered_at: now,
-                                caused_by: attacking_player_id,
-                                caused_to: attacked_player.id,
-                                damage: 0,
-                            },
-                        );
-                        attacked_player.add_effect(
-                            Effect::Poisoned,
-                            EffectData {
-                                time_left: duration,
-                                ends_at: add_millis(now, duration),
-                                duration: duration,
-                                direction: None,
-                                position: None,
-                                triggered_at: now,
-                                caused_by: attacking_player_id,
-                                caused_to: attacked_player.id,
-                                damage: damage,
-                            },
-                        );
-                        Ok(vec![player_id])
+                let mut affected_players: Vec<u64> = GameState::players_in_range_and_angle(
+                    &pys,
+                    direction,
+                    &attacking_player.position,
+                    attacking_player.skill_1_range(),
+                    attack_angle,
+                )
+                .into_iter()
+                .filter(|&(id, _distance)| id != attacking_player_id)
+                .map(|(player_id, _position)| player_id)
+                .collect();
+
+                for player_id in affected_players.iter_mut() {
+                    let attacked_player: Option<&mut Player> = self
+                        .players
+                        .iter_mut()
+                        .find(|player| player.id == *player_id && player.id != attacking_player_id);
+
+                    match attacked_player {
+                        Some(attacked_player) => {
+                            attacked_player.add_effect(
+                                Effect::YugenMark,
+                                EffectData {
+                                    time_left: duration,
+                                    ends_at: add_millis(now, duration),
+                                    duration: duration,
+                                    direction: None,
+                                    position: None,
+                                    triggered_at: now,
+                                    caused_by: attacking_player_id,
+                                    caused_to: attacked_player.id,
+                                    damage: 0,
+                                },
+                            );
+                            attacked_player.add_effect(
+                                Effect::Poisoned,
+                                EffectData {
+                                    time_left: duration,
+                                    ends_at: add_millis(now, duration),
+                                    duration: duration,
+                                    direction: None,
+                                    position: None,
+                                    triggered_at: now,
+                                    caused_by: attacking_player_id,
+                                    caused_to: attacked_player.id,
+                                    damage: damage,
+                                },
+                            );
+                        }
+                        _ => continue,
                     }
-                    None => Ok(Vec::new()),
                 }
+
+                Ok(affected_players)
             }
         };
 
