@@ -319,7 +319,6 @@ impl Player {
                 None => return (),
             }
         }
-        println!("{:?}", self.effects);
     }
 
     #[inline]
