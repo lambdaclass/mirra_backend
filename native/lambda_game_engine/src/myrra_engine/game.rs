@@ -1194,8 +1194,11 @@ impl GameState {
                 continue;
             }
 
-            target_player
-                .modify_health(-(target_player.health as f64 * 0.2 * marks_count as f64) as i64);
+            if marks_count == 3 {
+                target_player.modify_health(-(target_player.health));
+            } else {
+                target_player.modify_health(-(15_f64 * marks_count as f64) as i64);
+            }
             affected_players.push(target_player.id);
         }
         Ok(affected_players)
