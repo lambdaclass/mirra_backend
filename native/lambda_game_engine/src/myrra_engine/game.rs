@@ -1199,6 +1199,7 @@ impl GameState {
             } else {
                 target_player.modify_health(-(15_f64 * marks_count as f64) as i64);
             }
+            target_player.remove_uma_marks();
             affected_players.push(target_player.id);
         }
         Ok(affected_players)
