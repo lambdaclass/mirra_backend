@@ -83,8 +83,8 @@ impl Player {
         let y = new_y.min(max_y_bound).max(min_y_bound);
 
         self.position = Position {
-            x: x as u64,
-            y: y as u64,
+            x: x as i64,
+            y: y as i64,
         }
     }
 }

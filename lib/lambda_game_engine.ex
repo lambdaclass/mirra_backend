@@ -21,6 +21,8 @@ defmodule LambdaGameEngine do
   def engine_new_game(_config), do: :erlang.nif_error(:nif_not_loaded)
   @spec add_player(map(), binary()) :: {map(), nil | pos_integer()}
   def add_player(_game, _character_name), do: :erlang.nif_error(:nif_not_loaded)
+  @spec move_player(map(), pos_integer(), float()) :: map()
+  def move_player(_game_state, _player_id, _angle), do: :erlang.nif_error(:nif_not_loaded)
 
   ############################
   # Myrra engine functions   #
@@ -60,7 +62,6 @@ defmodule LambdaGameEngine do
       ),
       do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_player(_a, _b, _c), do: :erlang.nif_error(:nif_not_loaded)
 
   def move_player_to_relative_position(_game_state, _player_id, _relative_position),
     do: :erlang.nif_error(:nif_not_loaded)
