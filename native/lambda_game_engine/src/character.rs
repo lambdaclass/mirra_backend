@@ -14,13 +14,13 @@ pub struct CharacterConfigFile {
     skills: HashMap<String, String>,
 }
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct CharacterConfig {
-    name: String,
-    active: bool,
-    base_speed: u64,
-    base_size: u64,
-    skills: HashMap<String, SkillConfig>,
+    pub name: String,
+    pub active: bool,
+    pub base_speed: u64,
+    pub base_size: u64,
+    pub skills: HashMap<String, SkillConfig>,
 }
 
 impl CharacterConfig {

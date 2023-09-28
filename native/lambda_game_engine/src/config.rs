@@ -27,7 +27,16 @@ pub struct Config {
     projectiles: Vec<ProjectileConfig>,
     skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
-    game: GameConfig,
+    pub game: GameConfig,
+}
+
+impl Config {
+    pub fn find_character(&self, name: String) -> Option<CharacterConfig> {
+        self.characters
+            .iter()
+            .find(|character_config| character_config.active && character_config.name == name)
+            .cloned()
+    }
 }
 
 pub fn parse_config(data: &str) -> Config {
