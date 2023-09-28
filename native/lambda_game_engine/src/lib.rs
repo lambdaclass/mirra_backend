@@ -67,6 +67,19 @@ fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameSta
     }
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
+    let mut game = game;
+    let loot_id = game.next_id();
+    match loot::spawn_random_loot(&game.config, loot_id) {
+        None => (game, None),
+        Some(loot) => {
+            game.push_loot(loot);
+            (game, Some(loot_id))
+        }
+    }
+}
+
 /********************************************************
  * Functions in this space are copied from Myrra engine *
  * after the refactor there should be nothing down here *
@@ -231,6 +244,8 @@ rustler::init!(
         add_player,
         move_player,
         apply_effect,
+        spawn_random_loot,
+        // Myrra functions
         new_game,
         world_tick,
         disconnect,

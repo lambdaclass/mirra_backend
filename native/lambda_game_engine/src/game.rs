@@ -110,6 +110,10 @@ impl GameState {
         self.players.insert(player_id, player);
     }
 
+    pub fn push_loot(&mut self, loot: Loot) {
+        self.loots.push(loot);
+    }
+
     pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
         self.myrra_state = myrra_state;
     }

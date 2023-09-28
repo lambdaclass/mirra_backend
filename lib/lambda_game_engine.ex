@@ -30,8 +30,10 @@ defmodule LambdaGameEngine do
   def add_player(_game, _character_name), do: :erlang.nif_error(:nif_not_loaded)
   @spec move_player(map(), pos_integer(), float()) :: map()
   def move_player(_game_state, _player_id, _angle), do: :erlang.nif_error(:nif_not_loaded)
-  @spec move_player(map(), pos_integer(), binary()) :: map()
+  @spec apply_effect(map(), pos_integer(), binary()) :: map()
   def apply_effect(_game_state, _player_id, _effect_name), do: :erlang.nif_error(:nif_not_loaded)
+  @spec spawn_random_loot(map()) :: {map(), nil | pos_integer()}
+  def spawn_random_loot(_game_state), do: :erlang.nif_error(:nif_not_loaded)
 
   ############################
   # Myrra engine functions   #

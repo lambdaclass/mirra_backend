@@ -49,4 +49,12 @@ defmodule LambdaGameEngineTest do
 
     assert player_pre_effect.speed < player_post_effect.speed
   end
+
+  test "spawns a loot randomly", context do
+    {game, loot_id} = LambdaGameEngine.spawn_random_loot(context.game)
+    [loot] = game.loots
+
+    assert not is_nil(loot_id)
+    assert loot.id == loot_id
+  end
 end
