@@ -37,6 +37,12 @@ impl Config {
             .find(|character_config| character_config.active && character_config.name == name)
             .cloned()
     }
+
+    pub fn find_effect(&self, name: String) -> Option<&Effect> {
+        self.effects
+            .iter()
+            .find(|effect| effect.name == name)
+    }
 }
 
 pub fn parse_config(data: &str) -> Config {

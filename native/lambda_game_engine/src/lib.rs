@@ -54,6 +54,19 @@ fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     }
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameState {
+    let mut game = game;
+    match game.players.get_mut(&player_id) {
+        None => game,
+        Some(player) => {
+            let effect = game.config.find_effect(effect_name).unwrap();
+            player.apply_effect(effect);
+            game
+        }
+    }
+}
+
 /********************************************************
  * Functions in this space are copied from Myrra engine *
  * after the refactor there should be nothing down here *
@@ -217,6 +230,7 @@ rustler::init!(
         engine_new_game,
         add_player,
         move_player,
+        apply_effect,
         new_game,
         world_tick,
         disconnect,

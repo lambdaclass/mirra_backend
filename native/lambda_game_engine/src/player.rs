@@ -8,7 +8,9 @@ use rustler::NifTaggedEnum;
 
 use crate::character::CharacterConfig;
 use crate::config::Config;
+use crate::effect::AttributeModifier;
 use crate::effect::Effect;
+use crate::effect::TimeType;
 use crate::map::Position;
 
 #[derive(NifMap)]
@@ -64,6 +66,7 @@ impl Player {
             character: character_config,
         }
     }
+
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {
         // A speed of 0 (or less) means the player can't move (e.g. paralyzed, frozen, etc)
         if self.speed <= 0 {
@@ -86,5 +89,39 @@ impl Player {
             x: x as i64,
             y: y as i64,
         }
+    }
+
+    pub fn apply_effect(&mut self, effect: &Effect) {
+        // Store the effect in the player
+        if effect.effect_time_type != TimeType::Instant {
+            self.effects.push(effect.clone());
+        }
+
+        // Apply the effect
+        match effect.effect_time_type {
+            TimeType::Periodic { instant_applicaiton: true, .. } => (),
+            _ => {
+                effect.player_attributes
+                .iter()
+                .fold(self, |player, change| {
+                    match change.attribute.as_str() {
+                        "speed" => modify_attribute(&mut player.speed, &change.modifier, &change.value),
+                        "size" => modify_attribute(&mut player.size, &change.modifier, &change.value),
+                        "damage" => modify_attribute(&mut player.damage, &change.modifier, &change.value),
+                        "health" => modify_attribute(&mut player.health, &change.modifier, &change.value),
+                        _ => todo!(),
+                    };
+                    player
+                });
+            }
+        };
+    }
+}
+
+fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &String) {
+    match modifier {
+        AttributeModifier::Additive => *attribute_value = *attribute_value * value.parse::<u64>().unwrap(),
+        AttributeModifier::Multiplicative => *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64,
+        AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap(),
     }
 }

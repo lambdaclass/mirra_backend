@@ -4,16 +4,16 @@ use serde::Deserialize;
 #[derive(Deserialize, NifMap, Clone)]
 pub struct Effect {
     pub name: String,
-    effect_time_type: TimeType,
-    player_attributes: Vec<AttributeChange>,
-    projectile_attributes: Vec<AttributeChange>,
+    pub effect_time_type: TimeType,
+    pub player_attributes: Vec<AttributeChange>,
+    pub projectile_attributes: Vec<AttributeChange>
 }
 
 #[derive(Deserialize, NifMap, Clone)]
 pub struct AttributeChange {
-    attribute: String, // TODO: Can this be force to be certain things? Maybe an enum
-    modifier: AttributeModifier,
-    value: String, // TODO: Figure out how to do dynamic types here
+    pub attribute: String, // TODO: Can this be force to be certain things? Maybe an enum
+    pub modifier: AttributeModifier,
+    pub value: String, // TODO: Figure out how to do dynamic types here
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone)]
@@ -23,7 +23,7 @@ pub enum AttributeModifier {
     Override,
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone)]
+#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
 pub enum TimeType {
     Instant,
     Permanent,
