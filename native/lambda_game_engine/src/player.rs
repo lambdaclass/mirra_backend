@@ -15,20 +15,20 @@ use crate::map::Position;
 
 #[derive(NifMap)]
 pub struct Player {
-    id: u64,
-    character: CharacterConfig,
-    status: PlayerStatus,
-    kill_count: u64,
-    death_count: u64,
-    position: Position,
-    direction: u64,
-    actions: Vec<PlayerAction>,
-    health: u64,
-    cooldowns: HashMap<String, u64>,
-    effects: Vec<Effect>,
-    size: u64,
-    damage: u64,
-    speed: u64,
+    pub id: u64,
+    pub character: CharacterConfig,
+    pub status: PlayerStatus,
+    pub kill_count: u64,
+    pub death_count: u64,
+    pub position: Position,
+    pub direction: u64,
+    pub actions: Vec<PlayerAction>,
+    pub health: u64,
+    pub cooldowns: HashMap<String, u64>,
+    pub effects: Vec<Effect>,
+    pub size: u64,
+    pub damage: u64,
+    pub speed: u64,
 }
 
 #[derive(NifTaggedEnum, Clone)]
@@ -92,7 +92,7 @@ impl Player {
     }
 
     pub fn apply_effect(&mut self, effect: &Effect) {
-        // Store the effect in the player
+        // Store the effect in the player if it is not an instant effect
         if effect.effect_time_type != TimeType::Instant {
             self.effects.push(effect.clone());
         }
@@ -120,7 +120,7 @@ impl Player {
 
 fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &String) {
     match modifier {
-        AttributeModifier::Additive => *attribute_value = *attribute_value * value.parse::<u64>().unwrap(),
+        AttributeModifier::Additive => *attribute_value = *attribute_value + value.parse::<u64>().unwrap(),
         AttributeModifier::Multiplicative => *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64,
         AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap(),
     }

@@ -44,14 +44,9 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
-    let mut game = game;
-    match game.players.get_mut(&player_id) {
-        None => game,
-        Some(player) => {
-            player.move_position(angle, &game.config);
-            game
-        }
-    }
+    let mut game: GameState = game;
+    game.move_player(player_id, angle);
+    game
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]

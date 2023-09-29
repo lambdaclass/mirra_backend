@@ -57,4 +57,17 @@ defmodule LambdaGameEngineTest do
     assert not is_nil(loot_id)
     assert loot.id == loot_id
   end
+
+  test "moving picks up loot", context do
+    {game, _loot_id} = LambdaGameEngine.spawn_random_loot(context.game)
+    [loot] = game.loots
+
+    position = %{x: loot.position.x, y: loot.position.y - 25}
+    game = put_in(game, [:players, context.player_id, :position], position)
+    game = put_in(game, [:players, context.player_id, :health], 50)
+    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+
+    assert [] = game.loots
+    assert 80 = get_in(game, [:players, context.player_id, :health])
+  end
 end

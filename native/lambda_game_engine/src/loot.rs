@@ -23,11 +23,11 @@ pub struct LootConfig {
 
 #[derive(NifMap)]
 pub struct Loot {
-    name: String,
-    size: u64,
-    effects: Vec<Effect>,
-    id: u64,
-    position: Position,
+    pub name: String,
+    pub size: u64,
+    pub effects: Vec<Effect>,
+    pub id: u64,
+    pub position: Position,
 }
 
 impl LootConfig {
