@@ -35,6 +35,8 @@ jobs:
         run: mix deps.get
       - name: Check Elixir Formatting
         run: mix format --check-formatted
+      - name: Check Elixir code
+        run: mix credo --strict
       - name: Check Rust Formatting
         run: cargo fmt --check --manifest-path native/lambda_game_engine/Cargo.toml
       - name: Check Rust code
