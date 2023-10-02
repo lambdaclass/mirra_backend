@@ -73,7 +73,6 @@ defmodule LambdaGameEngine do
       ),
       do: :erlang.nif_error(:nif_not_loaded)
 
-
   def move_player_to_relative_position(_game_state, _player_id, _relative_position),
     do: :erlang.nif_error(:nif_not_loaded)
 
