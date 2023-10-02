@@ -36,7 +36,7 @@ jobs:
       - name: Check Elixir Formatting
         run: mix format
       - name: Check Rust Formatting
-        run: cargo fmt --manifest-path native/lambda_game_engine/Cargo.toml
+        run: cargo fmt --check --manifest-path native/lambda_game_engine/Cargo.toml
       - name: Compiles without warnings
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests

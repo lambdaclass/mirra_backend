@@ -39,9 +39,7 @@ impl Config {
     }
 
     pub fn find_effect(&self, name: String) -> Option<&Effect> {
-        self.effects
-            .iter()
-            .find(|effect| effect.name == name)
+        self.effects.iter().find(|effect| effect.name == name)
     }
 }
 

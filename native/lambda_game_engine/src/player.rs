@@ -99,20 +99,36 @@ impl Player {
 
         // Apply the effect
         match effect.effect_time_type {
-            TimeType::Periodic { instant_applicaiton: true, .. } => (),
+            TimeType::Periodic {
+                instant_applicaiton: true,
+                ..
+            } => (),
             _ => {
-                effect.player_attributes
-                .iter()
-                .fold(self, |player, change| {
-                    match change.attribute.as_str() {
-                        "speed" => modify_attribute(&mut player.speed, &change.modifier, &change.value),
-                        "size" => modify_attribute(&mut player.size, &change.modifier, &change.value),
-                        "damage" => modify_attribute(&mut player.damage, &change.modifier, &change.value),
-                        "health" => modify_attribute(&mut player.health, &change.modifier, &change.value),
-                        _ => todo!(),
-                    };
-                    player
-                });
+                effect
+                    .player_attributes
+                    .iter()
+                    .fold(self, |player, change| {
+                        match change.attribute.as_str() {
+                            "speed" => {
+                                modify_attribute(&mut player.speed, &change.modifier, &change.value)
+                            }
+                            "size" => {
+                                modify_attribute(&mut player.size, &change.modifier, &change.value)
+                            }
+                            "damage" => modify_attribute(
+                                &mut player.damage,
+                                &change.modifier,
+                                &change.value,
+                            ),
+                            "health" => modify_attribute(
+                                &mut player.health,
+                                &change.modifier,
+                                &change.value,
+                            ),
+                            _ => todo!(),
+                        };
+                        player
+                    });
             }
         };
     }
@@ -120,8 +136,12 @@ impl Player {
 
 fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &String) {
     match modifier {
-        AttributeModifier::Additive => *attribute_value = *attribute_value + value.parse::<u64>().unwrap(),
-        AttributeModifier::Multiplicative => *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64,
+        AttributeModifier::Additive => {
+            *attribute_value = *attribute_value + value.parse::<u64>().unwrap()
+        }
+        AttributeModifier::Multiplicative => {
+            *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64
+        }
         AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap(),
     }
 }

@@ -151,7 +151,9 @@ fn find_effects(config_effects_names: &Vec<String>, effects: &Vec<Effect>) -> Ve
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
-            loot.effects.iter().for_each(|effect| player.apply_effect(effect));
+            loot.effects
+                .iter()
+                .for_each(|effect| player.apply_effect(effect));
             false
         } else {
             true
