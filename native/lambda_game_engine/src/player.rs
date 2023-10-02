@@ -69,7 +69,7 @@ impl Player {
 
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {
         // A speed of 0 (or less) means the player can't move (e.g. paralyzed, frozen, etc)
-        if self.speed <= 0 {
+        if self.speed == 0 {
             return;
         }
 
@@ -134,10 +134,10 @@ impl Player {
     }
 }
 
-fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &String) {
+fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
     match modifier {
         AttributeModifier::Additive => {
-            *attribute_value = *attribute_value + value.parse::<u64>().unwrap()
+            *attribute_value += value.parse::<u64>().unwrap()
         }
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64

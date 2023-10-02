@@ -26,7 +26,7 @@ pub struct CharacterConfig {
 impl CharacterConfig {
     pub(crate) fn from_config_file(
         characters: Vec<CharacterConfigFile>,
-        skills: &Vec<SkillConfig>,
+        skills: &[SkillConfig],
     ) -> Vec<CharacterConfig> {
         characters
             .into_iter()
@@ -49,10 +49,10 @@ impl CharacterConfig {
     }
 }
 
-fn find_skill(skill_name: String, skills: &Vec<SkillConfig>) -> SkillConfig {
+fn find_skill(skill_name: String, skills: &[SkillConfig]) -> SkillConfig {
     skills
         .iter()
         .find(|skill| skill_name == skill.name)
-        .expect(format!("Skill `{}` does not exist in skills config", skill_name).as_str())
+        .unwrap_or_else(|| panic!("Skill `{}` does not exist in skills config", skill_name))
         .clone()
 }

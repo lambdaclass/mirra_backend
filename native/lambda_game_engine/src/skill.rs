@@ -68,14 +68,14 @@ pub enum SkillMechanic {
 impl SkillConfig {
     pub(crate) fn from_config_file(
         skills: Vec<SkillConfigFile>,
-        effects: &Vec<Effect>,
-        projectiles: &Vec<ProjectileConfig>,
+        effects: &[Effect],
+        projectiles: &[ProjectileConfig],
     ) -> Vec<SkillConfig> {
         skills
             .into_iter()
             .map(|config| {
                 let mechanics =
-                    SkillMechanic::from_config_file(config.mechanics, &effects, &projectiles);
+                    SkillMechanic::from_config_file(config.mechanics, effects, projectiles);
 
                 SkillConfig {
                     name: config.name.clone(),
@@ -91,8 +91,8 @@ impl SkillConfig {
 impl SkillMechanic {
     pub(crate) fn from_config_file(
         mechanics: Vec<SkillMechanicConfigFile>,
-        effects: &Vec<Effect>,
-        projectiles: &Vec<ProjectileConfig>,
+        effects: &[Effect],
+        projectiles: &[ProjectileConfig],
     ) -> Vec<SkillMechanic> {
         mechanics
             .into_iter()
@@ -112,7 +112,7 @@ impl SkillMechanic {
                     on_hit_effects,
                 } => {
                     let effects = effects
-                        .into_iter()
+                        .iter()
                         .filter(|effect| on_hit_effects.contains(&effect.name))
                         .cloned()
                         .collect();
@@ -128,13 +128,7 @@ impl SkillMechanic {
                     let projectile = projectiles
                         .iter()
                         .find(|projectile_config| projectile == projectile_config.name)
-                        .expect(
-                            format!(
-                                "Shoot.projectile `{}` does not exist in projectiles config",
-                                projectile
-                            )
-                            .as_str(),
-                        );
+                        .unwrap_or_else(|| panic!("Shoot.projectile `{}` does not exist in projectiles config", projectile));
 
                     SkillMechanic::SimpleShoot {
                         projectile: projectile.clone(),
@@ -148,13 +142,7 @@ impl SkillMechanic {
                     let projectile = projectiles
                         .iter()
                         .find(|projectile_config| projectile == projectile_config.name)
-                        .expect(
-                            format!(
-                                "Shoot.projectile `{}` does not exist in projectiles config",
-                                projectile
-                            )
-                            .as_str(),
-                        );
+                        .unwrap_or_else(|| panic!("Shoot.projectile `{}` does not exist in projectiles config", projectile));
 
                     SkillMechanic::MultiShoot {
                         projectile: projectile.clone(),

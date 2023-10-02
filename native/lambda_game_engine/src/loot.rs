@@ -33,13 +33,13 @@ pub struct Loot {
 impl LootConfig {
     pub(crate) fn from_config_file(
         loots: Vec<LootFileConfig>,
-        effects: &Vec<Effect>,
+        effects: &[Effect],
     ) -> Vec<LootConfig> {
         loots
             .into_iter()
             .map(|config| {
                 let effects = effects
-                    .into_iter()
+                    .iter()
                     .filter(|effect| config.effects.contains(&effect.name))
                     .cloned()
                     .collect();

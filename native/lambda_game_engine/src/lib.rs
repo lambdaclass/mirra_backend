@@ -4,6 +4,7 @@ mod effect;
 mod game;
 mod loot;
 mod map;
+#[allow(clippy::all, dead_code)]
 mod myrra_engine;
 mod player;
 mod projectile;
@@ -80,6 +81,7 @@ fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
  * after the refactor there should be nothing down here *
  ********************************************************/
 #[rustler::nif(schedule = "DirtyCpu")]
+#[allow(clippy::too_many_arguments)]
 fn new_game(
     selected_players: HashMap<u64, String>,
     number_of_players: u64,
