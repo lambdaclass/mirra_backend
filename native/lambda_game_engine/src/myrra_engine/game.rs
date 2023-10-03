@@ -82,7 +82,6 @@ impl GameState {
         }
     }
 
-
     pub fn new(
         selected_characters: HashMap<u64, Name>,
         number_of_players: u64,
@@ -591,7 +590,7 @@ impl GameState {
                     nearest_distance = distance;
                 }
             }
-        };
+        }
         nearest_player
     }
 
@@ -999,7 +998,6 @@ impl GameState {
                                 damage: 0,
                             },
                         );
-                        println!("Player {:?} has Xanda's Mark", player_id);
                     }
                     None => (),
                 };
@@ -1603,7 +1601,6 @@ impl GameState {
             if !matches!(attacked_player.status, Status::DEAD) {
                 attacked_player.modify_health(-damage);
                 self.update_killfeed(*player_id, vec![*attacked_player_id]);
-                println!("Ouch! Player {:?} received {:?} damage", attacked_player_id, damage);
             }
         }
 

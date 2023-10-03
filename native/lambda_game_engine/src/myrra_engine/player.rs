@@ -176,7 +176,6 @@ impl Player {
         let mut damage = hp_points;
         if self.character.name == Name::Uma && self.has_active_effect(&Effect::XandaMarkOwner) {
             damage = damage / 2;
-            println!("Damage halved for Uma! She received {:?} damage", damage);
         }
         if self.has_active_effect(&Effect::FieryRampage) {
             damage = damage * 3 / 4;
