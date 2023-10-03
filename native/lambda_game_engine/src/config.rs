@@ -4,6 +4,7 @@ use serde::Deserialize;
 use crate::{
     character::{CharacterConfig, CharacterConfigFile},
     effect::Effect,
+    game::{GameConfig, GameConfigFile},
     loot::{LootConfig, LootFileConfig},
     projectile::{ProjectileConfig, ProjectileConfigFile},
     skill::{SkillConfig, SkillConfigFile},
@@ -16,6 +17,7 @@ pub struct ConfigFile {
     projectiles: Vec<ProjectileConfigFile>,
     skills: Vec<SkillConfigFile>,
     characters: Vec<CharacterConfigFile>,
+    game: GameConfigFile,
 }
 
 #[derive(NifMap)]
@@ -25,6 +27,16 @@ pub struct Config {
     projectiles: Vec<ProjectileConfig>,
     skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
+    pub game: GameConfig,
+}
+
+impl Config {
+    pub fn find_character(&self, name: String) -> Option<CharacterConfig> {
+        self.characters
+            .iter()
+            .find(|character_config| character_config.active && character_config.name == name)
+            .cloned()
+    }
 }
 
 pub fn parse_config(data: &str) -> Config {
@@ -34,6 +46,7 @@ pub fn parse_config(data: &str) -> Config {
     let projectiles = ProjectileConfig::from_config_file(config_file.projectiles, &effects);
     let skills = SkillConfig::from_config_file(config_file.skills, &effects, &projectiles);
     let characters = CharacterConfig::from_config_file(config_file.characters, &skills);
+    let game = GameConfig::from_config_file(config_file.game, &effects);
 
     Config {
         effects,
@@ -41,5 +54,6 @@ pub fn parse_config(data: &str) -> Config {
         projectiles,
         skills,
         characters,
+        game,
     }
 }
