@@ -17,7 +17,7 @@ use std::cmp::{max, min};
 use std::collections::HashMap;
 use std::collections::HashSet;
 
-#[derive(NifStruct)]
+#[derive(NifStruct, Clone)]
 #[module = "LambdaGameEngine.MyrraEngine.Game"]
 pub struct GameState {
     pub players: Vec<Player>,
@@ -66,6 +66,22 @@ impl GameState {
             .map(|config| Character::from_config_map(config, skills))
             .collect()
     }
+
+    pub fn placeholder_new() -> Self {
+        Self {
+            players: Vec::new(),
+            board: Board::new(10, 10),
+            next_killfeed: Vec::new(),
+            killfeed: Vec::new(),
+            projectiles: Vec::new(),
+            next_projectile_id: 0,
+            playable_radius: 0,
+            shrinking_center: Position::new(0, 0),
+            loots: Vec::new(),
+            next_loot_id: 0,
+        }
+    }
+
 
     pub fn new(
         selected_characters: HashMap<u64, Name>,

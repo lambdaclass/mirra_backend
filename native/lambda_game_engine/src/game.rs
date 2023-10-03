@@ -1,7 +1,13 @@
-use rustler::{NifMap, NifTaggedEnum};
+use std::collections::HashMap;
+
+use rustler::NifMap;
+use rustler::NifTaggedEnum;
 use serde::Deserialize;
 
+use crate::config::Config;
 use crate::effect::Effect;
+use crate::loot::Loot;
+use crate::player::Player;
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
@@ -23,10 +29,10 @@ pub struct MapModificationConfigFile {
 
 #[derive(NifMap)]
 pub struct GameConfig {
-    width: u64,
-    height: u64,
-    loot_interval_ms: u64,
-    map_modification: MapModificationConfig,
+    pub width: u64,
+    pub height: u64,
+    pub loot_interval_ms: u64,
+    pub map_modification: MapModificationConfig,
 }
 
 #[derive(NifMap)]
@@ -44,6 +50,15 @@ pub struct MapModificationConfig {
 pub enum MapModificationModifier {
     Additive(u64),
     Multiplicative(f64),
+}
+
+#[derive(NifMap)]
+pub struct GameState {
+    pub config: Config,
+    pub players: HashMap<u64, Player>,
+    pub loots: Vec<Loot>,
+    pub myrra_state: crate::myrra_engine::game::GameState,
+    next_id: u64,
 }
 
 impl GameConfig {
@@ -71,6 +86,32 @@ impl GameConfig {
                 modification: game_config.map_modification.modification,
             },
         }
+    }
+}
+
+impl GameState {
+    pub fn new(config: Config) -> Self {
+        Self {
+            config,
+            players: HashMap::new(),
+            loots: Vec::new(),
+            next_id: 1,
+            myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
+        }
+    }
+
+    pub fn next_id(&mut self) -> u64 {
+        let id = self.next_id;
+        self.next_id += 1;
+        id
+    }
+
+    pub fn push_player(&mut self, player_id: u64, player: Player) {
+        self.players.insert(player_id, player);
+    }
+
+    pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
+        self.myrra_state = myrra_state;
     }
 }
 
