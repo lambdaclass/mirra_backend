@@ -182,7 +182,8 @@ impl Player {
             damage = damage * 3 / 4;
         }
         // Yugen's Mark can't kill.
-        if self.has_active_effect(&Effect::YugenMark) {
+        if self.has_active_effect(&Effect::YugenMark) || self.has_active_effect(&Effect::XandaMark)
+        {
             if damage.abs() >= self.health {
                 if self.health > 1 {
                     damage = (-1) * (self.health - 1);
