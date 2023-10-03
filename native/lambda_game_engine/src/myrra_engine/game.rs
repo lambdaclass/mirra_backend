@@ -82,7 +82,6 @@ impl GameState {
         }
     }
 
-
     pub fn new(
         selected_characters: HashMap<u64, Name>,
         number_of_players: u64,
@@ -571,7 +570,7 @@ impl GameState {
     ) -> Option<(u64, Position)> {
         let mut nearest_player = None;
         let mut nearest_distance = max_distance;
-        let mut lowest_hp = 100;
+        let mut lowest_hp = 1000;
 
         for player in players {
             if player.id != attacking_player_id && matches!(player.status, Status::ALIVE) {
@@ -592,7 +591,6 @@ impl GameState {
                 }
             }
         }
-
         nearest_player
     }
 
@@ -957,6 +955,7 @@ impl GameState {
                     GameState::get_player_mut(&mut self.players, attacking_player_id)?;
                 let attacking_player_id = attacking_player.id;
                 let duration = attacking_player.character.duration_skill_2();
+
                 match Self::nearest_player(
                     &pys,
                     &attacking_player.position,
@@ -968,7 +967,7 @@ impl GameState {
                     Some((player_id, _position)) => {
                         attacking_player.add_effect(
                             Effect::XandaMarkOwner,
-                            false,
+                            true,
                             EffectData {
                                 time_left: duration,
                                 ends_at: add_millis(now, duration),
@@ -986,7 +985,7 @@ impl GameState {
                             GameState::get_player_mut(&mut self.players, player_id)?;
                         attacked_player.add_effect(
                             Effect::XandaMark,
-                            false,
+                            true,
                             EffectData {
                                 time_left: duration,
                                 ends_at: add_millis(now, duration),
@@ -998,7 +997,7 @@ impl GameState {
                                 caused_to: attacked_player.id,
                                 damage: 0,
                             },
-                        )
+                        );
                     }
                     None => (),
                 };
