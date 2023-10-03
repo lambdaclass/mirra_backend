@@ -322,6 +322,15 @@ impl Player {
         }
     }
 
+    pub fn remove_uma_marks(&mut self) {
+        self.effects.retain(|effect, _| {
+            !matches!(
+                effect,
+                Effect::XandaMark | Effect::XandaMarkOwner | Effect::YugenMark | Effect::ElnarMark
+            )
+        });
+    }
+
     #[inline]
     pub fn speed(&self) -> u64 {
         let base_speed = self.character.base_speed;

@@ -1124,6 +1124,8 @@ impl GameState {
 
                 Ok(Vec::new())
             }
+            Name::Uma => GameState::uma_skill_3(&mut self.players, attacking_player_id),
+
             _ => Ok(Vec::new()),
         };
 
@@ -1222,7 +1224,6 @@ impl GameState {
                 );
                 Ok(Vec::new())
             }
-            Name::Uma => GameState::uma_skill_4(&mut self.players, attacking_player_id),
             _ => Ok(Vec::new()),
         };
 
@@ -1230,7 +1231,7 @@ impl GameState {
         Ok(())
     }
 
-    pub fn uma_skill_4(
+    pub fn uma_skill_3(
         players: &mut Vec<Player>,
         attacking_player_id: u64,
     ) -> Result<Vec<u64>, String> {
@@ -1245,9 +1246,10 @@ impl GameState {
             {
                 continue;
             }
+            let damage = min(45, 15 * marks_count);
+            target_player.modify_health(-(damage as f64) as i64);
 
-            target_player
-                .modify_health(-(target_player.health as f64 * 0.2 * marks_count as f64) as i64);
+            target_player.remove_uma_marks();
             affected_players.push(target_player.id);
         }
         Ok(affected_players)
