@@ -522,7 +522,7 @@ impl GameState {
 
             let angle_modifiers = [-20f32, 0f32, 20f32];
 
-            let mut speed = attacking_player.character.par_1_skill_1() as f32;
+            let mut speed = attacking_player.character.par_1_basic_skill() as f32;
             if piercing {
                 speed *= 1.25;
             }
@@ -538,7 +538,7 @@ impl GameState {
                     speed as u32,
                     1,
                     attacking_player.id,
-                    attacking_player.skill_1_damage(),
+                    attacking_player.basic_skill_damage(),
                     30,
                     ProjectileType::BULLET,
                     ProjectileStatus::ACTIVE,
@@ -693,12 +693,7 @@ impl GameState {
         let attack_angle = attacking_player.skill_1_angle();
 
         let attacked_player_ids = match attacking_player.character.name {
-            Name::H4ck => Self::h4ck_skill_1(
-                attacking_player,
-                direction,
-                &mut self.projectiles,
-                &mut self.next_projectile_id,
-            ),
+            Name::H4ck => Self::h4ck_skill_1(attacking_player, direction),
             Name::Muflus => {
                 let players = &mut self.players;
                 Self::muflus_skill_1(players, attacking_player_id, now)
@@ -780,34 +775,25 @@ impl GameState {
     pub fn h4ck_skill_1(
         attacking_player: &mut Player,
         direction: &RelativePosition,
-        projectiles: &mut Vec<Projectile>,
-        next_projectile_id: &mut u64,
     ) -> Result<Vec<u64>, String> {
-        if !attacking_player.can_attack(attacking_player.skill_3_cooldown_left, false) {
-            return Ok(Vec::new());
-        }
-
-        if attacking_player.has_active_effect(&Effect::Paralyzed)
-            && (attacking_player.character.name == Name::H4ck
-                || attacking_player.character.name == Name::Muflus)
-        {
+        if attacking_player.has_active_effect(&Effect::Paralyzed) {
             return Ok(Vec::new());
         }
 
         let now = time_now();
-        attacking_player.action = PlayerAction::EXECUTINGSKILL3;
-        attacking_player.skill_3_started_at = now;
-        attacking_player.skill_3_cooldown_left = attacking_player.skill_3_cooldown();
-        attacking_player.skill_3_ends_at = add_millis(now, attacking_player.skill_3_cooldown_left);
+        attacking_player.action = PlayerAction::EXECUTINGSKILL1;
+        attacking_player.skill_1_started_at = now;
+        attacking_player.skill_1_cooldown_left = attacking_player.skill_1_cooldown();
+        attacking_player.skill_1_ends_at = add_millis(now, attacking_player.skill_1_cooldown_left);
         attacking_player.direction = *direction;
 
         attacking_player.add_effect(
             Effect::NeonCrashing,
             false,
             EffectData {
-                time_left: attacking_player.character.duration_skill_3(),
-                ends_at: add_millis(now, attacking_player.character.duration_skill_3()),
-                duration: attacking_player.character.duration_skill_3(),
+                time_left: attacking_player.character.duration_skill_1(),
+                ends_at: add_millis(now, attacking_player.character.duration_skill_1()),
+                duration: attacking_player.character.duration_skill_1(),
                 direction: Some(*direction),
                 position: None,
                 triggered_at: u128_to_millis(0),
@@ -1115,9 +1101,9 @@ impl GameState {
                     Effect::DenialOfService,
                     false,
                     EffectData {
-                        time_left: attacking_player.character.duration_skill_4(),
-                        ends_at: add_millis(now, attacking_player.character.duration_skill_4()),
-                        duration: attacking_player.character.duration_skill_4(),
+                        time_left: attacking_player.character.duration_skill_3(),
+                        ends_at: add_millis(now, attacking_player.character.duration_skill_3()),
+                        duration: attacking_player.character.duration_skill_3(),
                         direction: None,
                         position: None,
                         triggered_at: u128_to_millis(0),
@@ -1126,7 +1112,22 @@ impl GameState {
                         damage: 0,
                     },
                 );
-
+                attacking_player.basic_skill_ends_at = add_millis(
+                    attacking_player.basic_skill_started_at,
+                    attacking_player.basic_skill_cooldown(),
+                );
+                attacking_player.skill_1_ends_at = add_millis(
+                    attacking_player.skill_1_started_at,
+                    attacking_player.skill_1_cooldown(),
+                );
+                attacking_player.skill_2_ends_at = add_millis(
+                    attacking_player.skill_2_started_at,
+                    attacking_player.skill_2_cooldown(),
+                );
+                attacking_player.skill_3_ends_at = add_millis(
+                    attacking_player.skill_3_started_at,
+                    attacking_player.skill_3_cooldown(),
+                );
                 Ok(Vec::new())
             }
             Name::Muflus => {
@@ -1380,8 +1381,8 @@ impl GameState {
                         )
                         .unwrap();
 
-                        let damage_neon_crash = player.skill_3_damage() as i64;
-                        let range_neon_crash = player.skill_3_range() as f64;
+                        let damage_neon_crash = player.skill_1_damage() as i64;
+                        let range_neon_crash = player.skill_1_range() as f64;
 
                         let af_pl = GameState::affected_players(
                             damage_neon_crash,
