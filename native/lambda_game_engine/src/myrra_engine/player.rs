@@ -161,9 +161,9 @@ impl Player {
             direction: RelativePosition::new(0., 0.),
         }
     }
-    pub fn modify_health(self: &mut Self, hp_points: i64) {
+    pub fn modify_health(self: &mut Self, damage: i64) {
         if matches!(self.status, Status::ALIVE) {
-            self.health = self.health.saturating_add(self.calculate_damage(hp_points));
+            self.health = self.health.saturating_add(self.calculate_damage(damage));
             if self.health <= 0 {
                 self.status = Status::DEAD;
                 self.death_count += 1;
@@ -172,25 +172,25 @@ impl Player {
         }
     }
 
-    pub fn calculate_damage(self: &Self, hp_points: i64) -> i64 {
-        let mut damage = hp_points;
+    pub fn modify_health_without_killing(self: &mut Self, damage: i64) {
+        if matches!(self.status, Status::ALIVE) {
+            let tentative_health = self.health.saturating_add(self.calculate_damage(damage));
+            if tentative_health <= 0 {
+                self.health = 1;
+            } else {
+                self.health = tentative_health;
+            }
+        }
+    }
+
+    pub fn calculate_damage(self: &Self, mut damage: i64) -> i64 {
         if self.character.name == Name::Uma && self.has_active_effect(&Effect::XandaMarkOwner) {
             damage = damage / 2;
         }
         if self.has_active_effect(&Effect::FieryRampage) {
             damage = damage * 3 / 4;
         }
-        // Yugen's Mark can't kill.
-        if self.has_active_effect(&Effect::YugenMark) || self.has_active_effect(&Effect::XandaMark)
-        {
-            if damage.abs() >= self.health {
-                if self.health > 1 {
-                    damage = (-1) * (self.health - 1);
-                } else {
-                    damage = 0;
-                }
-            }
-        }
+
         damage
     }
 

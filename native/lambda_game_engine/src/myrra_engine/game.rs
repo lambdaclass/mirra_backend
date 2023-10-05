@@ -1,7 +1,7 @@
 use super::board::Board;
 use super::character::{Character, Name};
 use super::loot::{self, Loot, LootType};
-use super::player::{self, Effect, EffectData, Player, PlayerAction, Position, Status};
+use super::player::{Effect, EffectData, Player, PlayerAction, Position, Status};
 use super::projectile::{Projectile, ProjectileStatus, ProjectileType};
 use super::skills::{self, Skill};
 use super::time_utils::{
@@ -1555,11 +1555,17 @@ impl GameState {
             };
 
             let time_between_hits = (1000 / 2) as u32;
+
+            // Damage is evenly distributed between the duration of the effect
             let damage = effect_data.damage / (effect_data.duration.low as u32 / time_between_hits);
 
             if millis_to_u128(sub_millis(now, effect_data.triggered_at)) > time_between_hits as u128
             {
-                player.modify_health(-(damage as i64));
+                if effect == Effect::Poisoned && player.has_active_effect(&Effect::YugenMark) {
+                    player.modify_health_without_killing(-(damage as i64));
+                } else {
+                    player.modify_health(-(damage as i64));
+                }
                 effect_data.triggered_at = now;
             }
             poisoned_affected_players
@@ -1643,12 +1649,11 @@ impl GameState {
         self: &mut Self,
         affected_players: HashMap<u64, (i64, u64)>,
     ) -> Result<(), String> {
-        for (player_id, (damage, attacked_player_id)) in affected_players.iter() {
+        for (_player_id, (damage, attacked_player_id)) in affected_players.iter() {
             let attacked_player =
                 GameState::get_player_mut(&mut self.players, *attacked_player_id)?;
             if !matches!(attacked_player.status, Status::DEAD) {
-                attacked_player.modify_health(-damage);
-                self.update_killfeed(*player_id, vec![*attacked_player_id]);
+                attacked_player.modify_health_without_killing(-damage);
             }
         }
 
