@@ -23,7 +23,7 @@ pub struct ConfigFile {
 #[derive(NifMap)]
 pub struct Config {
     effects: Vec<Effect>,
-    loots: Vec<LootConfig>,
+    pub loots: Vec<LootConfig>,
     projectiles: Vec<ProjectileConfig>,
     skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
@@ -36,6 +36,12 @@ impl Config {
             .iter()
             .find(|character_config| character_config.active && character_config.name == name)
             .cloned()
+    }
+
+    pub fn find_effect(&self, name: String) -> Option<&Effect> {
+        self.effects
+            .iter()
+            .find(|effect| effect.name == name)
     }
 }
 

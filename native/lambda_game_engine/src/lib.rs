@@ -44,12 +44,33 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
+    let mut game: GameState = game;
+    game.move_player(player_id, angle);
+    game
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
+fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameState {
     let mut game = game;
     match game.players.get_mut(&player_id) {
         None => game,
         Some(player) => {
-            player.move_position(angle, &game.config);
+            let effect = game.config.find_effect(effect_name).unwrap();
+            player.apply_effect(effect);
             game
+        }
+    }
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
+fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
+    let mut game = game;
+    let loot_id = game.next_id();
+    match loot::spawn_random_loot(&game.config, loot_id) {
+        None => (game, None),
+        Some(loot) => {
+            game.push_loot(loot);
+            (game, Some(loot_id))
         }
     }
 }
@@ -217,6 +238,9 @@ rustler::init!(
         engine_new_game,
         add_player,
         move_player,
+        apply_effect,
+        spawn_random_loot,
+        // Myrra functions
         new_game,
         world_tick,
         disconnect,

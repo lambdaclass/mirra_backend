@@ -7,6 +7,7 @@ use serde::Deserialize;
 use crate::config::Config;
 use crate::effect::Effect;
 use crate::loot::Loot;
+use crate::map;
 use crate::player::Player;
 
 #[derive(Deserialize)]
@@ -58,7 +59,7 @@ pub struct GameState {
     pub players: HashMap<u64, Player>,
     pub loots: Vec<Loot>,
     pub myrra_state: crate::myrra_engine::game::GameState,
-    next_id: u64,
+    pub next_id: u64,
 }
 
 impl GameConfig {
@@ -110,8 +111,21 @@ impl GameState {
         self.players.insert(player_id, player);
     }
 
+    pub fn push_loot(&mut self, loot: Loot) {
+        self.loots.push(loot);
+    }
+
     pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
         self.myrra_state = myrra_state;
+    }
+
+    pub fn move_player(&mut self, player_id: u64, angle: f32) {
+        let players = &mut self.players;
+        let loots = &mut self.loots;
+        if let Some(player) = players.get_mut(&player_id) {
+            player.move_position(angle, &self.config);
+            collect_nearby_loot(loots, player);
+        }
     }
 }
 
@@ -132,4 +146,15 @@ fn find_effects(config_effects_names: &Vec<String>, effects: &Vec<Effect>) -> Ve
                 .clone()
         })
         .collect()
+}
+
+fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
+    loots.retain(|loot| {
+        if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
+            loot.effects.iter().for_each(|effect| player.apply_effect(effect));
+            false
+        } else {
+            true
+        }
+    });
 }
