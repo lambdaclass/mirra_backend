@@ -128,7 +128,12 @@ impl SkillMechanic {
                     let projectile = projectiles
                         .iter()
                         .find(|projectile_config| projectile == projectile_config.name)
-                        .unwrap_or_else(|| panic!("Shoot.projectile `{}` does not exist in projectiles config", projectile));
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Shoot.projectile `{}` does not exist in projectiles config",
+                                projectile
+                            )
+                        });
 
                     SkillMechanic::SimpleShoot {
                         projectile: projectile.clone(),
@@ -142,7 +147,12 @@ impl SkillMechanic {
                     let projectile = projectiles
                         .iter()
                         .find(|projectile_config| projectile == projectile_config.name)
-                        .unwrap_or_else(|| panic!("Shoot.projectile `{}` does not exist in projectiles config", projectile));
+                        .unwrap_or_else(|| {
+                            panic!(
+                                "Shoot.projectile `{}` does not exist in projectiles config",
+                                projectile
+                            )
+                        });
 
                     SkillMechanic::MultiShoot {
                         projectile: projectile.clone(),

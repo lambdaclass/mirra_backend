@@ -136,9 +136,7 @@ impl Player {
 
 fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
     match modifier {
-        AttributeModifier::Additive => {
-            *attribute_value += value.parse::<u64>().unwrap()
-        }
+        AttributeModifier::Additive => *attribute_value += value.parse::<u64>().unwrap(),
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64
         }
