@@ -429,8 +429,6 @@ impl GameState {
                 direction,
                 &mut self.projectiles,
                 &mut self.next_projectile_id,
-                players,
-                attack_angle,
             ),
             Name::Muflus => {
                 let attacking_player = GameState::get_player(players, attacking_player_id)?;
@@ -511,51 +509,46 @@ impl GameState {
         direction: &RelativePosition,
         projectiles: &mut Vec<Projectile>,
         next_projectile_id: &mut u64,
-        players: &Vec<Player>,
-        attack_angle: u64,
     ) -> Result<Vec<u64>, String> {
         if direction.x != 0f32 || direction.y != 0f32 {
             let piercing = attacking_player.has_active_effect(&Effect::DenialOfService);
 
-            let projectile_direction = match Self::nearest_player(
-                players,
-                &attacking_player.position,
-                &attacking_player.direction,
-                attacking_player.id,
-                1000.,
-                attack_angle,
-            ) {
-                Some((_player_id, position)) => RelativePosition::new(
-                    position.y as f32 - attacking_player.position.y as f32,
-                    -(position.x as f32 - attacking_player.position.x as f32),
-                ),
-                None => *direction,
+            let angle = (direction.y as f32).atan2(direction.x as f32); // Calculates the angle in radians.
+            let angle_positive = if angle < 0.0 {
+                (angle + 2.0 * PI).to_degrees() // Adjusts the angle if negative.
+            } else {
+                angle.to_degrees()
             };
+
+            let angle_modifiers = [-20f32, 0f32, 20f32];
 
             let mut speed = attacking_player.character.par_1_basic_skill() as f32;
             if piercing {
                 speed *= 1.25;
             }
 
-            let projectile = Projectile::new(
-                *next_projectile_id,
-                attacking_player.position,
-                projectile_direction,
-                speed as u32,
-                1,
-                attacking_player.id,
-                attacking_player.basic_skill_damage(),
-                30,
-                ProjectileType::BULLET,
-                ProjectileStatus::ACTIVE,
-                attacking_player.id,
-                piercing,
-                "SLINGSHOT".to_string(),
-            );
-            projectiles.push(projectile);
-            (*next_projectile_id) += 1;
-
-            attacking_player.direction = projectile_direction;
+            for modifier in angle_modifiers {
+                let projectile = Projectile::new(
+                    *next_projectile_id,
+                    attacking_player.position,
+                    RelativePosition::new(
+                        (angle_positive + modifier).to_radians().cos(),
+                        (angle_positive + modifier).to_radians().sin(),
+                    ),
+                    speed as u32,
+                    1,
+                    attacking_player.id,
+                    attacking_player.basic_skill_damage(),
+                    30,
+                    ProjectileType::BULLET,
+                    ProjectileStatus::ACTIVE,
+                    attacking_player.id,
+                    piercing,
+                    "SLINGSHOT".to_string(),
+                );
+                projectiles.push(projectile);
+                (*next_projectile_id) += 1;
+            }
         }
         Ok(Vec::new())
     }
@@ -684,7 +677,8 @@ impl GameState {
         direction: &RelativePosition,
     ) -> Result<(), String> {
         let pys = self.players.clone();
-        let attacking_player = GameState::get_player_mut(&mut self.players, attacking_player_id)?;
+        let mut attacking_player =
+            GameState::get_player_mut(&mut self.players, attacking_player_id)?;
 
         if !attacking_player.can_attack(attacking_player.skill_1_cooldown_left, false) {
             return Ok(());
@@ -699,12 +693,7 @@ impl GameState {
         let attack_angle = attacking_player.skill_1_angle();
 
         let attacked_player_ids = match attacking_player.character.name {
-            Name::H4ck => Self::h4ck_skill_1(
-                &attacking_player,
-                direction,
-                &mut self.projectiles,
-                &mut self.next_projectile_id,
-            ),
+            Name::H4ck => Self::h4ck_skill_1(attacking_player, direction),
             Name::Muflus => {
                 let players = &mut self.players;
                 Self::muflus_skill_1(players, attacking_player_id, now)
@@ -784,51 +773,36 @@ impl GameState {
     }
 
     pub fn h4ck_skill_1(
-        attacking_player: &Player,
+        attacking_player: &mut Player,
         direction: &RelativePosition,
-        projectiles: &mut Vec<Projectile>,
-        next_projectile_id: &mut u64,
     ) -> Result<Vec<u64>, String> {
-        if direction.x != 0f32 || direction.y != 0f32 {
-            let piercing = attacking_player.has_active_effect(&Effect::DenialOfService);
-
-            let angle = (direction.y as f32).atan2(direction.x as f32); // Calculates the angle in radians.
-            let angle_positive = if angle < 0.0 {
-                (angle + 2.0 * PI).to_degrees() // Adjusts the angle if negative.
-            } else {
-                angle.to_degrees()
-            };
-
-            let angle_modifiers = [-20f32, -10f32, 0f32, 10f32, 20f32];
-
-            let mut speed = attacking_player.character.par_1_skill_1() as f32;
-            if piercing {
-                speed *= 1.25;
-            }
-
-            for modifier in angle_modifiers {
-                let projectile = Projectile::new(
-                    *next_projectile_id,
-                    attacking_player.position,
-                    RelativePosition::new(
-                        (angle_positive + modifier).to_radians().cos(),
-                        (angle_positive + modifier).to_radians().sin(),
-                    ),
-                    speed as u32,
-                    1,
-                    attacking_player.id,
-                    attacking_player.skill_1_damage(),
-                    30,
-                    ProjectileType::BULLET,
-                    ProjectileStatus::ACTIVE,
-                    attacking_player.id,
-                    piercing,
-                    "MULTISHOT".to_string(),
-                );
-                projectiles.push(projectile);
-                (*next_projectile_id) += 1;
-            }
+        if attacking_player.has_active_effect(&Effect::Paralyzed) {
+            return Ok(Vec::new());
         }
+
+        let now = time_now();
+        attacking_player.action = PlayerAction::EXECUTINGSKILL1;
+        attacking_player.skill_1_started_at = now;
+        attacking_player.skill_1_cooldown_left = attacking_player.skill_1_cooldown();
+        attacking_player.skill_1_ends_at = add_millis(now, attacking_player.skill_1_cooldown_left);
+        attacking_player.direction = *direction;
+
+        attacking_player.add_effect(
+            Effect::NeonCrashing,
+            false,
+            EffectData {
+                time_left: attacking_player.character.duration_skill_1(),
+                ends_at: add_millis(now, attacking_player.character.duration_skill_1()),
+                duration: attacking_player.character.duration_skill_1(),
+                direction: Some(*direction),
+                position: None,
+                triggered_at: u128_to_millis(0),
+                caused_by: attacking_player.id,
+                caused_to: attacking_player.id,
+                damage: 0,
+            },
+        );
+
         Ok(Vec::new())
     }
 
@@ -1066,19 +1040,36 @@ impl GameState {
         let attacked_player_ids: Result<Vec<u64>, String> = match attacking_player.character.name {
             Name::H4ck => {
                 attacking_player.add_effect(
-                    Effect::NeonCrashing,
+                    Effect::DenialOfService,
                     false,
                     EffectData {
                         time_left: attacking_player.character.duration_skill_3(),
                         ends_at: add_millis(now, attacking_player.character.duration_skill_3()),
                         duration: attacking_player.character.duration_skill_3(),
-                        direction: Some(*direction),
+                        direction: None,
                         position: None,
                         triggered_at: u128_to_millis(0),
                         caused_by: attacking_player.id,
                         caused_to: attacking_player.id,
                         damage: 0,
                     },
+                );
+
+                attacking_player.basic_skill_ends_at = add_millis(
+                    attacking_player.basic_skill_started_at,
+                    attacking_player.basic_skill_cooldown(),
+                );
+                attacking_player.skill_1_ends_at = add_millis(
+                    attacking_player.skill_1_started_at,
+                    attacking_player.skill_1_cooldown(),
+                );
+                attacking_player.skill_2_ends_at = add_millis(
+                    attacking_player.skill_2_started_at,
+                    attacking_player.skill_2_cooldown(),
+                );
+                attacking_player.skill_3_ends_at = add_millis(
+                    attacking_player.skill_3_started_at,
+                    attacking_player.skill_3_cooldown(),
                 );
 
                 Ok(Vec::new())
@@ -1334,8 +1325,8 @@ impl GameState {
                         )
                         .unwrap();
 
-                        let damage_neon_crash = player.skill_3_damage() as i64;
-                        let range_neon_crash = player.skill_3_range() as f64;
+                        let damage_neon_crash = player.skill_1_damage() as i64;
+                        let range_neon_crash = player.skill_1_range() as f64;
 
                         let af_pl = GameState::affected_players(
                             damage_neon_crash,
