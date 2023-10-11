@@ -1,7 +1,7 @@
 use rustler::NifMap;
 use serde::Deserialize;
 
-use crate::effect::Effect;
+use crate::{effect::Effect, map::Position};
 
 #[derive(Deserialize)]
 pub struct ProjectileConfigFile {
@@ -35,8 +35,8 @@ pub struct Projectile {
     duration_ms: u64,
     max_distance: u64,
     id: u64,
-    position: (u64, u64),
-    direction_angle: u64,
+    position: Position,
+    direction_angle: f32,
     player_id: u64,
 }
 
@@ -65,5 +65,29 @@ impl ProjectileConfig {
                 }
             })
             .collect()
+    }
+}
+
+impl Projectile {
+    pub fn new(
+        id: u64,
+        position: Position,
+        direction_angle: f32,
+        player_id: u64,
+        config: &ProjectileConfig,
+    ) -> Self {
+        Projectile {
+            name: config.name.clone(),
+            damage: config.base_damage,
+            speed: config.base_speed,
+            size: config.base_speed,
+            on_hit_effects: config.on_hit_effects.clone(),
+            duration_ms: config.duration_ms,
+            max_distance: config.max_distance,
+            id,
+            position,
+            direction_angle,
+            player_id,
+        }
     }
 }

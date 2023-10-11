@@ -34,6 +34,8 @@ defmodule LambdaGameEngine do
   def apply_effect(_game_state, _player_id, _effect_name), do: :erlang.nif_error(:nif_not_loaded)
   @spec spawn_random_loot(map()) :: {map(), nil | pos_integer()}
   def spawn_random_loot(_game_state), do: :erlang.nif_error(:nif_not_loaded)
+  @spec activate_skill(map(), pos_integer(), binary(), map()) :: map()
+  def activate_skill(_game_state, _player_id, _skill_key, _skill_params), do: :erlang.nif_error(:nif_not_loaded)
 
   ############################
   # Myrra engine functions   #
