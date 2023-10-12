@@ -27,17 +27,17 @@ pub struct ProjectileConfig {
 
 #[derive(NifMap)]
 pub struct Projectile {
-    name: String,
-    damage: u64,
-    speed: u64,
-    size: u64,
-    on_hit_effects: Vec<Effect>,
-    duration_ms: u64,
-    max_distance: u64,
-    id: u64,
-    position: Position,
-    direction_angle: f32,
-    player_id: u64,
+    pub name: String,
+    pub damage: u64,
+    pub speed: u64,
+    pub size: u64,
+    pub on_hit_effects: Vec<Effect>,
+    pub duration_ms: u64,
+    pub max_distance: u64,
+    pub id: u64,
+    pub position: Position,
+    pub direction_angle: f32,
+    pub player_id: u64,
 }
 
 impl ProjectileConfig {

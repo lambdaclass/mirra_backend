@@ -88,6 +88,13 @@ fn activate_skill(
     game
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
+    let mut game = game;
+    game.tick(time_diff_ms);
+    game
+}
+
 /********************************************************
  * Functions in this space are copied from Myrra engine *
  * after the refactor there should be nothing down here *
@@ -255,6 +262,7 @@ rustler::init!(
         apply_effect,
         spawn_random_loot,
         activate_skill,
+        game_tick,
         // Myrra functions
         new_game,
         world_tick,

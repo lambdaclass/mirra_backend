@@ -193,6 +193,10 @@ impl GameState {
             }
         }
     }
+
+    pub fn tick(&mut self, time_diff: u64) {
+        move_projectiles(&mut self.projectiles, time_diff, &self.config);
+    }
 }
 
 fn find_effects(config_effects_names: &[String], effects: &[Effect]) -> Vec<Effect> {
@@ -256,4 +260,14 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
     }
 
     angles
+}
+
+fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
+    projectiles.retain(|projectile| projectile.duration_ms > 0 && projectile.max_distance > 0);
+    projectiles
+    .iter_mut()
+    .for_each(|projectile| {
+        projectile.duration_ms = projectile.duration_ms - time_diff;
+        projectile.position = map::next_position(&projectile.position, projectile.direction_angle, projectile.speed as f32, config.game.width as f32, config.game.height as f32)
+    });
 }

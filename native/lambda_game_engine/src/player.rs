@@ -1,7 +1,4 @@
 use std::collections::HashMap;
-use std::f32::consts::PI;
-use std::ops::Div;
-use std::ops::Neg;
 
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
@@ -11,6 +8,7 @@ use crate::config::Config;
 use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
+use crate::map;
 use crate::map::Position;
 
 #[derive(NifMap)]
@@ -73,22 +71,7 @@ impl Player {
             return;
         }
 
-        let angle_rad = angle_degrees * (PI / 180.0);
-        let new_x = (self.position.x as f32) + (self.speed as f32) * angle_rad.cos();
-        let new_y = (self.position.y as f32) + (self.speed as f32) * angle_rad.sin();
-
-        let max_x_bound = config.game.width.div(2) as f32;
-        let min_x_bound = max_x_bound.neg();
-        let x = new_x.min(max_x_bound).max(min_x_bound);
-
-        let max_y_bound = config.game.height.div(2) as f32;
-        let min_y_bound = max_y_bound.neg();
-        let y = new_y.min(max_y_bound).max(min_y_bound);
-
-        self.position = Position {
-            x: x as i64,
-            y: y as i64,
-        }
+        self.position = map::next_position(&self.position, angle_degrees, self.speed as f32, config.game.width as f32, config.game.height as f32);
     }
 
     pub fn apply_effect(&mut self, effect: &Effect) {
