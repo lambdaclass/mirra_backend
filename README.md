@@ -21,3 +21,11 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/lambda_game_engine>.
+
+## Contributing
+
+### Requirements
+
+- Rust >= 1.72.0
+- Erlang OTP >= 26
+- Elixir >= 1.15.4

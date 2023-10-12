@@ -6,7 +6,7 @@ pub struct Effect {
     pub name: String,
     pub effect_time_type: TimeType,
     pub player_attributes: Vec<AttributeChange>,
-    pub projectile_attributes: Vec<AttributeChange>
+    pub projectile_attributes: Vec<AttributeChange>,
 }
 
 #[derive(Deserialize, NifMap, Clone)]

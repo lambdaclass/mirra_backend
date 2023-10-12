@@ -43,13 +43,13 @@ pub struct Projectile {
 impl ProjectileConfig {
     pub(crate) fn from_config_file(
         projectiles: Vec<ProjectileConfigFile>,
-        effects: &Vec<Effect>,
+        effects: &[Effect],
     ) -> Vec<ProjectileConfig> {
         projectiles
             .into_iter()
             .map(|config| {
                 let effects = effects
-                    .into_iter()
+                    .iter()
                     .filter(|effect| config.on_hit_effects.contains(&effect.name))
                     .cloned()
                     .collect();

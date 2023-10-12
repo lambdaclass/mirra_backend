@@ -34,9 +34,13 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
       - name: Check Elixir Formatting
-        run: mix format
+        run: mix format --check-formatted
+      - name: Check Elixir code
+        run: mix credo --strict
       - name: Check Rust Formatting
-        run: cargo fmt --manifest-path native/lambda_game_engine/Cargo.toml
+        run: cargo fmt --check --manifest-path native/lambda_game_engine/Cargo.toml
+      - name: Check Rust code
+        run: cargo clippy --manifest-path native/lambda_game_engine/Cargo.toml -- -D warnings
       - name: Compiles without warnings
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests

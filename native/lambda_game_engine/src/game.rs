@@ -63,10 +63,7 @@ pub struct GameState {
 }
 
 impl GameConfig {
-    pub(crate) fn from_config_file(
-        game_config: GameConfigFile,
-        effects: &Vec<Effect>,
-    ) -> GameConfig {
+    pub(crate) fn from_config_file(game_config: GameConfigFile, effects: &[Effect]) -> GameConfig {
         let outside_effects = find_effects(
             &game_config.map_modification.outside_radius_effects,
             effects,
@@ -129,20 +126,19 @@ impl GameState {
     }
 }
 
-fn find_effects(config_effects_names: &Vec<String>, effects: &Vec<Effect>) -> Vec<Effect> {
+fn find_effects(config_effects_names: &[String], effects: &[Effect]) -> Vec<Effect> {
     config_effects_names
-        .into_iter()
+        .iter()
         .map(|config_effect_name| {
             effects
-                .into_iter()
-                .find(|effect| config_effect_name.to_string() == effect.name)
-                .expect(
-                    format!(
+                .iter()
+                .find(|effect| *config_effect_name == effect.name)
+                .unwrap_or_else(|| {
+                    panic!(
                         "Game map_modification effect `{}` does not exist in effects config",
                         config_effect_name
                     )
-                    .as_str(),
-                )
+                })
                 .clone()
         })
         .collect()
@@ -151,7 +147,9 @@ fn find_effects(config_effects_names: &Vec<String>, effects: &Vec<Effect>) -> Ve
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
-            loot.effects.iter().for_each(|effect| player.apply_effect(effect));
+            loot.effects
+                .iter()
+                .for_each(|effect| player.apply_effect(effect));
             false
         } else {
             true

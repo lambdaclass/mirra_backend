@@ -1,5 +1,5 @@
-use rand::Rng;
 use rand::seq::SliceRandom;
+use rand::Rng;
 use rustler::NifMap;
 use serde::Deserialize;
 
@@ -33,13 +33,13 @@ pub struct Loot {
 impl LootConfig {
     pub(crate) fn from_config_file(
         loots: Vec<LootFileConfig>,
-        effects: &Vec<Effect>,
+        effects: &[Effect],
     ) -> Vec<LootConfig> {
         loots
             .into_iter()
             .map(|config| {
                 let effects = effects
-                    .into_iter()
+                    .iter()
                     .filter(|effect| config.effects.contains(&effect.name))
                     .cloned()
                     .collect();
@@ -75,7 +75,8 @@ pub fn spawn_random_loot(config: &Config, id: u64) -> Option<Loot> {
         y: rng.gen_range(-bound_y..bound_y),
     };
 
-    config.loots
-    .choose(rng)
-    .map(|loot_config| Loot::new(id, position, loot_config))
+    config
+        .loots
+        .choose(rng)
+        .map(|loot_config| Loot::new(id, position, loot_config))
 }
