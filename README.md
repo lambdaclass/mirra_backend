@@ -1,5 +1,5 @@
-# lambda_game_engine
-Open source engine developed by LambdaClass
+# Lambda Backend Game Engine
+Open source engine developed by LambdaClass in Elixir, for the communication, and Rust, for the state management.
 
 ## Documentation
 
