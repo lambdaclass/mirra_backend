@@ -677,8 +677,7 @@ impl GameState {
         direction: &RelativePosition,
     ) -> Result<(), String> {
         let pys = self.players.clone();
-        let mut attacking_player =
-            GameState::get_player_mut(&mut self.players, attacking_player_id)?;
+        let attacking_player = GameState::get_player_mut(&mut self.players, attacking_player_id)?;
 
         if !attacking_player.can_attack(attacking_player.skill_1_cooldown_left, false) {
             return Ok(());
