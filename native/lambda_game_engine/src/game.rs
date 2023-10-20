@@ -196,6 +196,7 @@ impl GameState {
     pub fn tick(&mut self, time_diff: u64) {
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
+        run_effects(&mut self.players, time_diff);
     }
 }
 
@@ -269,8 +270,8 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
     projectiles
     .iter_mut()
     .for_each(|projectile| {
-        projectile.duration_ms = projectile.duration_ms - time_diff;
-        projectile.max_distance = projectile.max_distance - projectile.speed;
+        projectile.duration_ms = projectile.duration_ms.saturating_sub(time_diff);
+        projectile.max_distance = projectile.max_distance.saturating_sub(projectile.speed);
         projectile.position = map::next_position(&projectile.position, projectile.direction_angle, projectile.speed as f32, config.game.width as f32, config.game.height as f32)
     });
 }
@@ -299,4 +300,8 @@ fn apply_projectiles_collisions(projectiles: &mut [Projectile], players: &mut Ha
             }
         }
     });
+}
+
+fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
+    players.values_mut().for_each(|player| player.run_effects(time_diff))
 }

@@ -34,5 +34,7 @@ pub enum TimeType {
         instant_applicaiton: bool,
         interval_ms: u64,
         trigger_count: u64,
+        #[serde(skip_deserializing)]
+        time_since_last_trigger: u64, // Default value is 0
     },
 }
