@@ -34,3 +34,31 @@ pub fn next_position(current_position: &Position, direction_angle: f32, movement
         y: y as i64,
     }
 }
+
+pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
+    let x_edge_positive = (width / 2) as i64;
+    let x_position_positive = center.x + size as i64;
+    if x_position_positive >= x_edge_positive {
+        return true;
+    }
+
+    let x_edge_negative = width as i64 / -2;
+    let x_position_negative = center.x - size as i64;
+    if x_position_negative <= x_edge_negative {
+        return true;
+    }
+
+    let y_edge_positive = (height / 2) as i64;
+    let y_position_positive = center.y + size as i64;
+    if y_position_positive >= y_edge_positive {
+        return true;
+    }
+
+    let y_edge_negative = height as i64 / -2;
+    let y_position_negative = center.y - size as i64;
+    if y_position_negative <= y_edge_negative {
+        return true;
+    }
+
+    return false;
+}

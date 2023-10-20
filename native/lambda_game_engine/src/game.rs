@@ -134,7 +134,6 @@ impl GameState {
         skill_params: HashMap<String, String>,
     ) {
         let players = &mut self.players;
-        // let (players, _other_players): (Vec<Player>, Vec<Player>) = players.into_values().partition(|player| player.id == player_id);
 
         if let Some(player) = players.get_mut(&player_id) {
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
@@ -186,7 +185,7 @@ impl GameState {
                             for effect in effects.iter() {
                                 player.apply_effect(effect);
                             }
-                        }
+                        },
                         _ => todo!("SkillMechanic not implemented"),
                     }
                 }
@@ -263,11 +262,14 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
 }
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
-    projectiles.retain(|projectile| projectile.duration_ms > 0 && projectile.max_distance > 0);
+    // Clear out projectiles that are no longer valid
+    projectiles.retain(|projectile| projectile.duration_ms > 0 && projectile.max_distance > 0 && map::collision_with_edge(&projectile.position, projectile.size, config.game.width, config.game.height));
+
     projectiles
     .iter_mut()
     .for_each(|projectile| {
         projectile.duration_ms = projectile.duration_ms - time_diff;
+        projectile.max_distance = projectile.max_distance - projectile.speed;
         projectile.position = map::next_position(&projectile.position, projectile.direction_angle, projectile.speed as f32, config.game.width as f32, config.game.height as f32)
     });
 }
