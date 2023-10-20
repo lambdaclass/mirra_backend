@@ -71,7 +71,13 @@ impl Player {
             return;
         }
 
-        self.position = map::next_position(&self.position, angle_degrees, self.speed as f32, config.game.width as f32, config.game.height as f32);
+        self.position = map::next_position(
+            &self.position,
+            angle_degrees,
+            self.speed as f32,
+            config.game.width as f32,
+            config.game.height as f32,
+        );
     }
 
     pub fn apply_effects(&mut self, effects: &[Effect]) {
@@ -86,7 +92,10 @@ impl Player {
 
         // Apply the effect
         match effect.effect_time_type {
-            TimeType::Periodic { instant_applicaiton: false, .. } => (),
+            TimeType::Periodic {
+                instant_applicaiton: false,
+                ..
+            } => (),
             _ => {
                 effect
                     .player_attributes
@@ -128,31 +137,40 @@ impl Player {
     pub fn run_effects(&mut self, time_diff: u64) {
         // Clean effects that have timed out
         self.effects.retain(|effect| {
-            match effect.effect_time_type {
-                TimeType::Duration { duration_ms } if duration_ms == 0 => false,
-                TimeType::Periodic { trigger_count, .. } if trigger_count == 0 => false,
-                _ => true,
-            }
+            !matches!(
+                effect.effect_time_type,
+                TimeType::Duration { duration_ms: 0 }
+                    | TimeType::Periodic {
+                        trigger_count: 0,
+                        ..
+                    }
+            )
         });
 
         for effect in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
                 TimeType::Duration { duration_ms } => {
                     *duration_ms = (*duration_ms).saturating_sub(time_diff);
-                },
-                TimeType::Periodic { interval_ms, trigger_count , time_since_last_trigger, ..} => {
-                    *time_since_last_trigger = *time_since_last_trigger + time_diff;
+                }
+                TimeType::Periodic {
+                    interval_ms,
+                    trigger_count,
+                    time_since_last_trigger,
+                    ..
+                } => {
+                    *time_since_last_trigger += time_diff;
 
                     if *time_since_last_trigger >= *interval_ms {
-                        *time_since_last_trigger = *time_since_last_trigger - *interval_ms;
-                        *trigger_count = *trigger_count - 1;
+                        *time_since_last_trigger -= *interval_ms;
+                        *trigger_count -= 1;
 
-                        effect
-                        .player_attributes
-                        .iter()
-                        .for_each(|change| {
+                        effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
-                                "health" => modify_attribute(&mut self.health, &change.modifier, &change.value),
+                                "health" => modify_attribute(
+                                    &mut self.health,
+                                    &change.modifier,
+                                    &change.value,
+                                ),
                                 _ => todo!(),
                             };
                         });
@@ -166,7 +184,10 @@ impl Player {
 
 fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
     match modifier {
-        AttributeModifier::Additive => *attribute_value = (*attribute_value).saturating_add_signed(value.parse::<i64>().unwrap()),
+        AttributeModifier::Additive => {
+            *attribute_value =
+                (*attribute_value).saturating_add_signed(value.parse::<i64>().unwrap())
+        }
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64
         }

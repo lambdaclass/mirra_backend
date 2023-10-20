@@ -185,7 +185,7 @@ impl GameState {
                             for effect in effects.iter() {
                                 player.apply_effect(effect);
                             }
-                        },
+                        }
                         _ => todo!("SkillMechanic not implemented"),
                     }
                 }
@@ -265,21 +265,43 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
     // Clear out projectiles that are no longer valid
-    projectiles.retain(|projectile| projectile.active && projectile.duration_ms > 0 && projectile.max_distance > 0 && !map::collision_with_edge(&projectile.position, projectile.size, config.game.width, config.game.height));
+    projectiles.retain(|projectile| {
+        projectile.active
+            && projectile.duration_ms > 0
+            && projectile.max_distance > 0
+            && !map::collision_with_edge(
+                &projectile.position,
+                projectile.size,
+                config.game.width,
+                config.game.height,
+            )
+    });
 
-    projectiles
-    .iter_mut()
-    .for_each(|projectile| {
+    projectiles.iter_mut().for_each(|projectile| {
         projectile.duration_ms = projectile.duration_ms.saturating_sub(time_diff);
         projectile.max_distance = projectile.max_distance.saturating_sub(projectile.speed);
-        projectile.position = map::next_position(&projectile.position, projectile.direction_angle, projectile.speed as f32, config.game.width as f32, config.game.height as f32)
+        projectile.position = map::next_position(
+            &projectile.position,
+            projectile.direction_angle,
+            projectile.speed as f32,
+            config.game.width as f32,
+            config.game.height as f32,
+        )
     });
 }
 
-fn apply_projectiles_collisions(projectiles: &mut [Projectile], players: &mut HashMap<u64, Player>) {
+fn apply_projectiles_collisions(
+    projectiles: &mut [Projectile],
+    players: &mut HashMap<u64, Player>,
+) {
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
-            if map::hit_boxes_collide(&projectile.position, &player.position, projectile.size, player.size) {
+            if map::hit_boxes_collide(
+                &projectile.position,
+                &player.position,
+                projectile.size,
+                player.size,
+            ) {
                 if player.id == projectile.player_id {
                     continue;
                 }
@@ -303,5 +325,7 @@ fn apply_projectiles_collisions(projectiles: &mut [Projectile], players: &mut Ha
 }
 
 fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
-    players.values_mut().for_each(|player| player.run_effects(time_diff))
+    players
+        .values_mut()
+        .for_each(|player| player.run_effects(time_diff))
 }
