@@ -16,6 +16,7 @@ use std::f32::consts::PI;
 use std::cmp::{max, min};
 use std::collections::HashMap;
 use std::collections::HashSet;
+use rand::prelude::*;
 
 #[derive(NifStruct, Clone)]
 #[module = "LambdaGameEngine.MyrraEngine.Game"]
@@ -1638,14 +1639,22 @@ impl GameState {
             .collect()
     }
 
-    pub fn spawn_player(self: &mut Self, player_id: u64) {
+    pub fn spawn_player(self: &mut Self, player_id: u64, characters_config: &[HashMap<String, String>],
+        skills_config: &[HashMap<String, String>],) {
         let mut tried_positions = HashSet::new();
         let position: Position;
+
+        let skills = skills::build_from_config(skills_config).unwrap();
+        let characters = GameState::build_characters_with_config(&characters_config, &skills).unwrap();
+
+        let character = characters
+                    .choose(&mut rand::thread_rng()).unwrap()
+                    .clone();
 
         position = generate_new_position(&mut tried_positions, self.board.width, self.board.height);
 
         self.players
-            .push(Player::new(player_id, 100, position, Default::default()));
+            .push(Player::new(player_id, 100, position, character));
     }
 
     pub fn shrink_map(self: &mut Self, map_shrink_minimum_radius: u64) {
