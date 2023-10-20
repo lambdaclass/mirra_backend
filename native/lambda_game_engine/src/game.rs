@@ -195,6 +195,7 @@ impl GameState {
 
     pub fn tick(&mut self, time_diff: u64) {
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
+        apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
     }
 }
 
@@ -263,7 +264,7 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
     // Clear out projectiles that are no longer valid
-    projectiles.retain(|projectile| projectile.duration_ms > 0 && projectile.max_distance > 0 && map::collision_with_edge(&projectile.position, projectile.size, config.game.width, config.game.height));
+    projectiles.retain(|projectile| projectile.active && projectile.duration_ms > 0 && projectile.max_distance > 0 && !map::collision_with_edge(&projectile.position, projectile.size, config.game.width, config.game.height));
 
     projectiles
     .iter_mut()
@@ -271,5 +272,31 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
         projectile.duration_ms = projectile.duration_ms - time_diff;
         projectile.max_distance = projectile.max_distance - projectile.speed;
         projectile.position = map::next_position(&projectile.position, projectile.direction_angle, projectile.speed as f32, config.game.width as f32, config.game.height as f32)
+    });
+}
+
+fn apply_projectiles_collisions(projectiles: &mut [Projectile], players: &mut HashMap<u64, Player>) {
+    projectiles.iter_mut().for_each(|projectile| {
+        for player in players.values_mut() {
+            if map::hit_boxes_collide(&projectile.position, &player.position, projectile.size, player.size) {
+                if player.id == projectile.player_id {
+                    continue;
+                }
+
+                player.decrease_health(projectile.damage);
+                player.apply_effects(&projectile.on_hit_effects);
+
+                projectile.active = false;
+                break;
+
+                // TODO: Uncomment (and fix) when projectile collision is a thing
+                //      move the `active` change and `break` to the else clause
+                // if projectile.collision == ENABLED {
+                //     continue;
+                // } else {
+                //     break;
+                // }
+            }
+        }
     });
 }

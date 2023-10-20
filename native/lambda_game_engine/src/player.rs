@@ -74,6 +74,10 @@ impl Player {
         self.position = map::next_position(&self.position, angle_degrees, self.speed as f32, config.game.width as f32, config.game.height as f32);
     }
 
+    pub fn apply_effects(&mut self, effects: &[Effect]) {
+        effects.iter().for_each(|effect| self.apply_effect(effect))
+    }
+
     pub fn apply_effect(&mut self, effect: &Effect) {
         // Store the effect in the player if it is not an instant effect
         if effect.effect_time_type != TimeType::Instant {
@@ -114,6 +118,14 @@ impl Player {
                     });
             }
         };
+    }
+
+    pub fn decrease_health(&mut self, amount: u64) {
+        self.health = self.health.saturating_sub(amount);
+
+        if self.health == 0 {
+            self.status = PlayerStatus::Death;
+        }
     }
 }
 

@@ -38,6 +38,7 @@ pub struct Projectile {
     pub position: Position,
     pub direction_angle: f32,
     pub player_id: u64,
+    pub active: bool, // TODO: this should be `status` field with an enum value
 }
 
 impl ProjectileConfig {
@@ -88,6 +89,7 @@ impl Projectile {
             position,
             direction_angle,
             player_id,
+            active: true,
         }
     }
 }
