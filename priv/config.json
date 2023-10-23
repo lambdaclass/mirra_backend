@@ -66,6 +66,24 @@
         }
       ],
       "projectile_attributes": []
+    },
+    {
+      "name": "poison",
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": false,
+          "interval_ms": 1000,
+          "trigger_count": 5
+        }
+      },
+      "player_attributes": [
+        {
+          "attribute": "health",
+          "modifier": "Multiplicative",
+          "value": "0.95"
+        }
+      ],
+      "projectile_attributes": []
     }
   ],
   "loots": [
@@ -78,31 +96,23 @@
   "projectiles": [
     {
       "name": "projectile_slingshot",
-      "base_damage": 10,
-      "base_speed": 120,
-      "base_size": 50,
+      "base_damage": 20,
+      "base_speed": 40,
+      "base_size": 20,
       "player_collision": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
       "max_distance": 999999
     },
     {
-      "name": "projectile_multishot",
-      "base_damage": 10,
-      "base_speed": 100,
-      "base_size": 50,
-      "on_hit_effects": [],
-      "duration_ms": 999999,
-      "max_distance": 999999
-    },
-    {
-      "name": "projectile_disarm",
+      "name": "projectile_poison_dart",
       "base_damage": 0,
-      "base_speed": 100,
-      "base_size": 50,
-      "on_hit_effects": [],
+      "base_speed": 60,
+      "base_size": 10,
+      "player_collision": true,
+      "on_hit_effects": ["poison"],
       "duration_ms": 999999,
-      "max_distance": 999999
+      "max_distance": 500
     }
   ],
   "skills": [
@@ -112,20 +122,8 @@
       "is_passive": false,
       "mechanics": [
         {
-          "SimpleShoot": {
-            "projectile": "projectile_slingshot"
-          }
-        }
-      ]
-    },
-    {
-      "name": "multishot",
-      "cooldown_ms": 4500,
-      "is_passive": false,
-      "mechanics": [
-        {
           "MultiShoot": {
-            "projectile": "projectile_multishot",
+            "projectile": "projectile_slingshot",
             "count": 5,
             "cone_angle": 90
           }
@@ -133,37 +131,14 @@
       ]
     },
     {
-      "name": "disarm",
-      "cooldown_ms": 6500,
+      "name": "poison_dart",
+      "cooldown_ms": 800,
       "is_passive": false,
       "mechanics": [
         {
           "SimpleShoot": {
-            "projectile": "projectile_disarm"
+            "projectile": "projectile_poison_dart"
           }
-        }
-      ]
-    },
-    {
-      "name": "neon_crash",
-      "cooldown_ms": 5000,
-      "is_passive": false,
-      "mechanics": [
-        {
-          "MoveToTarget": {
-            "duration_ms": 1000,
-            "max_range": 500
-          }
-        }
-      ]
-    },
-    {
-      "name": "denial_of_service",
-      "cooldown_ms": 20000,
-      "is_passive": false,
-      "mechanics": [
-        {
-          "GiveEffect": ["h4ck_dos"]
         }
       ]
     }
@@ -176,10 +151,7 @@
       "base_size": 80,
       "skills": {
         "1": "slingshot",
-        "2": "multishot",
-        "3": "disarm",
-        "4": "neon_crash",
-        "5": "denial_of_service"
+        "3": "poison_dart"
       }
     }
   ],

@@ -14,9 +14,9 @@ pub struct SkillConfigFile {
 #[derive(NifMap, Clone)]
 pub struct SkillConfig {
     pub name: String,
-    cooldown_ms: u64,
-    is_passive: bool,
-    mechanics: Vec<SkillMechanic>,
+    pub cooldown_ms: u64,
+    pub is_passive: bool,
+    pub mechanics: Vec<SkillMechanic>,
 }
 
 #[derive(Deserialize)]

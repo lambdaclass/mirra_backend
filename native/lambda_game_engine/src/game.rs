@@ -9,6 +9,9 @@ use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
 use crate::player::Player;
+use crate::player::PlayerStatus;
+use crate::projectile::Projectile;
+use crate::skill::SkillMechanic;
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
@@ -58,8 +61,9 @@ pub struct GameState {
     pub config: Config,
     pub players: HashMap<u64, Player>,
     pub loots: Vec<Loot>,
+    pub projectiles: Vec<Projectile>,
     pub myrra_state: crate::myrra_engine::game::GameState,
-    pub next_id: u64,
+    next_id: u64,
 }
 
 impl GameConfig {
@@ -93,15 +97,14 @@ impl GameState {
             config,
             players: HashMap::new(),
             loots: Vec::new(),
+            projectiles: Vec::new(),
             next_id: 1,
             myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
         }
     }
 
     pub fn next_id(&mut self) -> u64 {
-        let id = self.next_id;
-        self.next_id += 1;
-        id
+        get_next_id(&mut self.next_id)
     }
 
     pub fn push_player(&mut self, player_id: u64, player: Player) {
@@ -124,6 +127,78 @@ impl GameState {
             collect_nearby_loot(loots, player);
         }
     }
+
+    pub fn activate_skill(
+        &mut self,
+        player_id: u64,
+        skill_key: String,
+        skill_params: HashMap<String, String>,
+    ) {
+        let players = &mut self.players;
+
+        if let Some(player) = players.get_mut(&player_id) {
+            if let Some(skill) = player.character.clone().skills.get(&skill_key) {
+                for mechanic in skill.mechanics.iter() {
+                    match mechanic {
+                        SkillMechanic::SimpleShoot {
+                            projectile: projectile_config,
+                        } => {
+                            let id = get_next_id(&mut self.next_id);
+                            let direction_angle = skill_params
+                                .get("direction_angle")
+                                .map(|angle_str| angle_str.parse::<f32>())
+                                .unwrap()
+                                .unwrap();
+                            let projectile = Projectile::new(
+                                id,
+                                player.position.clone(),
+                                direction_angle,
+                                player.id,
+                                projectile_config,
+                            );
+                            self.projectiles.push(projectile);
+                        }
+                        SkillMechanic::MultiShoot {
+                            projectile: projectile_config,
+                            count,
+                            cone_angle,
+                        } => {
+                            let direction_angle = skill_params
+                                .get("direction_angle")
+                                .map(|angle_str| angle_str.parse::<f32>())
+                                .unwrap()
+                                .unwrap();
+                            let direction_distribution =
+                                distribute_angle(direction_angle, cone_angle, count);
+                            for direction in direction_distribution {
+                                let id = get_next_id(&mut self.next_id);
+                                let projectile = Projectile::new(
+                                    id,
+                                    player.position.clone(),
+                                    direction,
+                                    player.id,
+                                    projectile_config,
+                                );
+                                self.projectiles.push(projectile);
+                            }
+                        }
+                        SkillMechanic::GiveEffect(effects) => {
+                            for effect in effects.iter() {
+                                player.apply_effect(effect);
+                            }
+                        }
+                        _ => todo!("SkillMechanic not implemented"),
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn tick(&mut self, time_diff: u64) {
+        move_projectiles(&mut self.projectiles, time_diff, &self.config);
+        apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
+        run_effects(&mut self.players, time_diff);
+    }
 }
 
 fn find_effects(config_effects_names: &[String], effects: &[Effect]) -> Vec<Effect> {
@@ -144,6 +219,12 @@ fn find_effects(config_effects_names: &[String], effects: &[Effect]) -> Vec<Effe
         .collect()
 }
 
+fn get_next_id(next_id: &mut u64) -> u64 {
+    let id = *next_id;
+    *next_id += 1;
+    id
+}
+
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
@@ -155,4 +236,99 @@ fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
             true
         }
     });
+}
+
+fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<f32> {
+    let mut angles = Vec::new();
+    let half_cone_angle = cone_angle / 2;
+    let half_count = count / 2;
+    let cone_angle_diff = half_cone_angle / count;
+
+    // Generate the top angles
+    for i in 1..=half_count {
+        let angle = direction_angle + (cone_angle_diff * i) as f32;
+        angles.push(angle);
+    }
+
+    // Add the base angle if we have an odd count
+    if count % 2 != 0 {
+        angles.push(direction_angle);
+    }
+
+    // Generate the bottom angles
+    for i in 1..=half_count {
+        let angle = direction_angle - (cone_angle_diff * i) as f32;
+        angles.push(angle);
+    }
+
+    angles
+}
+
+fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
+    // Clear out projectiles that are no longer valid
+    projectiles.retain(|projectile| {
+        projectile.active
+            && projectile.duration_ms > 0
+            && projectile.max_distance > 0
+            && !map::collision_with_edge(
+                &projectile.position,
+                projectile.size,
+                config.game.width,
+                config.game.height,
+            )
+    });
+
+    projectiles.iter_mut().for_each(|projectile| {
+        projectile.duration_ms = projectile.duration_ms.saturating_sub(time_diff);
+        projectile.max_distance = projectile.max_distance.saturating_sub(projectile.speed);
+        projectile.position = map::next_position(
+            &projectile.position,
+            projectile.direction_angle,
+            projectile.speed as f32,
+            config.game.width as f32,
+            config.game.height as f32,
+        )
+    });
+}
+
+fn apply_projectiles_collisions(
+    projectiles: &mut [Projectile],
+    players: &mut HashMap<u64, Player>,
+) {
+    projectiles.iter_mut().for_each(|projectile| {
+        for player in players.values_mut() {
+            if player.status == PlayerStatus::Alive
+                && map::hit_boxes_collide(
+                    &projectile.position,
+                    &player.position,
+                    projectile.size,
+                    player.size,
+                )
+            {
+                if player.id == projectile.player_id {
+                    continue;
+                }
+
+                player.decrease_health(projectile.damage);
+                player.apply_effects(&projectile.on_hit_effects);
+
+                projectile.active = false;
+                break;
+
+                // TODO: Uncomment (and fix) when projectile collision is a thing
+                //      move the `active` change and `break` to the else clause
+                // if projectile.collision == ENABLED {
+                //     continue;
+                // } else {
+                //     break;
+                // }
+            }
+        }
+    });
+}
+
+fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
+    players
+        .values_mut()
+        .for_each(|player| player.run_effects(time_diff))
 }

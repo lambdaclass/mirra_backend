@@ -1,7 +1,4 @@
 use std::collections::HashMap;
-use std::f32::consts::PI;
-use std::ops::Div;
-use std::ops::Neg;
 
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
@@ -11,6 +8,7 @@ use crate::config::Config;
 use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
+use crate::map;
 use crate::map::Position;
 
 #[derive(NifMap)]
@@ -31,7 +29,7 @@ pub struct Player {
     pub speed: u64,
 }
 
-#[derive(NifTaggedEnum, Clone)]
+#[derive(NifTaggedEnum, Clone, PartialEq)]
 pub enum PlayerStatus {
     Alive,
     Death,
@@ -73,22 +71,17 @@ impl Player {
             return;
         }
 
-        let angle_rad = angle_degrees * (PI / 180.0);
-        let new_x = (self.position.x as f32) + (self.speed as f32) * angle_rad.cos();
-        let new_y = (self.position.y as f32) + (self.speed as f32) * angle_rad.sin();
+        self.position = map::next_position(
+            &self.position,
+            angle_degrees,
+            self.speed as f32,
+            config.game.width as f32,
+            config.game.height as f32,
+        );
+    }
 
-        let max_x_bound = config.game.width.div(2) as f32;
-        let min_x_bound = max_x_bound.neg();
-        let x = new_x.min(max_x_bound).max(min_x_bound);
-
-        let max_y_bound = config.game.height.div(2) as f32;
-        let min_y_bound = max_y_bound.neg();
-        let y = new_y.min(max_y_bound).max(min_y_bound);
-
-        self.position = Position {
-            x: x as i64,
-            y: y as i64,
-        }
+    pub fn apply_effects(&mut self, effects: &[Effect]) {
+        effects.iter().for_each(|effect| self.apply_effect(effect))
     }
 
     pub fn apply_effect(&mut self, effect: &Effect) {
@@ -100,7 +93,7 @@ impl Player {
         // Apply the effect
         match effect.effect_time_type {
             TimeType::Periodic {
-                instant_applicaiton: true,
+                instant_applicaiton: false,
                 ..
             } => (),
             _ => {
@@ -132,11 +125,69 @@ impl Player {
             }
         };
     }
+
+    pub fn decrease_health(&mut self, amount: u64) {
+        self.health = self.health.saturating_sub(amount);
+
+        if self.health == 0 {
+            self.status = PlayerStatus::Death;
+        }
+    }
+
+    pub fn run_effects(&mut self, time_diff: u64) {
+        // Clean effects that have timed out
+        self.effects.retain(|effect| {
+            !matches!(
+                effect.effect_time_type,
+                TimeType::Duration { duration_ms: 0 }
+                    | TimeType::Periodic {
+                        trigger_count: 0,
+                        ..
+                    }
+            )
+        });
+
+        for effect in self.effects.iter_mut() {
+            match &mut effect.effect_time_type {
+                TimeType::Duration { duration_ms } => {
+                    *duration_ms = (*duration_ms).saturating_sub(time_diff);
+                }
+                TimeType::Periodic {
+                    interval_ms,
+                    trigger_count,
+                    time_since_last_trigger,
+                    ..
+                } => {
+                    *time_since_last_trigger += time_diff;
+
+                    if *time_since_last_trigger >= *interval_ms {
+                        *time_since_last_trigger -= *interval_ms;
+                        *trigger_count -= 1;
+
+                        effect.player_attributes.iter().for_each(|change| {
+                            match change.attribute.as_str() {
+                                "health" => modify_attribute(
+                                    &mut self.health,
+                                    &change.modifier,
+                                    &change.value,
+                                ),
+                                _ => todo!(),
+                            };
+                        });
+                    }
+                }
+                _ => todo!(),
+            }
+        }
+    }
 }
 
 fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
     match modifier {
-        AttributeModifier::Additive => *attribute_value += value.parse::<u64>().unwrap(),
+        AttributeModifier::Additive => {
+            *attribute_value =
+                (*attribute_value).saturating_add_signed(value.parse::<i64>().unwrap())
+        }
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64
         }

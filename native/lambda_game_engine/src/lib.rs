@@ -76,6 +76,25 @@ fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     }
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+fn activate_skill(
+    game: GameState,
+    player_id: u64,
+    skill_key: String,
+    skill_params: HashMap<String, String>,
+) -> GameState {
+    let mut game = game;
+    game.activate_skill(player_id, skill_key, skill_params);
+    game
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
+fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
+    let mut game = game;
+    game.tick(time_diff_ms);
+    game
+}
+
 /********************************************************
  * Functions in this space are copied from Myrra engine *
  * after the refactor there should be nothing down here *
@@ -242,6 +261,8 @@ rustler::init!(
         move_player,
         apply_effect,
         spawn_random_loot,
+        activate_skill,
+        game_tick,
         // Myrra functions
         new_game,
         world_tick,
