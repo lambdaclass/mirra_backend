@@ -203,9 +203,18 @@ fn basic_attack(
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-fn spawn_player(game: GameState, player_id: u64,raw_characters_config: Vec<HashMap<Binary, Binary>>,
-    raw_skills_config: Vec<HashMap<Binary, Binary>>,) -> Result<GameState, String> {
-    let myrra_state = myrra_engine::spawn_player(game.myrra_state.clone(), player_id, raw_characters_config, raw_skills_config);
+fn spawn_player(
+    game: GameState,
+    player_id: u64,
+    raw_characters_config: Vec<HashMap<Binary, Binary>>,
+    raw_skills_config: Vec<HashMap<Binary, Binary>>,
+) -> Result<GameState, String> {
+    let myrra_state = myrra_engine::spawn_player(
+        game.myrra_state.clone(),
+        player_id,
+        raw_characters_config,
+        raw_skills_config,
+    );
     update_myrra_state_result(game, myrra_state)
 }
 
