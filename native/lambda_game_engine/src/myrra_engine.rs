@@ -133,17 +133,10 @@ pub fn basic_attack(
     Ok(game_2)
 }
 
-pub fn spawn_player(
-    game: GameState,
-    player_id: u64,
-    raw_characters_config: Vec<HashMap<Binary, Binary>>,
-    raw_skills_config: Vec<HashMap<Binary, Binary>>,
-) -> Result<GameState, String> {
-    let characters_config = game_configuration::config_binaries_to_strings(raw_characters_config);
-    let skills_config = game_configuration::config_binaries_to_strings(raw_skills_config);
+pub fn spawn_player(game: GameState, player_id: u64) -> Result<GameState, String> {
     let mut game_2 = game;
 
-    game_2.spawn_player(player_id, &characters_config, &skills_config);
+    game_2.spawn_player(player_id);
     Ok(game_2)
 }
 
