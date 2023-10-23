@@ -13,6 +13,7 @@ use rand::{thread_rng, Rng};
 use rustler::{NifStruct, NifTuple, NifUnitEnum};
 use std::f32::consts::PI;
 
+use rand::prelude::*;
 use std::cmp::{max, min};
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -30,6 +31,7 @@ pub struct GameState {
     pub shrinking_center: Position,
     pub loots: Vec<Loot>,
     pub next_loot_id: u64,
+    pub playable_characters: Vec<Character>,
 }
 
 #[derive(Clone, NifTuple)]
@@ -79,6 +81,7 @@ impl GameState {
             shrinking_center: Position::new(0, 0),
             loots: Vec::new(),
             next_loot_id: 0,
+            playable_characters: vec![],
         }
     }
 
@@ -134,6 +137,7 @@ impl GameState {
             shrinking_center,
             loots: Vec::new(),
             next_loot_id: 0,
+            playable_characters: characters,
         })
     }
 
@@ -1642,10 +1646,16 @@ impl GameState {
         let mut tried_positions = HashSet::new();
         let position: Position;
 
+        let character = self
+            .playable_characters
+            .choose(&mut rand::thread_rng())
+            .unwrap()
+            .clone();
+
         position = generate_new_position(&mut tried_positions, self.board.width, self.board.height);
 
         self.players
-            .push(Player::new(player_id, 100, position, Default::default()));
+            .push(Player::new(player_id, 100, position, character));
     }
 
     pub fn shrink_map(self: &mut Self, map_shrink_minimum_radius: u64) {
