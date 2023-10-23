@@ -135,7 +135,6 @@ pub fn basic_attack(
 
 pub fn spawn_player(game: GameState, player_id: u64) -> Result<GameState, String> {
     let mut game_2 = game;
-
     game_2.spawn_player(player_id);
     Ok(game_2)
 }
