@@ -96,6 +96,7 @@ pub struct Player {
     pub effects: StatusEffects,
     pub direction: RelativePosition,
     pub body_size: f64,
+    pub exited_game: bool,
 }
 
 #[derive(Debug, Clone, NifUnitEnum)]
@@ -159,6 +160,7 @@ impl Player {
             skill_4_ends_at: MillisTime { high: 0, low: 0 },
             effects: HashMap::new(),
             direction: RelativePosition::new(0., 0.),
+            exited_game: false,
         }
     }
     pub fn modify_health(self: &mut Self, damage: i64) {
@@ -446,6 +448,10 @@ impl Player {
         } else {
             0
         };
+    }
+
+    pub fn exit_game(&mut self) {
+        self.exited_game = true;
     }
 
     // TODO:

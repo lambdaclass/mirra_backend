@@ -137,6 +137,15 @@ impl GameState {
         })
     }
 
+    pub fn exit_game(self: &mut Self, player_id: u64) {
+        let player = self
+            .players
+            .iter_mut()
+            .find(|player| player.id == player_id)
+            .unwrap();
+        player.exit_game();
+    }
+
     pub fn move_player(
         self: &mut Self,
         player_id: u64,

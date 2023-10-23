@@ -150,3 +150,9 @@ pub fn spawn_loot(game: GameState) -> Result<GameState, String> {
     game_2.spawn_loot();
     Ok(game_2)
 }
+
+pub fn exit_game(game: GameState, player_id: u64) -> Result<GameState, String> {
+    let mut game_2 = game;
+    game_2.exit_game(player_id);
+    Ok(game_2)
+}

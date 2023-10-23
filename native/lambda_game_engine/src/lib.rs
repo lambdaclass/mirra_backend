@@ -239,6 +239,12 @@ fn spawn_loot(game: GameState) -> Result<GameState, String> {
     update_myrra_state_result(game, myrra_state)
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+fn exit_game(game: GameState, player_id: u64) -> Result<GameState, String> {
+    let myrra_state = myrra_engine::exit_game(game.myrra_state.clone(), player_id);
+    update_myrra_state_result(game, myrra_state)
+}
+
 fn update_myrra_state_result(
     mut game: GameState,
     myrra_state_result: Result<crate::myrra_engine::game::GameState, String>,
@@ -275,6 +281,7 @@ rustler::init!(
         skill_3,
         skill_4,
         shrink_map,
-        spawn_loot
+        spawn_loot,
+        exit_game
     ]
 );
