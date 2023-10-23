@@ -29,7 +29,7 @@ pub struct Player {
     pub speed: u64,
 }
 
-#[derive(NifTaggedEnum, Clone)]
+#[derive(NifTaggedEnum, Clone, PartialEq)]
 pub enum PlayerStatus {
     Alive,
     Death,
