@@ -9,6 +9,7 @@ use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
 use crate::player::Player;
+use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
 
@@ -296,7 +297,7 @@ fn apply_projectiles_collisions(
 ) {
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
-            if map::hit_boxes_collide(
+            if player.status == PlayerStatus::Alive && map::hit_boxes_collide(
                 &projectile.position,
                 &player.position,
                 projectile.size,
