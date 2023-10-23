@@ -297,12 +297,14 @@ fn apply_projectiles_collisions(
 ) {
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
-            if player.status == PlayerStatus::Alive && map::hit_boxes_collide(
-                &projectile.position,
-                &player.position,
-                projectile.size,
-                player.size,
-            ) {
+            if player.status == PlayerStatus::Alive
+                && map::hit_boxes_collide(
+                    &projectile.position,
+                    &player.position,
+                    projectile.size,
+                    player.size,
+                )
+            {
                 if player.id == projectile.player_id {
                     continue;
                 }
