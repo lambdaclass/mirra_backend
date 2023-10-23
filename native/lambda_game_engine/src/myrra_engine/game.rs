@@ -31,6 +31,7 @@ pub struct GameState {
     pub shrinking_center: Position,
     pub loots: Vec<Loot>,
     pub next_loot_id: u64,
+    pub playable_characters: Vec<Character>,
 }
 
 #[derive(Clone, NifTuple)]
@@ -80,6 +81,7 @@ impl GameState {
             shrinking_center: Position::new(0, 0),
             loots: Vec::new(),
             next_loot_id: 0,
+            playable_characters: vec![],
         }
     }
 
@@ -135,6 +137,7 @@ impl GameState {
             shrinking_center,
             loots: Vec::new(),
             next_loot_id: 0,
+            playable_characters: characters,
         })
     }
 
@@ -1639,20 +1642,15 @@ impl GameState {
             .collect()
     }
 
-    pub fn spawn_player(
-        self: &mut Self,
-        player_id: u64,
-        characters_config: &[HashMap<String, String>],
-        skills_config: &[HashMap<String, String>],
-    ) {
+    pub fn spawn_player(self: &mut Self, player_id: u64) {
         let mut tried_positions = HashSet::new();
         let position: Position;
 
-        let skills = skills::build_from_config(skills_config).unwrap();
-        let characters =
-            GameState::build_characters_with_config(&characters_config, &skills).unwrap();
-
-        let character = characters.choose(&mut rand::thread_rng()).unwrap().clone();
+        let character = self
+            .playable_characters
+            .choose(&mut rand::thread_rng())
+            .unwrap()
+            .clone();
 
         position = generate_new_position(&mut tried_positions, self.board.width, self.board.height);
 
