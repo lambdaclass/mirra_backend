@@ -18,7 +18,12 @@ pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: u64, siz
     centers_distance <= collision_distance
 }
 
-pub fn in_cone_angle_range(center_player: &Player, target_player: &Player, max_distance: u64, cone_angle: f32) -> bool {
+pub fn in_cone_angle_range(
+    center_player: &Player,
+    target_player: &Player,
+    max_distance: u64,
+    cone_angle: f32,
+) -> bool {
     // TODO: Take into consideration `size` attribute of Player
     let squared_x = (center_player.position.x - target_player.position.x).pow(2) as f64;
     let squared_y = (center_player.position.y - target_player.position.y).pow(2) as f64;

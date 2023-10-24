@@ -41,8 +41,14 @@ pub enum TimeType {
 
 pub fn modify_attribute(attribute_value: &mut u64, change: &AttributeChange) {
     match change.modifier {
-        AttributeModifier::Additive => *attribute_value = (*attribute_value).saturating_add_signed(change.value.parse::<i64>().unwrap()),
-        AttributeModifier::Multiplicative => *attribute_value = ((*attribute_value as f64) * change.value.parse::<f64>().unwrap()) as u64,
+        AttributeModifier::Additive => {
+            *attribute_value =
+                (*attribute_value).saturating_add_signed(change.value.parse::<i64>().unwrap())
+        }
+        AttributeModifier::Multiplicative => {
+            *attribute_value =
+                ((*attribute_value as f64) * change.value.parse::<f64>().unwrap()) as u64
+        }
         AttributeModifier::Override => *attribute_value = change.value.parse::<u64>().unwrap(),
     }
 }

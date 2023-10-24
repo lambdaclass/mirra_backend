@@ -136,7 +136,9 @@ impl GameState {
         skill_params: HashMap<String, String>,
     ) {
         let players = &mut self.players;
-        let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players.values_mut().partition(|player| player.id == player_id);
+        let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players
+            .values_mut()
+            .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
@@ -187,8 +189,13 @@ impl GameState {
                                 player.apply_effect(effect);
                             }
                         }
-                        SkillMechanic::Hit { damage, range, cone_angle, on_hit_effects } => {
-                            let mut damage = damage.clone();
+                        SkillMechanic::Hit {
+                            damage,
+                            range,
+                            cone_angle,
+                            on_hit_effects,
+                        } => {
+                            let mut damage = *damage;
 
                             for effect in player.effects.iter() {
                                 for change in effect.player_attributes.iter() {
@@ -199,12 +206,19 @@ impl GameState {
                             }
 
                             other_players
-                            .iter_mut()
-                            .filter(|target_player| map::in_cone_angle_range(player, target_player, *range, *cone_angle as f32))
-                            .for_each(|target_player| {
-                                target_player.decrease_health(damage);
-                                target_player.apply_effects(on_hit_effects);
-                            })
+                                .iter_mut()
+                                .filter(|target_player| {
+                                    map::in_cone_angle_range(
+                                        player,
+                                        target_player,
+                                        *range,
+                                        *cone_angle as f32,
+                                    )
+                                })
+                                .for_each(|target_player| {
+                                    target_player.decrease_health(damage);
+                                    target_player.apply_effects(on_hit_effects);
+                                })
                         }
                         _ => todo!("SkillMechanic not implemented"),
                     }
