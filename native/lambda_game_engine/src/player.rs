@@ -19,7 +19,7 @@ pub struct Player {
     pub kill_count: u64,
     pub death_count: u64,
     pub position: Position,
-    pub direction: u64,
+    pub direction: f32,
     pub actions: Vec<PlayerAction>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
@@ -53,7 +53,7 @@ impl Player {
             kill_count: 0,
             death_count: 0,
             position: Position { x: 0, y: 0 }, // TODO: random_position
-            direction: 0,
+            direction: 0.0,
             actions: Vec::new(),
             cooldowns: HashMap::new(),
             effects: Vec::new(),
@@ -71,6 +71,7 @@ impl Player {
             return;
         }
 
+        self.direction = angle_degrees;
         self.position = map::next_position(
             &self.position,
             angle_degrees,

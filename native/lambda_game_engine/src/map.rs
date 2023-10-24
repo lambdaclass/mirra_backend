@@ -2,6 +2,8 @@ use std::f32::consts::PI;
 
 use rustler::NifMap;
 
+use crate::player::Player;
+
 #[derive(NifMap, Clone)]
 pub struct Position {
     pub x: i64,
@@ -14,6 +16,25 @@ pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: u64, siz
     let centers_distance = (squared_x + squared_y).sqrt();
     let collision_distance = (size1 + size2) as f64;
     centers_distance <= collision_distance
+}
+
+pub fn in_cone_angle_range(center_player: &Player, target_player: &Player, max_distance: u64, cone_angle: f32) -> bool {
+    // TODO: Take into consideration `size` attribute of Player
+    let squared_x = (center_player.position.x - target_player.position.x).pow(2) as f64;
+    let squared_y = (center_player.position.y - target_player.position.y).pow(2) as f64;
+    let target_distance = (squared_x + squared_y).sqrt();
+
+    if target_distance > (max_distance as f64) {
+        return false;
+    }
+
+    let x_diff = (target_player.position.x - center_player.position.x) as f32;
+    let y_diff = (target_player.position.y - center_player.position.y) as f32;
+    let angle = y_diff.atan2(x_diff) * (180.0 / PI);
+    let relative_angle = angle - center_player.direction;
+    let normalized_angle = (relative_angle + 360.0) % 360.0;
+
+    normalized_angle < (cone_angle / 2.0)
 }
 
 pub fn next_position(
