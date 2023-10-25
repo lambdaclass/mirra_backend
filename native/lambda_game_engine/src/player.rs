@@ -136,20 +136,6 @@ impl Player {
 
     pub fn remove_expired_effects(&mut self) {
 
-        // Check if this works as expected
-        // It seems that extract_if is only experimental...
-        // let effects_to_remove = self.effects
-        //     .extract_if(|effect| 
-        //     matches!(
-        //         effect.effect_time_type,
-        //         TimeType::Duration { duration_ms: 0 }
-        //             | TimeType::Periodic {
-        //                 trigger_count: 0,
-        //                 ..
-        //             }
-        //     ))
-        //     .collect::<Vec<_>>();
-
         let effects_to_remove: Vec<_> = self.effects
             .iter()
             .filter(|effect|
@@ -263,7 +249,7 @@ fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) / value.parse::<f64>().unwrap()) as u64
         }
-        // TODO: This is not correct, we need to store the original value somewhere
-        AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap(),
+        // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
+        _ => todo!(),
     }
 }
