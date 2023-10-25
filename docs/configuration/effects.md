@@ -109,13 +109,11 @@ Examples of the JSON defining effects
 
 ### Adding an removing effects
 
-Some effects cause an increment in the attributes of a player.
-When the duration of the effect ends, we must revert the change made in the attribute.
-In that sense, we have a `revert_attribute` function that applies the opposite change that the effect did.
+Some effects result in an increase in a player's attributes. When the effect's duration expires, we need to revert the changes made to the attribute. To address this, we've implemented a revert_attribute function that undoes the effect's modifications.
 
-Be careful! Given the possibility to apply an Additive effect and a Multiplicative effect, there's a possibility of never obtaining the correct value when we revert the attribute values.
+However, caution is required! With the possibility of applying both Additive and Multiplicative effects, there is a risk of not obtaining the correct attribute values when performing a reversal.
 
-Also, we are not handling the possibility to revert an Override effect because we are not storing the previous value.
+Furthermore, we haven't accounted for the ability to reverse an Override effect since we don't store the previous value.
 
 ### Examples
 ```
