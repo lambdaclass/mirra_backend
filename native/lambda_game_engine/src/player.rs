@@ -134,7 +134,64 @@ impl Player {
         }
     }
 
-    pub fn run_effects(&mut self, time_diff: u64) {
+    pub fn remove_expired_effects(&mut self) {
+
+        // Check if this works as expected
+        // It seems that extract_if is only experimental...
+        // let effects_to_remove = self.effects
+        //     .extract_if(|effect| 
+        //     matches!(
+        //         effect.effect_time_type,
+        //         TimeType::Duration { duration_ms: 0 }
+        //             | TimeType::Periodic {
+        //                 trigger_count: 0,
+        //                 ..
+        //             }
+        //     ))
+        //     .collect::<Vec<_>>();
+
+        let effects_to_remove: Vec<_> = self.effects
+            .iter()
+            .filter(|effect|
+            matches!(
+                effect.effect_time_type,
+                TimeType::Duration { duration_ms: 0 }
+                    | TimeType::Periodic {
+                        trigger_count: 0,
+                        ..
+                    }
+            ))
+            .cloned()
+            .collect();
+        
+        for effect in effects_to_remove.iter() {
+            effect.player_attributes.iter().for_each(|change| {
+                match change.attribute.as_str() {
+                    "health" => revert_attribute(
+                        &mut self.health,
+                        &change.modifier,
+                        &change.value,
+                    ),
+                    "size" => revert_attribute(
+                        &mut self.size,
+                        &change.modifier,
+                        &change.value,
+                    ),
+                    "damage" => revert_attribute(
+                        &mut self.damage,
+                        &change.modifier,
+                        &change.value,
+                    ),
+                    "speed" => revert_attribute(
+                        &mut self.speed,
+                        &change.modifier,
+                        &change.value,
+                    ),
+                    _ => todo!(),
+                };
+            });
+        }
+
         // Clean effects that have timed out
         self.effects.retain(|effect| {
             !matches!(
@@ -146,7 +203,9 @@ impl Player {
                     }
             )
         });
+    }
 
+    pub fn run_effects(&mut self, time_diff: u64) {
         for effect in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
                 TimeType::Duration { duration_ms } => {
@@ -191,6 +250,20 @@ fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as u64
         }
+        AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap(),
+    }
+}
+
+fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
+    match modifier {
+        AttributeModifier::Additive => {
+            *attribute_value =
+                (*attribute_value).saturating_sub(value.parse::<i64>().unwrap() as u64)
+        }
+        AttributeModifier::Multiplicative => {
+            *attribute_value = ((*attribute_value as f64) / value.parse::<f64>().unwrap()) as u64
+        }
+        // TODO: This is not correct, we need to store the original value somewhere
         AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap(),
     }
 }
