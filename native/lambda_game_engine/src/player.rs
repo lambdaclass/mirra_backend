@@ -57,8 +57,8 @@ impl Player {
             actions: Vec::new(),
             cooldowns: HashMap::new(),
             effects: Vec::new(),
-            health: 100, //TODO: character_config.base_max_health,
-            damage: 15,  //TODO: character_config.base_damage,
+            health: character_config.base_health,
+            damage: 15, // TODO: character_config.base_damage, is this necesary? or should it be in the skill?
             speed: character_config.base_speed,
             size: character_config.base_size,
             character: character_config,
