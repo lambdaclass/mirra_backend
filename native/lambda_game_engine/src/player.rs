@@ -135,44 +135,29 @@ impl Player {
     }
 
     pub fn remove_expired_effects(&mut self) {
-
-        let effects_to_remove: Vec<_> = self.effects
+        let effects_to_remove: Vec<_> = self
+            .effects
             .iter()
-            .filter(|effect|
-            matches!(
-                effect.effect_time_type,
-                TimeType::Duration { duration_ms: 0 }
-                    | TimeType::Periodic {
-                        trigger_count: 0,
-                        ..
-                    }
-            ))
+            .filter(|effect| {
+                matches!(
+                    effect.effect_time_type,
+                    TimeType::Duration { duration_ms: 0 }
+                        | TimeType::Periodic {
+                            trigger_count: 0,
+                            ..
+                        }
+                )
+            })
             .cloned()
             .collect();
-        
+
         for effect in effects_to_remove.iter() {
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
-                    "health" => revert_attribute(
-                        &mut self.health,
-                        &change.modifier,
-                        &change.value,
-                    ),
-                    "size" => revert_attribute(
-                        &mut self.size,
-                        &change.modifier,
-                        &change.value,
-                    ),
-                    "damage" => revert_attribute(
-                        &mut self.damage,
-                        &change.modifier,
-                        &change.value,
-                    ),
-                    "speed" => revert_attribute(
-                        &mut self.speed,
-                        &change.modifier,
-                        &change.value,
-                    ),
+                    "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
+                    "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
+                    "damage" => revert_attribute(&mut self.damage, &change.modifier, &change.value),
+                    "speed" => revert_attribute(&mut self.speed, &change.modifier, &change.value),
                     _ => todo!(),
                 };
             });
