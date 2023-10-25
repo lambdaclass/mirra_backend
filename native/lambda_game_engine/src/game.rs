@@ -5,6 +5,7 @@ use rustler::NifTaggedEnum;
 use serde::Deserialize;
 
 use crate::config::Config;
+use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
@@ -135,8 +136,11 @@ impl GameState {
         skill_params: HashMap<String, String>,
     ) {
         let players = &mut self.players;
+        let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players
+            .values_mut()
+            .partition(|player| player.id == player_id);
 
-        if let Some(player) = players.get_mut(&player_id) {
+        if let Some(player) = player_in_list.get_mut(0) {
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
@@ -146,8 +150,7 @@ impl GameState {
                             let id = get_next_id(&mut self.next_id);
                             let direction_angle = skill_params
                                 .get("direction_angle")
-                                .map(|angle_str| angle_str.parse::<f32>())
-                                .unwrap()
+                                .map(|angle_str| angle_str.parse::<f32>().unwrap())
                                 .unwrap();
                             let projectile = Projectile::new(
                                 id,
@@ -165,8 +168,7 @@ impl GameState {
                         } => {
                             let direction_angle = skill_params
                                 .get("direction_angle")
-                                .map(|angle_str| angle_str.parse::<f32>())
-                                .unwrap()
+                                .map(|angle_str| angle_str.parse::<f32>().unwrap())
                                 .unwrap();
                             let direction_distribution =
                                 distribute_angle(direction_angle, cone_angle, count);
@@ -186,6 +188,37 @@ impl GameState {
                             for effect in effects.iter() {
                                 player.apply_effect(effect);
                             }
+                        }
+                        SkillMechanic::Hit {
+                            damage,
+                            range,
+                            cone_angle,
+                            on_hit_effects,
+                        } => {
+                            let mut damage = *damage;
+
+                            for effect in player.effects.iter() {
+                                for change in effect.player_attributes.iter() {
+                                    if change.attribute == "damage" {
+                                        effect::modify_attribute(&mut damage, change)
+                                    }
+                                }
+                            }
+
+                            other_players
+                                .iter_mut()
+                                .filter(|target_player| {
+                                    map::in_cone_angle_range(
+                                        player,
+                                        target_player,
+                                        *range,
+                                        *cone_angle as f32,
+                                    )
+                                })
+                                .for_each(|target_player| {
+                                    target_player.decrease_health(damage);
+                                    target_player.apply_effects(on_hit_effects);
+                                })
                         }
                         _ => todo!("SkillMechanic not implemented"),
                     }

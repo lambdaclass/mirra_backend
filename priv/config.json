@@ -141,6 +141,36 @@
           }
         }
       ]
+    },
+    {
+      "name": "hit",
+      "cooldown_ms": 1500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "Hit": {
+            "damage": 30,
+            "range": 500,
+            "cone_angle": 90,
+            "on_hit_effects": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "circle_hit",
+      "cooldown_ms": 1500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "Hit": {
+            "damage": 20,
+            "range": 500,
+            "cone_angle": 360,
+            "on_hit_effects": []
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -152,6 +182,16 @@
       "skills": {
         "1": "slingshot",
         "3": "poison_dart"
+      }
+    },
+    {
+      "name": "muflus",
+      "active": true,
+      "base_speed": 15,
+      "base_size": 100,
+      "skills": {
+        "1": "hit",
+        "2": "circle_hit"
       }
     }
   ],
