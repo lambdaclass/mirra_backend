@@ -337,6 +337,7 @@ fn apply_projectiles_collisions(
                     projectile.size,
                     player.size,
                 )
+                && !projectile.attacked_player_ids.contains(&player.id)
             {
                 if player.id == projectile.player_id {
                     continue;
@@ -344,17 +345,11 @@ fn apply_projectiles_collisions(
 
                 player.decrease_health(projectile.damage);
                 player.apply_effects(&projectile.on_hit_effects);
+                projectile.attacked_player_ids.push(player.id);
 
-                projectile.active = false;
-                break;
-
-                // TODO: Uncomment (and fix) when projectile collision is a thing
-                //      move the `active` change and `break` to the else clause
-                // if projectile.collision == ENABLED {
-                //     continue;
-                // } else {
-                //     break;
-                // }
+                if !projectile.pierce {
+                    projectile.active = false;
+                }
             }
         }
     });

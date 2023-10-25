@@ -17,4 +17,4 @@
 - `damage`: Damage done to players on collision
 - `speed`: Speed of the projectile
 - `size`: Size for the projectile model and collision math
-- `player_collision`: Determines if the projectile is removed from game after colliding with a player
+- `pierce`: Determines if the projectile is removed from game after colliding with a player
