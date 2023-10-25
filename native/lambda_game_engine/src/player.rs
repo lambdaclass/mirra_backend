@@ -38,11 +38,8 @@ pub enum PlayerStatus {
 #[derive(NifTaggedEnum, Clone)]
 pub enum PlayerAction {
     Nothing,
-    Attacking,
-    Attackingaoe,
     Moving,
-    StartingSkill(String),
-    ExecutingSkill(String),
+    UsingSkill(String),
 }
 
 impl Player {
