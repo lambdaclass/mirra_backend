@@ -17,4 +17,3 @@
 - `health`: current health of the player
 - `cooldowns`: Map containing the remaining cooldown for each skill, if skill is not present it has no pending cooldown. To change this attribute you can either say `cooldown` to affect all of them or use `.` syntax to target a specific key (e.g `cooldown.1` to target skill `1`)
 - `size`: Size for the player model and collision math
-- `damage`: Damage done by player skills directly (not projectiles)
