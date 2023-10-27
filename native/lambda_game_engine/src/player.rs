@@ -72,7 +72,7 @@ impl Player {
             return;
         }
 
-        self.add_action(Action::Moving);
+        self.add_action(Action::Moving, 0);
         self.direction = angle_degrees;
         self.position = map::next_position(
             &self.position,
@@ -83,8 +83,9 @@ impl Player {
         );
     }
 
-    pub fn add_action(&mut self, action: Action) {
+    pub fn add_action(&mut self, action: Action, duration_ms: u64) {
         self.next_actions.push(action);
+        self.action_duration_ms += duration_ms;
     }
 
     pub fn update_actions(&mut self) {
