@@ -119,7 +119,7 @@
     {
       "name": "slingshot",
       "cooldown_ms": 800,
-      "usage_interval_ms": 250,
+      "execution_duration_ms": 250,
       "is_passive": false,
       "mechanics": [
         {
@@ -134,7 +134,7 @@
     {
       "name": "poison_dart",
       "cooldown_ms": 800,
-      "usage_interval_ms": 150,
+      "execution_duration_ms": 150,
       "is_passive": false,
       "mechanics": [
         {
@@ -147,7 +147,7 @@
     {
       "name": "hit",
       "cooldown_ms": 1500,
-      "usage_interval_ms": 500,
+      "execution_duration_ms": 500,
       "is_passive": false,
       "mechanics": [
         {
@@ -163,7 +163,7 @@
     {
       "name": "circle_hit",
       "cooldown_ms": 1500,
-      "usage_interval_ms": 800,
+      "execution_duration_ms": 800,
       "is_passive": false,
       "mechanics": [
         {
