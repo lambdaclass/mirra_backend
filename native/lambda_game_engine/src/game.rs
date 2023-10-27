@@ -10,6 +10,7 @@ use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
 use crate::player::Player;
+use crate::player::Action;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
@@ -142,6 +143,8 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
+                player.add_action(Action::UsingSkill(skill_key));
+
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
                         SkillMechanic::SimpleShoot {
@@ -228,6 +231,7 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        update_player_actions(&mut self.players);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
         run_effects(&mut self.players, time_diff);
@@ -295,6 +299,12 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
     }
 
     angles
+}
+
+fn update_player_actions(players: &mut HashMap<u64, Player>) {
+    players
+    .values_mut()
+    .for_each(|player| player.update_actions())
 }
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {

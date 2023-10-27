@@ -20,13 +20,15 @@ pub struct Player {
     pub death_count: u64,
     pub position: Position,
     pub direction: f32,
-    pub actions: Vec<PlayerAction>,
+    pub actions: Vec<Action>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<Effect>,
     pub size: u64,
     pub damage: u64,
     pub speed: u64,
+    pub action_duration_ms: u64,
+    next_actions: Vec<Action>,
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq)]
@@ -36,7 +38,7 @@ pub enum PlayerStatus {
 }
 
 #[derive(NifTaggedEnum, Clone)]
-pub enum PlayerAction {
+pub enum Action {
     Nothing,
     Moving,
     UsingSkill(String),
@@ -59,6 +61,8 @@ impl Player {
             speed: character_config.base_speed,
             size: character_config.base_size,
             character: character_config,
+            action_duration_ms: 0,
+            next_actions: Vec::new(),
         }
     }
 
@@ -68,6 +72,7 @@ impl Player {
             return;
         }
 
+        self.add_action(Action::Moving);
         self.direction = angle_degrees;
         self.position = map::next_position(
             &self.position,
@@ -76,6 +81,15 @@ impl Player {
             config.game.width as f32,
             config.game.height as f32,
         );
+    }
+
+    pub fn add_action(&mut self, action: Action) {
+        self.next_actions.push(action);
+    }
+
+    pub fn update_actions(&mut self) {
+        self.actions = self.next_actions.clone();
+        self.next_actions.clear();
     }
 
     pub fn apply_effects(&mut self, effects: &[Effect]) {
