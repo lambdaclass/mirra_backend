@@ -179,6 +179,7 @@
       "active": true,
       "base_speed": 25,
       "base_size": 80,
+      "base_health": 8000,
       "skills": {
         "1": "slingshot",
         "3": "poison_dart"
@@ -189,6 +190,7 @@
       "active": true,
       "base_speed": 15,
       "base_size": 100,
+      "base_health": 8000,
       "skills": {
         "1": "hit",
         "2": "circle_hit"

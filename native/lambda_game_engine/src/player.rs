@@ -25,7 +25,6 @@ pub struct Player {
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<Effect>,
     pub size: u64,
-    pub damage: u64,
     pub speed: u64,
 }
 
@@ -57,8 +56,7 @@ impl Player {
             actions: Vec::new(),
             cooldowns: HashMap::new(),
             effects: Vec::new(),
-            health: 100, //TODO: character_config.base_max_health,
-            damage: 15,  //TODO: character_config.base_damage,
+            health: character_config.base_health,
             speed: character_config.base_speed,
             size: character_config.base_size,
             character: character_config,
@@ -109,11 +107,6 @@ impl Player {
                             "size" => {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
-                            "damage" => modify_attribute(
-                                &mut player.damage,
-                                &change.modifier,
-                                &change.value,
-                            ),
                             "health" => modify_attribute(
                                 &mut player.health,
                                 &change.modifier,
