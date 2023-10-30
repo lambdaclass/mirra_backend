@@ -150,7 +150,6 @@ impl Player {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
                     "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
-                    "damage" => revert_attribute(&mut self.damage, &change.modifier, &change.value),
                     "speed" => revert_attribute(&mut self.speed, &change.modifier, &change.value),
                     _ => todo!(),
                 };
