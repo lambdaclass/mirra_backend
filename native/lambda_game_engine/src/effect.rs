@@ -1,4 +1,3 @@
-use crate::game::Entity;
 use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
@@ -8,7 +7,6 @@ pub struct Effect {
     pub effect_time_type: TimeType,
     pub player_attributes: Vec<AttributeChange>,
     pub projectile_attributes: Vec<AttributeChange>,
-    pub owner: Entity,
 }
 
 #[derive(Deserialize, NifMap, Clone)]

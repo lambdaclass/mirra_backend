@@ -15,7 +15,7 @@ use std::collections::HashMap;
 use rustler::Binary;
 
 use crate::config::Config;
-use crate::game::GameState;
+use crate::game::{EntityOwner, GameState};
 use crate::myrra_engine::utils::RelativePosition;
 use crate::player::Player;
 
@@ -50,6 +50,7 @@ fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     game
 }
 
+// TODO: Is this method necesary?
 #[rustler::nif(schedule = "DirtyCpu")]
 fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameState {
     let mut game = game;
@@ -57,7 +58,7 @@ fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameSta
         None => game,
         Some(player) => {
             let effect = game.config.find_effect(effect_name).unwrap();
-            player.apply_effect(effect);
+            player.apply_effect(effect, EntityOwner::Zone);
             game
         }
     }

@@ -15,9 +15,10 @@ use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
 
-#[derive(Clone, Debug, Deserialize, NifTaggedEnum)]
-pub enum Entity {
+#[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
+pub enum EntityOwner {
     Zone,
+    Loot,
     Player(u64),
 }
 
@@ -66,7 +67,7 @@ pub enum MapModificationModifier {
 
 #[derive(Clone, Debug, NifTuple)]
 pub struct KillEvent {
-    pub kill_by: Entity,
+    pub kill_by: EntityOwner,
     pub killed: u64,
 }
 
@@ -203,7 +204,7 @@ impl GameState {
                         }
                         SkillMechanic::GiveEffect(effects) => {
                             for effect in effects.iter() {
-                                player.apply_effect(effect);
+                                player.apply_effect(effect, EntityOwner::Player(player.id));
                             }
                         }
                         SkillMechanic::Hit {
@@ -214,7 +215,7 @@ impl GameState {
                         } => {
                             let mut damage = *damage;
 
-                            for effect in player.effects.iter() {
+                            for (effect, _owner) in player.effects.iter() {
                                 for change in effect.player_attributes.iter() {
                                     if change.attribute == "damage" {
                                         effect::modify_attribute(&mut damage, change)
@@ -234,7 +235,10 @@ impl GameState {
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
-                                    target_player.apply_effects(on_hit_effects);
+                                    target_player.apply_effects(
+                                        on_hit_effects,
+                                        EntityOwner::Player(player.id),
+                                    );
                                 })
                         }
                         _ => todo!("SkillMechanic not implemented"),
@@ -288,7 +292,7 @@ fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
             loot.effects
                 .iter()
-                .for_each(|effect| player.apply_effect(effect));
+                .for_each(|effect| player.apply_effect(effect, EntityOwner::Loot));
             false
         } else {
             true
@@ -371,12 +375,15 @@ fn apply_projectiles_collisions(
                 player.decrease_health(projectile.damage);
                 if player.status == PlayerStatus::Death {
                     next_killfeed.push(KillEvent {
-                        kill_by: Entity::Player(projectile.player_id),
+                        kill_by: EntityOwner::Player(projectile.player_id),
                         killed: player.id,
                     });
                 }
 
-                player.apply_effects(&projectile.on_hit_effects);
+                player.apply_effects(
+                    &projectile.on_hit_effects,
+                    EntityOwner::Player(projectile.player_id),
+                );
 
                 projectile.active = false;
                 break;
