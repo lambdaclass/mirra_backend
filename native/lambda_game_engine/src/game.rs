@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
+use rustler::NifTuple;
 use serde::Deserialize;
 
 use crate::config::Config;
@@ -13,6 +14,12 @@ use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
+
+#[derive(Clone, Debug, Deserialize, NifTaggedEnum)]
+pub enum Entity {
+    Zone,
+    Player(u64),
+}
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
@@ -57,12 +64,20 @@ pub enum MapModificationModifier {
     Multiplicative(f64),
 }
 
+#[derive(Clone, Debug, NifTuple)]
+pub struct KillEvent {
+    pub kill_by: Entity,
+    pub killed: u64,
+}
+
 #[derive(NifMap)]
 pub struct GameState {
     pub config: Config,
     pub players: HashMap<u64, Player>,
     pub loots: Vec<Loot>,
     pub projectiles: Vec<Projectile>,
+    pub next_killfeed: Vec<KillEvent>,
+    pub killfeed: Vec<KillEvent>,
     pub myrra_state: crate::myrra_engine::game::GameState,
     next_id: u64,
 }
@@ -99,6 +114,8 @@ impl GameState {
             players: HashMap::new(),
             loots: Vec::new(),
             projectiles: Vec::new(),
+            next_killfeed: Vec::new(),
+            killfeed: Vec::new(),
             next_id: 1,
             myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
         }
@@ -229,8 +246,15 @@ impl GameState {
 
     pub fn tick(&mut self, time_diff: u64) {
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
-        apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
-        run_effects(&mut self.players, time_diff);
+        apply_projectiles_collisions(
+            &mut self.projectiles,
+            &mut self.players,
+            &mut self.next_killfeed,
+        );
+        run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
+
+        self.killfeed = self.next_killfeed.clone();
+        self.next_killfeed.clear();
     }
 }
 
@@ -327,6 +351,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
 fn apply_projectiles_collisions(
     projectiles: &mut [Projectile],
     players: &mut HashMap<u64, Player>,
+    next_killfeed: &mut Vec<KillEvent>,
 ) {
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
@@ -343,6 +368,13 @@ fn apply_projectiles_collisions(
                 }
 
                 player.decrease_health(projectile.damage);
+                if player.status == PlayerStatus::Death {
+                    next_killfeed.push(KillEvent {
+                        kill_by: Entity::Player(projectile.player_id),
+                        killed: player.id,
+                    });
+                }
+
                 player.apply_effects(&projectile.on_hit_effects);
 
                 projectile.active = false;
@@ -360,8 +392,19 @@ fn apply_projectiles_collisions(
     });
 }
 
-fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
-    players
-        .values_mut()
-        .for_each(|player| player.run_effects(time_diff))
+fn run_effects(
+    players: &mut HashMap<u64, Player>,
+    time_diff: u64,
+    next_killfeed: &mut Vec<KillEvent>,
+) {
+    players.values_mut().for_each(|player| {
+        if player.status == PlayerStatus::Alive {
+            if let Some(killer) = player.run_effects(time_diff) {
+                next_killfeed.push(KillEvent {
+                    kill_by: killer,
+                    killed: player.id,
+                })
+            }
+        }
+    });
 }

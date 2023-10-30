@@ -8,6 +8,7 @@ use crate::config::Config;
 use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
+use crate::game::Entity;
 use crate::map;
 use crate::map::Position;
 
@@ -135,7 +136,7 @@ impl Player {
         }
     }
 
-    pub fn run_effects(&mut self, time_diff: u64) {
+    pub fn run_effects(&mut self, time_diff: u64) -> Option<Entity> {
         // Clean effects that have timed out
         self.effects.retain(|effect| {
             !matches!(
@@ -175,11 +176,15 @@ impl Player {
                                 _ => todo!(),
                             };
                         });
+                        if self.status == PlayerStatus::Death {
+                            return Some(effect.owner.clone());
+                        }
                     }
                 }
                 _ => todo!(),
             }
         }
+        None
     }
 }
 
