@@ -106,3 +106,30 @@ Examples of the JSON defining effects
   }
 ]
 ```
+
+### Adding an removing effects
+
+Some effects result in an increase in a player's attributes. When the effect's duration expires, we need to revert the changes made to the attribute. To address this, we've implemented a revert_attribute function that undoes the effect's modifications.
+
+However, caution is required! With the possibility of applying both Additive and Multiplicative effects, there is a risk of not obtaining the correct attribute values when performing a reversal.
+
+Furthermore, we haven't accounted for the ability to reverse an Override effect since we don't store the previous value.
+
+### Examples
+```
+These example is a supposition.
+
+Suppose a player has an initial speed of 100 units. The player acquires boots that boost their speed by 50% (multiplicative (*1.5)). Then, they receive a leap, which reduces their speed by 10 units (additive (-10)). After these two events, the player has a speed of 140 units.
+
+If we reverse the effects in the following order, we will return to the original value of 100:
+
+1. Add 10 units to the speed value (reverse additive + 10).
+2. Divide the value by 1.5 (reverse multiplicative / 1.5).
+
+However, if we change the order as follows:
+
+1. Divide the value by 1.5 (reverse multiplicative / 1.5).
+2. Add 10 units to the speed value (reverse additive + 10).
+
+We will obtain the wrong value of 103.
+```

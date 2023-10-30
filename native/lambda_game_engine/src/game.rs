@@ -251,6 +251,7 @@ impl GameState {
             &mut self.players,
             &mut self.next_killfeed,
         );
+        remove_expired_effects(&mut self.players);
         run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
 
         self.killfeed = self.next_killfeed.clone();
@@ -407,4 +408,10 @@ fn run_effects(
             }
         }
     });
+}
+
+fn remove_expired_effects(players: &mut HashMap<u64, Player>) {
+    players
+        .values_mut()
+        .for_each(|player| player.remove_expired_effects())
 }

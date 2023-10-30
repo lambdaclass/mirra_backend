@@ -11,6 +11,7 @@ pub struct CharacterConfigFile {
     active: bool,
     base_speed: u64,
     base_size: u64,
+    base_health: u64,
     skills: HashMap<String, String>,
 }
 
@@ -20,6 +21,7 @@ pub struct CharacterConfig {
     pub active: bool,
     pub base_speed: u64,
     pub base_size: u64,
+    pub base_health: u64,
     pub skills: HashMap<String, SkillConfig>,
 }
 
@@ -42,6 +44,7 @@ impl CharacterConfig {
                     active: config.active,
                     base_speed: config.base_speed,
                     base_size: config.base_size,
+                    base_health: config.base_health,
                     skills: character_skills,
                 }
             })
