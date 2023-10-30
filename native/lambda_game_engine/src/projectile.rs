@@ -12,7 +12,7 @@ pub struct ProjectileConfigFile {
     on_hit_effects: Vec<String>,
     duration_ms: u64,
     max_distance: u64,
-    pierce: bool,
+    remove_on_collision: bool,
 }
 
 #[derive(NifMap, Clone)]
@@ -24,7 +24,7 @@ pub struct ProjectileConfig {
     on_hit_effects: Vec<Effect>,
     duration_ms: u64,
     max_distance: u64,
-    pierce: bool,
+    remove_on_collision: bool,
 }
 
 #[derive(NifMap)]
@@ -41,7 +41,7 @@ pub struct Projectile {
     pub direction_angle: f32,
     pub player_id: u64,
     pub active: bool, // TODO: this should be `status` field with an enum value
-    pub pierce: bool,
+    pub remove_on_collision: bool,
     pub attacked_player_ids: Vec<u64>,
 }
 
@@ -67,7 +67,7 @@ impl ProjectileConfig {
                     on_hit_effects: effects,
                     duration_ms: config.duration_ms,
                     max_distance: config.max_distance,
-                    pierce: config.pierce,
+                    remove_on_collision: config.remove_on_collision,
                 }
             })
             .collect()
@@ -90,7 +90,7 @@ impl Projectile {
             on_hit_effects: config.on_hit_effects.clone(),
             duration_ms: config.duration_ms,
             max_distance: config.max_distance,
-            pierce: config.pierce,
+            remove_on_collision: config.remove_on_collision,
             id,
             position,
             direction_angle,

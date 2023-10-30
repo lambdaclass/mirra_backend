@@ -331,13 +331,13 @@ fn apply_projectiles_collisions(
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
             if player.status == PlayerStatus::Alive
+                && !projectile.attacked_player_ids.contains(&player.id)
                 && map::hit_boxes_collide(
                     &projectile.position,
                     &player.position,
                     projectile.size,
                     player.size,
                 )
-                && !projectile.attacked_player_ids.contains(&player.id)
             {
                 if player.id == projectile.player_id {
                     continue;
@@ -347,9 +347,10 @@ fn apply_projectiles_collisions(
                 player.apply_effects(&projectile.on_hit_effects);
                 projectile.attacked_player_ids.push(player.id);
 
-                if !projectile.pierce {
+                if projectile.remove_on_collision {
                     projectile.active = false;
                 }
+                break;
             }
         }
     });
