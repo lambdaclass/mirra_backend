@@ -230,6 +230,7 @@ impl GameState {
     pub fn tick(&mut self, time_diff: u64) {
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
+        remove_expired_effects(&mut self.players);
         run_effects(&mut self.players, time_diff);
     }
 }
@@ -364,4 +365,10 @@ fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
     players
         .values_mut()
         .for_each(|player| player.run_effects(time_diff))
+}
+
+fn remove_expired_effects(players: &mut HashMap<u64, Player>) {
+    players
+        .values_mut()
+        .for_each(|player| player.remove_expired_effects())
 }
