@@ -7,6 +7,7 @@ use crate::{effect::Effect, projectile::ProjectileConfig};
 pub struct SkillConfigFile {
     name: String,
     cooldown_ms: u64,
+    execution_duration_ms: u64,
     is_passive: bool,
     mechanics: Vec<SkillMechanicConfigFile>,
 }
@@ -15,6 +16,7 @@ pub struct SkillConfigFile {
 pub struct SkillConfig {
     pub name: String,
     pub cooldown_ms: u64,
+    pub execution_duration_ms: u64,
     pub is_passive: bool,
     pub mechanics: Vec<SkillMechanic>,
 }
@@ -80,6 +82,7 @@ impl SkillConfig {
                 SkillConfig {
                     name: config.name.clone(),
                     cooldown_ms: config.cooldown_ms,
+                    execution_duration_ms: config.execution_duration_ms,
                     is_passive: config.is_passive,
                     mechanics,
                 }

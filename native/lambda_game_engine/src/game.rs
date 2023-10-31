@@ -9,6 +9,7 @@ use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
+use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
@@ -141,7 +142,14 @@ impl GameState {
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
+            // Check if player is still performing an action
+            if player.action_duration_ms > 0 {
+                return;
+            }
+
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
+                player.add_action(Action::UsingSkill(skill_key), skill.execution_duration_ms);
+
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
                         SkillMechanic::SimpleShoot {
@@ -228,6 +236,7 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        update_player_actions(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
         remove_expired_effects(&mut self.players);
@@ -296,6 +305,13 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
     }
 
     angles
+}
+
+fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
+    players.values_mut().for_each(|player| {
+        player.update_actions();
+        player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+    })
 }
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
