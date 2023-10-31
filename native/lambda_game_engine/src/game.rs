@@ -243,7 +243,7 @@ impl GameState {
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
-                                    
+
                                     if target_player.status == PlayerStatus::Death {
                                         self.next_killfeed.push(KillEvent {
                                             kill_by: EntityOwner::Player(player.id),
@@ -277,10 +277,6 @@ impl GameState {
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
-
-        if self.killfeed.len() > 0 {
-            println!("Killfeed: {:?}", self.killfeed);
-        }
     }
 }
 
