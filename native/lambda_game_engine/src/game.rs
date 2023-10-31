@@ -235,10 +235,18 @@ impl GameState {
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
-                                    target_player.apply_effects(
-                                        on_hit_effects,
-                                        EntityOwner::Player(player.id),
-                                    );
+                                    
+                                    if target_player.status == PlayerStatus::Death {
+                                        self.next_killfeed.push(KillEvent {
+                                            kill_by: EntityOwner::Player(player.id),
+                                            killed: target_player.id,
+                                        })
+                                    } else {
+                                        target_player.apply_effects(
+                                            on_hit_effects,
+                                            EntityOwner::Player(player.id),
+                                        );
+                                    }
                                 })
                         }
                         _ => todo!("SkillMechanic not implemented"),
@@ -260,6 +268,10 @@ impl GameState {
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
+
+        if self.killfeed.len() > 0 {
+            println!("Killfeed: {:?}", self.killfeed);
+        }
     }
 }
 
