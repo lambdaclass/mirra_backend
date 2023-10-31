@@ -7,7 +7,7 @@ Configurable fields:
 - `base_damage`: Damage done by the projectile on collision
 - `base_speed`: Travel speed of the projectile
 - `base_size`: Size of the projectile for collision math
-- `player_collision`: Determines if the projectile is removed from game after colliding with a player, default is `true`
+- `remove_on_collision`: Determines if the projectile is removed from game after colliding with a player, default is `true`
 - `on_hit_effects`: Effects given to target on collision
 - `duration_ms`: Defines how long in milliseconds the projectile can exist
 - `max_distance`: Defines the maximum distance the projectile can travel
@@ -25,7 +25,7 @@ Some example configurations
     "base_damage": 10,
     "base_speed": 123,
     "base_size": 50,
-    "player_collision": false,
+    "remove_on_collision": true,
     "on_hit_effects": []
   },
   {

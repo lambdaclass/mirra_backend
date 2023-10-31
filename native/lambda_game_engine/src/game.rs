@@ -348,6 +348,7 @@ fn apply_projectiles_collisions(
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
             if player.status == PlayerStatus::Alive
+                && !projectile.attacked_player_ids.contains(&player.id)
                 && map::hit_boxes_collide(
                     &projectile.position,
                     &player.position,
@@ -361,17 +362,12 @@ fn apply_projectiles_collisions(
 
                 player.decrease_health(projectile.damage);
                 player.apply_effects(&projectile.on_hit_effects);
+                projectile.attacked_player_ids.push(player.id);
 
-                projectile.active = false;
+                if projectile.remove_on_collision {
+                    projectile.active = false;
+                }
                 break;
-
-                // TODO: Uncomment (and fix) when projectile collision is a thing
-                //      move the `active` change and `break` to the else clause
-                // if projectile.collision == ENABLED {
-                //     continue;
-                // } else {
-                //     break;
-                // }
             }
         }
     });

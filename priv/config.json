@@ -49,7 +49,7 @@
           "value": "1.2"
         },
         {
-          "attribute": "player_collision",
+          "attribute": "remove_on_collision",
           "modifier": "Override",
           "value": "false"
         }
@@ -99,7 +99,7 @@
       "base_damage": 20,
       "base_speed": 40,
       "base_size": 20,
-      "player_collision": true,
+      "remove_on_collision": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
       "max_distance": 999999
@@ -109,7 +109,7 @@
       "base_damage": 0,
       "base_speed": 60,
       "base_size": 10,
-      "player_collision": true,
+      "remove_on_collision": false,
       "on_hit_effects": ["poison"],
       "duration_ms": 999999,
       "max_distance": 500
