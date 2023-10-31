@@ -20,17 +20,19 @@ pub struct GameConfigFile {
     width: u64,
     height: u64,
     loot_interval_ms: u64,
-    map_modification: MapModificationConfigFile,
+    zone_starting_radius: u64,
+    zone_modifications: Vec<ZoneModificationConfigFile>,
 }
 
 #[derive(Deserialize)]
-pub struct MapModificationConfigFile {
-    starting_radius: u64,
-    minimum_radius: u64,
+pub struct ZoneModificationConfigFile {
+    duration_ms: u64,
+    recenter_on_first_modification: bool,
+    interval_ms: u64,
+    min_radius: u64,
     max_radius: u64,
     outside_radius_effects: Vec<String>,
-    inside_radius_effects: Vec<String>,
-    modification: MapModificationModifier,
+    modification: ZoneModificationModifier,
 }
 
 #[derive(NifMap)]
@@ -38,22 +40,24 @@ pub struct GameConfig {
     pub width: u64,
     pub height: u64,
     pub loot_interval_ms: u64,
-    pub map_modification: MapModificationConfig,
+    pub zone_starting_radius: u64,
+    pub zone_modifications: Vec<ZoneModificationConfig>,
 }
 
 #[derive(NifMap)]
-pub struct MapModificationConfig {
-    starting_radius: u64,
-    minimum_radius: u64,
+pub struct ZoneModificationConfig {
+    duration_ms: u64,
+    recenter_on_first_modification: bool,
+    interval_ms: u64,
+    min_radius: u64,
     max_radius: u64,
     outside_radius_effects: Vec<Effect>,
-    inside_radius_effects: Vec<Effect>,
-    modification: MapModificationModifier,
+    modification: ZoneModificationModifier,
 }
 
-#[derive(Deserialize, NifTaggedEnum)]
+#[derive(Deserialize, NifTaggedEnum, Clone)]
 #[serde(tag = "modifier", content = "value")]
-pub enum MapModificationModifier {
+pub enum ZoneModificationModifier {
     Additive(u64),
     Multiplicative(f64),
 }
@@ -70,25 +74,28 @@ pub struct GameState {
 
 impl GameConfig {
     pub(crate) fn from_config_file(game_config: GameConfigFile, effects: &[Effect]) -> GameConfig {
-        let outside_effects = find_effects(
-            &game_config.map_modification.outside_radius_effects,
-            effects,
-        );
-        let inside_effects =
-            find_effects(&game_config.map_modification.inside_radius_effects, effects);
+        let zone_modifications = game_config.zone_modifications
+            .iter()
+            .map(|zone_modification| {
+                let outside_effects = find_effects(&zone_modification.outside_radius_effects, effects);
+                ZoneModificationConfig {
+                    duration_ms: zone_modification.duration_ms,
+                    recenter_on_first_modification: zone_modification.recenter_on_first_modification,
+                    interval_ms: zone_modification.interval_ms,
+                    min_radius: zone_modification.min_radius,
+                    max_radius: zone_modification.max_radius,
+                    modification: zone_modification.modification.clone(),
+                    outside_radius_effects: outside_effects,
+                }
+            })
+            .collect();
 
         GameConfig {
             width: game_config.width,
             height: game_config.height,
             loot_interval_ms: game_config.loot_interval_ms,
-            map_modification: MapModificationConfig {
-                starting_radius: game_config.map_modification.starting_radius,
-                minimum_radius: game_config.map_modification.minimum_radius,
-                max_radius: game_config.map_modification.max_radius,
-                outside_radius_effects: outside_effects,
-                inside_radius_effects: inside_effects,
-                modification: game_config.map_modification.modification,
-            },
+            zone_starting_radius: game_config.zone_starting_radius,
+            zone_modifications,
         }
     }
 }

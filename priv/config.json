@@ -204,17 +204,45 @@
   "game": {
     "width": 10000,
     "height": 10000,
-    "map_modification": {
-      "modification": {
-        "modifier": "Multiplicative",
-        "value": 0.9
+    "zone_starting_radius": 10000,
+    "zone_modifications": [
+      {
+        "duration_ms": 10000,
+        "modification": {
+          "modifier": "Multiplicative",
+          "value": 0.9
+        },
+        "recenter_on_first_modification": true,
+        "interval_ms": 500,
+        "min_radius": 6000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
       },
-      "starting_radius": 10000,
-      "minimum_radius": 1800,
-      "max_radius": 10000,
-      "outside_radius_effects": [],
-      "inside_radius_effects": ["damage_outside_area"]
-    },
+      {
+        "duration_ms": 8000,
+        "modification": {
+          "modifier": "Multiplicative",
+          "value": 0.8
+        },
+        "recenter_on_first_modification": true,
+        "interval_ms": 500,
+        "min_radius": 3000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
+      },
+      {
+        "duration_ms": 10000,
+        "modification": {
+          "modifier": "Multiplicative",
+          "value": 0.7
+        },
+        "recenter_on_first_modification": true,
+        "interval_ms": 500,
+        "min_radius": 1000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
+      }
+    ],
     "loot_interval_ms": 7000
   }
 }
