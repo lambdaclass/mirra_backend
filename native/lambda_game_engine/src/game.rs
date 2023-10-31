@@ -10,6 +10,7 @@ use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
+use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
@@ -159,7 +160,14 @@ impl GameState {
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
+            // Check if player is still performing an action
+            if player.action_duration_ms > 0 {
+                return;
+            }
+
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
+                player.add_action(Action::UsingSkill(skill_key), skill.execution_duration_ms);
+
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
                         SkillMechanic::SimpleShoot {
@@ -257,6 +265,7 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        update_player_actions(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(
             &mut self.projectiles,
@@ -338,6 +347,13 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
     angles
 }
 
+fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
+    players.values_mut().for_each(|player| {
+        player.update_actions();
+        player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+    })
+}
+
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
     // Clear out projectiles that are no longer valid
     projectiles.retain(|projectile| {
@@ -373,6 +389,7 @@ fn apply_projectiles_collisions(
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
             if player.status == PlayerStatus::Alive
+                && !projectile.attacked_player_ids.contains(&player.id)
                 && map::hit_boxes_collide(
                     &projectile.position,
                     &player.position,
@@ -391,22 +408,16 @@ fn apply_projectiles_collisions(
                         killed: player.id,
                     });
                 }
-
                 player.apply_effects(
                     &projectile.on_hit_effects,
                     EntityOwner::Player(projectile.player_id),
                 );
 
-                projectile.active = false;
+                projectile.attacked_player_ids.push(player.id);
+                if projectile.remove_on_collision {
+                    projectile.active = false;
+                }
                 break;
-
-                // TODO: Uncomment (and fix) when projectile collision is a thing
-                //      move the `active` change and `break` to the else clause
-                // if projectile.collision == ENABLED {
-                //     continue;
-                // } else {
-                //     break;
-                // }
             }
         }
     });
