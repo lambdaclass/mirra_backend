@@ -83,10 +83,12 @@ pub struct GameState {
 
 impl GameConfig {
     pub(crate) fn from_config_file(game_config: GameConfigFile, effects: &[Effect]) -> GameConfig {
-        let zone_modifications = game_config.zone_modifications
+        let zone_modifications = game_config
+            .zone_modifications
             .iter()
             .map(|zone_modification| {
-                let outside_effects = find_effects(&zone_modification.outside_radius_effects, effects);
+                let outside_effects =
+                    find_effects(&zone_modification.outside_radius_effects, effects);
                 ZoneModificationConfig {
                     duration_ms: zone_modification.duration_ms,
                     interval_ms: zone_modification.interval_ms,
@@ -118,7 +120,13 @@ impl GameState {
             players: HashMap::new(),
             loots: Vec::new(),
             projectiles: Vec::new(),
-            zone: Zone { center: Position { x: 0, y: 0 }, radius: zone_radius, modifications: zone_modifications, current_modification: None, time_since_last_modification_ms: 0 },
+            zone: Zone {
+                center: Position { x: 0, y: 0 },
+                radius: zone_radius,
+                modifications: zone_modifications,
+                current_modification: None,
+                time_since_last_modification_ms: 0,
+            },
             next_id: 1,
             myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
         }
@@ -416,22 +424,28 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                 zone.time_since_last_modification_ms -= zone_modification.interval_ms;
 
                 let new_radius = match zone_modification.modification {
-                    ZoneModificationModifier::Additive(value) => zone.radius.saturating_add_signed(value),
-                    ZoneModificationModifier::Multiplicative(value) => ((zone.radius as f64) * value) as u64,
+                    ZoneModificationModifier::Additive(value) => {
+                        zone.radius.saturating_add_signed(value)
+                    }
+                    ZoneModificationModifier::Multiplicative(value) => {
+                        ((zone.radius as f64) * value) as u64
+                    }
                 };
 
-                zone.radius = new_radius.max(zone_modification.min_radius).min(zone_modification.max_radius);
+                zone.radius = new_radius
+                    .max(zone_modification.min_radius)
+                    .min(zone_modification.max_radius);
             }
-        },
+        }
         _ => {
             // Ideally we should be able to use a VecDeque::pop_first(), but rustler does not have
             // a encoder/decoder for it and at the moment I'm not implementing one
-            if zone.modifications.len() > 0 {
-                zone.current_modification = Some(zone.modifications.remove(0));
-            } else {
+            if zone.modifications.is_empty() {
                 zone.current_modification = None;
+            } else {
+                zone.current_modification = Some(zone.modifications.remove(0));
             }
-        },
+        }
     }
 }
 
@@ -441,21 +455,18 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
             .values_mut()
             // We set size of player as 0 so a player has to be half way inside the zone to be considered inside
             // otherwise if just a border of the player where inside it would be considered inside which seems wrong
-            .partition(|player| map::hit_boxes_collide(&zone.center, &player.position, zone.radius, 0));
-
-        inside_players
-            .into_iter()
-            .for_each(|player| {
-                for effect in current_modification.outside_radius_effects.iter() {
-                    player.remove_effect(&effect.name)
-                }
+            .partition(|player| {
+                map::hit_boxes_collide(&zone.center, &player.position, zone.radius, 0)
             });
 
-        outside_players
-            .into_iter()
-            .for_each(|player| {
-                player.apply_effects(&current_modification.outside_radius_effects);
-            });
+        inside_players.into_iter().for_each(|player| {
+            for effect in current_modification.outside_radius_effects.iter() {
+                player.remove_effect(&effect.name)
+            }
+        });
+
+        outside_players.into_iter().for_each(|player| {
+            player.apply_effects(&current_modification.outside_radius_effects);
+        });
     }
-
 }
