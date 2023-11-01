@@ -8,6 +8,7 @@ use crate::config::Config;
 use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
+use crate::game::EntityOwner;
 use crate::map;
 use crate::map::Position;
 
@@ -23,7 +24,7 @@ pub struct Player {
     pub actions: Vec<Action>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
-    pub effects: Vec<Effect>,
+    pub effects: Vec<(Effect, EntityOwner)>,
     pub size: u64,
     pub speed: u64,
     pub action_duration_ms: u64,
@@ -91,14 +92,16 @@ impl Player {
         self.next_actions.clear();
     }
 
-    pub fn apply_effects(&mut self, effects: &[Effect]) {
-        effects.iter().for_each(|effect| self.apply_effect(effect))
+    pub fn apply_effects(&mut self, effects: &[Effect], owner: EntityOwner) {
+        effects
+            .iter()
+            .for_each(|effect| self.apply_effect(effect, owner));
     }
 
-    pub fn apply_effect(&mut self, effect: &Effect) {
+    pub fn apply_effect(&mut self, effect: &Effect, owner: EntityOwner) {
         // Store the effect in the player if it is not an instant effect
         if effect.effect_time_type != TimeType::Instant {
-            self.effects.push(effect.clone());
+            self.effects.push((effect.clone(), owner));
         }
 
         // Apply the effect
@@ -144,7 +147,7 @@ impl Player {
         let effects_to_remove: Vec<_> = self
             .effects
             .iter()
-            .filter(|effect| {
+            .filter(|(effect, _owner)| {
                 matches!(
                     effect.effect_time_type,
                     TimeType::Duration { duration_ms: 0 }
@@ -157,7 +160,7 @@ impl Player {
             .cloned()
             .collect();
 
-        for effect in effects_to_remove.iter() {
+        for (effect, _owner) in effects_to_remove.iter() {
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
@@ -169,7 +172,7 @@ impl Player {
         }
 
         // Clean effects that have timed out
-        self.effects.retain(|effect| {
+        self.effects.retain(|(effect, _owner)| {
             !matches!(
                 effect.effect_time_type,
                 TimeType::Duration { duration_ms: 0 }
@@ -181,8 +184,8 @@ impl Player {
         });
     }
 
-    pub fn run_effects(&mut self, time_diff: u64) {
-        for effect in self.effects.iter_mut() {
+    pub fn run_effects(&mut self, time_diff: u64) -> Option<EntityOwner> {
+        for (effect, owner) in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
                 TimeType::Duration { duration_ms } => {
                     *duration_ms = (*duration_ms).saturating_sub(time_diff);
@@ -209,11 +212,15 @@ impl Player {
                                 _ => todo!(),
                             };
                         });
+                        if self.status == PlayerStatus::Death {
+                            return Some(*owner);
+                        }
                     }
                 }
                 _ => todo!(),
             }
         }
+        None
     }
 }
 
