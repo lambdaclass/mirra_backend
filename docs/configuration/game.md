@@ -12,13 +12,12 @@ This is the meta configuration for the game, not for a particular thing in the g
 
 ### Zone modification
 
-As mentioned this attribute is composed of a list of "modifications". This modifications are processed in order and once the `duration_ms` of the current one is reached the engine will start move on to the next one and apply changes based on those rules. If you don't wish to have any modifications you can set an empty list
+As mentioned this attribute is composed of a list of "modifications". This modifications are processed in order and once the `duration_ms` of the current one is reached the engine will move on to the next one and apply changes based on those rules. If you don't wish to have any modifications you can set an empty list
 
 This "modifications" are compose of the following fields
 
 - `duration_ms`: Duration the modification should be applied for
 - `modification`: Defines how to modify the playable zone radius, similar to attributes changes it has a `modifier` and `value` fields
-- `recenter_on_first_modification`: Determines if the center of the zone should change (randomly) when we first apply this modification. The new center will be inside the zone and limiting to a place where `min_radius` still fits
 - `interval_ms`: Every X milliseconds the modification is applied
 - `min_radius`: Mininum radius for the playable zone, how small can the playable zone get
 - `max_radius`: Max radius for the playable zone, how big can the playable zone get
@@ -38,7 +37,6 @@ This "modifications" are compose of the following fields
         "modifier": "Multiplicative",
         "value": 0.9,
       },
-      "recenter_on_first_modification": true,
       "interval_ms": 500,
       "trigger_count": 5000,
       "min_radius": 1800,

@@ -212,7 +212,6 @@
           "modifier": "Multiplicative",
           "value": 0.9
         },
-        "recenter_on_first_modification": true,
         "interval_ms": 500,
         "min_radius": 6000,
         "max_radius": 10000,
@@ -224,7 +223,6 @@
           "modifier": "Multiplicative",
           "value": 0.8
         },
-        "recenter_on_first_modification": true,
         "interval_ms": 500,
         "min_radius": 3000,
         "max_radius": 10000,
@@ -236,7 +234,6 @@
           "modifier": "Multiplicative",
           "value": 0.7
         },
-        "recenter_on_first_modification": true,
         "interval_ms": 500,
         "min_radius": 1000,
         "max_radius": 10000,

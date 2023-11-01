@@ -9,6 +9,7 @@ use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
+use crate::map::Position;
 use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
@@ -27,7 +28,6 @@ pub struct GameConfigFile {
 #[derive(Deserialize)]
 pub struct ZoneModificationConfigFile {
     duration_ms: u64,
-    recenter_on_first_modification: bool,
     interval_ms: u64,
     min_radius: u64,
     max_radius: u64,
@@ -44,10 +44,9 @@ pub struct GameConfig {
     pub zone_modifications: Vec<ZoneModificationConfig>,
 }
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct ZoneModificationConfig {
     duration_ms: u64,
-    recenter_on_first_modification: bool,
     interval_ms: u64,
     min_radius: u64,
     max_radius: u64,
@@ -58,8 +57,17 @@ pub struct ZoneModificationConfig {
 #[derive(Deserialize, NifTaggedEnum, Clone)]
 #[serde(tag = "modifier", content = "value")]
 pub enum ZoneModificationModifier {
-    Additive(u64),
+    Additive(i64),
     Multiplicative(f64),
+}
+
+#[derive(NifMap)]
+pub struct Zone {
+    pub center: Position,
+    pub radius: u64,
+    pub current_modification: Option<ZoneModificationConfig>,
+    pub modifications: Vec<ZoneModificationConfig>,
+    pub time_since_last_modification_ms: u64,
 }
 
 #[derive(NifMap)]
@@ -69,6 +77,7 @@ pub struct GameState {
     pub loots: Vec<Loot>,
     pub projectiles: Vec<Projectile>,
     pub myrra_state: crate::myrra_engine::game::GameState,
+    pub zone: Zone,
     next_id: u64,
 }
 
@@ -80,7 +89,6 @@ impl GameConfig {
                 let outside_effects = find_effects(&zone_modification.outside_radius_effects, effects);
                 ZoneModificationConfig {
                     duration_ms: zone_modification.duration_ms,
-                    recenter_on_first_modification: zone_modification.recenter_on_first_modification,
                     interval_ms: zone_modification.interval_ms,
                     min_radius: zone_modification.min_radius,
                     max_radius: zone_modification.max_radius,
@@ -102,11 +110,15 @@ impl GameConfig {
 
 impl GameState {
     pub fn new(config: Config) -> Self {
+        let zone_radius = config.game.zone_starting_radius;
+        let zone_modifications = config.game.zone_modifications.clone();
+
         Self {
             config,
             players: HashMap::new(),
             loots: Vec::new(),
             projectiles: Vec::new(),
+            zone: Zone { center: Position { x: 0, y: 0 }, radius: zone_radius, modifications: zone_modifications, current_modification: None, time_since_last_modification_ms: 0 },
             next_id: 1,
             myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
         }
@@ -248,6 +260,8 @@ impl GameState {
         apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
         remove_expired_effects(&mut self.players);
         run_effects(&mut self.players, time_diff);
+        modify_zone(&mut self.zone, time_diff);
+        apply_zone_effects(&mut self.players, &self.zone);
     }
 }
 
@@ -389,5 +403,38 @@ fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
 fn remove_expired_effects(players: &mut HashMap<u64, Player>) {
     players
         .values_mut()
-        .for_each(|player| player.remove_expired_effects())
+        .for_each(|player| player.remove_expired_effects());
+}
+
+fn modify_zone(zone: &mut Zone, time_diff: u64) {
+    match &mut zone.current_modification {
+        Some(zone_modification) if zone_modification.duration_ms > 0 => {
+            zone_modification.duration_ms = zone_modification.duration_ms.saturating_sub(time_diff);
+            zone.time_since_last_modification_ms += time_diff;
+
+            if zone.time_since_last_modification_ms >= zone_modification.interval_ms {
+                zone.time_since_last_modification_ms -= zone_modification.interval_ms;
+
+                let new_radius = match zone_modification.modification {
+                    ZoneModificationModifier::Additive(value) => zone.radius.saturating_add_signed(value),
+                    ZoneModificationModifier::Multiplicative(value) => ((zone.radius as f64) * value) as u64,
+                };
+
+                zone.radius = new_radius.max(zone_modification.min_radius).min(zone_modification.max_radius);
+            }
+        },
+        _ => {
+            // Ideally we should be able to use a VecDeque::pop_first(), but rustler does not have
+            // a encoder/decoder for it and at the moment I'm not implementing one
+            if zone.modifications.len() > 0 {
+                zone.current_modification = Some(zone.modifications.remove(0));
+            } else {
+                zone.current_modification = None;
+            }
+        },
+    }
+}
+
+fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
+    todo!()
 }
