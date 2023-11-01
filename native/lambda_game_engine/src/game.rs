@@ -436,5 +436,26 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
 }
 
 fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
-    todo!()
+    if let Some(current_modification) = &zone.current_modification {
+        let (inside_players, outside_players): (Vec<_>, Vec<_>) = players
+            .values_mut()
+            // We set size of player as 0 so a player has to be half way inside the zone to be considered inside
+            // otherwise if just a border of the player where inside it would be considered inside which seems wrong
+            .partition(|player| map::hit_boxes_collide(&zone.center, &player.position, zone.radius, 0));
+
+        inside_players
+            .into_iter()
+            .for_each(|player| {
+                for effect in current_modification.outside_radius_effects.iter() {
+                    player.remove_effect(&effect.name)
+                }
+            });
+
+        outside_players
+            .into_iter()
+            .for_each(|player| {
+                player.apply_effects(&current_modification.outside_radius_effects);
+            });
+    }
+
 }

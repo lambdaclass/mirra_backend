@@ -57,7 +57,13 @@
     },
     {
       "name": "damage_outside_area",
-      "effect_time_type": "Instant",
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": false,
+          "interval_ms": 1000,
+          "trigger_count": 999999
+        }
+      },
       "player_attributes": [
         {
           "attribute": "health",
