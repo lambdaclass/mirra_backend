@@ -136,7 +136,7 @@ impl Player {
         if let Some(pos) = self.effects.iter().position(|effect| effect.name == effect_key) {
             let effect = self.effects.remove(pos);
 
-            // if effect.is_reversable {
+            if effect.is_reversable {
                 effect.player_attributes.iter().for_each(|change| {
                     match change.attribute.as_str() {
                         "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
@@ -145,7 +145,7 @@ impl Player {
                         _ => todo!(),
                     };
                 });
-            // }
+            }
         }
     }
 
@@ -174,7 +174,12 @@ impl Player {
             .cloned()
             .collect();
 
+
         for effect in effects_to_remove.iter() {
+            if !effect.is_reversable {
+                continue;
+            }
+
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),

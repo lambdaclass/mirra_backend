@@ -2,6 +2,7 @@
   "effects": [
     {
       "name": "test_effect",
+      "is_reversable": true,
       "effect_time_type": {
         "Duration": {
           "duration_ms": 6000
@@ -18,6 +19,7 @@
     },
     {
       "name": "heal_30",
+      "is_reversable": false,
       "effect_time_type": "Instant",
       "player_attributes": [
         {
@@ -30,6 +32,7 @@
     },
     {
       "name": "h4ck_dos",
+      "is_reversable": true,
       "effect_time_type": {
         "Duration": {
           "duration_ms": 6000
@@ -57,6 +60,7 @@
     },
     {
       "name": "damage_outside_area",
+      "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": false,
@@ -75,6 +79,7 @@
     },
     {
       "name": "poison",
+      "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": false,

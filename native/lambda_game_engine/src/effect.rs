@@ -4,6 +4,7 @@ use serde::Deserialize;
 #[derive(Deserialize, NifMap, Clone)]
 pub struct Effect {
     pub name: String,
+    pub is_reversable: bool,
     pub effect_time_type: TimeType,
     pub player_attributes: Vec<AttributeChange>,
     pub projectile_attributes: Vec<AttributeChange>,
