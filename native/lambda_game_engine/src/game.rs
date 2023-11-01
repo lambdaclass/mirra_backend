@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
+use rustler::NifTuple;
 use serde::Deserialize;
 
 use crate::config::Config;
@@ -15,6 +16,13 @@ use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
+
+#[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
+pub enum EntityOwner {
+    Zone,
+    Loot,
+    Player(u64),
+}
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
@@ -70,12 +78,20 @@ pub struct Zone {
     pub time_since_last_modification_ms: u64,
 }
 
+#[derive(Clone, Debug, NifTuple)]
+pub struct KillEvent {
+    pub kill_by: EntityOwner,
+    pub killed: u64,
+}
+
 #[derive(NifMap)]
 pub struct GameState {
     pub config: Config,
     pub players: HashMap<u64, Player>,
     pub loots: Vec<Loot>,
     pub projectiles: Vec<Projectile>,
+    pub next_killfeed: Vec<KillEvent>,
+    pub killfeed: Vec<KillEvent>,
     pub myrra_state: crate::myrra_engine::game::GameState,
     pub zone: Zone,
     next_id: u64,
@@ -127,6 +143,8 @@ impl GameState {
                 current_modification: None,
                 time_since_last_modification_ms: 0,
             },
+            next_killfeed: Vec::new(),
+            killfeed: Vec::new(),
             next_id: 1,
             myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
         }
@@ -221,7 +239,7 @@ impl GameState {
                         }
                         SkillMechanic::GiveEffect(effects) => {
                             for effect in effects.iter() {
-                                player.apply_effect(effect);
+                                player.apply_effect(effect, EntityOwner::Player(player.id));
                             }
                         }
                         SkillMechanic::Hit {
@@ -232,7 +250,7 @@ impl GameState {
                         } => {
                             let mut damage = *damage;
 
-                            for effect in player.effects.iter() {
+                            for (effect, _owner) in player.effects.iter() {
                                 for change in effect.player_attributes.iter() {
                                     if change.attribute == "damage" {
                                         effect::modify_attribute(&mut damage, change)
@@ -252,7 +270,18 @@ impl GameState {
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
-                                    target_player.apply_effects(on_hit_effects);
+
+                                    if target_player.status == PlayerStatus::Death {
+                                        self.next_killfeed.push(KillEvent {
+                                            kill_by: EntityOwner::Player(player.id),
+                                            killed: target_player.id,
+                                        })
+                                    } else {
+                                        target_player.apply_effects(
+                                            on_hit_effects,
+                                            EntityOwner::Player(player.id),
+                                        );
+                                    }
                                 })
                         }
                         _ => todo!("SkillMechanic not implemented"),
@@ -265,11 +294,18 @@ impl GameState {
     pub fn tick(&mut self, time_diff: u64) {
         update_player_actions(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
-        apply_projectiles_collisions(&mut self.projectiles, &mut self.players);
+        apply_projectiles_collisions(
+            &mut self.projectiles,
+            &mut self.players,
+            &mut self.next_killfeed,
+        );
         remove_expired_effects(&mut self.players);
-        run_effects(&mut self.players, time_diff);
+        run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
         modify_zone(&mut self.zone, time_diff);
         apply_zone_effects(&mut self.players, &self.zone);
+
+        self.killfeed = self.next_killfeed.clone();
+        self.next_killfeed.clear();
     }
 }
 
@@ -302,7 +338,7 @@ fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
             loot.effects
                 .iter()
-                .for_each(|effect| player.apply_effect(effect));
+                .for_each(|effect| player.apply_effect(effect, EntityOwner::Loot));
             false
         } else {
             true
@@ -373,6 +409,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
 fn apply_projectiles_collisions(
     projectiles: &mut [Projectile],
     players: &mut HashMap<u64, Player>,
+    next_killfeed: &mut Vec<KillEvent>,
 ) {
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
@@ -390,9 +427,18 @@ fn apply_projectiles_collisions(
                 }
 
                 player.decrease_health(projectile.damage);
-                player.apply_effects(&projectile.on_hit_effects);
-                projectile.attacked_player_ids.push(player.id);
+                if player.status == PlayerStatus::Death {
+                    next_killfeed.push(KillEvent {
+                        kill_by: EntityOwner::Player(projectile.player_id),
+                        killed: player.id,
+                    });
+                }
+                player.apply_effects(
+                    &projectile.on_hit_effects,
+                    EntityOwner::Player(projectile.player_id),
+                );
 
+                projectile.attacked_player_ids.push(player.id);
                 if projectile.remove_on_collision {
                     projectile.active = false;
                 }
@@ -402,10 +448,21 @@ fn apply_projectiles_collisions(
     });
 }
 
-fn run_effects(players: &mut HashMap<u64, Player>, time_diff: u64) {
-    players
-        .values_mut()
-        .for_each(|player| player.run_effects(time_diff))
+fn run_effects(
+    players: &mut HashMap<u64, Player>,
+    time_diff: u64,
+    next_killfeed: &mut Vec<KillEvent>,
+) {
+    players.values_mut().for_each(|player| {
+        if player.status == PlayerStatus::Alive {
+            if let Some(killer) = player.run_effects(time_diff) {
+                next_killfeed.push(KillEvent {
+                    kill_by: killer,
+                    killed: player.id,
+                })
+            }
+        }
+    });
 }
 
 fn remove_expired_effects(players: &mut HashMap<u64, Player>) {
@@ -466,7 +523,7 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
         });
 
         outside_players.into_iter().for_each(|player| {
-            player.apply_effects(&current_modification.outside_radius_effects);
+            player.apply_effects(&current_modification.outside_radius_effects, EntityOwner::Zone);
         });
     }
 }
