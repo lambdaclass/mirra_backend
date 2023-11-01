@@ -523,7 +523,10 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
         });
 
         outside_players.into_iter().for_each(|player| {
-            player.apply_effects(&current_modification.outside_radius_effects, EntityOwner::Zone);
+            player.apply_effects(
+                &current_modification.outside_radius_effects,
+                EntityOwner::Zone,
+            );
         });
     }
 }
