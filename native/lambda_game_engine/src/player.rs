@@ -92,9 +92,17 @@ impl Player {
         self.next_actions.clear();
     }
 
-    pub fn apply_effects_if_not_present(&mut self, outside_radius_effects: &[Effect], owner: EntityOwner) {
+    pub fn apply_effects_if_not_present(
+        &mut self,
+        outside_radius_effects: &[Effect],
+        owner: EntityOwner,
+    ) {
         for effect in outside_radius_effects.iter() {
-            if self.effects.iter().any(|(player_effect, _owner)| player_effect.name == effect.name) {
+            if self
+                .effects
+                .iter()
+                .any(|(player_effect, _owner)| player_effect.name == effect.name)
+            {
                 continue;
             }
 

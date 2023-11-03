@@ -1,11 +1,10 @@
 use rand::seq::SliceRandom;
-use rand::Rng;
 use rustler::NifMap;
 use serde::Deserialize;
 
 use crate::config::Config;
 use crate::effect::Effect;
-use crate::map::{Position, self};
+use crate::map::{self, Position};
 
 #[derive(Deserialize, NifMap)]
 pub struct LootFileConfig {
