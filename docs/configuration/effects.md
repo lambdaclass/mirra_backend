@@ -7,6 +7,7 @@ Effects are mostly buffs and debuffs players can have. They will given by skills
 Configurable fields:
 - `name`: unique name for the effect, this will be referenced by other configurations
 - `effect_time_type`: This determines how the effect is applied, see below ["Effect time type"](#effect-time-type)
+- `is_reversable`: Defines if the effect can be reversed when removed from the player (e.g. if it gives 10% more speed it will be removed from the player on removal), see more in ["Adding and removing effects"](#adding-and-removing-effects)
 - `player_attributes`: Attributes changes that will be applied over the player having this effect
 - `projectile_attributes`: Attributes changes that will be applied over the projectiles of the player having this effect
 
@@ -71,6 +72,7 @@ Examples of the JSON defining effects
 [
   {
     "name": "gain_health_10_3s"
+    "is_reversable": false,
     "effect_time_type": {
       "type": "Periodic",
       "instant_application": false
@@ -107,7 +109,7 @@ Examples of the JSON defining effects
 ]
 ```
 
-### Adding an removing effects
+### Adding and removing effects
 
 Some effects result in an increase in a player's attributes. When the effect's duration expires, we need to revert the changes made to the attribute. To address this, we've implemented a revert_attribute function that undoes the effect's modifications.
 

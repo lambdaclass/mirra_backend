@@ -6,17 +6,22 @@ This is the meta configuration for the game, not for a particular thing in the g
 
 - `width`: Defines the width of the playing area
 - `height`: Defines the length of the playing area
-- `map_modification`: If present, contains the information for when the map modification mechanic is triggered, see below [Map modification](#map-modification)
+- `zone_starting_radius`: Radius of the playable zone. The zone is an area in the map where effects are applied to players not in it
+- `zone_modifications`: This is attribute is a list of modifications to perform to the playable zone in the map. For the specifics see below ["Zone modification"](#zone-modification)
 - `loot_interval_ms`: If present, interval in milliseconds for spawning loot crates
 
-### Map modification
+### Zone modification
 
-- `modification`: Defines how to modify the playable area radius, similar to attributes changes it has a `modifier` and `value` fields
-- `starting_radius`: Starting radius for the playable area
-- `minimum_radius`: Mininum radius for the playable area, how small can the playable zone get
-- `max_radius`: Max radius for the playable area, how big can the playable zone get
-- `outside_radius_effects`: Effects given when a player is outside the playable area
-- `inside_radius_effects`: Effects given when a player is inside the playable area
+As mentioned this attribute is composed of a list of "modifications". This modifications are processed in order and once the `duration_ms` of the current one is reached the engine will move on to the next one and apply changes based on those rules. If you don't wish to have any modifications you can set an empty list
+
+This "modifications" are compose of the following fields
+
+- `duration_ms`: Duration the modification should be applied for
+- `modification`: Defines how to modify the playable zone radius, similar to attributes changes it has a `modifier` and `value` fields
+- `interval_ms`: Every X milliseconds the modification is applied
+- `min_radius`: Mininum radius for the playable zone, how small can the playable zone get
+- `max_radius`: Max radius for the playable zone, how big can the playable zone get
+- `outside_radius_effects`: Effects given when a player is outside the playable zone
 
 ### Example
 
@@ -24,17 +29,21 @@ This is the meta configuration for the game, not for a particular thing in the g
 {
   "width": 10000,
   "height": 10000,
-  "map_modification": {
-    "modification": {
-      "modifier": "Multiplicative",
-      "value": 0.9,
-    },
-    "starting_radius": 10000,
-    "minimum_radius": 1800,
-    "max_radius": 10000,
-    "outside_radius_effects": [],
-    "inside_radius_effects": ["damage_outside_area"]
-  }
+  "zone_starting_radius": 10000,
+  "zone_modification": [
+    {
+      "duration_ms": 1000,
+      "modification": {
+        "modifier": "Multiplicative",
+        "value": 0.9,
+      },
+      "interval_ms": 500,
+      "trigger_count": 5000,
+      "min_radius": 1800,
+      "max_radius": 10000,
+      "outside_radius_effects": [damage_outside_area],
+    }
+  ]
   "loot_interval_ms": 7000
 }
 ```

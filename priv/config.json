@@ -2,6 +2,7 @@
   "effects": [
     {
       "name": "test_effect",
+      "is_reversable": true,
       "effect_time_type": {
         "Duration": {
           "duration_ms": 6000
@@ -18,6 +19,7 @@
     },
     {
       "name": "heal_30",
+      "is_reversable": false,
       "effect_time_type": "Instant",
       "player_attributes": [
         {
@@ -30,6 +32,7 @@
     },
     {
       "name": "h4ck_dos",
+      "is_reversable": true,
       "effect_time_type": {
         "Duration": {
           "duration_ms": 6000
@@ -57,7 +60,14 @@
     },
     {
       "name": "damage_outside_area",
-      "effect_time_type": "Instant",
+      "is_reversable": false,
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": false,
+          "interval_ms": 1000,
+          "trigger_count": 999999
+        }
+      },
       "player_attributes": [
         {
           "attribute": "health",
@@ -69,6 +79,7 @@
     },
     {
       "name": "poison",
+      "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": false,
@@ -204,17 +215,42 @@
   "game": {
     "width": 10000,
     "height": 10000,
-    "map_modification": {
-      "modification": {
-        "modifier": "Multiplicative",
-        "value": 0.9
+    "zone_starting_radius": 10000,
+    "zone_modifications": [
+      {
+        "duration_ms": 10000,
+        "modification": {
+          "modifier": "Multiplicative",
+          "value": 0.9
+        },
+        "interval_ms": 500,
+        "min_radius": 6000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
       },
-      "starting_radius": 10000,
-      "minimum_radius": 1800,
-      "max_radius": 10000,
-      "outside_radius_effects": [],
-      "inside_radius_effects": ["damage_outside_area"]
-    },
+      {
+        "duration_ms": 8000,
+        "modification": {
+          "modifier": "Multiplicative",
+          "value": 0.8
+        },
+        "interval_ms": 500,
+        "min_radius": 3000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
+      },
+      {
+        "duration_ms": 10000,
+        "modification": {
+          "modifier": "Multiplicative",
+          "value": 0.7
+        },
+        "interval_ms": 500,
+        "min_radius": 1000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
+      }
+    ],
     "loot_interval_ms": 7000
   }
 }

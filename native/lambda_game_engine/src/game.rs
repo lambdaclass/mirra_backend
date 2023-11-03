@@ -10,6 +10,7 @@ use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
 use crate::map;
+use crate::map::Position;
 use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
@@ -28,17 +29,18 @@ pub struct GameConfigFile {
     width: u64,
     height: u64,
     loot_interval_ms: u64,
-    map_modification: MapModificationConfigFile,
+    zone_starting_radius: u64,
+    zone_modifications: Vec<ZoneModificationConfigFile>,
 }
 
 #[derive(Deserialize)]
-pub struct MapModificationConfigFile {
-    starting_radius: u64,
-    minimum_radius: u64,
+pub struct ZoneModificationConfigFile {
+    duration_ms: u64,
+    interval_ms: u64,
+    min_radius: u64,
     max_radius: u64,
     outside_radius_effects: Vec<String>,
-    inside_radius_effects: Vec<String>,
-    modification: MapModificationModifier,
+    modification: ZoneModificationModifier,
 }
 
 #[derive(NifMap)]
@@ -46,24 +48,34 @@ pub struct GameConfig {
     pub width: u64,
     pub height: u64,
     pub loot_interval_ms: u64,
-    pub map_modification: MapModificationConfig,
+    pub zone_starting_radius: u64,
+    pub zone_modifications: Vec<ZoneModificationConfig>,
+}
+
+#[derive(NifMap, Clone)]
+pub struct ZoneModificationConfig {
+    duration_ms: u64,
+    interval_ms: u64,
+    min_radius: u64,
+    max_radius: u64,
+    outside_radius_effects: Vec<Effect>,
+    modification: ZoneModificationModifier,
+}
+
+#[derive(Deserialize, NifTaggedEnum, Clone)]
+#[serde(tag = "modifier", content = "value")]
+pub enum ZoneModificationModifier {
+    Additive(i64),
+    Multiplicative(f64),
 }
 
 #[derive(NifMap)]
-pub struct MapModificationConfig {
-    starting_radius: u64,
-    minimum_radius: u64,
-    max_radius: u64,
-    outside_radius_effects: Vec<Effect>,
-    inside_radius_effects: Vec<Effect>,
-    modification: MapModificationModifier,
-}
-
-#[derive(Deserialize, NifTaggedEnum)]
-#[serde(tag = "modifier", content = "value")]
-pub enum MapModificationModifier {
-    Additive(u64),
-    Multiplicative(f64),
+pub struct Zone {
+    pub center: Position,
+    pub radius: u64,
+    pub current_modification: Option<ZoneModificationConfig>,
+    pub modifications: Vec<ZoneModificationConfig>,
+    pub time_since_last_modification_ms: u64,
 }
 
 #[derive(Clone, Debug, NifTuple)]
@@ -81,41 +93,56 @@ pub struct GameState {
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
     pub myrra_state: crate::myrra_engine::game::GameState,
+    pub zone: Zone,
     next_id: u64,
 }
 
 impl GameConfig {
     pub(crate) fn from_config_file(game_config: GameConfigFile, effects: &[Effect]) -> GameConfig {
-        let outside_effects = find_effects(
-            &game_config.map_modification.outside_radius_effects,
-            effects,
-        );
-        let inside_effects =
-            find_effects(&game_config.map_modification.inside_radius_effects, effects);
+        let zone_modifications = game_config
+            .zone_modifications
+            .iter()
+            .map(|zone_modification| {
+                let outside_effects =
+                    find_effects(&zone_modification.outside_radius_effects, effects);
+                ZoneModificationConfig {
+                    duration_ms: zone_modification.duration_ms,
+                    interval_ms: zone_modification.interval_ms,
+                    min_radius: zone_modification.min_radius,
+                    max_radius: zone_modification.max_radius,
+                    modification: zone_modification.modification.clone(),
+                    outside_radius_effects: outside_effects,
+                }
+            })
+            .collect();
 
         GameConfig {
             width: game_config.width,
             height: game_config.height,
             loot_interval_ms: game_config.loot_interval_ms,
-            map_modification: MapModificationConfig {
-                starting_radius: game_config.map_modification.starting_radius,
-                minimum_radius: game_config.map_modification.minimum_radius,
-                max_radius: game_config.map_modification.max_radius,
-                outside_radius_effects: outside_effects,
-                inside_radius_effects: inside_effects,
-                modification: game_config.map_modification.modification,
-            },
+            zone_starting_radius: game_config.zone_starting_radius,
+            zone_modifications,
         }
     }
 }
 
 impl GameState {
     pub fn new(config: Config) -> Self {
+        let zone_radius = config.game.zone_starting_radius;
+        let zone_modifications = config.game.zone_modifications.clone();
+
         Self {
             config,
             players: HashMap::new(),
             loots: Vec::new(),
             projectiles: Vec::new(),
+            zone: Zone {
+                center: Position { x: 0, y: 0 },
+                radius: zone_radius,
+                modifications: zone_modifications,
+                current_modification: None,
+                time_since_last_modification_ms: 0,
+            },
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
@@ -274,6 +301,8 @@ impl GameState {
         );
         remove_expired_effects(&mut self.players);
         run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
+        modify_zone(&mut self.zone, time_diff);
+        apply_zone_effects(&mut self.players, &self.zone);
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
@@ -439,5 +468,65 @@ fn run_effects(
 fn remove_expired_effects(players: &mut HashMap<u64, Player>) {
     players
         .values_mut()
-        .for_each(|player| player.remove_expired_effects())
+        .for_each(|player| player.remove_expired_effects());
+}
+
+fn modify_zone(zone: &mut Zone, time_diff: u64) {
+    match &mut zone.current_modification {
+        Some(zone_modification) if zone_modification.duration_ms > 0 => {
+            zone_modification.duration_ms = zone_modification.duration_ms.saturating_sub(time_diff);
+            zone.time_since_last_modification_ms += time_diff;
+
+            if zone.time_since_last_modification_ms >= zone_modification.interval_ms {
+                zone.time_since_last_modification_ms -= zone_modification.interval_ms;
+
+                let new_radius = match zone_modification.modification {
+                    ZoneModificationModifier::Additive(value) => {
+                        zone.radius.saturating_add_signed(value)
+                    }
+                    ZoneModificationModifier::Multiplicative(value) => {
+                        ((zone.radius as f64) * value) as u64
+                    }
+                };
+
+                zone.radius = new_radius
+                    .max(zone_modification.min_radius)
+                    .min(zone_modification.max_radius);
+            }
+        }
+        _ => {
+            // Ideally we should be able to use a VecDeque::pop_first(), but rustler does not have
+            // a encoder/decoder for it and at the moment I'm not implementing one
+            if zone.modifications.is_empty() {
+                zone.current_modification = None;
+            } else {
+                zone.current_modification = Some(zone.modifications.remove(0));
+            }
+        }
+    }
+}
+
+fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
+    if let Some(current_modification) = &zone.current_modification {
+        let (inside_players, outside_players): (Vec<_>, Vec<_>) = players
+            .values_mut()
+            // We set size of player as 0 so a player has to be half way inside the zone to be considered inside
+            // otherwise if just a border of the player where inside it would be considered inside which seems wrong
+            .partition(|player| {
+                map::hit_boxes_collide(&zone.center, &player.position, zone.radius, 0)
+            });
+
+        inside_players.into_iter().for_each(|player| {
+            for effect in current_modification.outside_radius_effects.iter() {
+                player.remove_effect(&effect.name)
+            }
+        });
+
+        outside_players.into_iter().for_each(|player| {
+            player.apply_effects(
+                &current_modification.outside_radius_effects,
+                EntityOwner::Zone,
+            );
+        });
+    }
 }
