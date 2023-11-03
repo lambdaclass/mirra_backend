@@ -1,5 +1,6 @@
 use std::f32::consts::PI;
 
+use rand::Rng;
 use rustler::NifMap;
 
 use crate::player::Player;
@@ -93,4 +94,15 @@ pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64
     }
 
     false
+}
+
+pub fn random_position(width: u64, height: u64) -> Position {
+    let rng = &mut rand::thread_rng();
+    let bound_x = (width / 2) as i64;
+    let bound_y = (height / 2) as i64;
+
+    Position {
+        x: rng.gen_range(-bound_x..bound_x),
+        y: rng.gen_range(-bound_y..bound_y),
+    }
 }

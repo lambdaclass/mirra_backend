@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use crate::config::Config;
 use crate::effect::Effect;
-use crate::map::Position;
+use crate::map::{Position, self};
 
 #[derive(Deserialize, NifMap)]
 pub struct LootFileConfig {
@@ -67,13 +67,7 @@ impl Loot {
 
 pub fn spawn_random_loot(config: &Config, id: u64) -> Option<Loot> {
     let rng = &mut rand::thread_rng();
-    let bound_x = (config.game.width / 2) as i64;
-    let bound_y = (config.game.height / 2) as i64;
-
-    let position = Position {
-        x: rng.gen_range(-bound_x..bound_x),
-        y: rng.gen_range(-bound_y..bound_y),
-    };
+    let position = map::random_position(config.game.width, config.game.height);
 
     config
         .loots

@@ -130,6 +130,8 @@ impl GameState {
     pub fn new(config: Config) -> Self {
         let zone_radius = config.game.zone_starting_radius;
         let zone_modifications = config.game.zone_modifications.clone();
+        let game_width = config.game.width;
+        let game_height = config.game.height;
 
         Self {
             config,
@@ -137,7 +139,7 @@ impl GameState {
             loots: Vec::new(),
             projectiles: Vec::new(),
             zone: Zone {
-                center: Position { x: 0, y: 0 },
+                center: map::random_position(game_width, game_height),
                 radius: zone_radius,
                 modifications: zone_modifications,
                 current_modification: None,
@@ -523,7 +525,7 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
         });
 
         outside_players.into_iter().for_each(|player| {
-            player.apply_effects(
+            player.apply_effects_if_not_present(
                 &current_modification.outside_radius_effects,
                 EntityOwner::Zone,
             );
