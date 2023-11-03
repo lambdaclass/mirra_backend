@@ -168,16 +168,21 @@ impl GameState {
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
                 player.add_action(Action::UsingSkill(skill_key), skill.execution_duration_ms);
 
+                let direction_angle = skill_params
+                    .get("direction_angle")
+                    .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                    .unwrap();
+
+                player.direction = direction_angle;
+                println!("direction_angle: {}", player.direction);
+
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
                         SkillMechanic::SimpleShoot {
                             projectile: projectile_config,
                         } => {
                             let id = get_next_id(&mut self.next_id);
-                            let direction_angle = skill_params
-                                .get("direction_angle")
-                                .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                                .unwrap();
+                            
                             let projectile = Projectile::new(
                                 id,
                                 player.position.clone(),
@@ -192,10 +197,7 @@ impl GameState {
                             count,
                             cone_angle,
                         } => {
-                            let direction_angle = skill_params
-                                .get("direction_angle")
-                                .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                                .unwrap();
+                            
                             let direction_distribution =
                                 distribute_angle(direction_angle, cone_angle, count);
                             for direction in direction_distribution {
