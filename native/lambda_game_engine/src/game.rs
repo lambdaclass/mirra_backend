@@ -182,7 +182,7 @@ impl GameState {
                             projectile: projectile_config,
                         } => {
                             let id = get_next_id(&mut self.next_id);
-                            
+
                             let projectile = Projectile::new(
                                 id,
                                 player.position.clone(),
@@ -197,7 +197,6 @@ impl GameState {
                             count,
                             cone_angle,
                         } => {
-                            
                             let direction_distribution =
                                 distribute_angle(direction_angle, cone_angle, count);
                             for direction in direction_distribution {
