@@ -3,7 +3,7 @@ defmodule LambdaGameEngine do
   Documentation for `LambdaGameEngine`.
   """
 
-  use Rustler, otp_app: :lambda_game_engine, crate: :lambda_game_engine
+  use Rustler, otp_app: :lambda_backend_game_engine, crate: :lambda_backend_game_engine
 
   ## Utility functions that are meant ONLY for local development
   if Mix.env() == :dev do

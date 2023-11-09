@@ -20,7 +20,7 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-lambda_game_engine-*.tar
+lambda_backend_game_engine-*.tar
 
 # Temporary files, for example, from tests.
 /tmp/

@@ -3,7 +3,7 @@ defmodule LambdaGameEngine.MixProject do
 
   def project do
     [
-      app: :lambda_game_engine,
+      app: :lambda_backend_game_engine,
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,

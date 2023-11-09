@@ -8,7 +8,7 @@
 
 ```elixir
 defmodule Engine do
-  use Rustler, otp_app: :lambda_game_engine, crate: "lambda_game_engine"
+  use Rustler, otp_app: :lambda_backend_game_engine, crate: "lambda_backend_game_engine"
 
   # When your NIF is loaded, it will override this function.
   def add(_a, _b), do: :erlang.nif_error(:nif_not_loaded)

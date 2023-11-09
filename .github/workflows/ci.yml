@@ -38,9 +38,9 @@ jobs:
       - name: Check Elixir code
         run: mix credo --strict
       - name: Check Rust Formatting
-        run: cargo fmt --check --manifest-path native/lambda_game_engine/Cargo.toml
+        run: cargo fmt --check --manifest-path native/lambda_backend_game_engine/Cargo.toml
       - name: Check Rust code
-        run: cargo clippy --manifest-path native/lambda_game_engine/Cargo.toml -- -D warnings
+        run: cargo clippy --manifest-path native/lambda_backend_game_engine/Cargo.toml -- -D warnings
       - name: Compiles without warnings
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests
