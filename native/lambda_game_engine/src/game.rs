@@ -203,7 +203,6 @@ impl GameState {
                     .unwrap();
 
                 player.direction = direction_angle;
-                println!("direction_angle: {}", player.direction);
 
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
