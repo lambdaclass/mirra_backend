@@ -8,10 +8,10 @@ mod player;
 mod projectile;
 mod skill;
 
-use std::collections::HashMap;
 use crate::config::Config;
 use crate::game::{EntityOwner, GameState};
 use crate::player::Player;
+use std::collections::HashMap;
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn parse_config(data: String) -> Config {
