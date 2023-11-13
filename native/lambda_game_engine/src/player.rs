@@ -45,13 +45,16 @@ pub enum Action {
 }
 
 impl Player {
-    pub fn new(id: u64, character_config: CharacterConfig) -> Self {
+    pub fn new(id: u64, character_config: CharacterConfig, config: &Config) -> Self {
+        let game_width = config.game.width;
+        let game_height = config.game.height;
+
         Self {
             id,
             status: PlayerStatus::Alive,
             kill_count: 0,
             death_count: 0,
-            position: Position { x: 0, y: 0 }, // TODO: random_position
+            position: map::random_position(game_width, game_height),
             direction: 0.0,
             actions: Vec::new(),
             cooldowns: HashMap::new(),
