@@ -260,7 +260,7 @@ impl Player {
                                         &change.modifier,
                                         &change.value,
                                     );
-                                    if self.health <= 0 {
+                                    if self.health == 0 {
                                         self.status = PlayerStatus::Death;
                                     }
                                 }
@@ -283,7 +283,7 @@ impl Player {
 
 fn update_status(player: &mut Player) {
     println!("Health: {}", player.health);
-    if player.health <= 0 {
+    if player.health == 0 {
         player.status = PlayerStatus::Death;
     }
 }
