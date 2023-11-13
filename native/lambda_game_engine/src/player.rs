@@ -282,7 +282,6 @@ impl Player {
 }
 
 fn update_status(player: &mut Player) {
-    println!("Health: {}", player.health);
     if player.health == 0 {
         player.status = PlayerStatus::Death;
     }
