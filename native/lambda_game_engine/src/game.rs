@@ -544,3 +544,29 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
         });
     }
 }
+
+fn nearest_player(
+    players: &Vec<&mut Player>,
+    position: &Position,
+) -> Option<(u64, Position)> {
+    let mut nearest_player = None;
+    let mut nearest_distance = 3000.0;
+
+    for player in players {
+        if matches!(player.status, PlayerStatus::Alive) {
+            let distance = distance_to_center(player, position);
+            if distance < nearest_distance
+            {
+                nearest_player = Some((player.id, player.position));
+                nearest_distance = distance;
+            }
+        }
+    }
+    nearest_player
+}
+
+fn distance_to_center(player: &Player, center: &Position) -> f32 {
+    let distance_squared =
+        (player.position.x - center.x).pow(2) + (player.position.y - center.y).pow(2);
+    (distance_squared as f32).sqrt()
+}

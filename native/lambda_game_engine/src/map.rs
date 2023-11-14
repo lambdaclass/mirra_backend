@@ -5,7 +5,7 @@ use rustler::NifMap;
 
 use crate::player::Player;
 
-#[derive(NifMap, Clone)]
+#[derive(NifMap, Clone, Copy)]
 pub struct Position {
     pub x: i64,
     pub y: i64,
@@ -105,4 +105,11 @@ pub fn random_position(width: u64, height: u64) -> Position {
         x: rng.gen_range(-bound_x..bound_x),
         y: rng.gen_range(-bound_y..bound_y),
     }
+}
+
+pub fn angle_between_positions(center: &Position, target: &Position) -> f32 {
+    let x_diff = (target.x - center.x) as f32;
+    let y_diff = (target.y - center.y) as f32;
+    let angle = y_diff.atan2(x_diff) * (180.0 / PI);
+    (angle + 360.0) % 360.0
 }
