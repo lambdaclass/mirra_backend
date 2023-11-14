@@ -191,10 +191,28 @@ impl GameState {
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
                 player.add_action(Action::UsingSkill(skill_key), skill.execution_duration_ms);
 
-                let direction_angle = skill_params
-                    .get("direction_angle")
-                    .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                let auto_aim = skill_params
+                    .get("auto_aim")
+                    .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
                     .unwrap();
+
+                let direction_angle = if auto_aim {
+                    let nearest_player: Option<(u64, Position)> = nearest_player(
+                        &other_players,
+                        &player.position
+                    );
+
+                    if let Some((_target_player_id, target_player_position)) = nearest_player {
+                        map::angle_between_positions(&player.position, &target_player_position)
+                    } else {
+                        player.direction
+                    }
+                } else {
+                    skill_params
+                        .get("direction_angle")
+                        .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                        .unwrap()
+                };
 
                 player.direction = direction_angle;
 
