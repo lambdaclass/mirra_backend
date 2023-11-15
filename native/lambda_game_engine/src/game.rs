@@ -31,6 +31,7 @@ pub struct GameConfigFile {
     loot_interval_ms: u64,
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
+    initial_positions: Vec<Position>,
 }
 
 #[derive(Deserialize)]
@@ -50,6 +51,7 @@ pub struct GameConfig {
     pub loot_interval_ms: u64,
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
+    pub initial_positions: Vec<Position>,
 }
 
 #[derive(NifMap, Clone)]
@@ -121,6 +123,7 @@ impl GameConfig {
             loot_interval_ms: game_config.loot_interval_ms,
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
+            initial_positions: game_config.initial_positions,
         }
     }
 }

@@ -30,7 +30,8 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
     match game.config.find_character(character_name) {
         None => (game, None),
         Some(character_config) => {
-            let player = Player::new(player_id, character_config);
+            let initial_position = game.config.game.initial_positions[game.players.len()].clone();
+            let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
             (game, Some(player_id))
         }
