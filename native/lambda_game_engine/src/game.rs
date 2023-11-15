@@ -530,6 +530,7 @@ fn apply_zone_effects(
         });
 
         outside_players.into_iter().for_each(|player| {
+            // If the player is alive in this tick, but dies as an effect of the zone, we push it to the killfeed.
             if player.status == PlayerStatus::Alive {
                 player.apply_effects_if_not_present(
                     &current_modification.outside_radius_effects,
