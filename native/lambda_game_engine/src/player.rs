@@ -29,7 +29,7 @@ pub struct Player {
     pub size: u64,
     pub speed: u64,
     pub action_duration_ms: u64,
-    pub inventory: Vec<Loot>,
+    pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
 }
 
@@ -288,9 +288,13 @@ impl Player {
         if (self.inventory.len() as u64) >= self.character.max_inventory_size {
             false
         } else {
-            self.inventory.push(loot.clone());
+            self.inventory.push(Some(loot.clone()));
             true
         }
+    }
+
+    pub fn inventory_get_at(&mut self, inventory_at: usize) -> Option<Loot> {
+        std::mem::replace(&mut self.inventory[inventory_at], None)
     }
 }
 

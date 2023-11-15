@@ -288,6 +288,14 @@ impl GameState {
         }
     }
 
+    pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
+        if let Some(player) = self.players.get_mut(&player_id) {
+            if let Some(loot) = player.inventory_get_at(inventory_at) {
+                player.apply_effects(&loot.effects, EntityOwner::Loot)
+            }
+        }
+    }
+
     pub fn tick(&mut self, time_diff: u64) {
         update_player_actions(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
