@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use itertools::Itertools;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 
@@ -64,9 +65,9 @@ impl Player {
             health: character_config.base_health,
             speed: character_config.base_speed,
             size: character_config.base_size,
+            inventory: vec![None; character_config.max_inventory_size as usize],
             character: character_config,
             action_duration_ms: 0,
-            inventory: Vec::new(),
             next_actions: Vec::new(),
         }
     }
@@ -285,11 +286,12 @@ impl Player {
     }
 
     pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {
-        if (self.inventory.len() as u64) >= self.character.max_inventory_size {
-            false
-        } else {
-            self.inventory.push(Some(loot.clone()));
-            true
+        match self.inventory.iter_mut().find_position(|element| element.is_none()) {
+            Some((slot_at, _)) => {
+                self.inventory[slot_at] = Some(loot.clone());
+                true
+            },
+            None => false,
         }
     }
 
