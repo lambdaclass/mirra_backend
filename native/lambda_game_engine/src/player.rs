@@ -143,11 +143,14 @@ impl Player {
                             "size" => {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
-                            "health" => modify_attribute(
-                                &mut player.health,
-                                &change.modifier,
-                                &change.value,
-                            ),
+                            "health" => {
+                                modify_attribute(
+                                    &mut player.health,
+                                    &change.modifier,
+                                    &change.value,
+                                );
+                                update_status(player);
+                            }
                             _ => todo!(),
                         };
                         player
@@ -183,10 +186,7 @@ impl Player {
 
     pub fn decrease_health(&mut self, amount: u64) {
         self.health = self.health.saturating_sub(amount);
-
-        if self.health == 0 {
-            self.status = PlayerStatus::Death;
-        }
+        update_status(self);
     }
 
     pub fn remove_expired_effects(&mut self) {
@@ -254,11 +254,18 @@ impl Player {
 
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
-                                "health" => modify_attribute(
-                                    &mut self.health,
-                                    &change.modifier,
-                                    &change.value,
-                                ),
+                                "health" => {
+                                    modify_attribute(
+                                        &mut self.health,
+                                        &change.modifier,
+                                        &change.value,
+                                    );
+                                    // TODO: refactor the use of references in order to use the update_status() remove the following duplicated code
+                                    if self.health == 0 {
+                                        self.status = PlayerStatus::Death;
+                                    }
+                                }
+
                                 _ => todo!(),
                             };
                         });
@@ -270,7 +277,14 @@ impl Player {
                 _ => todo!(),
             }
         }
+
         None
+    }
+}
+
+fn update_status(player: &mut Player) {
+    if player.health == 0 {
+        player.status = PlayerStatus::Death;
     }
 }
 
