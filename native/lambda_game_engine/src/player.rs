@@ -286,17 +286,21 @@ impl Player {
     }
 
     pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {
-        match self.inventory.iter_mut().find_position(|element| element.is_none()) {
+        match self
+            .inventory
+            .iter_mut()
+            .find_position(|element| element.is_none())
+        {
             Some((slot_at, _)) => {
                 self.inventory[slot_at] = Some(loot.clone());
                 true
-            },
+            }
             None => false,
         }
     }
 
     pub fn inventory_get_at(&mut self, inventory_at: usize) -> Option<Loot> {
-        std::mem::replace(&mut self.inventory[inventory_at], None)
+        self.inventory[inventory_at].take()
     }
 }
 
