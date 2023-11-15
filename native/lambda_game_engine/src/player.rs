@@ -260,6 +260,7 @@ impl Player {
                                         &change.modifier,
                                         &change.value,
                                     );
+                                    // TODO: refactor the use of references in order to use the update_status() remove the following duplicated code
                                     if self.health == 0 {
                                         self.status = PlayerStatus::Death;
                                     }
