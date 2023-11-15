@@ -9,6 +9,7 @@ use crate::config::Config;
 use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
+use crate::loot::PickupMechanic;
 use crate::map;
 use crate::map::Position;
 use crate::player::Action;
@@ -332,10 +333,17 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
-            loot.effects
-                .iter()
-                .for_each(|effect| player.apply_effect(effect, EntityOwner::Loot));
-            false
+            match loot.pickup_mechanic {
+                PickupMechanic::CollisionToInventory => {
+                    player.put_in_inventory(loot)
+                },
+                PickupMechanic::CollisionUse => {
+                    loot.effects
+                        .iter()
+                        .for_each(|effect| player.apply_effect(effect, EntityOwner::Loot));
+                    false
+                },
+            }
         } else {
             true
         }

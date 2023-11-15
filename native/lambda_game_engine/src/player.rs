@@ -283,6 +283,15 @@ impl Player {
 
         None
     }
+
+    pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {
+        if (self.inventory.len() as u64) >= self.character.max_inventory_size {
+            false
+        } else {
+            self.inventory.push(loot.clone());
+            true
+        }
+    }
 }
 
 fn update_status(player: &mut Player) {

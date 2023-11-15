@@ -22,7 +22,7 @@ pub struct LootConfig {
     effects: Vec<Effect>,
 }
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct Loot {
     pub name: String,
     pub size: u64,
