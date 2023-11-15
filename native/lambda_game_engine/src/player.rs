@@ -9,6 +9,7 @@ use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
 use crate::game::EntityOwner;
+use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
 
@@ -28,6 +29,7 @@ pub struct Player {
     pub size: u64,
     pub speed: u64,
     pub action_duration_ms: u64,
+    pub inventory: Vec<Loot>,
     next_actions: Vec<Action>,
 }
 
@@ -64,6 +66,7 @@ impl Player {
             size: character_config.base_size,
             character: character_config,
             action_duration_ms: 0,
+            inventory: Vec::new(),
             next_actions: Vec::new(),
         }
     }
