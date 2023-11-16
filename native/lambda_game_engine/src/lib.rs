@@ -19,17 +19,17 @@ use crate::game::{EntityOwner, GameState};
 use crate::myrra_engine::utils::RelativePosition;
 use crate::player::Player;
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn parse_config(data: String) -> Config {
     config::parse_config(&data)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn engine_new_game(config: Config) -> GameState {
     GameState::new(config)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64>) {
     let mut game = game;
     let player_id = game.next_id();
@@ -43,7 +43,7 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     let mut game: GameState = game;
     game.move_player(player_id, angle);
@@ -51,7 +51,7 @@ fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
 }
 
 // TODO: Is this method necesary?
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameState {
     let mut game = game;
     match game.players.get_mut(&player_id) {
@@ -64,7 +64,7 @@ fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameSta
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     let mut game = game;
     let loot_id = game.next_id();
@@ -77,7 +77,7 @@ fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn activate_skill(
     game: GameState,
     player_id: u64,
@@ -89,7 +89,7 @@ fn activate_skill(
     game
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
     let mut game = game;
     game.tick(time_diff_ms);
@@ -100,7 +100,7 @@ fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
  * Functions in this space are copied from Myrra engine *
  * after the refactor there should be nothing down here *
  ********************************************************/
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 #[allow(clippy::too_many_arguments)]
 fn new_game(
     selected_players: HashMap<u64, String>,
@@ -131,7 +131,7 @@ fn new_game(
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn world_tick(game: GameState, out_of_area_damage: i64) -> GameState {
     let mut game = game;
     let myrra_state = myrra_engine::world_tick(game.myrra_state.clone(), out_of_area_damage);
@@ -139,7 +139,7 @@ fn world_tick(game: GameState, out_of_area_damage: i64) -> GameState {
     game
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn skill_1(
     game: GameState,
     attacking_player_id: u64,
@@ -153,7 +153,7 @@ fn skill_1(
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn skill_2(
     game: GameState,
     attacking_player_id: u64,
@@ -167,7 +167,7 @@ fn skill_2(
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn skill_3(
     game: GameState,
     attacking_player_id: u64,
@@ -181,7 +181,7 @@ fn skill_3(
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn skill_4(
     game: GameState,
     attacking_player_id: u64,
@@ -195,13 +195,13 @@ fn skill_4(
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn disconnect(game: GameState, player_id: u64) -> Result<GameState, String> {
     let myrra_state = myrra_engine::disconnect(game.myrra_state.clone(), player_id);
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn move_with_joystick(
     game: GameState,
     player_id: u64,
@@ -212,7 +212,7 @@ fn move_with_joystick(
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn basic_attack(
     game: GameState,
     player_id: u64,
@@ -222,19 +222,19 @@ fn basic_attack(
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn spawn_player(game: GameState, player_id: u64) -> Result<GameState, String> {
     let myrra_state = myrra_engine::spawn_player(game.myrra_state.clone(), player_id);
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn shrink_map(game: GameState, map_shrink_minimum_radius: u64) -> Result<GameState, String> {
     let myrra_state = myrra_engine::shrink_map(game.myrra_state.clone(), map_shrink_minimum_radius);
     update_myrra_state_result(game, myrra_state)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn spawn_loot(game: GameState) -> Result<GameState, String> {
     let myrra_state = myrra_engine::spawn_loot(game.myrra_state.clone());
     update_myrra_state_result(game, myrra_state)
