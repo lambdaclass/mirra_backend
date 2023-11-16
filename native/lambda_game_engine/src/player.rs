@@ -51,7 +51,6 @@ impl Player {
             status: PlayerStatus::Alive,
             kill_count: 0,
             death_count: 0,
-            // position: Position { x: 0, y: 0 }, // TODO: random_position
             position: initial_position,
             direction: 0.0,
             actions: Vec::new(),
