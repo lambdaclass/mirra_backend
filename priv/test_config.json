@@ -224,7 +224,7 @@
           "value": 0
         },
         "interval_ms": 500,
-        "min_radius": 5000,
+        "min_radius": 6000,
         "max_radius": 10000,
         "outside_radius_effects": ["damage_outside_area"]
       },
@@ -235,42 +235,22 @@
           "value": -45
         },
         "interval_ms": 100,
-        "min_radius": 5000,
+        "min_radius": 3000,
         "max_radius": 10000,
         "outside_radius_effects": ["damage_outside_area"]
       },
       {
-        "duration_ms": 15000,
+        "duration_ms": 20000,
         "modification": {
           "modifier": "Additive",
-          "value": -25
+          "value": -45
         },
         "interval_ms": 100,
-        "min_radius": 2500,
+        "min_radius": 100,
         "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
-      },
-      {
-        "duration_ms": 15000,
-        "modification": {
-          "modifier": "Additive",
-          "value": -15
-        },
-        "interval_ms": 100,
-        "min_radius": 1000,
-        "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
-      },
-      {
-        "duration_ms": 120000,
-        "modification": {
-          "modifier": "Additive",
-          "value": -5
-        },
-        "interval_ms": 100,
-        "min_radius": 0,
-        "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
+        "outside_radius_effects": [
+          "damage_outside_area"
+        ]
       }
     ],
     "loot_interval_ms": 7000
