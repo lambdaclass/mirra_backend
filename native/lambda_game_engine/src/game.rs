@@ -92,7 +92,6 @@ pub struct GameState {
     pub projectiles: Vec<Projectile>,
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
-    pub myrra_state: crate::myrra_engine::game::GameState,
     pub zone: Zone,
     next_id: u64,
 }
@@ -148,7 +147,6 @@ impl GameState {
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
-            myrra_state: crate::myrra_engine::game::GameState::placeholder_new(),
         }
     }
 
@@ -162,10 +160,6 @@ impl GameState {
 
     pub fn push_loot(&mut self, loot: Loot) {
         self.loots.push(loot);
-    }
-
-    pub fn update_myrra_state(&mut self, myrra_state: crate::myrra_engine::game::GameState) {
-        self.myrra_state = myrra_state;
     }
 
     pub fn move_player(&mut self, player_id: u64, angle: f32) {
