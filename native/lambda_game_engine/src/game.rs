@@ -220,6 +220,53 @@ impl GameState {
                                 self.projectiles.push(projectile);
                             }
                         }
+                        SkillMechanic::GiveEffect{effects_to_give} => {
+                            for effect in effects_to_give.iter() {
+                                player.apply_effect(effect, EntityOwner::Player(player.id));
+                            }
+                        }
+                        SkillMechanic::Hit {
+                            damage,
+                            range,
+                            cone_angle,
+                            on_hit_effects,
+                        } => {
+                            let mut damage = *damage;
+
+                            for (effect, _owner) in player.effects.iter() {
+                                for change in effect.player_attributes.iter() {
+                                    if change.attribute == "damage" {
+                                        effect::modify_attribute(&mut damage, change)
+                                    }
+                                }
+                            }
+
+                            // other_players
+                            //     .iter_mut()
+                            //     .filter(|target_player| {
+                            //         map::in_cone_angle_range(
+                            //             player,
+                            //             target_player,
+                            //             *range,
+                            //             *cone_angle as f32,
+                            //         )
+                            //     })
+                            //     .for_each(|target_player| {
+                            //         target_player.decrease_health(damage);
+
+                            //         if target_player.status == PlayerStatus::Death {
+                            //             self.next_killfeed.push(KillEvent {
+                            //                 kill_by: EntityOwner::Player(player.id),
+                            //                 killed: target_player.id,
+                            //             })
+                            //         } else {
+                            //             target_player.apply_effects(
+                            //                 on_hit_effects,
+                            //                 EntityOwner::Player(player.id),
+                            //             );
+                            //         }
+                            //     })
+                        }
                         _ => todo!("SkillMechanic not implemented"),
                     }
                 }
@@ -290,8 +337,8 @@ impl GameState {
                                 self.projectiles.push(projectile);
                             }
                         }
-                        SkillMechanic::GiveEffect(effects) => {
-                            for effect in effects.iter() {
+                        SkillMechanic::GiveEffect{effects_to_give} => {
+                            for effect in effects_to_give.iter() {
                                 player.apply_effect(effect, EntityOwner::Player(player.id));
                             }
                         }
