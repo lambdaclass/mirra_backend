@@ -171,6 +171,63 @@ impl GameState {
         }
     }
 
+    fn activate_skills(&mut self) {
+        self.players.values_mut().for_each(|player| {
+        let skills = player.skills_to_execute.clone();
+        skills.iter().for_each(|skill_key: &String| {
+            if let Some(skill) = player.character.clone().skills.get(skill_key) {
+                player.add_action(Action::UsingSkill(skill_key.to_string()), skill.execution_duration_ms);
+
+                // let direction_angle = skill_params
+                //     .get("direction_angle")
+                //     .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                //     .unwrap();
+
+                // player.direction = direction_angle;
+
+                for mechanic in skill.mechanics.iter() {
+                    match mechanic {
+                        SkillMechanic::SimpleShoot {
+                            projectile: projectile_config,
+                        } => {
+                            let id = get_next_id(&mut self.next_id);
+
+                            let projectile = Projectile::new(
+                                id,
+                                player.position.clone(),
+                                player.direction,
+                                player.id,
+                                projectile_config,
+                            );
+                            self.projectiles.push(projectile);
+                        }
+                        SkillMechanic::MultiShoot {
+                            projectile: projectile_config,
+                            count,
+                            cone_angle,
+                        } => {
+                            let direction_distribution =
+                                distribute_angle(player.direction, cone_angle, count);
+                            for direction in direction_distribution {
+                                let id = get_next_id(&mut self.next_id);
+                                let projectile = Projectile::new(
+                                    id,
+                                    player.position.clone(),
+                                    direction,
+                                    player.id,
+                                    projectile_config,
+                                );
+                                self.projectiles.push(projectile);
+                            }
+                        }
+                        _ => todo!("SkillMechanic not implemented"),
+                    }
+                }
+            }
+        })
+        });
+    }
+
     pub fn activate_skill(
         &mut self,
         player_id: u64,
@@ -289,6 +346,7 @@ impl GameState {
 
     pub fn tick(&mut self, time_diff: u64) {
         update_player_actions(&mut self.players, time_diff);
+        self.activate_skills();
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(
             &mut self.projectiles,
