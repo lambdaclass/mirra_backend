@@ -298,7 +298,7 @@ impl GameState {
         remove_expired_effects(&mut self.players);
         run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
         modify_zone(&mut self.zone, time_diff);
-        apply_zone_effects(&mut self.players, &self.zone);
+        apply_zone_effects(&mut self.players, &self.zone, &mut self.next_killfeed);
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
@@ -502,7 +502,12 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
     }
 }
 
-fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
+fn apply_zone_effects(
+    players: &mut HashMap<u64, Player>,
+    zone: &Zone,
+    next_killfeed: &mut Vec<KillEvent>,
+) {
+    // next_killfeed
     if let Some(current_modification) = &zone.current_modification {
         let (inside_players, outside_players): (Vec<_>, Vec<_>) = players
             .values_mut()
@@ -519,10 +524,19 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
         });
 
         outside_players.into_iter().for_each(|player| {
-            player.apply_effects_if_not_present(
-                &current_modification.outside_radius_effects,
-                EntityOwner::Zone,
-            );
+            // If the player is alive in this tick, but dies as an effect of the zone, we push it to the killfeed.
+            if player.status == PlayerStatus::Alive {
+                player.apply_effects_if_not_present(
+                    &current_modification.outside_radius_effects,
+                    EntityOwner::Zone,
+                );
+                if player.status == PlayerStatus::Death {
+                    next_killfeed.push(KillEvent {
+                        kill_by: EntityOwner::Zone,
+                        killed: player.id,
+                    });
+                }
+            }
         });
     }
 }

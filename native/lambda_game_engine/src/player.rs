@@ -45,13 +45,16 @@ pub enum Action {
 }
 
 impl Player {
-    pub fn new(id: u64, character_config: CharacterConfig) -> Self {
+    pub fn new(id: u64, character_config: CharacterConfig, config: &Config) -> Self {
+        let game_width = config.game.width;
+        let game_height = config.game.height;
+
         Self {
             id,
             status: PlayerStatus::Alive,
             kill_count: 0,
             death_count: 0,
-            position: Position { x: 0, y: 0 }, // TODO: random_position
+            position: map::random_position(game_width, game_height),
             direction: 0.0,
             actions: Vec::new(),
             cooldowns: HashMap::new(),
@@ -140,11 +143,14 @@ impl Player {
                             "size" => {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
-                            "health" => modify_attribute(
-                                &mut player.health,
-                                &change.modifier,
-                                &change.value,
-                            ),
+                            "health" => {
+                                modify_attribute(
+                                    &mut player.health,
+                                    &change.modifier,
+                                    &change.value,
+                                );
+                                update_status(player);
+                            }
                             _ => todo!(),
                         };
                         player
@@ -180,10 +186,7 @@ impl Player {
 
     pub fn decrease_health(&mut self, amount: u64) {
         self.health = self.health.saturating_sub(amount);
-
-        if self.health == 0 {
-            self.status = PlayerStatus::Death;
-        }
+        update_status(self);
     }
 
     pub fn remove_expired_effects(&mut self) {
@@ -251,11 +254,18 @@ impl Player {
 
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
-                                "health" => modify_attribute(
-                                    &mut self.health,
-                                    &change.modifier,
-                                    &change.value,
-                                ),
+                                "health" => {
+                                    modify_attribute(
+                                        &mut self.health,
+                                        &change.modifier,
+                                        &change.value,
+                                    );
+                                    // TODO: refactor the use of references in order to use the update_status() remove the following duplicated code
+                                    if self.health == 0 {
+                                        self.status = PlayerStatus::Death;
+                                    }
+                                }
+
                                 _ => todo!(),
                             };
                         });
@@ -267,7 +277,14 @@ impl Player {
                 _ => todo!(),
             }
         }
+
         None
+    }
+}
+
+fn update_status(player: &mut Player) {
+    if player.health == 0 {
+        player.status = PlayerStatus::Death;
     }
 }
 
