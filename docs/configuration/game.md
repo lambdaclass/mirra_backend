@@ -9,6 +9,7 @@ This is the meta configuration for the game, not for a particular thing in the g
 - `zone_starting_radius`: Radius of the playable zone. The zone is an area in the map where effects are applied to players not in it
 - `zone_modifications`: This is attribute is a list of modifications to perform to the playable zone in the map. For the specifics see below ["Zone modification"](#zone-modification)
 - `loot_interval_ms`: If present, interval in milliseconds for spawning loot crates
+- `initial_positions`: The predefined positions for players to spawn in the map.
 
 ### Zone modification
 
@@ -44,6 +45,20 @@ This "modifications" are compose of the following fields
       "outside_radius_effects": [damage_outside_area],
     }
   ]
-  "loot_interval_ms": 7000
+  "loot_interval_ms": 7000,
+  "initial_positions": [
+      {
+        "x": -4500,
+        "y": 1500
+      },
+      {
+        "x": -3000,
+        "y": 4000
+      },
+      {
+        "x": 0,
+        "y": 2000
+      }
+  ]
 }
 ```
