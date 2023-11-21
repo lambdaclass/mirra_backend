@@ -103,6 +103,12 @@
       "size": 50,
       "pickup_mechanic": "CollisionUse",
       "effects": ["heal_30"]
+    },
+    {
+      "name": "loot_health_inventory",
+      "size": 50,
+      "pickup_mechanic": "CollisionToInventory",
+      "effects": ["heal_30"]
     }
   ],
   "projectiles": [

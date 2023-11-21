@@ -73,8 +73,8 @@ defmodule LambdaGameEngineTest do
     assert loot.id == loot_id
   end
 
-  test "moving picks up loot", context do
-    {game, _loot_id} = LambdaGameEngine.spawn_random_loot(context.game)
+  test "picks up loot and use", context do
+    game = spawn_specific_loot(context.game, :collision_use)
     [loot] = game.loots
 
     position = %{x: loot.position.x, y: loot.position.y - 25}
@@ -84,5 +84,56 @@ defmodule LambdaGameEngineTest do
 
     assert [] = game.loots
     assert 80 = get_in(game, [:players, context.player_id, :health])
+  end
+
+  test "picks up loot, store in inventory, and use", context do
+    game = spawn_specific_loot(context.game, :collision_to_inventory)
+    [loot] = game.loots
+
+    position = %{x: loot.position.x, y: loot.position.y - 25}
+    game = put_in(game, [:players, context.player_id, :position], position)
+    game = put_in(game, [:players, context.player_id, :health], 50)
+    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    assert [] = game.loots
+
+    player = get_in(game, [:players, context.player_id])
+    assert [^loot] = player.inventory
+    assert 50 = player.health
+
+    game = LambdaGameEngine.activate_inventory(game, context.player_id, 0)
+    player = get_in(game, [:players, context.player_id])
+    assert [nil] = player.inventory
+    assert 80 = player.health
+  end
+
+  test "inventory is capped", context do
+    game =
+      spawn_specific_loot(context.game, :collision_to_inventory)
+      |> spawn_specific_loot(:collision_to_inventory)
+    [loot1, loot2] = game.loots
+
+    position = %{x: loot1.position.x, y: loot1.position.y - 25}
+    game = put_in(game, [:players, context.player_id, :position], position)
+    game = put_in(game, [:players, context.player_id, :health], 50)
+    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    assert [^loot2] = game.loots
+
+    player = get_in(game, [:players, context.player_id])
+    assert [^loot1] = player.inventory
+
+    position = %{x: loot2.position.x, y: loot2.position.y - 25}
+    game = put_in(game, [:players, context.player_id, :position], position)
+    game = put_in(game, [:players, context.player_id, :health], 50)
+    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    assert [^loot2] = game.loots
+    assert [^loot1] = player.inventory
+  end
+
+  defp spawn_specific_loot(game_state, loot_mechanic) do
+    {new_game_state, loot_id} = LambdaGameEngine.spawn_random_loot(game_state)
+    case Enum.find(new_game_state.loots, fn loot -> loot.id == loot_id end) do
+      %{pickup_mechanic: ^loot_mechanic} -> new_game_state
+      _ -> spawn_specific_loot(game_state, loot_mechanic)
+    end
   end
 end
