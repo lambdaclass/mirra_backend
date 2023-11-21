@@ -566,10 +566,10 @@ fn apply_zone_effects(
 fn nearest_player(
     players: &Vec<&mut Player>,
     position: &Position,
-    auto_aim_max_distance: f32,
+    max_search_distance: f32,
 ) -> Option<(u64, Position)> {
     let mut nearest_player = None;
-    let mut nearest_distance = auto_aim_max_distance;
+    let mut nearest_distance = max_search_distance;
 
     for player in players {
         if matches!(player.status, PlayerStatus::Alive) {
