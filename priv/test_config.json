@@ -143,32 +143,6 @@
       ]
     },
     {
-      "name": "slingshot_burst",
-      "cooldown_ms": 800,
-      "execution_duration_ms": 250,
-      "is_passive": false,
-      "mechanics": [
-        {
-          "GiveEffect": {
-            "effects_to_give": ["auto_slingshot"]
-          }
-        }
-      ]
-    },
-    {
-      "name": "single_slingshot",
-      "cooldown_ms": 800,
-      "execution_duration_ms": 250,
-      "is_passive": false,
-      "mechanics": [
-        {
-          "SimpleShoot": {
-            "projectile": "projectile_slingshot"
-          }
-        }
-      ]
-    },
-    {
       "name": "poison_dart",
       "cooldown_ms": 800,
       "execution_duration_ms": 150,
@@ -222,8 +196,7 @@
       "base_size": 80,
       "base_health": 100,
       "skills": {
-        "1": "slingshot_burst",
-        "2": "single_slingshot",
+        "1": "slingshot",
         "3": "poison_dart"
       }
     },
