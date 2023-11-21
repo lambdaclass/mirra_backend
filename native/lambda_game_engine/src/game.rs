@@ -195,7 +195,10 @@ impl GameState {
             }
 
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                player.add_action(Action::UsingSkill(skill_key.clone()), skill.execution_duration_ms);
+                player.add_action(
+                    Action::UsingSkill(skill_key.clone()),
+                    skill.execution_duration_ms,
+                );
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
                 let direction_angle = skill_params
@@ -396,9 +399,10 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
 
 fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
     players.values_mut().for_each(|player| {
-        player.cooldowns
-        .iter_mut()
-        .for_each(|(_key, remaining)| *remaining = remaining.saturating_sub(elapsed_time_ms))
+        player
+            .cooldowns
+            .iter_mut()
+            .for_each(|(_key, remaining)| *remaining = remaining.saturating_sub(elapsed_time_ms))
     })
 }
 
