@@ -31,6 +31,7 @@ pub struct GameConfigFile {
     loot_interval_ms: u64,
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
+    auto_aim_max_distance: f32,
 }
 
 #[derive(Deserialize)]
@@ -50,6 +51,7 @@ pub struct GameConfig {
     pub loot_interval_ms: u64,
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
+    pub auto_aim_max_distance: f32,
 }
 
 #[derive(NifMap, Clone)]
@@ -121,6 +123,7 @@ impl GameConfig {
             loot_interval_ms: game_config.loot_interval_ms,
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
+            auto_aim_max_distance: game_config.auto_aim_max_distance,
         }
     }
 }
@@ -199,7 +202,8 @@ impl GameState {
                 let direction_angle = if auto_aim {
                     let nearest_player: Option<(u64, Position)> = nearest_player(
                         &other_players,
-                        &player.position
+                        &player.position,
+                        self.config.game.auto_aim_max_distance,
                     );
 
                     if let Some((_target_player_id, target_player_position)) = nearest_player {
@@ -562,9 +566,10 @@ fn apply_zone_effects(
 fn nearest_player(
     players: &Vec<&mut Player>,
     position: &Position,
+    auto_aim_max_distance: f32,
 ) -> Option<(u64, Position)> {
     let mut nearest_player = None;
-    let mut nearest_distance = 3000.0;
+    let mut nearest_distance = auto_aim_max_distance;
 
     for player in players {
         if matches!(player.status, PlayerStatus::Alive) {
