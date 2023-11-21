@@ -229,7 +229,7 @@ impl GameState {
 
                             let projectile = Projectile::new(
                                 id,
-                                player.position.clone(),
+                                player.position,
                                 direction_angle,
                                 player.id,
                                 projectile_config,
@@ -247,7 +247,7 @@ impl GameState {
                                 let id = get_next_id(&mut self.next_id);
                                 let projectile = Projectile::new(
                                     id,
-                                    player.position.clone(),
+                                    player.position,
                                     direction,
                                     player.id,
                                     projectile_config,
@@ -573,19 +573,12 @@ fn nearest_player(
 
     for player in players {
         if matches!(player.status, PlayerStatus::Alive) {
-            let distance = distance_to_center(player, position);
-            if distance < nearest_distance
-            {
+            let distance = map::distance_to_center(player, position);
+            if distance < nearest_distance {
                 nearest_player = Some((player.id, player.position));
                 nearest_distance = distance;
             }
         }
     }
     nearest_player
-}
-
-fn distance_to_center(player: &Player, center: &Position) -> f32 {
-    let distance_squared =
-        (player.position.x - center.x).pow(2) + (player.position.y - center.y).pow(2);
-    (distance_squared as f32).sqrt()
 }
