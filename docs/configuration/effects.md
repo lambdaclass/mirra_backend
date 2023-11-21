@@ -10,6 +10,7 @@ Configurable fields:
 - `is_reversable`: Defines if the effect can be reversed when removed from the player (e.g. if it gives 10% more speed it will be removed from the player on removal), see more in ["Adding and removing effects"](#adding-and-removing-effects)
 - `player_attributes`: Attributes changes that will be applied over the player having this effect
 - `projectile_attributes`: Attributes changes that will be applied over the projectiles of the player having this effect
+- `skill_keys_to_execute`: Store skill keys of a character to be executed as long as the effect is applied
 
 ### Effect time type
 
@@ -85,7 +86,9 @@ Examples of the JSON defining effects
         "modifier": additive,
         "value": 10
       }
-    ]
+    ],
+    "projectile_attributes": [],
+    "skills_keys_to_execute": []
   },
   {
     "name": "gigantify"
@@ -104,7 +107,9 @@ Examples of the JSON defining effects
         "modifier": additive,
         "value": 20
       }
-    ]
+    ],
+    "projectile_attributes": [],
+    "skills_keys_to_execute": ["1"]
   }
 ]
 ```

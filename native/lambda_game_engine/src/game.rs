@@ -173,8 +173,8 @@ impl GameState {
 
     fn activate_skills(&mut self) {
         self.players.values_mut().for_each(|player| {
-            let skills = player.skills_to_execute.clone();
-            skills.iter().for_each(|skill_key: &String| {
+            let skill_keys = player.skills_keys_to_execute.clone();
+            skill_keys.iter().for_each(|skill_key: &String| {
                 if let Some(skill) = player.character.clone().skills.get(skill_key) {
                     player.add_action(
                         Action::UsingSkill(skill_key.to_string()),

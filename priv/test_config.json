@@ -16,7 +16,7 @@
         }
       ],
       "projectile_attributes": [],
-      "skills_to_execute": []
+      "skills_keys_to_execute": []
     },
     {
       "name": "heal_30",
@@ -30,7 +30,7 @@
         }
       ],
       "projectile_attributes": [],
-      "skills_to_execute": []
+      "skills_keys_to_execute": []
     },
     {
       "name": "h4ck_dos",
@@ -59,7 +59,7 @@
           "value": "false"
         }
       ],
-      "skills_to_execute": []
+      "skills_keys_to_execute": []
     },
     {
       "name": "damage_outside_area",
@@ -79,7 +79,7 @@
         }
       ],
       "projectile_attributes": [],
-      "skills_to_execute": []
+      "skills_keys_to_execute": []
     },
     {
       "name": "poison",
@@ -99,7 +99,7 @@
         }
       ],
       "projectile_attributes": [],
-      "skills_to_execute": []
+      "skills_keys_to_execute": []
     }
   ],
   "loots": [
