@@ -344,9 +344,7 @@ fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
             match loot.pickup_mechanic {
                 PickupMechanic::CollisionToInventory => player.put_in_inventory(loot),
                 PickupMechanic::CollisionUse => {
-                    loot.effects
-                        .iter()
-                        .for_each(|effect| player.apply_effect(effect, EntityOwner::Loot));
+                    player.apply_effects(&loot.effects, EntityOwner::Loot);
                     false
                 }
             }
