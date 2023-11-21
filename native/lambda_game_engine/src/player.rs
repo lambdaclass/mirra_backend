@@ -99,6 +99,10 @@ impl Player {
         self.next_actions.clear();
     }
 
+    pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
+        self.cooldowns.insert(skill_key.to_string(), cooldown_ms);
+    }
+
     pub fn apply_effects_if_not_present(
         &mut self,
         outside_radius_effects: &[Effect],
