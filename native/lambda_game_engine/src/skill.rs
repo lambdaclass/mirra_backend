@@ -104,13 +104,15 @@ impl SkillMechanic {
         mechanics
             .into_iter()
             .map(|config| match config {
-                SkillMechanicConfigFile::GiveEffect{effects_to_give} => {
+                SkillMechanicConfigFile::GiveEffect { effects_to_give } => {
                     let effects = effects
                         .iter()
                         .filter(|effect| effects_to_give.contains(&effect.name))
                         .cloned()
                         .collect();
-                    SkillMechanic::GiveEffect{effects_to_give: effects}
+                    SkillMechanic::GiveEffect {
+                        effects_to_give: effects,
+                    }
                 }
                 SkillMechanicConfigFile::Hit {
                     damage,

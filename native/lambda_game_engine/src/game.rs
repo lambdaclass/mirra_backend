@@ -173,32 +173,35 @@ impl GameState {
 
     fn activate_skills(&mut self) {
         self.players.values_mut().for_each(|player| {
-        let skills = player.skills_to_execute.clone();
-        skills.iter().for_each(|skill_key: &String| {
-            if let Some(skill) = player.character.clone().skills.get(skill_key) {
-                player.add_action(Action::UsingSkill(skill_key.to_string()), skill.execution_duration_ms);
+            let skills = player.skills_to_execute.clone();
+            skills.iter().for_each(|skill_key: &String| {
+                if let Some(skill) = player.character.clone().skills.get(skill_key) {
+                    player.add_action(
+                        Action::UsingSkill(skill_key.to_string()),
+                        skill.execution_duration_ms,
+                    );
 
-                for mechanic in skill.mechanics.iter() {
-                    match mechanic {
-                        SkillMechanic::SimpleShoot {
-                            projectile: projectile_config,
-                        } => {
-                            let id = get_next_id(&mut self.next_id);
+                    for mechanic in skill.mechanics.iter() {
+                        match mechanic {
+                            SkillMechanic::SimpleShoot {
+                                projectile: projectile_config,
+                            } => {
+                                let id = get_next_id(&mut self.next_id);
 
-                            let projectile = Projectile::new(
-                                id,
-                                player.position.clone(),
-                                player.direction,
-                                player.id,
-                                projectile_config,
-                            );
-                            self.projectiles.push(projectile);
+                                let projectile = Projectile::new(
+                                    id,
+                                    player.position.clone(),
+                                    player.direction,
+                                    player.id,
+                                    projectile_config,
+                                );
+                                self.projectiles.push(projectile);
+                            }
+                            _ => todo!("SkillMechanic not implemented"),
                         }
-                        _ => todo!("SkillMechanic not implemented"),
                     }
                 }
-            }
-        })
+            })
         });
     }
 
@@ -264,7 +267,7 @@ impl GameState {
                                 self.projectiles.push(projectile);
                             }
                         }
-                        SkillMechanic::GiveEffect{effects_to_give} => {
+                        SkillMechanic::GiveEffect { effects_to_give } => {
                             for effect in effects_to_give.iter() {
                                 player.apply_effect(effect, EntityOwner::Player(player.id));
                             }

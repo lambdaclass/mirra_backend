@@ -256,9 +256,10 @@ impl Player {
                         *time_since_last_trigger -= *interval_ms;
                         *trigger_count -= 1;
 
-                        effect.skills_to_execute.iter().for_each(|skill| {
-                            skills_to_execute.push(skill.to_string())
-                        });
+                        effect
+                            .skills_to_execute
+                            .iter()
+                            .for_each(|skill| skills_to_execute.push(skill.to_string()));
 
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
