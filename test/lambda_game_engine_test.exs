@@ -4,7 +4,7 @@ defmodule LambdaGameEngineTest do
 
   setup do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/config.json")
+      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
       |> File.read()
 
     config = LambdaGameEngine.parse_config(data)
@@ -17,7 +17,7 @@ defmodule LambdaGameEngineTest do
 
   test "can parse config.json" do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/config.json")
+      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
       |> File.read()
 
     assert is_map(LambdaGameEngine.parse_config(data))
@@ -25,7 +25,7 @@ defmodule LambdaGameEngineTest do
 
   test "parsed zone config retains modifications order" do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/config.json")
+      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
       |> File.read()
 
     config = LambdaGameEngine.parse_config(data)
@@ -35,12 +35,12 @@ defmodule LambdaGameEngineTest do
     [zone_modification1, zone_modification2, zone_modification3] = config.game.zone_modifications
     assert zone_modification1.min_radius == 6000
     assert zone_modification2.min_radius == 3000
-    assert zone_modification3.min_radius == 1000
+    assert zone_modification3.min_radius == 100
   end
 
   test "can add a player" do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/config.json")
+      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
       |> File.read()
 
     config = LambdaGameEngine.parse_config(data)
