@@ -100,6 +100,20 @@
       ],
       "projectile_attributes": [],
       "skills_keys_to_execute": []
+    },
+    {
+      "name": "auto_slingshot",
+      "is_reversable": false,
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": true,
+          "interval_ms": 250,
+          "trigger_count": 10
+        }
+      },
+      "player_attributes": [],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": ["2"]
     }
   ],
   "loots": [
@@ -191,6 +205,32 @@
           }
         }
       ]
+    },
+    {
+      "name": "denial_of_service",
+      "cooldown_ms": 800,
+      "execution_duration_ms": 250,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "GiveEffect": {
+            "effects_to_give": ["auto_slingshot"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "single_slingshot",
+      "cooldown_ms": 800,
+      "execution_duration_ms": 250,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "SimpleShoot": {
+            "projectile": "projectile_slingshot"
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -202,7 +242,8 @@
       "base_health": 100,
       "skills": {
         "1": "slingshot",
-        "3": "poison_dart"
+        "2": "denial_of_service",
+        "3": "single_slingshot"
       }
     },
     {
