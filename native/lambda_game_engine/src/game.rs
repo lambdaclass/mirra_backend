@@ -178,13 +178,6 @@ impl GameState {
             if let Some(skill) = player.character.clone().skills.get(skill_key) {
                 player.add_action(Action::UsingSkill(skill_key.to_string()), skill.execution_duration_ms);
 
-                // let direction_angle = skill_params
-                //     .get("direction_angle")
-                //     .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                //     .unwrap();
-
-                // player.direction = direction_angle;
-
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
                         SkillMechanic::SimpleShoot {
@@ -200,72 +193,6 @@ impl GameState {
                                 projectile_config,
                             );
                             self.projectiles.push(projectile);
-                        }
-                        SkillMechanic::MultiShoot {
-                            projectile: projectile_config,
-                            count,
-                            cone_angle,
-                        } => {
-                            let direction_distribution =
-                                distribute_angle(player.direction, cone_angle, count);
-                            for direction in direction_distribution {
-                                let id = get_next_id(&mut self.next_id);
-                                let projectile = Projectile::new(
-                                    id,
-                                    player.position.clone(),
-                                    direction,
-                                    player.id,
-                                    projectile_config,
-                                );
-                                self.projectiles.push(projectile);
-                            }
-                        }
-                        SkillMechanic::GiveEffect{effects_to_give} => {
-                            for effect in effects_to_give.iter() {
-                                player.apply_effect(effect, EntityOwner::Player(player.id));
-                            }
-                        }
-                        SkillMechanic::Hit {
-                            damage,
-                            range,
-                            cone_angle,
-                            on_hit_effects,
-                        } => {
-                            let mut damage = *damage;
-
-                            for (effect, _owner) in player.effects.iter() {
-                                for change in effect.player_attributes.iter() {
-                                    if change.attribute == "damage" {
-                                        effect::modify_attribute(&mut damage, change)
-                                    }
-                                }
-                            }
-
-                            // other_players
-                            //     .iter_mut()
-                            //     .filter(|target_player| {
-                            //         map::in_cone_angle_range(
-                            //             player,
-                            //             target_player,
-                            //             *range,
-                            //             *cone_angle as f32,
-                            //         )
-                            //     })
-                            //     .for_each(|target_player| {
-                            //         target_player.decrease_health(damage);
-
-                            //         if target_player.status == PlayerStatus::Death {
-                            //             self.next_killfeed.push(KillEvent {
-                            //                 kill_by: EntityOwner::Player(player.id),
-                            //                 killed: target_player.id,
-                            //             })
-                            //         } else {
-                            //             target_player.apply_effects(
-                            //                 on_hit_effects,
-                            //                 EntityOwner::Player(player.id),
-                            //             );
-                            //         }
-                            //     })
                         }
                         _ => todo!("SkillMechanic not implemented"),
                     }
