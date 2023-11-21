@@ -299,7 +299,7 @@ impl Player {
         }
     }
 
-    pub fn inventory_get_at(&mut self, inventory_at: usize) -> Option<Loot> {
+    pub fn inventory_take_at(&mut self, inventory_at: usize) -> Option<Loot> {
         self.inventory[inventory_at].take()
     }
 }
