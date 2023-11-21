@@ -110,6 +110,7 @@ defmodule LambdaGameEngineTest do
     game =
       spawn_specific_loot(context.game, :collision_to_inventory)
       |> spawn_specific_loot(:collision_to_inventory)
+
     [loot1, loot2] = game.loots
 
     position = %{x: loot1.position.x, y: loot1.position.y - 25}
@@ -131,6 +132,7 @@ defmodule LambdaGameEngineTest do
 
   defp spawn_specific_loot(game_state, loot_mechanic) do
     {new_game_state, loot_id} = LambdaGameEngine.spawn_random_loot(game_state)
+
     case Enum.find(new_game_state.loots, fn loot -> loot.id == loot_id end) do
       %{pickup_mechanic: ^loot_mechanic} -> new_game_state
       _ -> spawn_specific_loot(game_state, loot_mechanic)
