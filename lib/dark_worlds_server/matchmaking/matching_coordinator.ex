@@ -1,0 +1,101 @@
+defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
+  alias DarkWorldsServer.Engine
+  use GenServer
+
+  ## Amount of players needed to start a game
+  @session_player_amount 10
+  ## Time to wait for a matching session to be full
+  @start_game_timeout_ms 10_000
+
+  #######
+  # API #
+  #######
+  def start_link(_args) do
+    GenServer.start_link(__MODULE__, [], name: __MODULE__)
+  end
+
+  def join(user_id) do
+    GenServer.call(__MODULE__, {:join, user_id})
+  end
+
+  def leave(user_id) do
+    GenServer.call(__MODULE__, {:leave, user_id})
+  end
+
+  #######################
+  # GenServer callbacks #
+  #######################
+  @impl true
+  def init(_args) do
+    {:ok, %{players: [], session: :unset}}
+  end
+
+  @impl true
+  def handle_call({:join, user_id}, {from, _}, %{players: []} = state) do
+    session_ref = make_ref()
+    Process.send_after(self(), {:check_timeout, session_ref}, @start_game_timeout_ms)
+    players = [{user_id, from}]
+    {:reply, :ok, %{state | players: players, session: session_ref}}
+  end
+
+  def handle_call({:join, user_id}, {from, _}, state) do
+    players = state.players ++ [{user_id, from}]
+    send(self(), :check_capacity)
+    {:reply, :ok, %{state | players: players}}
+  end
+
+  def handle_call({:leave, user_id}, _from, state) do
+    players = Enum.filter(state.players, fn {player_user_id, _} -> player_user_id != user_id end)
+    {:reply, :ok, %{state | players: players}}
+  end
+
+  @impl true
+  def handle_info({:check_timeout, session_ref}, %{session: session_ref, players: [_ | _]} = state) do
+    bot_count = @session_player_amount - length(state.players)
+    {:ok, game_pid, engine_config} = start_game(bot_count)
+    players = consume_and_notify_players(state.players, game_pid, engine_config, @session_player_amount)
+    new_session_ref = make_ref()
+    Process.send_after(self(), {:check_timeout, new_session_ref}, @start_game_timeout_ms)
+    {:noreply, %{state | players: players, session: new_session_ref}}
+  end
+
+  def handle_info({:check_timeout, _session_ref}, %{session: _other_session_ref} = state) do
+    {:noreply, state}
+  end
+
+  def handle_info(:check_capacity, %{players: players} = state) when length(players) >= @session_player_amount do
+    {:ok, game_pid, engine_config} = start_game()
+    players = consume_and_notify_players(state.players, game_pid, engine_config, @session_player_amount)
+    new_session_ref = make_ref()
+    Process.send_after(self(), {:check_timeout, new_session_ref}, @start_game_timeout_ms)
+    {:noreply, %{state | players: players, session: new_session_ref}}
+  end
+
+  def handle_info(:check_capacity, state) do
+    {:noreply, state}
+  end
+
+  ####################
+  # Internal helpers #
+  ####################
+  defp start_game(), do: start_game(0)
+
+  defp start_game(bot_count) do
+    {:ok, game_pid} = Engine.start_child(bot_count)
+    {:ok, engine_config} = Engine.EngineRunner.get_config(game_pid)
+    {:ok, game_pid, engine_config}
+  end
+
+  defp consume_and_notify_players(remaining_players, _, _, 0) do
+    remaining_players
+  end
+
+  defp consume_and_notify_players([], _, _, _) do
+    []
+  end
+
+  defp consume_and_notify_players([{_, client_pid} | rest_players], game_pid, engine_config, count) do
+    Process.send_after(client_pid, {:game_started, game_pid, engine_config}, 1_000)
+    consume_and_notify_players(rest_players, game_pid, engine_config, count - 1)
+  end
+end
