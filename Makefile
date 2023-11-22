@@ -42,3 +42,4 @@ prepush: format credo tests
 
 credo:
 	mix credo --strict
+	
