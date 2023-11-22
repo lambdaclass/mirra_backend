@@ -4,7 +4,7 @@ defmodule LambdaGameEngineTest do
 
   setup do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
+      Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
     config = LambdaGameEngine.parse_config(data)
@@ -17,7 +17,7 @@ defmodule LambdaGameEngineTest do
 
   test "can parse config.json" do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
+      Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
     assert is_map(LambdaGameEngine.parse_config(data))
@@ -25,7 +25,7 @@ defmodule LambdaGameEngineTest do
 
   test "parsed zone config retains modifications order" do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
+      Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
     config = LambdaGameEngine.parse_config(data)
@@ -40,7 +40,7 @@ defmodule LambdaGameEngineTest do
 
   test "can add a player" do
     {:ok, data} =
-      Application.app_dir(:lambda_game_engine, "priv/test_config.json")
+      Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
     config = LambdaGameEngine.parse_config(data)
