@@ -5,8 +5,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.RunnerSupervisor
-  alias DarkWorldsServer.RunnerSupervisor.Runner
   alias DarkWorldsServer.RunnerSupervisor.RequestTracker
+  alias DarkWorldsServer.RunnerSupervisor.Runner
 
   require Logger
 

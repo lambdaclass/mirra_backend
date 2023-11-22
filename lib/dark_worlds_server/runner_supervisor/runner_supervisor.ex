@@ -4,9 +4,9 @@ defmodule DarkWorldsServer.RunnerSupervisor do
   """
   use DynamicSupervisor
 
-  alias DarkWorldsServer.RunnerSupervisor.Runner
   alias DarkWorldsServer.RunnerSupervisor.PlayerTracker
   alias DarkWorldsServer.RunnerSupervisor.RequestTracker
+  alias DarkWorldsServer.RunnerSupervisor.Runner
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)
