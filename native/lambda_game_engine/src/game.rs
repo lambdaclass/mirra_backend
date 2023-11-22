@@ -9,6 +9,7 @@ use crate::config::Config;
 use crate::effect;
 use crate::effect::Effect;
 use crate::loot::Loot;
+use crate::loot::PickupMechanic;
 use crate::map;
 use crate::map::Position;
 use crate::player::Action;
@@ -31,6 +32,7 @@ pub struct GameConfigFile {
     loot_interval_ms: u64,
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
+    auto_aim_max_distance: f32,
     initial_positions: Vec<Position>,
 }
 
@@ -51,6 +53,7 @@ pub struct GameConfig {
     pub loot_interval_ms: u64,
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
+    pub auto_aim_max_distance: f32,
     pub initial_positions: Vec<Position>,
 }
 
@@ -123,6 +126,7 @@ impl GameConfig {
             loot_interval_ms: game_config.loot_interval_ms,
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
+            auto_aim_max_distance: game_config.auto_aim_max_distance,
             initial_positions: game_config.initial_positions,
         }
     }
@@ -191,13 +195,41 @@ impl GameState {
                 return;
             }
 
-            if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                player.add_action(Action::UsingSkill(skill_key), skill.execution_duration_ms);
+            // Check if skill is still on cooldown
+            if player.cooldowns.contains_key(&skill_key) {
+                return;
+            }
 
-                let direction_angle = skill_params
-                    .get("direction_angle")
-                    .map(|angle_str| angle_str.parse::<f32>().unwrap())
+            if let Some(skill) = player.character.clone().skills.get(&skill_key) {
+                player.add_action(
+                    Action::UsingSkill(skill_key.clone()),
+                    skill.execution_duration_ms,
+                );
+                player.add_cooldown(&skill_key, skill.cooldown_ms);
+
+                let auto_aim = skill_params
+                    .get("auto_aim")
+                    .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
                     .unwrap();
+
+                let direction_angle = if auto_aim {
+                    let nearest_player: Option<Position> = nearest_player_position(
+                        &other_players,
+                        &player.position,
+                        self.config.game.auto_aim_max_distance,
+                    );
+
+                    if let Some(target_player_position) = nearest_player {
+                        map::angle_between_positions(&player.position, &target_player_position)
+                    } else {
+                        player.direction
+                    }
+                } else {
+                    skill_params
+                        .get("direction_angle")
+                        .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                        .unwrap()
+                };
 
                 player.direction = direction_angle;
 
@@ -210,7 +242,7 @@ impl GameState {
 
                             let projectile = Projectile::new(
                                 id,
-                                player.position.clone(),
+                                player.position,
                                 direction_angle,
                                 player.id,
                                 projectile_config,
@@ -228,7 +260,7 @@ impl GameState {
                                 let id = get_next_id(&mut self.next_id);
                                 let projectile = Projectile::new(
                                     id,
-                                    player.position.clone(),
+                                    player.position,
                                     direction,
                                     player.id,
                                     projectile_config,
@@ -290,8 +322,17 @@ impl GameState {
         }
     }
 
+    pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
+        if let Some(player) = self.players.get_mut(&player_id) {
+            if let Some(loot) = player.inventory_take_at(inventory_at) {
+                player.apply_effects(&loot.effects, EntityOwner::Loot)
+            }
+        }
+    }
+
     pub fn tick(&mut self, time_diff: u64) {
         update_player_actions(&mut self.players, time_diff);
+        update_player_cooldowns(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(
             &mut self.projectiles,
@@ -301,7 +342,7 @@ impl GameState {
         remove_expired_effects(&mut self.players);
         run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
         modify_zone(&mut self.zone, time_diff);
-        apply_zone_effects(&mut self.players, &self.zone);
+        apply_zone_effects(&mut self.players, &self.zone, &mut self.next_killfeed);
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
@@ -335,10 +376,13 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
-            loot.effects
-                .iter()
-                .for_each(|effect| player.apply_effect(effect, EntityOwner::Loot));
-            false
+            match loot.pickup_mechanic {
+                PickupMechanic::CollisionToInventory => !player.put_in_inventory(loot),
+                PickupMechanic::CollisionUse => {
+                    player.apply_effects(&loot.effects, EntityOwner::Loot);
+                    false
+                }
+            }
         } else {
             true
         }
@@ -375,6 +419,12 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
     players.values_mut().for_each(|player| {
         player.update_actions();
         player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+    })
+}
+
+fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
+    players.values_mut().for_each(|player| {
+        player.reduce_cooldowns(elapsed_time_ms);
     })
 }
 
@@ -505,7 +555,12 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
     }
 }
 
-fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
+fn apply_zone_effects(
+    players: &mut HashMap<u64, Player>,
+    zone: &Zone,
+    next_killfeed: &mut Vec<KillEvent>,
+) {
+    // next_killfeed
     if let Some(current_modification) = &zone.current_modification {
         let (inside_players, outside_players): (Vec<_>, Vec<_>) = players
             .values_mut()
@@ -522,10 +577,39 @@ fn apply_zone_effects(players: &mut HashMap<u64, Player>, zone: &Zone) {
         });
 
         outside_players.into_iter().for_each(|player| {
-            player.apply_effects_if_not_present(
-                &current_modification.outside_radius_effects,
-                EntityOwner::Zone,
-            );
+            // If the player is alive in this tick, but dies as an effect of the zone, we push it to the killfeed.
+            if player.status == PlayerStatus::Alive {
+                player.apply_effects_if_not_present(
+                    &current_modification.outside_radius_effects,
+                    EntityOwner::Zone,
+                );
+                if player.status == PlayerStatus::Death {
+                    next_killfeed.push(KillEvent {
+                        kill_by: EntityOwner::Zone,
+                        killed: player.id,
+                    });
+                }
+            }
         });
     }
+}
+
+fn nearest_player_position(
+    players: &Vec<&mut Player>,
+    position: &Position,
+    max_search_distance: f32,
+) -> Option<Position> {
+    let mut nearest_player = None;
+    let mut nearest_distance = max_search_distance;
+
+    for player in players {
+        if matches!(player.status, PlayerStatus::Alive) {
+            let distance = map::distance_to_center(player, position);
+            if distance < nearest_distance {
+                nearest_player = Some(player.position);
+                nearest_distance = distance;
+            }
+        }
+    }
+    nearest_player
 }

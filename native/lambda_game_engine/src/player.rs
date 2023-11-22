@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use itertools::Itertools;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 
@@ -9,6 +10,7 @@ use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
 use crate::game::EntityOwner;
+use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
 
@@ -28,6 +30,7 @@ pub struct Player {
     pub size: u64,
     pub speed: u64,
     pub action_duration_ms: u64,
+    pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
 }
 
@@ -59,6 +62,7 @@ impl Player {
             health: character_config.base_health,
             speed: character_config.base_speed,
             size: character_config.base_size,
+            inventory: vec![None; character_config.max_inventory_size as usize],
             character: character_config,
             action_duration_ms: 0,
             next_actions: Vec::new(),
@@ -90,6 +94,17 @@ impl Player {
     pub fn update_actions(&mut self) {
         self.actions = self.next_actions.clone();
         self.next_actions.clear();
+    }
+
+    pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
+        self.cooldowns.insert(skill_key.to_string(), cooldown_ms);
+    }
+
+    pub fn reduce_cooldowns(&mut self, elapsed_time_ms: u64) {
+        self.cooldowns.retain(|_key, remaining| {
+            *remaining = remaining.saturating_sub(elapsed_time_ms);
+            *remaining > 0
+        });
     }
 
     pub fn apply_effects_if_not_present(
@@ -140,11 +155,14 @@ impl Player {
                             "size" => {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
-                            "health" => modify_attribute(
-                                &mut player.health,
-                                &change.modifier,
-                                &change.value,
-                            ),
+                            "health" => {
+                                modify_attribute(
+                                    &mut player.health,
+                                    &change.modifier,
+                                    &change.value,
+                                );
+                                update_status(player);
+                            }
                             _ => todo!(),
                         };
                         player
@@ -180,10 +198,7 @@ impl Player {
 
     pub fn decrease_health(&mut self, amount: u64) {
         self.health = self.health.saturating_sub(amount);
-
-        if self.health == 0 {
-            self.status = PlayerStatus::Death;
-        }
+        update_status(self);
     }
 
     pub fn remove_expired_effects(&mut self) {
@@ -251,11 +266,18 @@ impl Player {
 
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
-                                "health" => modify_attribute(
-                                    &mut self.health,
-                                    &change.modifier,
-                                    &change.value,
-                                ),
+                                "health" => {
+                                    modify_attribute(
+                                        &mut self.health,
+                                        &change.modifier,
+                                        &change.value,
+                                    );
+                                    // TODO: refactor the use of references in order to use the update_status() remove the following duplicated code
+                                    if self.health == 0 {
+                                        self.status = PlayerStatus::Death;
+                                    }
+                                }
+
                                 _ => todo!(),
                             };
                         });
@@ -267,7 +289,32 @@ impl Player {
                 _ => todo!(),
             }
         }
+
         None
+    }
+
+    pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {
+        match self
+            .inventory
+            .iter_mut()
+            .find_position(|element| element.is_none())
+        {
+            Some((slot_at, _)) => {
+                self.inventory[slot_at] = Some(loot.clone());
+                true
+            }
+            None => false,
+        }
+    }
+
+    pub fn inventory_take_at(&mut self, inventory_at: usize) -> Option<Loot> {
+        self.inventory[inventory_at].take()
+    }
+}
+
+fn update_status(player: &mut Player) {
+    if player.health == 0 {
+        player.status = PlayerStatus::Death;
     }
 }
 

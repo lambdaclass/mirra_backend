@@ -1,5 +1,5 @@
 use rand::seq::SliceRandom;
-use rustler::NifMap;
+use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
 use crate::config::Config;
@@ -10,6 +10,7 @@ use crate::map::{self, Position};
 pub struct LootFileConfig {
     name: String,
     size: u64,
+    pickup_mechanic: PickupMechanic,
     effects: Vec<String>,
 }
 
@@ -17,16 +18,24 @@ pub struct LootFileConfig {
 pub struct LootConfig {
     name: String,
     size: u64,
+    pickup_mechanic: PickupMechanic,
     effects: Vec<Effect>,
 }
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct Loot {
     pub name: String,
     pub size: u64,
+    pub pickup_mechanic: PickupMechanic,
     pub effects: Vec<Effect>,
     pub id: u64,
     pub position: Position,
+}
+
+#[derive(Deserialize, NifTaggedEnum, Clone)]
+pub enum PickupMechanic {
+    CollisionToInventory,
+    CollisionUse,
 }
 
 impl LootConfig {
@@ -45,6 +54,7 @@ impl LootConfig {
                 LootConfig {
                     name: config.name,
                     size: config.size,
+                    pickup_mechanic: config.pickup_mechanic,
                     effects,
                 }
             })
@@ -59,6 +69,7 @@ impl Loot {
             position,
             name: config.name.clone(),
             size: config.size,
+            pickup_mechanic: config.pickup_mechanic.clone(),
             effects: config.effects.clone(),
         }
     }

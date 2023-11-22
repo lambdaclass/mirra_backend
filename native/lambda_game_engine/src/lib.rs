@@ -94,6 +94,13 @@ fn activate_skill(
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
+fn activate_inventory(game: GameState, player_id: u64, inventory_at: u64) -> GameState {
+    let mut game = game;
+    game.activate_inventory(player_id, inventory_at as usize);
+    game
+}
+
+#[rustler::nif(schedule = "DirtyCpu")]
 fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
     let mut game = game;
     game.tick(time_diff_ms);
@@ -110,6 +117,7 @@ rustler::init!(
         apply_effect,
         spawn_random_loot,
         activate_skill,
+        activate_inventory,
         game_tick,
     ]
 );

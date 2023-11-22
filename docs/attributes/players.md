@@ -12,6 +12,7 @@
 - `direction`: angle where the player is facing
 - `actions`: Actions taken by the player since the last world tick
 - `action_duration_ms`: Time in milliseconds remaining before a player can do another action, usually only skills add to this value (e.g. moving is free)
+- `inventory`: List of loots that the player is holding and can activate
 
 ## Changeable attributes
 

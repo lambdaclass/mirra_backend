@@ -9,6 +9,7 @@ This is the meta configuration for the game, not for a particular thing in the g
 - `zone_starting_radius`: Radius of the playable zone. The zone is an area in the map where effects are applied to players not in it
 - `zone_modifications`: This is attribute is a list of modifications to perform to the playable zone in the map. For the specifics see below ["Zone modification"](#zone-modification)
 - `loot_interval_ms`: If present, interval in milliseconds for spawning loot crates
+- `auto_aim_max_distance`: Determines the max distance to auto aim
 - `initial_positions`: The predefined positions for players to spawn in the map.
 
 ### Zone modification
@@ -46,6 +47,7 @@ This "modifications" are compose of the following fields
     }
   ]
   "loot_interval_ms": 7000,
+  "auto_aim_max_distance": 2000,,
   "initial_positions": [
       {
         "x": -4500,
