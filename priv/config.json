@@ -276,6 +276,7 @@
         "outside_radius_effects": ["damage_outside_area"]
       }
     ],
-    "loot_interval_ms": 7000
+    "loot_interval_ms": 7000,
+    "auto_aim_max_distance": 1000
   }
 }
