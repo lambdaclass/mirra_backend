@@ -32,6 +32,7 @@ pub struct GameConfigFile {
     loot_interval_ms: u64,
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
+    auto_aim_max_distance: f32,
 }
 
 #[derive(Deserialize)]
@@ -51,6 +52,7 @@ pub struct GameConfig {
     pub loot_interval_ms: u64,
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
+    pub auto_aim_max_distance: f32,
 }
 
 #[derive(NifMap, Clone)]
@@ -122,6 +124,7 @@ impl GameConfig {
             loot_interval_ms: game_config.loot_interval_ms,
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
+            auto_aim_max_distance: game_config.auto_aim_max_distance,
         }
     }
 }
@@ -201,10 +204,29 @@ impl GameState {
                 );
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
-                let direction_angle = skill_params
-                    .get("direction_angle")
-                    .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                let auto_aim = skill_params
+                    .get("auto_aim")
+                    .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
                     .unwrap();
+
+                let direction_angle = if auto_aim {
+                    let nearest_player: Option<Position> = nearest_player_position(
+                        &other_players,
+                        &player.position,
+                        self.config.game.auto_aim_max_distance,
+                    );
+
+                    if let Some(target_player_position) = nearest_player {
+                        map::angle_between_positions(&player.position, &target_player_position)
+                    } else {
+                        player.direction
+                    }
+                } else {
+                    skill_params
+                        .get("direction_angle")
+                        .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                        .unwrap()
+                };
 
                 player.direction = direction_angle;
 
@@ -217,7 +239,7 @@ impl GameState {
 
                             let projectile = Projectile::new(
                                 id,
-                                player.position.clone(),
+                                player.position,
                                 direction_angle,
                                 player.id,
                                 projectile_config,
@@ -235,7 +257,7 @@ impl GameState {
                                 let id = get_next_id(&mut self.next_id);
                                 let projectile = Projectile::new(
                                     id,
-                                    player.position.clone(),
+                                    player.position,
                                     direction,
                                     player.id,
                                     projectile_config,
@@ -567,4 +589,24 @@ fn apply_zone_effects(
             }
         });
     }
+}
+
+fn nearest_player_position(
+    players: &Vec<&mut Player>,
+    position: &Position,
+    max_search_distance: f32,
+) -> Option<Position> {
+    let mut nearest_player = None;
+    let mut nearest_distance = max_search_distance;
+
+    for player in players {
+        if matches!(player.status, PlayerStatus::Alive) {
+            let distance = map::distance_to_center(player, position);
+            if distance < nearest_distance {
+                nearest_player = Some(player.position);
+                nearest_distance = distance;
+            }
+        }
+    }
+    nearest_player
 }
