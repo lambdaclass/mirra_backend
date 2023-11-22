@@ -12,6 +12,7 @@ pub struct CharacterConfigFile {
     base_speed: u64,
     base_size: u64,
     base_health: u64,
+    max_inventory_size: u64,
     skills: HashMap<String, String>,
 }
 
@@ -22,6 +23,7 @@ pub struct CharacterConfig {
     pub base_speed: u64,
     pub base_size: u64,
     pub base_health: u64,
+    pub max_inventory_size: u64,
     pub skills: HashMap<String, SkillConfig>,
 }
 
@@ -45,6 +47,7 @@ impl CharacterConfig {
                     base_speed: config.base_speed,
                     base_size: config.base_size,
                     base_health: config.base_health,
+                    max_inventory_size: config.max_inventory_size,
                     skills: character_skills,
                 }
             })

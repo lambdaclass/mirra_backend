@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use itertools::Itertools;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 
@@ -9,6 +10,7 @@ use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
 use crate::game::EntityOwner;
+use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
 
@@ -29,6 +31,7 @@ pub struct Player {
     pub speed: u64,
     pub action_duration_ms: u64,
     pub skills_keys_to_execute: Vec<String>,
+    pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
 }
 
@@ -63,6 +66,7 @@ impl Player {
             health: character_config.base_health,
             speed: character_config.base_speed,
             size: character_config.base_size,
+            inventory: vec![None; character_config.max_inventory_size as usize],
             character: character_config,
             action_duration_ms: 0,
             next_actions: Vec::new(),
@@ -288,6 +292,24 @@ impl Player {
         }
         self.skills_keys_to_execute = skills_keys_to_execute;
         None
+    }
+
+    pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {
+        match self
+            .inventory
+            .iter_mut()
+            .find_position(|element| element.is_none())
+        {
+            Some((slot_at, _)) => {
+                self.inventory[slot_at] = Some(loot.clone());
+                true
+            }
+            None => false,
+        }
+    }
+
+    pub fn inventory_take_at(&mut self, inventory_at: usize) -> Option<Loot> {
+        self.inventory[inventory_at].take()
     }
 }
 

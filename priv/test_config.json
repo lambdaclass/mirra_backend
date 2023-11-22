@@ -120,6 +120,13 @@
     {
       "name": "loot_health",
       "size": 50,
+      "pickup_mechanic": "CollisionUse",
+      "effects": ["heal_30"]
+    },
+    {
+      "name": "loot_health_inventory",
+      "size": 50,
+      "pickup_mechanic": "CollisionToInventory",
       "effects": ["heal_30"]
     }
   ],
@@ -240,6 +247,7 @@
       "base_speed": 20,
       "base_size": 80,
       "base_health": 100,
+      "max_inventory_size": 1,
       "skills": {
         "1": "slingshot",
         "2": "denial_of_service",
@@ -252,6 +260,7 @@
       "base_speed": 20,
       "base_size": 100,
       "base_health": 100,
+      "max_inventory_size": 1,
       "skills": {
         "1": "hit",
         "2": "circle_hit"
