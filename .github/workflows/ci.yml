@@ -4,6 +4,13 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  MIX_ENV: test
+  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build and test
@@ -12,6 +19,19 @@ jobs:
       matrix:
         elixir: [1.15.4]
         otp: [26.0.2]
+    services:
+      db:
+        image: postgres:15-alpine
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: dark_worlds_server_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - name: Set up Elixir
@@ -32,16 +52,18 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
       - name: Install dependencies
-        run: mix deps.get
+        run: make setup
+      - name: Credo Elixir Check
+        run: make credo
       - name: Check Elixir Formatting
-        run: mix format --check-formatted
-      - name: Check Elixir code
-        run: mix credo --strict
+        run: cd server && mix format --check-formatted
+      - name: (Load Test) Check Elixir Formatting
+        run: cd load_test && mix format --check-formatted
+      - name: Compiles without warnings
+        run: mix compile --all-warnings --warnings-as-errors
+      - name: Run tests
+        run: make tests
       - name: Check Rust Formatting
         run: cargo fmt --check --manifest-path native/lambda_game_engine/Cargo.toml
       - name: Check Rust code
         run: cargo clippy --manifest-path native/lambda_game_engine/Cargo.toml -- -D warnings
-      - name: Compiles without warnings
-        run: mix compile --all-warnings --warnings-as-errors
-      - name: Run tests
-        run: mix test
