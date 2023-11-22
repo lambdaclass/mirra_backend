@@ -399,10 +399,7 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
 
 fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
     players.values_mut().for_each(|player| {
-        player
-            .cooldowns
-            .iter_mut()
-            .for_each(|(_key, remaining)| *remaining = remaining.saturating_sub(elapsed_time_ms))
+        player.reduce_cooldowns(elapsed_time_ms);
     })
 }
 

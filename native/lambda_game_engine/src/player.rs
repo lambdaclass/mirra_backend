@@ -103,6 +103,13 @@ impl Player {
         self.cooldowns.insert(skill_key.to_string(), cooldown_ms);
     }
 
+    pub fn reduce_cooldowns(&mut self, elapsed_time_ms: u64) {
+        self.cooldowns.retain(|_key, remaining| {
+            *remaining = remaining.saturating_sub(elapsed_time_ms);
+            *remaining > 0
+        });
+    }
+
     pub fn apply_effects_if_not_present(
         &mut self,
         outside_radius_effects: &[Effect],
