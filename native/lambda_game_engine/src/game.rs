@@ -189,8 +189,17 @@ impl GameState {
                 return;
             }
 
+            // Check if skill is still on cooldown
+            if player.cooldowns.contains_key(&skill_key) {
+                return;
+            }
+
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                player.add_action(Action::UsingSkill(skill_key), skill.execution_duration_ms);
+                player.add_action(
+                    Action::UsingSkill(skill_key.clone()),
+                    skill.execution_duration_ms,
+                );
+                player.add_cooldown(&skill_key, skill.cooldown_ms);
 
                 let direction_angle = skill_params
                     .get("direction_angle")
@@ -298,6 +307,7 @@ impl GameState {
 
     pub fn tick(&mut self, time_diff: u64) {
         update_player_actions(&mut self.players, time_diff);
+        update_player_cooldowns(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(
             &mut self.projectiles,
@@ -384,6 +394,12 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
     players.values_mut().for_each(|player| {
         player.update_actions();
         player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+    })
+}
+
+fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
+    players.values_mut().for_each(|player| {
+        player.reduce_cooldowns(elapsed_time_ms);
     })
 }
 
