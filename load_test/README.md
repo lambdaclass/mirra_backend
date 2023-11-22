@@ -22,10 +22,10 @@ ulimit -n 65535
 before running iex -S mix
 ```
 
-If you want to see a request tracking report for every player of every game after a load test, you can run the helper function `DarkWorldsServer.Engine.RequestTracker.report/1` *on the server*. Running
+If you want to see a request tracking report for every player of every game after a load test, you can run the helper function `DarkWorldsServer.RunnerSupervisor.RequestTracker.report/1` *on the server*. Running
 
 ```
-DarkWorldsServer.Engine.RequestTracker.report(:game)
+DarkWorldsServer.RunnerSupervisor.RequestTracker.report(:game)
 ```
 
 will show something like this:
@@ -49,7 +49,7 @@ Details per game
 while running
 
 ```
-DarkWorldsServer.Engine.RequestTracker.report(:player)
+DarkWorldsServer.RunnerSupervisor.RequestTracker.report(:player)
 ```
 
 will show something like this:

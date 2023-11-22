@@ -1,5 +1,5 @@
 defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
-  alias DarkWorldsServer.Engine
+  alias DarkWorldsServer.RunnerSupervisor
   use GenServer
 
   ## Amount of players needed to start a game
@@ -52,8 +52,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   @impl true
   def handle_info({:check_timeout, session_ref}, %{session: session_ref, players: [_ | _]} = state) do
     bot_count = @session_player_amount - length(state.players)
-    {:ok, game_pid, engine_config} = start_game(bot_count)
-    players = consume_and_notify_players(state.players, game_pid, engine_config, @session_player_amount)
+    {:ok, game_pid, game_config} = start_game(bot_count)
+    players = consume_and_notify_players(state.players, game_pid, game_config, @session_player_amount)
     new_session_ref = make_ref()
     Process.send_after(self(), {:check_timeout, new_session_ref}, @start_game_timeout_ms)
     {:noreply, %{state | players: players, session: new_session_ref}}
@@ -64,8 +64,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   end
 
   def handle_info(:check_capacity, %{players: players} = state) when length(players) >= @session_player_amount do
-    {:ok, game_pid, engine_config} = start_game()
-    players = consume_and_notify_players(state.players, game_pid, engine_config, @session_player_amount)
+    {:ok, game_pid, game_config} = start_game()
+    players = consume_and_notify_players(state.players, game_pid, game_config, @session_player_amount)
     new_session_ref = make_ref()
     Process.send_after(self(), {:check_timeout, new_session_ref}, @start_game_timeout_ms)
     {:noreply, %{state | players: players, session: new_session_ref}}
@@ -81,9 +81,9 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   defp start_game(), do: start_game(0)
 
   defp start_game(bot_count) do
-    {:ok, game_pid} = Engine.start_child(bot_count)
-    {:ok, engine_config} = Engine.EngineRunner.get_config(game_pid)
-    {:ok, game_pid, engine_config}
+    {:ok, game_pid} = RunnerSupervisor.start_child(bot_count)
+    {:ok, game_config} = RunnerSupervisor.Runner.get_config(game_pid)
+    {:ok, game_pid, game_config}
   end
 
   defp consume_and_notify_players(remaining_players, _, _, 0) do
@@ -94,8 +94,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     []
   end
 
-  defp consume_and_notify_players([{_, client_pid} | rest_players], game_pid, engine_config, count) do
-    Process.send_after(client_pid, {:game_started, game_pid, engine_config}, 1_000)
-    consume_and_notify_players(rest_players, game_pid, engine_config, count - 1)
+  defp consume_and_notify_players([{_, client_pid} | rest_players], game_pid, game_config, count) do
+    Process.send_after(client_pid, {:game_started, game_pid, game_config}, 1_000)
+    consume_and_notify_players(rest_players, game_pid, game_config, count - 1)
   end
 end

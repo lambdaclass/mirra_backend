@@ -71,7 +71,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # Configures game GenServer
-config :dark_worlds_server, DarkWorldsServer.Engine.Runner, process_priority: :high
+config :dark_worlds_server, DarkWorldsServer.RunnerSupervisor.Runner, process_priority: :high
 
 # Configure server hash
 {hash, _} = System.cmd("git", ["rev-parse", "--short=8", "HEAD"])

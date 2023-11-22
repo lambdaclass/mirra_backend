@@ -2,12 +2,12 @@
 
 format:
 	mix format
-	cargo fmt --manifest-path native/lambda_game_engine/Cargo.toml
+	cargo fmt --manifest-path native/game_backend/Cargo.toml
 	cd load_test && mix format
 
 check:
 	mix credo --strict
-	cargo clippy --manifest-path native/lambda_game_engine/Cargo.toml -- -D warnings
+	cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings
 
 .PHONY: setup dependencies db stop start run tests elixir-tests shell prepush credo
 

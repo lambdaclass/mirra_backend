@@ -4,9 +4,9 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   """
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.GameAction
-  alias DarkWorldsServer.Engine
-  alias DarkWorldsServer.Engine.EngineRunner
-  alias DarkWorldsServer.Engine.RequestTracker
+  alias DarkWorldsServer.RunnerSupervisor
+  alias DarkWorldsServer.RunnerSupervisor.Runner
+  alias DarkWorldsServer.RunnerSupervisor.RequestTracker
 
   require Logger
 
@@ -58,10 +58,10 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     runner_pid = Communication.external_id_to_pid(game_id)
 
     with :ok <- Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}"),
-         true <- runner_pid in Engine.list_runners_pids(),
+         true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
 
-         {:ok, player_id} <- EngineRunner.join(runner_pid, client_id, Enum.random(["h4ck", "muflus"])) do
+         {:ok, player_id} <- Runner.join(runner_pid, client_id, Enum.random(["h4ck", "muflus"])) do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -110,7 +110,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
         case action do
           :move ->
-            EngineRunner.move(
+            Runner.move(
               web_socket_state[:runner_pid],
               web_socket_state[:player_id],
               action_data,
@@ -118,7 +118,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
             )
 
           :use_skill when action_data.skill == "BasicAttack" ->
-            EngineRunner.basic_attack(
+            Runner.basic_attack(
               web_socket_state[:runner_pid],
               web_socket_state[:player_id],
               action_data,
@@ -161,7 +161,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     {:reply, :ping, Map.put(web_socket_state, :last_ping_time, time_now)}
   end
 
-  ## The difference with :game_update messages is that these come from EngineRunner
+  ## The difference with :game_update messages is that these come from Runner
   def websocket_info({:game_state, game_state}, web_socket_state) do
     reply_map = %{
       players: game_state.players,
@@ -192,18 +192,6 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
   def websocket_info({:finish_character_selection, selected_players, players}, web_socket_state) do
     {:reply, {:binary, Communication.finish_character_selection!(selected_players, players)}, web_socket_state}
-  end
-
-  def websocket_info({:change_to_engine_runner, engine_runner_pid, topic}, web_socket_state) do
-    Logger.info("Switching to engine_runner #{inspect(engine_runner_pid)}")
-
-    :ok =
-      Phoenix.PubSub.unsubscribe(DarkWorldsServer.PubSub, "game_play_#{web_socket_state.game_id}")
-
-    :ok = Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, topic)
-
-    web_socket_state = %{web_socket_state | runner_pid: engine_runner_pid}
-    {:ok, web_socket_state}
   end
 
   def websocket_info(info, web_socket_state), do: {:reply, {:text, info}, web_socket_state}

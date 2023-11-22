@@ -1,11 +1,11 @@
 [package]
-name = "lambda_game_engine"
+name = "game_backend"
 version = "0.1.0"
 authors = []
 edition = "2021"
 
 [lib]
-name = "lambda_game_engine"
+name = "game_backend"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 
@@ -13,7 +13,7 @@ crate-type = ["cdylib"]
 rustler = "0.29.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-# Dependencies for myrra_engine module
+# Dependencies for myrra_backend module
 # remove after removal of module
 itertools = "0.11.0"
 rand = "0.8.5"

@@ -1,4 +1,4 @@
-defmodule DarkWorldsServer.Engine.RequestTracker do
+defmodule DarkWorldsServer.RunnerSupervisor.RequestTracker do
   def create_table() do
     :ets.new(:request_tracker, [:set, :public, :named_table])
   end

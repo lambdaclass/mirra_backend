@@ -19,7 +19,7 @@ fn parse_config(data: String) -> Config {
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-fn engine_new_game(config: Config) -> GameState {
+fn new_game(config: Config) -> GameState {
     GameState::new(config)
 }
 
@@ -98,10 +98,10 @@ fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
 }
 
 rustler::init!(
-    "Elixir.LambdaGameEngine",
+    "Elixir.GameBackend",
     [
         parse_config,
-        engine_new_game,
+        new_game,
         add_player,
         move_player,
         apply_effect,

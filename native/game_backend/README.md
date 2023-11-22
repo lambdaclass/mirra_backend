@@ -1,4 +1,4 @@
-# NIF for Elixir.Engine
+# NIF for Elixir.GameBackend
 
 ## To build the NIF module:
 
@@ -7,8 +7,8 @@
 ## To load the NIF:
 
 ```elixir
-defmodule Engine do
-  use Rustler, otp_app: :lambda_game_engine, crate: "lambda_game_engine"
+defmodule GameBackend do
+  use Rustler, otp_app: :game_backend, crate: "game_backend"
 
   # When your NIF is loaded, it will override this function.
   def add(_a, _b), do: :erlang.nif_error(:nif_not_loaded)

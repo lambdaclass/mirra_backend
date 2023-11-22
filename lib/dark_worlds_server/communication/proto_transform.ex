@@ -22,10 +22,10 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.Projectile, as: ProtoProjectile
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias LambdaGameEngine.MyrraEngine.Player, as: EnginePlayer
-  alias LambdaGameEngine.MyrraEngine.Position, as: EnginePosition
-  alias LambdaGameEngine.MyrraEngine.Projectile, as: EngineProjectile
-  alias LambdaGameEngine.MyrraEngine.RelativePosition, as: EngineRelativePosition
+  alias GameBackend.MyrraBackend.Player, as: MyrraPlayer
+  alias GameBackend.MyrraBackend.Position, as: MyrraPosition
+  alias GameBackend.MyrraBackend.Projectile, as: MyrraProjectile
+  alias GameBackend.MyrraBackend.RelativePosition, as: MyrraRelativePosition
 
   @behaviour Protobuf.TransformModule
 
@@ -48,18 +48,18 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
-  def encode(%EnginePosition{} = position, ProtoPosition) do
+  def encode(%MyrraPosition{} = position, ProtoPosition) do
     %{x: x, y: y} = position
     %ProtoPosition{x: x, y: y}
   end
 
-  def encode(%EngineRelativePosition{} = position, ProtoRelativePosition) do
+  def encode(%MyrraRelativePosition{} = position, ProtoRelativePosition) do
     %{x: x, y: y} = position
     %ProtoRelativePosition{x: x, y: y}
   end
 
-  def encode(%EnginePlayer{} = player, ProtoPlayer) do
-    %EnginePlayer{
+  def encode(%MyrraPlayer{} = player, ProtoPlayer) do
+    %MyrraPlayer{
       id: id,
       health: health,
       position: position,
@@ -100,7 +100,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
-  def encode(%EngineProjectile{} = projectile, ProtoProjectile) do
+  def encode(%MyrraProjectile{} = projectile, ProtoProjectile) do
     %{
       id: id,
       position: position,
@@ -225,13 +225,13 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   @impl Protobuf.TransformModule
   def decode(%ProtoPosition{} = position, ProtoPosition) do
     %{x: x, y: y} = position
-    %EnginePosition{x: x, y: y}
+    %MyrraPosition{x: x, y: y}
   end
 
   @impl Protobuf.TransformModule
   def decode(%ProtoRelativePosition{} = position, ProtoRelativePosition) do
     %{x: x, y: y} = position
-    %EngineRelativePosition{x: x, y: y}
+    %MyrraRelativePosition{x: x, y: y}
   end
 
   def decode(%ProtoPlayer{} = player, ProtoPlayer) do
@@ -255,7 +255,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       body_size: body_size
     } = player
 
-    %EnginePlayer{
+    %MyrraPlayer{
       id: id,
       health: health,
       position: position,
@@ -293,7 +293,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       skill_name: skill_name
     } = projectile
 
-    %EngineProjectile{
+    %MyrraProjectile{
       id: id,
       position: position,
       direction: direction,

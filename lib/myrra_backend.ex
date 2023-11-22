@@ -1,4 +1,4 @@
-defmodule LambdaGameEngine.MyrraEngine do
+defmodule GameBackend.MyrraBackend do
   defmodule Board do
     defstruct []
   end

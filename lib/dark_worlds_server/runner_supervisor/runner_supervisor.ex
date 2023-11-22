@@ -1,12 +1,12 @@
-defmodule DarkWorldsServer.Engine do
+defmodule DarkWorldsServer.RunnerSupervisor do
   @moduledoc """
-  Game Engine Supervisor
+  Game Runner Supervisor
   """
   use DynamicSupervisor
 
-  alias DarkWorldsServer.Engine.EngineRunner
-  alias DarkWorldsServer.Engine.PlayerTracker
-  alias DarkWorldsServer.Engine.RequestTracker
+  alias DarkWorldsServer.RunnerSupervisor.Runner
+  alias DarkWorldsServer.RunnerSupervisor.PlayerTracker
+  alias DarkWorldsServer.RunnerSupervisor.RequestTracker
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)
@@ -15,7 +15,7 @@ defmodule DarkWorldsServer.Engine do
   def start_child(bot_count) do
     DynamicSupervisor.start_child(
       __MODULE__,
-      {EngineRunner, %{bot_count: bot_count}}
+      {Runner, %{bot_count: bot_count}}
     )
   end
 
@@ -31,7 +31,7 @@ defmodule DarkWorldsServer.Engine do
     |> DynamicSupervisor.which_children()
     |> Enum.filter(fn children ->
       case children do
-        {:undefined, pid, :worker, [EngineRunner]} when is_pid(pid) -> true
+        {:undefined, pid, :worker, [Runner]} when is_pid(pid) -> true
         _ -> false
       end
     end)

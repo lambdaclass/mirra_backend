@@ -1,4 +1,4 @@
-defmodule DarkWorldsServer.Engine.PlayerTracker do
+defmodule DarkWorldsServer.RunnerSupervisor.PlayerTracker do
   @table :player_tracker
   @persistent_term_key {__MODULE__, :runtime_id}
 

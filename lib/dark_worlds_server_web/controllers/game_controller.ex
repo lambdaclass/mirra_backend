@@ -7,12 +7,12 @@ defmodule DarkWorldsServerWeb.GameController do
   # alias DarkWorldsServer.Communication.Proto.RunnerConfig
   # alias DarkWorldsServer.Communication.Proto.SkillConfigItem
   # alias DarkWorldsServer.Communication.Proto.SkillsConfig
-  alias DarkWorldsServer.Engine
-  # alias DarkWorldsServer.Engine.PlayerTracker
-  # alias DarkWorldsServer.Engine.Runner
+  alias DarkWorldsServer.RunnerSupervisor
+  # alias DarkWorldsServer.RunnerSupervisor.PlayerTracker
+  # alias DarkWorldsServer.RunnerSupervisor.Runner
 
   def current_games(conn, _params) do
-    current_games_pids = Engine.list_runners_pids()
+    current_games_pids = RunnerSupervisor.list_runners_pids()
 
     current_games =
       Enum.map(current_games_pids, fn pid -> Communication.pid_to_external_id(pid) end)

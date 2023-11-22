@@ -1,10 +1,10 @@
-defmodule DarkWorldsServer.Engine.EngineRunner do
+defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   use GenServer, restart: :transient
   require Logger
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.Engine.BotPlayer
+  alias DarkWorldsServer.RunnerSupervisor.BotPlayer
 
   # This is the amount of time between state updates in milliseconds
   @game_tick_rate_ms 20
@@ -63,15 +63,15 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
   @impl true
   def init(%{bot_count: bot_count}) do
     priority =
-      Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Engine.Runner)
+      Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.RunnerSupervisor.Runner)
       |> Keyword.fetch!(:process_priority)
 
     Process.flag(:priority, priority)
 
-    {:ok, engine_config_json} =
+    {:ok, game_config_json} =
       Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
 
-    engine_config = LambdaGameEngine.parse_config(engine_config_json)
+    game_config = GameBackend.parse_config(game_config_json)
 
     Process.send_after(self(), :game_timeout, @game_timeout_ms)
     Process.send_after(self(), :start_game_tick, @game_tick_start)
@@ -79,7 +79,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
     send(self(), {:spawn_bots, bot_count})
 
     state = %{
-      game_state: LambdaGameEngine.engine_new_game(engine_config),
+      game_state: GameBackend.new_game(game_config),
       game_tick: @game_tick_rate_ms,
       player_timestamps: %{},
       broadcast_topic: Communication.pubsub_game_topic(self()),
@@ -88,7 +88,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
       last_standing_players: []
     }
 
-    Process.put(:map_size, {engine_config.game.width, engine_config.game.height})
+    Process.put(:map_size, {game_config.game.width, game_config.game.height})
 
     {:ok, state}
   end
@@ -100,7 +100,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
 
   @impl true
   def handle_call({:join, user_id, character_name}, _from, state) do
-    {game_state, player_id} = LambdaGameEngine.add_player(state.game_state, character_name)
+    {game_state, player_id} = GameBackend.add_player(state.game_state, character_name)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -118,7 +118,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
   @impl true
   def handle_cast({:move, user_id, %Move{angle: angle}, timestamp}, state) do
     player_id = state.user_to_player[user_id] || user_id
-    game_state = LambdaGameEngine.move_player(state.game_state, player_id, angle)
+    game_state = GameBackend.move_player(state.game_state, player_id, angle)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -136,7 +136,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
     skill_key = action_skill_to_key(skill)
 
     game_state =
-      LambdaGameEngine.activate_skill(state.game_state, player_id, skill_key, %{
+      GameBackend.activate_skill(state.game_state, player_id, skill_key, %{
         "direction_angle" => Float.to_string(angle)
       })
 
@@ -167,7 +167,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
 
     now = System.monotonic_time(:millisecond)
     time_diff = now - state.last_game_tick_at
-    game_state = LambdaGameEngine.game_tick(state.game_state, time_diff)
+    game_state = GameBackend.game_tick(state.game_state, time_diff)
 
     broadcast_game_state(
       state.broadcast_topic,
@@ -186,7 +186,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
   def handle_info(:spawn_loot, state) do
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
 
-    {game_state, _loot_id} = LambdaGameEngine.spawn_random_loot(state.game_state)
+    {game_state, _loot_id} = GameBackend.spawn_random_loot(state.game_state)
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -228,7 +228,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
     {game_state, bots_ids} =
       Enum.reduce(0..(bot_count - 1), {state.game_state, []}, fn _, {acc_game_state, bots} ->
         character = Enum.random(["h4ck", "muflus"])
-        {new_game_state, player_id} = LambdaGameEngine.add_player(acc_game_state, character)
+        {new_game_state, player_id} = GameBackend.add_player(acc_game_state, character)
 
         {new_game_state, [player_id | bots]}
       end)
@@ -314,11 +314,11 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
 
   defp transform_state_to_myrra_state(game_state) do
     %{
-      __struct__: LambdaGameEngine.MyrraEngine.Game,
+      __struct__: GameBackend.MyrraBackend.Game,
       players: transform_players_to_myrra_players(game_state.players),
       board: %{
         width: game_state.config.game.width,
-        __struct__: LambdaGameEngine.MyrraEngine.Board,
+        __struct__: GameBackend.MyrraBackend.Board,
         height: game_state.config.game.height
       },
       projectiles: transform_projectiles_to_myrra_projectiles(game_state.projectiles),
@@ -340,7 +340,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
   defp transform_player_to_myrra_player(player) do
     %{
       ## Transformed
-      __struct__: LambdaGameEngine.MyrraEngine.Player,
+      __struct__: GameBackend.MyrraBackend.Player,
       id: player.id,
       position: transform_position_to_myrra_position(player.position),
       status: if(player.health <= 0, do: :dead, else: :alive),
@@ -353,18 +353,18 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
       death_count: 0,
       action: transform_action_to_myrra_action(player.actions),
       direction: transform_angle_to_myrra_relative_position(player.direction),
-      aoe_position: %LambdaGameEngine.MyrraEngine.Position{x: 0, y: 0}
+      aoe_position: %GameBackend.MyrraBackend.Position{x: 0, y: 0}
     }
     |> transform_player_cooldowns_to_myrra_player_cooldowns(player)
   end
 
-  defp transform_player_cooldowns_to_myrra_player_cooldowns(myrra_player, engine_player) do
+  defp transform_player_cooldowns_to_myrra_player_cooldowns(myrra_player, player) do
     myrra_cooldowns = %{
-      basic_skill_cooldown_left: transform_milliseconds_to_myrra_millis_time(engine_player.cooldowns["1"]),
-      skill_1_cooldown_left: transform_milliseconds_to_myrra_millis_time(engine_player.cooldowns["2"]),
-      skill_2_cooldown_left: transform_milliseconds_to_myrra_millis_time(engine_player.cooldowns["3"]),
-      skill_3_cooldown_left: transform_milliseconds_to_myrra_millis_time(engine_player.cooldowns["4"]),
-      skill_4_cooldown_left: transform_milliseconds_to_myrra_millis_time(engine_player.cooldowns["5"])
+      basic_skill_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["1"]),
+      skill_1_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["2"]),
+      skill_2_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["3"]),
+      skill_3_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["4"]),
+      skill_4_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["5"])
     }
 
     Map.merge(myrra_player, myrra_cooldowns)
@@ -372,7 +372,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
 
   defp transform_projectiles_to_myrra_projectiles(projectiles) do
     Enum.map(projectiles, fn projectile ->
-      %LambdaGameEngine.MyrraEngine.Projectile{
+      %GameBackend.MyrraBackend.Projectile{
         id: projectile.id,
         position: transform_position_to_myrra_position(projectile.position),
         direction: transform_angle_to_myrra_relative_position(projectile.direction_angle),
@@ -419,7 +419,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
   defp transform_position_to_myrra_position(position) do
     {width, height} = Process.get(:map_size)
 
-    %LambdaGameEngine.MyrraEngine.Position{
+    %GameBackend.MyrraBackend.Position{
       x: -1 * position.y + div(width, 2),
       y: position.x + div(height, 2)
     }
@@ -432,7 +432,7 @@ defmodule DarkWorldsServer.Engine.EngineRunner do
     angle_radians = Nx.divide(Nx.Constants.pi(), 180) |> Nx.multiply(angle)
     x = Nx.cos(angle_radians) |> Nx.to_number()
     y = Nx.sin(angle_radians) |> Nx.to_number()
-    %LambdaGameEngine.MyrraEngine.RelativePosition{x: x, y: y}
+    %GameBackend.MyrraBackend.RelativePosition{x: x, y: y}
   end
 
   defp transform_action_to_myrra_action([]), do: :nothing

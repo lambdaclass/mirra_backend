@@ -1,10 +1,10 @@
-defmodule DarkWorldsServer.Engine.BotPlayer do
+defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   use GenServer, restart: :transient
   require Logger
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.Engine.EngineRunner
+  alias DarkWorldsServer.RunnerSupervisor.Runner
 
   # This variable will decide how much time passes between bot decisions in milis
   @decide_delay_ms 500
@@ -246,13 +246,13 @@ defmodule DarkWorldsServer.Engine.BotPlayer do
   end
 
   defp do_action(bot_id, game_pid, _players, %{action: {:move, angle}}) do
-    EngineRunner.move(game_pid, bot_id, %Move{angle: angle}, nil)
+    Runner.move(game_pid, bot_id, %Move{angle: angle}, nil)
   end
 
   defp do_action(bot_id, game_pid, _players, %{
          action: {:attack, %{type: :enemy, attacking_angle_direction: angle}, skill}
        }) do
-    EngineRunner.basic_attack(game_pid, bot_id, %UseSkill{angle: angle, skill: skill}, nil)
+    Runner.basic_attack(game_pid, bot_id, %UseSkill{angle: angle, skill: skill}, nil)
   end
 
   defp do_action(_bot_id, _game_pid, _players, _) do

@@ -18,8 +18,8 @@ defmodule DarkWorldsServer.Application do
       {Finch, name: DarkWorldsServer.Finch},
       # Start the Endpoint (http/https)
       DarkWorldsServerWeb.Endpoint,
-      # Start the Game Engine
-      DarkWorldsServer.Engine,
+      # Start the Runner Supervisor
+      DarkWorldsServer.RunnerSupervisor,
       # Start the matchmaking supervisor
       DarkWorldsServer.Matchmaking.MatchingCoordinator
     ]

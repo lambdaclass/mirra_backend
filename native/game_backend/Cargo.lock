@@ -24,6 +24,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
+name = "game_backend"
+version = "0.1.0"
+dependencies = [
+ "itertools",
+ "rand",
+ "rustler",
+ "serde",
+ "serde_json",
+ "strum",
+ "strum_macros",
+]
+
+[[package]]
 name = "getrandom"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -54,19 +67,6 @@ name = "itoa"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af150ab688ff2122fcef229be89cb50dd66af9e01a4ff320cc137eecc9bacc38"
-
-[[package]]
-name = "lambda_game_engine"
-version = "0.1.0"
-dependencies = [
- "itertools",
- "rand",
- "rustler",
- "serde",
- "serde_json",
- "strum",
- "strum_macros",
-]
 
 [[package]]
 name = "lazy_static"

@@ -1,17 +1,17 @@
-defmodule LambdaGameEngineTest do
+defmodule GameBackendTest do
   use ExUnit.Case
-  doctest LambdaGameEngine
+  doctest GameBackend
 
   setup do
     {:ok, data} =
       Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
-    config = LambdaGameEngine.parse_config(data)
-    game = LambdaGameEngine.engine_new_game(config)
+    config = GameBackend.parse_config(data)
+    game = GameBackend.new_game(config)
 
     character_name = Enum.random(config.characters).name
-    {game, player_id} = LambdaGameEngine.add_player(game, character_name)
+    {game, player_id} = GameBackend.add_player(game, character_name)
     %{game: game, player_id: player_id}
   end
 
@@ -20,7 +20,7 @@ defmodule LambdaGameEngineTest do
       Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
-    assert is_map(LambdaGameEngine.parse_config(data))
+    assert is_map(GameBackend.parse_config(data))
   end
 
   test "parsed zone config retains modifications order" do
@@ -28,7 +28,7 @@ defmodule LambdaGameEngineTest do
       Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
-    config = LambdaGameEngine.parse_config(data)
+    config = GameBackend.parse_config(data)
 
     ## This asserts are based on how config.json is written so any changes on the
     ## modification stages will likely require a change here
@@ -43,15 +43,15 @@ defmodule LambdaGameEngineTest do
       Application.app_dir(:dark_worlds_server, "priv/test_config.json")
       |> File.read()
 
-    config = LambdaGameEngine.parse_config(data)
-    game = LambdaGameEngine.engine_new_game(config)
+    config = GameBackend.parse_config(data)
+    game = GameBackend.new_game(config)
 
     ## A character that does not exist does nothing and returns `nil`
-    assert match?({game, nil}, LambdaGameEngine.add_player(game, "miss-character"))
+    assert match?({game, nil}, GameBackend.add_player(game, "miss-character"))
 
     character_name = Enum.random(config.characters).name
-    {game, player_id1} = LambdaGameEngine.add_player(game, character_name)
-    {game, player_id2} = LambdaGameEngine.add_player(game, character_name)
+    {game, player_id1} = GameBackend.add_player(game, character_name)
+    {game, player_id2} = GameBackend.add_player(game, character_name)
     assert player_id1 == 1
     assert player_id2 == 2
     assert Enum.count(game.players) == 2
@@ -59,14 +59,14 @@ defmodule LambdaGameEngineTest do
 
   test "can apply effects on player", context do
     player_pre_effect = context.game.players[context.player_id]
-    game = LambdaGameEngine.apply_effect(context.game, context.player_id, "test_effect")
+    game = GameBackend.apply_effect(context.game, context.player_id, "test_effect")
     player_post_effect = game.players[context.player_id]
 
     assert player_pre_effect.speed < player_post_effect.speed
   end
 
   test "spawns a loot randomly", context do
-    {game, loot_id} = LambdaGameEngine.spawn_random_loot(context.game)
+    {game, loot_id} = GameBackend.spawn_random_loot(context.game)
     [loot] = game.loots
 
     assert not is_nil(loot_id)
@@ -80,7 +80,7 @@ defmodule LambdaGameEngineTest do
     position = %{x: loot.position.x, y: loot.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0)
 
     assert [] = game.loots
     assert 80 = get_in(game, [:players, context.player_id, :health])
@@ -93,14 +93,14 @@ defmodule LambdaGameEngineTest do
     position = %{x: loot.position.x, y: loot.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0)
     assert [] = game.loots
 
     player = get_in(game, [:players, context.player_id])
     assert [^loot] = player.inventory
     assert 50 = player.health
 
-    game = LambdaGameEngine.activate_inventory(game, context.player_id, 0)
+    game = GameBackend.activate_inventory(game, context.player_id, 0)
     player = get_in(game, [:players, context.player_id])
     assert [nil] = player.inventory
     assert 80 = player.health
@@ -116,7 +116,7 @@ defmodule LambdaGameEngineTest do
     position = %{x: loot1.position.x, y: loot1.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0)
     assert [^loot2] = game.loots
 
     player = get_in(game, [:players, context.player_id])
@@ -125,27 +125,27 @@ defmodule LambdaGameEngineTest do
     position = %{x: loot2.position.x, y: loot2.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = LambdaGameEngine.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0)
     assert [^loot2] = game.loots
     assert [^loot1] = player.inventory
   end
 
   test "Cooldowns are removed", context do
-    game = LambdaGameEngine.activate_skill(context.game, context.player_id, "1", %{"direction_angle" => "90.0"})
+    game = GameBackend.activate_skill(context.game, context.player_id, "1", %{"direction_angle" => "90.0"})
     %{"1" => cooldown} = game.players[context.player_id].cooldowns
 
     elapsed_time_ms = div(cooldown, 2)
-    game = LambdaGameEngine.game_tick(game, elapsed_time_ms)
+    game = GameBackend.game_tick(game, elapsed_time_ms)
     %{"1" => cooldown2} = game.players[context.player_id].cooldowns
     assert cooldown2 == cooldown - elapsed_time_ms
 
     elapsed_time_ms = cooldown * 2
-    game = LambdaGameEngine.game_tick(game, elapsed_time_ms)
+    game = GameBackend.game_tick(game, elapsed_time_ms)
     assert %{} = game.players[context.player_id].cooldowns
   end
 
   defp spawn_specific_loot(game_state, loot_mechanic) do
-    {new_game_state, loot_id} = LambdaGameEngine.spawn_random_loot(game_state)
+    {new_game_state, loot_id} = GameBackend.spawn_random_loot(game_state)
 
     case Enum.find(new_game_state.loots, fn loot -> loot.id == loot_id end) do
       %{pickup_mechanic: ^loot_mechanic} -> new_game_state
