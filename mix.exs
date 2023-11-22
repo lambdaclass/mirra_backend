@@ -1,4 +1,4 @@
-defmodule CurseOfMyrra.MixProject do
+defmodule DarkWorldsServer.MixProject do
   use Mix.Project
 
   def project do
@@ -63,7 +63,8 @@ defmodule CurseOfMyrra.MixProject do
       {:eep, github: "virtan/eep"},
       {:cors_plug, "~> 3.0"},
       {:tesla, "~> 1.4", override: true},
-      {:toxiproxy_ex, "~> 1.0.0"}
+      {:toxiproxy_ex, "~> 1.0.0"},
+      {:uuid, "~> 1.1"}
     ]
   end
 
