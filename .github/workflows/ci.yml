@@ -56,7 +56,7 @@ jobs:
       - name: Credo Elixir Check
         run: make credo
       - name: Check Elixir Formatting
-        run: cd server && mix format --check-formatted
+        run: mix format --check-formatted
       - name: (Load Test) Check Elixir Formatting
         run: cd load_test && mix format --check-formatted
       - name: Compiles without warnings
