@@ -200,13 +200,13 @@ impl GameState {
                     .unwrap();
 
                 let direction_angle = if auto_aim {
-                    let nearest_player: Option<(u64, Position)> = nearest_player(
+                    let nearest_player: Option<Position> = nearest_player_position(
                         &other_players,
                         &player.position,
                         self.config.game.auto_aim_max_distance,
                     );
 
-                    if let Some((_target_player_id, target_player_position)) = nearest_player {
+                    if let Some(target_player_position) = nearest_player {
                         map::angle_between_positions(&player.position, &target_player_position)
                     } else {
                         player.direction
@@ -563,11 +563,11 @@ fn apply_zone_effects(
     }
 }
 
-fn nearest_player(
+fn nearest_player_position(
     players: &Vec<&mut Player>,
     position: &Position,
     max_search_distance: f32,
-) -> Option<(u64, Position)> {
+) -> Option<Position> {
     let mut nearest_player = None;
     let mut nearest_distance = max_search_distance;
 
@@ -575,7 +575,7 @@ fn nearest_player(
         if matches!(player.status, PlayerStatus::Alive) {
             let distance = map::distance_to_center(player, position);
             if distance < nearest_distance {
-                nearest_player = Some((player.id, player.position));
+                nearest_player = Some(player.position);
                 nearest_distance = distance;
             }
         }
