@@ -263,7 +263,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Phoenix.PubSub.broadcast(
       DarkWorldsServer.PubSub,
       topic,
-      {:game_state, transform_state_to_myrra_state(game_state)}
+      {:game_state, transform_state_to_game_state(game_state)}
     )
   end
 
@@ -277,13 +277,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp broadcast_game_ended(topic, winner, game_state) do
-    myrra_winner = transform_player_to_myrra_player(winner)
-    myrra_state = transform_state_to_myrra_state(game_state)
+    game_winner = transform_player_to_game_player(winner)
+    game_state = transform_state_to_game_state(game_state)
 
     Phoenix.PubSub.broadcast(
       DarkWorldsServer.PubSub,
       topic,
-      {:game_ended, myrra_winner, myrra_state}
+      {:game_ended, game_winner, game_state}
     )
   end
 
@@ -312,20 +312,20 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp action_skill_to_key(:skill_3), do: "4"
   defp action_skill_to_key(:skill_4), do: "5"
 
-  defp transform_state_to_myrra_state(game_state) do
+  defp transform_state_to_game_state(game_state) do
     %{
-      __struct__: GameBackend.MyrraBackend.Game,
-      players: transform_players_to_myrra_players(game_state.players),
+      __struct__: GameBackend.Game,
+      players: transform_players_to_game_players(game_state.players),
       board: %{
         width: game_state.config.game.width,
-        __struct__: GameBackend.MyrraBackend.Board,
+        __struct__: GameBackend.Board,
         height: game_state.config.game.height
       },
-      projectiles: transform_projectiles_to_myrra_projectiles(game_state.projectiles),
-      killfeed: transform_killfeed_to_myrra_killfeed(game_state.killfeed),
+      projectiles: transform_projectiles_to_game_projectiles(game_state.projectiles),
+      killfeed: transform_killfeed_to_game_killfeed(game_state.killfeed),
       playable_radius: game_state.zone.radius,
-      shrinking_center: transform_position_to_myrra_position(game_state.zone.center),
-      loots: transform_loots_to_myrra_loots(game_state.loots),
+      shrinking_center: transform_position_to_game_position(game_state.zone.center),
+      loots: transform_loots_to_game_loots(game_state.loots),
       next_killfeed: [],
       next_projectile_id: 0,
       next_loot_id: 0,
@@ -333,49 +333,49 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     }
   end
 
-  defp transform_players_to_myrra_players(players) do
-    Enum.map(players, fn {_id, player} -> transform_player_to_myrra_player(player) end)
+  defp transform_players_to_game_players(players) do
+    Enum.map(players, fn {_id, player} -> transform_player_to_game_player(player) end)
   end
 
-  defp transform_player_to_myrra_player(player) do
+  defp transform_player_to_game_player(player) do
     %{
       ## Transformed
-      __struct__: GameBackend.MyrraBackend.Player,
+      __struct__: GameBackend.Player,
       id: player.id,
-      position: transform_position_to_myrra_position(player.position),
+      position: transform_position_to_game_position(player.position),
       status: if(player.health <= 0, do: :dead, else: :alive),
       health: player.health,
       body_size: player.size,
-      character_name: transform_character_name_to_myrra_character_name(player.character.name),
+      character_name: transform_character_name_to_game_character_name(player.character.name),
       ## Placeholder values
       kill_count: 0,
       effects: %{},
       death_count: 0,
-      action: transform_action_to_myrra_action(player.actions),
-      direction: transform_angle_to_myrra_relative_position(player.direction),
-      aoe_position: %GameBackend.MyrraBackend.Position{x: 0, y: 0}
+      action: transform_action_to_game_action(player.actions),
+      direction: transform_angle_to_game_relative_position(player.direction),
+      aoe_position: %GameBackend.Position{x: 0, y: 0}
     }
-    |> transform_player_cooldowns_to_myrra_player_cooldowns(player)
+    |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end
 
-  defp transform_player_cooldowns_to_myrra_player_cooldowns(myrra_player, player) do
-    myrra_cooldowns = %{
-      basic_skill_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["1"]),
-      skill_1_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["2"]),
-      skill_2_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["3"]),
-      skill_3_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["4"]),
-      skill_4_cooldown_left: transform_milliseconds_to_myrra_millis_time(player.cooldowns["5"])
+  defp transform_player_cooldowns_to_game_player_cooldowns(game_player, player) do
+    game_cooldowns = %{
+      basic_skill_cooldown_left: transform_milliseconds_to_game_millis_time(player.cooldowns["1"]),
+      skill_1_cooldown_left: transform_milliseconds_to_game_millis_time(player.cooldowns["2"]),
+      skill_2_cooldown_left: transform_milliseconds_to_game_millis_time(player.cooldowns["3"]),
+      skill_3_cooldown_left: transform_milliseconds_to_game_millis_time(player.cooldowns["4"]),
+      skill_4_cooldown_left: transform_milliseconds_to_game_millis_time(player.cooldowns["5"])
     }
 
-    Map.merge(myrra_player, myrra_cooldowns)
+    Map.merge(game_player, game_cooldowns)
   end
 
-  defp transform_projectiles_to_myrra_projectiles(projectiles) do
+  defp transform_projectiles_to_game_projectiles(projectiles) do
     Enum.map(projectiles, fn projectile ->
-      %GameBackend.MyrraBackend.Projectile{
+      %GameBackend.Projectile{
         id: projectile.id,
-        position: transform_position_to_myrra_position(projectile.position),
-        direction: transform_angle_to_myrra_relative_position(projectile.direction_angle),
+        position: transform_position_to_game_position(projectile.position),
+        direction: transform_angle_to_game_relative_position(projectile.direction_angle),
         speed: projectile.speed,
         range: projectile.max_distance,
         player_id: projectile.player_id,
@@ -387,74 +387,74 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
         last_attacked_player_id: projectile.player_id,
         # Honestly don't see why client should care about this
         remaining_ticks: 9999,
-        skill_name: transform_projectile_name_to_myrra_projectile_skill_name(projectile.name)
+        skill_name: transform_projectile_name_to_game_projectile_skill_name(projectile.name)
       }
     end)
   end
 
-  defp transform_projectile_name_to_myrra_projectile_skill_name("projectile_slingshot"),
+  defp transform_projectile_name_to_game_projectile_skill_name("projectile_slingshot"),
     do: "SLINGSHOT"
 
-  defp transform_projectile_name_to_myrra_projectile_skill_name("projectile_multishot"),
+  defp transform_projectile_name_to_game_projectile_skill_name("projectile_multishot"),
     do: "MULTISHOT"
 
-  defp transform_projectile_name_to_myrra_projectile_skill_name("projectile_disarm"), do: "DISARM"
+  defp transform_projectile_name_to_game_projectile_skill_name("projectile_disarm"), do: "DISARM"
   # TEST skills
-  defp transform_projectile_name_to_myrra_projectile_skill_name("projectile_poison_dart"),
+  defp transform_projectile_name_to_game_projectile_skill_name("projectile_poison_dart"),
     do: "DISARM"
 
-  defp transform_milliseconds_to_myrra_millis_time(nil), do: %{high: 0, low: 0}
-  defp transform_milliseconds_to_myrra_millis_time(cooldown), do: %{high: 0, low: cooldown}
+  defp transform_milliseconds_to_game_millis_time(nil), do: %{high: 0, low: 0}
+  defp transform_milliseconds_to_game_millis_time(cooldown), do: %{high: 0, low: cooldown}
 
-  defp transform_loots_to_myrra_loots(loots) do
+  defp transform_loots_to_game_loots(loots) do
     Enum.map(loots, fn loot ->
       %{
         id: loot.id,
         loot_type: {:health, :placeholder},
-        position: transform_position_to_myrra_position(loot.position)
+        position: transform_position_to_game_position(loot.position)
       }
     end)
   end
 
-  defp transform_position_to_myrra_position(position) do
+  defp transform_position_to_game_position(position) do
     {width, height} = Process.get(:map_size)
 
-    %GameBackend.MyrraBackend.Position{
+    %GameBackend.Position{
       x: -1 * position.y + div(width, 2),
       y: position.x + div(height, 2)
     }
   end
 
-  defp transform_character_name_to_myrra_character_name("h4ck"), do: "H4ck"
-  defp transform_character_name_to_myrra_character_name("muflus"), do: "Muflus"
+  defp transform_character_name_to_game_character_name("h4ck"), do: "H4ck"
+  defp transform_character_name_to_game_character_name("muflus"), do: "Muflus"
 
-  defp transform_angle_to_myrra_relative_position(angle) do
+  defp transform_angle_to_game_relative_position(angle) do
     angle_radians = Nx.divide(Nx.Constants.pi(), 180) |> Nx.multiply(angle)
     x = Nx.cos(angle_radians) |> Nx.to_number()
     y = Nx.sin(angle_radians) |> Nx.to_number()
-    %GameBackend.MyrraBackend.RelativePosition{x: x, y: y}
+    %GameBackend.RelativePosition{x: x, y: y}
   end
 
-  defp transform_action_to_myrra_action([]), do: :nothing
-  defp transform_action_to_myrra_action([:nothing | _]), do: :nothing
-  defp transform_action_to_myrra_action([:moving | _]), do: :moving
-  defp transform_action_to_myrra_action([{:using_skill, "1"} | _]), do: :attacking
-  defp transform_action_to_myrra_action([{:using_skill, "2"} | _]), do: :executingskill2
+  defp transform_action_to_game_action([]), do: :nothing
+  defp transform_action_to_game_action([:nothing | _]), do: :nothing
+  defp transform_action_to_game_action([:moving | _]), do: :moving
+  defp transform_action_to_game_action([{:using_skill, "1"} | _]), do: :attacking
+  defp transform_action_to_game_action([{:using_skill, "2"} | _]), do: :executingskill2
 
-  defp transform_killfeed_to_myrra_killfeed([]), do: []
+  defp transform_killfeed_to_game_killfeed([]), do: []
 
-  defp transform_killfeed_to_myrra_killfeed([
+  defp transform_killfeed_to_game_killfeed([
          {{:player, killer_id}, killed_id} | tail
        ]),
-       do: [%{killed_by: killer_id, killed: killed_id} | transform_killfeed_to_myrra_killfeed(tail)]
+       do: [%{killed_by: killer_id, killed: killed_id} | transform_killfeed_to_game_killfeed(tail)]
 
-  defp transform_killfeed_to_myrra_killfeed([
+  defp transform_killfeed_to_game_killfeed([
          {:zone, killed_id} | tail
        ]),
-       do: [%{killed_by: 9999, killed: killed_id} | transform_killfeed_to_myrra_killfeed(tail)]
+       do: [%{killed_by: 9999, killed: killed_id} | transform_killfeed_to_game_killfeed(tail)]
 
-  defp transform_killfeed_to_myrra_killfeed([
+  defp transform_killfeed_to_game_killfeed([
          {:loot, killed_id} | tail
        ]),
-       do: [%{killed_by: 1111, killed: killed_id} | transform_killfeed_to_myrra_killfeed(tail)]
+       do: [%{killed_by: 1111, killed: killed_id} | transform_killfeed_to_game_killfeed(tail)]
 end
