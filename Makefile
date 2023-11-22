@@ -9,7 +9,7 @@ check:
 	mix credo --strict
 	cargo clippy --manifest-path native/lambda_game_engine/Cargo.toml -- -D warnings
 
-.PHONY: setup dependencies db stop start run tests elixir-tests shell prepush
+.PHONY: setup dependencies db stop start run tests elixir-tests shell prepush credo
 
 setup: dependencies
 	mix deps.compile
@@ -39,3 +39,6 @@ shell:
 	iex -S mix run --no-start --no-halt
 
 prepush: format credo tests
+
+credo:
+	mix credo --strict
