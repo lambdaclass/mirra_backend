@@ -131,7 +131,8 @@ defmodule LambdaGameEngineTest do
   end
 
   test "Cooldowns are removed", context do
-    game = LambdaGameEngine.activate_skill(context.game, context.player_id, "1", %{"direction_angle" => "90.0"})
+    skill_params = %{"direction_angle" => "90.0", "auto_aim" => "false"}
+    game = LambdaGameEngine.activate_skill(context.game, context.player_id, "1", skill_params)
     %{"1" => cooldown} = game.players[context.player_id].cooldowns
 
     elapsed_time_ms = div(cooldown, 2)
