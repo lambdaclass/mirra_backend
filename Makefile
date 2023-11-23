@@ -42,4 +42,17 @@ prepush: format credo tests
 
 credo:
 	mix credo --strict
+
+gen-protobuf: gen-server-protobuf gen-load-test-protobuf
 	
+gen-server-protobuf:
+	protoc \
+		--elixir_out=transform_module=DarkWorldsServer.Communication.ProtoTransform:./lib/dark_worlds_server/communication/ \
+		--elixir_opt=package_prefix=dark_worlds_server.communication.proto \
+		messages.proto
+
+gen-load-test-protobuf:
+	protoc \
+		--elixir_out=./load_test/lib/load_test/ \
+		--elixir_opt=package_prefix=load_test.communication.proto \
+		messages.proto
