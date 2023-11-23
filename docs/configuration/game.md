@@ -13,7 +13,7 @@ This is the meta configuration for the game, not for a particular thing in the g
 
 ### Zone modification
 
-As mentioned this attribute is composed of a list of "modifications". This modifications are processed in order and once the `duration_ms` of the current one is reached the engine will move on to the next one and apply changes based on those rules. If you don't wish to have any modifications you can set an empty list
+As mentioned this attribute is composed of a list of "modifications". These modifications are processed in order and once the `duration_ms` of the current one is reached the runner will move on to the next one and apply changes based on those rules. If you don't wish to have any modifications you can set an empty list
 
 This "modifications" are compose of the following fields
 
