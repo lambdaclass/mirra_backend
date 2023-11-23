@@ -194,7 +194,7 @@ impl GameState {
 
                                 let projectile = Projectile::new(
                                     id,
-                                    player.position.clone(),
+                                    player.position,
                                     player.direction,
                                     player.id,
                                     projectile_config,
