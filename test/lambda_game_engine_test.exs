@@ -130,6 +130,21 @@ defmodule LambdaGameEngineTest do
     assert [^loot1] = player.inventory
   end
 
+  test "Cooldowns are removed", context do
+    skill_params = %{"direction_angle" => "90.0", "auto_aim" => "false"}
+    game = LambdaGameEngine.activate_skill(context.game, context.player_id, "1", skill_params)
+    %{"1" => cooldown} = game.players[context.player_id].cooldowns
+
+    elapsed_time_ms = div(cooldown, 2)
+    game = LambdaGameEngine.game_tick(game, elapsed_time_ms)
+    %{"1" => cooldown2} = game.players[context.player_id].cooldowns
+    assert cooldown2 == cooldown - elapsed_time_ms
+
+    elapsed_time_ms = cooldown * 2
+    game = LambdaGameEngine.game_tick(game, elapsed_time_ms)
+    assert %{} = game.players[context.player_id].cooldowns
+  end
+
   defp spawn_specific_loot(game_state, loot_mechanic) do
     {new_game_state, loot_id} = LambdaGameEngine.spawn_random_loot(game_state)
 
