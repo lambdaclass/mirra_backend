@@ -33,7 +33,7 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
         None => (game, None),
         Some(character_config) => {
             let rng = &mut rand::thread_rng();
-            let initial_position = if game.config.game.initial_positions.len() < 1 {
+            let initial_position = if game.config.game.initial_positions.is_empty() {
                 Position { x: 0, y: 0 }
             } else {
                 game.config
