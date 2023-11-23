@@ -122,6 +122,8 @@ However, caution is required! With the possibility of applying both Additive and
 
 Furthermore, we haven't accounted for the ability to reverse an Override effect since we don't store the previous value.
 
+Other effects trigger the action of executing a skill. That skill will be executed as long as the effect is active, accordingly to its effect_time_type.
+
 ### Examples
 ```
 These example is a supposition.
@@ -139,4 +141,8 @@ However, if we change the order as follows:
 2. Add 10 units to the speed value (reverse additive + 10).
 
 We will obtain the wrong value of 103.
+
+An example of an effect that executes a skill could be an Effect with effect_time_type: {"type": "Periodic", "interval_ms": 1000, "trigger_count": 3} and "skills_to_execute": ["1"].
+
+With the above configuration, the player's character will execute the character skill number "1" 3 times in intervals of 1000 ms, when the effect is active.
 ```
