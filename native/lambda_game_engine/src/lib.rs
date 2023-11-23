@@ -34,9 +34,12 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
         Some(character_config) => {
             let rng = &mut rand::thread_rng();
             let initial_position = if game.config.game.initial_positions.len() < 1 {
-                Position{x: 0, y: 0}
+                Position { x: 0, y: 0 }
             } else {
-                game.config.game.initial_positions.swap_remove(rng.gen_range(0..game.config.game.initial_positions.len()))
+                game.config
+                    .game
+                    .initial_positions
+                    .swap_remove(rng.gen_range(0..game.config.game.initial_positions.len()))
             };
 
             let player = Player::new(player_id, character_config, initial_position);
