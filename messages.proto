@@ -77,6 +77,7 @@ message Player {
     map<uint64, EffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
+    uint64 action_duration_ms = 18;
 }
 
 message EffectInfo {

@@ -269,6 +269,7 @@ defmodule LoadTest.Communication.Proto.Player do
 
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
 end
 
 defmodule LoadTest.Communication.Proto.EffectInfo do
