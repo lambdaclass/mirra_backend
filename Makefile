@@ -51,8 +51,16 @@ gen-server-protobuf:
 		--elixir_opt=package_prefix=dark_worlds_server.communication.proto \
 		messages.proto
 
+# Elixir's protobuf lib does not add a new line nor formats the output file
+# so we do it here with a format:
+	mix format "./lib/dark_worlds_server/communication/*"
+
 gen-load-test-protobuf:
 	protoc \
 		--elixir_out=./load_test/lib/load_test/ \
 		--elixir_opt=package_prefix=load_test.communication.proto \
 		messages.proto
+
+# Elixir's protobuf lib does not add a new line nor formats the output file
+# so we do it here with a format:
+	mix format "./load_test/lib/load_test/*"
