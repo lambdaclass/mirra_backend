@@ -6,7 +6,6 @@ on:
 
 env:
   MIX_ENV: test
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
 
 permissions:
   contents: read
@@ -53,6 +52,10 @@ jobs:
           restore-keys: ${{ runner.os }}-mix-
       - name: Install dependencies
         run: make setup
+      - name: Check Rust Formatting
+        run: cargo fmt --check --manifest-path native/game_backend/Cargo.toml
+      - name: Check Rust code
+        run: cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings
       - name: Credo Elixir Check
         run: make credo
       - name: Check Elixir Formatting
@@ -63,7 +66,3 @@ jobs:
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests
         run: make tests
-      - name: Check Rust Formatting
-        run: cargo fmt --check --manifest-path native/game_backend/Cargo.toml
-      - name: Check Rust code
-        run: cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings
