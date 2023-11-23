@@ -2,4 +2,4 @@
 set -ex
 
  
-/root/game_backend/_build/prod/rel/game_backend/bin/game_backend start
+/root/game_backend/_build/prod/rel/dark_worlds_server/bin/dark_worlds_server start
