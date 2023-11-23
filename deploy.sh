@@ -52,7 +52,7 @@ EOF
 
 systemctl stop game_backend
 
-/root/game_backend/_build/prod/rel/game_backend/bin/migrate
+/root/game_backend/_build/prod/rel/dark_worlds_server/bin/migrate
 
 systemctl daemon-reload
 systemctl start game_backend
