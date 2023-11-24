@@ -57,7 +57,7 @@ gen-server-protobuf:
 
 gen-load-test-protobuf:
 	protoc \
-		--elixir_out=./load_test/lib/load_test/ \
+		--elixir_out=./load_test/lib/load_test/communication \
 		--elixir_opt=package_prefix=load_test.communication.proto \
 		messages.proto
 
