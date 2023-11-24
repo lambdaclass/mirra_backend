@@ -1,0 +1,34 @@
+name: Certificate Renewal
+
+on:
+  schedule:
+    - cron: '0 0 1 */2 *' # Running at 1st of the month, every two months.
+
+jobs:
+
+  regenerate-certificate:
+    name: Renew Certificates
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        HOST: [testing.dark-worlds.lambdaclass.com, aws-testing.dark-worlds.lambdaclass.com]
+
+    steps:
+
+    - name: Create ssh private key file from env var
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+      run: |
+        set -ex
+        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_deploy
+        chmod 400 id_ed25519_deploy
+
+    - name: Renew certificates
+      env:
+        HOST: ${{ matrix.HOST }}
+      run: |
+          set -ex
+          mkdir -p ~/.ssh/
+          ssh-keyscan $HOST >> ~/.ssh/known_hosts
+          ssh -i id_ed25519_deploy root@$HOST certbot renew 
+          set +ex

@@ -101,13 +101,14 @@
     {
       "name": "loot_health",
       "size": 50,
-      "effects": ["heal_30"]
+      "effects": ["heal_30"],
+      "pickup_mechanic": "CollisionUse"
     }
   ],
   "projectiles": [
     {
       "name": "projectile_slingshot",
-      "base_damage": 20,
+      "base_damage": 8,
       "base_speed": 40,
       "base_size": 20,
       "remove_on_collision": true,
@@ -136,8 +137,8 @@
         {
           "MultiShoot": {
             "projectile": "projectile_slingshot",
-            "count": 5,
-            "cone_angle": 90
+            "count": 3,
+            "cone_angle": 40
           }
         }
       ]
@@ -163,9 +164,9 @@
       "mechanics": [
         {
           "Hit": {
-            "damage": 30,
-            "range": 500,
-            "cone_angle": 90,
+            "damage": 14,
+            "range": 1000,
+            "cone_angle": 120,
             "on_hit_effects": []
           }
         }
@@ -192,9 +193,10 @@
     {
       "name": "h4ck",
       "active": true,
-      "base_speed": 25,
+      "base_speed": 20,
       "base_size": 80,
-      "base_health": 8000,
+      "base_health": 100,
+      "max_inventory_size": 1,
       "skills": {
         "1": "slingshot",
         "3": "poison_dart"
@@ -203,9 +205,10 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 15,
+      "base_speed": 20,
       "base_size": 100,
-      "base_health": 8000,
+      "base_health": 100,
+      "max_inventory_size": 1,
       "skills": {
         "1": "hit",
         "2": "circle_hit"
@@ -215,42 +218,65 @@
   "game": {
     "width": 10000,
     "height": 10000,
-    "zone_starting_radius": 10000,
+    "zone_starting_radius": 14000,
     "zone_modifications": [
       {
-        "duration_ms": 10000,
+        "duration_ms": 30000,
         "modification": {
-          "modifier": "Multiplicative",
-          "value": 0.9
+          "modifier": "Additive",
+          "value": 0
         },
         "interval_ms": 500,
-        "min_radius": 6000,
+        "min_radius": 5000,
         "max_radius": 10000,
         "outside_radius_effects": ["damage_outside_area"]
       },
       {
-        "duration_ms": 8000,
+        "duration_ms": 20000,
         "modification": {
-          "modifier": "Multiplicative",
-          "value": 0.8
+          "modifier": "Additive",
+          "value": -45
         },
-        "interval_ms": 500,
-        "min_radius": 3000,
+        "interval_ms": 100,
+        "min_radius": 5000,
         "max_radius": 10000,
         "outside_radius_effects": ["damage_outside_area"]
       },
       {
-        "duration_ms": 10000,
+        "duration_ms": 15000,
         "modification": {
-          "modifier": "Multiplicative",
-          "value": 0.7
+          "modifier": "Additive",
+          "value": -25
         },
-        "interval_ms": 500,
+        "interval_ms": 100,
+        "min_radius": 2500,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
+      },
+      {
+        "duration_ms": 15000,
+        "modification": {
+          "modifier": "Additive",
+          "value": -15
+        },
+        "interval_ms": 100,
         "min_radius": 1000,
+        "max_radius": 10000,
+        "outside_radius_effects": ["damage_outside_area"]
+      },
+      {
+        "duration_ms": 120000,
+        "modification": {
+          "modifier": "Additive",
+          "value": -5
+        },
+        "interval_ms": 100,
+        "min_radius": 0,
         "max_radius": 10000,
         "outside_radius_effects": ["damage_outside_area"]
       }
     ],
-    "loot_interval_ms": 7000
+    "loot_interval_ms": 7000,
+    "auto_aim_max_distance": 1000
   }
 }
