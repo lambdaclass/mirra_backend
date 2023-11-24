@@ -10,6 +10,7 @@
 * [Attributes](#attributes)
   * [Player attributes](./attributes/players.md)
   * [Projectile attributes](./attributes/projectiles.md)
+* [Load Testing](./load_testing/load_testing.md)
 
 ## Configuration
 
