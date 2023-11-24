@@ -4,11 +4,13 @@ BRANCH_NAME="$1"
 BRANCH_NAME=${BRANCH_NAME:-"main"}
 
 export MIX_ENV=prod
+if [ -d "/tmp/game_backend" ]; then
+  rm -rf /tmp/game_backend
+fi
+
 cd /tmp
-git clone https://github.com/lambdaclass/curse_of_myrra.git curse_of_myrra
-cd curse_of_myrra/
-git checkout $BRANCH_NAME
-cd server/load_test
+git clone git@github.com:lambdaclass/game_backend.git --branch ${BRANCH_NAME}
+cd game_backend/
 
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
@@ -18,5 +20,5 @@ mix compile
 mix phx.gen.release
 mix release --overwrite
 
-rm -rf /root/curse_of_myrra
-mv /tmp/curse_of_myrra /root/
+rm -rf $HOME/game_backend
+mv /tmp/game_backend $HOME/
