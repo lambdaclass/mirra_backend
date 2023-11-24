@@ -63,4 +63,4 @@ gen-load-test-protobuf:
 
 # Elixir's protobuf lib does not add a new line nor formats the output file
 # so we do it here with a format:
-	mix format "./load_test/lib/load_test/*"
+	mix format "./load_test/lib/load_test/communication/*"
