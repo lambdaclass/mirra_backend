@@ -7,7 +7,8 @@ defmodule DarkWorldsServer.Bot.BotClient do
 
   def start_link(%{game_id: game_id, config: config}) do
     client_id = UUID.uuid4()
-    WebSockex.start_link("ws://localhost:4000/play/#{game_id}/#{client_id}/2", __MODULE__, %{config: config}, [])
+    ws_url = Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Bot) |> Keyword.get(:game_server_url)
+    WebSockex.start_link("#{ws_url}/play/#{game_id}/#{client_id}/2", __MODULE__, %{config: config}, [])
   end
 
   @impl true

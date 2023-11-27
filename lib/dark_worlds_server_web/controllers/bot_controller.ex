@@ -12,10 +12,9 @@ defmodule DarkWorldsServerWeb.BotController do
 
   def check_bot_server_enabled(conn, _options) do
     bot_server_enabled =
-      Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.RunnerSupervisor.Runner)
-      |> Keyword.fetch!(:bot_server)
+      Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Bot) |> Keyword.get(:bot_server_enabled)
 
-    if bot_server_enabled == :enabled do
+    if bot_server_enabled == "true" do
       conn
     else
       put_status(conn, 409) |> halt()

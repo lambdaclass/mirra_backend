@@ -237,7 +237,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     config = Jason.decode!(game_config_json)
     payload = %{game_id: Communication.pid_to_external_id(self()), bot_count: bot_count, config: config}
     headers = [{"content-type", "application/json"}]
-    {:ok, %{status: 201}} = Tesla.post("localhost:4000/api/bot", payload, headers: headers)
+    bot_url = Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Bot) |> Keyword.get(:bot_server_url)
+    {:ok, %{status: 201}} = Tesla.post("#{bot_url}/api/bot", payload, headers: headers)
     {:noreply, state}
   end
 
