@@ -118,8 +118,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
               timestamp
             )
 
-          :use_skill when action_data.skill == "BasicAttack" ->
-            Runner.basic_attack(
+          :use_skill ->
+            Runner.attack(
               web_socket_state[:runner_pid],
               web_socket_state[:player_id],
               action_data,

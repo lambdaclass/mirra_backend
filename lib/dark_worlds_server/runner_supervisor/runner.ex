@@ -39,8 +39,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     GenServer.cast(runner_pid, {:move, user_id, action, timestamp})
   end
 
-  def basic_attack(runner_pid, user_id, action, timestamp) do
-    GenServer.cast(runner_pid, {:basic_attack, user_id, action, timestamp})
+  def attack(runner_pid, user_id, action, timestamp) do
+    GenServer.cast(runner_pid, {:attack, user_id, action, timestamp})
   end
 
   def skill(runner_pid, user_id, action) do
@@ -132,7 +132,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_cast(
-        {:basic_attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
+        {:attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
         state
       ) do
     player_id = state.user_to_player[user_id] || user_id
@@ -322,6 +322,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp action_skill_to_key("BasicAttack"), do: "1"
+  defp action_skill_to_key("Skill1"), do: "2"
   defp action_skill_to_key(:skill_1), do: "2"
   defp action_skill_to_key(:skill_2), do: "3"
   defp action_skill_to_key(:skill_3), do: "4"
@@ -455,6 +456,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp transform_action_to_game_action([:moving | _]), do: :moving
   defp transform_action_to_game_action([{:using_skill, "1"} | _]), do: :attacking
   defp transform_action_to_game_action([{:using_skill, "2"} | _]), do: :executingskill2
+  defp transform_action_to_game_action([{:using_skill, "4"} | _]), do: :executingskill4
 
   defp transform_killfeed_to_game_killfeed([]), do: []
 
