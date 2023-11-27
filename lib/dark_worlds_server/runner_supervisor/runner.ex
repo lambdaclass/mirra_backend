@@ -84,12 +84,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       player_timestamps: %{},
       broadcast_topic: Communication.pubsub_game_topic(self()),
       user_to_player: %{},
+      bot_count: bot_count,
       bot_handler_pid: nil,
       last_standing_players: []
     }
 
     Process.put(:map_size, {game_config.game.width, game_config.game.height})
 
+    NewRelic.increment_custom_metric("GameBackend/TotalGames", 1)
     {:ok, state}
   end
 
@@ -106,6 +108,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       Map.put(state, :game_state, game_state)
       |> put_in([:user_to_player, user_id], player_id)
 
+    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", 1)
     {:reply, {:ok, player_id}, state}
   end
 
@@ -169,6 +172,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     now = System.monotonic_time(:millisecond)
     time_diff = now - state.last_game_tick_at
     game_state = GameBackend.game_tick(state.game_state, time_diff)
+    now_after_tick = System.monotonic_time(:millisecond)
+    NewRelic.report_custom_metric("GameBackend/GameTickExecutionTimeMs", now_after_tick - now)
 
     broadcast_game_state(
       state.broadcast_topic,
@@ -240,6 +245,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       Map.put(state, :game_state, game_state)
       |> Map.put(:bot_handler_pid, bot_handler_pid)
 
+    NewRelic.increment_custom_metric("GameBackend/TotalBots", bot_count)
     {:noreply, state}
   end
 
@@ -255,6 +261,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   def handle_info(msg, state) do
     Logger.error("Unexpected handle_info msg", %{msg: msg})
     {:noreply, state}
+  end
+
+  @impl true
+  def terminate(_reason, state) do
+    player_count = length(state.game_state.players) - state.bot_count
+    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
+    NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
+    NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
   end
 
   ####################
