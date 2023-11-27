@@ -440,8 +440,12 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp transform_action_to_game_action([]), do: :nothing
   defp transform_action_to_game_action([:nothing | tail]), do: [:nothing, transform_action_to_game_action(tail)]
   defp transform_action_to_game_action([:moving | tail]), do: [:moving, transform_action_to_game_action(tail)]
-  defp transform_action_to_game_action([{:using_skill, "1"} | tail]), do: [:attacking, transform_action_to_game_action(tail)]
-  defp transform_action_to_game_action([{:using_skill, "2"} | tail]), do: [:executingskill2, transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "1"} | tail]),
+    do: [:attacking, transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "2"} | tail]),
+    do: [:executingskill2, transform_action_to_game_action(tail)]
 
   defp transform_killfeed_to_game_killfeed([]), do: []
 

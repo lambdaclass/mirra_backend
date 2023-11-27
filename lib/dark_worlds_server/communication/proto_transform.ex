@@ -341,16 +341,33 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   def player_action_encode(:moving), do: [:MOVING]
   def player_action_encode([]), do: [:NOTHING]
   def player_action_encode([:attacking | tail]), do: [:ATTACKING, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:nothing | tail]), do: player_action_encode(tail)|> List.flatten()
+  def player_action_encode([:nothing | tail]), do: player_action_encode(tail) |> List.flatten()
   def player_action_encode([:attackingaoe | tail]), do: [:ATTACKING_AOE, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:startingskill1 | tail]), do: [:STARTING_SKILL_1, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:startingskill2 | tail]), do: [:STARTING_SKILL_2, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:startingskill3 | tail]), do: [:STARTING_SKILL_3, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:startingskill4 | tail]), do: [:STARTING_SKILL_4, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:executingskill1 | tail]), do: [:EXECUTING_SKILL_1, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:executingskill2 | tail]), do: [:EXECUTING_SKILL_2, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:executingskill3 | tail]), do: [:EXECUTING_SKILL_3, player_action_encode(tail |> List.flatten())]
-  def player_action_encode([:executingskill4 | tail]), do: [:EXECUTING_SKILL_4, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:startingskill1 | tail]),
+    do: [:STARTING_SKILL_1, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:startingskill2 | tail]),
+    do: [:STARTING_SKILL_2, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:startingskill3 | tail]),
+    do: [:STARTING_SKILL_3, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:startingskill4 | tail]),
+    do: [:STARTING_SKILL_4, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:executingskill1 | tail]),
+    do: [:EXECUTING_SKILL_1, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:executingskill2 | tail]),
+    do: [:EXECUTING_SKILL_2, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:executingskill3 | tail]),
+    do: [:EXECUTING_SKILL_3, player_action_encode(tail |> List.flatten())]
+
+  def player_action_encode([:executingskill4 | tail]),
+    do: [:EXECUTING_SKILL_4, player_action_encode(tail |> List.flatten())]
+
   def player_action_encode([:moving | tail]), do: [:MOVING, player_action_encode(tail |> List.flatten())]
 
   defp player_action_decode([]), do: []
