@@ -126,13 +126,13 @@ defmodule DarkWorldsServer.Communication do
   end
 
   def player_move(angle) do
-    %Move{angle: angle}
-    |> Move.encode()
+    %GameAction{timestamp: timestamp(), action_type: {:move, %Move{angle: angle}}}
+    |> GameAction.encode()
   end
 
   def player_use_skill(skill, angle) do
-    %UseSkill{skill: skill, angle: angle, auto_aim: false}
-    |> UseSkill.encode()
+    %GameAction{timestamp: timestamp(), action_type: {:use_skill, %UseSkill{skill: skill, angle: angle, auto_aim: false}}}
+    |> GameAction.encode()
   end
 
   def decode(value) do
@@ -153,5 +153,9 @@ defmodule DarkWorldsServer.Communication do
 
   def pubsub_game_topic(game_pid) when is_pid(game_pid) do
     "game_play_#{pid_to_external_id(game_pid)}"
+  end
+
+  defp timestamp() do
+    DateTime.utc_now() |> DateTime.to_unix(:millisecond)
   end
 end

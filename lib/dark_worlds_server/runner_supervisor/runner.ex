@@ -4,7 +4,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.RunnerSupervisor.BotPlayer
 
   # This is the amount of time between state updates in milliseconds
   @game_tick_rate_ms 20
@@ -234,28 +233,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   def handle_info({:spawn_bots, bot_count}, state) when bot_count > 0 do
-    {:ok, bot_handler_pid} = BotPlayer.start_link(self(), %{})
-
-    {game_state, bots_ids} =
-      Enum.reduce(0..(bot_count - 1), {state.game_state, []}, fn _, {acc_game_state, bots} ->
-        character = "muflus"
-        {:ok, {new_game_state, player_id}} = GameBackend.add_player(acc_game_state, character)
-
-        {new_game_state, [player_id | bots]}
-      end)
-
-    Process.send_after(self(), {:activate_bots, bots_ids}, 10_000)
-
-    state =
-      Map.put(state, :game_state, game_state)
-      |> Map.put(:bot_handler_pid, bot_handler_pid)
-
-    NewRelic.increment_custom_metric("GameBackend/TotalBots", bot_count)
-    {:noreply, state}
-  end
-
-  def handle_info({:activate_bots, bots_ids}, state) do
-    Enum.each(bots_ids, fn player_id -> BotPlayer.add_bot(state.bot_handler_pid, player_id) end)
+    {:ok, game_config_json} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
+    config = Jason.decode!(game_config_json)
+    payload = %{game_id: Communication.pid_to_external_id(self()), bot_count: bot_count, config: config}
+    headers = [{"content-type", "application/json"}]
+    {:ok, %{status: 201}} = Tesla.post("localhost:4000/api/bot", payload, headers: headers)
     {:noreply, state}
   end
 
@@ -270,7 +252,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def terminate(_reason, state) do
-    player_count = Enum.count(state.game_state.players) - state.bot_count
+    player_count = length(Map.values(state.game_state.players)) - state.bot_count
     NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
     NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
     NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)

@@ -27,8 +27,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   #######
   # API #
   #######
-  def start_link(connection_pid) do
-    GenServer.start_link(__MODULE__, connection_pid)
+  def start_link(connection_pid, config) do
+    GenServer.start_link(__MODULE__, {connection_pid, config})
   end
 
   def add_bot(bot_pid, bot_id) do
@@ -43,9 +43,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # GenServer callbacks #
   #######################
   @impl GenServer
-  def init(connection_pid) do
+  def init({connection_pid, config}) do
     {:ok, %{
       connection_pid: connection_pid,
+      config: config,
       bots_enabled: true,
       game_tick_rate: @game_tick_rate_ms,
       players: [],
@@ -269,7 +270,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     Map.put(bot_state, :objective, :nothing)
   end
 
-  def decide_objective(bot_state, %{game_state: game_state}, bot_id, %{
+  def decide_objective(bot_state, %{game_state: game_state, config: config}, bot_id, %{
         enemies_by_distance: enemies_by_distance,
         loots_by_distance: loots_by_distance
       }) do
@@ -287,20 +288,20 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     if out_of_area? do
       Map.put(bot_state, :objective, :flee_from_zone)
     else
-      set_objective(bot_state, bot, game_state, closest_entity)
+      set_objective(bot_state, bot, game_state, config, closest_entity)
     end
   end
 
   def decide_objective(bot_state, _, _, _), do: Map.put(bot_state, :objective, :nothing)
 
-  defp set_objective(bot_state, nil, _game_state, _closest_entities),
+  defp set_objective(bot_state, nil, _game_state, _config, _closest_entities),
     do: Map.put(bot_state, :objective, :waiting_game_update)
 
-  defp set_objective(bot_state, bot, game_state, nil) do
-    maybe_put_wandering_position(bot_state, bot, game_state)
+  defp set_objective(bot_state, bot, game_state, config, nil) do
+    maybe_put_wandering_position(bot_state, bot, game_state, config)
   end
 
-  defp set_objective(bot_state, _bot, _game_state, closest_entity) do
+  defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
       closest_entity.type == :enemy ->
         Map.put(bot_state, :objective, :chase_enemy)
@@ -370,26 +371,28 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   def maybe_put_wandering_position(
         %{objective: :wander, current_wandering_position: current_wandering_position} = bot_state,
         bot,
-        game_state
+        game_state,
+        config
       ) do
     if get_distance_to_point(bot.position, %{
          x: current_wandering_position.x,
          y: current_wandering_position.y
        }) <
          500 do
-      put_wandering_position(bot_state, bot, game_state)
+      put_wandering_position(bot_state, bot, game_state, config)
     else
       bot_state
     end
   end
 
-  def maybe_put_wandering_position(bot_state, bot, game_state),
-    do: put_wandering_position(bot_state, bot, game_state)
+  def maybe_put_wandering_position(bot_state, bot, game_state, config),
+    do: put_wandering_position(bot_state, bot, game_state, config)
 
   def put_wandering_position(
         bot_state,
         %{position: bot_position},
-        game_state
+        game_state,
+        config
       ) do
     bot_visibility_radius = @visibility_max_range_cells * 2
 
@@ -405,7 +408,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
       Enum.min([
         game_state.shrinking_center.x + game_state.playable_radius,
         bot_position.x + bot_visibility_radius,
-        game_state.board.width
+        get_in(config, ["game", "width"])
       ])
 
     down_y =
@@ -419,7 +422,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
       Enum.min([
         game_state.shrinking_center.y + game_state.playable_radius,
         bot_position.y + bot_visibility_radius,
-        game_state.board.height
+        get_in(config, ["game", "height"])
       ])
 
     wandering_position = %{
