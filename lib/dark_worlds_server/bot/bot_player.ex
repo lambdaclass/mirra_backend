@@ -44,16 +44,16 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   #######################
   @impl GenServer
   def init({connection_pid, config}) do
-    {:ok, %{
-      connection_pid: connection_pid,
-      config: config,
-      bots_enabled: true,
-      game_tick_rate: @game_tick_rate_ms,
-      players: [],
-      bots: %{},
-      game_state: %{}
-      }
-    }
+    {:ok,
+     %{
+       connection_pid: connection_pid,
+       config: config,
+       bots_enabled: true,
+       game_tick_rate: @game_tick_rate_ms,
+       players: [],
+       bots: %{},
+       game_state: %{}
+     }}
   end
 
   @impl GenServer

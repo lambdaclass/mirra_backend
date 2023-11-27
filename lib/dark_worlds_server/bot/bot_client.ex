@@ -26,15 +26,17 @@ defmodule DarkWorldsServer.Bot.BotClient do
   def handle_info({:move, angle}, state) do
     {:reply, {:binary, Communication.player_move(angle)}, state}
   end
+
   def handle_info({:use_skill, angle, skill}, state) do
     {:reply, {:binary, Communication.player_use_skill(skill, angle)}, state}
   end
 
   @impl true
   def handle_disconnect(%{reason: {:local, reason}}, state) do
-    Logger.info("Local close with reason: #{inspect reason}")
+    Logger.info("Local close with reason: #{inspect(reason)}")
     {:ok, state}
   end
+
   def handle_disconnect(disconnect_map, state) do
     super(disconnect_map, state)
   end
@@ -45,14 +47,17 @@ defmodule DarkWorldsServer.Bot.BotClient do
     state = Map.merge(state, %{bot_pid: bot_pid, player_id: player_id})
     {:ok, state}
   end
+
   defp handle_msg(%{type: :STATE_UPDATE} = game_state, state) do
     send(state.bot_pid, {:game_state, game_state})
     {:ok, state}
   end
+
   defp handle_msg(%{type: :GAME_FINISHED}, state) do
     GenServer.stop(state.bot_pid)
     {:close, state}
   end
+
   defp handle_msg(%{type: :PING_UPDATE}, state) do
     {:ok, state}
   end

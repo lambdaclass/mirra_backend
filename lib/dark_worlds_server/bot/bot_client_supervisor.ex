@@ -10,6 +10,7 @@ defmodule DarkWorldsServer.Bot.BotClientSupervisor do
     Enum.each(1..bot_count//1, fn _ ->
       {:ok, _child_pid} = DynamicSupervisor.start_child(__MODULE__, {BotClient, %{game_id: game_id, config: config}})
     end)
+
     :ok
   end
 

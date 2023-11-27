@@ -22,7 +22,7 @@ defmodule DarkWorldsServer.Application do
       DarkWorldsServer.RunnerSupervisor,
       # Start the matchmaking supervisor
       DarkWorldsServer.Matchmaking.MatchingCoordinator,
-      DarkWorldsServer.Bot.BotClientSupervisor,
+      DarkWorldsServer.Bot.BotClientSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

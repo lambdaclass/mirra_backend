@@ -1,10 +1,10 @@
 defmodule DarkWorldsServer.Communication do
-  alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameEvent
   alias DarkWorldsServer.Communication.Proto.LobbyEvent
+  alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.PlayerInformation
+  alias DarkWorldsServer.Communication.Proto.UseSkill
 
   @moduledoc """
   The Communication context
@@ -131,7 +131,10 @@ defmodule DarkWorldsServer.Communication do
   end
 
   def player_use_skill(skill, angle) do
-    %GameAction{timestamp: timestamp(), action_type: {:use_skill, %UseSkill{skill: skill, angle: angle, auto_aim: false}}}
+    %GameAction{
+      timestamp: timestamp(),
+      action_type: {:use_skill, %UseSkill{skill: skill, angle: angle, auto_aim: false}}
+    }
     |> GameAction.encode()
   end
 
