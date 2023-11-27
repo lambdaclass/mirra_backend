@@ -57,10 +57,10 @@ gen-server-protobuf:
 
 gen-load-test-protobuf:
 	protoc \
-		--elixir_out=./load_test/lib/load_test/ \
+		--elixir_out=./load_test/lib/load_test/communication \
 		--elixir_opt=package_prefix=load_test.communication.proto \
 		messages.proto
 
 # Elixir's protobuf lib does not add a new line nor formats the output file
 # so we do it here with a format:
-	mix format "./load_test/lib/load_test/*"
+	mix format "./load_test/lib/load_test/communication/*"

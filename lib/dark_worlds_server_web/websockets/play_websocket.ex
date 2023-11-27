@@ -66,6 +66,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
 
+      NewRelic.increment_custom_metric("GameBackend/TotalGameWebSockets", 1)
       {:reply, {:binary, Communication.joined_game(player_id)}, web_socket_state}
     else
       false ->
@@ -78,8 +79,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
   @impl true
   def terminate(reason, _partialreq, %{runner_pid: _pid, player_id: _id}) do
+    NewRelic.increment_custom_metric("GameBackend/TotalGameWebSockets", -1)
     log_termination(reason)
-    # Runner.disconnect(pid, id)
     :ok
   end
 
@@ -150,10 +151,6 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     {:reply, {:binary, Communication.game_player_joined(player_id, player_name)}, web_socket_state}
   end
 
-  def websocket_info({:initial_positions, players}, web_socket_state) do
-    {:reply, {:binary, Communication.initial_positions(players)}, web_socket_state}
-  end
-
   # Send a ping frame every once in a while
   def websocket_info(:send_ping, web_socket_state) do
     Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -184,14 +181,6 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     }
 
     {:reply, {:binary, Communication.game_finished!(reply_map)}, web_socket_state}
-  end
-
-  def websocket_info({:selected_characters, selected_characters}, web_socket_state) do
-    {:reply, {:binary, Communication.selected_characters!(selected_characters)}, web_socket_state}
-  end
-
-  def websocket_info({:finish_character_selection, selected_players, players}, web_socket_state) do
-    {:reply, {:binary, Communication.finish_character_selection!(selected_players, players)}, web_socket_state}
   end
 
   def websocket_info(info, web_socket_state), do: {:reply, {:text, info}, web_socket_state}
