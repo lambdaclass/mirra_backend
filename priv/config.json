@@ -101,20 +101,22 @@
     {
       "name": "loot_health",
       "size": 50,
-      "effects": ["heal_30"],
-      "pickup_mechanic": "CollisionUse"
+      "pickup_mechanic": "CollisionUse",
+      "effects": [
+        "heal_30"
+      ]
     }
   ],
   "projectiles": [
     {
       "name": "projectile_slingshot",
-      "base_damage": 8,
-      "base_speed": 40,
+      "base_damage": 7,
+      "base_speed": 60,
       "base_size": 20,
       "remove_on_collision": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
-      "max_distance": 999999
+      "max_distance": 1500
     },
     {
       "name": "projectile_poison_dart",
@@ -122,7 +124,9 @@
       "base_speed": 60,
       "base_size": 10,
       "remove_on_collision": false,
-      "on_hit_effects": ["poison"],
+      "on_hit_effects": [
+        "poison"
+      ],
       "duration_ms": 999999,
       "max_distance": 500
     }
@@ -130,7 +134,7 @@
   "skills": [
     {
       "name": "slingshot",
-      "cooldown_ms": 800,
+      "cooldown_ms": 1000,
       "execution_duration_ms": 250,
       "is_passive": false,
       "mechanics": [
@@ -158,14 +162,14 @@
     },
     {
       "name": "hit",
-      "cooldown_ms": 1500,
+      "cooldown_ms": 1000,
       "execution_duration_ms": 500,
       "is_passive": false,
       "mechanics": [
         {
           "Hit": {
-            "damage": 14,
-            "range": 1000,
+            "damage": 20,
+            "range": 675,
             "cone_angle": 120,
             "on_hit_effects": []
           }
@@ -229,7 +233,7 @@
         "interval_ms": 500,
         "min_radius": 5000,
         "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
+        "outside_radius_effects": []
       },
       {
         "duration_ms": 20000,
@@ -240,7 +244,9 @@
         "interval_ms": 100,
         "min_radius": 5000,
         "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
+        "outside_radius_effects": [
+          "damage_outside_area"
+        ]
       },
       {
         "duration_ms": 15000,
@@ -251,7 +257,9 @@
         "interval_ms": 100,
         "min_radius": 2500,
         "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
+        "outside_radius_effects": [
+          "damage_outside_area"
+        ]
       },
       {
         "duration_ms": 15000,
@@ -262,7 +270,9 @@
         "interval_ms": 100,
         "min_radius": 1000,
         "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
+        "outside_radius_effects": [
+          "damage_outside_area"
+        ]
       },
       {
         "duration_ms": 120000,
@@ -273,10 +283,12 @@
         "interval_ms": 100,
         "min_radius": 0,
         "max_radius": 10000,
-        "outside_radius_effects": ["damage_outside_area"]
+        "outside_radius_effects": [
+          "damage_outside_area"
+        ]
       }
     ],
     "loot_interval_ms": 7000,
-    "auto_aim_max_distance": 1000
+    "auto_aim_max_distance": 2000
   }
 }
