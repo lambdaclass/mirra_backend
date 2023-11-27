@@ -107,13 +107,13 @@
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": true,
-          "interval_ms": 250,
+          "interval_ms": 130,
           "trigger_count": 10
         }
       },
       "player_attributes": [],
       "projectile_attributes": [],
-      "skills_keys_to_execute": ["2"]
+      "skills_keys_to_execute": ["4"]
     }
   ],
   "loots": [
@@ -212,7 +212,7 @@
       ]
     },
     {
-      "name": "slingshot_burst",
+      "name": "denial_of_service",
       "cooldown_ms": 800,
       "execution_duration_ms": 250,
       "is_passive": false,
@@ -247,9 +247,10 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "single_slingshot",
-        "2": "slingshot_burst",
-        "3": "poison_dart"
+        "1": "slingshot",
+        "2": "denial_of_service",
+        "3": "poison_dart",
+        "4": "single_slingshot"
       }
     },
     {
