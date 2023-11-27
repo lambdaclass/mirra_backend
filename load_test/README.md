@@ -39,7 +39,7 @@ When the game server is ran as a systemd service you might need to edit the serv
 If you want to see a request tracking report for every player of every game after a load test, you can run the helper function `DarkWorldsServer.Engine.RequestTracker.report/1` *on the server*. Running
 
 ```
-DarkWorldsServer.Engine.RequestTracker.report(:game)
+DarkWorldsServer.RunnerSupervisor.RequestTracker.report(:game)
 ```
 
 will show something like this:
@@ -63,7 +63,7 @@ Details per game
 while running
 
 ```
-DarkWorldsServer.Engine.RequestTracker.report(:player)
+DarkWorldsServer.RunnerSupervisor.RequestTracker.report(:player)
 ```
 
 will show something like this:
