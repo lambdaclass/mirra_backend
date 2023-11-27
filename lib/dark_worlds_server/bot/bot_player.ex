@@ -1,10 +1,6 @@
 defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   use GenServer, restart: :transient
   require Logger
-  alias DarkWorldsServer.Communication
-  alias DarkWorldsServer.Communication.Proto.Move
-  alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.RunnerSupervisor.Runner
 
   # This variable will decide how much time passes between bot decisions in milis
   @decide_delay_ms 500
@@ -31,21 +27,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   #######
   # API #
   #######
-  def start_link(game_pid, _args) do
-    GenServer.start_link(__MODULE__, {game_pid, @game_tick_rate_ms})
+  def start_link(connection_pid) do
+    GenServer.start_link(__MODULE__, connection_pid)
   end
 
   def add_bot(bot_pid, bot_id) do
     GenServer.cast(bot_pid, {:add_bot, bot_id})
   end
-
-  # def enable_bots(bot_pid) do
-  #   GenServer.cast(bot_pid, {:bots_enabled, true})
-  # end
-
-  # def disable_bots(bot_pid) do
-  #   GenServer.cast(bot_pid, {:bots_enabled, false})
-  # end
 
   def toggle_bots(bot_pid, bots_active) do
     GenServer.cast(bot_pid, {:bots_enabled, bots_active})
@@ -55,19 +43,16 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # GenServer callbacks #
   #######################
   @impl GenServer
-  def init({game_pid, tick_rate}) do
-    game_id = Communication.pid_to_external_id(game_pid)
-    Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}")
-
-    {:ok,
-     %{
-       game_pid: game_pid,
-       bots_enabled: true,
-       game_tick_rate: tick_rate,
-       players: [],
-       bots: %{},
-       game_state: %{}
-     }}
+  def init(connection_pid) do
+    {:ok, %{
+      connection_pid: connection_pid,
+      bots_enabled: true,
+      game_tick_rate: @game_tick_rate_ms,
+      players: [],
+      bots: %{},
+      game_state: %{}
+      }
+    }
   end
 
   @impl GenServer
@@ -118,7 +103,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     if bot_state.alive do
       Process.send_after(self(), {:do_action, bot_id}, state.game_tick_rate)
-      do_action(bot_id, state.game_pid, state.players, bot_state)
+      do_action(state.connection_pid, state.players, bot_state)
     end
 
     {:noreply, state}
@@ -245,17 +230,17 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     |> Map.put(:action, {:nothing, nil})
   end
 
-  defp do_action(bot_id, game_pid, _players, %{action: {:move, angle}}) do
-    Runner.move(game_pid, bot_id, %Move{angle: angle}, nil)
+  defp do_action(connection_pid, _players, %{action: {:move, angle}}) do
+    send(connection_pid, {:move, angle})
   end
 
-  defp do_action(bot_id, game_pid, _players, %{
+  defp do_action(connection_pid, _players, %{
          action: {:attack, %{type: :enemy, attacking_angle_direction: angle}, skill}
        }) do
-    Runner.attack(game_pid, bot_id, %UseSkill{angle: angle, skill: skill}, nil)
+    send(connection_pid, {:use_skill, angle, skill})
   end
 
-  defp do_action(_bot_id, _game_pid, _players, _) do
+  defp do_action(_connection_pid, _players, _) do
     nil
   end
 

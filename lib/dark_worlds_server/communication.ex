@@ -1,4 +1,6 @@
 defmodule DarkWorldsServer.Communication do
+  alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameEvent
   alias DarkWorldsServer.Communication.Proto.LobbyEvent
@@ -121,6 +123,16 @@ defmodule DarkWorldsServer.Communication do
   def joined_game(player_id) do
     %GameEvent{type: :PLAYER_JOINED, player_joined_id: player_id}
     |> GameEvent.encode()
+  end
+
+  def player_move(angle) do
+    %Move{angle: angle}
+    |> Move.encode()
+  end
+
+  def player_use_skill(skill, angle) do
+    %UseSkill{skill: skill, angle: angle, auto_aim: false}
+    |> UseSkill.encode()
   end
 
   def decode(value) do
