@@ -22,7 +22,6 @@ fn parse_config(data: String) -> Config {
 fn new_game(config: Config) -> GameState {
     GameState::new(config)
 }
-// Result<(GameState, Option<u64>), String>
 #[rustler::nif(schedule = "DirtyCpu")]
 fn add_player(game: GameState, character_name: String) -> Result<(GameState, Option<u64>), String> {
     let mut game = game;
