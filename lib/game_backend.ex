@@ -13,8 +13,8 @@ defmodule GameBackend do
   def new_game(_config), do: :erlang.nif_error(:nif_not_loaded)
   @spec add_player(map(), binary()) :: {map(), nil | pos_integer()}
   def add_player(_game, _character_name), do: :erlang.nif_error(:nif_not_loaded)
-  @spec move_player(map(), pos_integer(), float()) :: map()
-  def move_player(_game_state, _player_id, _angle), do: :erlang.nif_error(:nif_not_loaded)
+  @spec move_player(map(), pos_integer(), float(), boolean()) :: map()
+  def move_player(_game_state, _player_id, _angle, _moving), do: :erlang.nif_error(:nif_not_loaded)
   @spec apply_effect(map(), pos_integer(), binary()) :: map()
   def apply_effect(_game_state, _player_id, _effect_name), do: :erlang.nif_error(:nif_not_loaded)
   @spec spawn_random_loot(map()) :: {map(), nil | pos_integer()}

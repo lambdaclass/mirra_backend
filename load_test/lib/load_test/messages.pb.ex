@@ -747,6 +747,7 @@ defmodule LoadTest.Communication.Proto.Move do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:angle, 1, type: :float)
+  field(:moving, 2, type: :bool)
 end
 
 defmodule LoadTest.Communication.Proto.UseSkill do

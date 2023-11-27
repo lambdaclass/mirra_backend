@@ -619,6 +619,7 @@ Represents a move action
 */
 message Move {
   float angle = 1;
+  bool moving = 2;
 }
 
 /*
