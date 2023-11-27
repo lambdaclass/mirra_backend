@@ -236,7 +236,12 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   field(:health, 2, type: :sint64)
   field(:position, 3, type: DarkWorldsServer.Communication.Proto.Position)
   field(:status, 4, type: DarkWorldsServer.Communication.Proto.Status, enum: true)
-  field(:action, 5, type: DarkWorldsServer.Communication.Proto.PlayerAction, enum: true)
+
+  field(:action, 5,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.PlayerAction,
+    enum: true
+  )
 
   field(:aoe_position, 6,
     type: DarkWorldsServer.Communication.Proto.Position,
@@ -281,6 +286,7 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
