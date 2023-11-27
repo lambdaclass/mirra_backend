@@ -5,6 +5,7 @@ use serde::Deserialize;
 pub struct Effect {
     pub name: String,
     pub is_reversable: bool,
+    #[serde(default = "default_effect_time_type")]
     pub effect_time_type: TimeType,
     pub player_attributes: Vec<AttributeChange>,
     pub projectile_attributes: Vec<AttributeChange>,
@@ -52,4 +53,8 @@ pub fn modify_attribute(attribute_value: &mut u64, change: &AttributeChange) {
         }
         AttributeModifier::Override => *attribute_value = change.value.parse::<u64>().unwrap(),
     }
+}
+
+fn default_effect_time_type() -> TimeType {
+    TimeType::Instant
 }

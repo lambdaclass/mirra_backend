@@ -20,7 +20,11 @@
     {
       "name": "heal_30",
       "is_reversable": false,
-      "effect_time_type": "Instant",
+      "effect_time_type": {
+        "Duration": {
+          "duration_ms": 1
+        }
+      },
       "player_attributes": [
         {
           "attribute": "health",

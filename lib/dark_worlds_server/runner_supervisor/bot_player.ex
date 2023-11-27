@@ -175,8 +175,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     angle = closest_loot.angle_direction_to_entity
 
-    center = game_state.shrinking_center
-    radius = game_state.playable_radius
+    center = game_state.zone.shrinking_center
+    radius = game_state.zone.playable_radius
 
     if position_out_of_radius?(closest_loot.entity_position, center, radius) do
       flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
@@ -205,7 +205,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
       amount_of_players_in_flee_proximity >= @amount_of_players_to_flee or
         (bot.health <= 25 and amount_of_players_in_flee_proximity >= 1)
 
-    playable_radius_closed = game_state.playable_radius <= @min_playable_radius_flee
+    playable_radius_closed = game_state.zone.playable_radius <= @min_playable_radius_flee
 
     cond do
       danger_zone and not playable_radius_closed ->
@@ -233,7 +233,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     target =
       calculate_circle_point(
         bot.position,
-        state.game_state.shrinking_center,
+        state.game_state.zone.shrinking_center,
         false
       )
 
@@ -294,8 +294,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     closest_entity = Enum.min_by(closests_entities, fn e -> if e, do: e.distance_to_entity end)
 
-    center = game_state.shrinking_center
-    radius = game_state.playable_radius
+    center = game_state.zone.shrinking_center
+    radius = game_state.zone.playable_radius
 
     out_of_area? = position_out_of_radius?(bot.position, center, radius)
 
@@ -411,28 +411,28 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     # We need to pick and X and Y wich are in a safe zone close to the bot that's also inside of the board
     left_x =
       Enum.max([
-        game_state.shrinking_center.x - game_state.playable_radius,
+        game_state.shrinking_center.x - game_state.zone.playable_radius,
         bot_position.x - bot_visibility_radius,
         0
       ])
 
     right_x =
       Enum.min([
-        game_state.shrinking_center.x + game_state.playable_radius,
+        game_state.shrinking_center.x + game_state.zone.playable_radius,
         bot_position.x + bot_visibility_radius,
         game_state.board.width
       ])
 
     down_y =
       Enum.max([
-        game_state.shrinking_center.y - game_state.playable_radius,
+        game_state.shrinking_center.y - game_state.zone.playable_radius,
         bot_position.y - bot_visibility_radius,
         0
       ])
 
     up_y =
       Enum.min([
-        game_state.shrinking_center.y + game_state.playable_radius,
+        game_state.shrinking_center.y + game_state.zone.playable_radius,
         bot_position.y + bot_visibility_radius,
         game_state.board.height
       ])

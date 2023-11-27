@@ -165,8 +165,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
       projectiles: game_state.projectiles,
       killfeed: game_state.killfeed,
       player_timestamp: game_state.player_timestamps[web_socket_state.player_id],
-      playable_radius: game_state.playable_radius,
-      shrinking_center: game_state.shrinking_center,
+      playable_radius: game_state.zone.radius,
+      shrinking_center: game_state.zone.center,
       server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
       loots: game_state.loots
     }
