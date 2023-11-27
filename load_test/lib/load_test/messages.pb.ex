@@ -158,6 +158,7 @@ defmodule LoadTest.Communication.Proto.MechanicType do
   field(:HIT, 0)
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
+  field(:GIVE_EFFECT, 3)
 end
 
 defmodule LoadTest.Communication.Proto.GameEvent.SelectedCharactersEntry do
