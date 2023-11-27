@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Communication.ProtoTransform do
+  alias DarkWorldsServer.Communication.Proto.Attribute
   alias DarkWorldsServer.Communication.Proto.Config
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameCharacter
@@ -14,7 +15,6 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.LootPackage
   alias DarkWorldsServer.Communication.Proto.MapModification
   alias DarkWorldsServer.Communication.Proto.Mechanic
-  alias DarkWorldsServer.Communication.Proto.Modification
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.Player, as: ProtoPlayer
   alias DarkWorldsServer.Communication.Proto.PlayerInformation, as: ProtoPlayerInformation
@@ -22,6 +22,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.Projectile, as: ProtoProjectile
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Communication.Proto.ZoneModification
   alias GameBackend.Player, as: GamePlayer
   alias GameBackend.Position, as: GamePosition
   alias GameBackend.Projectile, as: GameProjectile
@@ -39,13 +40,6 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       name: mechanic_name_encode(name)
     }
     |> Map.merge(mechanic)
-  end
-
-  def encode({modifier, value}, Modification) do
-    %Modification{
-      value: value,
-      modifier: modifier_encode(modifier)
-    }
   end
 
   def encode(%GamePosition{} = position, ProtoPosition) do
@@ -150,6 +144,41 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
+  def encode({modifier, value}, ZoneModification) do
+    %ZoneModification{
+      modifier: modifier_encode(modifier),
+      value: value
+    }
+  end
+
+  def encode(%{modifier: modifier, attribute: attribute, value: value}, Attribute) do
+    %Attribute{
+      modifier: modifier_encode(modifier),
+      attribute: attribute,
+      value: value
+    }
+  end
+
+  def encode(
+        %{
+          name: name,
+          effect_time_type: effect_time_type,
+          is_reversable: is_reversable,
+          player_attributes: player_attributes,
+          projectile_attributes: projectile_attributes
+        },
+        GameEffect
+      ) do
+    %GameEffect{
+      name: name,
+      effect_time_type: effect_time_type,
+      is_reversable: is_reversable,
+      player_attributes: player_attributes,
+      projectile_attributes: projectile_attributes
+    }
+    |> IO.inspect(label: "effect")
+  end
+
   def encode(data, _struct) do
     data
   end
@@ -175,6 +204,10 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   end
 
   def decode(config, MapModification) do
+    config
+  end
+
+  def decode(config, Modifier) do
     config
   end
 
@@ -214,6 +247,11 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
 
   @impl Protobuf.TransformModule
   def decode(value, UseSkill) do
+    value
+  end
+
+  @impl Protobuf.TransformModule
+  def decode(value, ZoneModification) do
     value
   end
 
@@ -364,6 +402,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
 
   defp modifier_encode(:multiplicative), do: :MULTIPLICATIVE
   defp modifier_encode(:additive), do: :ADDITIVE
+  defp modifier_encode(:override), do: :OVERRIDE
 
   defp mechanic_name_encode(:hit), do: :HIT
   defp mechanic_name_encode(:simple_shoot), do: :SIMPLE_SHOOT

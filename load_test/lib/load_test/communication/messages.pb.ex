@@ -136,13 +136,14 @@ defmodule LoadTest.Communication.Proto.LootType do
   field(:LOOT_HEALTH, 1)
 end
 
-defmodule LoadTest.Communication.Proto.ModifierType do
+defmodule LoadTest.Communication.Proto.Modifier do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:MULTIPLICATIVE, 0)
   field(:ADDITIVE, 1)
+  field(:OVERRIDE, 2)
 end
 
 defmodule LoadTest.Communication.Proto.MechanicType do
@@ -560,13 +561,16 @@ defmodule LoadTest.Communication.Proto.GameStateConfig do
 
   field(:width, 1, type: :uint64)
   field(:height, 2, type: :uint64)
+  field(:loot_interval_ms, 3, type: :uint64, json_name: "lootIntervalMs")
+  field(:zone_starting_radius, 4, type: :uint64, json_name: "zoneStartingRadius")
 
-  field(:map_modification, 3,
+  field(:zone_modifications, 5,
+    repeated: true,
     type: LoadTest.Communication.Proto.MapModification,
-    json_name: "mapModification"
+    json_name: "zoneModifications"
   )
 
-  field(:loot_interval_ms, 4, type: :uint64, json_name: "lootIntervalMs")
+  field(:loots, 6, repeated: true, type: LoadTest.Communication.Proto.GameLoot)
 end
 
 defmodule LoadTest.Communication.Proto.MapModification do
@@ -574,9 +578,9 @@ defmodule LoadTest.Communication.Proto.MapModification do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:modification, 1, type: LoadTest.Communication.Proto.Modification)
+  field(:modification, 1, type: LoadTest.Communication.Proto.ZoneModification)
   field(:starting_radius, 2, type: :uint64, json_name: "startingRadius")
-  field(:minimum_radius, 3, type: :uint64, json_name: "minimumRadius")
+  field(:min_radius, 3, type: :uint64, json_name: "minRadius")
   field(:max_radius, 4, type: :uint64, json_name: "maxRadius")
 
   field(:outside_radius_effects, 5,
@@ -590,15 +594,28 @@ defmodule LoadTest.Communication.Proto.MapModification do
     type: LoadTest.Communication.Proto.GameEffect,
     json_name: "insideRadiusEffects"
   )
+
+  field(:duration_ms, 7, type: :float, json_name: "durationMs")
+  field(:interval_ms, 8, type: :float, json_name: "intervalMs")
 end
 
-defmodule LoadTest.Communication.Proto.Modification do
+defmodule LoadTest.Communication.Proto.ZoneModification do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:modifier, 1, type: LoadTest.Communication.Proto.ModifierType, enum: true)
+  field(:modifier, 1, type: LoadTest.Communication.Proto.Modifier, enum: true)
   field(:value, 2, type: :float)
+end
+
+defmodule LoadTest.Communication.Proto.Attribute do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:modifier, 1, type: LoadTest.Communication.Proto.Modifier, enum: true)
+  field(:attribute, 2, type: :string)
+  field(:value, 3, type: :string)
 end
 
 defmodule LoadTest.Communication.Proto.GameLoot do
@@ -621,15 +638,8 @@ defmodule LoadTest.Communication.Proto.GameProjectile do
   field(:base_speed, 3, type: :uint64, json_name: "baseSpeed")
   field(:base_size, 4, type: :uint64, json_name: "baseSize")
   field(:remove_on_collision, 5, type: :bool, json_name: "removeOnCollision")
-
-  field(:on_hit_effect, 6,
-    repeated: true,
-    type: LoadTest.Communication.Proto.GameEffect,
-    json_name: "onHitEffect"
-  )
-
-  field(:max_distance, 7, type: :uint64, json_name: "maxDistance")
-  field(:duration_ms, 8, type: :float, json_name: "durationMs")
+  field(:max_distance, 6, type: :uint64, json_name: "maxDistance")
+  field(:duration_ms, 7, type: :float, json_name: "durationMs")
 end
 
 defmodule LoadTest.Communication.Proto.GameCharacter.SkillsEntry do
@@ -668,6 +678,7 @@ defmodule LoadTest.Communication.Proto.GameSkill do
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:is_passive, 3, type: :bool, json_name: "isPassive")
   field(:mechanics, 4, repeated: true, type: LoadTest.Communication.Proto.Mechanic)
+  field(:execution_duration_ms, 5, type: :uint64, json_name: "executionDurationMs")
 end
 
 defmodule LoadTest.Communication.Proto.Mechanic do
@@ -708,9 +719,10 @@ defmodule LoadTest.Communication.Proto.GameEffect.Periodic do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:type, 1, type: :string)
-  field(:instant_application, 2, type: :string, json_name: "instantApplication")
+  field(:instant_application, 2, type: :bool, json_name: "instantApplication")
   field(:interval_ms, 3, type: :uint64, json_name: "intervalMs")
   field(:trigger_count, 4, type: :uint64, json_name: "triggerCount")
+  field(:time_since_last_trigger, 5, type: :float, json_name: "timeSinceLastTrigger")
 end
 
 defmodule LoadTest.Communication.Proto.GameEffect do
@@ -718,22 +730,26 @@ defmodule LoadTest.Communication.Proto.GameEffect do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  oneof(:effect_type, 0)
+  oneof(:effect_time_type, 0)
 
   field(:name, 1, type: :string)
-  field(:simple_type, 2, type: :string, json_name: "simpleType", oneof: 0)
+  field(:is_reversable, 2, type: :bool, json_name: "isReversable")
 
-  field(:duration_type, 3,
-    type: LoadTest.Communication.Proto.GameEffect.Duration,
-    json_name: "durationType",
-    oneof: 0
+  field(:player_attributes, 3,
+    repeated: true,
+    type: LoadTest.Communication.Proto.Attribute,
+    json_name: "playerAttributes"
   )
 
-  field(:periodic_type, 4,
-    type: LoadTest.Communication.Proto.GameEffect.Periodic,
-    json_name: "periodicType",
-    oneof: 0
+  field(:projectile_attributes, 4,
+    repeated: true,
+    type: LoadTest.Communication.Proto.Attribute,
+    json_name: "projectileAttributes"
   )
+
+  field(:simple_type, 5, type: :string, json_name: "simpleType", oneof: 0)
+  field(:duration, 6, type: LoadTest.Communication.Proto.GameEffect.Duration, oneof: 0)
+  field(:periodic, 7, type: LoadTest.Communication.Proto.GameEffect.Periodic, oneof: 0)
 end
 
 defmodule LoadTest.Communication.Proto.Move do
