@@ -66,6 +66,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
 
+      NewRelic.increment_custom_metric("GameBackend/TotalGameWebSockets", 1)
       {:reply, {:binary, Communication.joined_game(player_id)}, web_socket_state}
     else
       false ->
@@ -78,8 +79,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
   @impl true
   def terminate(reason, _partialreq, %{runner_pid: _pid, player_id: _id}) do
+    NewRelic.increment_custom_metric("GameBackend/TotalGameWebSockets", -1)
     log_termination(reason)
-    # Runner.disconnect(pid, id)
     :ok
   end
 
