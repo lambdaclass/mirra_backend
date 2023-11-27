@@ -30,26 +30,6 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
-  def lobby_player_removed!(player_id, host_player_id, players) do
-    player_info = %PlayerInformation{player_id: player_id, player_name: "not_needed"}
-
-    players_info =
-      Enum.map(players, fn {id, name} -> %PlayerInformation{player_id: id, player_name: name} end)
-
-    %LobbyEvent{
-      type: :PLAYER_REMOVED,
-      removed_player_info: player_info,
-      host_player_id: host_player_id,
-      players_info: players_info
-    }
-    |> LobbyEvent.encode()
-  end
-
-  def lobby_player_count!(count) do
-    %LobbyEvent{type: :PLAYER_COUNT, player_count: count}
-    |> LobbyEvent.encode()
-  end
-
   def lobby_game_started!(%{
         game_pid: game_pid,
         game_config: game_config,
@@ -105,25 +85,6 @@ defmodule DarkWorldsServer.Communication do
     |> GameEvent.encode()
   end
 
-  def initial_positions(players) do
-    %GameEvent{type: :INITIAL_POSITIONS, players: players}
-    |> GameEvent.encode()
-  end
-
-  def selected_characters!(selected_characters) do
-    %GameEvent{type: :SELECTED_CHARACTER_UPDATE, selected_characters: selected_characters}
-    |> GameEvent.encode()
-  end
-
-  def finish_character_selection!(selected_characters, players) do
-    %GameEvent{
-      type: :FINISH_CHARACTER_SELECTION,
-      selected_characters: selected_characters,
-      players: players
-    }
-    |> GameEvent.encode()
-  end
-
   def joined_game(player_id) do
     %GameEvent{type: :PLAYER_JOINED, player_joined_id: player_id}
     |> GameEvent.encode()
@@ -132,14 +93,6 @@ defmodule DarkWorldsServer.Communication do
   def decode(value) do
     try do
       {:ok, GameAction.decode(value)}
-    rescue
-      Protobuf.DecodeError -> {:error, :error_decoding}
-    end
-  end
-
-  def lobby_decode(value) do
-    try do
-      {:ok, LobbyEvent.decode(value)}
     rescue
       Protobuf.DecodeError -> {:error, :error_decoding}
     end
