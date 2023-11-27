@@ -78,6 +78,9 @@ config :dark_worlds_server, DarkWorldsServer.RunnerSupervisor.Runner, process_pr
 hash = String.trim(hash)
 config :dark_worlds_server, :information, version_hash: hash
 
+# By default disable NewRelic agent
+config :new_relic_agent, license_key: nil
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
