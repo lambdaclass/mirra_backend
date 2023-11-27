@@ -9,7 +9,7 @@ mod projectile;
 mod skill;
 
 use crate::config::Config;
-use crate::game::{EntityOwner, GameState};
+use crate::game::{EntityOwner, GameError, GameState};
 use crate::player::Player;
 use std::collections::HashMap;
 
@@ -23,11 +23,14 @@ fn new_game(config: Config) -> GameState {
     GameState::new(config)
 }
 #[rustler::nif(schedule = "DirtyCpu")]
-fn add_player(game: GameState, character_name: String) -> Result<(GameState, Option<u64>), String> {
+fn add_player(
+    game: GameState,
+    character_name: String,
+) -> Result<(GameState, Option<u64>), GameError> {
     let mut game = game;
     let player_id = game.next_id();
     match game.config.find_character(character_name) {
-        None => Err("Character doesn't exists".to_string()),
+        None => Err(GameError::CharacterNotFound),
         Some(character_config) => {
             let player = Player::new(player_id, character_config, &game.config);
             game.push_player(player_id, player);

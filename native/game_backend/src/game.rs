@@ -19,6 +19,11 @@ use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
+pub enum GameError {
+    CharacterNotFound,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
 pub enum EntityOwner {
     Zone,
     Loot,

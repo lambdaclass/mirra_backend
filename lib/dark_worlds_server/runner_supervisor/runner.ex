@@ -102,7 +102,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_call({:join, user_id, character_name}, _from, state) do
-    case GameBackend.add_player(state.game_state, character_name) do
+    case GameBackend.add_player(state.game_state, character_name) |> IO.inspect() do
       {:ok, {game_state, player_id}} ->
         state =
           Map.put(state, :game_state, game_state)
@@ -111,8 +111,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
         NewRelic.increment_custom_metric("GameBackend/TotalPlayers", 1)
         {:reply, {:ok, player_id}, state}
 
-      {:error, reason} ->
-        {:reply, {:error, reason}, state}
+      {:error, :character_not_found} ->
+        {:reply, {:error, "Character doesn't exists"}, state}
     end
   end
 
