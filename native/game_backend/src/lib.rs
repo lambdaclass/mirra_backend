@@ -13,17 +13,17 @@ use crate::game::{EntityOwner, GameState};
 use crate::player::Player;
 use std::collections::HashMap;
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn parse_config(data: String) -> Config {
     config::parse_config(&data)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn new_game(config: Config) -> GameState {
     GameState::new(config)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64>) {
     let mut game = game;
     let player_id = game.next_id();
@@ -37,7 +37,7 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     let mut game: GameState = game;
     game.move_player(player_id, angle);
@@ -45,7 +45,7 @@ fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
 }
 
 // TODO: Is this method necesary?
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameState {
     let mut game = game;
     match game.players.get_mut(&player_id) {
@@ -58,7 +58,7 @@ fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameSta
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     let mut game = game;
     let loot_id = game.next_id();
@@ -71,7 +71,7 @@ fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn activate_skill(
     game: GameState,
     player_id: u64,
@@ -83,14 +83,14 @@ fn activate_skill(
     game
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn activate_inventory(game: GameState, player_id: u64, inventory_at: u64) -> GameState {
     let mut game = game;
     game.activate_inventory(player_id, inventory_at as usize);
     game
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
     let mut game = game;
     game.tick(time_diff_ms);

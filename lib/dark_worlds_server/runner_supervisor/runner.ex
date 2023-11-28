@@ -84,12 +84,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       player_timestamps: %{},
       broadcast_topic: Communication.pubsub_game_topic(self()),
       user_to_player: %{},
+      bot_count: bot_count,
       bot_handler_pid: nil,
       last_standing_players: []
     }
 
     Process.put(:map_size, {game_config.game.width, game_config.game.height})
 
+    NewRelic.increment_custom_metric("GameBackend/TotalGames", 1)
     {:ok, state}
   end
 
@@ -106,6 +108,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       Map.put(state, :game_state, game_state)
       |> put_in([:user_to_player, user_id], player_id)
 
+    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", 1)
     {:reply, {:ok, player_id}, state}
   end
 
@@ -169,6 +172,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     now = System.monotonic_time(:millisecond)
     time_diff = now - state.last_game_tick_at
     game_state = GameBackend.game_tick(state.game_state, time_diff)
+    now_after_tick = System.monotonic_time(:millisecond)
+    NewRelic.report_custom_metric("GameBackend/GameTickExecutionTimeMs", now_after_tick - now)
 
     broadcast_game_state(
       state.broadcast_topic,
@@ -228,7 +233,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     {game_state, bots_ids} =
       Enum.reduce(0..(bot_count - 1), {state.game_state, []}, fn _, {acc_game_state, bots} ->
-        character = Enum.random(["h4ck", "muflus"])
+        # character = Enum.random(["h4ck", "muflus"])
+        character = "muflus"
         {new_game_state, player_id} = GameBackend.add_player(acc_game_state, character)
 
         {new_game_state, [player_id | bots]}
@@ -240,6 +246,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       Map.put(state, :game_state, game_state)
       |> Map.put(:bot_handler_pid, bot_handler_pid)
 
+    NewRelic.increment_custom_metric("GameBackend/TotalBots", bot_count)
     {:noreply, state}
   end
 
@@ -255,6 +262,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   def handle_info(msg, state) do
     Logger.error("Unexpected handle_info msg", %{msg: msg})
     {:noreply, state}
+  end
+
+  @impl true
+  def terminate(_reason, state) do
+    player_count = length(state.game_state.players) - state.bot_count
+    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
+    NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
+    NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
   end
 
   ####################
@@ -354,7 +369,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       death_count: 0,
       action: transform_action_to_game_action(player.actions),
       direction: transform_angle_to_game_relative_position(player.direction),
-      aoe_position: %GameBackend.Position{x: 0, y: 0}
+      aoe_position: %GameBackend.Position{x: 0, y: 0},
+      action_duration_ms: player.action_duration_ms
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end
@@ -436,11 +452,15 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     %GameBackend.RelativePosition{x: x, y: y}
   end
 
-  defp transform_action_to_game_action([]), do: :nothing
-  defp transform_action_to_game_action([:nothing | _]), do: :nothing
-  defp transform_action_to_game_action([:moving | _]), do: :moving
-  defp transform_action_to_game_action([{:using_skill, "1"} | _]), do: :attacking
-  defp transform_action_to_game_action([{:using_skill, "2"} | _]), do: :executingskill2
+  defp transform_action_to_game_action([]), do: []
+  defp transform_action_to_game_action([:nothing | tail]), do: transform_action_to_game_action(tail)
+  defp transform_action_to_game_action([:moving | tail]), do: [:moving | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "1"} | tail]),
+    do: [:attacking | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "2"} | tail]),
+    do: [:executingskill2 | transform_action_to_game_action(tail)]
 
   defp transform_killfeed_to_game_killfeed([]), do: []
 
