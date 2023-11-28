@@ -7,6 +7,7 @@ defmodule LoadTest.Communication.Proto.GameEventType do
   field(:PING_UPDATE, 1)
   field(:PLAYER_JOINED, 2)
   field(:GAME_FINISHED, 3)
+  field(:GAME_STARTED, 4)
 end
 
 defmodule LoadTest.Communication.Proto.Status do
@@ -105,9 +106,8 @@ defmodule LoadTest.Communication.Proto.LobbyEventType do
   field(:TYPE_UNSPECIFIED, 0)
   field(:CONNECTED, 1)
   field(:PLAYER_ADDED, 2)
-  field(:GAME_STARTED, 3)
-  field(:START_GAME, 4)
-  field(:PREPARING_GAME, 5)
+  field(:START_GAME, 3)
+  field(:PREPARING_GAME, 4)
 end
 
 defmodule LoadTest.Communication.Proto.ProjectileType do
