@@ -95,7 +95,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   end
 
   defp consume_and_notify_players([{_, client_pid} | rest_players], game_pid, game_config, count) do
-    Process.send_after(client_pid, {:game_started, game_pid, game_config}, 1_000)
+    Process.send(client_pid, {:preparing_game, game_pid, game_config}, [])
+    Process.send_after(client_pid, :game_started, 5_000)
     consume_and_notify_players(rest_players, game_pid, game_config, count - 1)
   end
 end
