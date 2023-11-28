@@ -7,13 +7,13 @@ use crate::player::Player;
 
 #[derive(NifMap, Clone, Copy)]
 pub struct Position {
-    pub x: i64,
-    pub y: i64,
+    pub x: f32,
+    pub y: f32,
 }
 
 pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: u64, size2: u64) -> bool {
-    let squared_x = (center1.x - center2.x).pow(2) as f64;
-    let squared_y = (center1.y - center2.y).pow(2) as f64;
+    let squared_x = (center1.x - center2.x).powi(2) as f64;
+    let squared_y = (center1.y - center2.y).powi(2) as f64;
     let centers_distance = (squared_x + squared_y).sqrt();
     let collision_distance = (size1 + size2) as f64;
     centers_distance <= collision_distance
@@ -26,8 +26,8 @@ pub fn in_cone_angle_range(
     cone_angle: f32,
 ) -> bool {
     // TODO: Take into consideration `size` attribute of Player
-    let squared_x = (center_player.position.x - target_player.position.x).pow(2) as f64;
-    let squared_y = (center_player.position.y - target_player.position.y).pow(2) as f64;
+    let squared_x = (center_player.position.x - target_player.position.x).powi(2) as f64;
+    let squared_y = (center_player.position.y - target_player.position.y).powi(2) as f64;
     let target_distance = (squared_x + squared_y).sqrt();
 
     if target_distance > (max_distance as f64) {
@@ -62,33 +62,30 @@ pub fn next_position(
     let min_y_bound = max_y_bound * -1.0;
     let y = new_y.min(max_y_bound).max(min_y_bound);
 
-    Position {
-        x: x as i64,
-        y: y as i64,
-    }
+    Position { x, y }
 }
 
 pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
-    let x_edge_positive = (width / 2) as i64;
-    let x_position_positive = center.x + size as i64;
+    let x_edge_positive = (width / 2) as f32;
+    let x_position_positive = center.x + size as f32;
     if x_position_positive >= x_edge_positive {
         return true;
     }
 
-    let x_edge_negative = width as i64 / -2;
-    let x_position_negative = center.x - size as i64;
+    let x_edge_negative = width as f32 / -2.0;
+    let x_position_negative = center.x - size as f32;
     if x_position_negative <= x_edge_negative {
         return true;
     }
 
-    let y_edge_positive = (height / 2) as i64;
-    let y_position_positive = center.y + size as i64;
+    let y_edge_positive = (height / 2) as f32;
+    let y_position_positive = center.y + size as f32;
     if y_position_positive >= y_edge_positive {
         return true;
     }
 
-    let y_edge_negative = height as i64 / -2;
-    let y_position_negative = center.y - size as i64;
+    let y_edge_negative = height as f32 / -2.0;
+    let y_position_negative = center.y - size as f32;
     if y_position_negative <= y_edge_negative {
         return true;
     }
@@ -98,8 +95,8 @@ pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64
 
 pub fn random_position(width: u64, height: u64) -> Position {
     let rng = &mut rand::thread_rng();
-    let bound_x = (width / 2) as i64;
-    let bound_y = (height / 2) as i64;
+    let bound_x = (width / 2) as f32;
+    let bound_y = (height / 2) as f32;
 
     Position {
         x: rng.gen_range(-bound_x..bound_x),
@@ -116,6 +113,6 @@ pub fn angle_between_positions(center: &Position, target: &Position) -> f32 {
 
 pub fn distance_to_center(player: &Player, center: &Position) -> f32 {
     let distance_squared =
-        (player.position.x - center.x).pow(2) + (player.position.y - center.y).pow(2);
+        (player.position.x - center.x).powi(2) + (player.position.y - center.y).powi(2);
     (distance_squared as f32).sqrt()
 }

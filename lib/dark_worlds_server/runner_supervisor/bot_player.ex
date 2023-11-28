@@ -354,8 +354,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     remaining = abs(x_distance - y_distance)
 
     (diagonal_movement_cost * Enum.min([x_distance, y_distance]) +
-       remaining * straight_movement_cost)
-    |> div(10)
+       remaining * straight_movement_cost) / 10.0
   end
 
   defp map_entities(entities, bot, type) do
@@ -438,8 +437,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
       ])
 
     wandering_position = %{
-      x: Enum.random(left_x..right_x),
-      y: Enum.random(down_y..up_y)
+      x: :rand.uniform() * (right_x - left_x) + left_x,
+      y: :rand.uniform() * (up_y - down_y) + down_y
     }
 
     Map.merge(bot_state, %{current_wandering_position: wandering_position, objective: :wander})

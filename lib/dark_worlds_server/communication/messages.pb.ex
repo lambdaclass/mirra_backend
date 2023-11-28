@@ -318,8 +318,8 @@ defmodule DarkWorldsServer.Communication.Proto.Position do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :uint64)
-  field(:y, 2, type: :uint64)
+  field(:x, 1, type: :float)
+  field(:y, 2, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

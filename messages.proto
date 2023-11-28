@@ -99,8 +99,8 @@ enum Status {
     - y: Y coordinate in the grid
  */
 message Position {
-    uint64 x = 1;
-    uint64 y = 2;
+    float x = 1;
+    float y = 2;
 }
 
 /* A relative position
