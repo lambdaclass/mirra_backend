@@ -156,6 +156,17 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:MULTI_SHOOT, 2)
 end
 
+defmodule DarkWorldsServer.Communication.Proto.GameEvent.PlayersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: DarkWorldsServer.Communication.Proto.Player)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -173,7 +184,13 @@ defmodule DarkWorldsServer.Communication.Proto.GameEvent do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:type, 1, type: DarkWorldsServer.Communication.Proto.GameEventType, enum: true)
-  field(:players, 2, repeated: true, type: DarkWorldsServer.Communication.Proto.Player)
+
+  field(:players, 2,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.GameEvent.PlayersEntry,
+    map: true
+  )
+
   field(:latency, 3, type: :uint64)
   field(:projectiles, 4, repeated: true, type: DarkWorldsServer.Communication.Proto.Projectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
@@ -281,7 +298,7 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   )
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
-  field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:size, 17, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -313,8 +330,8 @@ defmodule DarkWorldsServer.Communication.Proto.Position do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :uint64)
-  field(:y, 2, type: :uint64)
+  field(:x, 1, type: :int64)
+  field(:y, 2, type: :int64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

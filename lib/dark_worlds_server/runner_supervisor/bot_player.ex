@@ -411,28 +411,28 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     # We need to pick and X and Y wich are in a safe zone close to the bot that's also inside of the board
     left_x =
       Enum.max([
-        game_state.shrinking_center.x - game_state.zone.playable_radius,
+        game_state.zone.shrinking_center.x - game_state.zone.playable_radius,
         bot_position.x - bot_visibility_radius,
         0
       ])
 
     right_x =
       Enum.min([
-        game_state.shrinking_center.x + game_state.zone.playable_radius,
+        game_state.zone.shrinking_center.x + game_state.zone.playable_radius,
         bot_position.x + bot_visibility_radius,
         game_state.board.width
       ])
 
     down_y =
       Enum.max([
-        game_state.shrinking_center.y - game_state.zone.playable_radius,
+        game_state.zone.shrinking_center.y - game_state.zone.playable_radius,
         bot_position.y - bot_visibility_radius,
         0
       ])
 
     up_y =
       Enum.min([
-        game_state.shrinking_center.y + game_state.zone.playable_radius,
+        game_state.zone.shrinking_center.y + game_state.zone.playable_radius,
         bot_position.y + bot_visibility_radius,
         game_state.board.height
       ])

@@ -90,7 +90,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      size: body_size
     }
   end
 
@@ -176,7 +176,6 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       player_attributes: player_attributes,
       projectile_attributes: projectile_attributes
     }
-    |> IO.inspect(label: "effect")
   end
 
   def encode(data, _struct) do
@@ -290,7 +289,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      size: body_size
     } = player
 
     %GamePlayer{

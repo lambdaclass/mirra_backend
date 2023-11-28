@@ -11,7 +11,7 @@ syntax = "proto3";
  */
 message GameEvent {
     GameEventType type = 1;
-    repeated Player players = 2;
+    map<uint64,Player> players = 2;
     uint64 latency = 3;
     repeated Projectile projectiles = 4;
     uint64 player_joined_id = 5;
@@ -72,7 +72,7 @@ message Player {
     string character_name = 14;
     map<uint64, EffectInfo> effects = 15;
     RelativePosition direction = 16;
-    float body_size = 17;
+    float size = 17;
 }
 
 message EffectInfo {
@@ -98,8 +98,8 @@ enum Status {
     - y: Y coordinate in the grid
  */
 message Position {
-    uint64 x = 1;
-    uint64 y = 2;
+    int64 x = 1;
+    int64 y = 2;
 }
 
 /* A relative position

@@ -76,13 +76,14 @@ defmodule DarkWorldsServer.Communication do
   end
 
   def game_finished!(%{winner: winner, players: players}) do
-    %GameEvent{winner_player: winner, type: :GAME_FINISHED, players: players}
+    %GameEvent{type: :GAME_FINISHED, winner_player: winner, players: players}
     |> GameEvent.encode()
   end
 
   def game_player_joined(player_id, player_name) do
     %GameEvent{type: :PLAYER_JOINED, player_joined_id: player_id, player_joined_name: player_name}
     |> GameEvent.encode()
+    |> IO.inspect()
   end
 
   def joined_game(player_id) do

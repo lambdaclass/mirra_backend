@@ -156,6 +156,15 @@ defmodule LoadTest.Communication.Proto.MechanicType do
   field(:MULTI_SHOOT, 2)
 end
 
+defmodule LoadTest.Communication.Proto.GameEvent.PlayersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: LoadTest.Communication.Proto.Player)
+end
+
 defmodule LoadTest.Communication.Proto.GameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -171,7 +180,13 @@ defmodule LoadTest.Communication.Proto.GameEvent do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:type, 1, type: LoadTest.Communication.Proto.GameEventType, enum: true)
-  field(:players, 2, repeated: true, type: LoadTest.Communication.Proto.Player)
+
+  field(:players, 2,
+    repeated: true,
+    type: LoadTest.Communication.Proto.GameEvent.PlayersEntry,
+    map: true
+  )
+
   field(:latency, 3, type: :uint64)
   field(:projectiles, 4, repeated: true, type: LoadTest.Communication.Proto.Projectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
@@ -264,7 +279,7 @@ defmodule LoadTest.Communication.Proto.Player do
   )
 
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
-  field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:size, 17, type: :float)
 end
 
 defmodule LoadTest.Communication.Proto.EffectInfo do
@@ -290,8 +305,8 @@ defmodule LoadTest.Communication.Proto.Position do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :uint64)
-  field(:y, 2, type: :uint64)
+  field(:x, 1, type: :int64)
+  field(:y, 2, type: :int64)
 end
 
 defmodule LoadTest.Communication.Proto.RelativePosition do
