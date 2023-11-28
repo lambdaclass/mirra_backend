@@ -266,7 +266,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def terminate(_reason, state) do
-    player_count = length(state.game_state.players) - state.bot_count
+    player_count = map_size(state.game_state.players) - state.bot_count
     NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
     NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
     NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
