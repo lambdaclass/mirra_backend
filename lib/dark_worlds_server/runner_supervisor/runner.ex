@@ -235,7 +235,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   def handle_info({:spawn_bots, bot_count}, state) when bot_count > 0 do
     {:ok, game_config_json} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
     config = Jason.decode!(game_config_json)
-    payload = %{game_id: Communication.pid_to_external_id(self()), bot_count: bot_count, config: config}
+    payload = Jason.encode!(%{game_id: Communication.pid_to_external_id(self()), bot_count: bot_count, config: config})
     headers = [{"content-type", "application/json"}]
     bot_url = Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Bot) |> Keyword.get(:bot_server_url)
     {:ok, %{status: 201}} = Tesla.post("#{bot_url}/api/bot", payload, headers: headers)
@@ -253,7 +253,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def terminate(_reason, state) do
-    player_count = length(Map.values(state.game_state.players)) - state.bot_count
+    player_count = Enum.count(state.game_state.players) - state.bot_count
     NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
     NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
     NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
