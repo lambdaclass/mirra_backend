@@ -30,7 +30,7 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
-  def lobby_game_started!(%{
+  def lobby_preparing_game!(%{
         game_pid: game_pid,
         game_config: game_config,
         server_hash: server_hash
@@ -38,10 +38,17 @@ defmodule DarkWorldsServer.Communication do
     game_id = pid_to_external_id(game_pid)
 
     %LobbyEvent{
-      type: :GAME_STARTED,
+      type: :PREPARING_GAME,
       game_id: game_id,
       game_config: game_config,
       server_hash: server_hash
+    }
+    |> LobbyEvent.encode()
+  end
+
+  def lobby_game_started!() do
+    %LobbyEvent{
+      type: :GAME_STARTED
     }
     |> LobbyEvent.encode()
   end

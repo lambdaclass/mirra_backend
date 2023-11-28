@@ -107,6 +107,7 @@ defmodule LoadTest.Communication.Proto.LobbyEventType do
   field(:PLAYER_ADDED, 2)
   field(:GAME_STARTED, 3)
   field(:START_GAME, 4)
+  field(:PREPARING_GAME, 5)
 end
 
 defmodule LoadTest.Communication.Proto.ProjectileType do

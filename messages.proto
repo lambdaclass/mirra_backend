@@ -332,6 +332,7 @@ enum LobbyEventType {
     PLAYER_ADDED = 2;
     GAME_STARTED = 3;
     START_GAME = 4;
+    PREPARING_GAME = 5;
 }
 
 
