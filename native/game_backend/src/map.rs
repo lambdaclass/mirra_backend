@@ -34,8 +34,8 @@ pub fn in_cone_angle_range(
         return false;
     }
 
-    let x_diff = (target_player.position.x - center_player.position.x) as f32;
-    let y_diff = (target_player.position.y - center_player.position.y) as f32;
+    let x_diff = target_player.position.x - center_player.position.x;
+    let y_diff = target_player.position.y - center_player.position.y;
     let angle = y_diff.atan2(x_diff) * (180.0 / PI);
     let relative_angle = angle - center_player.direction;
     let normalized_angle = (relative_angle + 360.0) % 360.0;
@@ -51,8 +51,8 @@ pub fn next_position(
     height: f32,
 ) -> Position {
     let angle_rad = direction_angle * (PI / 180.0);
-    let new_x = (current_position.x as f32) + movement_amount * angle_rad.cos();
-    let new_y = (current_position.y as f32) + movement_amount * angle_rad.sin();
+    let new_x = current_position.x + movement_amount * angle_rad.cos();
+    let new_y = current_position.y + movement_amount * angle_rad.sin();
 
     let max_x_bound = width / 2.0;
     let min_x_bound = max_x_bound * -1.0;
@@ -105,8 +105,8 @@ pub fn random_position(width: u64, height: u64) -> Position {
 }
 
 pub fn angle_between_positions(center: &Position, target: &Position) -> f32 {
-    let x_diff = (target.x - center.x) as f32;
-    let y_diff = (target.y - center.y) as f32;
+    let x_diff = target.x - center.x;
+    let y_diff = target.y - center.y;
     let angle = y_diff.atan2(x_diff) * (180.0 / PI);
     (angle + 360.0) % 360.0
 }
@@ -114,5 +114,5 @@ pub fn angle_between_positions(center: &Position, target: &Position) -> f32 {
 pub fn distance_to_center(player: &Player, center: &Position) -> f32 {
     let distance_squared =
         (player.position.x - center.x).powi(2) + (player.position.y - center.y).powi(2);
-    (distance_squared as f32).sqrt()
+    distance_squared.sqrt()
 }
