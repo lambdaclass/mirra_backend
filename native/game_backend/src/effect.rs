@@ -48,7 +48,7 @@ pub fn modify_attribute(attribute_value: &mut u64, change: &AttributeChange) {
         }
         AttributeModifier::Multiplicative => {
             *attribute_value =
-                ((*attribute_value as f64) * change.value.parse::<f64>().unwrap()) as u64
+                ((*attribute_value as f32) * change.value.parse::<f32>().unwrap()) as u64
         }
         AttributeModifier::Override => *attribute_value = change.value.parse::<u64>().unwrap(),
     }

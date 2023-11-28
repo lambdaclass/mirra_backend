@@ -341,7 +341,7 @@ fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
                 (*attribute_value).saturating_sub(value.parse::<i64>().unwrap() as u64)
         }
         AttributeModifier::Multiplicative => {
-            *attribute_value = ((*attribute_value as f64) / value.parse::<f64>().unwrap()) as u64
+            *attribute_value = ((*attribute_value as f32) / value.parse::<f32>().unwrap()) as u64
         }
         // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
         _ => todo!(),

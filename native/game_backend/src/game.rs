@@ -69,7 +69,7 @@ pub struct ZoneModificationConfig {
 #[serde(tag = "modifier", content = "value")]
 pub enum ZoneModificationModifier {
     Additive(i64),
-    Multiplicative(f64),
+    Multiplicative(f32),
 }
 
 #[derive(NifMap)]
@@ -531,7 +531,7 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                         zone.radius.saturating_add_signed(value)
                     }
                     ZoneModificationModifier::Multiplicative(value) => {
-                        ((zone.radius as f64) * value) as u64
+                        ((zone.radius as f32) * value) as u64
                     }
                 };
 
