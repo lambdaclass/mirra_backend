@@ -12,8 +12,8 @@ pub struct Position {
 }
 
 pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: u64, size2: u64) -> bool {
-    let squared_x = (center1.x - center2.x).powi(2) as f64;
-    let squared_y = (center1.y - center2.y).powi(2) as f64;
+    let squared_x = ((center1.x - center2.x) as f64).powi(2);
+    let squared_y = ((center1.y - center2.y) as f64).powi(2);
     let centers_distance = (squared_x + squared_y).sqrt();
     let collision_distance = (size1 + size2) as f64;
     centers_distance <= collision_distance
@@ -26,8 +26,8 @@ pub fn in_cone_angle_range(
     cone_angle: f32,
 ) -> bool {
     // TODO: Take into consideration `size` attribute of Player
-    let squared_x = (center_player.position.x - target_player.position.x).powi(2) as f64;
-    let squared_y = (center_player.position.y - target_player.position.y).powi(2) as f64;
+    let squared_x = ((center_player.position.x - target_player.position.x) as f64).powi(2);
+    let squared_y = ((center_player.position.y - target_player.position.y) as f64).powi(2);
     let target_distance = (squared_x + squared_y).sqrt();
 
     if target_distance > (max_distance as f64) {
