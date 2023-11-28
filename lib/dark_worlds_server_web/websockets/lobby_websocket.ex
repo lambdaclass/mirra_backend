@@ -42,12 +42,6 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
     {:reply, {:binary, Communication.lobby_preparing_game!(reply_map)}, state}
   end
 
-  def websocket_info(:game_started, state) do
-    new_state = Map.put(state, :game_started, true)
-
-    {:reply, {:binary, Communication.lobby_game_started!()}, new_state}
-  end
-
   @impl true
   def terminate(reason, _partialreq, %{user_id: user_id}) do
     log_termination(reason)
