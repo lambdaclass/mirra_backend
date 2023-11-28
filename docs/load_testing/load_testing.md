@@ -84,14 +84,15 @@ is to open htop, you should see the virtual cores as 'offline'.
 2. If not already there, copy this repo's script under `server/load_test/setup_load_client.sh`
    and run it:
    ```sh
-   chmod +x ./setup_load_client.sh && ./setup_load_client.sh
+   scp /path_go_game_backend/game_backend/load_test/setup_load_client.sh myrra_load_test_server:/user/setup_load_client.sh
    ```
-
    `setup_load_client` can also take a branch name as an argument. So if you want to run the load test client from a specific branch, you can instead do:
    ```sh
-   chmod +x ./setup_load_client.sh && ./setup_load_client.sh <BRANCH_NAME_TO_TEST>
+   ./setup_load_client.sh <BRANCH_NAME_TO_TEST>
    ```
 3. Set this env variable: `export SERVER_HOST=game_server_ip:game_server_port`.
+   Where `game_server_ip` is the ip of the load test server, and `game_server_port`,
+   the corresponding port.
 4. Run:
    ```sh
        cd ./curse_of_myrra/server/load_test/ && iex -S mix 
@@ -99,7 +100,7 @@ is to open htop, you should see the virtual cores as 'offline'.
    this drops you into an Elixir shell from which you'll run the load tests.
 5. From the elixir shell, start the load test with:
    ```elixir
-   LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_ms)
+   LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
    ``` 
 
 ### Testing UX while running load tests
