@@ -161,6 +161,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Process.send_after(self(), :game_tick, @game_tick_rate_ms)
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+    broadcast_game_start(state.broadcast_topic, Map.put(state.game_state, :player_timestamps, state.player_timestamps))
 
     state = Map.put(state, :last_game_tick_at, System.monotonic_time(:millisecond))
     {:noreply, state}
@@ -265,7 +266,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def terminate(_reason, state) do
-    player_count = length(state.game_state.players) - state.bot_count
+    player_count = Enum.count(state.game_state.players) - state.bot_count
     NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
     NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
     NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
@@ -279,6 +280,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       DarkWorldsServer.PubSub,
       topic,
       {:game_state, transform_state_to_game_state(game_state)}
+    )
+  end
+
+  defp broadcast_game_start(topic, game_state) do
+    Phoenix.PubSub.broadcast(
+      DarkWorldsServer.PubSub,
+      topic,
+      {:game_start, transform_state_to_game_state(game_state)}
     )
   end
 
