@@ -14,7 +14,7 @@
 - 32 GB Swap.
 
 ### Non-Dirty Scheduling Results:
-#### 500 players
+#### 50 games - 10 players per game.
 
 ![Alt text](<img/Load Test - 23 Nov - 500 - No Dirty /Screenshot 2023-11-23 at 17.02.18.png>)
 ![Alt text](image.png)
@@ -27,8 +27,9 @@
 - Each player sent an action each 30 ms.
 - Really really poor UX, game freezes and projectiles
   behave badly.
-- For the 1000 players tests, we had to increase the file descriptor
-  limit with ulimit -n 65000 on both the server and the client.
+- For the 100 games with 10 players each tests (i.e. 1000 players in total),
+  we had to increase the file descriptor limit with ulimit -n 65000 on both 
+  the server and the client.
 - We used the LoadTest.PlayerSupervisor.spawn_players/2 function
   for each load test.
 
@@ -76,7 +77,7 @@ was the WebSocket module, here's the result:
 
 We found out that with:
 - An action each 30ms from the load testing clients.
-- 200 players.
+- 20 games with 10 players each (i.e. 200 players).
 The game would become unplayable and unstable.
 ### 100 players with Dirty and Non Dirty, respectively:
 ![Alt text](<img/Load Test Dirty Scheduler While Playing/Dirty Scheduler - 100 - Playgournd.png>) ![Alt text](<img/Load Test While Playing/100 players - 24 Cores - NonDirty.png>)
@@ -86,6 +87,6 @@ The game would become unplayable and unstable.
 ### Possible improvements:
 - Since 30ms for an action is not realistic,
   we changed it to 200ms and found that the game improved,
-  even with 600 players around. We still need to test when
+  even with 60 games of players 10 each around (600 players). We still need to test when
   exactly the gameplay degrades.
 - New algorithm for the World Tick.
