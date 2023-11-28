@@ -1,3 +1,4 @@
+
 # Usage: ./setup_game_server.sh <BRANCH_NAME>
 # If no BRANCH_NAME is provided, defaults to main
 
@@ -26,31 +27,4 @@ mix release --overwrite
 rm -rf $HOME/game_backend
 mv /tmp/game_backend $HOME/game_backend
 
-cat <<EOF > /etc/systemd/system/game_backend.service
-[Unit]
-Description=Dark Worlds server
-Requires=network-online.target
-After=network-online.target
-
-[Service]
-User=root
-WorkingDirectory=/root/game_backend
-Restart=on-failure
-ExecStart=/root/game_backend/entrypoint.sh
-ExecReload=/bin/kill -HUP
-KillSignal=SIGTERM
-EnvironmentFile=/root/.env
-LimitNOFILE=65512
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl enable game_backend
-
-systemctl stop game_backend
-
-/root/game_backend/_build/prod/rel/dark_worlds_server/bin/migrate
-
-systemctl daemon-reload
-systemctl start game_backend
+$HOME/game_backend/_build/prod/rel/dark_worlds_server/bin/migrate

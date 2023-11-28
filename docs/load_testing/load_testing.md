@@ -27,6 +27,11 @@ Some things to keep in mind about load tests:
 
 ### Setup
 I recommend you add each server ip to your ~/.ssh/config file to avoid confusions, like this:
+First, open a terminal and run: 
+```bash 
+ open ~/.ssh/config
+``` 
+And paste this:
 ```conf 
 Host myrra_load_test_client
   Hostname client_ip
@@ -36,17 +41,16 @@ Host myrra_load_test_server
 ```
 
 ### Game Server Setup
-1. Log into it with ssh: 
+1. Check you can log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_server
    ```
-2. If it's not already there, copy the script on this repo under
-   `server/load_test/setup_game_server.sh` it clones the game server, compiles it, and creates a
-   systemd service for it, run it with:
+2. If it's not already there exit, copy the script on this repo under
+   `game_backend/load_test/setup_game_server.sh` it clones the game server and compiles it:
    ```sh
-   chmod +x ./setup_game_server.sh && ./setup_game_server.sh
+   scp /path_go_game_backend/game_backend/load_test/setup_game_server.sh myrra_load_test_server:/user/setup_game_server.sh
    ```
-
+   Then relog (step 1) and relog into the server 
    `setup_game_server` can also take a branch name as an argument. So if you want to run the load test on an specific branch, you can instead do:
    ```sh
    chmod +x ./setup_game_server.sh && ./setup_game_server.sh <BRANCH_NAME_TO_TEST>
@@ -54,9 +58,14 @@ Host myrra_load_test_server
 
 3. Now you can start the game server with: 
 ```sh
-systemctl daemon-reload && systemctl start curse_of_myrra
+export $(cat .env | xargs) && cd game_backend && MIX_ENV=prod iex -S mix phx.server
 ```
    You can check the logs with `journalctl -xefu curse_of_myrra`.
+   From now on, you can just use: 
+```sh
+MIX_ENV=prod iex -S mix phx.server
+```
+   
 4. Make sure to disable hyperthreading, if using an x86 CPU:
 ```sh
 # If active, this returns 1
