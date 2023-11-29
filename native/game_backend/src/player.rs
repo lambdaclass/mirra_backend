@@ -28,7 +28,7 @@ pub struct Player {
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<(Effect, EntityOwner)>,
     pub size: u64,
-    pub speed: u64,
+    pub speed: f32,
     pub action_duration_ms: u64,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
@@ -74,7 +74,7 @@ impl Player {
 
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {
         // A speed of 0 (or less) means the player can't move (e.g. paralyzed, frozen, etc)
-        if self.speed == 0 {
+        if self.speed.abs() < f32::EPSILON {
             return;
         }
 
@@ -153,7 +153,7 @@ impl Player {
                     .fold(self, |player, change| {
                         match change.attribute.as_str() {
                             "speed" => {
-                                modify_attribute(&mut player.speed, &change.modifier, &change.value)
+                                modify_float_attribute(&mut player.speed, &change.modifier, &change.value)
                             }
                             "size" => {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
@@ -190,7 +190,7 @@ impl Player {
                         }
                         "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
                         "speed" => {
-                            revert_attribute(&mut self.speed, &change.modifier, &change.value)
+                            revert_float_attribute(&mut self.speed, &change.modifier, &change.value)
                         }
                         _ => todo!(),
                     };
@@ -230,7 +230,7 @@ impl Player {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
                     "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
-                    "speed" => revert_attribute(&mut self.speed, &change.modifier, &change.value),
+                    "speed" => revert_float_attribute(&mut self.speed, &change.modifier, &change.value),
                     _ => todo!(),
                 };
             });
@@ -342,6 +342,31 @@ fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
         }
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f32) / value.parse::<f32>().unwrap()) as u64
+        }
+        // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
+        _ => todo!(),
+    }
+}
+
+fn modify_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifier, value: &str) {
+    match modifier {
+        AttributeModifier::Additive => {
+            *attribute_value = (*attribute_value + value.parse::<f32>().unwrap()).max(f32::MAX)
+        }
+        AttributeModifier::Multiplicative => {
+            *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as f32
+        }
+        AttributeModifier::Override => *attribute_value = value.parse::<f32>().unwrap(),
+    }
+}
+
+fn revert_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifier, value: &str) {
+    match modifier {
+        AttributeModifier::Additive => {
+            *attribute_value = (*attribute_value - value.parse::<f32>().unwrap()).max(f32::MAX)
+        }
+        AttributeModifier::Multiplicative => {
+            *attribute_value = ((*attribute_value as f32) / value.parse::<f32>().unwrap()) as f32
         }
         // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
         _ => todo!(),

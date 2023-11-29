@@ -430,7 +430,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
     projectiles.retain(|projectile| {
         projectile.active
             && projectile.duration_ms > 0
-            && projectile.max_distance > 0
+            && projectile.max_distance > 0.0
             && !map::collision_with_edge(
                 &projectile.position,
                 projectile.size,
@@ -441,7 +441,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
 
     projectiles.iter_mut().for_each(|projectile| {
         projectile.duration_ms = projectile.duration_ms.saturating_sub(time_diff);
-        projectile.max_distance = projectile.max_distance.saturating_sub(projectile.speed);
+        projectile.max_distance = (projectile.max_distance - projectile.speed).max(0.0);
         projectile.position = map::next_position(
             &projectile.position,
             projectile.direction_angle,

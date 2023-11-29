@@ -499,7 +499,7 @@ defmodule LoadTest.Communication.Proto.Projectile do
   field(:id, 1, type: :uint64)
   field(:position, 2, type: LoadTest.Communication.Proto.Position)
   field(:direction, 3, type: LoadTest.Communication.Proto.RelativePosition)
-  field(:speed, 4, type: :uint32)
+  field(:speed, 4, type: :float)
   field(:range, 5, type: :uint32)
   field(:player_id, 6, type: :uint64, json_name: "playerId")
   field(:damage, 7, type: :uint32)
@@ -619,7 +619,7 @@ defmodule LoadTest.Communication.Proto.GameProjectile do
 
   field(:name, 1, type: :string)
   field(:base_damage, 2, type: :uint64, json_name: "baseDamage")
-  field(:base_speed, 3, type: :uint64, json_name: "baseSpeed")
+  field(:base_speed, 3, type: :float, json_name: "baseSpeed")
   field(:base_size, 4, type: :uint64, json_name: "baseSize")
   field(:remove_on_collision, 5, type: :bool, json_name: "removeOnCollision")
 
@@ -629,7 +629,7 @@ defmodule LoadTest.Communication.Proto.GameProjectile do
     json_name: "onHitEffect"
   )
 
-  field(:max_distance, 7, type: :uint64, json_name: "maxDistance")
+  field(:max_distance, 7, type: :float, json_name: "maxDistance")
   field(:duration_ms, 8, type: :float, json_name: "durationMs")
 end
 
@@ -649,7 +649,7 @@ defmodule LoadTest.Communication.Proto.GameCharacter do
 
   field(:name, 1, type: :string)
   field(:active, 2, type: :bool)
-  field(:base_speed, 3, type: :uint64, json_name: "baseSpeed")
+  field(:base_speed, 3, type: :float, json_name: "baseSpeed")
   field(:base_size, 4, type: :uint64, json_name: "baseSize")
   field(:base_health, 5, type: :uint64, json_name: "baseHealth")
 

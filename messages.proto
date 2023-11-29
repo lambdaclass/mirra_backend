@@ -367,7 +367,7 @@ message Projectile {
     uint64 id = 1;
     Position position = 2;
     RelativePosition direction = 3;
-    uint32 speed = 4;
+    float speed = 4;
     uint32 range = 5;
     uint64 player_id = 6;
     uint32 damage = 7;
@@ -503,11 +503,11 @@ message GameLoot {
 message GameProjectile {
     string name = 1;
     uint64 base_damage = 2;
-    uint64 base_speed = 3;
+    float base_speed = 3;
     uint64 base_size = 4;
     bool remove_on_collision = 5;
     repeated GameEffect on_hit_effect = 6;
-    uint64 max_distance = 7;
+    float max_distance = 7;
     float duration_ms = 8;
 }
 
@@ -522,7 +522,7 @@ message GameProjectile {
 message GameCharacter {
     string name = 1;
     bool active = 2;
-    uint64 base_speed = 3;
+    float base_speed = 3;
     uint64 base_size = 4;
     uint64 base_health = 5;
     map<string, GameSkill> skills = 6;
