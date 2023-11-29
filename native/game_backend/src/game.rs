@@ -455,17 +455,14 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
     })
 }
 
-fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &Vec<KillEvent>) {
-    killfeed
-        .iter()
-        .for_each(|kill_event| match kill_event.kill_by {
-            EntityOwner::Player(player_id) => {
-                if let Some(player) = players.get_mut(&player_id) {
-                    player.add_kill();
-                }
+fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &[KillEvent]) {
+    killfeed.iter().for_each(|kill_event| {
+        if let EntityOwner::Player(player_id) = kill_event.kill_by {
+            if let Some(player) = players.get_mut(&player_id) {
+                player.add_kill();
             }
-            _ => {}
-        })
+        }
+    })
 }
 
 fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
