@@ -370,7 +370,8 @@ fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
 fn modify_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifier, value: &str) {
     match modifier {
         AttributeModifier::Additive => {
-            *attribute_value = (*attribute_value + value.parse::<f32>().unwrap()).clamp(f32::MIN, f32::MAX)
+            *attribute_value =
+                (*attribute_value + value.parse::<f32>().unwrap()).clamp(f32::MIN, f32::MAX)
         }
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) * value.parse::<f64>().unwrap()) as f32
@@ -382,7 +383,8 @@ fn modify_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifie
 fn revert_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifier, value: &str) {
     match modifier {
         AttributeModifier::Additive => {
-            *attribute_value = (*attribute_value - value.parse::<f32>().unwrap()).clamp(f32::MIN, f32::MAX)
+            *attribute_value =
+                (*attribute_value - value.parse::<f32>().unwrap()).clamp(f32::MIN, f32::MAX)
         }
         AttributeModifier::Multiplicative => {
             *attribute_value = *attribute_value / value.parse::<f32>().unwrap()

@@ -562,9 +562,7 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                 zone.time_since_last_modification_ms -= zone_modification.interval_ms;
 
                 let new_radius = match zone_modification.modification {
-                    ZoneModificationModifier::Additive(value) => {
-                        zone.radius + value
-                    }
+                    ZoneModificationModifier::Additive(value) => zone.radius + value,
                     ZoneModificationModifier::Multiplicative(value) => zone.radius * value,
                 };
 
