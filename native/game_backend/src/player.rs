@@ -30,6 +30,7 @@ pub struct Player {
     pub size: u64,
     pub speed: u64,
     pub action_duration_ms: u64,
+    pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
 }
@@ -69,6 +70,7 @@ impl Player {
             character: character_config,
             action_duration_ms: 0,
             next_actions: Vec::new(),
+            skills_keys_to_execute: Vec::new(),
         }
     }
 
@@ -250,6 +252,8 @@ impl Player {
     }
 
     pub fn run_effects(&mut self, time_diff: u64) -> Option<EntityOwner> {
+        let mut skills_keys_to_execute: Vec<String> = Vec::new();
+
         for (effect, owner) in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
                 TimeType::Duration { duration_ms } => {
@@ -266,6 +270,11 @@ impl Player {
                     if *time_since_last_trigger >= *interval_ms {
                         *time_since_last_trigger -= *interval_ms;
                         *trigger_count -= 1;
+
+                        effect
+                            .skills_keys_to_execute
+                            .iter()
+                            .for_each(|skill| skills_keys_to_execute.push(skill.to_string()));
 
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
@@ -292,7 +301,7 @@ impl Player {
                 _ => todo!(),
             }
         }
-
+        self.skills_keys_to_execute = skills_keys_to_execute;
         None
     }
 

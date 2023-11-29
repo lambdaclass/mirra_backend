@@ -252,7 +252,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   defp do_action(bot_id, game_pid, _players, %{
          action: {:attack, %{type: :enemy, attacking_angle_direction: angle}, skill}
        }) do
-    Runner.basic_attack(game_pid, bot_id, %UseSkill{angle: angle, skill: skill}, nil)
+    Runner.attack(game_pid, bot_id, %UseSkill{angle: angle, skill: skill}, nil)
   end
 
   defp do_action(_bot_id, _game_pid, _players, _) do
