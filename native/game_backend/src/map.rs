@@ -11,7 +11,7 @@ pub struct Position {
     pub y: f32,
 }
 
-pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: u64, size2: u64) -> bool {
+pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: f32, size2: f32) -> bool {
     let squared_x = ((center1.x - center2.x) as f64).powi(2);
     let squared_y = ((center1.y - center2.y) as f64).powi(2);
     let centers_distance = (squared_x + squared_y).sqrt();
@@ -22,7 +22,7 @@ pub fn hit_boxes_collide(center1: &Position, center2: &Position, size1: u64, siz
 pub fn in_cone_angle_range(
     center_player: &Player,
     target_player: &Player,
-    max_distance: u64,
+    max_distance: f32,
     cone_angle: f32,
 ) -> bool {
     // TODO: Take into consideration `size` attribute of Player
@@ -65,27 +65,27 @@ pub fn next_position(
     Position { x, y }
 }
 
-pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
-    let x_edge_positive = (width / 2) as f32;
-    let x_position_positive = center.x + size as f32;
+pub fn collision_with_edge(center: &Position, size: f32, width: f32, height: f32) -> bool {
+    let x_edge_positive = width / 2.0;
+    let x_position_positive = center.x + size;
     if x_position_positive >= x_edge_positive {
         return true;
     }
 
-    let x_edge_negative = width as f32 / -2.0;
-    let x_position_negative = center.x - size as f32;
+    let x_edge_negative = width / -2.0;
+    let x_position_negative = center.x - size;
     if x_position_negative <= x_edge_negative {
         return true;
     }
 
-    let y_edge_positive = (height / 2) as f32;
-    let y_position_positive = center.y + size as f32;
+    let y_edge_positive = height / 2.0;
+    let y_position_positive = center.y + size;
     if y_position_positive >= y_edge_positive {
         return true;
     }
 
-    let y_edge_negative = height as f32 / -2.0;
-    let y_position_negative = center.y - size as f32;
+    let y_edge_negative = height / -2.0;
+    let y_position_negative = center.y - size;
     if y_position_negative <= y_edge_negative {
         return true;
     }
@@ -93,10 +93,10 @@ pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64
     false
 }
 
-pub fn random_position(width: u64, height: u64) -> Position {
+pub fn random_position(width: f32, height: f32) -> Position {
     let rng = &mut rand::thread_rng();
-    let bound_x = (width / 2) as f32;
-    let bound_y = (height / 2) as f32;
+    let bound_x = width / 2.0;
+    let bound_y = height / 2.0;
 
     Position {
         x: rng.gen_range(-bound_x..bound_x),

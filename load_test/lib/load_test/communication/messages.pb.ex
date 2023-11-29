@@ -153,6 +153,7 @@ defmodule LoadTest.Communication.Proto.MechanicType do
   field(:HIT, 0)
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
+  field(:GIVE_EFFECT, 3)
 end
 
 defmodule LoadTest.Communication.Proto.GameEvent.SelectedCharactersEntry do
@@ -187,7 +188,7 @@ defmodule LoadTest.Communication.Proto.GameEvent do
   field(:player_timestamp, 9, type: :int64, json_name: "playerTimestamp")
   field(:server_timestamp, 10, type: :int64, json_name: "serverTimestamp")
   field(:killfeed, 11, repeated: true, type: LoadTest.Communication.Proto.KillEvent)
-  field(:playable_radius, 12, type: :uint64, json_name: "playableRadius")
+  field(:playable_radius, 12, type: :float, json_name: "playableRadius")
 
   field(:shrinking_center, 13,
     type: LoadTest.Communication.Proto.Position,
@@ -407,8 +408,8 @@ defmodule LoadTest.Communication.Proto.BoardSize do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:width, 1, type: :float)
+  field(:height, 2, type: :float)
 end
 
 defmodule LoadTest.Communication.Proto.CharacterConfigItem do
@@ -500,7 +501,7 @@ defmodule LoadTest.Communication.Proto.Projectile do
   field(:position, 2, type: LoadTest.Communication.Proto.Position)
   field(:direction, 3, type: LoadTest.Communication.Proto.RelativePosition)
   field(:speed, 4, type: :float)
-  field(:range, 5, type: :uint32)
+  field(:range, 5, type: :float)
   field(:player_id, 6, type: :uint64, json_name: "playerId")
   field(:damage, 7, type: :uint32)
   field(:remaining_ticks, 8, type: :sint64, json_name: "remainingTicks")
@@ -559,8 +560,8 @@ defmodule LoadTest.Communication.Proto.GameStateConfig do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:width, 1, type: :float)
+  field(:height, 2, type: :float)
 
   field(:map_modification, 3,
     type: LoadTest.Communication.Proto.MapModification,
@@ -576,9 +577,9 @@ defmodule LoadTest.Communication.Proto.MapModification do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:modification, 1, type: LoadTest.Communication.Proto.Modification)
-  field(:starting_radius, 2, type: :uint64, json_name: "startingRadius")
-  field(:minimum_radius, 3, type: :uint64, json_name: "minimumRadius")
-  field(:max_radius, 4, type: :uint64, json_name: "maxRadius")
+  field(:starting_radius, 2, type: :float, json_name: "startingRadius")
+  field(:minimum_radius, 3, type: :float, json_name: "minimumRadius")
+  field(:max_radius, 4, type: :float, json_name: "maxRadius")
 
   field(:outside_radius_effects, 5,
     repeated: true,
@@ -608,7 +609,7 @@ defmodule LoadTest.Communication.Proto.GameLoot do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:name, 1, type: :string)
-  field(:size, 2, type: :uint64)
+  field(:size, 2, type: :float)
   field(:effects, 3, repeated: true, type: LoadTest.Communication.Proto.GameEffect)
 end
 
@@ -620,7 +621,7 @@ defmodule LoadTest.Communication.Proto.GameProjectile do
   field(:name, 1, type: :string)
   field(:base_damage, 2, type: :uint64, json_name: "baseDamage")
   field(:base_speed, 3, type: :float, json_name: "baseSpeed")
-  field(:base_size, 4, type: :uint64, json_name: "baseSize")
+  field(:base_size, 4, type: :float, json_name: "baseSize")
   field(:remove_on_collision, 5, type: :bool, json_name: "removeOnCollision")
 
   field(:on_hit_effect, 6,
@@ -650,7 +651,7 @@ defmodule LoadTest.Communication.Proto.GameCharacter do
   field(:name, 1, type: :string)
   field(:active, 2, type: :bool)
   field(:base_speed, 3, type: :float, json_name: "baseSpeed")
-  field(:base_size, 4, type: :uint64, json_name: "baseSize")
+  field(:base_size, 4, type: :float, json_name: "baseSize")
   field(:base_health, 5, type: :uint64, json_name: "baseHealth")
 
   field(:skills, 6,
@@ -679,7 +680,7 @@ defmodule LoadTest.Communication.Proto.Mechanic do
   field(:name, 1, type: LoadTest.Communication.Proto.MechanicType, enum: true)
   field(:effects, 2, repeated: true, type: LoadTest.Communication.Proto.GameEffect)
   field(:damage, 3, type: :uint64)
-  field(:range, 4, type: :uint64)
+  field(:range, 4, type: :float)
   field(:cone_angle, 5, type: :uint64, json_name: "coneAngle")
 
   field(:on_hit_effects, 6,
@@ -691,7 +692,7 @@ defmodule LoadTest.Communication.Proto.Mechanic do
   field(:projectile, 7, type: LoadTest.Communication.Proto.GameProjectile)
   field(:count, 8, type: :uint64)
   field(:duration_ms, 9, type: :uint64, json_name: "durationMs")
-  field(:max_range, 10, type: :uint64, json_name: "maxRange")
+  field(:max_range, 10, type: :float, json_name: "maxRange")
 end
 
 defmodule LoadTest.Communication.Proto.GameEffect.Duration do

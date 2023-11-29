@@ -438,8 +438,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     {width, height} = Process.get(:map_size)
 
     %GameBackend.Position{
-      x: -1 * position.y + div(width, 2),
-      y: position.x + div(height, 2)
+      x: -1 * position.y + width / 2,
+      y: position.x + height / 2
     }
   end
 

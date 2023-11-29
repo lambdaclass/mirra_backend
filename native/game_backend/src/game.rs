@@ -27,10 +27,10 @@ pub enum EntityOwner {
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
-    width: u64,
-    height: u64,
+    width: f32,
+    height: f32,
     loot_interval_ms: u64,
-    zone_starting_radius: u64,
+    zone_starting_radius: f32,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
 }
@@ -39,18 +39,18 @@ pub struct GameConfigFile {
 pub struct ZoneModificationConfigFile {
     duration_ms: u64,
     interval_ms: u64,
-    min_radius: u64,
-    max_radius: u64,
+    min_radius: f32,
+    max_radius: f32,
     outside_radius_effects: Vec<String>,
     modification: ZoneModificationModifier,
 }
 
 #[derive(NifMap)]
 pub struct GameConfig {
-    pub width: u64,
-    pub height: u64,
+    pub width: f32,
+    pub height: f32,
     pub loot_interval_ms: u64,
-    pub zone_starting_radius: u64,
+    pub zone_starting_radius: f32,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
 }
@@ -59,8 +59,8 @@ pub struct GameConfig {
 pub struct ZoneModificationConfig {
     duration_ms: u64,
     interval_ms: u64,
-    min_radius: u64,
-    max_radius: u64,
+    min_radius: f32,
+    max_radius: f32,
     outside_radius_effects: Vec<Effect>,
     modification: ZoneModificationModifier,
 }
@@ -68,14 +68,14 @@ pub struct ZoneModificationConfig {
 #[derive(Deserialize, NifTaggedEnum, Clone)]
 #[serde(tag = "modifier", content = "value")]
 pub enum ZoneModificationModifier {
-    Additive(i64),
+    Additive(f32),
     Multiplicative(f32),
 }
 
 #[derive(NifMap)]
 pub struct Zone {
     pub center: Position,
-    pub radius: u64,
+    pub radius: f32,
     pub current_modification: Option<ZoneModificationConfig>,
     pub modifications: Vec<ZoneModificationConfig>,
     pub time_since_last_modification_ms: u64,
@@ -407,7 +407,7 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
-        if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
+        if map::hit_boxes_collide(&loot.position, &player.position, loot.size as f32, player.size as f32) {
             match loot.pickup_mechanic {
                 PickupMechanic::CollisionToInventory => !player.put_in_inventory(loot),
                 PickupMechanic::CollisionUse => {
@@ -499,8 +499,8 @@ fn apply_projectiles_collisions(
                 && map::hit_boxes_collide(
                     &projectile.position,
                     &player.position,
-                    projectile.size,
-                    player.size,
+                    projectile.size as f32,
+                    player.size as f32,
                 )
             {
                 if player.id == projectile.player_id {
@@ -563,10 +563,10 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
 
                 let new_radius = match zone_modification.modification {
                     ZoneModificationModifier::Additive(value) => {
-                        zone.radius.saturating_add_signed(value)
+                        (zone.radius + value).max(f32::MAX)
                     }
                     ZoneModificationModifier::Multiplicative(value) => {
-                        ((zone.radius as f32) * value) as u64
+                        zone.radius as f32 * value
                     }
                 };
 
@@ -599,7 +599,7 @@ fn apply_zone_effects(
             // We set size of player as 0 so a player has to be half way inside the zone to be considered inside
             // otherwise if just a border of the player where inside it would be considered inside which seems wrong
             .partition(|player| {
-                map::hit_boxes_collide(&zone.center, &player.position, zone.radius, 0)
+                map::hit_boxes_collide(&zone.center, &player.position, zone.radius, 0.0)
             });
 
         inside_players.into_iter().for_each(|player| {

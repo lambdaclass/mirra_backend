@@ -27,7 +27,7 @@ pub struct Player {
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<(Effect, EntityOwner)>,
-    pub size: u64,
+    pub size: f32,
     pub speed: f32,
     pub action_duration_ms: u64,
     pub skills_keys_to_execute: Vec<String>,
@@ -158,7 +158,7 @@ impl Player {
                                 modify_float_attribute(&mut player.speed, &change.modifier, &change.value)
                             }
                             "size" => {
-                                modify_attribute(&mut player.size, &change.modifier, &change.value)
+                                modify_float_attribute(&mut player.size, &change.modifier, &change.value)
                             }
                             "health" => {
                                 modify_attribute(
@@ -190,7 +190,7 @@ impl Player {
                         "health" => {
                             revert_attribute(&mut self.health, &change.modifier, &change.value)
                         }
-                        "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
+                        "size" => revert_float_attribute(&mut self.size, &change.modifier, &change.value),
                         "speed" => {
                             revert_float_attribute(&mut self.speed, &change.modifier, &change.value)
                         }
@@ -231,7 +231,7 @@ impl Player {
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
-                    "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
+                    "size" => revert_float_attribute(&mut self.size, &change.modifier, &change.value),
                     "speed" => revert_float_attribute(&mut self.speed, &change.modifier, &change.value),
                     _ => todo!(),
                 };

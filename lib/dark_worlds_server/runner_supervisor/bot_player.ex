@@ -11,19 +11,19 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   # We'll decide the view range of a bot measured in grid cells
   # e.g. from {x=1, y=1} to {x=5, y=1} you have 4 cells
-  @visibility_max_range_cells 2000
+  @visibility_max_range_cells 20.0
 
   # This number determines the amount of players needed in proximity for the bot to flee
   @amount_of_players_to_flee 3
 
   # The numbers of cell close to the bot in wich the enemies will count to flee
-  @range_of_players_to_flee @visibility_max_range_cells + 500
+  @range_of_players_to_flee @visibility_max_range_cells + 5.0
 
   # The number of minimum playable radius where the bot could flee
-  @min_playable_radius_flee 5000
+  @min_playable_radius_flee 50.0
 
   # Number to substract to the playable radio
-  @radius_sub_to_escape 500
+  @radius_sub_to_escape 5.0
 
   # This is the amount of time between bots messages
   @game_tick_rate_ms 30
