@@ -407,12 +407,7 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
-        if map::hit_boxes_collide(
-            &loot.position,
-            &player.position,
-            loot.size,
-            player.size,
-        ) {
+        if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
             match loot.pickup_mechanic {
                 PickupMechanic::CollisionToInventory => !player.put_in_inventory(loot),
                 PickupMechanic::CollisionUse => {
