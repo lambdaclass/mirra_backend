@@ -32,6 +32,8 @@ pub struct Player {
     pub action_duration_ms: u64,
     pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
+    pub skill_moving_duration_ms: u64,
+    pub skill_moving_speed_per_ms: f32,
     next_actions: Vec<Action>,
 }
 
@@ -68,6 +70,8 @@ impl Player {
             action_duration_ms: 0,
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
+            skill_moving_duration_ms: 0,
+            skill_moving_speed_per_ms: 0.0,
         }
     }
 
@@ -89,6 +93,16 @@ impl Player {
             self.speed as f32,
             config.game.width as f32,
         );
+    }
+
+    pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
+        if self.skill_moving_duration_ms == 0 {
+            return;
+        }
+
+        self.skill_moving_duration_ms = self.skill_moving_duration_ms.saturating_sub(elapsed_time_ms);
+        let speed  = self.skill_moving_speed_per_ms * (elapsed_time_ms as f32);
+        self.position = map::next_position(&self.position, self.direction, speed, config.game.width as f32, config.game.height as f32);
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {

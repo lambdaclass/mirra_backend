@@ -358,6 +358,10 @@ impl GameState {
                                     }
                                 })
                         }
+                        SkillMechanic::MoveToTarget { duration_ms, max_range } => {
+                            player.skill_moving_duration_ms = *duration_ms;
+                            player.skill_moving_speed_per_ms = (*max_range as f32) / (*duration_ms as f32);
+                        }
                         _ => todo!("SkillMechanic not implemented"),
                     }
                 }
@@ -374,6 +378,7 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        skill_move_players(&mut self.players, time_diff, &self.config);
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
@@ -474,6 +479,12 @@ fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &[KillEvent]
                 player.add_kill();
             }
         }
+    });
+}
+
+fn skill_move_players(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64, config: &Config) {
+    players.values_mut().for_each(|player| {
+        player.skill_move(elapsed_time_ms, config);
     })
 }
 

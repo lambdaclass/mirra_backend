@@ -392,4 +392,5 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   defp mechanic_name_encode(:simple_shoot), do: :SIMPLE_SHOOT
   defp mechanic_name_encode(:multi_shoot), do: :MULTI_SHOOT
   defp mechanic_name_encode(:give_effect), do: :GIVE_EFFECT
+  defp mechanic_name_encode(:move_to_target), do: :MOVE_TO_TARGET
 end

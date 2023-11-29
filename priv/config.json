@@ -236,6 +236,20 @@
           }
         }
       ]
+    },
+    {
+      "name": "leap",
+      "cooldown_ms": 5000,
+      "execution_duration_ms": 2000,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "MoveToTarget": {
+            "duration_ms": 2000,
+            "max_range": 2000
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -261,8 +275,8 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "hit",
-        "2": "circle_hit"
+        "1": "leap",
+        "2": "leap"
       }
     }
   ],
