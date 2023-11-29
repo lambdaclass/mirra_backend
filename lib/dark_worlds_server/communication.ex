@@ -47,6 +47,17 @@ defmodule DarkWorldsServer.Communication do
   end
 
   def game_started!(%{
+        players: players,
+        projectiles: projectiles,
+        killfeed: killfeed,
+        playable_radius: playable_radius,
+        shrinking_center: shrinking_center,
+        player_timestamp: player_timestamp,
+        server_timestamp: server_timestamp,
+        loots: loots
+      }) do
+    %GameEvent{
+      type: :GAME_STARTED,
       players: players,
       projectiles: projectiles,
       killfeed: killfeed,
@@ -55,17 +66,6 @@ defmodule DarkWorldsServer.Communication do
       player_timestamp: player_timestamp,
       server_timestamp: server_timestamp,
       loots: loots
-    }) do
-    %GameEvent{
-    type: :GAME_STARTED,
-    players: players,
-    projectiles: projectiles,
-    killfeed: killfeed,
-    playable_radius: playable_radius,
-    shrinking_center: shrinking_center,
-    player_timestamp: player_timestamp,
-    server_timestamp: server_timestamp,
-    loots: loots
     }
     |> GameEvent.encode()
   end
