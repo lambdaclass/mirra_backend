@@ -426,6 +426,7 @@ enum MechanicType {
     HIT = 0;
     SIMPLE_SHOOT = 1;
     MULTI_SHOOT = 2;
+    GIVE_EFFECT = 3;
 }
 
 message Config {

@@ -153,6 +153,7 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:HIT, 0)
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
+  field(:GIVE_EFFECT, 3)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
