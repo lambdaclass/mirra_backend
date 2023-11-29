@@ -85,9 +85,9 @@ impl Player {
         self.position = map::next_position(
             &self.position,
             angle_degrees,
-            self.speed as f32,
-            config.game.width as f32,
-            config.game.height as f32,
+            self.speed,
+            config.game.width,
+            config.game.height,
         );
     }
 
@@ -154,12 +154,16 @@ impl Player {
                     .iter()
                     .fold(self, |player, change| {
                         match change.attribute.as_str() {
-                            "speed" => {
-                                modify_float_attribute(&mut player.speed, &change.modifier, &change.value)
-                            }
-                            "size" => {
-                                modify_float_attribute(&mut player.size, &change.modifier, &change.value)
-                            }
+                            "speed" => modify_float_attribute(
+                                &mut player.speed,
+                                &change.modifier,
+                                &change.value,
+                            ),
+                            "size" => modify_float_attribute(
+                                &mut player.size,
+                                &change.modifier,
+                                &change.value,
+                            ),
                             "health" => {
                                 modify_attribute(
                                     &mut player.health,
@@ -190,7 +194,9 @@ impl Player {
                         "health" => {
                             revert_attribute(&mut self.health, &change.modifier, &change.value)
                         }
-                        "size" => revert_float_attribute(&mut self.size, &change.modifier, &change.value),
+                        "size" => {
+                            revert_float_attribute(&mut self.size, &change.modifier, &change.value)
+                        }
                         "speed" => {
                             revert_float_attribute(&mut self.speed, &change.modifier, &change.value)
                         }
@@ -231,8 +237,12 @@ impl Player {
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
-                    "size" => revert_float_attribute(&mut self.size, &change.modifier, &change.value),
-                    "speed" => revert_float_attribute(&mut self.speed, &change.modifier, &change.value),
+                    "size" => {
+                        revert_float_attribute(&mut self.size, &change.modifier, &change.value)
+                    }
+                    "speed" => {
+                        revert_float_attribute(&mut self.speed, &change.modifier, &change.value)
+                    }
                     _ => todo!(),
                 };
             });
@@ -375,7 +385,7 @@ fn revert_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifie
             *attribute_value = (*attribute_value - value.parse::<f32>().unwrap()).clamp(f32::MIN, f32::MAX)
         }
         AttributeModifier::Multiplicative => {
-            *attribute_value = ((*attribute_value as f32) / value.parse::<f32>().unwrap()) as f32
+            *attribute_value = *attribute_value / value.parse::<f32>().unwrap()
         }
         // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
         _ => todo!(),

@@ -407,7 +407,7 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
-        if map::hit_boxes_collide(&loot.position, &player.position, loot.size as f32, player.size as f32) {
+        if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
             match loot.pickup_mechanic {
                 PickupMechanic::CollisionToInventory => !player.put_in_inventory(loot),
                 PickupMechanic::CollisionUse => {
@@ -480,9 +480,9 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
         projectile.position = map::next_position(
             &projectile.position,
             projectile.direction_angle,
-            projectile.speed as f32,
-            config.game.width as f32,
-            config.game.height as f32,
+            projectile.speed,
+            config.game.width,
+            config.game.height,
         )
     });
 }
@@ -499,8 +499,8 @@ fn apply_projectiles_collisions(
                 && map::hit_boxes_collide(
                     &projectile.position,
                     &player.position,
-                    projectile.size as f32,
-                    player.size as f32,
+                    projectile.size,
+                    player.size,
                 )
             {
                 if player.id == projectile.player_id {
@@ -565,9 +565,7 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                     ZoneModificationModifier::Additive(value) => {
                         zone.radius + value
                     }
-                    ZoneModificationModifier::Multiplicative(value) => {
-                        zone.radius as f32 * value
-                    }
+                    ZoneModificationModifier::Multiplicative(value) => zone.radius * value,
                 };
 
                 zone.radius = new_radius
