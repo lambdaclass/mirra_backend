@@ -39,8 +39,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     GenServer.cast(runner_pid, {:move, user_id, action, timestamp})
   end
 
-  def basic_attack(runner_pid, user_id, action, timestamp) do
-    GenServer.cast(runner_pid, {:basic_attack, user_id, action, timestamp})
+  def attack(runner_pid, user_id, action, timestamp) do
+    GenServer.cast(runner_pid, {:attack, user_id, action, timestamp})
   end
 
   def skill(runner_pid, user_id, action) do
@@ -132,7 +132,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_cast(
-        {:basic_attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
+        {:attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
         state
       ) do
     player_id = state.user_to_player[user_id] || user_id
@@ -266,7 +266,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def terminate(_reason, state) do
-    player_count = length(state.game_state.players) - state.bot_count
+    player_count = Enum.count(state.game_state.players) - state.bot_count
     NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
     NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
     NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
@@ -323,6 +323,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp action_skill_to_key("BasicAttack"), do: "1"
+  defp action_skill_to_key("Skill1"), do: "2"
   defp action_skill_to_key(:skill_1), do: "2"
   defp action_skill_to_key(:skill_2), do: "3"
   defp action_skill_to_key(:skill_3), do: "4"
@@ -461,6 +462,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   defp transform_action_to_game_action([{:using_skill, "2"} | tail]),
     do: [:executingskill2 | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "4"} | tail]),
+    do: [:executingskill4 | transform_action_to_game_action(tail)]
 
   defp transform_killfeed_to_game_killfeed([]), do: []
 
