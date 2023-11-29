@@ -4,6 +4,6 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: theo
+      POSTGRES_PASSWORD: 1t8j1j1
       POSTGRES_DB: dark_worlds_server_dev

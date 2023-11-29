@@ -2,12 +2,12 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   @moduledoc """
   Play Websocket handler that parses msgs to be send to the runner genserver
   """
+  alias DarkWorldsServer.Accounts.User
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.RunnerSupervisor
   alias DarkWorldsServer.RunnerSupervisor.RequestTracker
   alias DarkWorldsServer.RunnerSupervisor.Runner
-  alias DarkWorldsServer.Accounts.User
 
   require Logger
 

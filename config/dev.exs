@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :dark_worlds_server, DarkWorldsServer.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "theo",
+  password: "1t8j1j1",
   hostname: "localhost",
   database: "dark_worlds_server_dev",
   stacktrace: true,
