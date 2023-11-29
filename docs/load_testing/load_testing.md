@@ -103,17 +103,6 @@ is to open htop, you should see the virtual cores as 'offline'.
    LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
    ``` 
 
-### Testing UX while running load tests
-
-You can also run UX tests when running the load test. This means starting the load test, and from Unity joining a new game. For this you'll need to edit a few files because the load testing servers only accept http and ws requests:
-
-- change `wss` to `ws` at `makeWebsocketUrl` on `LobbyConnection.cs`.
-- change `https` to `http` at `makeUrl` on `LobbyConnection.cs`.
-- change `wss` to `ws` at `makeWebsocketUrl` on `SocketConnectionManager.cs`.
-- change `https` to `http` at `makeUrl` on `SocketConnectionManager.cs`.
-- when launching the game, use the custom option for the server and write the server ip (no port included):
-
-![custom server selector](./images/custom_server.png)
 
 ### Useful tools
 - Htop: To monitor CPU Usage, usually installed on Linux distributions and Mac.
