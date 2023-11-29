@@ -1,3 +1,4 @@
+#![allow(clippy::assign_op_pattern)]
 mod character;
 mod config;
 mod effect;

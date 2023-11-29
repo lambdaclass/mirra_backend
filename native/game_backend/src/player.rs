@@ -85,9 +85,9 @@ impl Player {
         self.position = map::next_position(
             &self.position,
             angle_degrees,
-            self.speed as f32,
-            config.game.width as f32,
-            config.game.height as f32,
+            self.speed,
+            config.game.width,
+            config.game.height,
         );
     }
 
@@ -385,7 +385,7 @@ fn revert_float_attribute(attribute_value: &mut f32, modifier: &AttributeModifie
             *attribute_value = (*attribute_value - value.parse::<f32>().unwrap()).max(f32::MAX)
         }
         AttributeModifier::Multiplicative => {
-            *attribute_value = ((*attribute_value as f32) / value.parse::<f32>().unwrap()) as f32
+            *attribute_value = *attribute_value / value.parse::<f32>().unwrap()
         }
         // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
         _ => todo!(),
