@@ -484,6 +484,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
        do: [%{killed_by: 1111, killed: killed_id} | transform_killfeed_to_game_killfeed(tail)]
 
   def transform_effects_to_game_effects([]), do: []
-  def transform_effects_to_game_effects([ {%{name: "damage_outside_area"}, :zone} | tail]), do: [{6, 0} | transform_effects_to_game_effects(tail)]
-  def transform_effects_to_game_effects([ _ | tail]), do: transform_effects_to_game_effects(tail)
+
+  def transform_effects_to_game_effects([{%{name: "damage_outside_area"}, :zone} | tail]),
+    do: [{6, 0} | transform_effects_to_game_effects(tail)]
+
+  def transform_effects_to_game_effects([_ | tail]), do: transform_effects_to_game_effects(tail)
 end
