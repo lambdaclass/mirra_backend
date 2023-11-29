@@ -407,7 +407,12 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     loots.retain(|loot| {
-        if map::hit_boxes_collide(&loot.position, &player.position, loot.size as f32, player.size as f32) {
+        if map::hit_boxes_collide(
+            &loot.position,
+            &player.position,
+            loot.size as f32,
+            player.size as f32,
+        ) {
             match loot.pickup_mechanic {
                 PickupMechanic::CollisionToInventory => !player.put_in_inventory(loot),
                 PickupMechanic::CollisionUse => {
@@ -565,9 +570,7 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                     ZoneModificationModifier::Additive(value) => {
                         (zone.radius + value).max(f32::MAX)
                     }
-                    ZoneModificationModifier::Multiplicative(value) => {
-                        zone.radius as f32 * value
-                    }
+                    ZoneModificationModifier::Multiplicative(value) => zone.radius as f32 * value,
                 };
 
                 zone.radius = new_radius

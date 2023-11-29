@@ -154,12 +154,16 @@ impl Player {
                     .iter()
                     .fold(self, |player, change| {
                         match change.attribute.as_str() {
-                            "speed" => {
-                                modify_float_attribute(&mut player.speed, &change.modifier, &change.value)
-                            }
-                            "size" => {
-                                modify_float_attribute(&mut player.size, &change.modifier, &change.value)
-                            }
+                            "speed" => modify_float_attribute(
+                                &mut player.speed,
+                                &change.modifier,
+                                &change.value,
+                            ),
+                            "size" => modify_float_attribute(
+                                &mut player.size,
+                                &change.modifier,
+                                &change.value,
+                            ),
                             "health" => {
                                 modify_attribute(
                                     &mut player.health,
@@ -190,7 +194,9 @@ impl Player {
                         "health" => {
                             revert_attribute(&mut self.health, &change.modifier, &change.value)
                         }
-                        "size" => revert_float_attribute(&mut self.size, &change.modifier, &change.value),
+                        "size" => {
+                            revert_float_attribute(&mut self.size, &change.modifier, &change.value)
+                        }
                         "speed" => {
                             revert_float_attribute(&mut self.speed, &change.modifier, &change.value)
                         }
@@ -231,8 +237,12 @@ impl Player {
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
                     "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
-                    "size" => revert_float_attribute(&mut self.size, &change.modifier, &change.value),
-                    "speed" => revert_float_attribute(&mut self.speed, &change.modifier, &change.value),
+                    "size" => {
+                        revert_float_attribute(&mut self.size, &change.modifier, &change.value)
+                    }
+                    "speed" => {
+                        revert_float_attribute(&mut self.speed, &change.modifier, &change.value)
+                    }
                     _ => todo!(),
                 };
             });
