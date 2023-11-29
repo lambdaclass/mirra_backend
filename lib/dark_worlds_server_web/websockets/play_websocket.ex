@@ -62,7 +62,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
          true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
 
-         %User{selected_character: selected_character} <- DarkWorldsServer.Accounts.get_user_by_device_client_id(client_id),
+         %User{selected_character: selected_character} <-
+           DarkWorldsServer.Accounts.get_user_by_device_client_id(client_id),
          {:ok, player_id} <- Runner.join(runner_pid, client_id, selected_character) do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
