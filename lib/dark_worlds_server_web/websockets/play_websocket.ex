@@ -7,6 +7,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   alias DarkWorldsServer.RunnerSupervisor
   alias DarkWorldsServer.RunnerSupervisor.RequestTracker
   alias DarkWorldsServer.RunnerSupervisor.Runner
+  alias DarkWorldsServer.Accounts.User
 
   require Logger
 
@@ -61,7 +62,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
          true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
 
-         {:ok, player_id} <- Runner.join(runner_pid, client_id, Enum.random(["h4ck", "muflus"])) do
+         %User{selected_character: selected_character} <- DarkWorldsServer.Accounts.get_user_by_device_client_id(client_id),
+         {:ok, player_id} <- Runner.join(runner_pid, client_id, selected_character) do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
