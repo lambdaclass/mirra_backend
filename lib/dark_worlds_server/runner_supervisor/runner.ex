@@ -7,7 +7,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.RunnerSupervisor.BotPlayer
 
   # This is the amount of time between state updates in milliseconds
-  @game_tick_rate_ms 20
+  @game_tick_rate_ms 30
   # Amount of time between loot spawn
   @loot_spawn_rate_ms 20_000
   # Amount of time between loot spawn
