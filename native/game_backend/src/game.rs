@@ -378,6 +378,7 @@ impl GameState {
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
+        update_kill_counts(&mut self.players, &self.killfeed);
     }
 }
 
@@ -451,6 +452,16 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
     players.values_mut().for_each(|player| {
         player.update_actions();
         player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+    })
+}
+
+fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &[KillEvent]) {
+    killfeed.iter().for_each(|kill_event| {
+        if let EntityOwner::Player(player_id) = kill_event.kill_by {
+            if let Some(player) = players.get_mut(&player_id) {
+                player.add_kill();
+            }
+        }
     })
 }
 
