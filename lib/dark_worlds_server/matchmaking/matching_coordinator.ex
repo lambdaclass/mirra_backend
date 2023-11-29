@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
+  alias DarkWorldsServer.Communication
   alias DarkWorldsServer.RunnerSupervisor
   use GenServer
 
@@ -57,6 +58,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     bot_count = @session_player_amount - length(state.players)
     {:ok, game_pid, game_config} = start_game(bot_count)
     players = consume_and_notify_players(state.players, game_pid, game_config, @session_player_amount)
+    trigger_bots(bot_count, game_pid)
     new_session_ref = make_ref()
     Process.send_after(self(), {:check_timeout, new_session_ref}, @start_game_timeout_ms)
     {:noreply, %{state | players: players, session: new_session_ref}}
@@ -111,5 +113,21 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     |> Enum.each(fn {_, client_pid} ->
       Process.send(client_pid, {:notify_players_amount, amount, capacity}, [])
     end)
+  end
+
+  defp trigger_bots(bot_count, game_pid) when bot_count > 0 do
+    {:ok, game_config_json} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
+    config = Jason.decode!(game_config_json)
+
+    payload =
+      Jason.encode!(%{game_id: Communication.pid_to_external_id(game_pid), bot_count: bot_count, config: config})
+
+    headers = [{"content-type", "application/json"}]
+    bot_url = Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Bot) |> Keyword.get(:bot_server_url)
+    {:ok, %{status: 201}} = Tesla.post("#{bot_url}/api/bot", payload, headers: headers)
+  end
+
+  defp trigger_bots(_, _) do
+    :ok
   end
 end
