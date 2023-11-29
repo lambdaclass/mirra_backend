@@ -365,7 +365,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       body_size: player.size,
       character_name: transform_character_name_to_game_character_name(player.character.name),
       ## Placeholder values
-      kill_count: 0,
+      kill_count: player.kill_count,
       effects: %{},
       death_count: 0,
       action: transform_action_to_game_action(player.actions),

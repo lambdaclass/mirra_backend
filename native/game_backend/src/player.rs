@@ -74,6 +74,10 @@ impl Player {
         }
     }
 
+    pub fn add_kill(&mut self) {
+        self.kill_count += 1;
+    }
+
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {
         // A speed of 0 (or less) means the player can't move (e.g. paralyzed, frozen, etc)
         if self.speed == 0 {
