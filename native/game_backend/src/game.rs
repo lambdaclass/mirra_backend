@@ -563,7 +563,7 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
 
                 let new_radius = match zone_modification.modification {
                     ZoneModificationModifier::Additive(value) => {
-                        (zone.radius + value).max(f32::MAX)
+                        zone.radius + value
                     }
                     ZoneModificationModifier::Multiplicative(value) => {
                         zone.radius as f32 * value
