@@ -29,7 +29,6 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-User=dev
 WorkingDirectory=$HOME/game_backend
 Restart=on-failure
 ExecStart=$HOME/game_backend/entrypoint.sh
