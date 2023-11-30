@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://baremetal-brazil-testing.curseofmyrra.com/board
+      url: https://brazil-testing.curseofmyrra.com/board
 
     steps:
       - name: Checkout deploy script
