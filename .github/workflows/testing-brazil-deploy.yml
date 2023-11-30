@@ -30,7 +30,7 @@ jobs:
           chmod 400 ~/.ssh/id_ed25519
           ssh-keyscan $HOST >> ~/.ssh/known_hosts
 
-      - name: Copy deploy script
+      - name: Copy deploy script 
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ vars.BRAZIL_HOST }}
