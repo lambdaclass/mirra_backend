@@ -51,7 +51,7 @@ jobs:
           PHX_HOST: ${{ vars.EUROPE_HOST }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_EUROPE }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
