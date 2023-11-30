@@ -17,10 +17,7 @@ jobs:
       url: https://europe-testing.curseofmyrra.com/board
 
     steps:
-      - name: Checkout deploy script
-        uses: Bhacaz/checkout-files@v2
-        with:
-          files: deploy.sh
+      - uses: actions/checkout@v4
 
       - name: Create ssh private key file from env var
         env:
