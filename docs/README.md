@@ -11,6 +11,7 @@
   * [Player attributes](./attributes/players.md)
   * [Projectile attributes](./attributes/projectiles.md)
 * [Metrics and monitoring](./metrics_and_monitoring/metrics-and-monitoring.md)
+* [Load Testing](./load_testing/load_testing.md)
 
 ## Configuration
 

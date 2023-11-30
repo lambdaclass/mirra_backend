@@ -365,8 +365,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       body_size: player.size,
       character_name: transform_character_name_to_game_character_name(player.character.name),
       ## Placeholder values
-      kill_count: 0,
-      effects: %{},
+      kill_count: player.kill_count,
+      effects: transform_effects_to_game_effects(player.effects),
       death_count: 0,
       action: transform_action_to_game_action(player.actions),
       direction: transform_angle_to_game_relative_position(player.direction),
@@ -482,4 +482,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
          {:loot, killed_id} | tail
        ]),
        do: [%{killed_by: 1111, killed: killed_id} | transform_killfeed_to_game_killfeed(tail)]
+
+  def transform_effects_to_game_effects([]), do: []
+
+  def transform_effects_to_game_effects([{%{name: "damage_outside_area"}, :zone} | tail]),
+    do: [{6, 0} | transform_effects_to_game_effects(tail)]
+
+  def transform_effects_to_game_effects([_ | tail]), do: transform_effects_to_game_effects(tail)
 end

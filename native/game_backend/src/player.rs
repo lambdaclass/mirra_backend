@@ -49,16 +49,13 @@ pub enum Action {
 }
 
 impl Player {
-    pub fn new(id: u64, character_config: CharacterConfig, config: &Config) -> Self {
-        let game_width = config.game.width;
-        let game_height = config.game.height;
-
+    pub fn new(id: u64, character_config: CharacterConfig, initial_position: Position) -> Self {
         Self {
             id,
             status: PlayerStatus::Alive,
             kill_count: 0,
             death_count: 0,
-            position: map::random_position(game_width, game_height),
+            position: initial_position,
             direction: 0.0,
             actions: Vec::new(),
             cooldowns: HashMap::new(),
@@ -72,6 +69,10 @@ impl Player {
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
         }
+    }
+
+    pub fn add_kill(&mut self) {
+        self.kill_count += 1;
     }
 
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {

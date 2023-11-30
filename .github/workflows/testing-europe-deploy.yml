@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/testing-deploy.yml
+      - .github/workflows/testing-europe-deploy.yml
 
 jobs:
   build-deploy:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://testing.dark-worlds.lambdaclass.com/board
+      url: https://europe-testing.curseofmyrra.com/board
 
     steps:
       - name: Checkout deploy script
@@ -24,35 +24,31 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-        run: |
-          set -ex
-          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
-          chmod 400 id_ed25519_testing
-
-      - name: Copy deploy script
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
-          SCRIPT_SRC: "deploy.sh"
-          SCRIPT_DEST: "/root/deploy-script/"
+          HOST: ${{ vars.EUROPE_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
-          ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-          scp -i id_ed25519_testing \
-              -P ${SSH_PORT} \
-              ${SCRIPT_SRC} \
-              ${SSH_USERNAME}@${SSH_HOST}:${SCRIPT_DEST}
+          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519
+          chmod 400 id_ed25519
+          ssh-keyscan $HOST >> ~/.ssh/known_hosts
+
+      - name: Copy deploy script
+        env:
+          SSH_HOST: ${{ vars.EUROPE_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SCRIPT_SRC: "deploy.sh"
+          SCRIPT_DEST: "~/deploy-script/"
+        run: |
+          set -ex
+          rsync -avz --mkpath ${SCRIPT_SRC} ${SSH_USERNAME}@${SSH_HOST}:${SCRIPT_DEST}
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_HOST: ${{ vars.EUROPE_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_PORT: ${{ secrets.SSH_PORT }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.PHX_HOST }}
+          PHX_HOST: ${{ vars.EUROPE_HOST }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
@@ -60,11 +56,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
-          mkdir -p ~/.ssh/
-          ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-          ssh -i id_ed25519_testing \
-              -p ${SSH_PORT} \
-              ${SSH_USERNAME}@${SSH_HOST} \
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
                 PHX_SERVER=${PHX_SERVER} \
@@ -73,4 +65,4 @@ jobs:
                 DATABASE_URL=${DATABASE_URL} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                /root/deploy-script/deploy.sh
+                ~/deploy-script/deploy.sh
