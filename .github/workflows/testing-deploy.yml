@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://testing.dark-worlds.lambdaclass.com/board
+      url: https://europe-testing.curseofmyrra.com/board
 
     steps:
       - name: Checkout deploy script
@@ -35,7 +35,7 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SCRIPT_SRC: "deploy.sh"
-          SCRIPT_DEST: "/root/deploy-script/"
+          SCRIPT_DEST: "~/deploy-script/"
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -73,4 +73,4 @@ jobs:
                 DATABASE_URL=${DATABASE_URL} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                /root/deploy-script/deploy.sh
+                ~/deploy-script/deploy.sh
