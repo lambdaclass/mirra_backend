@@ -16,7 +16,7 @@ Each 10 players, a game is created, so the 600 players are distributed among 60 
 
 # 10 games, 10 players each, 10 mins.
 
-![Htop during Load Test](img/100_games_10_min.png)
+![Htop during Load Test](img/10_games_10_min.png)
 
 # 40 games, 10 players each, 10 mins.
 
