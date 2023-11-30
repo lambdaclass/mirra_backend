@@ -336,7 +336,7 @@
       }
     ],
     "loot_interval_ms": 7000,
-    "auto_aim_max_distance": 20.0
+    "auto_aim_max_distance": 20.0,
     "initial_positions": [
       {
         "x": -45.0,
@@ -367,7 +367,7 @@
         "y": -40.0
       },
       {
-        "x": 0,
+        "x": 0.0,
         "y": -20.0
       },
       {
