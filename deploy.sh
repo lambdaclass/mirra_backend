@@ -10,6 +10,8 @@ cd /tmp
 git clone git@github.com:lambdaclass/game_backend.git --branch ${BRANCH_NAME}
 cd game_backend/
 
+chmod +x entrypoint.sh
+
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
 mix deps.compile
