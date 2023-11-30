@@ -235,7 +235,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if player.action_duration_ms > 0 {
+            if player.action_duration_ms > 0 || player.skill_moving_duration_ms > 0 {
                 return;
             }
 
@@ -251,31 +251,7 @@ impl GameState {
                 );
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
-                let auto_aim = skill_params
-                    .get("auto_aim")
-                    .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
-                    .unwrap();
-
-                let direction_angle = if auto_aim {
-                    let nearest_player: Option<Position> = nearest_player_position(
-                        &other_players,
-                        &player.position,
-                        self.config.game.auto_aim_max_distance,
-                    );
-
-                    if let Some(target_player_position) = nearest_player {
-                        map::angle_between_positions(&player.position, &target_player_position)
-                    } else {
-                        player.direction
-                    }
-                } else {
-                    skill_params
-                        .get("direction_angle")
-                        .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                        .unwrap()
-                };
-
-                player.direction = direction_angle;
+                player.direction = get_direction_angle(player, &other_players, &skill_params, &self.config);
 
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
@@ -287,7 +263,7 @@ impl GameState {
                             let projectile = Projectile::new(
                                 id,
                                 player.position,
-                                direction_angle,
+                                player.direction,
                                 player.id,
                                 projectile_config,
                             );
@@ -299,7 +275,7 @@ impl GameState {
                             cone_angle,
                         } => {
                             let direction_distribution =
-                                distribute_angle(direction_angle, cone_angle, count);
+                                distribute_angle(player.direction, cone_angle, count);
                             for direction in direction_distribution {
                                 let id = get_next_id(&mut self.next_id);
                                 let projectile = Projectile::new(
@@ -361,10 +337,14 @@ impl GameState {
                                 })
                         }
                         SkillMechanic::MoveToTarget { duration_ms, max_range } => {
-                            player.skill_moving_duration_ms = *duration_ms;
-                            player.skill_moving_speed_per_ms = (*max_range as f32) / (*duration_ms as f32);
+                            if let Some(target_position) = parse_skill_params_move_to_target(&skill_params) {
+                                let distance = map::distance_to_center(player, &target_position).min(*max_range as f32);
+                                player.direction = map::angle_between_positions(&player.position, &target_position);
+                                player.skill_moving_duration_ms = *duration_ms;
+                                player.skill_moving_speed_per_ms = distance / (*duration_ms as f32);
+
+                            }
                         }
-                        _ => todo!("SkillMechanic not implemented"),
                     }
                 }
             }
@@ -688,4 +668,45 @@ fn nearest_player_position(
         }
     }
     nearest_player
+}
+
+fn get_direction_angle(player: &Player, other_players: &Vec<&mut Player>, skill_params: &HashMap<String, String>, config: &Config) -> f32 {
+    let auto_aim = skill_params
+        .get("auto_aim")
+        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap());
+
+    if auto_aim.is_some_and(|val| val) {
+        let nearest_player: Option<Position> = nearest_player_position(
+            &other_players,
+            &player.position,
+            config.game.auto_aim_max_distance,
+        );
+
+        if let Some(target_player_position) = nearest_player {
+            map::angle_between_positions(&player.position, &target_player_position)
+        } else {
+            player.direction
+        }
+    } else {
+        skill_params
+        .get("direction_angle")
+        .map(|angle_str| angle_str.parse::<f32>().unwrap())
+        .unwrap_or(player.direction)
+    }
+}
+
+fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> Option<Position> {
+    let target_x = skill_params
+        .get("target_x")
+        .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
+
+    let target_y = skill_params
+        .get("target_y")
+        .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
+
+    if let (Some(x), Some(y)) = (target_x, target_y) {
+        Some(Position { x: x as i64, y: y as i64 })
+    } else {
+        None
+    }
 }
