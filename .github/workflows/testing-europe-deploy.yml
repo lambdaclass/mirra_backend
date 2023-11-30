@@ -65,4 +65,4 @@ jobs:
                 DATABASE_URL=${DATABASE_URL} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                ~/deploy-script/deploy.sh
+                /home/${SSH_USERNAME}/deploy-script/deploy.sh
