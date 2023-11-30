@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/testing-deploy.yml
+      - .github/workflows/testing-europe-deploy.yml
 
 jobs:
   build-deploy:
