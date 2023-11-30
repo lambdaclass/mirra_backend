@@ -23,7 +23,9 @@ pub struct SkillConfig {
 
 #[derive(Deserialize)]
 pub enum SkillMechanicConfigFile {
-    GiveEffect(Vec<String>),
+    GiveEffect {
+        effects_to_give: Vec<String>,
+    },
     Hit {
         damage: u64,
         range: u64,
@@ -46,7 +48,9 @@ pub enum SkillMechanicConfigFile {
 
 #[derive(NifTaggedEnum, Clone)]
 pub enum SkillMechanic {
-    GiveEffect(Vec<Effect>),
+    GiveEffect {
+        effects_to_give: Vec<Effect>,
+    },
     Hit {
         damage: u64,
         range: u64,
@@ -100,13 +104,15 @@ impl SkillMechanic {
         mechanics
             .into_iter()
             .map(|config| match config {
-                SkillMechanicConfigFile::GiveEffect(config_effects) => {
+                SkillMechanicConfigFile::GiveEffect { effects_to_give } => {
                     let effects = effects
                         .iter()
-                        .filter(|effect| config_effects.contains(&effect.name))
+                        .filter(|effect| effects_to_give.contains(&effect.name))
                         .cloned()
                         .collect();
-                    SkillMechanic::GiveEffect(effects)
+                    SkillMechanic::GiveEffect {
+                        effects_to_give: effects,
+                    }
                 }
                 SkillMechanicConfigFile::Hit {
                     damage,

@@ -17,42 +17,43 @@ mix deps.compile
 mix assets.deploy
 mix compile
 mix phx.gen.release
-mix release
+mix release --overwrite
 
-rm -rf /root/game_backend
-mv /tmp/game_backend /root/
+rm -rf $HOME/game_backend
+mv /tmp/game_backend $HOME/
 
-cat <<EOF > /etc/systemd/system/game_backend.service
+cat <<EOF > $HOME/.config/systemd/user/game_backend.service
 [Unit]
-Description=Dark Worlds server
+Description=Game Backend server
 Requires=network-online.target
 After=network-online.target
 
 [Service]
-User=root
-WorkingDirectory=/root/game_backend
+User=dev
+WorkingDirectory=$HOME/game_backend
 Restart=on-failure
-ExecStart=/root/game_backend/entrypoint.sh
+ExecStart=$HOME/game_backend/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
-EnvironmentFile=/root/.env
+EnvironmentFile=$HOME/.env
+LimitNOFILE=4000
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-systemctl enable game_backend
+systemctl --user enable game_backend
 
-cat <<EOF > /root/.env
+cat <<EOF > $HOME/.env
 PHX_HOST=${PHX_HOST}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
 DATABASE_URL=${DATABASE_URL}
 EOF
 
-systemctl stop game_backend
+systemctl --user stop game_backend
 
-/root/game_backend/_build/prod/rel/dark_worlds_server/bin/migrate
+$HOME/game_backend/_build/prod/rel/dark_worlds_server/bin/migrate
 
-systemctl daemon-reload
-systemctl start game_backend
+systemctl --user daemon-reload
+systemctl --user start game_backend

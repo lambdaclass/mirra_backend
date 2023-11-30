@@ -60,8 +60,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     with :ok <- Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}"),
          true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
-
-         {:ok, player_id} <- Runner.join(runner_pid, client_id, Enum.random(["h4cko", "muflas"])) do
+         {:ok, player_id} <- Runner.join(runner_pid, client_id, "muflus") do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -118,8 +117,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
               timestamp
             )
 
-          :use_skill when action_data.skill == "BasicAttack" ->
-            Runner.basic_attack(
+          :use_skill ->
+            Runner.attack(
               web_socket_state[:runner_pid],
               web_socket_state[:player_id],
               action_data,
@@ -149,10 +148,6 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   @impl true
   def websocket_info({:player_joined, player_id, player_name}, web_socket_state) do
     {:reply, {:binary, Communication.game_player_joined(player_id, player_name)}, web_socket_state}
-  end
-
-  def websocket_info({:initial_positions, players}, web_socket_state) do
-    {:reply, {:binary, Communication.initial_positions(players)}, web_socket_state}
   end
 
   # Send a ping frame every once in a while
@@ -185,14 +180,6 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     }
 
     {:reply, {:binary, Communication.game_finished!(reply_map)}, web_socket_state}
-  end
-
-  def websocket_info({:selected_characters, selected_characters}, web_socket_state) do
-    {:reply, {:binary, Communication.selected_characters!(selected_characters)}, web_socket_state}
-  end
-
-  def websocket_info({:finish_character_selection, selected_players, players}, web_socket_state) do
-    {:reply, {:binary, Communication.finish_character_selection!(selected_players, players)}, web_socket_state}
   end
 
   def websocket_info(info, web_socket_state), do: {:reply, {:text, info}, web_socket_state}

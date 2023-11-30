@@ -7,9 +7,6 @@ defmodule DarkWorldsServer.Communication.Proto.GameEventType do
   field(:PING_UPDATE, 1)
   field(:PLAYER_JOINED, 2)
   field(:GAME_FINISHED, 3)
-  field(:INITIAL_POSITIONS, 4)
-  field(:SELECTED_CHARACTER_UPDATE, 5)
-  field(:FINISH_CHARACTER_SELECTION, 6)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.Status do
@@ -109,9 +106,7 @@ defmodule DarkWorldsServer.Communication.Proto.LobbyEventType do
   field(:CONNECTED, 1)
   field(:PLAYER_ADDED, 2)
   field(:GAME_STARTED, 3)
-  field(:PLAYER_COUNT, 4)
-  field(:START_GAME, 5)
-  field(:PLAYER_REMOVED, 6)
+  field(:START_GAME, 4)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.ProjectileType do
@@ -158,6 +153,7 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:HIT, 0)
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
+  field(:GIVE_EFFECT, 3)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
@@ -241,7 +237,12 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   field(:health, 2, type: :sint64)
   field(:position, 3, type: DarkWorldsServer.Communication.Proto.Position)
   field(:status, 4, type: DarkWorldsServer.Communication.Proto.Status, enum: true)
-  field(:action, 5, type: DarkWorldsServer.Communication.Proto.PlayerAction, enum: true)
+
+  field(:action, 5,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.PlayerAction,
+    enum: true
+  )
 
   field(:aoe_position, 6,
     type: DarkWorldsServer.Communication.Proto.Position,
@@ -286,6 +287,7 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
