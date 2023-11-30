@@ -336,7 +336,8 @@ impl GameState {
                             other_players
                                 .iter_mut()
                                 .filter(|target_player| {
-                                    map::in_cone_angle_range(
+                                    player.skill_moving_duration_ms == 0
+                                    && map::in_cone_angle_range(
                                         player,
                                         target_player,
                                         *range,
@@ -429,6 +430,10 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 }
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
+    if player.skill_moving_duration_ms > 0 {
+        return;
+    }
+
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
             match loot.pickup_mechanic {
@@ -533,6 +538,7 @@ fn apply_projectiles_collisions(
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
             if player.status == PlayerStatus::Alive
+                && player.skill_moving_duration_ms == 0
                 && !projectile.attacked_player_ids.contains(&player.id)
                 && map::hit_boxes_collide(
                     &projectile.position,
