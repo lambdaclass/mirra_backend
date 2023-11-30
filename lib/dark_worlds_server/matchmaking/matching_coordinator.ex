@@ -35,17 +35,25 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     session_ref = make_ref()
     Process.send_after(self(), {:check_timeout, session_ref}, @start_game_timeout_ms)
     players = [{user_id, from}]
+    notify_players_amount(players, @session_player_amount)
+
     {:reply, :ok, %{state | players: players, session: session_ref}}
   end
 
   def handle_call({:join, user_id}, {from, _}, state) do
-    players = state.players ++ [{user_id, from}]
-    send(self(), :check_capacity)
-    {:reply, :ok, %{state | players: players}}
+    if Enum.any?(state.players, fn {player_user_id, _} -> user_id == player_user_id end) do
+      {:reply, :ok, state}
+    else
+      players = state.players ++ [{user_id, from}]
+      notify_players_amount(players, @session_player_amount)
+      send(self(), :check_capacity)
+      {:reply, :ok, %{state | players: players}}
+    end
   end
 
   def handle_call({:leave, user_id}, _from, state) do
     players = Enum.filter(state.players, fn {player_user_id, _} -> player_user_id != user_id end)
+    notify_players_amount(players, @session_player_amount)
     {:reply, :ok, %{state | players: players}}
   end
 
@@ -97,5 +105,10 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   defp consume_and_notify_players([{_, client_pid} | rest_players], game_pid, game_config, count) do
     Process.send_after(client_pid, {:game_started, game_pid, game_config}, 1_000)
     consume_and_notify_players(rest_players, game_pid, game_config, count - 1)
+  end
+
+  defp notify_players_amount(players, capacity) do
+    players
+    |> Enum.each(fn {_, client_pid} -> Process.send(client_pid, {:notify_players_amount, Enum.count(players), capacity}, []) end)
   end
 end
