@@ -41,9 +41,9 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   end
 
   def handle_call({:join, user_id}, {from, _}, state) do
-      players = state.players ++ [{user_id, from}]
-      send(self(), :check_capacity)
-      {:reply, :ok, %{state | players: players}}
+    players = state.players ++ [{user_id, from}]
+    send(self(), :check_capacity)
+    {:reply, :ok, %{state | players: players}}
   end
 
   def handle_call({:leave, user_id}, _from, state) do
