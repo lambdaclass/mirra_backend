@@ -35,7 +35,7 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ vars.EUROPE_HOST }}
         run: |
-          set -ex 
+          set -ex
           rsync -avz --mkpath deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
