@@ -17,10 +17,7 @@ jobs:
       url: https://brazil-testing.curseofmyrra.com/board
 
     steps:
-      - name: Checkout deploy script
-        uses: Bhacaz/checkout-files@v2
-        with:
-          files: deploy.sh
+      - uses: actions/checkout@v4
 
       - name: Create ssh private key file from env var
         env:
@@ -35,13 +32,11 @@ jobs:
 
       - name: Copy deploy script
         env:
-          SSH_HOST: ${{ vars.BRAZIL_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SCRIPT_SRC: "deploy.sh"
-          SCRIPT_DEST: "~/deploy-script/"
+          SSH_HOST: ${{ vars.BRASIL_HOST }}
         run: |
-          set -ex
-          rsync -avz --mkpath ${SCRIPT_SRC} ${SSH_USERNAME}@${SSH_HOST}:${SCRIPT_DEST}
+          set -ex 
+          rsync -avz --mkpath deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
