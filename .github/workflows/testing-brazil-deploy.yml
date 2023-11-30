@@ -26,6 +26,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           HOST: ${{ vars.BRAZIL_HOST }}
         run: |
+          set -ex
           mkdir -p ~/.ssh/
           sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 400 ~/.ssh/id_ed25519
