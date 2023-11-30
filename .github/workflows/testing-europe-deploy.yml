@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix-ci
     paths:
       - .github/workflows/testing-europe-deploy.yml
 
@@ -16,10 +17,7 @@ jobs:
       url: https://europe-testing.curseofmyrra.com/board
 
     steps:
-      - name: Checkout deploy script
-        uses: Bhacaz/checkout-files@v2
-        with:
-          files: deploy.sh
+      - uses: actions/checkout@v4
 
       - name: Create ssh private key file from env var
         env:
@@ -34,13 +32,11 @@ jobs:
 
       - name: Copy deploy script
         env:
-          SSH_HOST: ${{ vars.EUROPE_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SCRIPT_SRC: "deploy.sh"
-          SCRIPT_DEST: "~/deploy-script/"
+          SSH_HOST: ${{ vars.EUROPE_HOST }}
         run: |
           set -ex
-          rsync -avz --mkpath ${SCRIPT_SRC} ${SSH_USERNAME}@${SSH_HOST}:${SCRIPT_DEST}
+          rsync -avz --mkpath deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:

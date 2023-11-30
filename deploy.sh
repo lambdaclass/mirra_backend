@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-. "$HOME/.asdf/asdf.sh"
 . "$HOME/.cargo/env"
 set -ex
 
@@ -10,6 +9,8 @@ fi
 cd /tmp
 git clone git@github.com:lambdaclass/game_backend.git --branch ${BRANCH_NAME}
 cd game_backend/
+
+chmod +x entrypoint.sh
 
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
@@ -22,6 +23,7 @@ mix release --overwrite
 rm -rf $HOME/game_backend
 mv /tmp/game_backend $HOME/
 
+mkdir -p $HOME/.config/systemd/user/
 cat <<EOF >$HOME/.config/systemd/user/game_backend.service
 [Unit]
 Description=Game Backend server
@@ -29,7 +31,6 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-User=dev
 WorkingDirectory=$HOME/game_backend
 Restart=on-failure
 ExecStart=$HOME/game_backend/entrypoint.sh
