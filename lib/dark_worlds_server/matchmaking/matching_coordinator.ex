@@ -109,6 +109,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
 
   defp notify_players_amount(players, capacity) do
     players
-    |> Enum.each(fn {_, client_pid} -> Process.send(client_pid, {:notify_players_amount, Enum.count(players), capacity}, []) end)
+    |> Enum.each(fn {_, client_pid} ->
+      Process.send(client_pid, {:notify_players_amount, Enum.count(players), capacity}, [])
+    end)
   end
 end
