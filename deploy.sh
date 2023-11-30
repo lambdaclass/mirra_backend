@@ -21,6 +21,7 @@ mix release --overwrite
 rm -rf $HOME/game_backend
 mv /tmp/game_backend $HOME/
 
+mkdir -p $HOME/.config/systemd/user/
 cat <<EOF >$HOME/.config/systemd/user/game_backend.service
 [Unit]
 Description=Game Backend server
