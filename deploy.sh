@@ -4,7 +4,7 @@
 set -ex
 
 if [ -d "/tmp/game_backend" ]; then
-  rm -rf /tmp/game_backend
+	rm -rf /tmp/game_backend
 fi
 
 cd /tmp
@@ -22,7 +22,7 @@ mix release --overwrite
 rm -rf $HOME/game_backend
 mv /tmp/game_backend $HOME/
 
-cat <<EOF > $HOME/.config/systemd/user/game_backend.service
+cat <<EOF >$HOME/.config/systemd/user/game_backend.service
 [Unit]
 Description=Game Backend server
 Requires=network-online.target
@@ -44,7 +44,7 @@ EOF
 
 systemctl --user enable game_backend
 
-cat <<EOF > $HOME/.env
+cat <<EOF >$HOME/.env
 PHX_HOST=${PHX_HOST}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
