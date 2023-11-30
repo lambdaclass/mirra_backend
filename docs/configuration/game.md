@@ -47,7 +47,7 @@ This "modifications" are compose of the following fields
     }
   ]
   "loot_interval_ms": 7000,
-  "auto_aim_max_distance": 2000,,
+  "auto_aim_max_distance": 2000,
   "initial_positions": [
       {
         "x": -4500,
