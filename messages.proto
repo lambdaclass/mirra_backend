@@ -1,0 +1,633 @@
+syntax = "proto3";
+
+// import "communication/config.proto";
+
+/* Represents the events pushed by the server during a game
+    - type: type of the event
+    - players: player list, used on STATE_UPDATE
+    - ping_update: updated player's ping, used on PING_UPDATE
+    - projectiles: projectile list, used on STATE_UPDATE
+    - player_joined_id: ID of the player that joined the game
+ */
+message GameEvent {
+    GameEventType type = 1;
+    repeated Player players = 2;
+    uint64 latency = 3;
+    repeated Projectile projectiles = 4;
+    uint64 player_joined_id = 5;
+    string player_joined_name = 6;
+    Player winner_player = 7;
+    map<uint64, string> selected_characters = 8;
+    int64 player_timestamp = 9;
+    int64 server_timestamp = 10;
+    repeated KillEvent killfeed = 11;
+    uint64 playable_radius = 12;
+    Position shrinking_center = 13;
+    repeated LootPackage loots = 14;
+}
+
+/* Type of game events
+    - STATE_UPDATE: The game's state has been updated
+    - PING_UPDATE: The player's current ping updated
+    - PLAYER_JOINED: A player has joined the game
+ */
+enum GameEventType {
+    STATE_UPDATE = 0;
+    PING_UPDATE = 1;
+    PLAYER_JOINED = 2;
+    GAME_FINISHED = 3;
+}
+
+message PlayerCharacter{
+    uint64 player_id = 1;
+    string character_name = 2;
+}
+
+/* Information about a player
+    - id: ID of the player, this ID is the identifier in the game session, the game object tied to it
+    - health: Current health of the player
+    - position: Position of the player in the server game grid (see Position for more info)
+    - power: [Amin 2023-05-05:  not sure what this is, was copied from struct like this]
+    - action: [Manu 2023-05-12: accion to renderize on client side]
+    - status: currently if alive or dead
+    - aoe_position: Position of the aoe attack, only used when action == ATTACKING_AOE
+    - {basic, first, second, third, fourth}_cooldown_left: Time remaining in seconds until the cooldown is over.
+    - character_name: Name of the player's character
+    - effects: The effects that are active on the player
+ */
+message Player {
+    uint64 id = 1;
+    sint64 health = 2;
+    Position position = 3;
+    Status status = 4;
+    repeated PlayerAction action = 5;
+    Position aoe_position = 6;
+    uint64 kill_count = 7;
+    uint64 death_count = 8;
+    MillisTime basic_skill_cooldown_left = 9;
+    MillisTime skill_1_cooldown_left = 10;
+    MillisTime skill_2_cooldown_left = 11;
+    MillisTime skill_3_cooldown_left = 12;
+    MillisTime skill_4_cooldown_left = 13;
+    string character_name = 14;
+    map<uint64, EffectInfo> effects = 15;
+    RelativePosition direction = 16;
+    float body_size = 17;
+    uint64 action_duration_ms = 18;
+}
+
+message EffectInfo {
+    MillisTime ends_at = 1;
+    uint64 caused_by = 2;
+}
+
+message KillEvent {
+    uint64 killed_by = 1;
+    uint64 killed = 2;
+}
+
+/*
+Status of a player
+*/
+enum Status {
+    ALIVE = 0;
+    DEAD = 1;
+}
+
+/* A position in the server game grid, the grid is a NxN square with (0,0) in the top left corner
+    - x: X coordinate in the grid
+    - y: Y coordinate in the grid
+ */
+message Position {
+    uint64 x = 1;
+    uint64 y = 2;
+}
+
+/* A relative position
+    - x: X coordinate between -1 and 1
+    - y: Y coordinate between -1 and 1
+ */
+message RelativePosition {
+    float x = 1;
+    float y = 2;
+}
+
+/* Represents any action that a client/player can make
+    - action: the action taken by the player
+    - direction: direction of the action (see Direction), used on actions MOVE, ATTACK
+    - position: to decide aoe attack center
+    - move_delta: movement direction
+    - target: player id to autoattack
+    - timestamp: client's time at the moment they send the action
+ */
+message ClientAction {
+    Action action = 1;
+    Direction direction = 2;
+    RelativePosition position = 3;
+    RelativePosition move_delta = 4;
+    sint64 target = 5;
+    int64 timestamp = 6;
+    PlayerCharacter player_character = 7;
+    float angle = 8;
+}
+
+/* Actions a client/player performs
+    - MOVE: the player moves
+    - ATTACK: player attacks
+    - TELEPORT: the player instantly moves to a non-contiguous position
+    - ATTACK_AOE:
+    - MOVE_WITH_JOYSTICK:
+    - ADD_BOT: Ask the server to add a bot player to the game
+    - AUTO_ATTACK: Player attacks nearest oponent, if in range.
+    - BASIC_ATTACK, SKILL_{1, 2, 3, 4}: Player skills.
+    - ENABLE_BOTS: Bots are enabled (move, attack, etc)
+    - DISABLE_BOTS: Bots are disabled (stand still)
+ */
+enum Action {
+    ACTION_UNSPECIFIED = 0;
+    ATTACK = 1;
+    TELEPORT = 2;
+    ATTACK_AOE = 3;
+    MOVE_WITH_JOYSTICK = 4;
+    ADD_BOT = 5;
+    AUTO_ATTACK = 6;
+    BASIC_ATTACK = 7;
+    SKILL_1 = 8;
+    SKILL_2 = 9;
+    SKILL_3 = 10;
+    SKILL_4 = 11;
+    SELECT_CHARACTER = 12;
+    ENABLE_BOTS = 13;
+    DISABLE_BOTS = 14;
+}
+
+/* Directions an action can happen in
+ */
+enum Direction {
+    DIRECTION_UNSPECIFIED = 0;
+    UP = 1;
+    DOWN = 2;
+    LEFT = 3;
+    RIGHT = 4;
+}
+
+/* Actions a player performs
+    - NOTHING: nothing
+    - ATTACKING: player is attacking
+ */
+enum PlayerAction {
+    NOTHING = 0;
+    ATTACKING = 1;
+    ATTACKING_AOE = 2;
+    STARTING_SKILL_1 = 3;
+    STARTING_SKILL_2 = 4;
+    STARTING_SKILL_3 = 5;
+    STARTING_SKILL_4 = 6;
+    EXECUTING_SKILL_1 = 7;
+    EXECUTING_SKILL_2 = 8;
+    EXECUTING_SKILL_3 = 9;
+    EXECUTING_SKILL_4 = 10;
+    MOVING = 11;
+}
+
+/* Effects a player has */
+enum PlayerEffect {
+    PETRIFIED = 0;
+    DISARMED = 1;
+    DENIAL_OF_SERVICE = 2;
+    RAGED = 3;
+    NEON_CRASHING = 4;
+    LEAPING = 5;
+    OUT_OF_AREA = 6;
+    ELNAR_MARK = 7;
+    YUGEN_MARK = 8;
+    XANDA_MARK = 9;
+    XANDA_MARK_OWNER = 10;
+    POISONED = 11;
+    SLOWED = 12;
+    FIERY_RAMPAGE = 13;
+    BURNED = 14;
+    SCHERZO = 15;
+    DANSE_MACABRE = 16;
+    PARALYZED = 17;
+    NONE = 18;
+}
+
+/* Represents the events happening in the matchmaking lobby, either from client or server
+    - type: type of the event
+    - lobby_id: ID of the matchmaking lobby, used on CONNECTED
+    - player_info: Information assigned to the player (client) in the matchmaking lobby, used on CONNECTED
+    - added_player_info: Information of any new player joining the lobby, used on PLAYER_ADDED
+    - game_id: ID of the game session to join, used on GAME_STARTED
+    - [DEPRECATED] player_count: Number of players in the matchmaking lobby, used on PLAYER_COUNT
+    - players_info: List of players, used on PLAYER_ADDED
+    - removed_player_info: Information of any player leaving the lobby, used on PLAYER_REMOVED
+    - host_player_id: ID of the player considered host of the lobby, used on PLAYER_ADDED, PLAYER_REMOVED
+ */
+message LobbyEvent {
+    LobbyEventType type = 1;
+    string lobby_id = 2;
+    PlayerInformation player_info = 3;
+    PlayerInformation added_player_info = 4;
+    string game_id = 5;
+    uint64 player_count = 6;
+    repeated PlayerInformation players_info = 7;
+    PlayerInformation removed_player_info = 8;
+    Config game_config = 9;
+    string server_hash = 10;
+    uint64 host_player_id = 11;
+}
+
+/* Represents the information of a player/client
+    - player_id: Internal ID used by backend to identify the player/client
+    - player_name: Name to use to identify the player/client
+ */
+ message PlayerInformation {
+    uint64 player_id = 1;
+    string player_name = 2;
+ }
+
+message RunnerConfig {
+    string Name = 1;
+    uint64 board_width = 2;
+    uint64 board_height = 3;
+    uint64 server_tickrate_ms = 4;
+    uint64 game_timeout_ms = 5;
+    uint64 map_shrink_wait_ms = 6;
+    uint64 map_shrink_interval = 7;
+    uint64 out_of_area_damage = 8;
+    string use_proxy = 9;
+    uint64 map_shrink_minimum_radius = 10;
+    uint64 spawn_loot_interval_ms = 11;
+}
+
+message GameConfig {
+    BoardSize board_size = 1;
+    uint64 server_tickrate_ms = 2;
+    uint64 game_timeout_ms = 3;
+}
+
+message BoardSize {
+    uint64 width = 1;
+    uint64 height = 2;
+}
+
+message CharacterConfigItem {
+    string Name = 1;
+    string Id = 2;
+    string Active = 3;
+    string Class = 4;
+    string Faction = 5;
+    string BaseSpeed = 6;
+    string SkillBasic = 7;
+    string SkillActive1 = 8;
+    string SkillActive2 = 9;
+    string SkillDash = 10;
+    string SkillUltimate = 11;
+    string BodySize = 12;
+}
+
+message CharacterConfig {
+    repeated CharacterConfigItem Items = 1;
+}
+
+message SkillsConfig {
+    repeated SkillConfigItem Items = 1;
+}
+
+message SkillConfigItem {
+    string Name = 1;
+    string Cooldown = 2;
+    string Damage = 3;
+    string Duration = 4;
+    string Projectile = 5;
+    string SkillRange = 6;
+    string Par1 = 7;
+    string Par1Desc = 8;
+    string Par2 = 9;
+    string Par2Desc = 10;
+    string Par3 = 11;
+    string Par3Desc = 12;
+    string Par4 = 13;
+    string Par4Desc = 14;
+    string Par5 = 15;
+    string Par5Desc = 16;
+    string Angle = 17;
+}
+
+message ServerGameSettings {
+    RunnerConfig runner_config = 1;
+    CharacterConfig character_config = 2;
+    SkillsConfig skills_config = 3;
+}
+
+
+/* Type of lobby events
+    - CONNECTED: Websocket connection is established
+    - PLAYER_ADDED: A player has joined the matchmaking lobby
+    - GAME_STARTED: A game session has started from this lobby
+ */
+enum LobbyEventType {
+    TYPE_UNSPECIFIED = 0;
+    CONNECTED = 1;
+    PLAYER_ADDED = 2;
+    GAME_STARTED = 3;
+    START_GAME = 4;
+}
+
+
+/* Type of projectiles
+    - BULLET: Single little bullet
+ */
+enum ProjectileType {
+    BULLET = 0;
+    DISARMING_BULLET = 1;
+}
+
+/* Status of projectiles
+    - ACTIVE: Active projectile
+    - EXPLODED: Exploded projectile
+ */
+enum ProjectileStatus {
+    ACTIVE = 0;
+    EXPLODED = 1;
+}
+
+/*
+    - position: Current projectile prosition
+    - direction: Projectile direction
+    - speed: Projectile speed
+    - range: Attack range, with center in position
+    - player_id: Player id who attacked
+    - damage: Damage dealt on opponents when hit
+    - remaining_ticks: Projectile remaining lifetime
+    - type: Projectile type depending on the attack
+ */
+message Projectile {
+    uint64 id = 1;
+    Position position = 2;
+    RelativePosition direction = 3;
+    uint32 speed = 4;
+    uint32 range = 5;
+    uint64 player_id = 6;
+    uint32 damage = 7;
+    sint64 remaining_ticks = 8;
+    ProjectileType projectile_type = 9;
+    ProjectileStatus status = 10;
+    uint64 last_attacked_player_id = 11;
+    bool pierce = 12;
+    string skill_name = 13;
+}
+
+/*
+    - We divided the milliseconds time in two parts because
+    - rustler can't handle u128, so instead of developing those functions
+    - we decided to use 2 u64 fields to represent the time in milliseconds
+
+    - If you need to use complete time in milliseconds, you should use both
+    - If you need to use remaining time in milliseconds, you can use only low field
+    - because high field will be 0
+*/
+message MillisTime {
+    uint64 high = 1;
+    uint64 low = 2;
+}
+
+/*
+    - id: Unique identifier for the loot
+    - position: Position of the loot
+    - loot_type: Type of loot
+ */
+message LootPackage {
+
+    uint64 id = 1;
+    Position position = 2;
+    LootType loot_type = 3;
+}
+
+/*
+   - LOOT_HEALTH: Gives health instantly
+ */
+enum LootType {
+    LOOT_TYPE_UNSPECIFIED = 0;
+    LOOT_HEALTH = 1;
+}
+
+/*
+ */
+enum ModifierType {
+    MULTIPLICATIVE = 0;
+    ADDITIVE = 1;
+}
+
+/*
+ */
+enum MechanicType {
+    HIT = 0;
+    SIMPLE_SHOOT = 1;
+    MULTI_SHOOT = 2;
+    GIVE_EFFECT = 3;
+}
+
+message Config {
+  repeated GameCharacter characters = 1;
+  repeated GameEffect effects = 2;
+  GameStateConfig game = 3;
+  repeated GameLoot loots = 4;
+  repeated GameProjectile projectiles = 5;
+  repeated GameSkill skills = 6;
+}
+
+/* Represents the initial game state.
+    - width_ The width of the playing area.
+    - height: The length of the playing area.
+    - map_modification: If present, contains the information for when the map modification mechanic is triggered
+    - loot_interval_ms: If present, interval in milliseconds for spawning loot crates
+*/
+message GameStateConfig {
+    uint64 width = 1;
+    uint64 height = 2;
+    MapModification map_modification = 3;
+    uint64 loot_interval_ms = 4;
+}
+
+/* The information for when the map modification mechanic is triggered.
+    - modification: Defines how to modify the playable area radius.
+    - starting_radius: Starting radius for the playable area.
+    - minimum_radius: Mininum radius for the playable area, how small can the playable zone get.
+    - max_radius: Max radius for the playable area, how big can the playable zone get.
+    - outside_radius_effects: Effects given when a player is outside the playable area.
+    - inside_radius_effects: Effects given when a player is inside the playable area.
+*/
+message MapModification {
+    Modification modification = 1;
+    uint64 starting_radius = 2;
+    uint64 minimum_radius = 3;
+    uint64 max_radius = 4;
+    repeated GameEffect outside_radius_effects = 5;
+    repeated GameEffect inside_radius_effects = 6;
+}
+
+/* Defines how to modify the playable area radius.
+    - modifier: Determines how `value` interacts with the current value of the attribute, it can be one of
+    - additive: Given value is added to current value
+    - multiplicative: Given value is multiplied to current value
+    - override: Given value is set as the attribute value
+    - value: The value we are using for the changemessage Modification
+*/
+message Modification {
+    ModifierType modifier = 1;
+    float value = 2;
+}
+
+/*
+    - name: unique name for the loot, this will be referenced by other configurations
+    - size: radius size of the loot
+    - effects: List of effects the loot will give out
+*/
+message GameLoot {
+    string name = 1;
+    uint64 size = 2;
+    repeated GameEffect effects = 3;
+}
+
+/*
+    - `name`: Unique name for the projectile, this will be referenced by other configurations
+    - `base_damage`: Damage done by the projectile on collision
+    - `base_speed`: Travel speed of the projectile
+    - `base_size`: Size of the projectile for collision math
+    - `remove_on_collision`: Determines if the projectile is removed from game after colliding with a player, default is `true`
+    - `on_hit_effects`: Effects given to target on collision
+    - `duration_ms`: Defines how long in milliseconds the projectile can exist
+    - `max_distance`: Defines the maximum distance the projectile can travel
+*/
+message GameProjectile {
+    string name = 1;
+    uint64 base_damage = 2;
+    uint64 base_speed = 3;
+    uint64 base_size = 4;
+    bool remove_on_collision = 5;
+    repeated GameEffect on_hit_effect = 6;
+    uint64 max_distance = 7;
+    float duration_ms = 8;
+}
+
+/* Represents a character in the game
+- name: Unique name of the character.
+- active: Can the character be picked?
+- base_speed: Base speed of the character.
+- base_size: Size of the character for collision math.
+- base_health: Base health of the character.
+- skills: A map of integer (as string) to skills, where the integers represent the id and ordering of skills for calling them.
+*/
+message GameCharacter {
+    string name = 1;
+    bool active = 2;
+    uint64 base_speed = 3;
+    uint64 base_size = 4;
+    uint64 base_health = 5;
+    map<string, GameSkill> skills = 6;
+}
+
+/* Represents a skill of a character
+- name: Unique name for the skill.
+- cooldown_ms: Time that needs to elapse before the skill is usable again.
+- is_passive: Marks the skill as a passive skill, this means it can't be triggered. Instead it will trigger on player spawn, so only `GiveEffect` makes sense for it.
+- mechanics: Core mechanic of the skill (e.g hit, shoot, etc).
+*/
+message GameSkill {
+    string name = 1;
+    uint64 cooldown_ms = 2;
+    bool is_passive = 3;
+    repeated Mechanic mechanics = 4;
+}
+
+/*
+- GiveEffect: This makes the skill give a certain effect.
+  * effects: List of effects given.
+- Hit: Player will hit all things in area of target.
+  * damage: Damage done to targets.
+  * range: Up to how far away can things be hit.
+  * cone_angle: Defines how the cone of hit is generated.
+  * on_hit_effects: Effects given to targets hit by skill.
+- SimpleShoot: Player will shoot a projectile.
+  * projectile: Projectile to shoot.
+- MultiShoot: Player will shoot multiple shots of a projectile.
+  * projectile: Projectile to shoot.
+  * count: How many projectiles will be shot.
+  * cone_angle: Defines how wide is the angle to spread the projectiles on.
+- MoveToTarget: Player will be moved to target position.
+  * duration_ms: How long it takes to move the player, 0 means instantly.
+  * max_range: Maximum distance allowed to move, if target is beyond this limit movement will be capped to this point.
+*/
+message Mechanic {
+    MechanicType name = 1;
+    repeated GameEffect effects = 2;
+    uint64 damage = 3;
+    uint64 range = 4;
+    uint64 cone_angle = 5;
+    repeated GameEffect on_hit_effects = 6;
+    GameProjectile projectile = 7;
+    uint64 count = 8;
+    uint64 duration_ms = 9;
+    uint64 max_range = 10;
+}
+
+/* Represents an effect acting on a player.
+- name: unique name for the effect.
+- effect_time_type: This determines how the effect is applied. It can be any of:
+  - Instant: Effect is executed once and removed
+  - Duration: Effect is stuck on the player for a duration
+    - duration_ms
+  - Permanent: Effect lasts forever and can only be removed by other effects
+  - Periodic: Like an Instant, but the effect is applied many times over a period of time
+    - instant_application: Boolean specifying if first application of effect should happen at instant 0 or not
+    - interval_ms: Every X milliseconds the effect will be applied
+    - trigger_count: Sets how many times the effect will be applied
+- player_attributes: Attributes changes that will be applied over the player having this effect
+- projectile_attributes: Attributes changes that will be applied over the projectiles of the player having this effect
+*/
+message GameEffect {
+  string name = 1;
+  oneof effect_type {
+    string simple_type = 2;
+    Duration duration_type = 3;
+    Periodic periodic_type = 4;
+  }
+
+  message Duration {
+    string type = 1;
+    uint64 duration_ms = 2;
+  }
+
+  message Periodic {
+    string type = 1;
+    string instant_application = 2;
+    uint64 interval_ms = 3;
+    uint64 trigger_count = 4;
+  }
+}
+
+/*
+Represents a move action
+*/
+message Move {
+  float angle = 1;
+}
+
+/*
+Represents the action of using a skill
+*/
+message UseSkill {
+  string skill = 1;
+  float angle = 2;
+  bool auto_aim = 3;
+}
+
+message GameAction {
+    oneof action_type {
+        Move move = 1;
+        UseSkill use_skill = 2;
+    }
+    int64 timestamp = 3;
+}
