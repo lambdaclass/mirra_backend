@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/aws-testing-deploy.yml
+      - .github/workflows/testing-brazil-deploy.yml
 
 jobs:
   build-deploy:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://aws-testing.dark-worlds.lambdaclass.com/board
+      url: https://baremetal-brazil-testing.curseofmyrra.com/board
 
     steps:
       - name: Checkout deploy script
@@ -31,11 +31,11 @@ jobs:
 
       - name: Copy deploy script
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST_AWS }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME_AWS }}
+          SSH_HOST: ${{ secrets.SSH_HOST_BRAZIL }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           SCRIPT_SRC: "deploy.sh"
-          SCRIPT_DEST: "/root/deploy-script/"
+          SCRIPT_DEST: "~/deploy-script/"
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -46,19 +46,19 @@ jobs:
               ${SSH_USERNAME}@${SSH_HOST}:${SCRIPT_DEST}
           ssh -i id_ed25519_testing \
               ${SSH_USERNAME}@${SSH_HOST} \
-              chmod +x /root/deploy-script/deploy.sh
+              chmod +x ~/deploy-script/deploy.sh
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST_AWS }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME_AWS }}
+          SSH_HOST: ${{ secrets.SSH_HOST_BRAZIL }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_PORT: ${{ secrets.SSH_PORT }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.PHX_HOST_AWS }}
+          PHX_HOST: ${{ vars.PHX_HOST_BRAZIL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_AWS }}
+          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_BRAZIL }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
@@ -76,4 +76,4 @@ jobs:
                 DATABASE_URL=${DATABASE_URL} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                /root/deploy-script/deploy.sh
+                ~/deploy-script/deploy.sh
