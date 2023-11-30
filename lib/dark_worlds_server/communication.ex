@@ -46,6 +46,15 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
+  def notify_player_amount!(amount_of_players, capacity) do
+    %LobbyEvent{
+      type: :NOTIFY_PLAYER_AMOUNT,
+      amount_of_players: amount_of_players,
+      capacity: capacity
+    }
+    |> LobbyEvent.encode()
+  end
+
   def game_update!(%{
         players: players,
         projectiles: projectiles,
