@@ -11,7 +11,7 @@ on:
 jobs:
   build-deploy:
     name: Build and deploy to Europe testing
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     environment:
       name: testing
       url: https://europe-testing.curseofmyrra.com/board
