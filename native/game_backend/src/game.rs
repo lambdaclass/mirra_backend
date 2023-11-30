@@ -178,9 +178,10 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if player.action_duration_ms > 0 {
+            if player.skill_moving_duration_ms > 0 {
                 return;
             }
+
             player.move_position(angle, &self.config);
             collect_nearby_loot(loots, player);
         }
@@ -371,6 +372,10 @@ impl GameState {
 
     pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
         if let Some(player) = self.players.get_mut(&player_id) {
+            if player.skill_moving_duration_ms > 0 {
+                return;
+            }
+
             if let Some(loot) = player.inventory_take_at(inventory_at) {
                 player.apply_effects(&loot.effects, EntityOwner::Loot)
             }
