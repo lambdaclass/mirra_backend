@@ -9,7 +9,7 @@ mod projectile;
 mod skill;
 
 use crate::config::Config;
-use crate::game::{EntityOwner, GameState};
+use crate::game::{EntityOwner, GameError, GameState};
 use crate::map::Position;
 use crate::player::Player;
 use rand::Rng;
@@ -26,11 +26,14 @@ fn new_game(config: Config) -> GameState {
 }
 
 #[rustler::nif()]
-fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64>) {
+fn add_player(
+    game: GameState,
+    character_name: String,
+) -> Result<(GameState, Option<u64>), GameError> {
     let mut game = game;
     let player_id = game.next_id();
     match game.config.find_character(character_name) {
-        None => (game, None),
+        None => Err(GameError::CharacterNotFound),
         Some(character_config) => {
             let rng = &mut rand::thread_rng();
             let initial_position = if game.config.game.initial_positions.is_empty() {
@@ -44,7 +47,7 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
 
             let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
-            (game, Some(player_id))
+            Ok((game, Some(player_id)))
         }
     }
 }
