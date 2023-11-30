@@ -10,7 +10,9 @@ mod skill;
 
 use crate::config::Config;
 use crate::game::{EntityOwner, GameState};
+use crate::map::Position;
 use crate::player::Player;
+use rand::Rng;
 use std::collections::HashMap;
 
 #[rustler::nif()]
@@ -30,7 +32,17 @@ fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64
     match game.config.find_character(character_name) {
         None => (game, None),
         Some(character_config) => {
-            let player = Player::new(player_id, character_config, &game.config);
+            let rng = &mut rand::thread_rng();
+            let initial_position = if game.config.game.initial_positions.is_empty() {
+                Position { x: 0, y: 0 }
+            } else {
+                game.config
+                    .game
+                    .initial_positions
+                    .swap_remove(rng.gen_range(0..game.config.game.initial_positions.len()))
+            };
+
+            let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
             (game, Some(player_id))
         }

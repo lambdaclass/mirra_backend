@@ -33,6 +33,7 @@ pub struct GameConfigFile {
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
+    initial_positions: Vec<Position>,
 }
 
 #[derive(Deserialize)]
@@ -53,6 +54,7 @@ pub struct GameConfig {
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
+    pub initial_positions: Vec<Position>,
 }
 
 #[derive(NifMap, Clone)]
@@ -125,6 +127,7 @@ impl GameConfig {
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
             auto_aim_max_distance: game_config.auto_aim_max_distance,
+            initial_positions: game_config.initial_positions,
         }
     }
 }
