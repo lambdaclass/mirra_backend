@@ -41,14 +41,9 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   end
 
   def handle_call({:join, user_id}, {from, _}, state) do
-    if Enum.any?(state.players, fn {player_user_id, _} -> user_id == player_user_id end) do
-      {:reply, :ok, state}
-    else
       players = state.players ++ [{user_id, from}]
-      notify_players_amount(players, @session_player_amount)
       send(self(), :check_capacity)
       {:reply, :ok, %{state | players: players}}
-    end
   end
 
   def handle_call({:leave, user_id}, _from, state) do
@@ -73,13 +68,15 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
 
   def handle_info(:check_capacity, %{players: players} = state) when length(players) >= @session_player_amount do
     {:ok, game_pid, game_config} = start_game()
+    notify_players_amount(@session_player_amount, @session_player_amount)
     players = consume_and_notify_players(state.players, game_pid, game_config, @session_player_amount)
     new_session_ref = make_ref()
     Process.send_after(self(), {:check_timeout, new_session_ref}, @start_game_timeout_ms)
     {:noreply, %{state | players: players, session: new_session_ref}}
   end
 
-  def handle_info(:check_capacity, state) do
+  def handle_info(:check_capacity, %{players: players} = state) do
+    notify_players_amount(players, @session_player_amount)
     {:noreply, state}
   end
 
