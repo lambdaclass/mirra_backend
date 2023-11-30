@@ -46,7 +46,7 @@ defmodule GameBackendTest do
     config = GameBackend.parse_config(data)
     game = GameBackend.new_game(config)
 
-    ## A character that does not exist does nothing and returns `nil`
+    ## A character that does not exist does nothing and returns `:character_not_found`
     assert match?({:error, :character_not_found}, GameBackend.add_player(game, "miss-character"))
 
     character_name = Enum.random(config.characters).name
