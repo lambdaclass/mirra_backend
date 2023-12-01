@@ -272,7 +272,7 @@
     "zone_starting_radius": 14000,
     "zone_modifications": [
       {
-        "duration_ms": 30000,
+        "duration_ms": 999999,
         "modification": {
           "modifier": "Additive",
           "value": 0

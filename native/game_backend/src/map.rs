@@ -48,7 +48,6 @@ pub fn next_position(
     direction_angle: f32,
     movement_amount: f32,
     width: f32,
-    _height: f32,
 ) -> Position {
     let angle_rad = direction_angle * (PI / 180.0);
     let new_x = (current_position.x as f32) + movement_amount * angle_rad.cos();
@@ -122,10 +121,6 @@ pub fn angle_between_positions(center: &Position, target: &Position) -> f32 {
     let y_diff = (target.y - center.y) as f32;
     let angle = y_diff.atan2(x_diff) * (180.0 / PI);
     (angle + 360.0) % 360.0
-}
-
-pub fn distance_to_center(player: &Player, center: &Position) -> f32 {
-    distance_between_positions(&player.position, center)
 }
 
 pub fn distance_between_positions(position_1: &Position, position_2: &Position) -> f32 {
