@@ -505,7 +505,6 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
             projectile.direction_angle,
             projectile.speed as f32,
             config.game.width as f32,
-            config.game.height as f32,
         )
     });
 }
@@ -659,7 +658,7 @@ fn nearest_player_position(
 
     for player in players {
         if matches!(player.status, PlayerStatus::Alive) {
-            let distance = map::distance_to_center(player, position);
+            let distance = map::distance_between_positions(&player.position, position);
             if distance < nearest_distance {
                 nearest_player = Some(player.position);
                 nearest_distance = distance;
