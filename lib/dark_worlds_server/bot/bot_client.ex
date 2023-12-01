@@ -69,4 +69,9 @@ defmodule DarkWorldsServer.Bot.BotClient do
   defp handle_msg(%{type: :PING_UPDATE}, state) do
     {:ok, state}
   end
+
+  defp handle_msg(%{type: :GAME_STARTED}, state) do
+    BotPlayer.toggle_bots(state.bot_pid, true)
+    {:ok, state}
+  end
 end
