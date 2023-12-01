@@ -178,6 +178,9 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
+            if player.action_duration_ms > 0 {
+                return;
+            }
             player.move_position(angle, &self.config);
             collect_nearby_loot(loots, player);
         }
@@ -336,7 +339,7 @@ impl GameState {
                                         target_player,
                                         *range,
                                         *cone_angle as f32,
-                                    )
+                                    ) && target_player.status == PlayerStatus::Alive
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
