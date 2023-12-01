@@ -4,7 +4,7 @@
 
 - `name`: Unique name for the skill, this will be referenced by other configurations
 - `cooldown_ms`: Time that needs to elapse before the skill recharges
-- `execution_duration_ms`: Time in milliseconds it takes to perform the skill, player will be unable
+- `execution_duration_ms`: Time in milliseconds it takes to perform the skill, player will be unable to move or attack in the meantime
 - `is_passive`: Marks the skill as a passive skill, this means it can't be triggered. Instead it will trigger on player spawn, so only `GiveEffect` makes sense for it
 - `mechanics`: Core mechanic of the skill (e.g hit, shoot, etc)
 
