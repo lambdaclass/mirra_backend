@@ -2,10 +2,11 @@ use std::f32::consts::PI;
 
 use rand::Rng;
 use rustler::NifMap;
+use serde::Deserialize;
 
 use crate::player::Player;
 
-#[derive(NifMap, Clone, Copy)]
+#[derive(NifMap, Clone, Deserialize, Copy)]
 pub struct Position {
     pub x: i64,
     pub y: i64,

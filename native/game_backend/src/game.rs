@@ -19,6 +19,11 @@ use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
+pub enum GameError {
+    CharacterNotFound,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
 pub enum EntityOwner {
     Zone,
     Loot,
@@ -33,6 +38,7 @@ pub struct GameConfigFile {
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
+    initial_positions: Vec<Position>,
 }
 
 #[derive(Deserialize)]
@@ -53,6 +59,7 @@ pub struct GameConfig {
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
+    pub initial_positions: Vec<Position>,
 }
 
 #[derive(NifMap, Clone)]
@@ -125,6 +132,7 @@ impl GameConfig {
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
             auto_aim_max_distance: game_config.auto_aim_max_distance,
+            initial_positions: game_config.initial_positions,
         }
     }
 }
@@ -378,6 +386,7 @@ impl GameState {
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
+        update_kill_counts(&mut self.players, &self.killfeed);
     }
 }
 
@@ -451,6 +460,16 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
     players.values_mut().for_each(|player| {
         player.update_actions();
         player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+    })
+}
+
+fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &[KillEvent]) {
+    killfeed.iter().for_each(|kill_event| {
+        if let EntityOwner::Player(player_id) = kill_event.kill_by {
+            if let Some(player) = players.get_mut(&player_id) {
+                player.add_kill();
+            }
+        }
     })
 }
 
