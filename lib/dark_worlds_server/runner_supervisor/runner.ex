@@ -136,17 +136,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_cast(
-        {:attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
+        {:attack, user_id, %UseSkill{skill: skill} = use_skill, timestamp},
         state
       ) do
     player_id = state.user_to_player[user_id] || user_id
     skill_key = action_skill_to_key(skill)
-
-    game_state =
-      GameBackend.activate_skill(state.game_state, player_id, skill_key, %{
-        "direction_angle" => Float.to_string(angle),
-        "auto_aim" => to_string(auto_aim)
-      })
+    skill_params = extract_and_convert_params(use_skill)
+    game_state = GameBackend.activate_skill(state.game_state, player_id, skill_key, skill_params)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -340,6 +336,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp action_skill_to_key(:skill_2), do: "3"
   defp action_skill_to_key(:skill_3), do: "4"
   defp action_skill_to_key(:skill_4), do: "5"
+
+  defp extract_and_convert_params(params) do
+    Map.from_struct(params)
+    |> Map.drop([:__unknown_fields__])
+    |> Enum.map(fn ({key, value}) -> {to_string(key), to_string(value)} end)
+    |> Map.new()
+  end
 
   defp transform_state_to_game_state(game_state) do
     %{

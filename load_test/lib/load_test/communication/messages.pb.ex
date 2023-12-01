@@ -759,6 +759,8 @@ defmodule LoadTest.Communication.Proto.UseSkill do
   field(:skill, 1, type: :string)
   field(:angle, 2, type: :float)
   field(:auto_aim, 3, type: :bool, json_name: "autoAim")
+  field(:target_x, 4, type: :float, json_name: "targetX")
+  field(:target_y, 5, type: :float, json_name: "targetY")
 end
 
 defmodule LoadTest.Communication.Proto.GameAction do

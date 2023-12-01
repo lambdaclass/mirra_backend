@@ -627,6 +627,8 @@ message UseSkill {
   string skill = 1;
   float angle = 2;
   bool auto_aim = 3;
+  float target_x = 4;
+  float target_y = 5;
 }
 
 message GameAction {
