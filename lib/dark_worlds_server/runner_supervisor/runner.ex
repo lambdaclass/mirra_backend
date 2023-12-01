@@ -340,7 +340,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp extract_and_convert_params(params) do
     Map.from_struct(params)
     |> Map.drop([:__unknown_fields__])
-    |> Enum.map(fn ({key, value}) -> {to_string(key), to_string(value)} end)
+    |> Enum.map(fn {key, value} -> {to_string(key), to_string(value)} end)
     |> Map.new()
   end
 

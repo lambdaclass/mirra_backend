@@ -34,7 +34,7 @@ pub struct Player {
     pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
-    skill_moving_params: Option<SkillMovingParams>
+    skill_moving_params: Option<SkillMovingParams>,
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq)]
@@ -97,12 +97,18 @@ impl Player {
     pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
         if let Some(moving_params) = self.skill_moving_params.as_mut() {
             let actual_duration = moving_params.duration_ms.min(elapsed_time_ms);
-            let speed  = moving_params.speed_per_ms * (actual_duration as f32);
-            self.position = map::next_position(&self.position, self.direction, speed, config.game.width as f32);
+            let speed = moving_params.speed_per_ms * (actual_duration as f32);
+            self.position = map::next_position(
+                &self.position,
+                self.direction,
+                speed,
+                config.game.width as f32,
+            );
             moving_params.duration_ms = moving_params.duration_ms.saturating_sub(elapsed_time_ms);
 
             if moving_params.duration_ms == 0 {
-                self.skills_keys_to_execute.append(&mut moving_params.skills_on_arrival);
+                self.skills_keys_to_execute
+                    .append(&mut moving_params.skills_on_arrival);
                 self.skill_moving_params = None;
             }
         }
@@ -340,8 +346,17 @@ impl Player {
         self.inventory[inventory_at].take()
     }
 
-    pub fn set_moving_params(&mut self, duration_ms: u64, speed_per_ms: f32, skills_on_arrival: &Vec<String>) {
-        let moving_params = SkillMovingParams { duration_ms, speed_per_ms, skills_on_arrival: skills_on_arrival.to_vec() };
+    pub fn set_moving_params(
+        &mut self,
+        duration_ms: u64,
+        speed_per_ms: f32,
+        skills_on_arrival: &[String],
+    ) {
+        let moving_params = SkillMovingParams {
+            duration_ms,
+            speed_per_ms,
+            skills_on_arrival: skills_on_arrival.to_vec(),
+        };
         self.skill_moving_params = Some(moving_params);
     }
 

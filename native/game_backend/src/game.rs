@@ -251,7 +251,8 @@ impl GameState {
                 );
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
-                player.direction = get_direction_angle(player, &other_players, &skill_params, &self.config);
+                player.direction =
+                    get_direction_angle(player, &other_players, &skill_params, &self.config);
 
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
@@ -313,12 +314,12 @@ impl GameState {
                                 .iter_mut()
                                 .filter(|target_player| {
                                     player.is_targetable()
-                                    && map::in_cone_angle_range(
-                                        player,
-                                        target_player,
-                                        *range,
-                                        *cone_angle as f32,
-                                    )
+                                        && map::in_cone_angle_range(
+                                            player,
+                                            target_player,
+                                            *range,
+                                            *cone_angle as f32,
+                                        )
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
@@ -336,11 +337,24 @@ impl GameState {
                                     }
                                 })
                         }
-                        SkillMechanic::MoveToTarget { duration_ms, max_range, on_arrival_skills } => {
-                            if let Some(target_position) = parse_skill_params_move_to_target(&skill_params) {
-                                let distance = map::distance_between_positions(&player.position, &target_position).min(*max_range as f32);
+                        SkillMechanic::MoveToTarget {
+                            duration_ms,
+                            max_range,
+                            on_arrival_skills,
+                        } => {
+                            if let Some(target_position) =
+                                parse_skill_params_move_to_target(&skill_params)
+                            {
+                                let distance = map::distance_between_positions(
+                                    &player.position,
+                                    &target_position,
+                                )
+                                .min(*max_range as f32);
                                 let speed = distance / (*duration_ms as f32);
-                                player.direction = map::angle_between_positions(&player.position, &target_position);
+                                player.direction = map::angle_between_positions(
+                                    &player.position,
+                                    &target_position,
+                                );
                                 player.set_moving_params(*duration_ms, speed, on_arrival_skills);
                             }
                         }
@@ -669,14 +683,19 @@ fn nearest_player_position(
     nearest_player
 }
 
-fn get_direction_angle(player: &Player, other_players: &Vec<&mut Player>, skill_params: &HashMap<String, String>, config: &Config) -> f32 {
+fn get_direction_angle(
+    player: &Player,
+    other_players: &Vec<&mut Player>,
+    skill_params: &HashMap<String, String>,
+    config: &Config,
+) -> f32 {
     let auto_aim = skill_params
         .get("auto_aim")
         .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap());
 
     if auto_aim.is_some_and(|val| val) {
         let nearest_player: Option<Position> = nearest_player_position(
-            &other_players,
+            other_players,
             &player.position,
             config.game.auto_aim_max_distance,
         );
@@ -688,9 +707,9 @@ fn get_direction_angle(player: &Player, other_players: &Vec<&mut Player>, skill_
         }
     } else {
         skill_params
-        .get("direction_angle")
-        .map(|angle_str| angle_str.parse::<f32>().unwrap())
-        .unwrap_or(player.direction)
+            .get("direction_angle")
+            .map(|angle_str| angle_str.parse::<f32>().unwrap())
+            .unwrap_or(player.direction)
     }
 }
 
@@ -704,7 +723,10 @@ fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> 
         .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
 
     if let (Some(x), Some(y)) = (target_x, target_y) {
-        Some(Position { x: x as i64, y: y as i64 })
+        Some(Position {
+            x: x as i64,
+            y: y as i64,
+        })
     } else {
         None
     }
