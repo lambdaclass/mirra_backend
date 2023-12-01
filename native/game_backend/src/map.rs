@@ -53,7 +53,9 @@ pub fn next_position(
     let angle_rad = direction_angle * (PI / 180.0);
     let new_x = (current_position.x as f32) + movement_amount * angle_rad.cos();
     let new_y = (current_position.y as f32) + movement_amount * angle_rad.sin();
-    let radius = width / 2.0;
+
+    // This is to avoid  the overflow on the front end
+    let radius = (width - 200.0) / 2.0;
 
     let center = Position { x: 0, y: 0 };
 
@@ -66,6 +68,7 @@ pub fn next_position(
         new_position
     } else {
         let angle = angle_between_positions(&center, &new_position) * (PI / 180.0);
+
         Position {
             x: (radius * angle.cos()) as i64,
             y: (radius * angle.sin()) as i64,
@@ -106,7 +109,7 @@ pub fn random_position(width: u64, _height: u64) -> Position {
 
     let radius = (width / 2) as i64;
     let random_radius = (rng.gen_range(0..radius.pow(2)) as f32).sqrt();
-    let angle = rng.gen_range(0.0..(2.0 * PI)) as f32;
+    let angle = rng.gen_range(0.0..(2.0 * PI));
 
     Position {
         x: (random_radius * angle.cos()) as i64,
