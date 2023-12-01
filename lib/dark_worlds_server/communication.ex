@@ -30,7 +30,7 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
-  def lobby_game_started!(%{
+  def lobby_preparing_game!(%{
         game_pid: game_pid,
         game_config: game_config,
         server_hash: server_hash
@@ -38,7 +38,7 @@ defmodule DarkWorldsServer.Communication do
     game_id = pid_to_external_id(game_pid)
 
     %LobbyEvent{
-      type: :GAME_STARTED,
+      type: :PREPARING_GAME,
       game_id: game_id,
       game_config: game_config,
       server_hash: server_hash
@@ -53,6 +53,30 @@ defmodule DarkWorldsServer.Communication do
       capacity: capacity
     }
     |> LobbyEvent.encode()
+  end
+
+  def game_started!(%{
+        players: players,
+        projectiles: projectiles,
+        killfeed: killfeed,
+        playable_radius: playable_radius,
+        shrinking_center: shrinking_center,
+        player_timestamp: player_timestamp,
+        server_timestamp: server_timestamp,
+        loots: loots
+      }) do
+    %GameEvent{
+      type: :GAME_STARTED,
+      players: players,
+      projectiles: projectiles,
+      killfeed: killfeed,
+      playable_radius: playable_radius,
+      shrinking_center: shrinking_center,
+      player_timestamp: player_timestamp,
+      server_timestamp: server_timestamp,
+      loots: loots
+    }
+    |> GameEvent.encode()
   end
 
   def game_update!(%{

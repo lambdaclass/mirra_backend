@@ -165,6 +165,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Process.send_after(self(), :game_tick, @game_tick_rate_ms)
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+    broadcast_game_start(state.broadcast_topic, Map.put(state.game_state, :player_timestamps, state.player_timestamps))
 
     state = Map.put(state, :last_game_tick_at, System.monotonic_time(:millisecond))
     {:noreply, state}
@@ -283,6 +284,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       DarkWorldsServer.PubSub,
       topic,
       {:game_state, transform_state_to_game_state(game_state)}
+    )
+  end
+
+  defp broadcast_game_start(topic, game_state) do
+    Phoenix.PubSub.broadcast(
+      DarkWorldsServer.PubSub,
+      topic,
+      {:game_start, transform_state_to_game_state(game_state)}
     )
   end
 
