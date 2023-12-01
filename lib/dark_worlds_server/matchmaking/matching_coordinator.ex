@@ -40,7 +40,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     {:reply, :ok, %{state | players: players, session: session_ref}}
   end
 
-  def handle_call({:join, user_id}, {from, _}, %{players: players} =state) do
+  def handle_call({:join, user_id}, {from, _}, %{players: players} = state) do
     if Enum.any?(players, fn {player_user_id, _} -> player_user_id == user_id end) do
       send(self(), :check_capacity)
       {:reply, :ok, state}
