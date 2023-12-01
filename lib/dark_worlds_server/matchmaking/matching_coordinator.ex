@@ -5,7 +5,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   ## Amount of players needed to start a game
   @session_player_amount 10
   ## Time to wait for a matching session to be full
-  @start_game_timeout_ms 10_000
+  @start_game_timeout_ms 9_500
 
   #######
   # API #
@@ -35,6 +35,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     session_ref = make_ref()
     Process.send_after(self(), {:check_timeout, session_ref}, @start_game_timeout_ms)
     players = [{user_id, from}]
+    notify_players_amount(players, @session_player_amount)
+
     {:reply, :ok, %{state | players: players, session: session_ref}}
   end
 
@@ -46,6 +48,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
 
   def handle_call({:leave, user_id}, _from, state) do
     players = Enum.filter(state.players, fn {player_user_id, _} -> player_user_id != user_id end)
+    notify_players_amount(players, @session_player_amount)
     {:reply, :ok, %{state | players: players}}
   end
 
@@ -71,7 +74,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     {:noreply, %{state | players: players, session: new_session_ref}}
   end
 
-  def handle_info(:check_capacity, state) do
+  def handle_info(:check_capacity, %{players: players} = state) do
+    notify_players_amount(players, @session_player_amount)
     {:noreply, state}
   end
 
@@ -96,6 +100,16 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
 
   defp consume_and_notify_players([{_, client_pid} | rest_players], game_pid, game_config, count) do
     Process.send(client_pid, {:preparing_game, game_pid, game_config}, [])
+    Process.send(client_pid, {:notify_players_amount, @session_player_amount, @session_player_amount}, [])
     consume_and_notify_players(rest_players, game_pid, game_config, count - 1)
+  end
+
+  defp notify_players_amount(players, capacity) do
+    amount = length(players)
+
+    players
+    |> Enum.each(fn {_, client_pid} ->
+      Process.send(client_pid, {:notify_players_amount, amount, capacity}, [])
+    end)
   end
 end

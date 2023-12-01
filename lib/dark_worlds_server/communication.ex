@@ -46,28 +46,37 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
-  def game_started!(%{
-        players: players,
-        projectiles: projectiles,
-        killfeed: killfeed,
-        playable_radius: playable_radius,
-        shrinking_center: shrinking_center,
-        player_timestamp: player_timestamp,
-        server_timestamp: server_timestamp,
-        loots: loots
-      }) do
-    %GameEvent{
-      type: :GAME_STARTED,
-      players: players,
-      projectiles: projectiles,
-      killfeed: killfeed,
-      playable_radius: playable_radius,
-      shrinking_center: shrinking_center,
-      player_timestamp: player_timestamp,
-      server_timestamp: server_timestamp,
-      loots: loots
+  def notify_player_amount!(amount_of_players, capacity) do
+    %LobbyEvent{
+      type: :NOTIFY_PLAYER_AMOUNT,
+      amount_of_players: amount_of_players,
+      capacity: capacity
     }
-    |> GameEvent.encode()
+    |> LobbyEvent.encode()
+  end
+
+  def game_started!(%{
+    players: players,
+    projectiles: projectiles,
+    killfeed: killfeed,
+    playable_radius: playable_radius,
+    shrinking_center: shrinking_center,
+    player_timestamp: player_timestamp,
+    server_timestamp: server_timestamp,
+    loots: loots
+  }) do
+  %GameEvent{
+    type: :GAME_STARTED,
+    players: players,
+    projectiles: projectiles,
+    killfeed: killfeed,
+    playable_radius: playable_radius,
+    shrinking_center: shrinking_center,
+    player_timestamp: player_timestamp,
+    server_timestamp: server_timestamp,
+    loots: loots
+  }
+  |> GameEvent.encode()
   end
 
   def game_update!(%{
