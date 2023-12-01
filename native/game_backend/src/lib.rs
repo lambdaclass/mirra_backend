@@ -7,7 +7,7 @@ mod map;
 mod player;
 mod projectile;
 mod skill;
-mod space_hash_grid;
+mod space_hash_grid_2;
 
 use crate::config::Config;
 use crate::game::{EntityOwner, GameState};
