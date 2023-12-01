@@ -1,9 +1,10 @@
-use std::collections::HashMap;
-
+use crate::space_hash_grid_2::{self, Vec2};
+use crate::space_hash_grid_2::{GameEntity, SpatialHashGrid};
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
 use serde::Deserialize;
+use std::collections::HashMap;
 
 use crate::config::Config;
 use crate::effect;
@@ -96,6 +97,7 @@ pub struct GameState {
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
+    pub collisions_grid: SpatialHashGrid,
     next_id: u64,
 }
 
@@ -135,7 +137,7 @@ impl GameState {
         let zone_modifications = config.game.zone_modifications.clone();
         let game_width = config.game.width;
         let game_height = config.game.height;
-
+        let collisions_grid = SpatialHashGrid::new(game_width, game_height, 1_u64);
         Self {
             config,
             players: HashMap::new(),
@@ -151,6 +153,7 @@ impl GameState {
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
+            collisions_grid,
         }
     }
 
@@ -327,7 +330,22 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        self.collisions_grid.clear_buckets();
+        let mut first_player_entity = None;
         move_players(&mut self.players, &mut self.loots, &self.config);
+
+        self.players.iter().for_each(|(player_id, player)| {
+            let entity_for_player: GameEntity = player.into();
+            if *player_id == 1_u64 {
+                first_player_entity = Some(entity_for_player.clone())
+            }
+            self.collisions_grid.register_entity(&entity_for_player);
+        });
+        println!(
+            "Nearby player: {:?}",
+            self.collisions_grid
+                .get_nearby(&first_player_entity.unwrap())
+        );
         update_player_actions(&mut self.players, time_diff);
         update_player_cooldowns(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);

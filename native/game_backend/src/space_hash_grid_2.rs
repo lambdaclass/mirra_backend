@@ -1,19 +1,41 @@
-use itertools::Itertools;
+use rustler::NifMap;
 use std::collections::HashMap;
+use crate::{map::Position, player::Player};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, rustler::NifMap)]
 pub struct Vec2 {
     x: f32,
     y: f32,
 }
+
+impl From<Position> for Vec2 {
+    fn from(value: Position) -> Self {
+        let x = value.x as f32;
+        let y = value.y as f32;
+        Self { x, y }
+    }
+}
+
 pub type Bucket = Vec<GameEntity>;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, rustler::NifMap)]
 pub struct GameEntity {
     position: Vec2,
     radius: f32,
 }
 
+impl From<&Player> for GameEntity {
+    fn from(player: &Player) -> GameEntity {
+        let position = player.position.into();
+        let radius = player.size as f32;
+        GameEntity {
+            position,
+            radius
+        }
+    }
+}
+
+#[derive(NifMap)]
 pub struct SpatialHashGrid {
     cols: u64,
     rows: u64,
