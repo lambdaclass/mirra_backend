@@ -10,7 +10,7 @@
 
 ### Mechanics
 
-This are the mechanics so far. Every mechanic will add a configuration field with the same name of it which is a nested object with configuration attributes specific for it
+These are the mechanics so far. Every mechanic will add a configuration field with the same name, which is a nested object with configuration attributes specific for it
 
 - `GiveEffect`: This makes the skill give a certain effect
   * `effects`: List of effects given
