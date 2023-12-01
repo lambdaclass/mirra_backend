@@ -178,6 +178,9 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
+            if player.action_duration_ms > 0 {
+                return;
+            }
             player.move_position(angle, &self.config);
             collect_nearby_loot(loots, player);
         }
@@ -226,6 +229,7 @@ impl GameState {
         let players = &mut self.players;
         let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players
             .values_mut()
+            .filter(|player| player.status == PlayerStatus::Alive)
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
