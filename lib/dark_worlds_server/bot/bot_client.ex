@@ -43,6 +43,7 @@ defmodule DarkWorldsServer.Bot.BotClient do
     super(disconnect_map, state)
   end
 
+  @impl true
   def terminate(_reason, _state) do
     NewRelic.increment_custom_metric("GameBackend/TotalBots", -1)
     :ok
