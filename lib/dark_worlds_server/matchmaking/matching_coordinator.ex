@@ -56,7 +56,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   @impl true
   def handle_info({:check_timeout, session_ref}, %{session: session_ref, players: [_ | _]} = state) do
     bot_count = @session_player_amount - length(state.players)
-    {:ok, game_pid, game_config} = start_game(bot_count)
+    {:ok, game_pid, game_config} = start_game()
     players = consume_and_notify_players(state.players, game_pid, game_config, @session_player_amount)
     trigger_bots(bot_count, game_pid)
     new_session_ref = make_ref()
@@ -84,10 +84,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   ####################
   # Internal helpers #
   ####################
-  defp start_game(), do: start_game(0)
-
-  defp start_game(bot_count) do
-    {:ok, game_pid} = RunnerSupervisor.start_child(bot_count)
+  defp start_game() do
+    {:ok, game_pid} = RunnerSupervisor.start_child()
     {:ok, game_config} = RunnerSupervisor.Runner.get_config(game_pid)
     {:ok, game_pid, game_config}
   end
