@@ -129,13 +129,3 @@ pub fn distance_between_positions(position_1: &Position, position_2: &Position) 
         (position_1.x - position_2.x).pow(2) + (position_1.y - position_2.y).pow(2);
     (distance_squared as f32).sqrt()
 }
-
-pub fn calculate_target_position(position: &Position, angle: f32, distance: f32) -> Position {
-    let angle_rad = angle.to_radians();
-    let target_x = (angle_rad.cos() * distance as f32) + (position.x as f32);
-    let target_y = (angle_rad.sin() * distance as f32) + (position.y as f32);
-
-    // TODO: check collision with edges
-
-    Position { x: target_x as i64, y: target_y as i64 }
-}
