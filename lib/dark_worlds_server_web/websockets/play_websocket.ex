@@ -60,8 +60,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     with :ok <- Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}"),
          true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
-
-         {:ok, player_id} <- Runner.join(runner_pid, client_id, Enum.random(["h4ck", "muflus"])) do
+         {:ok, player_id} <- Runner.join(runner_pid, client_id, "muflus") do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -118,8 +117,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
               timestamp
             )
 
-          :use_skill when action_data.skill == "BasicAttack" ->
-            Runner.basic_attack(
+          :use_skill ->
+            Runner.attack(
               web_socket_state[:runner_pid],
               web_socket_state[:player_id],
               action_data,

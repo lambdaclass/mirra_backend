@@ -39,8 +39,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     GenServer.cast(runner_pid, {:move, user_id, action, timestamp})
   end
 
-  def basic_attack(runner_pid, user_id, action, timestamp) do
-    GenServer.cast(runner_pid, {:basic_attack, user_id, action, timestamp})
+  def attack(runner_pid, user_id, action, timestamp) do
+    GenServer.cast(runner_pid, {:attack, user_id, action, timestamp})
   end
 
   def skill(runner_pid, user_id, action) do
@@ -102,14 +102,18 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_call({:join, user_id, character_name}, _from, state) do
-    {game_state, player_id} = GameBackend.add_player(state.game_state, character_name)
+    case GameBackend.add_player(state.game_state, character_name) do
+      {:ok, {game_state, player_id}} ->
+        state =
+          Map.put(state, :game_state, game_state)
+          |> put_in([:user_to_player, user_id], player_id)
 
-    state =
-      Map.put(state, :game_state, game_state)
-      |> put_in([:user_to_player, user_id], player_id)
+        NewRelic.increment_custom_metric("GameBackend/TotalPlayers", 1)
+        {:reply, {:ok, player_id}, state}
 
-    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", 1)
-    {:reply, {:ok, player_id}, state}
+      {:error, :character_not_found} ->
+        {:reply, {:error, "Character doesn't exists"}, state}
+    end
   end
 
   @impl true
@@ -132,7 +136,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_cast(
-        {:basic_attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
+        {:attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
         state
       ) do
     player_id = state.user_to_player[user_id] || user_id
@@ -234,8 +238,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     {game_state, bots_ids} =
       Enum.reduce(0..(bot_count - 1), {state.game_state, []}, fn _, {acc_game_state, bots} ->
-        character = Enum.random(["h4ck", "muflus"])
-        {new_game_state, player_id} = GameBackend.add_player(acc_game_state, character)
+        character = "muflus"
+        {:ok, {new_game_state, player_id}} = GameBackend.add_player(acc_game_state, character)
 
         {new_game_state, [player_id | bots]}
       end)
@@ -331,6 +335,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp action_skill_to_key("BasicAttack"), do: "1"
+  defp action_skill_to_key("Skill1"), do: "2"
   defp action_skill_to_key(:skill_1), do: "2"
   defp action_skill_to_key(:skill_2), do: "3"
   defp action_skill_to_key(:skill_3), do: "4"
@@ -372,12 +377,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       body_size: player.size,
       character_name: transform_character_name_to_game_character_name(player.character.name),
       ## Placeholder values
-      kill_count: 0,
-      effects: %{},
+      kill_count: player.kill_count,
+      effects: transform_effects_to_game_effects(player.effects),
       death_count: 0,
       action: transform_action_to_game_action(player.actions),
       direction: transform_angle_to_game_relative_position(player.direction),
-      aoe_position: %GameBackend.Position{x: 0, y: 0}
+      aoe_position: %GameBackend.Position{x: 0, y: 0},
+      action_duration_ms: player.action_duration_ms
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end
@@ -459,11 +465,18 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     %GameBackend.RelativePosition{x: x, y: y}
   end
 
-  defp transform_action_to_game_action([]), do: :nothing
-  defp transform_action_to_game_action([:nothing | _]), do: :nothing
-  defp transform_action_to_game_action([:moving | _]), do: :moving
-  defp transform_action_to_game_action([{:using_skill, "1"} | _]), do: :attacking
-  defp transform_action_to_game_action([{:using_skill, "2"} | _]), do: :executingskill2
+  defp transform_action_to_game_action([]), do: []
+  defp transform_action_to_game_action([:nothing | tail]), do: transform_action_to_game_action(tail)
+  defp transform_action_to_game_action([:moving | tail]), do: [:moving | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "1"} | tail]),
+    do: [:attacking | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "2"} | tail]),
+    do: [:executingskill2 | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "4"} | tail]),
+    do: [:executingskill4 | transform_action_to_game_action(tail)]
 
   defp transform_killfeed_to_game_killfeed([]), do: []
 
@@ -481,4 +494,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
          {:loot, killed_id} | tail
        ]),
        do: [%{killed_by: 1111, killed: killed_id} | transform_killfeed_to_game_killfeed(tail)]
+
+  def transform_effects_to_game_effects([]), do: []
+
+  def transform_effects_to_game_effects([{%{name: "damage_outside_area"}, :zone} | tail]),
+    do: [{6, 0} | transform_effects_to_game_effects(tail)]
+
+  def transform_effects_to_game_effects([_ | tail]), do: transform_effects_to_game_effects(tail)
 end

@@ -23,4 +23,5 @@ config :logger, level: :info
 # Newrelic agent
 config :new_relic_agent,
   app_name: System.get_env("NEWRELIC_APP_NAME"),
-  license_key: System.get_env("NEWRELIC_KEY")
+  license_key: System.get_env("NEWRELIC_KEY"),
+  disable_erlang_trace: if(System.get_env("FLAMEGRAPH"), do: true, else: false)

@@ -61,7 +61,7 @@ message Player {
     sint64 health = 2;
     Position position = 3;
     Status status = 4;
-    PlayerAction action = 5;
+    repeated PlayerAction action = 5;
     Position aoe_position = 6;
     uint64 kill_count = 7;
     uint64 death_count = 8;
@@ -74,6 +74,7 @@ message Player {
     map<uint64, EffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
+    uint64 action_duration_ms = 18;
 }
 
 message EffectInfo {
@@ -425,6 +426,7 @@ enum MechanicType {
     HIT = 0;
     SIMPLE_SHOOT = 1;
     MULTI_SHOOT = 2;
+    GIVE_EFFECT = 3;
 }
 
 message Config {
