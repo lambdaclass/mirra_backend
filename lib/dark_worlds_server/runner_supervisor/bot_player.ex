@@ -376,8 +376,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   defp skill_would_hit?(bot, %{distance_to_entity: distance_to_entity}) do
     # TODO: We should find a way to use the skill of the character distance
     case bot.character_name do
-      "H4ck" -> distance_to_entity < 1000 and Enum.random(0..100) < 40
-      "Muflus" -> distance_to_entity < 450 and Enum.random(0..100) < 30
+      "H4ck" -> distance_to_entity < 10.0 and Enum.random(0..100) < 40
+      "Muflus" -> distance_to_entity < 4.5 and Enum.random(0..100) < 30
     end
   end
 
@@ -390,7 +390,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
          x: current_wandering_position.x,
          y: current_wandering_position.y
        }) <
-         500 do
+         5.0 do
       put_wandering_position(bot_state, bot, game_state)
     else
       bot_state
