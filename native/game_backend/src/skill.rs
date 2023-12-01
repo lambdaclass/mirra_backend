@@ -43,6 +43,7 @@ pub enum SkillMechanicConfigFile {
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
+        on_arrival_skills: Vec<String>,
     },
 }
 
@@ -68,7 +69,15 @@ pub enum SkillMechanic {
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
+        on_arrival_skills: Vec<String>,
     },
+}
+
+#[derive(NifMap, Clone)]
+pub struct SkillMovingParams {
+    pub duration_ms: u64,
+    pub speed_per_ms: f32,
+    pub skills_on_arrival: Vec<String>,
 }
 
 impl SkillConfig {
@@ -172,9 +181,11 @@ impl SkillMechanic {
                 SkillMechanicConfigFile::MoveToTarget {
                     duration_ms,
                     max_range,
+                    on_arrival_skills,
                 } => SkillMechanic::MoveToTarget {
                     duration_ms,
                     max_range,
+                    on_arrival_skills,
                 },
             })
             .collect()

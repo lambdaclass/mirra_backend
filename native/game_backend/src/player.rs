@@ -13,6 +13,7 @@ use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
+use crate::skill::SkillMovingParams;
 
 #[derive(NifMap)]
 pub struct Player {
@@ -32,9 +33,8 @@ pub struct Player {
     pub action_duration_ms: u64,
     pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
-    pub skill_moving_duration_ms: u64,
-    pub skill_moving_speed_per_ms: f32,
     next_actions: Vec<Action>,
+    skill_moving_params: Option<SkillMovingParams>
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq)]
@@ -70,8 +70,7 @@ impl Player {
             action_duration_ms: 0,
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
-            skill_moving_duration_ms: 0,
-            skill_moving_speed_per_ms: 0.0,
+            skill_moving_params: None,
         }
     }
 
@@ -96,13 +95,17 @@ impl Player {
     }
 
     pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
-        if self.skill_moving_duration_ms == 0 {
-            return;
-        }
+        if let Some(moving_params) = self.skill_moving_params.as_mut() {
+            let actual_duration = moving_params.duration_ms.min(elapsed_time_ms);
+            let speed  = moving_params.speed_per_ms * (actual_duration as f32);
+            self.position = map::next_position(&self.position, self.direction, speed, config.game.width as f32, config.game.height as f32);
+            moving_params.duration_ms = moving_params.duration_ms.saturating_sub(elapsed_time_ms);
 
-        self.skill_moving_duration_ms = self.skill_moving_duration_ms.saturating_sub(elapsed_time_ms);
-        let speed  = self.skill_moving_speed_per_ms * (elapsed_time_ms as f32);
-        self.position = map::next_position(&self.position, self.direction, speed, config.game.width as f32, config.game.height as f32);
+            if moving_params.duration_ms == 0 {
+                self.skills_keys_to_execute.append(&mut moving_params.skills_on_arrival);
+                self.skill_moving_params = None;
+            }
+        }
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
@@ -335,6 +338,23 @@ impl Player {
 
     pub fn inventory_take_at(&mut self, inventory_at: usize) -> Option<Loot> {
         self.inventory[inventory_at].take()
+    }
+
+    pub fn set_moving_params(&mut self, duration_ms: u64, speed_per_ms: f32, skills_on_arrival: &Vec<String>) {
+        let moving_params = SkillMovingParams { duration_ms, speed_per_ms, skills_on_arrival: skills_on_arrival.to_vec() };
+        self.skill_moving_params = Some(moving_params);
+    }
+
+    pub fn can_move(&self) -> bool {
+        self.action_duration_ms == 0 && self.skill_moving_params.is_none()
+    }
+
+    pub fn can_activate(&self) -> bool {
+        self.action_duration_ms == 0 && self.skill_moving_params.is_none()
+    }
+
+    pub fn is_targetable(&self) -> bool {
+        self.skill_moving_params.is_none()
     }
 }
 

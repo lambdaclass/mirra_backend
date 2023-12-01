@@ -178,7 +178,7 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if player.skill_moving_duration_ms > 0 {
+            if player.can_move() {
                 return;
             }
 
@@ -235,7 +235,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if player.action_duration_ms > 0 || player.skill_moving_duration_ms > 0 {
+            if player.can_activate() {
                 return;
             }
 
@@ -312,7 +312,7 @@ impl GameState {
                             other_players
                                 .iter_mut()
                                 .filter(|target_player| {
-                                    player.skill_moving_duration_ms == 0
+                                    player.is_targetable()
                                     && map::in_cone_angle_range(
                                         player,
                                         target_player,
@@ -336,13 +336,12 @@ impl GameState {
                                     }
                                 })
                         }
-                        SkillMechanic::MoveToTarget { duration_ms, max_range } => {
+                        SkillMechanic::MoveToTarget { duration_ms, max_range, on_arrival_skills } => {
                             if let Some(target_position) = parse_skill_params_move_to_target(&skill_params) {
                                 let distance = map::distance_to_center(player, &target_position).min(*max_range as f32);
+                                let speed = distance / (*duration_ms as f32);
                                 player.direction = map::angle_between_positions(&player.position, &target_position);
-                                player.skill_moving_duration_ms = *duration_ms;
-                                player.skill_moving_speed_per_ms = distance / (*duration_ms as f32);
-
+                                player.set_moving_params(*duration_ms, speed, on_arrival_skills);
                             }
                         }
                     }
@@ -353,7 +352,7 @@ impl GameState {
 
     pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
         if let Some(player) = self.players.get_mut(&player_id) {
-            if player.skill_moving_duration_ms > 0 {
+            if player.can_activate() {
                 return;
             }
 
@@ -410,7 +409,7 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 }
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
-    if player.skill_moving_duration_ms > 0 {
+    if player.is_targetable() {
         return;
     }
 
@@ -518,7 +517,7 @@ fn apply_projectiles_collisions(
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
             if player.status == PlayerStatus::Alive
-                && player.skill_moving_duration_ms == 0
+                && player.is_targetable()
                 && !projectile.attacked_player_ids.contains(&player.id)
                 && map::hit_boxes_collide(
                     &projectile.position,

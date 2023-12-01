@@ -246,7 +246,8 @@
         {
           "MoveToTarget": {
             "duration_ms": 2000,
-            "max_range": 2000
+            "max_range": 2000,
+            "on_arrival_skills": "3"
           }
         }
       ]
@@ -275,8 +276,9 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "leap",
-        "2": "leap"
+        "1": "hit",
+        "2": "leap",
+        "3": "circle_hit"
       }
     }
   ],
