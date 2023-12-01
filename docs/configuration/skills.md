@@ -45,11 +45,13 @@ o o o o x
 
 This means that an angle of 180˚ would pick everything from the sides to the front of the player, but not the back. Something like this
 
+```
 o o x x x     Legend:
 o o x x x       `>` is the player, it is looking to the right (east)
 o o > x x       `o` represents spaces not selected for targetting
 o o x x x       `x` represents spaces selected for targetting
 o o x x x
+```
 
 ## Configuration
 
