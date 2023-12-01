@@ -107,6 +107,7 @@ defmodule DarkWorldsServer.Communication.Proto.LobbyEventType do
   field(:PLAYER_ADDED, 2)
   field(:GAME_STARTED, 3)
   field(:START_GAME, 4)
+  field(:NOTIFY_PLAYER_AMOUNT, 5)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.ProjectileType do
@@ -402,6 +403,8 @@ defmodule DarkWorldsServer.Communication.Proto.LobbyEvent do
 
   field(:server_hash, 10, type: :string, json_name: "serverHash")
   field(:host_player_id, 11, type: :uint64, json_name: "hostPlayerId")
+  field(:amount_of_players, 12, type: :uint64, json_name: "amountOfPlayers")
+  field(:capacity, 13, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
