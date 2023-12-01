@@ -14,6 +14,7 @@ defmodule DarkWorldsServer.Bot.BotClient do
   @impl true
   def handle_connect(_conn, state) do
     Logger.info("Connected #{inspect(self())}")
+    NewRelic.increment_custom_metric("GameBackend/TotalBots", 1)
     {:ok, state}
   end
 
@@ -40,6 +41,11 @@ defmodule DarkWorldsServer.Bot.BotClient do
 
   def handle_disconnect(disconnect_map, state) do
     super(disconnect_map, state)
+  end
+
+  def terminate(_reason, _state) do
+    NewRelic.increment_custom_metric("GameBackend/TotalBots", -1)
+    :ok
   end
 
   defp handle_msg(%{type: :PLAYER_JOINED, player_joined_id: player_id}, state) do
