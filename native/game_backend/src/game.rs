@@ -338,7 +338,7 @@ impl GameState {
                         }
                         SkillMechanic::MoveToTarget { duration_ms, max_range, on_arrival_skills } => {
                             if let Some(target_position) = parse_skill_params_move_to_target(&skill_params) {
-                                let distance = map::distance_to_center(player, &target_position).min(*max_range as f32);
+                                let distance = map::distance_between_positions(&player.position, &target_position).min(*max_range as f32);
                                 let speed = distance / (*duration_ms as f32);
                                 player.direction = map::angle_between_positions(&player.position, &target_position);
                                 player.set_moving_params(*duration_ms, speed, on_arrival_skills);

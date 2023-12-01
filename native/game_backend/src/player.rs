@@ -98,7 +98,7 @@ impl Player {
         if let Some(moving_params) = self.skill_moving_params.as_mut() {
             let actual_duration = moving_params.duration_ms.min(elapsed_time_ms);
             let speed  = moving_params.speed_per_ms * (actual_duration as f32);
-            self.position = map::next_position(&self.position, self.direction, speed, config.game.width as f32, config.game.height as f32);
+            self.position = map::next_position(&self.position, self.direction, speed, config.game.width as f32);
             moving_params.duration_ms = moving_params.duration_ms.saturating_sub(elapsed_time_ms);
 
             if moving_params.duration_ms == 0 {
