@@ -229,6 +229,7 @@ impl GameState {
         let players = &mut self.players;
         let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players
             .values_mut()
+            .filter(|player| player.status == PlayerStatus::Alive)
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
@@ -339,7 +340,7 @@ impl GameState {
                                         target_player,
                                         *range,
                                         *cone_angle as f32,
-                                    ) && target_player.status == PlayerStatus::Alive
+                                    )
                                 })
                                 .for_each(|target_player| {
                                     target_player.decrease_health(damage);
