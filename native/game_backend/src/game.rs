@@ -166,12 +166,11 @@ impl GameState {
         self.loots.push(loot);
     }
 
-    pub fn move_player(&mut self, player_id: u64, angle: f32) {
+    pub fn move_player(&mut self, player_id: u64, angle: f32, moving: bool) {
         let players = &mut self.players;
-        let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            player.move_position(angle, &self.config);
-            collect_nearby_loot(loots, player);
+            player.direction = angle;
+            player.moving = moving;
         }
     }
 
@@ -328,6 +327,7 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        move_players(&mut self.players, &mut self.loots, &self.config);
         update_player_actions(&mut self.players, time_diff);
         update_player_cooldowns(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
@@ -423,6 +423,15 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
     players.values_mut().for_each(|player| {
         player.reduce_cooldowns(elapsed_time_ms);
     })
+}
+
+fn move_players(players: &mut HashMap<u64, Player>, loots: &mut Vec<Loot>, config: &Config) {
+    players.values_mut().for_each(|player| {
+        if player.status == PlayerStatus::Alive {
+            player.move_position(config);
+            collect_nearby_loot(loots, player);
+        }
+    });
 }
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {

@@ -7,9 +7,6 @@ defmodule LoadTest.Communication.Proto.GameEventType do
   field(:PING_UPDATE, 1)
   field(:PLAYER_JOINED, 2)
   field(:GAME_FINISHED, 3)
-  field(:INITIAL_POSITIONS, 4)
-  field(:SELECTED_CHARACTER_UPDATE, 5)
-  field(:FINISH_CHARACTER_SELECTION, 6)
 end
 
 defmodule LoadTest.Communication.Proto.Status do
@@ -109,9 +106,7 @@ defmodule LoadTest.Communication.Proto.LobbyEventType do
   field(:CONNECTED, 1)
   field(:PLAYER_ADDED, 2)
   field(:GAME_STARTED, 3)
-  field(:PLAYER_COUNT, 4)
-  field(:START_GAME, 5)
-  field(:PLAYER_REMOVED, 6)
+  field(:START_GAME, 4)
 end
 
 defmodule LoadTest.Communication.Proto.ProjectileType do
@@ -747,6 +742,7 @@ defmodule LoadTest.Communication.Proto.Move do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:angle, 1, type: :float)
+  field(:moving, 2, type: :bool)
 end
 
 defmodule LoadTest.Communication.Proto.UseSkill do
