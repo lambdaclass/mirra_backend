@@ -30,6 +30,11 @@ if System.get_env("USE_PROXY") do
   ])
 end
 
+config :dark_worlds_server, DarkWorldsServer.Bot,
+  bot_server_enabled: System.get_env("GAME_BACKEND_BOT_SERVER_ENABLED") || "true",
+  bot_server_url: System.get_env("GAME_BACKEND_BOT_SERVER_URL") || "http://localhost:4000",
+  game_server_url: System.get_env("GAME_BACKEND_GAME_SERVER_URL") || "ws://localhost:4000"
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

@@ -2,7 +2,9 @@ defmodule DarkWorldsServer.Communication do
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameEvent
   alias DarkWorldsServer.Communication.Proto.LobbyEvent
+  alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.PlayerInformation
+  alias DarkWorldsServer.Communication.Proto.UseSkill
 
   @moduledoc """
   The Communication context
@@ -123,6 +125,19 @@ defmodule DarkWorldsServer.Communication do
     |> GameEvent.encode()
   end
 
+  def player_move(angle) do
+    %GameAction{timestamp: timestamp(), action_type: {:move, %Move{angle: angle}}}
+    |> GameAction.encode()
+  end
+
+  def player_use_skill(skill, angle) do
+    %GameAction{
+      timestamp: timestamp(),
+      action_type: {:use_skill, %UseSkill{skill: skill, angle: angle, auto_aim: false}}
+    }
+    |> GameAction.encode()
+  end
+
   def decode(value) do
     try do
       {:ok, GameAction.decode(value)}
@@ -141,5 +156,9 @@ defmodule DarkWorldsServer.Communication do
 
   def pubsub_game_topic(game_pid) when is_pid(game_pid) do
     "game_play_#{pid_to_external_id(game_pid)}"
+  end
+
+  defp timestamp() do
+    DateTime.utc_now() |> DateTime.to_unix(:millisecond)
   end
 end

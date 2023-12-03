@@ -22,6 +22,8 @@ defmodule DarkWorldsServerWeb.Router do
 
   scope "/api", DarkWorldsServerWeb do
     pipe_through(:api)
+
+    post "/bot", BotController, :create
   end
 
   scope "/", DarkWorldsServerWeb do

@@ -4,7 +4,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.RunnerSupervisor.BotPlayer
 
   # This is the amount of time between state updates in milliseconds
   @game_tick_rate_ms 20
@@ -61,7 +60,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   # GenServer callbacks #
   #######################
   @impl true
-  def init(%{bot_count: bot_count}) do
+  def init(_) do
     priority =
       Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.RunnerSupervisor.Runner)
       |> Keyword.fetch!(:process_priority)
@@ -76,16 +75,12 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Process.send_after(self(), :game_timeout, @game_timeout_ms)
     Process.send_after(self(), :start_game_tick, @game_tick_start)
 
-    send(self(), {:spawn_bots, bot_count})
-
     state = %{
       game_state: GameBackend.new_game(game_config),
       game_tick: @game_tick_rate_ms,
       player_timestamps: %{},
       broadcast_topic: Communication.pubsub_game_topic(self()),
       user_to_player: %{},
-      bot_count: bot_count,
-      bot_handler_pid: nil,
       last_standing_players: []
     }
 
@@ -233,36 +228,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     {:stop, {:shutdown, :game_timeout}, state}
   end
 
-  def handle_info({:spawn_bots, bot_count}, state) when bot_count > 0 do
-    {:ok, bot_handler_pid} = BotPlayer.start_link(self(), %{})
-
-    {game_state, bots_ids} =
-      Enum.reduce(0..(bot_count - 1), {state.game_state, []}, fn _, {acc_game_state, bots} ->
-        character = "muflus"
-        {:ok, {new_game_state, player_id}} = GameBackend.add_player(acc_game_state, character)
-
-        {new_game_state, [player_id | bots]}
-      end)
-
-    Process.send_after(self(), {:activate_bots, bots_ids}, 10_000)
-
-    state =
-      Map.put(state, :game_state, game_state)
-      |> Map.put(:bot_handler_pid, bot_handler_pid)
-
-    NewRelic.increment_custom_metric("GameBackend/TotalBots", bot_count)
-    {:noreply, state}
-  end
-
-  def handle_info({:activate_bots, bots_ids}, state) do
-    Enum.each(bots_ids, fn player_id -> BotPlayer.add_bot(state.bot_handler_pid, player_id) end)
-    {:noreply, state}
-  end
-
-  def handle_info({:spawn_bots, _bot_count}, state) do
-    {:noreply, state}
-  end
-
   def handle_info(msg, state) do
     Logger.error("Unexpected handle_info msg", %{msg: msg})
     {:noreply, state}
@@ -270,9 +235,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def terminate(_reason, state) do
-    player_count = Enum.count(state.game_state.players) - state.bot_count
-    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", -player_count)
-    NewRelic.increment_custom_metric("GameBackend/TotalBots", -state.bot_count)
+    NewRelic.increment_custom_metric("GameBackend/TotalPlayers", map_size(state.game_state.players))
     NewRelic.increment_custom_metric("GameBackend/TotalGames", -1)
   end
 
