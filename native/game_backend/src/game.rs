@@ -150,7 +150,7 @@ impl GameState {
             loots: Vec::new(),
             projectiles: Vec::new(),
             zone: Zone {
-                center: map::random_position(game_width, game_height),
+                center: Position { x: 0, y: 0}, //map::random_position(game_width, game_height),
                 radius: zone_radius,
                 modifications: zone_modifications,
                 current_modification: None,
