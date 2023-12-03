@@ -141,8 +141,9 @@ impl GameState {
     pub fn new(config: Config) -> Self {
         let zone_radius = config.game.zone_starting_radius;
         let zone_modifications = config.game.zone_modifications.clone();
-        let game_width = config.game.width;
-        let game_height = config.game.height;
+        // The zone is disabled for now
+        // let game_width = config.game.width;
+        // let game_height = config.game.height;
 
         Self {
             config,
