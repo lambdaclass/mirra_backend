@@ -30,8 +30,11 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
     {:reply, {:binary, Communication.lobby_player_added!(player_id, player_name, host_player_id, players)}, state}
   end
 
-  def websocket_info({:game_started, game_pid, game_config}, state) do
-    new_state = Map.put(state, :game_started, true)
+  def websocket_info({:notify_players_amount, amount_of_players, capacity}, state) do
+    {:reply, {:binary, Communication.notify_player_amount!(amount_of_players, capacity)}, state}
+  end
+
+  def websocket_info({:preparing_game, game_pid, game_config}, state) do
     server_hash = Application.get_env(:dark_worlds_server, :information) |> Keyword.get(:version_hash)
 
     reply_map = %{
@@ -40,7 +43,7 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
       server_hash: server_hash
     }
 
-    {:reply, {:binary, Communication.lobby_game_started!(reply_map)}, new_state}
+    {:reply, {:binary, Communication.lobby_preparing_game!(reply_map)}, state}
   end
 
   @impl true

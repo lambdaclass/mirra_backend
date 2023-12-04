@@ -9,35 +9,49 @@ mod projectile;
 mod skill;
 
 use crate::config::Config;
-use crate::game::{EntityOwner, GameState};
+use crate::game::{EntityOwner, GameError, GameState};
+use crate::map::Position;
 use crate::player::Player;
+use rand::Rng;
 use std::collections::HashMap;
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn parse_config(data: String) -> Config {
     config::parse_config(&data)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn new_game(config: Config) -> GameState {
     GameState::new(config)
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
-fn add_player(game: GameState, character_name: String) -> (GameState, Option<u64>) {
+#[rustler::nif()]
+fn add_player(
+    game: GameState,
+    character_name: String,
+) -> Result<(GameState, Option<u64>), GameError> {
     let mut game = game;
     let player_id = game.next_id();
     match game.config.find_character(character_name) {
-        None => (game, None),
+        None => Err(GameError::CharacterNotFound),
         Some(character_config) => {
-            let player = Player::new(player_id, character_config, &game.config);
+            let rng = &mut rand::thread_rng();
+            let initial_position = if game.config.game.initial_positions.is_empty() {
+                Position { x: 0, y: 0 }
+            } else {
+                game.config
+                    .game
+                    .initial_positions
+                    .swap_remove(rng.gen_range(0..game.config.game.initial_positions.len()))
+            };
+
+            let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
-            (game, Some(player_id))
+            Ok((game, Some(player_id)))
         }
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
 fn move_player(game: GameState, player_id: u64, angle: f32, moving: bool) -> GameState {
     let mut game: GameState = game;
     game.move_player(player_id, angle, moving);
@@ -45,7 +59,7 @@ fn move_player(game: GameState, player_id: u64, angle: f32, moving: bool) -> Gam
 }
 
 // TODO: Is this method necesary?
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameState {
     let mut game = game;
     match game.players.get_mut(&player_id) {
@@ -58,7 +72,7 @@ fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameSta
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     let mut game = game;
     let loot_id = game.next_id();
@@ -71,7 +85,7 @@ fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     }
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn activate_skill(
     game: GameState,
     player_id: u64,
@@ -83,14 +97,14 @@ fn activate_skill(
     game
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn activate_inventory(game: GameState, player_id: u64, inventory_at: u64) -> GameState {
     let mut game = game;
     game.activate_inventory(player_id, inventory_at as usize);
     game
 }
 
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn game_tick(game: GameState, time_diff_ms: u64) -> GameState {
     let mut game = game;
     game.tick(time_diff_ms);

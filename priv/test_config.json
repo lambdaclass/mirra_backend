@@ -15,7 +15,8 @@
           "value": "1.2"
         }
       ],
-      "projectile_attributes": []
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
     },
     {
       "name": "heal_30",
@@ -28,7 +29,8 @@
           "value": "30"
         }
       ],
-      "projectile_attributes": []
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
     },
     {
       "name": "h4ck_dos",
@@ -56,7 +58,8 @@
           "modifier": "Override",
           "value": "false"
         }
-      ]
+      ],
+      "skills_keys_to_execute": []
     },
     {
       "name": "damage_outside_area",
@@ -75,7 +78,8 @@
           "value": "-10"
         }
       ],
-      "projectile_attributes": []
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
     },
     {
       "name": "poison",
@@ -94,7 +98,22 @@
           "value": "0.95"
         }
       ],
-      "projectile_attributes": []
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
+    },
+    {
+      "name": "auto_slingshot",
+      "is_reversable": false,
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": true,
+          "interval_ms": 250,
+          "trigger_count": 10
+        }
+      },
+      "player_attributes": [],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": ["2"]
     }
   ],
   "loots": [
@@ -193,6 +212,32 @@
           }
         }
       ]
+    },
+    {
+      "name": "denial_of_service",
+      "cooldown_ms": 800,
+      "execution_duration_ms": 250,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "GiveEffect": {
+            "effects_to_give": ["auto_slingshot"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "single_slingshot",
+      "cooldown_ms": 800,
+      "execution_duration_ms": 250,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "SimpleShoot": {
+            "projectile": "projectile_slingshot"
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -205,7 +250,8 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "slingshot",
-        "3": "poison_dart"
+        "2": "denial_of_service",
+        "3": "single_slingshot"
       }
     },
     {
@@ -263,6 +309,20 @@
       }
     ],
     "loot_interval_ms": 7000,
-    "auto_aim_max_distance": 1000
+    "auto_aim_max_distance": 1000,
+    "initial_positions": [
+      {
+        "x": -4500,
+        "y": 1500
+      },
+      {
+        "x": 3000,
+        "y": 4000
+      },
+      {
+        "x": -4500,
+        "y": -1500
+      }
+    ]
   }
 }

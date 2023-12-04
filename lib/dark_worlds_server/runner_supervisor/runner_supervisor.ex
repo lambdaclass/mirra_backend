@@ -12,10 +12,10 @@ defmodule DarkWorldsServer.RunnerSupervisor do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  def start_child(bot_count) do
+  def start_child() do
     DynamicSupervisor.start_child(
       __MODULE__,
-      {Runner, %{bot_count: bot_count}}
+      {Runner, %{}}
     )
   end
 
