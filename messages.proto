@@ -221,9 +221,7 @@ enum PlayerEffect {
     - added_player_info: Information of any new player joining the lobby, used on PLAYER_ADDED
     - game_id: ID of the game session to join, used on GAME_STARTED
     - [DEPRECATED] player_count: Number of players in the matchmaking lobby, used on PLAYER_COUNT
-    - players_info: List of players, used on PLAYER_ADDED
     - removed_player_info: Information of any player leaving the lobby, used on PLAYER_REMOVED
-    - host_player_id: ID of the player considered host of the lobby, used on PLAYER_ADDED, PLAYER_REMOVED
  */
 message LobbyEvent {
     LobbyEventType type = 1;
@@ -232,13 +230,11 @@ message LobbyEvent {
     PlayerInformation added_player_info = 4;
     string game_id = 5;
     uint64 player_count = 6;
-    repeated PlayerInformation players_info = 7;
-    PlayerInformation removed_player_info = 8;
-    Config game_config = 9;
-    string server_hash = 10;
-    uint64 host_player_id = 11;
-    uint64 amount_of_players = 12;
-    uint64 capacity = 13;
+    PlayerInformation removed_player_info = 7;
+    Config game_config = 8;
+    string server_hash = 9;
+    uint64 amount_of_players = 10;
+    uint64 capacity = 11;
 }
 
 /* Represents the information of a player/client
@@ -248,6 +244,7 @@ message LobbyEvent {
  message PlayerInformation {
     uint64 player_id = 1;
     string player_name = 2;
+    string character_name = 3;
  }
 
 message RunnerConfig {

@@ -107,9 +107,15 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   defp notify_players_amount(players, capacity) do
     amount = length(players)
 
+    # TODO
+    # Replace this random with a getter to the user's selected character and name
+    player_name = ["Juan", "Pablo", "Pedro"]
+    character_name = Enum.random(["muflus"])
+
     players
-    |> Enum.each(fn {_, client_pid} ->
+    |> Enum.each(fn {user_id, client_pid} ->
       Process.send(client_pid, {:notify_players_amount, amount, capacity}, [])
+      Process.send(client_pid, {:player_added, user_id, player_name, character_name}, [])
     end)
   end
 
