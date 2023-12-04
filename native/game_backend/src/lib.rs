@@ -52,6 +52,7 @@ fn add_player(
     }
 }
 
+#[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, angle: f32, moving: bool) -> GameState {
     let mut game: GameState = game;
     game.move_player(player_id, angle, moving);
