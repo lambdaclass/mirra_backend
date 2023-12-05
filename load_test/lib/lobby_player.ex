@@ -27,7 +27,7 @@ defmodule LoadTest.LobbyPlayer do
   def handle_frame({_type, msg}, state) do
     case LobbyEvent.decode(msg) do
       %LobbyEvent{
-        type: :GAME_STARTED,
+        type: :PREPARING_GAME,
         game_id: game_id,
         game_config: _config,
         server_hash: _server_hash

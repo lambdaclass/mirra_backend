@@ -19,6 +19,11 @@ use crate::projectile::Projectile;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
+pub enum GameError {
+    CharacterNotFound,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
 pub enum EntityOwner {
     Zone,
     Loot,
@@ -33,6 +38,7 @@ pub struct GameConfigFile {
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
+    initial_positions: Vec<Position>,
 }
 
 #[derive(Deserialize)]
@@ -53,6 +59,7 @@ pub struct GameConfig {
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
+    pub initial_positions: Vec<Position>,
 }
 
 #[derive(NifMap, Clone)]
@@ -125,6 +132,7 @@ impl GameConfig {
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
             auto_aim_max_distance: game_config.auto_aim_max_distance,
+            initial_positions: game_config.initial_positions,
         }
     }
 }
@@ -170,9 +178,46 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
+            if player.action_duration_ms > 0 {
+                return;
+            }
             player.move_position(angle, &self.config);
             collect_nearby_loot(loots, player);
         }
+    }
+
+    fn activate_skills(&mut self) {
+        self.players.values_mut().for_each(|player| {
+            let skill_keys = player.skills_keys_to_execute.clone();
+            skill_keys.iter().for_each(|skill_key: &String| {
+                if let Some(skill) = player.character.clone().skills.get(skill_key) {
+                    player.add_action(
+                        Action::UsingSkill(skill_key.to_string()),
+                        skill.execution_duration_ms,
+                    );
+
+                    for mechanic in skill.mechanics.iter() {
+                        match mechanic {
+                            SkillMechanic::SimpleShoot {
+                                projectile: projectile_config,
+                            } => {
+                                let id = get_next_id(&mut self.next_id);
+
+                                let projectile = Projectile::new(
+                                    id,
+                                    player.position,
+                                    player.direction,
+                                    player.id,
+                                    projectile_config,
+                                );
+                                self.projectiles.push(projectile);
+                            }
+                            _ => todo!("SkillMechanic not implemented"),
+                        }
+                    }
+                }
+            })
+        });
     }
 
     pub fn activate_skill(
@@ -184,6 +229,7 @@ impl GameState {
         let players = &mut self.players;
         let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players
             .values_mut()
+            .filter(|player| player.status == PlayerStatus::Alive)
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
@@ -265,8 +311,8 @@ impl GameState {
                                 self.projectiles.push(projectile);
                             }
                         }
-                        SkillMechanic::GiveEffect(effects) => {
-                            for effect in effects.iter() {
+                        SkillMechanic::GiveEffect { effects_to_give } => {
+                            for effect in effects_to_give.iter() {
                                 player.apply_effect(effect, EntityOwner::Player(player.id));
                             }
                         }
@@ -329,6 +375,7 @@ impl GameState {
 
     pub fn tick(&mut self, time_diff: u64) {
         update_player_actions(&mut self.players, time_diff);
+        self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
         move_projectiles(&mut self.projectiles, time_diff, &self.config);
         apply_projectiles_collisions(
@@ -343,6 +390,7 @@ impl GameState {
 
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
+        update_kill_counts(&mut self.players, &self.killfeed);
     }
 }
 
@@ -419,6 +467,16 @@ fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u6
     })
 }
 
+fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &[KillEvent]) {
+    killfeed.iter().for_each(|kill_event| {
+        if let EntityOwner::Player(player_id) = kill_event.kill_by {
+            if let Some(player) = players.get_mut(&player_id) {
+                player.add_kill();
+            }
+        }
+    })
+}
+
 fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
     players.values_mut().for_each(|player| {
         player.reduce_cooldowns(elapsed_time_ms);
@@ -447,7 +505,6 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
             projectile.direction_angle,
             projectile.speed as f32,
             config.game.width as f32,
-            config.game.height as f32,
         )
     });
 }
@@ -601,7 +658,7 @@ fn nearest_player_position(
 
     for player in players {
         if matches!(player.status, PlayerStatus::Alive) {
-            let distance = map::distance_to_center(player, position);
+            let distance = map::distance_between_positions(&player.position, position);
             if distance < nearest_distance {
                 nearest_player = Some(player.position);
                 nearest_distance = distance;

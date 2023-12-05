@@ -7,6 +7,7 @@ defmodule LoadTest.Communication.Proto.GameEventType do
   field(:PING_UPDATE, 1)
   field(:PLAYER_JOINED, 2)
   field(:GAME_FINISHED, 3)
+  field(:GAME_STARTED, 4)
 end
 
 defmodule LoadTest.Communication.Proto.Status do
@@ -105,8 +106,9 @@ defmodule LoadTest.Communication.Proto.LobbyEventType do
   field(:TYPE_UNSPECIFIED, 0)
   field(:CONNECTED, 1)
   field(:PLAYER_ADDED, 2)
-  field(:GAME_STARTED, 3)
+  field(:PREPARING_GAME, 3)
   field(:START_GAME, 4)
+  field(:NOTIFY_PLAYER_AMOUNT, 5)
 end
 
 defmodule LoadTest.Communication.Proto.ProjectileType do
@@ -154,6 +156,7 @@ defmodule LoadTest.Communication.Proto.MechanicType do
   field(:HIT, 0)
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
+  field(:GIVE_EFFECT, 3)
 end
 
 defmodule LoadTest.Communication.Proto.GameEvent.PlayersEntry do
@@ -240,7 +243,7 @@ defmodule LoadTest.Communication.Proto.Player do
   field(:health, 2, type: :sint64)
   field(:position, 3, type: LoadTest.Communication.Proto.Position)
   field(:status, 4, type: LoadTest.Communication.Proto.Status, enum: true)
-  field(:action, 5, type: LoadTest.Communication.Proto.PlayerAction, enum: true)
+  field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.PlayerAction, enum: true)
   field(:aoe_position, 6, type: LoadTest.Communication.Proto.Position, json_name: "aoePosition")
   field(:kill_count, 7, type: :uint64, json_name: "killCount")
   field(:death_count, 8, type: :uint64, json_name: "deathCount")
@@ -280,6 +283,7 @@ defmodule LoadTest.Communication.Proto.Player do
 
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
   field(:size, 17, type: :float)
+  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
 end
 
 defmodule LoadTest.Communication.Proto.EffectInfo do
@@ -378,6 +382,8 @@ defmodule LoadTest.Communication.Proto.LobbyEvent do
   field(:game_config, 9, type: LoadTest.Communication.Proto.Config, json_name: "gameConfig")
   field(:server_hash, 10, type: :string, json_name: "serverHash")
   field(:host_player_id, 11, type: :uint64, json_name: "hostPlayerId")
+  field(:amount_of_players, 12, type: :uint64, json_name: "amountOfPlayers")
+  field(:capacity, 13, type: :uint64)
 end
 
 defmodule LoadTest.Communication.Proto.PlayerInformation do

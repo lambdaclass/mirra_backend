@@ -11,7 +11,7 @@ defmodule GameBackendTest do
     game = GameBackend.new_game(config)
 
     character_name = Enum.random(config.characters).name
-    {game, player_id} = GameBackend.add_player(game, character_name)
+    {:ok, {game, player_id}} = GameBackend.add_player(game, character_name)
     %{game: game, player_id: player_id}
   end
 
@@ -46,12 +46,12 @@ defmodule GameBackendTest do
     config = GameBackend.parse_config(data)
     game = GameBackend.new_game(config)
 
-    ## A character that does not exist does nothing and returns `nil`
-    assert match?({game, nil}, GameBackend.add_player(game, "miss-character"))
+    ## A character that does not exist does nothing and returns `:character_not_found`
+    assert match?({:error, :character_not_found}, GameBackend.add_player(game, "miss-character"))
 
     character_name = Enum.random(config.characters).name
-    {game, player_id1} = GameBackend.add_player(game, character_name)
-    {game, player_id2} = GameBackend.add_player(game, character_name)
+    {:ok, {game, player_id1}} = GameBackend.add_player(game, character_name)
+    {:ok, {game, player_id2}} = GameBackend.add_player(game, character_name)
     assert player_id1 == 1
     assert player_id2 == 2
     assert Enum.count(game.players) == 2

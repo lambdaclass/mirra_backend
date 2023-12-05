@@ -30,6 +30,7 @@ pub struct Player {
     pub size: u64,
     pub speed: u64,
     pub action_duration_ms: u64,
+    pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<Action>,
 }
@@ -48,16 +49,13 @@ pub enum Action {
 }
 
 impl Player {
-    pub fn new(id: u64, character_config: CharacterConfig, config: &Config) -> Self {
-        let game_width = config.game.width;
-        let game_height = config.game.height;
-
+    pub fn new(id: u64, character_config: CharacterConfig, initial_position: Position) -> Self {
         Self {
             id,
             status: PlayerStatus::Alive,
             kill_count: 0,
             death_count: 0,
-            position: map::random_position(game_width, game_height),
+            position: initial_position,
             direction: 0.0,
             actions: Vec::new(),
             cooldowns: HashMap::new(),
@@ -69,7 +67,12 @@ impl Player {
             character: character_config,
             action_duration_ms: 0,
             next_actions: Vec::new(),
+            skills_keys_to_execute: Vec::new(),
         }
+    }
+
+    pub fn add_kill(&mut self) {
+        self.kill_count += 1;
     }
 
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {
@@ -85,7 +88,6 @@ impl Player {
             angle_degrees,
             self.speed as f32,
             config.game.width as f32,
-            config.game.height as f32,
         );
     }
 
@@ -250,6 +252,8 @@ impl Player {
     }
 
     pub fn run_effects(&mut self, time_diff: u64) -> Option<EntityOwner> {
+        let mut skills_keys_to_execute: Vec<String> = Vec::new();
+
         for (effect, owner) in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
                 TimeType::Duration { duration_ms } => {
@@ -266,6 +270,11 @@ impl Player {
                     if *time_since_last_trigger >= *interval_ms {
                         *time_since_last_trigger -= *interval_ms;
                         *trigger_count -= 1;
+
+                        effect
+                            .skills_keys_to_execute
+                            .iter()
+                            .for_each(|skill| skills_keys_to_execute.push(skill.to_string()));
 
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
@@ -292,7 +301,7 @@ impl Player {
                 _ => todo!(),
             }
         }
-
+        self.skills_keys_to_execute = skills_keys_to_execute;
         None
     }
 

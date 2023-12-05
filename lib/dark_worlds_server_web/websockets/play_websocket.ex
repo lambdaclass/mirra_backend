@@ -60,8 +60,7 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     with :ok <- Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}"),
          true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
-
-         {:ok, player_id} <- Runner.join(runner_pid, client_id, Enum.random(["h4ck", "muflus"])) do
+         {:ok, player_id} <- Runner.join(runner_pid, client_id, "muflus") do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -118,8 +117,8 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
               timestamp
             )
 
-          :use_skill when action_data.skill == "BasicAttack" ->
-            Runner.basic_attack(
+          :use_skill ->
+            Runner.attack(
               web_socket_state[:runner_pid],
               web_socket_state[:player_id],
               action_data,
@@ -172,6 +171,21 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     }
 
     {:reply, {:binary, Communication.game_update!(reply_map)}, web_socket_state}
+  end
+
+  def websocket_info({:game_start, game_state}, web_socket_state) do
+    reply_map = %{
+      players: game_state.players,
+      projectiles: game_state.projectiles,
+      killfeed: game_state.killfeed,
+      player_timestamp: game_state.player_timestamps[web_socket_state.player_id],
+      playable_radius: game_state.playable_radius,
+      shrinking_center: game_state.shrinking_center,
+      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+      loots: game_state.loots
+    }
+
+    {:reply, {:binary, Communication.game_started!(reply_map)}, web_socket_state}
   end
 
   def websocket_info({:game_ended, winner, game_state}, web_socket_state) do

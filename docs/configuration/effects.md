@@ -10,6 +10,7 @@ Configurable fields:
 - `is_reversable`: Defines if the effect can be reversed when removed from the player (e.g. if it gives 10% more speed it will be removed from the player on removal), see more in ["Adding and removing effects"](#adding-and-removing-effects)
 - `player_attributes`: Attributes changes that will be applied over the player having this effect
 - `projectile_attributes`: Attributes changes that will be applied over the projectiles of the player having this effect
+- `skill_keys_to_execute`: Store skill keys of a character to be executed as long as the effect is applied
 
 ### Effect time type
 
@@ -85,7 +86,9 @@ Examples of the JSON defining effects
         "modifier": additive,
         "value": 10
       }
-    ]
+    ],
+    "projectile_attributes": [],
+    "skills_keys_to_execute": []
   },
   {
     "name": "gigantify"
@@ -104,7 +107,9 @@ Examples of the JSON defining effects
         "modifier": additive,
         "value": 20
       }
-    ]
+    ],
+    "projectile_attributes": [],
+    "skills_keys_to_execute": ["1"]
   }
 ]
 ```
@@ -116,6 +121,8 @@ Some effects result in an increase in a player's attributes. When the effect's d
 However, caution is required! With the possibility of applying both Additive and Multiplicative effects, there is a risk of not obtaining the correct attribute values when performing a reversal.
 
 Furthermore, we haven't accounted for the ability to reverse an Override effect since we don't store the previous value.
+
+Other effects trigger the action of executing a skill. That skill will be executed as long as the effect is active, accordingly to its effect_time_type.
 
 ### Examples
 ```
@@ -134,4 +141,8 @@ However, if we change the order as follows:
 2. Add 10 units to the speed value (reverse additive + 10).
 
 We will obtain the wrong value of 103.
+
+An example of an effect that executes a skill could be an Effect with effect_time_type: {"type": "Periodic", "interval_ms": 1000, "trigger_count": 3} and "skills_to_execute": ["1"].
+
+With the above configuration, the player's character will execute the character skill number "1" 3 times in intervals of 1000 ms, when the effect is active.
 ```
