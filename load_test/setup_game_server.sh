@@ -43,8 +43,6 @@ tar -xvf rust-1.74.0-x86_64-unknown-linux-gnu.tar.gz
 cd rust-1.74.0-x86_64-unknown-linux-gnu
 ./install.sh
 cd ..
-rm -rf rust-1.74.0-x86_64-unknown-linux-gnu && rust-1.74.0-x86_64-unknown-linux-gnu.tar.gz
-
 cd 
 
 # Install erlang
