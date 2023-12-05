@@ -36,6 +36,7 @@ enum GameEventType {
     PING_UPDATE = 1;
     PLAYER_JOINED = 2;
     GAME_FINISHED = 3;
+    GAME_STARTED = 4;
 }
 
 message PlayerCharacter{
@@ -333,7 +334,7 @@ enum LobbyEventType {
     TYPE_UNSPECIFIED = 0;
     CONNECTED = 1;
     PLAYER_ADDED = 2;
-    GAME_STARTED = 3;
+    PREPARING_GAME = 3;
     START_GAME = 4;
     NOTIFY_PLAYER_AMOUNT = 5;
 }

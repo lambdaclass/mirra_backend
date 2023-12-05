@@ -88,7 +88,6 @@ impl Player {
             angle_degrees,
             self.speed as f32,
             config.game.width as f32,
-            config.game.height as f32,
         );
     }
 
