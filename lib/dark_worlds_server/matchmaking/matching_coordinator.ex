@@ -45,7 +45,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     if Enum.any?(players, fn {player_user_id, _} -> player_user_id == user_id end) do
       {:reply, :ok, state}
     else
-      players = state.players ++ [{user_id, from}]
+      players = [{user_id, from} | state.players]
       send(self(), :check_capacity)
       {:reply, :ok, %{state | players: players}}
     end
