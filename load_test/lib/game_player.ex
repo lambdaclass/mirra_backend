@@ -19,7 +19,7 @@ defmodule LoadTest.GamePlayer do
     angle_deg = dir_to_degrees(direction)
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    %GameAction{action_type: {:move, %{angle: angle_deg}}, timestamp: timestamp}
+    %GameAction{action_type: {:move, %{angle: angle_deg, moving: true}}, timestamp: timestamp}
     |> send_command()
   end
 
@@ -34,13 +34,14 @@ defmodule LoadTest.GamePlayer do
     |> send_command()
   end
 
-  def start_link({player_number, session_id, max_duration_seconds}) do
+  def start_link({player_number, session_id, max_duration_seconds, client_event_rate}) do
     ws_url = ws_url(session_id, player_number)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
       player_number: player_number,
       session_id: session_id,
-      max_duration_seconds: max_duration_seconds
+      max_duration_seconds: max_duration_seconds,
+      client_event_rate: client_event_rate
     })
   end
 
@@ -82,7 +83,7 @@ defmodule LoadTest.GamePlayer do
         _basic_attack(state.player_number, direction)
     end
 
-    Process.send_after(self(), :play, 30, [])
+    Process.send_after(self(), :play, state.client_event_rate, [])
     {:ok, state}
   end
 
