@@ -44,19 +44,19 @@ is a noticeable downgrade on the UX. We'll run using
 PLAY_TIME is the amount in seconds the players play before closing the
 connection in seconds.
 
-- NUMBER_OF_USERS = X1, PLAY_TIME = Y1min
-- NUMBER_OF_USERS = X2, PLAY_TIME = Y2min
+- 30 games of 10 players each (NUMBER_OF_USERS = 300), PLAY_TIME = 5min
+- 60 games of 10 players each (NUMBER_OF_USERS = 600), PLAY_TIME = 5min
 
 ## Test Results
 
-### NUMBER_OF_USERS = X1, PLAY_TIME = Y1min
+### 30 games of 10 players each, 5 minutes
 
 #### Briefly describe the UX exprerience:
 
 #### Screenshots of htop, newrelic and other extra tools if used
 ![image]()
 
-### NUMBER_OF_USERS = X2, PLAY_TIME = Y2min
+### 60 games of 10 players each, 5 minutes
 #### Briefly describe the UX exprerience:
 
 #### Screenshots of htop, newrelic and other extra tools if used
