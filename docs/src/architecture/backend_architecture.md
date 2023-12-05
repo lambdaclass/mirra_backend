@@ -98,7 +98,7 @@ sequenceDiagram
 
 When a game starts, two things happen:
 
-- A game session is spawned by a `DynamicSupervisor` called `Engine`.  This `Engine` starts a new child `Runner` process, which holds the entire game's state and the logic to update it according to the players' actions. The PID of this `Runner` is encoded in a human friendly format and called the `game_session_id`.
+- A game session is spawned by a `DynamicSupervisor` called `GameBackend`.  This `GameBackend` starts a new child `Runner` process, which holds the entire game's state and the logic to update it according to the players' actions. The PID of this `Runner` is encoded in a human friendly format and called the `game_session_id`.
 - Every player connects to the game through websocket under the `/play/:game_session_id` path. Each player's connection is handled by a separate [cowboy websocket](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/) process, defined in the `PlayWebSocket` module. On startup, the process saves the runner's PID so it can communicate with it. Inside the game, a player is the same as a websocket connection.
 
 Let's go over the main gameplay flow. Let's say `player_1` wants to move to the right one square. To do this, they send a `JSON` frame over the socket that looks like this:
@@ -124,7 +124,7 @@ The `Runner`'s appropriate handler eventually picks up this message, which in th
       end
 
     player_id = state.user_to_player[user_id]
-    game_state = LambdaGameEngine.move_player(state.game_state, player_id, angle)
+    game_state = GameBackend.move_player(state.game_state, player_id, angle)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -155,14 +155,14 @@ Below are two diagrams summarizing the whole flow.
 sequenceDiagram
     participant Player (Unity Client)
     participant Server
-    participant Engine
+    participant GameBackend
     participant Runner
     participant PlayerWebSocket
     Player (Unity Client)->>Server: Start Game
-    Server->>Engine: Start Runner
-    Engine->>Runner: Spawn child
-    Runner->>Engine: Runner PID
-    Engine->>Server: PID
+    Server->>GameBackend: Start Runner
+    GameBackend->>Runner: Spawn child
+    Runner->>GameBackend: Runner PID
+    GameBackend->>Server: PID
     Server->>Player (Unity Client): game_session_id
     Player (Unity Client)->>Server: ws://.../play/:game_session_id
     Server->>PlayerWebSocket: Handle connection
@@ -197,7 +197,7 @@ This state is kept inside the `Runner` process, but *state transitions* (players
 All the Rust game state code is located inside the `native/gamestate` directory. The functions exposed to Elixir are all in the `lib.rs` file. Here's the function that we call to move players around the map:
 
 ```rust
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, direction: Direction) -> GameState {
     let mut game_2 = game;
     game_2.move_player(player_id, direction);
@@ -205,7 +205,7 @@ fn move_player(game: GameState, player_id: u64, direction: Direction) -> GameSta
 }
 ```
 
-The associated Elixir function is inside the `Engine.Game` module:
+The associated Elixir function is inside the `GameBackend.Game` module:
 
 ```elixir
 def move_player(_a, _b, _c), do: :erlang.nif_error(:nif_not_loaded)
