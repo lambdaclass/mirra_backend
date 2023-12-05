@@ -96,7 +96,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
           bot_state
 
         bot_state ->
-          Process.send_after(self(), {:decide_action, bot_id}, @decide_delay_ms + (@random_factor * 2))
+          Process.send_after(self(), {:decide_action, bot_id}, @decide_delay_ms + @random_factor * 2)
 
           bot = Enum.find(state.players, fn player -> player.id == bot_id end)
 
@@ -501,6 +501,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   def random_chance(chance \\ 100, additive)
 
   def random_chance(chance, additive) do
-    (:rand.uniform(chance) <= @random_factor + additive)
+    :rand.uniform(chance) <= @random_factor + additive
   end
 end
