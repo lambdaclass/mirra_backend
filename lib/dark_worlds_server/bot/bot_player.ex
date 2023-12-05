@@ -475,12 +475,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     end
   end
 
-  def random_chance(chance \\ 100, additive)
-
-  def random_chance(chance, additive) do
-    :rand.uniform(chance) <= @random_factor + additive
-  end
-
   defp maybe_add_inaccuracy_to_angle(angle, false), do: angle
 
   defp maybe_add_inaccuracy_to_angle(angle, true) do
