@@ -121,7 +121,7 @@
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": false,
-          "interval_ms": 250,
+          "interval_ms": 300,
           "trigger_count": 1
         }
       },
