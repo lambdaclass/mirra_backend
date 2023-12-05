@@ -126,7 +126,7 @@ defmodule DarkWorldsServer.Communication do
   end
 
   def player_move(angle) do
-    %GameAction{timestamp: timestamp(), action_type: {:move, %Move{angle: angle}}}
+    %GameAction{timestamp: timestamp(), action_type: {:move, %Move{angle: angle, moving: true}}}
     |> GameAction.encode()
   end
 
