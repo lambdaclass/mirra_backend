@@ -25,7 +25,7 @@ Some things to keep in mind about load tests:
   if you find improvements.
 - It's important for load tests to be reproducible.
 
-### Setup
+## First Step: Setup SSH
 I recommend you add each server ip to your ~/.ssh/config file to avoid confusions, like this:
 First, open a terminal and run: 
 ```bash 
@@ -35,28 +35,50 @@ And paste this:
 ```conf 
 Host myrra_load_test_client
   Hostname client_ip
+  User user
 
 Host myrra_load_test_server
   Hostname game_ip
+  User user
 ```
 
-### Game Server Setup
+(You don't have to literally put `user` there. Put the appropiate user based on the server you'll be using).
+
+## Second Step : Load Test Server First Time Setup
+
 1. Check you can log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_server
    ```
-2. If it's not already there exit, copy the script on this repo under
-   `game_backend/load_test/setup_game_server.sh` it clones the game server and compiles it:
+2. Then run `exit` and copy the script on this repo under
+   `load_test/setup_game_server.sh` it clones the game server from your machine into the server and compiles it:
    ```sh
-   scp /path_go_game_backend/game_backend/load_test/setup_game_server.sh myrra_load_test_server:/user/setup_game_server.sh
-   ```
-   Then relog (step 1) and relog into the server 
-   `setup_game_server` can also take a branch name as an argument. So if you want to run the load test on an specific branch, you can instead do:
-   ```sh
-   chmod +x ./setup_game_server.sh && ./setup_game_server.sh <BRANCH_NAME_TO_TEST>
+   scp load_test/setup_game_server.sh myrra_load_test_server:setup_game_server.sh && ssh myuser@myrra_load_test_server
    ```
 
-3. Now you can start the game server with: 
+   From now on, you'll be running commands from the load test server's terminal. To return to your terminal you can run `exit`
+
+3. Install rust, erlang, elixir, postgres and node
+    - If you're on Debian, you can use this install script:
+    
+3. Run `setup_game_server.sh` with:
+   ```sh
+   chmod +x ./setup_game_server.sh && ./setup_game_server.sh
+   ```
+
+   This clones the repo and compiles the app *on the main branch*
+
+3. Make sure to disable hyperthreading, if using an x86 CPU:
+```sh
+# If active, this returns 1
+cat /sys/devices/system/cpu/smt/active
+# Turn off hyperthreading
+echo off | sudo tee /sys/devices/system/cpu/smt/control
+```
+One way of checking this, besides the command above,
+is to open htop, you should see the virtual cores as 'offline'.
+
+4. Now you can start the game server with: 
 ```sh
 export $(cat .env | xargs) && cd game_backend && MIX_ENV=prod iex -S mix phx.server
 ```
@@ -66,15 +88,6 @@ export $(cat .env | xargs) && cd game_backend && MIX_ENV=prod iex -S mix phx.ser
 MIX_ENV=prod iex -S mix phx.server
 ```
    
-4. Make sure to disable hyperthreading, if using an x86 CPU:
-```sh
-# If active, this returns 1
-cat /sys/devices/system/cpu/smt/active
-# Turn off hyperthreading
-echo off | sudo tee /sys/devices/system/cpu/smt/control
-```
-One way of checking this, besides the command above,
-is to open htop, you should see the virtual cores as 'offline'.
 
 ### Load Test Client setup
 1. Log into it with ssh: 
