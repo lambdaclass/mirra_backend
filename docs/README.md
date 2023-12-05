@@ -11,8 +11,11 @@
   * [Player attributes](./attributes/players.md)
   * [Projectile attributes](./attributes/projectiles.md)
 * [Architecture](#architecture)
-* [Metrics and monitoring](./metrics_and_monitoring/metrics-and-monitoring.md)
-* [Load Testing](./load_testing/load_testing.md)
+* [Metrics and monitoring](#metrics-and-monitoring)
+  * [Metrics and monitoring](./metrics_and_monitoring/metrics-and-monitoring.md)
+* [Testing](#testing)
+  * [Load Testing](./testing/load_testing/load_testing.md)
+  * [Simulating High Latency](./testing/simulating_latency.md)
 
 ## Configuration
 
