@@ -481,13 +481,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     :rand.uniform(chance) <= @random_factor + additive
   end
 
-  # We'll add a randomness to a position decided by the @random_factor variable so the bot behavior isn't 100% acurate
-  def add_randomness_to_position(%{x: x, y: y}) do
-    random_x = x + Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1])
-    random_y = y + Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1])
-    {random_x, random_y}
-  end
-
   defp maybe_add_inaccuracy_to_angle(angle, false), do: angle
 
   defp maybe_add_inaccuracy_to_angle(angle, true) do
