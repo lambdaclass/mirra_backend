@@ -57,13 +57,25 @@ Host myrra_load_test_server
    ```
 
    From now on, you'll be running commands from the load test server's terminal. To return to your terminal you can run `exit`
-    
-3. Run `setup_game_server.sh` with:
+
+3. Set the needed env variables on the $HOME/.env file.
+   First create it: 
+   ```sh
+   cat <<EOF > ~/.env
+   PHX_HOST=
+   PHX_SERVER=true
+   SECRET_KEY_BASE=
+   DATABASE_URL=ecto://postgres:@localhost/dark_worlds_server
+   EOF
+   ```
+   And then fill it. 
+4. Run `setup_game_server.sh` with:
    ```sh
    chmod +x ./setup_game_server.sh && sudo ./setup_game_server.sh
    ```
 
    This clones the repo and compiles the app *on the main branch*
+
 
 3. Make sure to disable hyperthreading, if using an x86 CPU:
 ```sh
