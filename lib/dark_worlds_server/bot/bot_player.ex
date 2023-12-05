@@ -26,7 +26,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   # The random factor will add a layer of randomness to bot actions
   # The following actions will be afected:
-  # - Bot decision, the bot will start a wandering cicle with an fourth times chance and an eight times chance to do nothing
+  # - Bot decision, the bot will start a wandering cicle with an fourth times
+  #   chance and an eight times chance to do nothing
   # - Every attack the bot do will have a tilt that's decided with the random factor
   # - Add an additive to the range of attacks they're not always accurate
   # - Add some miliseconds to the time of decision of the bot
@@ -184,7 +185,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
          %{objective: :chase_enemy} = bot_state,
          bot_id,
          _players,
-         %{game_state: game_state},
+         %{game_state: game_state, config: config},
          %{enemies_by_distance: enemies_by_distance}
        ) do
     bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
@@ -207,7 +208,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
         flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
         Map.put(bot_state, :action, {:move, flee_angle_direction})
 
-      skill_would_hit?(bot, closest_enemy) ->
+      skill_would_hit?(bot, closest_enemy, config) ->
         Map.put(bot_state, :action, {:attack, closest_enemy, "BasicAttack"})
 
       true ->
@@ -365,12 +366,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     |> Enum.filter(fn distances -> distances.distance_to_entity <= @visibility_max_range_cells end)
   end
 
-  defp skill_would_hit?(bot, %{distance_to_entity: distance_to_entity}) do
+  defp skill_would_hit?(bot, %{distance_to_entity: distance_to_entity}, config) do
     # TODO: We should find a way to use the skill of the character distance
-    case bot.character_name do
-      "H4ck" -> distance_to_entity < 1000 and Enum.random(0..100) < 40
-      "Muflus" -> distance_to_entity < 450 and Enum.random(0..100) < 30
-    end
+    skill_range = get_skill_range(bot.character_name, config)
+    range_modifier = :rand.uniform(@random_factor) * Enum.random([-1, 1])
+    distance_to_entity < skill_range + range_modifier
   end
 
   def maybe_put_wandering_position(
@@ -480,4 +480,29 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   defp maybe_add_inaccuracy_to_angle(angle, true) do
     Nx.add(angle, Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1]))
   end
+
+  defp get_skill_range(character_name, config) do
+    character_name = String.downcase(character_name)
+
+    basic_attack_name =
+      config["characters"]
+      |> Enum.find(fn character -> character["name"] == character_name end)
+      |> get_in(["skills", "1"])
+
+    config["skills"]
+    |> Enum.find(fn skill -> skill["name"] == basic_attack_name end)
+    |> Map.get("mechanics")
+    |> Enum.find(fn mechanic -> Map.has_key?(mechanic, "Hit") end)
+    |> get_skill_range()
+  end
+
+  # TODO Fix projectile base mechanics
+  defp get_skill_range(%{
+         "Hit" => %{
+           "range" => range
+         }
+       }),
+       do: range
+
+  defp get_skill_range(_), do: nil
 end
