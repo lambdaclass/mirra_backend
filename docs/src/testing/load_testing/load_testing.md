@@ -51,19 +51,16 @@ Host myrra_load_test_server
    ssh myuser@myrra_load_test_server
    ```
 2. Then run `exit` and copy the script on this repo under
-   `load_test/setup_game_server.sh` it clones the game server from your machine into the server and compiles it:
+   `load_test/setup_game_server.sh` it installs all dependencies, clones the game server and compiles it:
    ```sh
    scp load_test/setup_game_server.sh myrra_load_test_server:setup_game_server.sh && ssh myuser@myrra_load_test_server
    ```
 
    From now on, you'll be running commands from the load test server's terminal. To return to your terminal you can run `exit`
-
-3. Install rust, erlang, elixir, postgres and node
-    - If you're on Debian, you can use this install script:
     
 3. Run `setup_game_server.sh` with:
    ```sh
-   chmod +x ./setup_game_server.sh && ./setup_game_server.sh
+   chmod +x ./setup_game_server.sh && sudo ./setup_game_server.sh
    ```
 
    This clones the repo and compiles the app *on the main branch*
