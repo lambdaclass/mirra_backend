@@ -24,6 +24,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # This is the amount of time between bots messages
   @game_tick_rate_ms 30
 
+  # The random factor will add a layer of randomness to bot actions
+  # The following actions will be afected:
+  # - Bot decision, the bot will start a wandering cicle with an fourth times chance and an eight times chance to do nothing
+  # - Every attack the bot do will have a tilt that's decided with the random factor
+  # - Add an additive to the range of attacks they're not always accurate
+  # - Add some miliseconds to the time of decision of the bot
+  @random_factor Enum.random([10, 30, 60, 80])
+
   #######
   # API #
   #######
@@ -83,7 +91,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
           bot_state
 
         bot_state ->
-          Process.send_after(self(), {:decide_action, bot_id}, @decide_delay_ms)
+          Process.send_after(self(), {:decide_action, bot_id}, @decide_delay_ms + (@random_factor * 2))
 
           bot = Enum.find(state.players, fn player -> player.id == bot_id end)
 
@@ -260,12 +268,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     |> Kernel.*(-1)
   end
 
-  defp maybe_add_inaccuracy_to_angle(angle, false), do: angle
-
-  defp maybe_add_inaccuracy_to_angle(angle, true) do
-    Nx.add(angle, Enum.random([-0.1, -0.01, 0, 0.01, 0.1]))
-  end
-
   def decide_objective(bot_state, %{bots_enabled: false}, _bot_id, _closest_entities) do
     Map.put(bot_state, :objective, :nothing)
   end
@@ -303,6 +305,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
+      random_decision = maybe_random_decision() ->
+        Map.put(bot_state, :objective, random_decision)
+
       closest_entity.type == :enemy ->
         Map.put(bot_state, :objective, :chase_enemy)
 
@@ -450,12 +455,42 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   end
 
   defp position_out_of_radius?(position, center, playable_radius) do
-    distance =
-      (:math.pow(position.x - center.x, 2) + :math.pow(position.y - center.y, 2))
-      |> :math.sqrt()
+    distance = get_distance_to_point(position, center)
 
     # We'll substract a fixed value to the playable radio to have some space between the bot
     # and the unplayable zone to avoid being on the edge of both
     distance > playable_radius - @radius_sub_to_escape
+  end
+
+  def maybe_random_decision() do
+    case :rand.uniform(100) do
+      x when x <= div(@random_factor, 8) ->
+        :nothing
+
+      x when x < div(@random_factor, 4) ->
+        :wander
+
+      _ ->
+        nil
+    end
+  end
+
+  def random_chance(chance \\ 100, additive)
+
+  def random_chance(chance, additive) do
+    :rand.uniform(chance) <= @random_factor + additive
+  end
+
+  # We'll add a randomness to a position decided by the @random_factor variable so the bot behavior isn't 100% acurate
+  def add_randomness_to_position(%{x: x, y: y}) do
+    random_x = x + Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1])
+    random_y = y + Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1])
+    {random_x, random_y}
+  end
+
+  defp maybe_add_inaccuracy_to_angle(angle, false), do: angle
+
+  defp maybe_add_inaccuracy_to_angle(angle, true) do
+    Nx.add(angle, Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1]))
   end
 end
