@@ -26,7 +26,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   # The random factor will add a layer of randomness to bot actions
   # The following actions will be afected:
-  # - Bot decision, the bot will start a wandering cicle with an fourth times chance and an eight times chance to do nothing
+  # - Bot decision, the bot will start a wandering cicle with an fourth times
+  #   chance and an eight times chance to do nothing
   # - Every attack the bot do will have a tilt that's decided with the random factor
   # - Add an additive to the range of attacks they're not always accurate
   # - Add some miliseconds to the time of decision of the bot
