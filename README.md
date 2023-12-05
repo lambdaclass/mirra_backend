@@ -1,6 +1,14 @@
 # Lambda Game Backend
 Open source backend developed by LambdaClass in Elixir, for the communication, and Rust, for the state management.
 
+## Table of Contents
+
+- [Documentation](#documentation)
+- [Installation](#installation)
+- [Running the Backend](#running-the-backend)
+- [Contributing](#contributing)
+
+
 ## Documentation
 
 You can find our documentation in [docs](./docs/README.md) folder, or run it locally.
@@ -39,6 +47,12 @@ be found at <https://hexdocs.pm/game_backend>.
 
 ## Running the Backend
 
+### Requirements
+
+- Rust >= 1.72.0
+- Erlang OTP >= 26
+- Elixir >= 1.15.4
+
 Ensure Docker is running and execute:
 
 ```bash
@@ -56,8 +70,3 @@ For testing using a remote server, point to the _GitHub URL_ instead and specify
 
 ## Contributing
 
-### Requirements
-
-- Rust >= 1.72.0
-- Erlang OTP >= 26
-- Elixir >= 1.15.4
