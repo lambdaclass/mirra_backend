@@ -1,4 +1,4 @@
-## Simulating High Latency/Network Failures
+# Simulating High Latency/Network Failures
 
 The backend can be configured to point to [ToxiProxy](https://github.com/Shopify/toxiproxy), which is a server that can act as a proxy between the client and the backend, allowing you to add network latency and simulate poor network environments in general.
 
