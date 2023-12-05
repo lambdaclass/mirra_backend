@@ -3,7 +3,22 @@ Open source backend developed by LambdaClass in Elixir, for the communication, a
 
 ## Documentation
 
-You can find our documentation in [docs](./docs/README.md) folder
+You can find our documentation in [docs](./docs/README.md) folder, or run it locally
+
+To run locally, install:
+
+```
+cargo install mdbook
+cargo install mdbook-mermaid
+```
+
+Then run:
+
+```
+make docs
+```
+
+Open: [http://localhost:3000/](http://localhost:3000/)
 
 ## Installation
 
