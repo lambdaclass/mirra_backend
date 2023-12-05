@@ -1,5 +1,97 @@
 syntax = "proto3";
 
+message Position {
+    int64 x = 1;
+    int64 y = 2;
+}
+
+message GameState {
+    repeated Player players = 1;
+    repeated Projectile projectiles = 2;
+    repeated Item items = 3;
+    ZoneInfo zone_info = 4;
+    repeated KillEvent killfeed = 5;
+    int64 player_timestamp = 6;
+    int64 server_timestamp = 7;
+}
+
+message Player {
+    uint64 id = 1;
+    Position position = 2;
+    sint64 health = 3;
+    sint64 speed = 4;
+    float size = 5;
+    float direction = 6;
+    Status status = 7;
+    uint64 kill_count = 8;
+    uint64 death_count = 9;
+    repeated PlayerAction actions = 10;
+    uint64 action_duration_ms = 11;
+    repeated SkillCooldown cooldowns = 12;
+    repeated Item inventory = 13;
+    repeated EffectInfo effects = 14;
+    string character_name = 15;
+}
+
+message PlayerAction {
+    PlayerActionEnum action = 1;
+    string action_skill_key = 2;
+}
+
+message SkillCooldown {
+    string skill_key = 1;
+    uint64 cooldown_ms = 2;
+}
+
+message EffectInfo {
+    string name = 1;
+    uint64 remaining_ms = 2;
+}
+
+message Item {
+    uint64 id = 1;
+    string name = 2;
+    float size = 3;
+    Position position = 4;
+}
+
+message Projectile {
+    uint64 id = 1;
+    string name = 2;
+    uint32 damage = 3;
+    uint32 speed = 4;
+    float size = 5;
+    Position position = 6;
+    float direction = 7;
+}
+
+message ZoneInfo {
+    Position center = 1;
+    float radius = 2;
+}
+
+enum Status {
+    STATUS_UNDEFINED = 0;
+    STATUS_ALIVE = 1;
+    STATUS_DEAD = 2;
+}
+
+enum PlayerActionEnum {
+    PLAYER_ACTION_UNDEFINED = 0;
+    PLAYER_ACTION_NOTHING = 1;
+    PLAYER_ACTION_MOVING = 2;
+    PLAYER_ACTION_USING_SKILL = 3;
+}
+
+
+/*****************************
+******************************
+*                            *
+*   OLD STUFF BELOW (REMOVE) *
+*                            *
+******************************
+*****************************/
+
 // import "communication/config.proto";
 
 /* Represents the events pushed by the server during a game
@@ -11,6 +103,9 @@ syntax = "proto3";
  */
 message GameEvent {
     GameEventType type = 1;
+    /*************
+    * OLD STUFF  *
+    *************/
     map<uint64,Player> players = 2;
     uint64 latency = 3;
     repeated Projectile projectiles = 4;
@@ -18,8 +113,6 @@ message GameEvent {
     string player_joined_name = 6;
     Player winner_player = 7;
     map<uint64, string> selected_characters = 8;
-    int64 player_timestamp = 9;
-    int64 server_timestamp = 10;
     repeated KillEvent killfeed = 11;
     uint64 playable_radius = 12;
     Position shrinking_center = 13;
@@ -44,65 +137,16 @@ message PlayerCharacter{
     string character_name = 2;
 }
 
-/* Information about a player
-    - id: ID of the player, this ID is the identifier in the game session, the game object tied to it
-    - health: Current health of the player
-    - position: Position of the player in the server game grid (see Position for more info)
-    - power: [Amin 2023-05-05:  not sure what this is, was copied from struct like this]
-    - action: [Manu 2023-05-12: accion to renderize on client side]
-    - status: currently if alive or dead
-    - aoe_position: Position of the aoe attack, only used when action == ATTACKING_AOE
-    - {basic, first, second, third, fourth}_cooldown_left: Time remaining in seconds until the cooldown is over.
-    - character_name: Name of the player's character
-    - effects: The effects that are active on the player
- */
-message Player {
-    uint64 id = 1;
-    sint64 health = 2;
-    Position position = 3;
-    Status status = 4;
-    repeated PlayerAction action = 5;
-    Position aoe_position = 6;
-    uint64 kill_count = 7;
-    uint64 death_count = 8;
-    MillisTime basic_skill_cooldown_left = 9;
-    MillisTime skill_1_cooldown_left = 10;
-    MillisTime skill_2_cooldown_left = 11;
-    MillisTime skill_3_cooldown_left = 12;
-    MillisTime skill_4_cooldown_left = 13;
-    string character_name = 14;
-    map<uint64, EffectInfo> effects = 15;
-    RelativePosition direction = 16;
-    float size = 17;
-    uint64 action_duration_ms = 18;
-}
-
-message EffectInfo {
-    MillisTime ends_at = 1;
-    uint64 caused_by = 2;
-}
-
 message KillEvent {
     uint64 killed_by = 1;
     uint64 killed = 2;
-}
-
-/*
-Status of a player
-*/
-enum Status {
-    ALIVE = 0;
-    DEAD = 1;
 }
 
 /* A position in the server game grid, the grid is a NxN square with (0,0) in the top left corner
     - x: X coordinate in the grid
     - y: Y coordinate in the grid
  */
-message Position {
-    int64 x = 1;
-    int64 y = 2;
-}
+
 
 /* A relative position
     - x: X coordinate between -1 and 1
@@ -170,25 +214,6 @@ enum Direction {
     DOWN = 2;
     LEFT = 3;
     RIGHT = 4;
-}
-
-/* Actions a player performs
-    - NOTHING: nothing
-    - ATTACKING: player is attacking
- */
-enum PlayerAction {
-    NOTHING = 0;
-    ATTACKING = 1;
-    ATTACKING_AOE = 2;
-    STARTING_SKILL_1 = 3;
-    STARTING_SKILL_2 = 4;
-    STARTING_SKILL_3 = 5;
-    STARTING_SKILL_4 = 6;
-    EXECUTING_SKILL_1 = 7;
-    EXECUTING_SKILL_2 = 8;
-    EXECUTING_SKILL_3 = 9;
-    EXECUTING_SKILL_4 = 10;
-    MOVING = 11;
 }
 
 /* Effects a player has */
@@ -355,32 +380,6 @@ enum ProjectileType {
 enum ProjectileStatus {
     ACTIVE = 0;
     EXPLODED = 1;
-}
-
-/*
-    - position: Current projectile prosition
-    - direction: Projectile direction
-    - speed: Projectile speed
-    - range: Attack range, with center in position
-    - player_id: Player id who attacked
-    - damage: Damage dealt on opponents when hit
-    - remaining_ticks: Projectile remaining lifetime
-    - type: Projectile type depending on the attack
- */
-message Projectile {
-    uint64 id = 1;
-    Position position = 2;
-    RelativePosition direction = 3;
-    uint32 speed = 4;
-    uint32 range = 5;
-    uint64 player_id = 6;
-    uint32 damage = 7;
-    sint64 remaining_ticks = 8;
-    ProjectileType projectile_type = 9;
-    ProjectileStatus status = 10;
-    uint64 last_attacked_player_id = 11;
-    bool pierce = 12;
-    string skill_name = 13;
 }
 
 /*

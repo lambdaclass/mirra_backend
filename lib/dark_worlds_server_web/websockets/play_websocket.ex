@@ -159,18 +159,9 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
   ## The difference with :game_update messages is that these come from Runner
   def websocket_info({:game_state, game_state}, web_socket_state) do
-    reply_map = %{
-      players: game_state.players,
-      projectiles: game_state.projectiles,
-      killfeed: game_state.killfeed,
-      player_timestamp: game_state.player_timestamps[web_socket_state.player_id],
-      playable_radius: game_state.zone.radius,
-      shrinking_center: game_state.zone.center,
-      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-      loots: game_state.loots
-    }
-
-    {:reply, {:binary, Communication.game_update!(reply_map)}, web_socket_state}
+    player_timestamp = game_state.player_timestamps[web_socket_state.player_id]
+    server_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    {:reply, {:binary, Communication.game_update!(game_state, player_timestamp, server_timestamp)}, web_socket_state}
   end
 
   def websocket_info({:game_start, game_state}, web_socket_state) do

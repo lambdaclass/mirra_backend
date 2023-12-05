@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Communication do
+  alias DarkWorldsServer.Communication.Proto.GameState
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameEvent
   alias DarkWorldsServer.Communication.Proto.LobbyEvent
@@ -63,8 +64,8 @@ defmodule DarkWorldsServer.Communication do
         killfeed: killfeed,
         playable_radius: playable_radius,
         shrinking_center: shrinking_center,
-        player_timestamp: player_timestamp,
-        server_timestamp: server_timestamp,
+        player_timestamp: _player_timestamp,
+        server_timestamp: _server_timestamp,
         loots: loots
       }) do
     %GameEvent{
@@ -74,35 +75,22 @@ defmodule DarkWorldsServer.Communication do
       killfeed: killfeed,
       playable_radius: playable_radius,
       shrinking_center: shrinking_center,
-      player_timestamp: player_timestamp,
-      server_timestamp: server_timestamp,
       loots: loots
     }
     |> GameEvent.encode()
   end
 
-  def game_update!(%{
-        players: players,
-        projectiles: projectiles,
-        killfeed: killfeed,
-        playable_radius: playable_radius,
-        shrinking_center: shrinking_center,
-        player_timestamp: player_timestamp,
-        server_timestamp: server_timestamp,
-        loots: loots
-      }) do
-    %GameEvent{
-      type: :STATE_UPDATE,
-      players: players,
-      projectiles: projectiles,
-      killfeed: killfeed,
-      playable_radius: playable_radius,
-      shrinking_center: shrinking_center,
+  def game_update!(game_state, player_timestamp, server_timestamp) do
+    %GameState{
+      players: Map.values(game_state.players),
+      projectiles: game_state.projectiles,
+      items: game_state.loots,
+      zone_info: nil,#TODO
+      killfeed: game_state.killfeed,
       player_timestamp: player_timestamp,
-      server_timestamp: server_timestamp,
-      loots: loots
+      server_timestamp: server_timestamp
     }
-    |> GameEvent.encode()
+    |> GameState.encode()
   end
 
   def encode!(%{latency: latency}) do

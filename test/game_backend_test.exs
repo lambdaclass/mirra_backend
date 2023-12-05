@@ -1,4 +1,5 @@
 defmodule GameBackendTest do
+  alias DarkWorldsServer.Communication
   use ExUnit.Case
   doctest GameBackend
 
@@ -10,8 +11,7 @@ defmodule GameBackendTest do
     config = GameBackend.parse_config(data)
     game = GameBackend.new_game(config)
 
-    character_name = Enum.random(config.characters).name
-    {:ok, {game, player_id}} = GameBackend.add_player(game, character_name)
+    {:ok, {game, player_id}} = GameBackend.add_player(game, "test_character")
     %{game: game, player_id: player_id}
   end
 
@@ -145,12 +145,28 @@ defmodule GameBackendTest do
     assert %{} = game.players[context.player_id].cooldowns
   end
 
+  test "Game state is encodable", context do
+    Communication.game_update!(context.game, now_timestamp(), now_timestamp())
+  end
+
   defp spawn_specific_loot(game_state, loot_mechanic) do
+    spawn_specific_loot(game_state, loot_mechanic, 100)
+  end
+
+  defp spawn_specific_loot(game_state, loot_mechanic, attempts) do
     {new_game_state, loot_id} = GameBackend.spawn_random_loot(game_state)
 
     case Enum.find(new_game_state.loots, fn loot -> loot.id == loot_id end) do
       %{pickup_mechanic: ^loot_mechanic} -> new_game_state
-      _ -> spawn_specific_loot(game_state, loot_mechanic)
+      _ -> spawn_specific_loot(game_state, loot_mechanic, attempts-1)
     end
+  end
+
+  defp spawn_specific_loot(_game_state, loot_mechanic, 0) do
+    raise "error spawn_specific_loot/2 could spawn desired loot #{loot_mechanic}"
+  end
+
+  defp now_timestamp() do
+    DateTime.utc_now() |> DateTime.to_unix(:millisecond)
   end
 end

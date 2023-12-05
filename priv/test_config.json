@@ -21,7 +21,11 @@
     {
       "name": "heal_30",
       "is_reversable": false,
-      "effect_time_type": "Instant",
+      "effect_time_type": {
+        "Duration": {
+          "duration_ms": 1
+        }
+      },
       "player_attributes": [
         {
           "attribute": "health",
@@ -107,13 +111,13 @@
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": true,
-          "interval_ms": 250,
+          "interval_ms": 130,
           "trigger_count": 10
         }
       },
       "player_attributes": [],
       "projectile_attributes": [],
-      "skills_keys_to_execute": ["2"]
+      "skills_keys_to_execute": ["4"]
     }
   ],
   "loots": [
@@ -121,7 +125,9 @@
       "name": "loot_health",
       "size": 50,
       "pickup_mechanic": "CollisionUse",
-      "effects": ["heal_30"]
+      "effects": [
+        "heal_30"
+      ]
     },
     {
       "name": "loot_health_inventory",
@@ -133,13 +139,13 @@
   "projectiles": [
     {
       "name": "projectile_slingshot",
-      "base_damage": 8,
-      "base_speed": 40,
+      "base_damage": 7,
+      "base_speed": 60,
       "base_size": 20,
       "remove_on_collision": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
-      "max_distance": 999999
+      "max_distance": 1500
     },
     {
       "name": "projectile_poison_dart",
@@ -147,7 +153,9 @@
       "base_speed": 60,
       "base_size": 10,
       "remove_on_collision": false,
-      "on_hit_effects": ["poison"],
+      "on_hit_effects": [
+        "poison"
+      ],
       "duration_ms": 999999,
       "max_distance": 500
     }
@@ -155,7 +163,7 @@
   "skills": [
     {
       "name": "slingshot",
-      "cooldown_ms": 800,
+      "cooldown_ms": 1000,
       "execution_duration_ms": 250,
       "is_passive": false,
       "mechanics": [
@@ -183,14 +191,14 @@
     },
     {
       "name": "hit",
-      "cooldown_ms": 1500,
-      "execution_duration_ms": 500,
+      "cooldown_ms": 1000,
+      "execution_duration_ms": 1000,
       "is_passive": false,
       "mechanics": [
         {
           "Hit": {
-            "damage": 14,
-            "range": 1000,
+            "damage": 20,
+            "range": 675,
             "cone_angle": 120,
             "on_hit_effects": []
           }
@@ -242,7 +250,7 @@
   ],
   "characters": [
     {
-      "name": "h4ck",
+      "name": "test_character",
       "active": true,
       "base_speed": 20,
       "base_size": 80,
@@ -251,19 +259,9 @@
       "skills": {
         "1": "slingshot",
         "2": "denial_of_service",
-        "3": "single_slingshot"
-      }
-    },
-    {
-      "name": "muflus",
-      "active": true,
-      "base_speed": 20,
-      "base_size": 100,
-      "base_health": 100,
-      "max_inventory_size": 1,
-      "skills": {
-        "1": "hit",
-        "2": "circle_hit"
+        "3": "poison_dart",
+        "4": "single_slingshot",
+        "5": "hit"
       }
     }
   ],
@@ -309,15 +307,43 @@
       }
     ],
     "loot_interval_ms": 7000,
-    "auto_aim_max_distance": 1000,
+    "auto_aim_max_distance": 2000,
     "initial_positions": [
       {
         "x": -4500,
         "y": 1500
       },
       {
+        "x": -3000,
+        "y": 4000
+      },
+      {
+        "x": 0,
+        "y": 2000
+      },
+      {
         "x": 3000,
         "y": 4000
+      },
+      {
+        "x": 4500,
+        "y": 1500
+      },
+      {
+        "x": 4500,
+        "y": -1500
+      },
+      {
+        "x": 3000,
+        "y": -4000
+      },
+      {
+        "x": 0,
+        "y": -2000
+      },
+      {
+        "x": -3000,
+        "y": -4000
       },
       {
         "x": -4500,

@@ -23,10 +23,6 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias DarkWorldsServer.Communication.Proto.ZoneModification
-  alias GameBackend.Player, as: GamePlayer
-  alias GameBackend.Position, as: GamePosition
-  alias GameBackend.Projectile, as: GameProjectile
-  alias GameBackend.RelativePosition, as: GameRelativePosition
 
   @behaviour Protobuf.TransformModule
 
@@ -42,91 +38,47 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     |> Map.merge(mechanic)
   end
 
-  def encode(%GamePosition{} = position, ProtoPosition) do
+  def encode(position, ProtoPosition) do
     %{x: x, y: y} = position
     %ProtoPosition{x: x, y: y}
   end
 
-  def encode(%GameRelativePosition{} = position, ProtoRelativePosition) do
+  def encode(position, ProtoRelativePosition) do
     %{x: x, y: y} = position
     %ProtoRelativePosition{x: x, y: y}
   end
 
-  def encode(%GamePlayer{} = player, ProtoPlayer) do
-    %GamePlayer{
-      id: id,
-      health: health,
-      position: position,
-      status: status,
-      action: action,
-      aoe_position: aoe_position,
-      kill_count: kill_count,
-      death_count: death_count,
-      basic_skill_cooldown_left: basic_skill_cooldown_left,
-      skill_1_cooldown_left: skill_1_cooldown_left,
-      skill_2_cooldown_left: skill_2_cooldown_left,
-      skill_3_cooldown_left: skill_3_cooldown_left,
-      skill_4_cooldown_left: skill_4_cooldown_left,
-      character_name: name,
-      effects: effects,
-      direction: direction,
-      body_size: body_size,
-      action_duration_ms: action_duration_ms
-    } = player
-
+  def encode(player, ProtoPlayer) do
     %ProtoPlayer{
-      id: id,
-      health: health,
-      position: position,
-      status: player_status_encode(status),
-      action: player_action_encode(action),
-      aoe_position: aoe_position,
-      kill_count: kill_count,
-      death_count: death_count,
-      basic_skill_cooldown_left: basic_skill_cooldown_left,
-      skill_1_cooldown_left: skill_1_cooldown_left,
-      skill_2_cooldown_left: skill_2_cooldown_left,
-      skill_3_cooldown_left: skill_3_cooldown_left,
-      skill_4_cooldown_left: skill_4_cooldown_left,
-      character_name: name,
-      effects: effects,
-      direction: direction,
-      size: body_size,
-      action_duration_ms: action_duration_ms
+      id: player.id,
+      position: player.position,
+      health: player.health,
+      speed: player.speed,
+      size: player.size,
+      direction: player.direction,
+      status: player_status_encode(player.status),
+      kill_count: player.kill_count,
+      death_count: player.death_count,
+      # player_action_encode(player.action),
+      actions: [],
+      action_duration_ms: player.action_duration_ms,
+      # player.cooldowns
+      cooldowns: [],
+      # player.effects,
+      effects: [],
+      character_name: player.character.name
     }
   end
 
-  def encode(%GameProjectile{} = projectile, ProtoProjectile) do
-    %{
-      id: id,
-      position: position,
-      direction: direction,
-      speed: speed,
-      range: range,
-      player_id: player_id,
-      damage: damage,
-      remaining_ticks: remaining_ticks,
-      projectile_type: projectile_type,
-      status: status,
-      last_attacked_player_id: last_attacked_player_id,
-      pierce: pierce,
-      skill_name: skill_name
-    } = projectile
-
+  def encode(projectile, ProtoProjectile) do
     %ProtoProjectile{
-      id: id,
-      position: position,
-      direction: direction,
-      speed: speed,
-      range: range,
-      player_id: player_id,
-      damage: damage,
-      remaining_ticks: remaining_ticks,
-      projectile_type: projectile_encode(projectile_type),
-      status: projectile_status_encode(status),
-      last_attacked_player_id: last_attacked_player_id,
-      pierce: pierce,
-      skill_name: skill_name
+      id: projectile.id,
+      name: projectile.name,
+      damage: projectile.damage,
+      speed: projectile.speed,
+      size: projectile.size,
+      position: projectile.position,
+      direction: projectile.direction
     }
   end
 
@@ -180,8 +132,9 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
-  def encode(data, _struct) do
-    data
+  def encode(data, pstruct) do
+    IO.inspect(data, label: "generic_encode: #{inspect(pstruct)}")
+    raise "encode_error"
   end
 
   ###########
@@ -262,92 +215,53 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   end
 
   @impl Protobuf.TransformModule
-  def decode(%ProtoPosition{} = position, ProtoPosition) do
-    %{x: x, y: y} = position
-    %GamePosition{x: x, y: y}
+  def decode(position, ProtoPosition) do
+    position
   end
 
   @impl Protobuf.TransformModule
   def decode(%ProtoRelativePosition{} = position, ProtoRelativePosition) do
-    %{x: x, y: y} = position
-    %GameRelativePosition{x: x, y: y}
+    position
   end
 
-  def decode(%ProtoPlayer{} = player, ProtoPlayer) do
-    %ProtoPlayer{
-      id: id,
-      health: health,
-      position: position,
-      status: status,
-      action: action,
-      aoe_position: aoe_position,
-      kill_count: kill_count,
-      death_count: death_count,
-      basic_skill_cooldown_left: basic_skill_cooldown_left,
-      skill_1_cooldown_left: skill_1_cooldown_left,
-      skill_2_cooldown_left: skill_2_cooldown_left,
-      skill_3_cooldown_left: skill_3_cooldown_left,
-      skill_4_cooldown_left: skill_4_cooldown_left,
-      character_name: name,
-      effects: effects,
-      direction: direction,
-      size: body_size,
-      action_duration_ms: action_duration_ms
-    } = player
-
-    %GamePlayer{
-      id: id,
-      health: health,
-      position: position,
-      status: player_status_decode(status),
-      action: player_action_decode(action),
-      aoe_position: aoe_position,
-      kill_count: kill_count,
-      death_count: death_count,
-      basic_skill_cooldown_left: basic_skill_cooldown_left,
-      skill_1_cooldown_left: skill_1_cooldown_left,
-      skill_2_cooldown_left: skill_2_cooldown_left,
-      skill_3_cooldown_left: skill_3_cooldown_left,
-      skill_4_cooldown_left: skill_4_cooldown_left,
-      character_name: name,
-      effects: effects,
-      direction: direction,
-      body_size: body_size,
-      action_duration_ms: action_duration_ms
+  def decode(player, ProtoPlayer) do
+    %{
+      id: player.id,
+      health: player.health,
+      position: player.position,
+      status: player_status_decode(player.status),
+      action: player_action_decode(player.action),
+      aoe_position: player.aoe_position,
+      kill_count: player.kill_count,
+      death_count: player.death_count,
+      basic_skill_cooldown_left: player.basic_skill_cooldown_left,
+      skill_1_cooldown_left: player.skill_1_cooldown_left,
+      skill_2_cooldown_left: player.skill_2_cooldown_left,
+      skill_3_cooldown_left: player.skill_3_cooldown_left,
+      skill_4_cooldown_left: player.skill_4_cooldown_left,
+      character_name: player.name,
+      effects: player.effects,
+      direction: player.direction,
+      body_size: player.body_size,
+      action_duration_ms: player.action_duration_ms
     }
   end
 
-  def decode(%ProtoProjectile{} = projectile, ProtoProjectile) do
+  def decode(projectile, ProtoProjectile) do
     %{
-      id: id,
-      position: position,
-      direction: direction,
-      speed: speed,
-      range: range,
-      player_id: player_id,
-      damage: damage,
-      remaining_ticks: remaining_ticks,
-      projectile_type: projectile_type,
-      status: status,
-      last_attacked_player_id: last_attacked_player_id,
-      pierce: pierce,
-      skill_name: skill_name
-    } = projectile
-
-    %GameProjectile{
-      id: id,
-      position: position,
-      direction: direction,
-      speed: speed,
-      range: range,
-      player_id: player_id,
-      damage: damage,
-      remaining_ticks: remaining_ticks,
-      projectile_type: projectile_decode(projectile_type),
-      status: projectile_status_decode(status),
-      last_attacked_player_id: last_attacked_player_id,
-      pierce: pierce,
-      skill_name: skill_name
+      id: projectile.id,
+      position: projectile.position,
+      direction: projectile.direction,
+      speed: projectile.speed,
+      range: projectile.range,
+      player_id: projectile.player_id,
+      damage: projectile.damage,
+      remaining_ticks: projectile.remaining_ticks,
+      projectile_type: projectile_decode(projectile.projectile_type),
+      status: projectile_status_decode(projectile.status),
+      last_attacked_player_id: projectile.last_attacked_player_id,
+      pierce: projectile.pierce,
+      skill_name: projectile.skill_name
     }
   end
 
@@ -358,8 +272,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   ###############################
   # Helpers for transformations #
   ###############################
-  defp player_status_encode(:alive), do: :ALIVE
-  defp player_status_encode(:dead), do: :DEAD
+  defp player_status_encode(:alive), do: :STATUS_ALIVE
+  defp player_status_encode(:dead), do: :STATUS_DEAD
 
   defp player_status_decode(:ALIVE), do: :alive
   defp player_status_decode(:DEAD), do: :dead
