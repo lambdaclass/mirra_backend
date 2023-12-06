@@ -158,6 +158,15 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:GIVE_EFFECT, 3)
 end
 
+defmodule DarkWorldsServer.Communication.Proto.PickupMechanic do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:COLLISION_TO_INVENTORY, 0)
+  field(:COLLISION_USE, 1)
+end
+
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -611,6 +620,12 @@ defmodule DarkWorldsServer.Communication.Proto.LootPackage do
     enum: true
   )
 
+  field(:pickup_mechanic, 4,
+    type: DarkWorldsServer.Communication.Proto.PickupMechanic,
+    json_name: "pickupMechanic",
+    enum: true
+  )
+
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
@@ -688,9 +703,18 @@ defmodule DarkWorldsServer.Communication.Proto.GameLoot do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:name, 1, type: :string)
+  field(:id, 1, type: :uint64)
   field(:size, 2, type: :uint64)
-  field(:effects, 3, repeated: true, type: DarkWorldsServer.Communication.Proto.GameEffect)
+
+  field(:pickup_mechanic, 3,
+    type: DarkWorldsServer.Communication.Proto.PickupMechanic,
+    json_name: "pickupMechanic",
+    enum: true
+  )
+
+  field(:effects, 4, repeated: true, type: DarkWorldsServer.Communication.Proto.GameEffect)
+  field(:name, 5, type: :string)
+  field(:position, 6, type: DarkWorldsServer.Communication.Proto.Position)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -858,6 +882,16 @@ defmodule DarkWorldsServer.Communication.Proto.UseSkill do
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
+defmodule DarkWorldsServer.Communication.Proto.UseInventory do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:inventory_at, 1, type: :uint64, json_name: "inventoryAt")
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
 defmodule DarkWorldsServer.Communication.Proto.GameAction do
   @moduledoc false
 
@@ -873,7 +907,13 @@ defmodule DarkWorldsServer.Communication.Proto.GameAction do
     oneof: 0
   )
 
-  field(:timestamp, 3, type: :int64)
+  field(:use_inventory, 3,
+    type: DarkWorldsServer.Communication.Proto.UseInventory,
+    json_name: "useInventory",
+    oneof: 0
+  )
+
+  field(:timestamp, 4, type: :int64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

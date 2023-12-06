@@ -33,6 +33,10 @@ defmodule DarkWorldsServer.Bot.BotClient do
     {:reply, {:binary, Communication.player_use_skill(skill, angle)}, state}
   end
 
+  def handle_info({:use_inventory, inventory_at}, state) do
+    {:reply, {:binary, Communication.player_use_inventory(inventory_at)}, state}
+  end
+
   @impl true
   def handle_disconnect(%{reason: {:local, reason}}, state) do
     Logger.info("Local close with reason: #{inspect(reason)}")

@@ -4,6 +4,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Communication.Proto.UseInventory
 
   # This is the amount of time between state updates in milliseconds
   @game_tick_rate_ms 20
@@ -40,6 +41,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   def attack(runner_pid, user_id, action, timestamp) do
     GenServer.cast(runner_pid, {:attack, user_id, action, timestamp})
+  end
+
+  def use_inventory(runner_pid, user_id, action, timestamp) do
+    GenServer.cast(runner_pid, {:use_inventory, user_id, action, timestamp})
   end
 
   def skill(runner_pid, user_id, action) do
@@ -142,6 +147,23 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
         "direction_angle" => Float.to_string(angle),
         "auto_aim" => to_string(auto_aim)
       })
+
+    state =
+      Map.put(state, :game_state, game_state)
+      |> put_in([:player_timestamps, user_id], timestamp)
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_cast(
+        {:use_inventory, user_id, %UseInventory{inventory_at: inventory_at}, timestamp},
+        state
+      ) do
+    player_id = state.user_to_player[user_id] || user_id
+
+    game_state =
+      GameBackend.activate_inventory(state.game_state, player_id, inventory_at)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -404,7 +426,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       %{
         id: loot.id,
         loot_type: {:health, :placeholder},
-        position: transform_position_to_game_position(loot.position)
+        position: transform_position_to_game_position(loot.position),
+        pickup_mechanic: loot.pickup_mechanic
       }
     end)
   end
