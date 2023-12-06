@@ -71,7 +71,7 @@ Host myrra_load_test_server
    And then fill it. Lastly after that you also have to export those variables with:
 
     ```bash
-    export $(cat .env | xargs)
+    export $(cat ~/.env | xargs)
     ```
 4. Run `setup_game_server.sh` with:
    ```sh
