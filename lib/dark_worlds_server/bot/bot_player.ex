@@ -113,7 +113,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     if bot_state.alive do
       Process.send_after(self(), {:do_action, bot_id}, state.game_tick_rate)
-      do_action(state.connection_pid, state.players, bot_state)
+      do_action(state.connection_pid, state, bot_state, bot_id)
     end
 
     {:noreply, state}
@@ -185,7 +185,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
          %{objective: :chase_enemy} = bot_state,
          bot_id,
          _players,
-         %{game_state: game_state, config: config},
+         %{game_state: game_state},
          %{enemies_by_distance: enemies_by_distance}
        ) do
     bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
@@ -208,11 +208,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
         flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
         Map.put(bot_state, :action, {:move, flee_angle_direction})
 
-      skill_would_hit?(bot, closest_enemy, config) ->
-        Map.put(bot_state, :action, {:attack, closest_enemy, "BasicAttack"})
-
       true ->
-        Map.put(bot_state, :action, {:move, closest_enemy.angle_direction_to_entity})
+        Map.put(bot_state, :action, {:try_attack, closest_enemy, "BasicAttack"})
     end
   end
 
@@ -235,22 +232,35 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     Map.put(bot_state, :action, {:move, target})
   end
 
-  defp decide_action(bot_state, _bot_id, _players, _game_state, _closest_entities) do
+  defp decide_action(bot_state, _bot_id, _state, _game_state, _closest_entities) do
     bot_state
     |> Map.put(:action, {:nothing, nil})
   end
 
-  defp do_action(connection_pid, _players, %{action: {:move, angle}}) do
+  defp do_action(connection_pid, _state, %{action: {:move, angle}}, _bot_id) do
     send(connection_pid, {:move, angle})
   end
 
-  defp do_action(connection_pid, _players, %{
-         action: {:attack, %{type: :enemy, attacking_angle_direction: angle}, skill}
-       }) do
-    send(connection_pid, {:use_skill, angle, skill})
+  defp do_action(
+         connection_pid,
+         %{config: config, game_state: game_state},
+         %{
+           action: {:try_attack, %{type: :enemy, attacking_angle_direction: angle} = closest_enemy, skill}
+         },
+         bot_id
+       ) do
+    bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
+
+    cond do
+      skill_would_hit?(bot, closest_enemy, config) ->
+        send(connection_pid, {:use_skill, angle, skill})
+
+      true ->
+        send(connection_pid, {:move, angle})
+    end
   end
 
-  defp do_action(_connection_pid, _players, _) do
+  defp do_action(_connection_pid, _state, _, _bot_id) do
     nil
   end
 
