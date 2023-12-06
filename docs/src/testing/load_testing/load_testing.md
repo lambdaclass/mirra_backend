@@ -23,7 +23,16 @@ Some things to keep in mind about load tests:
 - Use multiple sources of truth and data, like htop, New Relic, erlang's etop/fprop.
 - Feel free to experiment a bit, certain VM flags can improve or hinder performance,
   if you find improvements.
-- It's important for load tests to be reproducible.
+- **It's important for load tests to be reproducible**.
+
+## Table of Contents
+1. [Setup SSH](#setup-ssh)
+2. [Running Load Tests](#running-load-tests)
+    - [Starting the load test server](#starting-the-load-test-server)
+    - [Starting the load test runner](#starting-the-load-test-runner)
+3. [Load Test Server First Time Setup](#load-test-server-first-time-setup)
+4. [Load Test Runner First Time Setup](#load-test-runner-first-time-setup)
+5. [Useful Tools](#useful-tools)
 
 ## Setup SSH
 We recommend you add each server ip to your ~/.ssh/config file to avoid confusions, like this:
