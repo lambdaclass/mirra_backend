@@ -83,10 +83,9 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
     {:noreply, state}
   end
 
-  def handle_info(:simulate_player_joined, %{curent_lobby_players: curent_lobby_players, players: players} = state) do
+  def handle_info(:simulate_player_joined, %{curent_lobby_players: curent_lobby_players} = state) do
     Process.send_after(self(), :simulate_player_joined, 1000)
-    current_player = length(players)
-    limit = @session_player_amount - (current_player + curent_lobby_players)
+    limit = @session_player_amount - curent_lobby_players
 
     new_state =
       %{state | curent_lobby_players: curent_lobby_players + Enum.random(0..Enum.min([2, limit]))}
@@ -132,6 +131,8 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   end
 
   defp notify_players_amount(%{curent_lobby_players: amount, players: players}, capacity) do
+    amount = Enum.max([length(players), amount])
+
     players
     |> Enum.each(fn {_, client_pid} ->
       Process.send(client_pid, {:notify_players_amount, amount, capacity}, [])
