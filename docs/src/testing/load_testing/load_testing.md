@@ -46,6 +46,8 @@ Host myrra_load_test_server
 
 ## Second Step : Load Test Server First Time Setup
 
+This is supposed to be done only once per server. If it was already done, you can skip this step.
+
 1. Check you can log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_server
@@ -81,6 +83,9 @@ EOF
    This installs dependencies, clones the repo and compiles the app *on the main branch*
 
 ## Third Step : Load Test Runner First Time Setup
+
+This is supposed to be done only once per server. If it was already done, you can skip this step.
+
 1. Log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_client
@@ -129,7 +134,6 @@ ulimit -n 65000
 ```sh
 cd game_backend && MIX_ENV=prod iex -S mix phx.server
 ```
-   You can check the logs with `journalctl -xefu curse_of_myrra`.
    From now on, you can just use: 
 ```sh
 MIX_ENV=prod iex -S mix phx.server
