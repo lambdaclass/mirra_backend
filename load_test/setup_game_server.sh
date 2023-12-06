@@ -83,7 +83,7 @@ fi
 
 # Clone and compile the game.
 cd /tmp
-git clone git@github.com:lambdaclass/game_backend.git --branch ${BRANCH_NAME}
+git clone https://github.com/lambdaclass/game_backend --branch ${BRANCH_NAME}
 cd game_backend/
 
 mix local.hex --force && mix local.rebar --force
@@ -93,8 +93,8 @@ mix assets.deploy
 mix compile
 mix phx.gen.release
 mix release --overwrite
+mix ecto.setup
 
 rm -rf $HOME/game_backend
 mv /tmp/game_backend $HOME/game_backend
 
-$HOME/game_backend/_build/prod/rel/dark_worlds_server/bin/migrate

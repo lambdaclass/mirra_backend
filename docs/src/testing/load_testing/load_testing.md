@@ -60,14 +60,14 @@ Host myrra_load_test_server
 
 3. Set the needed env variables on the $HOME/.env file.
    First create it: 
-   ```sh
-   cat <<EOF > ~/.env
-   PHX_HOST=
-   PHX_SERVER=true
-   SECRET_KEY_BASE=
-   DATABASE_URL=ecto://postgres:postgrespassword@localhost/dark_worlds_server
-   EOF
-   ```
+```sh
+cat <<EOF > ~/.env
+PHX_HOST=
+PHX_SERVER=true
+SECRET_KEY_BASE=
+DATABASE_URL=ecto://postgres:postgrespassword@localhost/dark_worlds_server
+EOF
+```
    And then fill it. Lastly after that you also have to export those variables with:
 
     ```bash
