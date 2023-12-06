@@ -107,11 +107,16 @@ echo off | sudo tee /sys/devices/system/cpu/smt/control
 One way of checking this, besides the command above,
 is to open htop, you should see the virtual cores as 'offline'.
 
-2. Export the variables defined at `~/.env`
+2. Run this command to increase the file descriptor amount.
+```bash
+ulimit -n 65000
+```
+
+3. Export the variables defined at `~/.env`
     ```bash
     export $(cat ~/.env | xargs)
     ```
-3. Set the env variables for newrelic:
+4. Set the env variables for newrelic:
 
     ```bash
     export NEW_RELIC_APP_NAME=
@@ -120,7 +125,7 @@ is to open htop, you should see the virtual cores as 'offline'.
 
     You will have to ask for them
 
-4. Now you can start the game server with: 
+5. Now you can start the game server with: 
 ```sh
 cd game_backend && MIX_ENV=prod iex -S mix phx.server
 ```
@@ -135,12 +140,16 @@ MIX_ENV=prod iex -S mix phx.server
 1. Set this env variable: `export SERVER_HOST=game_server_ip:game_server_port`.
    Where `game_server_ip` is the ip of the load test server, and `game_server_port`,
    the corresponding port.
-2. Run:
+2. Run this command to increase the file descriptor amount.
+```bash
+ulimit -n 65000
+```
+3. Run:
    ```sh
        cd ./curse_of_myrra/server/load_test/ && iex -S mix 
    ``` 
    this drops you into an Elixir shell from which you'll run the load tests.
-3. From the elixir shell, start the load test with:
+4. From the elixir shell, start the load test with:
    ```elixir
    LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
    ``` 
