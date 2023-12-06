@@ -65,19 +65,22 @@ Host myrra_load_test_server
    PHX_HOST=
    PHX_SERVER=true
    SECRET_KEY_BASE=
-   DATABASE_URL=ecto://postgres:@localhost/dark_worlds_server
+   DATABASE_URL=ecto://postgres:postgrespassword@localhost/dark_worlds_server
    EOF
    ```
-   And then fill it. 
+   And then fill it. Lastly after that you also have to export those variables with:
+
+    ```bash
+    export $(cat .env | xargs) && 
+    ```
 4. Run `setup_game_server.sh` with:
    ```sh
    chmod +x ./setup_game_server.sh && sudo ./setup_game_server.sh
    ```
 
-   This clones the repo and compiles the app *on the main branch*
+   This installs dependencies, clones the repo and compiles the app *on the main branch*
 
-
-3. Make sure to disable hyperthreading, if using an x86 CPU:
+5. Make sure to disable hyperthreading, if using an x86 CPU:
 ```sh
 # If active, this returns 1
 cat /sys/devices/system/cpu/smt/active
@@ -87,9 +90,9 @@ echo off | sudo tee /sys/devices/system/cpu/smt/control
 One way of checking this, besides the command above,
 is to open htop, you should see the virtual cores as 'offline'.
 
-4. Now you can start the game server with: 
+6. Now you can start the game server with: 
 ```sh
-export $(cat .env | xargs) && cd game_backend && MIX_ENV=prod iex -S mix phx.server
+cd game_backend && MIX_ENV=prod iex -S mix phx.server
 ```
    You can check the logs with `journalctl -xefu curse_of_myrra`.
    From now on, you can just use: 
@@ -98,7 +101,7 @@ MIX_ENV=prod iex -S mix phx.server
 ```
    
 
-### Load Test Client setup
+## Second Step : Load Test Server First Time Setup
 1. Log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_client

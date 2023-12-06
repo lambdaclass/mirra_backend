@@ -71,6 +71,7 @@ sudo apt install -y postgresql-15
 
 # Install newrelic agent
 
+# If no branch name is provided, it defaults to main
 BRANCH_NAME="$1"
 BRANCH_NAME=${BRANCH_NAME:-"main"}
 
