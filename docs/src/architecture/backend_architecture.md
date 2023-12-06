@@ -43,7 +43,7 @@ For matchmaking to work, players should be able to join a game, which will autom
 
 There is a single process taking care of the matchmaking, the `MatchingCoordinator`. This process is responsible for keeping track of the lobby and its state, launching a new game when the lobby is full or the time limit is reached. It also provides an API for joining and leaving the lobby.
 
-Inside a lobby, when the game starts, the lobby process uses [Phoenix PubSub](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) to broadcast a message saying that the game has started; then it terminates. We'll go into it later, but the idea is that the *gameplay* part of the server will pick up this message and start the game from there.
+When the game starts, each player connects to the server through a websocket. The server spawns a new process for each connection, which we'll call `PlayWebSocket`. This process is responsible for handling the connection and relaying messages between the player and the game. We'll go into more detail about this later.
 
 
 ### Create lobby
