@@ -1,4 +1,6 @@
-# Documentation
+# Game Backend Documentation
+
+## Table of Contents
 
 * [Configuration](#configuration)
   * [Effects](./configuration/effects.md)
@@ -10,10 +12,9 @@
 * [Attributes](#attributes)
   * [Player attributes](./attributes/players.md)
   * [Projectile attributes](./attributes/projectiles.md)
-* [Architecture](#architecture)
-* [Metrics and monitoring](#metrics-and-monitoring)
-  * [Metrics and monitoring](./metrics_and_monitoring/metrics-and-monitoring.md)
-* [Testing](#testing)
+* [Architecture](./architecture/backend_architecture.md)
+* [Metrics and monitoring](./metrics_and_monitoring/metrics-and-monitoring.md)
+* Testing
   * [Load Testing](./testing/load_testing/load_testing.md)
   * [Simulating High Latency](./testing/simulating_latency.md)
 
@@ -50,6 +51,6 @@ Each attribute will fall in one of two categories
 - `Non-changeable`: This means the attribute is set by the game backend and either completely static or only modified through calls to its API and in-game logic
 - `Changeable`: This attributes can be modified by effects, see [Effects Configuration: Attributes changes](../configuration/effects.md) for more information on how this happens
 
-Read more about each entity attributes
+Read more about each entity attributes:
 - [Player attributes](./attributes/players.md)
 - [Projectile attributes](./attributes/projectiles.md)

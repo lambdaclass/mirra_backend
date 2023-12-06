@@ -1,5 +1,6 @@
 # Documentation
 
+* [Introduction](./README.md)
 * [Effects](./configuration/effects.md)
 * [Loots](./configuration/loots.md)
 * [Projectiles](./configuration/projectiles.md)
