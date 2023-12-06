@@ -102,7 +102,7 @@ This is supposed to be done only once per server. If it was already done, you ca
 
 ## Fourth Step : Starting the load test server
 
-1. Make sure to disable hyperthreading, if using an x86 CPU:
+1. Make sure to disable hyperthreading:
 ```sh
 # If active, this returns 1
 cat /sys/devices/system/cpu/smt/active
