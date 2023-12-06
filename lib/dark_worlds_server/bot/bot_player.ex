@@ -12,7 +12,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   @random_factor Enum.random([10, 30, 60, 80])
 
   # This variable will decide how much time passes between bot decisions in milis
-  @decide_delay_ms 500 + (@random_factor * 2)
+  @decide_delay_ms 500 + @random_factor * 2
 
   # We'll decide the view range of a bot measured in grid cells
   # e.g. from {x=1, y=1} to {x=5, y=1} you have 4 cells
