@@ -71,7 +71,7 @@ Host myrra_load_test_server
    And then fill it. Lastly after that you also have to export those variables with:
 
     ```bash
-    export $(cat .env | xargs) && 
+    export $(cat .env | xargs)
     ```
 4. Run `setup_game_server.sh` with:
    ```sh
@@ -80,28 +80,7 @@ Host myrra_load_test_server
 
    This installs dependencies, clones the repo and compiles the app *on the main branch*
 
-5. Make sure to disable hyperthreading, if using an x86 CPU:
-```sh
-# If active, this returns 1
-cat /sys/devices/system/cpu/smt/active
-# Turn off hyperthreading
-echo off | sudo tee /sys/devices/system/cpu/smt/control
-```
-One way of checking this, besides the command above,
-is to open htop, you should see the virtual cores as 'offline'.
-
-6. Now you can start the game server with: 
-```sh
-cd game_backend && MIX_ENV=prod iex -S mix phx.server
-```
-   You can check the logs with `journalctl -xefu curse_of_myrra`.
-   From now on, you can just use: 
-```sh
-MIX_ENV=prod iex -S mix phx.server
-```
-   
-
-## Second Step : Load Test Server First Time Setup
+## Third Step : Load Test Runner First Time Setup
 1. Log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_client
@@ -115,15 +94,53 @@ MIX_ENV=prod iex -S mix phx.server
    ```sh
    ./setup_load_client.sh <BRANCH_NAME_TO_TEST>
    ```
-3. Set this env variable: `export SERVER_HOST=game_server_ip:game_server_port`.
+
+## Fourth Step : Starting the load test server
+
+1. Make sure to disable hyperthreading, if using an x86 CPU:
+```sh
+# If active, this returns 1
+cat /sys/devices/system/cpu/smt/active
+# Turn off hyperthreading
+echo off | sudo tee /sys/devices/system/cpu/smt/control
+```
+One way of checking this, besides the command above,
+is to open htop, you should see the virtual cores as 'offline'.
+
+2. Export the variables defined at `~/.env`
+    ```bash
+    export $(cat ~/.env | xargs)
+    ```
+3. Set the env variables for newrelic:
+
+    ```bash
+    export NEW_RELIC_APP_NAME=
+    export NEW_RELIC_LICENSE_KEY=
+    ```
+
+    You will have to ask for them
+
+4. Now you can start the game server with: 
+```sh
+cd game_backend && MIX_ENV=prod iex -S mix phx.server
+```
+   You can check the logs with `journalctl -xefu curse_of_myrra`.
+   From now on, you can just use: 
+```sh
+MIX_ENV=prod iex -S mix phx.server
+```
+
+## Fifth Step : Starting the load test runner
+
+1. Set this env variable: `export SERVER_HOST=game_server_ip:game_server_port`.
    Where `game_server_ip` is the ip of the load test server, and `game_server_port`,
    the corresponding port.
-4. Run:
+2. Run:
    ```sh
        cd ./curse_of_myrra/server/load_test/ && iex -S mix 
    ``` 
    this drops you into an Elixir shell from which you'll run the load tests.
-5. From the elixir shell, start the load test with:
+3. From the elixir shell, start the load test with:
    ```elixir
    LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
    ``` 
