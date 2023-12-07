@@ -426,8 +426,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       %{
         id: loot.id,
         loot_type: {:health, :placeholder},
-        position: transform_position_to_game_position(loot.position),
-        pickup_mechanic: loot.pickup_mechanic
+        position: transform_position_to_game_position(loot.position)
       }
     end)
   end
