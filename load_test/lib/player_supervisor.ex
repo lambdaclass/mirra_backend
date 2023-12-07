@@ -14,17 +14,17 @@ defmodule LoadTest.PlayerSupervisor do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)
   end
 
-  def spawn_lobby_player(player_number, max_duration_seconds) do
+  def spawn_lobby_player(player_number, max_duration_seconds, client_event_rate) do
     DynamicSupervisor.start_child(
       __MODULE__,
-      {LobbyPlayer, {player_number, max_duration_seconds}}
+      {LobbyPlayer, {player_number, max_duration_seconds, client_event_rate}}
     )
   end
 
-  def spawn_game_player(player_number, game_id, max_duration_seconds) do
+  def spawn_game_player(player_number, game_id, max_duration_seconds, client_event_rate) do
     DynamicSupervisor.start_child(
       __MODULE__,
-      {GamePlayer, {player_number, game_id, max_duration_seconds}}
+      {GamePlayer, {player_number, game_id, max_duration_seconds, client_event_rate}}
     )
   end
 
@@ -34,9 +34,9 @@ defmodule LoadTest.PlayerSupervisor do
   end
 
   # creates `num_players` which will try to join a lobby
-  def spawn_players(num_players, duration_seconds \\ nil) do
+  def spawn_players(num_players, duration_seconds \\ nil, client_event_rate \\ 100) do
     for i <- 1..num_players do
-      {:ok, _pid} = spawn_lobby_player(i, duration_seconds)
+      {:ok, _pid} = spawn_lobby_player(i, duration_seconds, client_event_rate)
     end
   end
 

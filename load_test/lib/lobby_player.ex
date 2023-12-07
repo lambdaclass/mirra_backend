@@ -12,7 +12,7 @@ defmodule LoadTest.LobbyPlayer do
   alias LoadTest.Communication.Proto.BoardSize
   alias LoadTest.PlayerSupervisor
 
-  def start_link({player_number, max_duration_seconds}) do
+  def start_link({player_number, max_duration_seconds, client_event_rate}) do
     player_id = "user_#{player_number}"
     ws_url = ws_url(player_id)
 
@@ -20,14 +20,15 @@ defmodule LoadTest.LobbyPlayer do
       user_id: player_id,
       player_id: player_id,
       player_number: player_number,
-      max_duration_seconds: max_duration_seconds
+      max_duration_seconds: max_duration_seconds,
+      client_event_rate: client_event_rate
     })
   end
 
   def handle_frame({_type, msg}, state) do
     case LobbyEvent.decode(msg) do
       %LobbyEvent{
-        type: :GAME_STARTED,
+        type: :PREPARING_GAME,
         game_id: game_id,
         game_config: _config,
         server_hash: _server_hash
@@ -36,7 +37,8 @@ defmodule LoadTest.LobbyPlayer do
           PlayerSupervisor.spawn_game_player(
             state.player_number,
             game_id,
-            state.max_duration_seconds
+            state.max_duration_seconds,
+            state.client_event_rate
           )
 
         Process.send(pid, :play, [])

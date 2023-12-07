@@ -36,6 +36,7 @@ enum GameEventType {
     PING_UPDATE = 1;
     PLAYER_JOINED = 2;
     GAME_FINISHED = 3;
+    GAME_STARTED = 4;
 }
 
 message PlayerCharacter{
@@ -60,7 +61,7 @@ message Player {
     sint64 health = 2;
     Position position = 3;
     Status status = 4;
-    PlayerAction action = 5;
+    repeated PlayerAction action = 5;
     Position aoe_position = 6;
     uint64 kill_count = 7;
     uint64 death_count = 8;
@@ -73,6 +74,7 @@ message Player {
     map<uint64, EffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
+    uint64 action_duration_ms = 18;
 }
 
 message EffectInfo {
@@ -235,6 +237,8 @@ message LobbyEvent {
     Config game_config = 9;
     string server_hash = 10;
     uint64 host_player_id = 11;
+    uint64 amount_of_players = 12;
+    uint64 capacity = 13;
 }
 
 /* Represents the information of a player/client
@@ -330,8 +334,9 @@ enum LobbyEventType {
     TYPE_UNSPECIFIED = 0;
     CONNECTED = 1;
     PLAYER_ADDED = 2;
-    GAME_STARTED = 3;
+    PREPARING_GAME = 3;
     START_GAME = 4;
+    NOTIFY_PLAYER_AMOUNT = 5;
 }
 
 
@@ -425,6 +430,7 @@ enum MechanicType {
     HIT = 0;
     SIMPLE_SHOOT = 1;
     MULTI_SHOOT = 2;
+    GIVE_EFFECT = 3;
 }
 
 message Config {
