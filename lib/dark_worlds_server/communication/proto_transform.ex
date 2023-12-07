@@ -1,4 +1,7 @@
 defmodule DarkWorldsServer.Communication.ProtoTransform do
+  alias DarkWorldsServer.Communication.Proto.SkillCooldown
+  alias DarkWorldsServer.Communication.Proto.PlayerAction
+  alias DarkWorldsServer.Communication.Proto.Item
   alias DarkWorldsServer.Communication.Proto.Attribute
   alias DarkWorldsServer.Communication.Proto.Config
   alias DarkWorldsServer.Communication.Proto.GameAction
@@ -59,13 +62,10 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       status: player_status_encode(player.status),
       kill_count: player.kill_count,
       death_count: player.death_count,
-      # player_action_encode(player.action),
-      actions: [],
+      actions: player.actions,
       action_duration_ms: player.action_duration_ms,
-      # player.cooldowns
-      cooldowns: [],
-      # player.effects,
-      effects: [],
+      cooldowns: player.cooldowns,
+      effects: player.effects,
       character_name: player.character.name
     }
   end
@@ -78,7 +78,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       speed: projectile.speed,
       size: projectile.size,
       position: projectile.position,
-      direction: projectile.direction
+      direction: projectile.direction_angle
     }
   end
 
@@ -129,6 +129,32 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       is_reversable: is_reversable,
       player_attributes: player_attributes,
       projectile_attributes: projectile_attributes
+    }
+  end
+
+  def encode(item, Item) do
+    %Item{
+      id: item.id,
+      name: item.name,
+      size: item.size,
+      position: item.position
+    }
+  end
+
+  def encode({action_enum, action_skill_jey}, PlayerAction) do
+    %PlayerAction{
+      action: encode_player_action_enum(action_enum),
+      action_skill_key: action_skill_jey
+    }
+  end
+  def encode(action_enum, PlayerAction) do
+    %PlayerAction{action: encode_player_action_enum(action_enum)}
+  end
+
+  def encode({skill_key, cooldown_ms}, SkillCooldown) do
+    %SkillCooldown{
+      skill_key: skill_key,
+      cooldown_ms: cooldown_ms
     }
   end
 
@@ -272,6 +298,10 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   ###############################
   # Helpers for transformations #
   ###############################
+  defp encode_player_action_enum(:nothing), do: :PLAYER_ACTION_NOTHING
+  defp encode_player_action_enum(:moving), do: :PLAYER_ACTION_MOVING
+  defp encode_player_action_enum(:using_skill), do: :PLAYER_ACTION_USING_SKILL
+
   defp player_status_encode(:alive), do: :STATUS_ALIVE
   defp player_status_encode(:dead), do: :STATUS_DEAD
 

@@ -146,11 +146,35 @@ defmodule GameBackendTest do
   end
 
   test "Game state is encodable", context do
-    Communication.game_update!(context.game, now_timestamp(), now_timestamp())
+    game_state =
+      spawn_specific_loot(context.game, :collision_to_inventory)
+      |> spawn_specific_loot(:collision_to_inventory)
+
+    [inventory_item | _] = game_state.loots
+
+    position = %{x: inventory_item.position.x, y: inventory_item.position.y - 25}
+    game_state = put_in(game_state, [:players, context.player_id, :position], position)
+    game_state = put_in(game_state, [:players, context.player_id, :health], 50)
+    game_state = GameBackend.move_player(game_state, context.player_id, 90.0)
+    game_state = GameBackend.game_tick(game_state, 5000)
+
+    Communication.game_update!(game_state, now_timestamp(), now_timestamp())
+
+
+    skill_params = %{"direction_angle" => "90.0", "auto_aim" => "false"}
+    game_state = GameBackend.activate_skill(game_state, context.player_id, "slingshot", skill_params)
+    game_state = GameBackend.game_tick(game_state, 500)
+
+    game_state = GameBackend.activate_skill(game_state, context.player_id, "6", skill_params)
+    Communication.game_update!(game_state, now_timestamp(), now_timestamp())
   end
 
   defp spawn_specific_loot(game_state, loot_mechanic) do
     spawn_specific_loot(game_state, loot_mechanic, 100)
+  end
+
+  defp spawn_specific_loot(_game_state, loot_mechanic, 0) do
+    raise "error spawn_specific_loot/2 could spawn desired loot #{loot_mechanic}"
   end
 
   defp spawn_specific_loot(game_state, loot_mechanic, attempts) do
@@ -160,10 +184,6 @@ defmodule GameBackendTest do
       %{pickup_mechanic: ^loot_mechanic} -> new_game_state
       _ -> spawn_specific_loot(game_state, loot_mechanic, attempts-1)
     end
-  end
-
-  defp spawn_specific_loot(_game_state, loot_mechanic, 0) do
-    raise "error spawn_specific_loot/2 could spawn desired loot #{loot_mechanic}"
   end
 
   defp now_timestamp() do
