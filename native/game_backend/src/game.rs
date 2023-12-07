@@ -245,10 +245,8 @@ impl GameState {
             }
 
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                player.add_action(
-                    Action::UsingSkill(skill_key.clone()),
-                    skill.execution_duration_ms,
-                );
+                
+                let mut execution_duration_ms = skill.execution_duration_ms;
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
                 player.direction =
@@ -346,12 +344,17 @@ impl GameState {
                                 parse_skill_params_move_to_target(&skill_params)
                             {
                                 let distance = target_position_x * (*max_range as f32);
-                                let speed = distance / (*duration_ms as f32);
-                                player.set_moving_params(*duration_ms, speed, on_arrival_skills);
+                                execution_duration_ms = (distance / (player.speed as f32 / 20.)) as u64;
+                                player.set_moving_params(execution_duration_ms, (player.speed as f32 / 20.), on_arrival_skills);
                             }
                         }
                     }
                 }
+
+                player.add_action(
+                    Action::UsingSkill(skill_key.clone()),
+                    execution_duration_ms,
+                );
             }
         }
     }
@@ -685,7 +688,6 @@ fn get_direction_angle(
         .get("auto_aim")
         .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap());
 
-    println!("auto_aim {:?}", auto_aim);
     match auto_aim {
         Some(true) => {
             let nearest_player: Option<Position> = nearest_player_position(
