@@ -77,7 +77,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
-      action_duration_ms: action_duration_ms
+      action_duration_ms: action_duration_ms,
+      inventory: inventory
     } = player
 
     %ProtoPlayer{
@@ -98,7 +99,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
-      action_duration_ms: action_duration_ms
+      action_duration_ms: action_duration_ms,
+      inventory: inventory
     }
   end
 
@@ -255,7 +257,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
-      action_duration_ms: action_duration_ms
+      action_duration_ms: action_duration_ms,
+      inventory: inventory
     } = player
 
     %GamePlayer{
@@ -276,7 +279,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
-      action_duration_ms: action_duration_ms
+      action_duration_ms: action_duration_ms,
+      inventory: inventory
     }
   end
 
