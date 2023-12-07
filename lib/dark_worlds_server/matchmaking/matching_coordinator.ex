@@ -5,7 +5,7 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   ## Amount of players needed to start a game
   @session_player_amount 10
   ## Time to wait for a matching session to be full
-  @start_game_timeout_ms 9_500
+  @start_game_timeout_ms 1
 
   #######
   # API #

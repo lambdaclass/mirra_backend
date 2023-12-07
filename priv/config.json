@@ -148,6 +148,16 @@
       ],
       "duration_ms": 999999,
       "max_distance": 500
+    },
+    {
+      "name": "projectile_leap",
+      "base_damage": 20,
+      "base_speed": 0,
+      "base_size": 1000,
+      "remove_on_collision": false,
+      "on_hit_effects": [],
+      "duration_ms": 100,
+      "max_distance": 1500
     }
   ],
   "skills": [
@@ -197,16 +207,13 @@
     },
     {
       "name": "circle_hit",
-      "cooldown_ms": 1500,
-      "execution_duration_ms": 800,
+      "cooldown_ms": 100,
+      "execution_duration_ms": 100,
       "is_passive": false,
       "mechanics": [
         {
-          "Hit": {
-            "damage": 20,
-            "range": 500,
-            "cone_angle": 360,
-            "on_hit_effects": []
+          "SimpleShoot": {
+            "projectile": "projectile_leap"
           }
         }
       ]
@@ -239,15 +246,15 @@
     },
     {
       "name": "leap",
-      "cooldown_ms": 5000,
-      "execution_duration_ms": 2000,
+      "cooldown_ms": 1000,
+      "execution_duration_ms": 1000,
       "is_passive": false,
       "mechanics": [
         {
           "MoveToTarget": {
-            "duration_ms": 2000,
-            "max_range": 2000,
-            "on_arrival_skills": "3"
+            "duration_ms": 1000,
+            "max_range": 1000,
+            "on_arrival_skills": ["3"]
           }
         }
       ]

@@ -428,6 +428,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp transform_projectile_name_to_game_projectile_skill_name("projectile_slingshot"),
     do: "SLINGSHOT"
 
+  defp transform_projectile_name_to_game_projectile_skill_name("projectile_leap"),
+    do: "CIRCLE_HET"
+
   defp transform_projectile_name_to_game_projectile_skill_name("projectile_multishot"),
     do: "MULTISHOT"
 
@@ -476,7 +479,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     do: [:attacking | transform_action_to_game_action(tail)]
 
   defp transform_action_to_game_action([{:using_skill, "2"} | tail]),
-    do: [:executingskill2 | transform_action_to_game_action(tail)]
+    do: [:startingskill1 | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([{:using_skill, "3"} | tail]),
+    do: [:executingskill1 | transform_action_to_game_action(tail)]
 
   defp transform_action_to_game_action([{:using_skill, "4"} | tail]),
     do: [:executingskill4 | transform_action_to_game_action(tail)]

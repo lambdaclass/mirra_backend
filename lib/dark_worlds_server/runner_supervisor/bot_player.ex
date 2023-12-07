@@ -62,7 +62,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     {:ok,
      %{
        game_pid: game_pid,
-       bots_enabled: true,
+       bots_enabled: false,
        game_tick_rate: tick_rate,
        players: [],
        bots: %{},

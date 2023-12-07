@@ -178,7 +178,7 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if player.can_move() {
+            if !player.can_move() {
                 return;
             }
 
@@ -235,7 +235,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if player.can_activate() {
+            if !player.can_activate() {
                 return;
             }
 
@@ -342,19 +342,11 @@ impl GameState {
                             max_range,
                             on_arrival_skills,
                         } => {
-                            if let Some(target_position) =
+                            if let Some((target_position_x, _target_position_y)) =
                                 parse_skill_params_move_to_target(&skill_params)
                             {
-                                let distance = map::distance_between_positions(
-                                    &player.position,
-                                    &target_position,
-                                )
-                                .min(*max_range as f32);
+                                let distance = target_position_x * (*max_range as f32);
                                 let speed = distance / (*duration_ms as f32);
-                                player.direction = map::angle_between_positions(
-                                    &player.position,
-                                    &target_position,
-                                );
                                 player.set_moving_params(*duration_ms, speed, on_arrival_skills);
                             }
                         }
@@ -366,7 +358,7 @@ impl GameState {
 
     pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
         if let Some(player) = self.players.get_mut(&player_id) {
-            if player.can_activate() {
+            if !player.can_activate() {
                 return;
             }
 
@@ -693,27 +685,31 @@ fn get_direction_angle(
         .get("auto_aim")
         .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap());
 
-    if auto_aim.is_some_and(|val| val) {
-        let nearest_player: Option<Position> = nearest_player_position(
-            other_players,
-            &player.position,
-            config.game.auto_aim_max_distance,
-        );
+    println!("auto_aim {:?}", auto_aim);
+    match auto_aim {
+        Some(true) => {
+            let nearest_player: Option<Position> = nearest_player_position(
+                other_players,
+                &player.position,
+                config.game.auto_aim_max_distance,
+            );
 
-        if let Some(target_player_position) = nearest_player {
-            map::angle_between_positions(&player.position, &target_player_position)
-        } else {
-            player.direction
-        }
-    } else {
-        skill_params
-            .get("direction_angle")
-            .map(|angle_str| angle_str.parse::<f32>().unwrap())
-            .unwrap_or(player.direction)
+            if let Some(target_player_position) = nearest_player {
+                map::angle_between_positions(&player.position, &target_player_position)
+            } else {
+                player.direction
+            }
+        },
+        _ => {
+            skill_params
+                .get("angle")
+                .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                .unwrap_or(player.direction)
+        },
     }
 }
 
-fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> Option<Position> {
+fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> Option<(f32, f32)> {
     let target_x = skill_params
         .get("target_x")
         .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
@@ -723,10 +719,7 @@ fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> 
         .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
 
     if let (Some(x), Some(y)) = (target_x, target_y) {
-        Some(Position {
-            x: x as i64,
-            y: y as i64,
-        })
+        Some((x, y))
     } else {
         None
     }
