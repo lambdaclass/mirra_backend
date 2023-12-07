@@ -11,7 +11,7 @@ Open source backend developed by LambdaClass in Elixir, for the communication, a
 
 ## Documentation
 
-You can find our documentation in [docs](./docs/README.md) folder, or run it locally.
+You can find our documentation in [docs](./docs/src/README.md) folder, or run it locally.
 
 To run locally, install:
 

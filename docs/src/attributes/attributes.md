@@ -9,5 +9,5 @@ Each attribute will fall in one of two categories
 - `Changeable`: This attributes can be modified by effects, see [Effects Configuration: Attributes changes](../configuration/effects.md) for more information on how this happens
 
 Read more about each entity attributes:
-- [Player attributes](./attributes/players.md)
-- [Projectile attributes](./attributes/projectiles.md)
+- [Player attributes](./players.md)
+- [Projectile attributes](./projectiles.md)
