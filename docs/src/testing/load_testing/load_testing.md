@@ -54,10 +54,11 @@ Host myrra_load_test_server
 ## Running Load tests
 
 You're going to need 3 tabs in order to run load tests: 
-
-- one for the load test server
-- one to monitor the load test server status
-- one for the load test runner
+on the server ip: 
+    - one for the load test server
+    - one to monitor the load test server status (e.g. htop)
+On the client ip:
+   - load test runner
 
 ### Starting the load test server
 
