@@ -33,7 +33,7 @@ Additionally, the server can communicate various messages to the clients:
 
 - game_started: Indicates the start of the game.
 - game_finished: Signals the end of the game.
-- state_update: Represents the differences between two states.
+- state_update: Contains all the information about the game
 - player_joined: Indicates a player joining the game.
 - ping_update: Used to inquire about the server's ping.
 
