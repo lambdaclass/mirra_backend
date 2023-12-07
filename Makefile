@@ -66,4 +66,4 @@ gen-load-test-protobuf:
 	mix format "./load_test/lib/load_test/communication/*"
 
 docs: 
-	cd docs && mdbook serve --open
+	cd docs && mdbook-mermaid install && mdbook serve --open
