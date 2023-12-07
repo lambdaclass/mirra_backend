@@ -41,7 +41,7 @@ Additionally, the server can communicate various messages to the clients:
 
 For matchmaking to work, players should be able to join a game, which will automatically start once the lobby is full or we reach a time limit (whichever happens first). 
 
-There is a single process taking care of the matchmaking, the `MatchingCoordinator`. This process is responsible for keeping track of the lobby and its state, launching a new game when the lobby is full or the time limit is reached. It also provides an API for joining and leaving the lobby.
+There is a single process taking care of the matchmaking, the `MatchingCoordinator`. This process is responsible for keeping track of a queue that receives all players that press the play button, launching a new game when it reaches the max capacity for a game or the time limit is reached (launching the game with bots).
 
 When the game starts, each player connects to the server through a websocket. The server spawns a new process for each connection, which we'll call `PlayWebSocket`. This process is responsible for handling the connection and relaying messages between the player and the game. We'll go into more detail about this later.
 
