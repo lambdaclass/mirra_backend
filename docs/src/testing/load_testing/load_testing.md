@@ -73,9 +73,8 @@ One way of checking this, besides the command above,
 is to open htop, you should see the virtual cores as 'offline'.
 
 2. Run this command to increase the file descriptor amount.
-```bash
-ulimit -n 65000
-```
+   ```bash
+   ulimit -n 65000
 
 3. Export the variables defined at `~/.env`
     ```bash
