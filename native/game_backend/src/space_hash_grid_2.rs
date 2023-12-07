@@ -63,7 +63,7 @@ impl SpatialHashGrid {
         }
     }
     pub fn clear_buckets(&mut self) {
-        self.buckets.clear();
+        self.buckets = HashMap::new();
         let buckets = self.cols * self.rows;
         for i in 0..buckets {
             self.buckets.insert(i, vec![]);
