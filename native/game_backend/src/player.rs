@@ -97,8 +97,10 @@ impl Player {
     }
 
     pub fn update_actions(&mut self) {
+        if self.action_duration_ms == 0 {
+            self.next_actions.clear();
+        }
         self.actions = self.next_actions.clone();
-        self.next_actions.clear();
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
