@@ -114,6 +114,26 @@
       "player_attributes": [],
       "projectile_attributes": [],
       "skills_keys_to_execute": ["4"]
+    },
+    {
+      "name": "muflus_hit_delay",
+      "is_reversable": false,
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": false,
+          "interval_ms": 300,
+          "trigger_count": 1
+        }
+      },
+      "player_attributes": [
+        {
+          "attribute": "health",
+          "modifier": "Additive",
+          "value": "-20"
+        }
+      ],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
     }
   ],
   "loots": [
@@ -187,10 +207,10 @@
       "mechanics": [
         {
           "Hit": {
-            "damage": 20,
+            "damage": 0,
             "range": 675,
             "cone_angle": 120,
-            "on_hit_effects": []
+            "on_hit_effects": ["muflus_hit_delay"]
           }
         }
       ]
