@@ -26,21 +26,30 @@ pub fn in_cone_angle_range(
     max_distance: u64,
     cone_angle: f32,
 ) -> bool {
+    let max_distance_plus_player_size = max_distance + center_player.size * 2;
     // TODO: Take into consideration `size` attribute of Player
-    let squared_x = (center_player.position.x - target_player.position.x).pow(2) as f64;
-    let squared_y = (center_player.position.y - target_player.position.y).pow(2) as f64;
+    let angle_rad = center_player.direction * (PI / 180.0);
+    let new_x = center_player.position.x - (((center_player.size * 2) as f32) * angle_rad.cos()) as i64;
+    let new_y = center_player.position.y - (((center_player.size * 2) as f32) * angle_rad.sin()) as i64;
+    println!("aber x y x movida {:?}, {:?}", center_player.position.x, new_x);
+    println!("aber y e y movida {:?}, {:?}", center_player.position.y, new_y);
+    let squared_x = (new_x - target_player.position.x).pow(2) as f64;
+    let squared_y = (new_y - target_player.position.y).pow(2) as f64;
     let target_distance = (squared_x + squared_y).sqrt();
 
-    if target_distance > (max_distance as f64) {
+    if target_distance > (max_distance_plus_player_size as f64) {
+        println!("no llegas flaco");
         return false;
     }
 
-    let x_diff = (target_player.position.x - center_player.position.x) as f32;
-    let y_diff = (target_player.position.y - center_player.position.y) as f32;
+    let x_diff = (target_player.position.x - new_x) as f32;
+    let y_diff = (target_player.position.y - new_y) as f32;
     let angle = y_diff.atan2(x_diff) * (180.0 / PI);
     let relative_angle = angle - center_player.direction;
     let normalized_angle = (relative_angle + 360.0) % 360.0;
-
+    println!("angulo nomralizado {:?}", normalized_angle);
+    println!("angulo relativo {:?}", relative_angle);
+    println!("angulo cono {:?}", cone_angle);
     normalized_angle < (cone_angle / 2.0)
 }
 
