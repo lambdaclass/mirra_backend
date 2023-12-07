@@ -75,6 +75,7 @@ message Player {
     RelativePosition direction = 16;
     float body_size = 17;
     uint64 action_duration_ms = 18;
+    repeated GameLoot inventory = 19;
 }
 
 message EffectInfo {
@@ -628,6 +629,9 @@ message UseSkill {
   bool auto_aim = 3;
 }
 
+/*
+Represents the action of using an item from the inventory
+*/
 message UseInventory {
     uint64 inventory_at = 1;
 }
