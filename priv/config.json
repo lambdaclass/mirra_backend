@@ -256,7 +256,7 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 20,
+      "base_speed": 25,
       "base_size": 100,
       "base_health": 100,
       "max_inventory_size": 1,
