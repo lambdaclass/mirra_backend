@@ -31,8 +31,7 @@ pub fn in_cone_angle_range(
     let squared_y = (center_player.position.y - target_player.position.y).pow(2) as f64;
     let target_distance = (squared_x + squared_y).sqrt();
 
-    if target_distance > (max_distance as f64)
-    {
+    if target_distance > (max_distance as f64) {
         return false;
     } else if target_distance <= ((center_player.size * 3) as f64) {
         return true;
