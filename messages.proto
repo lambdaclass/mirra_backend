@@ -407,7 +407,6 @@ message LootPackage {
     uint64 id = 1;
     Position position = 2;
     LootType loot_type = 3;
-    PickupMechanic pickup_mechanic = 4;
 }
 
 /*
@@ -491,17 +490,9 @@ message Modification {
     - effects: List of effects the loot will give out
 */
 message GameLoot {
-    uint64 id = 1;
+    string name = 1;
     uint64 size = 2;
-    PickupMechanic pickup_mechanic = 3;
-    repeated GameEffect effects = 4;
-    string name = 5;
-    Position position = 6;
-}
-
-enum PickupMechanic {
-    COLLISION_TO_INVENTORY = 0;
-    COLLISION_USE = 1;
+    repeated GameEffect effects = 3;
 }
 
 /*
@@ -645,7 +636,6 @@ message GameAction {
     oneof action_type {
         Move move = 1;
         UseSkill use_skill = 2;
-        UseInventory use_inventory = 3;
     }
-    int64 timestamp = 4;
+    int64 timestamp = 3;
 }

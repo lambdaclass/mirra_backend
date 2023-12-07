@@ -158,15 +158,6 @@ defmodule LoadTest.Communication.Proto.MechanicType do
   field(:GIVE_EFFECT, 3)
 end
 
-defmodule LoadTest.Communication.Proto.PickupMechanic do
-  @moduledoc false
-
-  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:COLLISION_TO_INVENTORY, 0)
-  field(:COLLISION_USE, 1)
-end
-
 defmodule LoadTest.Communication.Proto.GameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -553,12 +544,6 @@ defmodule LoadTest.Communication.Proto.LootPackage do
     json_name: "lootType",
     enum: true
   )
-
-  field(:pickup_mechanic, 4,
-    type: LoadTest.Communication.Proto.PickupMechanic,
-    json_name: "pickupMechanic",
-    enum: true
-  )
 end
 
 defmodule LoadTest.Communication.Proto.Config do
@@ -627,18 +612,9 @@ defmodule LoadTest.Communication.Proto.GameLoot do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:id, 1, type: :uint64)
+  field(:name, 1, type: :string)
   field(:size, 2, type: :uint64)
-
-  field(:pickup_mechanic, 3,
-    type: LoadTest.Communication.Proto.PickupMechanic,
-    json_name: "pickupMechanic",
-    enum: true
-  )
-
-  field(:effects, 4, repeated: true, type: LoadTest.Communication.Proto.GameEffect)
-  field(:name, 5, type: :string)
-  field(:position, 6, type: LoadTest.Communication.Proto.Position)
+  field(:effects, 3, repeated: true, type: LoadTest.Communication.Proto.GameEffect)
 end
 
 defmodule LoadTest.Communication.Proto.GameProjectile do
@@ -807,11 +783,5 @@ defmodule LoadTest.Communication.Proto.GameAction do
     oneof: 0
   )
 
-  field(:use_inventory, 3,
-    type: LoadTest.Communication.Proto.UseInventory,
-    json_name: "useInventory",
-    oneof: 0
-  )
-
-  field(:timestamp, 4, type: :int64)
+  field(:timestamp, 3, type: :int64)
 end

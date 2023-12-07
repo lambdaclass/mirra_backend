@@ -145,13 +145,10 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   end
 
   def encode(loot, LootPackage) do
-    IO.inspect(loot)
-
     %LootPackage{
       id: loot.id,
       loot_type: loot_type_encode(loot.loot_type),
-      position: loot.position,
-      pickup_mechanic: pickup_mechanic_encode(loot.pickup_mechanic)
+      position: loot.position
     }
   end
 
@@ -387,11 +384,6 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   defp projectile_status_decode(:EXPLODED), do: :exploded
 
   defp loot_type_encode({:health, _}), do: :LOOT_HEALTH
-
-  defp pickup_mechanic_encode(:collision_to_inventory), do: :COLLISION_TO_INVENTORY
-  defp pickup_mechanic_encode(:collision_to_use), do: :COLLISION_TO_USE
-  defp pickup_mechanic_encode("CollisionToInventory"), do: :COLLISION_TO_INVENTORY
-  defp pickup_mechanic_encode("CollisionToUse"), do: :COLLISION_TO_USE
 
   defp modifier_encode(:multiplicative), do: :MULTIPLICATIVE
   defp modifier_encode(:additive), do: :ADDITIVE
