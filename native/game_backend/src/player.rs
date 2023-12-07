@@ -13,8 +13,10 @@ use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
+use crate::space_hash_grid_2::GameEntity;
+use crate::space_hash_grid_2::SpatialHashGrid;
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct Player {
     pub id: u64,
     pub character: CharacterConfig,
@@ -77,19 +79,30 @@ impl Player {
         self.kill_count += 1;
     }
 
-    pub fn move_position(&mut self, config: &Config) {
+    pub fn move_position(&mut self, config: &Config, grid: &SpatialHashGrid) {
         // A speed of 0 (or less) means the player can't move (e.g. paralyzed, frozen, etc)
         if self.speed == 0 || !self.moving {
             return;
         }
 
         self.add_action(Action::Moving, 0);
-        self.position = map::next_position(
+        let possible_next_position = map::next_position(
             &self.position,
             self.direction,
             self.speed as f32,
             config.game.width as f32,
         );
+        let ids_in_grid_for_player = grid.get_nearby(&GameEntity::from(&(self.clone())));
+        let entities_at: Vec<&GameEntity> = ids_in_grid_for_player
+            .iter()
+            .map(|ref id| grid.game_entities_at(**id))
+            .flatten()
+            .filter(|game_entity| game_entity.id != self.id)
+            .collect();
+
+        if entities_at.len() == 0 {
+           self.position = possible_next_position; 
+        }
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {

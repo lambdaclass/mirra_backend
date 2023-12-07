@@ -145,7 +145,7 @@ impl GameState {
         let zone_modifications = config.game.zone_modifications.clone();
         let game_width = config.game.width;
         let game_height = config.game.height;
-        let collisions_grid = SpatialHashGrid::new(game_width, game_height, 1_u64);
+        let collisions_grid = SpatialHashGrid::new(game_width, game_height, 100_u64);
         Self {
             config,
             players: HashMap::new(),
@@ -378,21 +378,17 @@ impl GameState {
 
     pub fn tick(&mut self, time_diff: u64) {
         self.collisions_grid.clear_buckets();
-        let mut first_player_entity = None;
-        move_players(&mut self.players, &mut self.loots, &self.config);
+        move_players(&mut self.players, &mut self.loots, &self.config, &self.collisions_grid);
 
         self.players.iter().for_each(|(player_id, player)| {
-            let entity_for_player: GameEntity = player.into();
-            if *player_id == 1_u64 {
-                first_player_entity = Some(entity_for_player.clone())
-            }
-            self.collisions_grid.register_entity(&entity_for_player);
+            // let entity_for_player: GameEntity = player.into();
+            self.collisions_grid.register_entity(&player.into());
         });
-        println!(
-            "Nearby player: {:?}",
-            self.collisions_grid
-                .get_nearby(&first_player_entity.unwrap())
-        );
+        // println!(
+        //     "Nearby player: {:?}",
+        //     self.collisions_grid
+        //         .get_nearby(&first_player_entity.unwrap())
+        // );
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
@@ -502,10 +498,10 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
     })
 }
 
-fn move_players(players: &mut HashMap<u64, Player>, loots: &mut Vec<Loot>, config: &Config) {
+fn move_players(players: &mut HashMap<u64, Player>, loots: &mut Vec<Loot>, config: &Config, grid: &SpatialHashGrid) {
     players.values_mut().for_each(|player| {
         if player.status == PlayerStatus::Alive {
-            player.move_position(config);
+            player.move_position(config, grid);
             collect_nearby_loot(loots, player);
         }
     });

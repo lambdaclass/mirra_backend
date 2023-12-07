@@ -1,6 +1,6 @@
+use crate::{map::Position, player::Player};
 use rustler::NifMap;
 use std::collections::HashMap;
-use crate::{map::Position, player::Player};
 
 #[derive(Clone, Debug, rustler::NifMap)]
 pub struct Vec2 {
@@ -22,15 +22,18 @@ pub type Bucket = Vec<GameEntity>;
 pub struct GameEntity {
     position: Vec2,
     radius: f32,
+    pub id: u64,
 }
 
 impl From<&Player> for GameEntity {
     fn from(player: &Player) -> GameEntity {
         let position = player.position.into();
         let radius = player.size as f32;
+        let id = player.id;
         GameEntity {
             position,
-            radius
+            radius,
+            id: id,
         }
     }
 }
@@ -39,6 +42,7 @@ impl From<&Player> for GameEntity {
 pub struct SpatialHashGrid {
     cols: u64,
     rows: u64,
+    bucket_total: u64,
     buckets: HashMap<u64, Bucket>,
     sceneheight: u64,
     cellsize: u64,
@@ -47,15 +51,19 @@ pub struct SpatialHashGrid {
 
 impl SpatialHashGrid {
     pub fn new(scenewidth: u64, sceneheight: u64, cellsize: u64) -> Self {
-        let cols = scenewidth / cellsize;
-        let rows = sceneheight / cellsize;
-        let mut buckets = HashMap::with_capacity((cols * rows) as usize);
-        for i in 0..(cols * rows) {
+        // let cols = scenewidth / cellsize;
+        // let rows = sceneheight / cellsize;
+        let cols = 1000;
+        let rows = 1000;
+        let bucket_total = cols*rows;
+        let mut buckets = HashMap::new();
+        for i in 0..bucket_total {
             buckets.insert(i, vec![]);
         }
         SpatialHashGrid {
             cols,
             rows,
+            bucket_total,
             buckets,
             sceneheight,
             cellsize,
@@ -64,20 +72,27 @@ impl SpatialHashGrid {
     }
     pub fn clear_buckets(&mut self) {
         self.buckets = HashMap::new();
-        let buckets = self.cols * self.rows;
-        for i in 0..buckets {
-            self.buckets.insert(i, vec![]);
+        let mocked_entity = GameEntity {
+            position: Vec2 { x: 1f32, y: 1f32 },
+            radius: 1f32,
+            id: (2_u64 << 32),
+        };
+        for i in 0..self.bucket_total {
+            self.buckets.insert(i, vec![mocked_entity.clone()]);
         }
     }
     pub fn register_entity(&mut self, entity: &GameEntity) {
-        let cell_ids = self.calculate_id_for(entity);
-        for ref id in cell_ids {
-            let mut bucket = self.buckets.get_mut(id).expect("Grid not defined at: {id}");
+        let cell_ids = self.calculate_ids_for(entity);
+        for (indx, ref id) in cell_ids.iter().enumerate() {
+            let bucket = self
+                .buckets
+                .get_mut(id)
+                .expect(&format!("Grid not defined at: {id} with index: {indx}"));
             bucket.push(entity.clone());
         }
     }
 
-    pub fn calculate_id_for(&self, entity: &GameEntity) -> Vec<u64> {
+    pub fn calculate_ids_for(&self, entity: &GameEntity) -> Vec<u64> {
         let mut buckets_entity_is_in = vec![];
         let min = Vec2 {
             x: entity.position.x - entity.radius,
@@ -93,6 +108,7 @@ impl SpatialHashGrid {
         let bottom_right = Vec2 { x: max.x, y: max.y };
         let bottom_left = Vec2 { x: min.x, y: max.y };
         let positions_entity_touches = vec![top_left, top_right, bottom_right, bottom_left];
+        // println!("{:?}", positions_entity_touches);
         for position in positions_entity_touches {
             self.add_to_bucket(position, width as f32, &mut buckets_entity_is_in)
         }
@@ -103,11 +119,16 @@ impl SpatialHashGrid {
         let x_ref = (vec.x / (self.cellsize as f32));
         let y_ref = (vec.y / (self.cellsize as f32));
         let cell_position = ((x_ref + y_ref) * width).floor();
+        // println!("x: {}, y: {}, cell_pos: {}", x_ref, y_ref, cell_position);
         bucket.push(cell_position as u64);
     }
 
     pub fn get_nearby(&self, entity: &GameEntity) -> Vec<u64> {
         let vec: Vec<GameEntity> = vec![];
-        return self.calculate_id_for(entity);
+        return self.calculate_ids_for(entity);
+    }
+
+    pub fn game_entities_at(&self, id: u64) -> &Bucket {
+        self.buckets.get(&id).expect(&format!("{id} is not known"))
     }
 }
