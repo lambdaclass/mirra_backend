@@ -208,7 +208,7 @@
         {
           "Hit": {
             "damage": 0,
-            "range": 675,
+            "range": 975,
             "cone_angle": 120,
             "on_hit_effects": ["muflus_hit_delay"]
           }
@@ -277,7 +277,7 @@
       "name": "muflus",
       "active": true,
       "base_speed": 25,
-      "base_size": 100,
+      "base_size": 150,
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
