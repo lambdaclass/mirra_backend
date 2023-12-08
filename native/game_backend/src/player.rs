@@ -98,7 +98,8 @@ impl Player {
 
     pub fn update_actions(&mut self) {
         if !self.is_executing_action() {
-            self.next_actions.clear();
+            self.next_actions
+                .retain(|action| matches!(action, Action::Moving));
         }
         self.actions = self.next_actions.clone();
     }
