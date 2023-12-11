@@ -53,7 +53,7 @@ be found at <https://hexdocs.pm/game_backend>.
 - Erlang OTP >= 26
 - Elixir >= 1.15.4
 - Docker and docker compose
-- inotify-utils (optional, for development live reload)
+- [inotify-utils](https://hexdocs.pm/phoenix/installation.html#inotify-tools-for-linux-users) if using Linux (optional, for development live reload)
 
 Ensure Docker is running and execute:
 
