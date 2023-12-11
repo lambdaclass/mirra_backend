@@ -640,6 +640,7 @@ message GameAction {
     oneof action_type {
         Move move = 1;
         UseSkill use_skill = 2;
+        UseInventory use_inventory = 3;
     }
-    int64 timestamp = 3;
+    int64 timestamp = 4;
 }

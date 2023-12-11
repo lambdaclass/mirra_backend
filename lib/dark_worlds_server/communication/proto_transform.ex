@@ -22,6 +22,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.Projectile, as: ProtoProjectile
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias GameBackend.Player, as: GamePlayer
   alias GameBackend.Position, as: GamePosition
   alias GameBackend.Projectile, as: GameProjectile
@@ -223,6 +224,11 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
 
   @impl Protobuf.TransformModule
   def decode(value, Move) do
+    value
+  end
+
+  @impl Protobuf.TransformModule
+  def decode(value, UseInventory) do
     value
   end
 

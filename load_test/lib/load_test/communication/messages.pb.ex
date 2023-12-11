@@ -784,5 +784,11 @@ defmodule LoadTest.Communication.Proto.GameAction do
     oneof: 0
   )
 
-  field(:timestamp, 3, type: :int64)
+  field(:use_inventory, 3,
+    type: LoadTest.Communication.Proto.UseInventory,
+    json_name: "useInventory",
+    oneof: 0
+  )
+
+  field(:timestamp, 4, type: :int64)
 end
