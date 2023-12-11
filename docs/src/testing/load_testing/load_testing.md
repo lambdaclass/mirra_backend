@@ -51,6 +51,8 @@ Host myrra_load_test_server
   User user
 ```
 
+(You don't have to literally put `user` there. Put the appropiate user based on the server you'll be using).
+
 ## Running Load tests
 
 You're going to need 3 tabs in order to run load tests: 
@@ -109,16 +111,13 @@ ulimit -n 65000
 ```
 3. Run:
    ```sh
-       cd ./curse_of_myrra/server/load_test/ && iex -S mix 
+       cd ./game_backend/load_test/ && iex -S mix 
    ``` 
    this drops you into an Elixir shell from which you'll run the load tests.
 4. From the elixir shell, start the load test with:
    ```elixir
    LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
    ``` 
-
-(You don't have to literally put `user` there. Put the appropiate user based on the server you'll be using).
-
 
 ## Load Test Server First Time Setup
 
