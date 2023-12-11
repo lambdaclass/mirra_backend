@@ -13,6 +13,7 @@ use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
+use crate::map::distance_between_positions;
 use crate::space_hash_grid_2::GameEntity;
 use crate::space_hash_grid_2::SpatialHashGrid;
 
@@ -92,17 +93,20 @@ impl Player {
             self.speed as f32,
             config.game.width as f32,
         );
-        let ids_in_grid_for_player = grid.get_nearby(&GameEntity::from(&(self.clone())));
-        let entities_at: Vec<&GameEntity> = ids_in_grid_for_player
-            .iter()
-            .map(|ref id| grid.game_entities_at(**id))
-            .flatten()
-            .filter(|game_entity| game_entity.id != self.id)
-            .collect();
 
-        if entities_at.len() == 0 {
+        // let ids_in_grid_for_player = grid.get_nearby(&GameEntity::from(&(self.clone())));
+        // let entities_at: Vec<&GameEntity> = ids_in_grid_for_player
+        //     .iter()
+        //     .map(|ref id| grid.game_entities_at(**id))
+        //     .flatten()
+        //     .filter(|game_entity| game_entity.id != self.id && distance_between_positions(&Position::from(game_entity.position.clone()), &self.position) <= (game_entity.radius + self.size as f32))
+        //     .collect();
+        //
+        // println!("{:?}", entities_at);
+
+        // if entities_at.len() == 0 {
            self.position = possible_next_position; 
-        }
+        // }
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {

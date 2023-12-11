@@ -3,8 +3,10 @@ use crate::space_hash_grid_2::{GameEntity, SpatialHashGrid};
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
+use rustler::ResourceArc;
 use serde::Deserialize;
 use std::collections::HashMap;
+use std::sync::Mutex;
 
 use crate::config::Config;
 use crate::effect;
@@ -104,8 +106,12 @@ pub struct GameState {
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
-    pub collisions_grid: SpatialHashGrid,
+    pub collisions_grid: ResourceArc<SpatialHashGridResource>,
     next_id: u64,
+}
+
+pub struct SpatialHashGridResource {
+    resource: Mutex<SpatialHashGrid>,
 }
 
 impl GameConfig {
@@ -161,7 +167,7 @@ impl GameState {
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
-            collisions_grid,
+            collisions_grid: ResourceArc::new(SpatialHashGridResource{ resource: Mutex::new(collisions_grid) }),
         }
     }
 
@@ -377,12 +383,20 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
-        self.collisions_grid.clear_buckets();
-        move_players(&mut self.players, &mut self.loots, &self.config, &self.collisions_grid);
+
+        {
+            let mut grid = self.collisions_grid.resource.lock().expect("Couldn't get resource");
+            grid.clear_buckets();
+            for (_player_id, player) in self.players.iter() {
+                grid.register_entity(&GameEntity::from(player));
+            }
+        }
+
+        move_players(&mut self.players, &mut self.loots, &self.config, &(self.collisions_grid).resource.lock().expect("Couldnt get resource"));
 
         self.players.iter().for_each(|(player_id, player)| {
             // let entity_for_player: GameEntity = player.into();
-            self.collisions_grid.register_entity(&player.into());
+            self.collisions_grid.resource.lock().expect("Couldnt get resource").register_entity(&player.into());
         });
         // println!(
         //     "Nearby player: {:?}",

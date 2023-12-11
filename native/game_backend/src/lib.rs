@@ -10,10 +10,11 @@ mod skill;
 mod space_hash_grid_2;
 
 use crate::config::Config;
-use crate::game::{EntityOwner, GameError, GameState};
+use crate::game::{EntityOwner, GameError, GameState, SpatialHashGridResource};
 use crate::map::Position;
 use crate::player::Player;
 use rand::Rng;
+use rustler::{Env, Term};
 use std::collections::HashMap;
 
 #[rustler::nif()]
@@ -125,5 +126,11 @@ rustler::init!(
         activate_skill,
         activate_inventory,
         game_tick,
-    ]
+    ],
+    load=load
 );
+
+fn load(env: Env, _info: Term) -> bool {
+  rustler::resource!(SpatialHashGridResource, env);
+  true
+}

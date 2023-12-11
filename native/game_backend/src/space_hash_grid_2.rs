@@ -4,8 +4,8 @@ use std::collections::HashMap;
 
 #[derive(Clone, Debug, rustler::NifMap)]
 pub struct Vec2 {
-    x: f32,
-    y: f32,
+    pub x: f32,
+    pub y: f32,
 }
 
 impl From<Position> for Vec2 {
@@ -16,12 +16,20 @@ impl From<Position> for Vec2 {
     }
 }
 
+impl From<Vec2> for Position {
+    fn from(value: Vec2) -> Self {
+        let x = value.x as i64;
+        let y = value.y as i64;
+        Self { x, y }
+    }
+}
+
 pub type Bucket = Vec<GameEntity>;
 
 #[derive(Clone, Debug, rustler::NifMap)]
 pub struct GameEntity {
-    position: Vec2,
-    radius: f32,
+    pub position: Vec2,
+    pub radius: f32,
     pub id: u64,
 }
 
@@ -33,7 +41,7 @@ impl From<&Player> for GameEntity {
         GameEntity {
             position,
             radius,
-            id: id,
+            id,
         }
     }
 }
@@ -53,8 +61,8 @@ impl SpatialHashGrid {
     pub fn new(scenewidth: u64, sceneheight: u64, cellsize: u64) -> Self {
         // let cols = scenewidth / cellsize;
         // let rows = sceneheight / cellsize;
-        let cols = 1000;
-        let rows = 1000;
+        let cols = 100;
+        let rows = 100;
         let bucket_total = cols*rows;
         let mut buckets = HashMap::new();
         for i in 0..bucket_total {
@@ -72,13 +80,8 @@ impl SpatialHashGrid {
     }
     pub fn clear_buckets(&mut self) {
         self.buckets = HashMap::new();
-        let mocked_entity = GameEntity {
-            position: Vec2 { x: 1f32, y: 1f32 },
-            radius: 1f32,
-            id: (2_u64 << 32),
-        };
         for i in 0..self.bucket_total {
-            self.buckets.insert(i, vec![mocked_entity.clone()]);
+            self.buckets.insert(i, vec![]);
         }
     }
     pub fn register_entity(&mut self, entity: &GameEntity) {
