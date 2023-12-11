@@ -3,8 +3,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   require Logger
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
-  alias DarkWorldsServer.Communication.Proto.UseSkill
   alias DarkWorldsServer.Communication.Proto.UseInventory
+  alias DarkWorldsServer.Communication.Proto.UseSkill
 
   # This is the amount of time between state updates in milliseconds
   @game_tick_rate_ms 20
