@@ -52,6 +52,8 @@ be found at <https://hexdocs.pm/game_backend>.
 - Rust >= 1.72.0
 - Erlang OTP >= 26
 - Elixir >= 1.15.4
+- Docker and docker compose
+- inotify-utils (optional, for development live reload)
 
 Ensure Docker is running and execute:
 
@@ -63,4 +65,3 @@ make start
 ```
 
 ## Contributing
-

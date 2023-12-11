@@ -35,7 +35,7 @@ pub struct Player {
     next_actions: Vec<Action>,
 }
 
-#[derive(NifTaggedEnum, Clone, PartialEq)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
 pub enum PlayerStatus {
     Alive,
     Death,
