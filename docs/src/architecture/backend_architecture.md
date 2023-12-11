@@ -26,31 +26,25 @@ The architecture of the server should be as simple as possible.
 We aim for the API provided to clients during a game to be as simple as possible:
 
 - move(joystick_values): Allows a player to move through the board by providing joystick values corresponding to the direction of movement.
-- basic_attack(joystick_values): Takes joystick values to determine the direction of the attack.
-- skill(skill_name, joystick_values): Accepts joystick values for skill direction along with the skill name.
+- use_skill(skill_name, joystick_values): Accepts joystick values for skill direction along with the skill name.
 - refresh: Used to request the entire game state.
 
 Additionally, the server can communicate various messages to the clients:
 
-- game_start: Indicates the start of the game.
-- game_end: Signals the end of the game.
-- state: Represents the differences between two states.
-- game_state: Contains all the information about the game.
-- ping: Used to inquire about the server's ping.
+- game_started: Indicates the start of the game.
+- game_finished: Signals the end of the game.
+- state_update: Contains all the information about the game
+- player_joined: Indicates a player joining the game.
+- ping_update: Used to inquire about the server's ping.
 
 ## Matchmaking
 
-For matchmaking to work, players should be able to:
+For matchmaking to work, players should be able to join a game, which will automatically start once the lobby is full or we reach a time limit (whichever happens first). 
 
-- Join an existing lobby.
-- Create a lobby if no other exists.
-- Start the game once the lobby is full.
+There is a single process taking care of the matchmaking, the `MatchingCoordinator`. This process is responsible for keeping track of a queue that receives all players that press the play button, launching a new game when it reaches the max capacity for a game or the time limit is reached (launching the game with bots).
 
-All matchmaking sessions are spawned by a `DynamicSupervisor` called `MatchingSupervisor`. When a player creates a lobby, this supervisor starts a new child `MatchingSession` process. This is the process that will both handle the logic and hold all of the state for that lobby. Right now, that's just a list of the current players in the lobby, along with the ability to add/remove players and start the game.
+When the game starts, each player connects to the server through a websocket. The server spawns a new process for each connection, which we'll call `PlayWebSocket`. This process is responsible for handling the connection and relaying messages between the player and the game. We'll go into more detail about this later.
 
-Inside a lobby, when the game starts, the lobby process uses [Phoenix PubSub](https://hexdocs.pm/phoenix_pubsub/Phoenix.PubSub.html) to broadcast a message saying that the game has started; then it terminates. We'll go into it later, but the idea is that the *gameplay* part of the server will pick up this message and start the game from there.
-
-Every lobby has a unique `ID`, which we call the `session_id` throughout the code. This id is simply the erlang `PID` of the lobby process with an encoding on top to make it human readable. This way players can pass it around to their friends to join their lobbies.
 
 ### Create lobby
 
@@ -98,8 +92,8 @@ sequenceDiagram
 
 When a game starts, two things happen:
 
-- A game session is spawned by a `DynamicSupervisor` called `Engine`.  This `Engine` starts a new child `Runner` process, which holds the entire game's state and the logic to update it according to the players' actions. The PID of this `Runner` is encoded in a human friendly format and called the `game_session_id`.
-- Every player connects to the game through websocket under the `/play/:game_session_id` path. Each player's connection is handled by a separate [cowboy websocket](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/) process, defined in the `PlayWebSocket` module. On startup, the process saves the runner's PID so it can communicate with it. Inside the game, a player is the same as a websocket connection.
+- A game session is spawned by a `DynamicSupervisor` called `GameBackend`.  This `GameBackend` starts a new child `Runner` process, which holds the entire game's state and the logic to update it according to the players' actions. The PID of this `Runner` is encoded in a human friendly format and called the `game_session_id`.
+- Every player connects to the game through websocket under the `/play/:game_id/:client_id/:player_id` path. Each player's connection is handled by a separate [cowboy websocket](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/) process, defined in the `PlayWebSocket` module. On startup, the process saves the runner's PID so it can communicate with it. Inside the game, a player is the same as a websocket connection.
 
 Let's go over the main gameplay flow. Let's say `player_1` wants to move to the right one square. To do this, they send a `JSON` frame over the socket that looks like this:
 
@@ -116,19 +110,13 @@ GenServer.cast(runner_pid, {:move, user_id, action})
 The `Runner`'s appropriate handler eventually picks up this message, which in this case looks like this:
 
 ```elixir
-  def handle_cast({:move, user_id, %ActionOk{value: value, timestamp: timestamp}}, state) do
-    angle =
-      case Nx.atan2(value.y, value.x) |> Nx.multiply(Nx.divide(180.0, Nx.Constants.pi())) |> Nx.to_number() do
-        pos_degree when pos_degree >= 0 -> pos_degree
-        neg_degree -> neg_degree + 360
-      end
-
-    player_id = state.user_to_player[user_id]
-    game_state = LambdaGameEngine.move_player(state.game_state, player_id, angle)
+  def handle_cast({:move, user_id, %Move{angle: angle}, timestamp}, state) do
+    player_id = state.user_to_player[user_id] || user_id
+    game_state = GameBackend.move_player(state.game_state, player_id, angle)
 
     state =
       Map.put(state, :game_state, game_state)
-      |> put_in([:player_timestamps, player_id], timestamp)
+      |> put_in([:player_timestamps, user_id], timestamp)
 
     {:noreply, state}
   end
@@ -137,9 +125,9 @@ The `Runner`'s appropriate handler eventually picks up this message, which in th
 Every action handler updates the game state accordingly. We're managing game
 updates through a tick rate. The runner sends a message to itself every 30ms and
 does a broadcast of the new state. Currently, this is being done on the handler
-that matches with `:update_state`.
+that matches with `:game_tick`.
 
-You'll notice the `init` function on the `PlayWebSocket` process does (among other things) the following:
+You'll notice the `websocket_init` function on the `PlayWebSocket` process does (among other things) the following:
 
 ```elixir
 :ok = Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}")
@@ -155,14 +143,14 @@ Below are two diagrams summarizing the whole flow.
 sequenceDiagram
     participant Player (Unity Client)
     participant Server
-    participant Engine
+    participant GameBackend
     participant Runner
     participant PlayerWebSocket
     Player (Unity Client)->>Server: Start Game
-    Server->>Engine: Start Runner
-    Engine->>Runner: Spawn child
-    Runner->>Engine: Runner PID
-    Engine->>Server: PID
+    Server->>GameBackend: Start Runner
+    GameBackend->>Runner: Spawn child
+    Runner->>GameBackend: Runner PID
+    GameBackend->>Server: PID
     Server->>Player (Unity Client): game_session_id
     Player (Unity Client)->>Server: ws://.../play/:game_session_id
     Server->>PlayerWebSocket: Handle connection
@@ -187,17 +175,12 @@ sequenceDiagram
 
 ## State management and Rust NIFs
 
-In the architecture walkthrough above, we glossed over how the game state is handled. Currently, it consists of two things:
-
-- A list of players, each of which has an `id`, a position, and a health value.
-- A `board`, which is just a matrix indicating what each cell on the map contains (whether it's empty, has a player in it, etc).
-
-This state is kept inside the `Runner` process, but *state transitions* (players moving, attacking, etc) are computed in Rust. To call Rust code from Elixir we use [Rustler](https://github.com/rusterlium/rustler), which allows us to write `NIF`s; a way to call low level performant code inside the Erlang VM. You can read more about them [here](https://www.erlang.org/doc/tutorial/nif.html) and [here](https://www.erlang.org/doc/man/erl_nif.html).
+In the architecture walkthrough above, we glossed over how the game state is handled. This state is kept inside the `Runner` process, but *state transitions* (players moving, attacking, etc) are computed in Rust. To call Rust code from Elixir we use [Rustler](https://github.com/rusterlium/rustler), which allows us to write `NIF`s; a way to call low level performant code inside the Erlang VM. You can read more about them [here](https://www.erlang.org/doc/tutorial/nif.html) and [here](https://www.erlang.org/doc/man/erl_nif.html).
 
 All the Rust game state code is located inside the `native/gamestate` directory. The functions exposed to Elixir are all in the `lib.rs` file. Here's the function that we call to move players around the map:
 
 ```rust
-#[rustler::nif(schedule = "DirtyCpu")]
+#[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, direction: Direction) -> GameState {
     let mut game_2 = game;
     game_2.move_player(player_id, direction);
@@ -205,7 +188,7 @@ fn move_player(game: GameState, player_id: u64, direction: Direction) -> GameSta
 }
 ```
 
-The associated Elixir function is inside the `Engine.Game` module:
+The associated Elixir function is inside the `GameBackend.Game` module:
 
 ```elixir
 def move_player(_a, _b, _c), do: :erlang.nif_error(:nif_not_loaded)
