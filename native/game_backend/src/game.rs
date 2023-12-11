@@ -388,11 +388,13 @@ impl GameState {
             let mut grid = self.collisions_grid.resource.lock().expect("Couldn't get resource");
             grid.clear_buckets();
             for (_player_id, player) in self.players.iter() {
-                grid.register_entity(&GameEntity::from(player));
+                if player.status == PlayerStatus::Alive {
+                    grid.register_entity(&GameEntity::from(player));
+                }
             }
-        }
 
-        move_players(&mut self.players, &mut self.loots, &self.config, &(self.collisions_grid).resource.lock().expect("Couldnt get resource"));
+            move_players(&mut self.players, &mut self.loots, &self.config, &grid);
+        }
 
         self.players.iter().for_each(|(player_id, player)| {
             // let entity_for_player: GameEntity = player.into();
