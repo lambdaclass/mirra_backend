@@ -7,7 +7,7 @@ format:
 
 check:
 	mix credo --strict
-	cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings
+	cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings -D clippy::nursery -D clippy::all -D clippy::complexity -A clippy::use_self 
 
 .PHONY: setup dependencies db stop start run tests elixir-tests shell prepush credo docs
 
