@@ -197,8 +197,11 @@ impl GameState {
     }
 
     fn activate_skills(&mut self) {
-        let cloned_players: Vec<Player> =
-            self.players.values().map(|player| player.clone()).collect();
+        let cloned_players: Vec<Player> = self
+            .players
+            .iter_mut()
+            .map(|(_, player)| player.clone())
+            .collect();
 
         self.players.values_mut().for_each(|player| {
             let skill_keys = player.skills_keys_to_execute.clone();

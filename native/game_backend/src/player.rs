@@ -16,7 +16,7 @@ use crate::map;
 use crate::map::Position;
 use crate::skill::SkillMovingParams;
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct Player {
     pub id: u64,
     pub character: CharacterConfig,
