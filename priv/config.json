@@ -114,6 +114,26 @@
       "player_attributes": [],
       "projectile_attributes": [],
       "skills_keys_to_execute": ["4"]
+    },
+    {
+      "name": "muflus_hit_delay",
+      "is_reversable": false,
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": false,
+          "interval_ms": 300,
+          "trigger_count": 1
+        }
+      },
+      "player_attributes": [
+        {
+          "attribute": "health",
+          "modifier": "Additive",
+          "value": "-20"
+        }
+      ],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
     }
   ],
   "loots": [
@@ -182,15 +202,15 @@
     {
       "name": "hit",
       "cooldown_ms": 1000,
-      "execution_duration_ms": 500,
+      "execution_duration_ms": 1000,
       "is_passive": false,
       "mechanics": [
         {
           "Hit": {
-            "damage": 20,
-            "range": 675,
+            "damage": 0,
+            "range": 975,
             "cone_angle": 120,
-            "on_hit_effects": []
+            "on_hit_effects": ["muflus_hit_delay"]
           }
         }
       ]
@@ -256,8 +276,8 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 20,
-      "base_size": 100,
+      "base_speed": 25,
+      "base_size": 150,
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
@@ -272,7 +292,7 @@
     "zone_starting_radius": 14000,
     "zone_modifications": [
       {
-        "duration_ms": 30000,
+        "duration_ms": 180000,
         "modification": {
           "modifier": "Additive",
           "value": 0
@@ -339,31 +359,31 @@
     "auto_aim_max_distance": 2000,
     "initial_positions": [
       {
-        "x": -4500,
-        "y": 1500
+        "x": -1500,
+        "y": 4000
       },
       {
-        "x": -3000,
-        "y": 4000
+        "x": -3500,
+        "y": 2000
       },
       {
         "x": 0,
         "y": 2000
       },
       {
-        "x": 3000,
+        "x": 1500,
         "y": 4000
       },
       {
-        "x": 4500,
-        "y": 1500
+        "x": 3500,
+        "y": 2000
       },
       {
-        "x": 4500,
-        "y": -1500
+        "x": 3500,
+        "y": -2000
       },
       {
-        "x": 3000,
+        "x": 1500,
         "y": -4000
       },
       {
@@ -371,12 +391,12 @@
         "y": -2000
       },
       {
-        "x": -3000,
+        "x": -1500,
         "y": -4000
       },
       {
-        "x": -4500,
-        "y": -1500
+        "x": -3500,
+        "y": -2000
       }
     ]
   }

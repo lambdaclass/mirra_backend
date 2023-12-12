@@ -178,6 +178,9 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
+            if player.action_duration_ms > 0 {
+                return;
+            }
             player.move_position(angle, &self.config);
             collect_nearby_loot(loots, player);
         }
@@ -226,6 +229,7 @@ impl GameState {
         let players = &mut self.players;
         let (mut player_in_list, mut other_players): (Vec<_>, Vec<_>) = players
             .values_mut()
+            .filter(|player| player.status == PlayerStatus::Alive)
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
@@ -501,7 +505,6 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
             projectile.direction_angle,
             projectile.speed as f32,
             config.game.width as f32,
-            config.game.height as f32,
         )
     });
 }
@@ -655,7 +658,7 @@ fn nearest_player_position(
 
     for player in players {
         if matches!(player.status, PlayerStatus::Alive) {
-            let distance = map::distance_to_center(player, position);
+            let distance = map::distance_between_positions(&player.position, position);
             if distance < nearest_distance {
                 nearest_player = Some(player.position);
                 nearest_distance = distance;

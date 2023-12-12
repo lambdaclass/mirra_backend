@@ -33,6 +33,8 @@ pub fn in_cone_angle_range(
 
     if target_distance > (max_distance as f64) {
         return false;
+    } else if target_distance <= ((center_player.size * 3) as f64) {
+        return true;
     }
 
     let x_diff = (target_player.position.x - center_player.position.x) as f32;
@@ -49,23 +51,30 @@ pub fn next_position(
     direction_angle: f32,
     movement_amount: f32,
     width: f32,
-    height: f32,
 ) -> Position {
     let angle_rad = direction_angle * (PI / 180.0);
     let new_x = (current_position.x as f32) + movement_amount * angle_rad.cos();
     let new_y = (current_position.y as f32) + movement_amount * angle_rad.sin();
 
-    let max_x_bound = width / 2.0;
-    let min_x_bound = max_x_bound * -1.0;
-    let x = new_x.min(max_x_bound).max(min_x_bound);
+    // This is to avoid  the overflow on the front end
+    let radius = (width - 200.0) / 2.0;
 
-    let max_y_bound = height / 2.0;
-    let min_y_bound = max_y_bound * -1.0;
-    let y = new_y.min(max_y_bound).max(min_y_bound);
+    let center = Position { x: 0, y: 0 };
 
-    Position {
-        x: x as i64,
-        y: y as i64,
+    let new_position = Position {
+        x: new_x as i64,
+        y: new_y as i64,
+    };
+
+    if distance_between_positions(&new_position, &center) <= radius {
+        new_position
+    } else {
+        let angle = angle_between_positions(&center, &new_position) * (PI / 180.0);
+
+        Position {
+            x: (radius * angle.cos()) as i64,
+            y: (radius * angle.sin()) as i64,
+        }
     }
 }
 
@@ -97,14 +106,16 @@ pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64
     false
 }
 
-pub fn random_position(width: u64, height: u64) -> Position {
+pub fn random_position(width: u64, _height: u64) -> Position {
     let rng = &mut rand::thread_rng();
-    let bound_x = (width / 2) as i64;
-    let bound_y = (height / 2) as i64;
+
+    let radius = (width / 2) as i64;
+    let random_radius = (rng.gen_range(0..radius.pow(2)) as f32).sqrt();
+    let angle = rng.gen_range(0.0..(2.0 * PI));
 
     Position {
-        x: rng.gen_range(-bound_x..bound_x),
-        y: rng.gen_range(-bound_y..bound_y),
+        x: (random_radius * angle.cos()) as i64,
+        y: (random_radius * angle.sin()) as i64,
     }
 }
 
@@ -115,8 +126,8 @@ pub fn angle_between_positions(center: &Position, target: &Position) -> f32 {
     (angle + 360.0) % 360.0
 }
 
-pub fn distance_to_center(player: &Player, center: &Position) -> f32 {
+pub fn distance_between_positions(position_1: &Position, position_2: &Position) -> f32 {
     let distance_squared =
-        (player.position.x - center.x).pow(2) + (player.position.y - center.y).pow(2);
+        (position_1.x - position_2.x).pow(2) + (position_1.y - position_2.y).pow(2);
     (distance_squared as f32).sqrt()
 }

@@ -1,10 +1,6 @@
 defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   use GenServer, restart: :transient
   require Logger
-  alias DarkWorldsServer.Communication
-  alias DarkWorldsServer.Communication.Proto.Move
-  alias DarkWorldsServer.Communication.Proto.UseSkill
-  alias DarkWorldsServer.RunnerSupervisor.Runner
 
   # This variable will decide how much time passes between bot decisions in milis
   @decide_delay_ms 500
@@ -31,21 +27,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   #######
   # API #
   #######
-  def start_link(game_pid, _args) do
-    GenServer.start_link(__MODULE__, {game_pid, @game_tick_rate_ms})
+  def start_link(connection_pid, config) do
+    GenServer.start_link(__MODULE__, {connection_pid, config})
   end
 
   def add_bot(bot_pid, bot_id) do
     GenServer.cast(bot_pid, {:add_bot, bot_id})
   end
-
-  # def enable_bots(bot_pid) do
-  #   GenServer.cast(bot_pid, {:bots_enabled, true})
-  # end
-
-  # def disable_bots(bot_pid) do
-  #   GenServer.cast(bot_pid, {:bots_enabled, false})
-  # end
 
   def toggle_bots(bot_pid, bots_active) do
     GenServer.cast(bot_pid, {:bots_enabled, bots_active})
@@ -55,15 +43,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # GenServer callbacks #
   #######################
   @impl GenServer
-  def init({game_pid, tick_rate}) do
-    game_id = Communication.pid_to_external_id(game_pid)
-    Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}")
-
+  def init({connection_pid, config}) do
     {:ok,
      %{
-       game_pid: game_pid,
+       connection_pid: connection_pid,
+       config: config,
        bots_enabled: true,
-       game_tick_rate: tick_rate,
+       game_tick_rate: @game_tick_rate_ms,
        players: [],
        bots: %{},
        game_state: %{}
@@ -118,7 +104,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     if bot_state.alive do
       Process.send_after(self(), {:do_action, bot_id}, state.game_tick_rate)
-      do_action(bot_id, state.game_pid, state.players, bot_state)
+      do_action(state.connection_pid, state.players, bot_state)
     end
 
     {:noreply, state}
@@ -245,17 +231,17 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     |> Map.put(:action, {:nothing, nil})
   end
 
-  defp do_action(bot_id, game_pid, _players, %{action: {:move, angle}}) do
-    Runner.move(game_pid, bot_id, %Move{angle: angle}, nil)
+  defp do_action(connection_pid, _players, %{action: {:move, angle}}) do
+    send(connection_pid, {:move, angle})
   end
 
-  defp do_action(bot_id, game_pid, _players, %{
+  defp do_action(connection_pid, _players, %{
          action: {:attack, %{type: :enemy, attacking_angle_direction: angle}, skill}
        }) do
-    Runner.attack(game_pid, bot_id, %UseSkill{angle: angle, skill: skill}, nil)
+    send(connection_pid, {:use_skill, angle, skill})
   end
 
-  defp do_action(_bot_id, _game_pid, _players, _) do
+  defp do_action(_connection_pid, _players, _) do
     nil
   end
 
@@ -284,7 +270,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     Map.put(bot_state, :objective, :nothing)
   end
 
-  def decide_objective(bot_state, %{game_state: game_state}, bot_id, %{
+  def decide_objective(bot_state, %{game_state: game_state, config: config}, bot_id, %{
         enemies_by_distance: enemies_by_distance,
         loots_by_distance: loots_by_distance
       }) do
@@ -302,20 +288,20 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     if out_of_area? do
       Map.put(bot_state, :objective, :flee_from_zone)
     else
-      set_objective(bot_state, bot, game_state, closest_entity)
+      set_objective(bot_state, bot, game_state, config, closest_entity)
     end
   end
 
   def decide_objective(bot_state, _, _, _), do: Map.put(bot_state, :objective, :nothing)
 
-  defp set_objective(bot_state, nil, _game_state, _closest_entities),
+  defp set_objective(bot_state, nil, _game_state, _config, _closest_entities),
     do: Map.put(bot_state, :objective, :waiting_game_update)
 
-  defp set_objective(bot_state, bot, game_state, nil) do
-    maybe_put_wandering_position(bot_state, bot, game_state)
+  defp set_objective(bot_state, bot, game_state, config, nil) do
+    maybe_put_wandering_position(bot_state, bot, game_state, config)
   end
 
-  defp set_objective(bot_state, _bot, _game_state, closest_entity) do
+  defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
       closest_entity.type == :enemy ->
         Map.put(bot_state, :objective, :chase_enemy)
@@ -378,33 +364,35 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     # TODO: We should find a way to use the skill of the character distance
     case bot.character_name do
       "H4ck" -> distance_to_entity < 1000 and Enum.random(0..100) < 40
-      "Muflus" -> distance_to_entity < 450 and Enum.random(0..100) < 30
+      "Muflus" -> distance_to_entity < 975 and Enum.random(0..100) < 30
     end
   end
 
   def maybe_put_wandering_position(
         %{objective: :wander, current_wandering_position: current_wandering_position} = bot_state,
         bot,
-        game_state
+        game_state,
+        config
       ) do
     if get_distance_to_point(bot.position, %{
          x: current_wandering_position.x,
          y: current_wandering_position.y
        }) <
          500 do
-      put_wandering_position(bot_state, bot, game_state)
+      put_wandering_position(bot_state, bot, game_state, config)
     else
       bot_state
     end
   end
 
-  def maybe_put_wandering_position(bot_state, bot, game_state),
-    do: put_wandering_position(bot_state, bot, game_state)
+  def maybe_put_wandering_position(bot_state, bot, game_state, config),
+    do: put_wandering_position(bot_state, bot, game_state, config)
 
   def put_wandering_position(
         bot_state,
         %{position: bot_position},
-        game_state
+        game_state,
+        config
       ) do
     bot_visibility_radius = @visibility_max_range_cells * 2
 
@@ -420,7 +408,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
       Enum.min([
         game_state.shrinking_center.x + game_state.playable_radius,
         bot_position.x + bot_visibility_radius,
-        game_state.board.width
+        get_in(config, ["game", "width"])
       ])
 
     down_y =
@@ -434,7 +422,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
       Enum.min([
         game_state.shrinking_center.y + game_state.playable_radius,
         bot_position.y + bot_visibility_radius,
-        game_state.board.height
+        get_in(config, ["game", "height"])
       ])
 
     wandering_position = %{
