@@ -2,7 +2,7 @@ defmodule LoadTest.GamePlayer do
   use WebSockex, restart: :transient
   require Logger
   use Tesla
-
+  @random_seed {100, 1222, 333, 444}
   alias LoadTest.Communication.Proto.LobbyEvent
   alias LoadTest.Communication.Proto.GameConfig
   alias LoadTest.Communication.Proto.BoardSize
@@ -35,7 +35,7 @@ defmodule LoadTest.GamePlayer do
   end
 
   def start_link({player_number, session_id, max_duration_seconds, client_event_rate}) do
-    :rand.seed(:exss, {100, 1222, 333, 444})
+    :rand.seed(:exss, @random_seed)
     ws_url = ws_url(session_id, player_number)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
@@ -72,6 +72,7 @@ defmodule LoadTest.GamePlayer do
 
   def handle_info(:play, state) do
     direction = Enum.random([:up, :down, :left, :right])
+    action = Enum.random([:move, :attack])
 
     action =
       if :rand.uniform() <= 0.75 do
@@ -80,10 +81,6 @@ defmodule LoadTest.GamePlayer do
         :attack
       end
 
-    # action = Enum.at([:move, :attack], round(rand_action))
-
-    # Melee attacks pretty much never ever land, but in general we have to rework how
-    # both melee and aoe attacks work in general, so w/e
     case action do
       :move ->
         _move(state.player_number, direction)
