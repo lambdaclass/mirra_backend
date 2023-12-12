@@ -35,7 +35,6 @@ defmodule LoadTest.GamePlayer do
   end
 
   def start_link({player_number, session_id, max_duration_seconds, client_event_rate}) do
-    :rand.seed(:exss, @random_seed)
     ws_url = ws_url(session_id, player_number)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
@@ -73,13 +72,6 @@ defmodule LoadTest.GamePlayer do
   def handle_info(:play, state) do
     direction = Enum.random([:up, :down, :left, :right])
     action = Enum.random([:move, :attack])
-
-    action =
-      if :rand.uniform() <= 0.75 do
-        :move
-      else
-        :attack
-      end
 
     case action do
       :move ->

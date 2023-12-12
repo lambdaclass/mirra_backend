@@ -35,6 +35,8 @@ defmodule LoadTest.PlayerSupervisor do
 
   # creates `num_players` which will try to join a lobby
   def spawn_players(num_players, duration_seconds \\ nil, client_event_rate \\ 100) do
+    :rand.seed(:exss, {100, 1222, 333, 444})
+
     for i <- 1..num_players do
       {:ok, _pid} = spawn_lobby_player(i, duration_seconds, client_event_rate)
     end
