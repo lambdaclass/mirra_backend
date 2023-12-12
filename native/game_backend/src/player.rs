@@ -169,6 +169,7 @@ impl Player {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
                             "health" => {
+                                println!("apply");
                                 modify_attribute(
                                     &mut player.health,
                                     &change.modifier,
@@ -289,8 +290,8 @@ impl Player {
                             match change.attribute.as_str() {
                                 "health" => {
                                     damages.push(DamageTracker {
-                                        damage: change.value.parse::<u64>().unwrap(),
-                                        attacker: owner.clone(),
+                                        damage: change.value.parse::<i64>().unwrap(),
+                                        attacker: *owner,
                                         attacked_id: self.id,
                                         on_hit_effects: vec![],
                                     });

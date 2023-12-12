@@ -95,7 +95,7 @@ pub struct KillEvent {
 }
 #[derive(Clone, NifTuple, Debug)]
 pub struct DamageTracker {
-    pub damage: u64,
+    pub damage: i64,
     pub attacker: EntityOwner,
     pub attacked_id: u64,
     pub on_hit_effects: Vec<Effect>,
@@ -355,7 +355,7 @@ impl GameState {
                                     self.pending_damages.push(DamageTracker {
                                         attacked_id: target_player.id,
                                         attacker: EntityOwner::Player(player.id),
-                                        damage: damage,
+                                        damage: damage as i64,
                                         on_hit_effects: on_hit_effects.clone(),
                                     });
                                 })
@@ -409,7 +409,7 @@ fn apply_damages_and_effects(
     while let Some(damage_tracker) = pending_damages.pop() {
         if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
             if victim.status != PlayerStatus::Death {
-                victim.decrease_health(damage_tracker.damage);
+                victim.decrease_health(damage_tracker.damage.abs() as u64);
                 victim.apply_effects(
                     &damage_tracker.on_hit_effects,
                     damage_tracker.attacker,
@@ -562,7 +562,7 @@ fn apply_projectiles_collisions(
                 pending_damages.push(DamageTracker {
                     attacked_id: player.id,
                     attacker: EntityOwner::Player(projectile.player_id),
-                    damage: projectile.damage,
+                    damage: projectile.damage as i64,
                     on_hit_effects: projectile.on_hit_effects.clone(),
                 });
 
