@@ -9,6 +9,7 @@ use crate::config::Config;
 use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
+use crate::game::DamageTracker;
 use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
@@ -258,8 +259,9 @@ impl Player {
         });
     }
 
-    pub fn run_effects(&mut self, time_diff: u64) -> Option<EntityOwner> {
+    pub fn run_effects(&mut self, time_diff: u64) -> Vec<DamageTracker> {
         let mut skills_keys_to_execute: Vec<String> = Vec::new();
+        let mut damages: Vec<DamageTracker> = Vec::new();
 
         for (effect, owner) in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
@@ -286,30 +288,26 @@ impl Player {
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
                                 "health" => {
-                                    modify_attribute(
-                                        &mut self.health,
-                                        &change.modifier,
-                                        &change.value,
+                                    damages.push(
+                                        DamageTracker{
+                                            damage: change.value.parse::<u64>().unwrap(),
+                                            attacker: owner.clone(),
+                                            attacked_id: self.id,
+                                            on_hit_effects: vec![]
+                                        }
                                     );
-                                    // TODO: refactor the use of references in order to use the update_status() remove the following duplicated code
-                                    if self.health == 0 {
-                                        self.status = PlayerStatus::Death;
-                                    }
                                 }
 
                                 _ => todo!(),
                             };
                         });
-                        if self.status == PlayerStatus::Death {
-                            return Some(*owner);
-                        }
                     }
                 }
                 _ => todo!(),
             }
         }
         self.skills_keys_to_execute = skills_keys_to_execute;
-        None
+        damages
     }
 
     pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {
