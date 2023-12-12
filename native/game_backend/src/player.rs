@@ -288,14 +288,12 @@ impl Player {
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
                                 "health" => {
-                                    damages.push(
-                                        DamageTracker{
-                                            damage: change.value.parse::<u64>().unwrap(),
-                                            attacker: owner.clone(),
-                                            attacked_id: self.id,
-                                            on_hit_effects: vec![]
-                                        }
-                                    );
+                                    damages.push(DamageTracker {
+                                        damage: change.value.parse::<u64>().unwrap(),
+                                        attacker: owner.clone(),
+                                        attacked_id: self.id,
+                                        on_hit_effects: vec![],
+                                    });
                                 }
 
                                 _ => todo!(),
