@@ -1,6 +1,6 @@
 defmodule DarkWorldsServer.Communication do
   alias DarkWorldsServer.Communication.Proto.GameAction
-  alias DarkWorldsServer.Communication.Proto.GameEvent
+  alias DarkWorldsServer.Communication.Proto.OldGameEvent
   alias DarkWorldsServer.Communication.Proto.LobbyEvent
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.PlayerInformation
@@ -67,7 +67,7 @@ defmodule DarkWorldsServer.Communication do
         server_timestamp: server_timestamp,
         loots: loots
       }) do
-    %GameEvent{
+    %OldGameEvent{
       type: :GAME_STARTED,
       players: players,
       projectiles: projectiles,
@@ -78,7 +78,7 @@ defmodule DarkWorldsServer.Communication do
       server_timestamp: server_timestamp,
       loots: loots
     }
-    |> GameEvent.encode()
+    |> OldGameEvent.encode()
   end
 
   def game_update!(%{
@@ -91,7 +91,7 @@ defmodule DarkWorldsServer.Communication do
         server_timestamp: server_timestamp,
         loots: loots
       }) do
-    %GameEvent{
+    %OldGameEvent{
       type: :STATE_UPDATE,
       players: players,
       projectiles: projectiles,
@@ -102,27 +102,27 @@ defmodule DarkWorldsServer.Communication do
       server_timestamp: server_timestamp,
       loots: loots
     }
-    |> GameEvent.encode()
+    |> OldGameEvent.encode()
   end
 
   def encode!(%{latency: latency}) do
-    %GameEvent{type: :PING_UPDATE, latency: latency}
-    |> GameEvent.encode()
+    %OldGameEvent{type: :PING_UPDATE, latency: latency}
+    |> OldGameEvent.encode()
   end
 
   def game_finished!(%{winner: winner, players: players}) do
-    %GameEvent{winner_player: winner, type: :GAME_FINISHED, players: players}
-    |> GameEvent.encode()
+    %OldGameEvent{winner_player: winner, type: :GAME_FINISHED, players: players}
+    |> OldGameEvent.encode()
   end
 
   def game_player_joined(player_id, player_name) do
-    %GameEvent{type: :PLAYER_JOINED, player_joined_id: player_id, player_joined_name: player_name}
-    |> GameEvent.encode()
+    %OldGameEvent{type: :PLAYER_JOINED, player_joined_id: player_id, player_joined_name: player_name}
+    |> OldGameEvent.encode()
   end
 
   def joined_game(player_id) do
-    %GameEvent{type: :PLAYER_JOINED, player_joined_id: player_id}
-    |> GameEvent.encode()
+    %OldGameEvent{type: :PLAYER_JOINED, player_joined_id: player_id}
+    |> OldGameEvent.encode()
   end
 
   def player_move(angle) do

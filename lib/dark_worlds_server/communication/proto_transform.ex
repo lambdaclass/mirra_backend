@@ -16,10 +16,10 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.Mechanic
   alias DarkWorldsServer.Communication.Proto.Modification
   alias DarkWorldsServer.Communication.Proto.Move
-  alias DarkWorldsServer.Communication.Proto.Player, as: ProtoPlayer
+  alias DarkWorldsServer.Communication.Proto.OldPlayer, as: ProtoPlayer
   alias DarkWorldsServer.Communication.Proto.PlayerInformation, as: ProtoPlayerInformation
-  alias DarkWorldsServer.Communication.Proto.Position, as: ProtoPosition
-  alias DarkWorldsServer.Communication.Proto.Projectile, as: ProtoProjectile
+  alias DarkWorldsServer.Communication.Proto.OldPosition, as: ProtoPosition
+  alias DarkWorldsServer.Communication.Proto.OldProjectile, as: ProtoProjectile
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias GameBackend.Player, as: GamePlayer
