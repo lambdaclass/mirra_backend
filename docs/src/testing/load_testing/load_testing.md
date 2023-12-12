@@ -1,4 +1,4 @@
-## Load Testing guide
+# Load Testing guide
 The goal of load testing is to simulate a real scenario where there
 are a lot of players in one server, our current goal is 1000 players by server.
 
