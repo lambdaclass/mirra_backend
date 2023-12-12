@@ -1,7 +1,7 @@
 use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
-#[derive(Deserialize, NifMap, Clone)]
+#[derive(Deserialize, NifMap, Clone, Debug)]
 pub struct Effect {
     pub name: String,
     pub is_reversable: bool,
@@ -11,21 +11,21 @@ pub struct Effect {
     pub skills_keys_to_execute: Vec<String>,
 }
 
-#[derive(Deserialize, NifMap, Clone)]
+#[derive(Deserialize, NifMap, Clone, Debug)]
 pub struct AttributeChange {
     pub attribute: String, // TODO: Can this be force to be certain things? Maybe an enum
     pub modifier: AttributeModifier,
     pub value: String, // TODO: Figure out how to do dynamic types here
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone)]
+#[derive(Deserialize, NifTaggedEnum, Clone, Debug)]
 pub enum AttributeModifier {
     Additive,
     Multiplicative,
     Override,
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
+#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq, Debug)]
 pub enum TimeType {
     Instant,
     Permanent,
