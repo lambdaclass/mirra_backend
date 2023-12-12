@@ -1,11 +1,11 @@
-defmodule DarkWorldsServer.Communication.Proto.Status do
+defmodule DarkWorldsServer.Communication.Proto.PlayerStatus do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:STATUS_UNDEFINED, 0)
-  field(:STATUS_ALIVE, 1)
-  field(:STATUS_DEAD, 2)
+  field(:PLAYER_STATUS_UNDEFINED, 0)
+  field(:PLAYER_STATUS_ALIVE, 1)
+  field(:PLAYER_STATUS_DEAD, 2)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.PlayerActionEnum do
@@ -13,10 +13,10 @@ defmodule DarkWorldsServer.Communication.Proto.PlayerActionEnum do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:PLAYER_ACTION_UNDEFINED, 0)
-  field(:PLAYER_ACTION_NOTHING, 1)
-  field(:PLAYER_ACTION_MOVING, 2)
-  field(:PLAYER_ACTION_USING_SKILL, 3)
+  field(:PLAYER_ACTION_ENUM_UNDEFINED, 0)
+  field(:PLAYER_ACTION_ENUM_NOTHING, 1)
+  field(:PLAYER_ACTION_ENUM_MOVING, 2)
+  field(:PLAYER_ACTION_ENUM_USING_SKILL, 3)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.GameEventType do
@@ -29,6 +29,15 @@ defmodule DarkWorldsServer.Communication.Proto.GameEventType do
   field(:PLAYER_JOINED, 2)
   field(:GAME_FINISHED, 3)
   field(:GAME_STARTED, 4)
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ALIVE, 0)
+  field(:DEAD, 1)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.Action do
@@ -63,6 +72,25 @@ defmodule DarkWorldsServer.Communication.Proto.Direction do
   field(:DOWN, 2)
   field(:LEFT, 3)
   field(:RIGHT, 4)
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldPlayerAction do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:NOTHING, 0)
+  field(:ATTACKING, 1)
+  field(:ATTACKING_AOE, 2)
+  field(:STARTING_SKILL_1, 3)
+  field(:STARTING_SKILL_2, 4)
+  field(:STARTING_SKILL_3, 5)
+  field(:STARTING_SKILL_4, 6)
+  field(:EXECUTING_SKILL_1, 7)
+  field(:EXECUTING_SKILL_2, 8)
+  field(:EXECUTING_SKILL_3, 9)
+  field(:EXECUTING_SKILL_4, 10)
+  field(:MOVING, 11)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.PlayerEffect do
@@ -150,6 +178,7 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
   field(:GIVE_EFFECT, 3)
+  field(:MOVE_TO_TARGET, 4)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.Position do
@@ -190,7 +219,7 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   field(:speed, 4, type: :sint64)
   field(:size, 5, type: :float)
   field(:direction, 6, type: :float)
-  field(:status, 7, type: DarkWorldsServer.Communication.Proto.Status, enum: true)
+  field(:status, 7, type: DarkWorldsServer.Communication.Proto.PlayerStatus, enum: true)
   field(:kill_count, 8, type: :uint64, json_name: "killCount")
   field(:death_count, 9, type: :uint64, json_name: "deathCount")
   field(:actions, 10, repeated: true, type: DarkWorldsServer.Communication.Proto.PlayerAction)
@@ -276,17 +305,6 @@ defmodule DarkWorldsServer.Communication.Proto.ZoneInfo do
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
-defmodule DarkWorldsServer.Communication.Proto.GameEvent.PlayersEntry do
-  @moduledoc false
-
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:key, 1, type: :uint64)
-  field(:value, 2, type: DarkWorldsServer.Communication.Proto.Player)
-
-  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
-end
-
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -304,20 +322,14 @@ defmodule DarkWorldsServer.Communication.Proto.GameEvent do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:type, 1, type: DarkWorldsServer.Communication.Proto.GameEventType, enum: true)
-
-  field(:players, 2,
-    repeated: true,
-    type: DarkWorldsServer.Communication.Proto.GameEvent.PlayersEntry,
-    map: true
-  )
-
+  field(:players, 2, repeated: true, type: DarkWorldsServer.Communication.Proto.OldPlayer)
   field(:latency, 3, type: :uint64)
-  field(:projectiles, 4, repeated: true, type: DarkWorldsServer.Communication.Proto.Projectile)
+  field(:projectiles, 4, repeated: true, type: DarkWorldsServer.Communication.Proto.OldProjectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
   field(:player_joined_name, 6, type: :string, json_name: "playerJoinedName")
 
   field(:winner_player, 7,
-    type: DarkWorldsServer.Communication.Proto.Player,
+    type: DarkWorldsServer.Communication.Proto.OldPlayer,
     json_name: "winnerPlayer"
   )
 
@@ -328,15 +340,142 @@ defmodule DarkWorldsServer.Communication.Proto.GameEvent do
     map: true
   )
 
+  field(:player_timestamp, 9, type: :int64, json_name: "playerTimestamp")
+  field(:server_timestamp, 10, type: :int64, json_name: "serverTimestamp")
   field(:killfeed, 11, repeated: true, type: DarkWorldsServer.Communication.Proto.KillEvent)
   field(:playable_radius, 12, type: :uint64, json_name: "playableRadius")
 
   field(:shrinking_center, 13,
-    type: DarkWorldsServer.Communication.Proto.Position,
+    type: DarkWorldsServer.Communication.Proto.OldPosition,
     json_name: "shrinkingCenter"
   )
 
   field(:loots, 14, repeated: true, type: DarkWorldsServer.Communication.Proto.LootPackage)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldPlayer.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: DarkWorldsServer.Communication.Proto.OldEffectInfo)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :uint64)
+  field(:health, 2, type: :sint64)
+  field(:position, 3, type: DarkWorldsServer.Communication.Proto.OldPosition)
+  field(:status, 4, type: DarkWorldsServer.Communication.Proto.OldStatus, enum: true)
+
+  field(:action, 5,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.OldPlayerAction,
+    enum: true
+  )
+
+  field(:aoe_position, 6,
+    type: DarkWorldsServer.Communication.Proto.OldPosition,
+    json_name: "aoePosition"
+  )
+
+  field(:kill_count, 7, type: :uint64, json_name: "killCount")
+  field(:death_count, 8, type: :uint64, json_name: "deathCount")
+
+  field(:basic_skill_cooldown_left, 9,
+    type: DarkWorldsServer.Communication.Proto.MillisTime,
+    json_name: "basicSkillCooldownLeft"
+  )
+
+  field(:skill_1_cooldown_left, 10,
+    type: DarkWorldsServer.Communication.Proto.MillisTime,
+    json_name: "skill1CooldownLeft"
+  )
+
+  field(:skill_2_cooldown_left, 11,
+    type: DarkWorldsServer.Communication.Proto.MillisTime,
+    json_name: "skill2CooldownLeft"
+  )
+
+  field(:skill_3_cooldown_left, 12,
+    type: DarkWorldsServer.Communication.Proto.MillisTime,
+    json_name: "skill3CooldownLeft"
+  )
+
+  field(:skill_4_cooldown_left, 13,
+    type: DarkWorldsServer.Communication.Proto.MillisTime,
+    json_name: "skill4CooldownLeft"
+  )
+
+  field(:character_name, 14, type: :string, json_name: "characterName")
+
+  field(:effects, 15,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.OldPlayer.EffectsEntry,
+    map: true
+  )
+
+  field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
+  field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldPosition do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:x, 1, type: :uint64)
+  field(:y, 2, type: :uint64)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldEffectInfo do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ends_at, 1, type: DarkWorldsServer.Communication.Proto.MillisTime, json_name: "endsAt")
+  field(:caused_by, 2, type: :uint64, json_name: "causedBy")
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.OldProjectile do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :uint64)
+  field(:position, 2, type: DarkWorldsServer.Communication.Proto.OldPosition)
+  field(:direction, 3, type: DarkWorldsServer.Communication.Proto.RelativePosition)
+  field(:speed, 4, type: :uint32)
+  field(:range, 5, type: :uint32)
+  field(:player_id, 6, type: :uint64, json_name: "playerId")
+  field(:damage, 7, type: :uint32)
+  field(:remaining_ticks, 8, type: :sint64, json_name: "remainingTicks")
+
+  field(:projectile_type, 9,
+    type: DarkWorldsServer.Communication.Proto.ProjectileType,
+    json_name: "projectileType",
+    enum: true
+  )
+
+  field(:status, 10, type: DarkWorldsServer.Communication.Proto.ProjectileStatus, enum: true)
+  field(:last_attacked_player_id, 11, type: :uint64, json_name: "lastAttackedPlayerId")
+  field(:pierce, 12, type: :bool)
+  field(:skill_name, 13, type: :string, json_name: "skillName")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -554,7 +693,7 @@ defmodule DarkWorldsServer.Communication.Proto.SkillConfigItem do
   field(:Cooldown, 2, type: :string)
   field(:Damage, 3, type: :string)
   field(:Duration, 4, type: :string)
-  field(:Projectile, 5, type: :string)
+  field(:OldProjectile, 5, type: :string)
   field(:SkillRange, 6, type: :string)
   field(:Par1, 7, type: :string)
   field(:Par1Desc, 8, type: :string)
@@ -611,7 +750,7 @@ defmodule DarkWorldsServer.Communication.Proto.LootPackage do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:id, 1, type: :uint64)
-  field(:position, 2, type: DarkWorldsServer.Communication.Proto.Position)
+  field(:position, 2, type: DarkWorldsServer.Communication.Proto.OldPosition)
 
   field(:loot_type, 3,
     type: DarkWorldsServer.Communication.Proto.LootType,
@@ -879,6 +1018,8 @@ defmodule DarkWorldsServer.Communication.Proto.UseSkill do
   field(:skill, 1, type: :string)
   field(:angle, 2, type: :float)
   field(:auto_aim, 3, type: :bool, json_name: "autoAim")
+  field(:target_x, 4, type: :float, json_name: "targetX")
+  field(:target_y, 5, type: :float, json_name: "targetY")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

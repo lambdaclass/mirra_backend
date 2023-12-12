@@ -147,6 +147,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       action_skill_key: action_skill_jey
     }
   end
+
   def encode(action_enum, PlayerAction) do
     %PlayerAction{action: encode_player_action_enum(action_enum)}
   end

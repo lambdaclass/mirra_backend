@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option csharp_namespace = "Communication.Protobuf";
+
 message Position {
     int64 x = 1;
     int64 y = 2;
@@ -22,7 +24,7 @@ message Player {
     sint64 speed = 4;
     float size = 5;
     float direction = 6;
-    Status status = 7;
+    PlayerStatus status = 7;
     uint64 kill_count = 8;
     uint64 death_count = 9;
     repeated PlayerAction actions = 10;
@@ -70,17 +72,17 @@ message ZoneInfo {
     float radius = 2;
 }
 
-enum Status {
-    STATUS_UNDEFINED = 0;
-    STATUS_ALIVE = 1;
-    STATUS_DEAD = 2;
+enum PlayerStatus {
+    PLAYER_STATUS_UNDEFINED = 0;
+    PLAYER_STATUS_ALIVE = 1;
+    PLAYER_STATUS_DEAD = 2;
 }
 
 enum PlayerActionEnum {
-    PLAYER_ACTION_UNDEFINED = 0;
-    PLAYER_ACTION_NOTHING = 1;
-    PLAYER_ACTION_MOVING = 2;
-    PLAYER_ACTION_USING_SKILL = 3;
+    PLAYER_ACTION_ENUM_UNDEFINED = 0;
+    PLAYER_ACTION_ENUM_NOTHING = 1;
+    PLAYER_ACTION_ENUM_MOVING = 2;
+    PLAYER_ACTION_ENUM_USING_SKILL = 3;
 }
 
 
@@ -103,19 +105,18 @@ enum PlayerActionEnum {
  */
 message GameEvent {
     GameEventType type = 1;
-    /*************
-    * OLD STUFF  *
-    *************/
-    map<uint64,Player> players = 2;
+    repeated OldPlayer players = 2;
     uint64 latency = 3;
-    repeated Projectile projectiles = 4;
+    repeated OldProjectile projectiles = 4;
     uint64 player_joined_id = 5;
     string player_joined_name = 6;
-    Player winner_player = 7;
+    OldPlayer winner_player = 7;
     map<uint64, string> selected_characters = 8;
+    int64 player_timestamp = 9;
+    int64 server_timestamp = 10;
     repeated KillEvent killfeed = 11;
     uint64 playable_radius = 12;
-    Position shrinking_center = 13;
+    OldPosition shrinking_center = 13;
     repeated LootPackage loots = 14;
 }
 
@@ -132,6 +133,53 @@ enum GameEventType {
     GAME_STARTED = 4;
 }
 
+message OldPlayer {
+    uint64 id = 1;
+    sint64 health = 2;
+    OldPosition position = 3;
+    OldStatus status = 4;
+    repeated OldPlayerAction action = 5;
+    OldPosition aoe_position = 6;
+    uint64 kill_count = 7;
+    uint64 death_count = 8;
+    MillisTime basic_skill_cooldown_left = 9;
+    MillisTime skill_1_cooldown_left = 10;
+    MillisTime skill_2_cooldown_left = 11;
+    MillisTime skill_3_cooldown_left = 12;
+    MillisTime skill_4_cooldown_left = 13;
+    string character_name = 14;
+    map<uint64, OldEffectInfo> effects = 15;
+    RelativePosition direction = 16;
+    float body_size = 17;
+    uint64 action_duration_ms = 18;
+}
+
+message OldPosition {
+    uint64 x = 1;
+    uint64 y = 2;
+}
+
+message OldEffectInfo {
+    MillisTime ends_at = 1;
+    uint64 caused_by = 2;
+}
+
+message OldProjectile {
+    uint64 id = 1;
+    OldPosition position = 2;
+    RelativePosition direction = 3;
+    uint32 speed = 4;
+    uint32 range = 5;
+    uint64 player_id = 6;
+    uint32 damage = 7;
+    sint64 remaining_ticks = 8;
+    ProjectileType projectile_type = 9;
+    ProjectileStatus status = 10;
+    uint64 last_attacked_player_id = 11;
+    bool pierce = 12;
+    string skill_name = 13;
+}
+
 message PlayerCharacter{
     uint64 player_id = 1;
     string character_name = 2;
@@ -140,6 +188,11 @@ message PlayerCharacter{
 message KillEvent {
     uint64 killed_by = 1;
     uint64 killed = 2;
+}
+
+enum OldStatus {
+    ALIVE = 0;
+    DEAD = 1;
 }
 
 /* A position in the server game grid, the grid is a NxN square with (0,0) in the top left corner
@@ -183,8 +236,8 @@ message ClientAction {
     - ATTACK_AOE:
     - MOVE_WITH_JOYSTICK:
     - ADD_BOT: Ask the server to add a bot player to the game
-    - AUTO_ATTACK: Player attacks nearest oponent, if in range.
-    - BASIC_ATTACK, SKILL_{1, 2, 3, 4}: Player skills.
+    - AUTO_ATTACK: OldPlayer attacks nearest oponent, if in range.
+    - BASIC_ATTACK, SKILL_{1, 2, 3, 4}: OldPlayer skills.
     - ENABLE_BOTS: Bots are enabled (move, attack, etc)
     - DISABLE_BOTS: Bots are disabled (stand still)
  */
@@ -214,6 +267,21 @@ enum Direction {
     DOWN = 2;
     LEFT = 3;
     RIGHT = 4;
+}
+
+enum OldPlayerAction {
+    NOTHING = 0;
+    ATTACKING = 1;
+    ATTACKING_AOE = 2;
+    STARTING_SKILL_1 = 3;
+    STARTING_SKILL_2 = 4;
+    STARTING_SKILL_3 = 5;
+    STARTING_SKILL_4 = 6;
+    EXECUTING_SKILL_1 = 7;
+    EXECUTING_SKILL_2 = 8;
+    EXECUTING_SKILL_3 = 9;
+    EXECUTING_SKILL_4 = 10;
+    MOVING = 11;
 }
 
 /* Effects a player has */
@@ -328,7 +396,7 @@ message SkillConfigItem {
     string Cooldown = 2;
     string Damage = 3;
     string Duration = 4;
-    string Projectile = 5;
+    string OldProjectile = 5;
     string SkillRange = 6;
     string Par1 = 7;
     string Par1Desc = 8;
@@ -398,13 +466,13 @@ message MillisTime {
 
 /*
     - id: Unique identifier for the loot
-    - position: Position of the loot
+    - position: OldPosition of the loot
     - loot_type: Type of loot
  */
 message LootPackage {
 
     uint64 id = 1;
-    Position position = 2;
+    OldPosition position = 2;
     LootType loot_type = 3;
 }
 
@@ -431,6 +499,7 @@ enum MechanicType {
     SIMPLE_SHOOT = 1;
     MULTI_SHOOT = 2;
     GIVE_EFFECT = 3;
+    MOVE_TO_TARGET = 4;
 }
 
 message Config {
@@ -558,18 +627,18 @@ message GameSkill {
 /*
 - GiveEffect: This makes the skill give a certain effect.
   * effects: List of effects given.
-- Hit: Player will hit all things in area of target.
+- Hit: OldPlayer will hit all things in area of target.
   * damage: Damage done to targets.
   * range: Up to how far away can things be hit.
   * cone_angle: Defines how the cone of hit is generated.
   * on_hit_effects: Effects given to targets hit by skill.
-- SimpleShoot: Player will shoot a projectile.
-  * projectile: Projectile to shoot.
-- MultiShoot: Player will shoot multiple shots of a projectile.
-  * projectile: Projectile to shoot.
+- SimpleShoot: OldPlayer will shoot a projectile.
+  * projectile: OldProjectile to shoot.
+- MultiShoot: OldPlayer will shoot multiple shots of a projectile.
+  * projectile: OldProjectile to shoot.
   * count: How many projectiles will be shot.
   * cone_angle: Defines how wide is the angle to spread the projectiles on.
-- MoveToTarget: Player will be moved to target position.
+- MoveToTarget: OldPlayer will be moved to target position.
   * duration_ms: How long it takes to move the player, 0 means instantly.
   * max_range: Maximum distance allowed to move, if target is beyond this limit movement will be capped to this point.
 */
@@ -639,6 +708,8 @@ message UseSkill {
   string skill = 1;
   float angle = 2;
   bool auto_aim = 3;
+  float target_x = 4;
+  float target_y = 5;
 }
 
 message GameAction {
