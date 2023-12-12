@@ -19,6 +19,17 @@ defmodule DarkWorldsServer.Communication.Proto.PlayerActionEnum do
   field(:PLAYER_ACTION_ENUM_USING_SKILL, 3)
 end
 
+defmodule DarkWorldsServer.Communication.Proto.KillEntity do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:KILL_ENTITY_UNDEFINED, 0)
+  field(:KILL_ENTITY_PLAYER, 1)
+  field(:KILL_ENTITY_ITEM, 2)
+  field(:KILL_ENTITY_ZONE, 3)
+end
+
 defmodule DarkWorldsServer.Communication.Proto.GameEventType do
   @moduledoc false
 
@@ -373,6 +384,23 @@ defmodule DarkWorldsServer.Communication.Proto.Position do
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
+defmodule DarkWorldsServer.Communication.Proto.KillEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:killed_by_entity, 1,
+    type: DarkWorldsServer.Communication.Proto.KillEntity,
+    json_name: "killedByEntity",
+    enum: true
+  )
+
+  field(:killed_by_id, 2, type: :uint64, json_name: "killedById")
+  field(:killed, 3, type: :uint64)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
 defmodule DarkWorldsServer.Communication.Proto.OldGameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -410,7 +438,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldGameEvent do
 
   field(:player_timestamp, 9, type: :int64, json_name: "playerTimestamp")
   field(:server_timestamp, 10, type: :int64, json_name: "serverTimestamp")
-  field(:killfeed, 11, repeated: true, type: DarkWorldsServer.Communication.Proto.KillEvent)
+  field(:killfeed, 11, repeated: true, type: DarkWorldsServer.Communication.Proto.OldKillEvent)
   field(:playable_radius, 12, type: :uint64, json_name: "playableRadius")
 
   field(:shrinking_center, 13,
@@ -520,7 +548,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldEffectInfo do
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
-defmodule DarkWorldsServer.Communication.Proto.KillEvent do
+defmodule DarkWorldsServer.Communication.Proto.OldKillEvent do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

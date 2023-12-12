@@ -94,6 +94,12 @@ message Position {
     int64 y = 2;
 }
 
+message KillEvent {
+    KillEntity killed_by_entity = 1;
+    uint64 killed_by_id = 2;
+    uint64 killed = 3;
+}
+
 enum PlayerStatus {
     PLAYER_STATUS_UNDEFINED = 0;
     PLAYER_STATUS_ALIVE = 1;
@@ -105,6 +111,13 @@ enum PlayerActionEnum {
     PLAYER_ACTION_ENUM_NOTHING = 1;
     PLAYER_ACTION_ENUM_MOVING = 2;
     PLAYER_ACTION_ENUM_USING_SKILL = 3;
+}
+
+enum KillEntity {
+    KILL_ENTITY_UNDEFINED = 0;
+    KILL_ENTITY_PLAYER = 1;
+    KILL_ENTITY_ITEM = 2;
+    KILL_ENTITY_ZONE = 3;
 }
 
 
@@ -136,7 +149,7 @@ message OldGameEvent {
     map<uint64, string> selected_characters = 8;
     int64 player_timestamp = 9;
     int64 server_timestamp = 10;
-    repeated KillEvent killfeed = 11;
+    repeated OldKillEvent killfeed = 11;
     uint64 playable_radius = 12;
     OldPosition shrinking_center = 13;
     repeated LootPackage loots = 14;
@@ -198,7 +211,7 @@ message OldEffectInfo {
     uint64 caused_by = 2;
 }
 
-message KillEvent {
+message OldKillEvent {
     uint64 killed_by = 1;
     uint64 killed = 2;
 }

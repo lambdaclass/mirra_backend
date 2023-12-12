@@ -1,4 +1,9 @@
 defmodule DarkWorldsServer.Communication.ProtoTransform do
+  alias DarkWorldsServer.Communication.Proto.KillEvent
+  alias DarkWorldsServer.Communication.Proto.SkillCooldown
+  alias DarkWorldsServer.Communication.Proto.PlayerAction
+  alias DarkWorldsServer.Communication.Proto.Item
+  alias DarkWorldsServer.Communication.Proto.Player
   alias DarkWorldsServer.Communication.Proto.Config
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameCharacter
@@ -10,7 +15,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.GameProjectile
   alias DarkWorldsServer.Communication.Proto.GameSkill
   alias DarkWorldsServer.Communication.Proto.GameStateConfig
-  alias DarkWorldsServer.Communication.Proto.KillEvent
+  alias DarkWorldsServer.Communication.Proto.OldKillEvent
   alias DarkWorldsServer.Communication.Proto.LootPackage
   alias DarkWorldsServer.Communication.Proto.MapModification
   alias DarkWorldsServer.Communication.Proto.Mechanic
@@ -84,7 +89,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       id: id,
       health: health,
       position: position,
-      status: player_status_encode(status),
+      status: player_old_status_encode(status),
       action: player_action_encode(action),
       aoe_position: aoe_position,
       kill_count: kill_count,
@@ -99,6 +104,25 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       direction: direction,
       body_size: body_size,
       action_duration_ms: action_duration_ms
+    }
+  end
+
+  def encode(player, Player) do
+    %Player{
+      id: player.id,
+      position: player.position,
+      health: player.health,
+      speed: player.speed,
+      size: player.size,
+      direction: player.direction,
+      status: player_status_encode(player.status),
+      kill_count: player.kill_count,
+      death_count: player.death_count,
+      actions: player.actions,
+      action_duration_ms: player.action_duration_ms,
+      cooldowns: player.cooldowns,
+      effects: Enum.map(player.effects, fn {effect, _} -> effect end),
+      character_name: player.character.name
     }
   end
 
@@ -136,8 +160,16 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
+  def encode({killed_by, killed}, OldKillEvent) do
+    %OldKillEvent{killed_by: killed_by, killed: killed}
+  end
+
+  def encode({{killed_by, killed_by_id}, killed}, KillEvent) do
+    %KillEvent{killed_by_entity: kill_entity_encode(killed_by), killed_by_id: killed_by_id, killed: killed}
+  end
+
   def encode({killed_by, killed}, KillEvent) do
-    %KillEvent{killed_by: killed_by, killed: killed}
+    %KillEvent{killed_by_entity: kill_entity_encode(killed_by), killed: killed}
   end
 
   def encode(%ProtoPlayerInformation{} = player_information, ProtoPlayerInformation) do
@@ -149,6 +181,33 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       id: loot.id,
       loot_type: loot_type_encode(loot.loot_type),
       position: loot.position
+    }
+  end
+
+  def encode(item, Item) do
+    %Item{
+      id: item.id,
+      name: item.name,
+      size: item.size,
+      position: item.position
+    }
+  end
+
+  def encode({action_enum, action_skill_jey}, PlayerAction) do
+    %PlayerAction{
+      action: player_action_enum_encode(action_enum),
+      action_skill_key: action_skill_jey
+    }
+  end
+
+  def encode(action_enum, PlayerAction) do
+    %PlayerAction{action: player_action_enum_encode(action_enum)}
+  end
+
+  def encode({skill_key, cooldown_ms}, SkillCooldown) do
+    %SkillCooldown{
+      skill_key: skill_key,
+      cooldown_ms: cooldown_ms
     }
   end
 
@@ -262,7 +321,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       id: id,
       health: health,
       position: position,
-      status: player_status_decode(status),
+      status: player_old_status_decode(status),
       action: player_action_decode(action),
       aoe_position: aoe_position,
       kill_count: kill_count,
@@ -321,11 +380,22 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   ###############################
   # Helpers for transformations #
   ###############################
-  defp player_status_encode(:alive), do: :ALIVE
-  defp player_status_encode(:dead), do: :DEAD
+  defp player_action_enum_encode(:nothing), do: :PLAYER_ACTION_ENUM_NOTHING
+  defp player_action_enum_encode(:moving), do: :PLAYER_ACTION_ENUM_MOVING
+  defp player_action_enum_encode(:using_skill), do: :PLAYER_ACTION_ENUM_USING_SKILL
 
-  defp player_status_decode(:ALIVE), do: :alive
-  defp player_status_decode(:DEAD), do: :dead
+  defp player_status_encode(:alive), do: :PLAYER_STATUS_ALIVE
+  defp player_status_encode(:death), do: :PLAYER_STATUS_DEAD
+
+  defp kill_entity_encode(:player), do: :KILL_ENTITY_PLAYER
+  defp kill_entity_encode(:loot), do: :KILL_ENTITY_ITEM
+  defp kill_entity_encode(:zone), do: :KILL_ENTITY_ZONE
+
+  defp player_old_status_encode(:alive), do: :ALIVE
+  defp player_old_status_encode(:dead), do: :DEAD
+
+  defp player_old_status_decode(:ALIVE), do: :alive
+  defp player_old_status_decode(:DEAD), do: :dead
 
   def player_action_encode([]), do: []
   def player_action_encode([:attacking | tail]), do: [:ATTACKING | player_action_encode(tail)]
