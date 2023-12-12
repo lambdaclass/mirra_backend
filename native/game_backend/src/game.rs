@@ -400,6 +400,9 @@ impl GameState {
             // let entity_for_player: GameEntity = player.into();
             self.collisions_grid.resource.lock().expect("Couldnt get resource").register_entity(&player.into());
         });
+        self.projectiles.iter().for_each(|projectile| {
+            self.collisions_grid.register_entity(&projectile.into())
+        });
         // println!(
         //     "Nearby player: {:?}",
         //     self.collisions_grid
