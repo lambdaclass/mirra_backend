@@ -3,7 +3,19 @@ defmodule GameBackend do
   Documentation for `GameBackend`.
   """
 
-  use Rustler, otp_app: :dark_worlds_server, crate: :game_backend
+  use Rustler,
+    otp_app: :dark_worlds_server,
+    crate: :game_backend,
+    features: [
+      case System.fetch_env("HASH_TYPE") do
+        {:ok, type} when is_binary(type) ->
+          IO.puts("Compiling with hash type: #{type}")
+          type
+
+        :error ->
+          raise "Missing env var HASH_TYPE must be one of: 'mutex', 'rwlock', 'refcell'"
+      end
+    ]
 
   # When loading a NIF module, dummy clauses for all NIF function are required.
   # NIF dummies usually just error out when called when the NIF is not loaded, as that should never normally happen.
