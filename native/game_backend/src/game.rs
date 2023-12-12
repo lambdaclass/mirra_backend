@@ -409,7 +409,7 @@ fn apply_damages_and_effects(
     while let Some(damage_tracker) = pending_damages.pop() {
         if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
             if victim.status != PlayerStatus::Death {
-                victim.decrease_health(damage_tracker.damage.abs() as u64);
+                victim.decrease_health(damage_tracker.damage.unsigned_abs());
                 victim.apply_effects(&damage_tracker.on_hit_effects, damage_tracker.attacker);
                 if victim.status == PlayerStatus::Death {
                     next_killfeed.push(KillEvent {
