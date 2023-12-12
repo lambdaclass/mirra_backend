@@ -7,6 +7,11 @@ use rustler::ResourceArc;
 use serde::Deserialize;
 use std::collections::HashMap;
 use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::RwLock;
+use std::sync::RwLockWriteGuard;
+use std::cell::RefCell;
+use std::cell::RefMut;
 
 use crate::config::Config;
 use crate::effect;
@@ -112,9 +117,59 @@ pub struct GameState {
     next_id: u64,
 }
 
+#[cfg(feature = "mutex")]
 pub struct SpatialHashGridResource {
     resource: Mutex<SpatialHashGrid>,
 }
+
+#[cfg(feature = "mutex")]
+impl SpatialHashGridResource {
+    fn new(grid: SpatialHashGrid) -> Self {
+        Self{resource: Mutex::new(grid)}
+    }
+
+    fn lock(&self) -> MutexGuard<'_, SpatialHashGrid> {
+        self.resource.lock().unwrap()
+    }
+}
+
+#[cfg(feature = "rwlock")]
+pub struct SpatialHashGridResource {
+    resource: RwLock<SpatialHashGrid>,
+}
+
+#[cfg(feature = "rwlock")]
+impl SpatialHashGridResource {
+    fn new(grid: SpatialHashGrid) -> Self {
+        Self{resource: RwLock::new(grid)}
+    }
+
+    fn lock(&self) -> RwLockWriteGuard<'_, SpatialHashGrid> {
+        self.resource.write().unwrap()
+    }
+}
+
+#[cfg(feature = "refcell")]
+pub struct SpatialHashGridResource {
+    resource: RefCell<SpatialHashGrid>,
+}
+
+#[cfg(feature = "refcell")]
+impl SpatialHashGridResource {
+    fn new(grid: SpatialHashGrid) -> Self {
+        Self{resource: RefCell::new(grid)}
+    }
+
+    fn lock(&self) -> RefMut<'_, SpatialHashGrid> {
+        self.resource.borrow_mut()
+    }
+}
+
+#[cfg(feature = "refcell")]
+unsafe impl Sync for SpatialHashGridResource {}
+
+#[cfg(feature = "refcell")]
+unsafe impl Send for SpatialHashGridResource {}
 
 impl GameConfig {
     pub(crate) fn from_config_file(game_config: GameConfigFile, effects: &[Effect]) -> GameConfig {
@@ -171,9 +226,9 @@ impl GameState {
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
-            collisions_grid: ResourceArc::new(SpatialHashGridResource {
-                resource: Mutex::new(collisions_grid),
-            }),
+            collisions_grid: ResourceArc::new(
+                SpatialHashGridResource::new(collisions_grid),
+            ),
         }
     }
 
@@ -392,9 +447,7 @@ impl GameState {
         {
             let mut grid = self
                 .collisions_grid
-                .resource
-                .lock()
-                .expect("Couldn't get resource");
+                .lock();
             grid.clear_buckets();
             grid.add_walls_at(1000);
             grid.add_walls_at(-1000);
