@@ -168,16 +168,6 @@
       ],
       "duration_ms": 999999,
       "max_distance": 500
-    },
-    {
-      "name": "projectile_leap",
-      "base_damage": 30,
-      "base_speed": 0,
-      "base_size": 500,
-      "remove_on_collision": false,
-      "on_hit_effects": [],
-      "duration_ms": 2000,
-      "max_distance": 9000
     }
   ],
   "skills": [
@@ -232,8 +222,11 @@
       "is_passive": false,
       "mechanics": [
         {
-          "SimpleShoot": {
-            "projectile": "projectile_leap"
+          "Hit": {
+            "damage": 30,
+            "range": 2000,
+            "cone_angle": 360,
+            "on_hit_effects": []
           }
         }
       ]
