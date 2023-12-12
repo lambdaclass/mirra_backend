@@ -108,7 +108,6 @@ impl Player {
             })
             .collect();
         if entities_at.is_empty() {
-            println!("More than 1 entity");
             self.position = possible_next_position;
         }
     }
