@@ -358,12 +358,6 @@ impl GameState {
                                         damage: damage,
                                         on_hit_effects: on_hit_effects.clone(),
                                     });
-                                    if target_player.status != PlayerStatus::Death {
-                                        target_player.apply_effects(
-                                            on_hit_effects,
-                                            EntityOwner::Player(player.id),
-                                        );
-                                    }
                                 })
                         }
                         _ => todo!("SkillMechanic not implemented"),
@@ -396,7 +390,7 @@ impl GameState {
         modify_zone(&mut self.zone, time_diff);
         apply_zone_effects(&mut self.players, &self.zone, &mut self.next_killfeed);
 
-        apply_damages(
+        apply_damages_and_effects(
             &mut self.pending_damages,
             &mut self.players,
             &mut self.next_killfeed,
@@ -407,7 +401,7 @@ impl GameState {
     }
 }
 
-fn apply_damages(
+fn apply_damages_and_effects(
     pending_damages: &mut Vec<DamageTracker>,
     players: &mut HashMap<u64, Player>,
     next_killfeed: &mut Vec<KillEvent>,
@@ -416,6 +410,10 @@ fn apply_damages(
         if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
             if victim.status != PlayerStatus::Death {
                 victim.decrease_health(damage_tracker.damage);
+                victim.apply_effects(
+                    &damage_tracker.on_hit_effects,
+                    damage_tracker.attacker,
+                );
                 if victim.status == PlayerStatus::Death {
                     next_killfeed.push(KillEvent {
                         kill_by: damage_tracker.attacker,
@@ -567,10 +565,6 @@ fn apply_projectiles_collisions(
                     damage: projectile.damage,
                     on_hit_effects: projectile.on_hit_effects.clone(),
                 });
-                player.apply_effects(
-                    &projectile.on_hit_effects,
-                    EntityOwner::Player(projectile.player_id),
-                );
 
                 projectile.attacked_player_ids.push(player.id);
                 if projectile.remove_on_collision {
