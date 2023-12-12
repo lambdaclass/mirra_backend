@@ -14,8 +14,8 @@ use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
 use crate::map::distance_between_positions;
-use crate::space_hash_grid_2::GameEntity;
-use crate::space_hash_grid_2::SpatialHashGrid;
+use crate::space_hash_grid::GameEntity;
+use crate::space_hash_grid::SpatialHashGrid;
 
 #[derive(NifMap, Clone)]
 pub struct Player {

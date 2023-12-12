@@ -1,5 +1,5 @@
-use crate::space_hash_grid_2::{self, Vec2};
-use crate::space_hash_grid_2::{GameEntity, SpatialHashGrid};
+use crate::space_hash_grid::{self, Vec2};
+use crate::space_hash_grid::{GameEntity, SpatialHashGrid};
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
@@ -167,7 +167,9 @@ impl GameState {
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
-            collisions_grid: ResourceArc::new(SpatialHashGridResource{ resource: Mutex::new(collisions_grid) }),
+            collisions_grid: ResourceArc::new(SpatialHashGridResource {
+                resource: Mutex::new(collisions_grid),
+            }),
         }
     }
 
@@ -383,9 +385,12 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
-
         {
-            let mut grid = self.collisions_grid.resource.lock().expect("Couldn't get resource");
+            let mut grid = self
+                .collisions_grid
+                .resource
+                .lock()
+                .expect("Couldn't get resource");
             grid.clear_buckets();
             for (_player_id, player) in self.players.iter() {
                 if player.status == PlayerStatus::Alive {
@@ -394,20 +399,12 @@ impl GameState {
             }
 
             move_players(&mut self.players, &mut self.loots, &self.config, &grid);
+
+            self.projectiles
+                .iter()
+                .for_each(|projectile| grid.register_entity(&projectile.into()));
         }
 
-        self.players.iter().for_each(|(player_id, player)| {
-            // let entity_for_player: GameEntity = player.into();
-            self.collisions_grid.resource.lock().expect("Couldnt get resource").register_entity(&player.into());
-        });
-        self.projectiles.iter().for_each(|projectile| {
-            self.collisions_grid.register_entity(&projectile.into())
-        });
-        // println!(
-        //     "Nearby player: {:?}",
-        //     self.collisions_grid
-        //         .get_nearby(&first_player_entity.unwrap())
-        // );
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
@@ -517,7 +514,12 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
     })
 }
 
-fn move_players(players: &mut HashMap<u64, Player>, loots: &mut Vec<Loot>, config: &Config, grid: &SpatialHashGrid) {
+fn move_players(
+    players: &mut HashMap<u64, Player>,
+    loots: &mut Vec<Loot>,
+    config: &Config,
+    grid: &SpatialHashGrid,
+) {
     players.values_mut().for_each(|player| {
         if player.status == PlayerStatus::Alive {
             player.move_position(config, grid);
