@@ -35,6 +35,7 @@ defmodule LoadTest.GamePlayer do
   end
 
   def start_link({player_number, session_id, max_duration_seconds, client_event_rate}) do
+    :rand.seed(:exss, {100, 1222, 333, 444})
     ws_url = ws_url(session_id, player_number)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
@@ -71,7 +72,15 @@ defmodule LoadTest.GamePlayer do
 
   def handle_info(:play, state) do
     direction = Enum.random([:up, :down, :left, :right])
-    action = Enum.random([:move, :attack])
+
+    action =
+      if :rand.uniform() <= 0.75 do
+        :move
+      else
+        :attack
+      end
+
+    # action = Enum.at([:move, :attack], round(rand_action))
 
     # Melee attacks pretty much never ever land, but in general we have to rework how
     # both melee and aoe attacks work in general, so w/e

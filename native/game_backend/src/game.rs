@@ -37,6 +37,7 @@ pub enum EntityOwner {
 pub struct GameConfigFile {
     width: u64,
     height: u64,
+    grid_cell_size: u64,
     loot_interval_ms: u64,
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
@@ -58,6 +59,7 @@ pub struct ZoneModificationConfigFile {
 pub struct GameConfig {
     pub width: u64,
     pub height: u64,
+    pub grid_cell_size: u64,
     pub loot_interval_ms: u64,
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
@@ -141,6 +143,7 @@ impl GameConfig {
             zone_modifications,
             auto_aim_max_distance: game_config.auto_aim_max_distance,
             initial_positions: game_config.initial_positions,
+            grid_cell_size: game_config.grid_cell_size
         }
     }
 }
@@ -151,7 +154,8 @@ impl GameState {
         let zone_modifications = config.game.zone_modifications.clone();
         let game_width = config.game.width;
         let game_height = config.game.height;
-        let collisions_grid = SpatialHashGrid::new(game_width, game_height, 100_u64);
+        let grid_cell_size = config.game.grid_cell_size;
+        let collisions_grid = SpatialHashGrid::new(game_width, game_height, grid_cell_size);
         Self {
             config,
             players: HashMap::new(),
@@ -392,6 +396,8 @@ impl GameState {
                 .lock()
                 .expect("Couldn't get resource");
             grid.clear_buckets();
+            grid.add_walls_at(1000);
+            grid.add_walls_at(-1000);
             for (_player_id, player) in self.players.iter() {
                 if player.status == PlayerStatus::Alive {
                     grid.register_entity(&GameEntity::from(player));

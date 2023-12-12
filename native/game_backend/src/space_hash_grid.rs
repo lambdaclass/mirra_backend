@@ -30,6 +30,7 @@ pub type Bucket = Vec<GameEntity>;
 pub struct GameEntity {
     pub position: Vec2,
     pub radius: f32,
+    pub is_blocking: bool
 }
 
 impl From<&Player> for GameEntity {
@@ -40,6 +41,7 @@ impl From<&Player> for GameEntity {
         GameEntity {
             position,
             radius,
+            is_blocking: false
         }
     }
 }
@@ -49,7 +51,8 @@ impl From<&Projectile> for GameEntity {
         let position = Vec2::from(projectile.position);
         GameEntity {
             radius: projectile.size as f32,
-            position
+            position,
+            is_blocking: false
         }
     }
 }
@@ -67,10 +70,8 @@ pub struct SpatialHashGrid {
 
 impl SpatialHashGrid {
     pub fn new(scenewidth: u64, sceneheight: u64, cellsize: u64) -> Self {
-        // let cols = scenewidth / cellsize;
-        // let rows = sceneheight / cellsize;
-        let cols = 100;
-        let rows = 100;
+        let cols = scenewidth / cellsize;
+        let rows = sceneheight / cellsize;
         let bucket_total = cols*rows;
         let mut buckets = HashMap::new();
         for i in 0..bucket_total {
@@ -102,7 +103,13 @@ impl SpatialHashGrid {
             bucket.push(entity.clone());
         }
     }
-
+    pub fn add_walls_at(&mut self, x: i64) {
+        for y in -5000..5000 {
+           let wall_position = Vec2 { x: x as f32, y: y as f32};
+           let wall = GameEntity {is_blocking: true, position: wall_position, radius: 1 as f32};
+           self.register_entity(&wall)
+        }
+    }
     pub fn calculate_ids_for(&self, entity: &GameEntity) -> Vec<u64> {
         let mut buckets_entity_is_in = vec![];
         let min = Vec2 {
