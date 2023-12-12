@@ -197,6 +197,9 @@ impl GameState {
     }
 
     fn activate_skills(&mut self) {
+        let cloned_players: Vec<Player> =
+            self.players.values().map(|player| player.clone()).collect();
+
         self.players.values_mut().for_each(|player| {
             let skill_keys = player.skills_keys_to_execute.clone();
             skill_keys.iter().for_each(|skill_key: &String| {
@@ -221,6 +224,44 @@ impl GameState {
                                     projectile_config,
                                 );
                                 self.projectiles.push(projectile);
+                            }
+                            SkillMechanic::Hit {
+                                damage,
+                                range,
+                                cone_angle,
+                                on_hit_effects,
+                            } => {
+                                let mut damage = *damage;
+
+                                for (effect, _owner) in player.effects.iter() {
+                                    for change in effect.player_attributes.iter() {
+                                        if change.attribute == "damage" {
+                                            effect::modify_attribute(&mut damage, change)
+                                        }
+                                    }
+                                }
+
+                                cloned_players
+                                    .iter()
+                                    .filter(|list_player| {
+                                        list_player.status == PlayerStatus::Alive
+                                            && list_player.id != player.id
+                                            && player.is_targetable()
+                                            && map::in_cone_angle_range(
+                                                player,
+                                                list_player,
+                                                *range,
+                                                *cone_angle as f32,
+                                            )
+                                    })
+                                    .for_each(|target_player| {
+                                        self.pending_damages.push(DamageTracker {
+                                            attacked_id: target_player.id,
+                                            attacker: EntityOwner::Player(player.id),
+                                            damage: damage as i64,
+                                            on_hit_effects: on_hit_effects.clone(),
+                                        });
+                                    });
                             }
                             _ => todo!("SkillMechanic not implemented"),
                         }
@@ -254,7 +295,6 @@ impl GameState {
             }
 
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                
                 let mut execution_duration_ms = skill.execution_duration_ms;
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
@@ -346,17 +386,18 @@ impl GameState {
                                 parse_skill_params_move_to_target(&skill_params)
                             {
                                 let distance = target_position_x * (*max_range as f32);
-                                execution_duration_ms = (distance / (player.speed as f32 / 20.)) as u64;
-                                player.set_moving_params(execution_duration_ms, (player.speed as f32 / 20.), on_arrival_skills);
+                                execution_duration_ms =
+                                    (distance / (player.speed as f32 / 20.)) as u64;
+                                player.set_moving_params(
+                                    execution_duration_ms,
+                                    (player.speed as f32) / 20.,
+                                    on_arrival_skills,
+                                );
                             }
                         }
                     }
                 }
-
-                player.add_action(
-                    Action::UsingSkill(skill_key.clone()),
-                    execution_duration_ms,
-                );
+                player.add_action(Action::UsingSkill(skill_key.clone()), execution_duration_ms);
             }
         }
     }
@@ -409,10 +450,7 @@ fn apply_damages_and_effects(
         if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
             if victim.status != PlayerStatus::Death {
                 victim.decrease_health(damage_tracker.damage.abs() as u64);
-                victim.apply_effects(
-                    &damage_tracker.on_hit_effects,
-                    damage_tracker.attacker,
-                );
+                victim.apply_effects(&damage_tracker.on_hit_effects, damage_tracker.attacker);
                 if victim.status == PlayerStatus::Death {
                     next_killfeed.push(KillEvent {
                         kill_by: damage_tracker.attacker,
@@ -722,13 +760,11 @@ fn get_direction_angle(
             } else {
                 player.direction
             }
-        },
-        _ => {
-            skill_params
-                .get("angle")
-                .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                .unwrap_or(player.direction)
-        },
+        }
+        _ => skill_params
+            .get("angle")
+            .map(|angle_str| angle_str.parse::<f32>().unwrap())
+            .unwrap_or(player.direction),
     }
 }
 
