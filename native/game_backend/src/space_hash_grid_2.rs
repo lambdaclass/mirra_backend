@@ -1,4 +1,4 @@
-use crate::{map::Position, player::Player};
+use crate::{map::Position, player::Player, projectile::{Projectile, self}};
 use rustler::NifMap;
 use std::collections::HashMap;
 
@@ -30,7 +30,6 @@ pub type Bucket = Vec<GameEntity>;
 pub struct GameEntity {
     pub position: Vec2,
     pub radius: f32,
-    pub id: u64,
 }
 
 impl From<&Player> for GameEntity {
@@ -41,7 +40,16 @@ impl From<&Player> for GameEntity {
         GameEntity {
             position,
             radius,
-            id,
+        }
+    }
+}
+
+impl From<&Projectile> for GameEntity {
+    fn from(projectile: &Projectile) -> GameEntity {
+        let position = Vec2::from(projectile.position);
+        GameEntity {
+            radius: projectile.size as f32,
+            position
         }
     }
 }
