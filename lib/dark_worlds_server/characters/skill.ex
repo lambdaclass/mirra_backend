@@ -28,6 +28,7 @@ defmodule DarkWorldsServer.Skill do
   defmodule SkillMechanic do
     use Ecto.Schema
 
+    @primary_key false
     embedded_schema do
       # GiveEffect, Hit, SimpleShoot, MultiShoot, MoveToTarget
       field(:type, :string)
