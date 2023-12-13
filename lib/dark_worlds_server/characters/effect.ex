@@ -3,7 +3,6 @@ defmodule DarkWorldsServer.Characters.Effect do
   import Ecto.Changeset
   alias DarkWorldsServer.Characters.Effect.AttributesModifier
   alias DarkWorldsServer.Characters.EffectSkill
-  alias DarkWorldsServer.Characters.Skill
   alias DarkWorldsServer.Characters.TimeType
 
   @primary_key {:id, :binary_id, autogenerate: true}

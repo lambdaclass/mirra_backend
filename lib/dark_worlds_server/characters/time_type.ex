@@ -1,7 +1,7 @@
 defmodule DarkWorldsServer.Characters.TimeType do
   use Ecto.Type
 
-  def type, do: :string
+  def type(), do: :string
 
   def cast(:instant), do: {:ok, "Instant"}
   def cast(:permanent), do: {:ok, "Permanent"}

@@ -2,8 +2,8 @@ defmodule DarkWorldsServer.Characters do
   alias DarkWorldsServer.Characters.Character
   alias DarkWorldsServer.Characters.CharacterSkill
   alias DarkWorldsServer.Characters.Effect
-  alias DarkWorldsServer.Repo
   alias DarkWorldsServer.Characters.Skill
+  alias DarkWorldsServer.Repo
 
   def insert_character(attrs \\ %{}) do
     %Character{}
