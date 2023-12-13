@@ -162,7 +162,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     %MapCollisionable{
       id: map_collisionable.id,
       position: map_collisionable.position,
-      collisionable_type: map_collisionable_type_encode(map_collisionable.collisionable_type)
+      collisionable_type: map_collisionable_type_encode(map_collisionable.collisionable_type),
+      radius: map_collisionable.radius
     }
   end
 

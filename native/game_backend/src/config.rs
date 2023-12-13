@@ -47,6 +47,7 @@ pub struct MapCollisionable {
     pub id: u64,
     pub collisionable_type: CollisionableType,
     pub position: Position,
+    pub radius: u64,
 }
 
 impl Config {

@@ -4,10 +4,46 @@
             "id": 1,
             "collisionable_type": "Circle",
             "position": {
-                "x": 15,
-                "y": 21
+                "x": 3000,
+                "y": 7150
             },
-            "radius": 15
+            "radius": 25
+        },
+        {
+            "id": 2,
+            "collisionable_type": "Circle",
+            "position": {
+                "x": 2000,
+                "y": 1150
+            },
+            "radius": 10
+        },
+        {
+            "id": 3,
+            "collisionable_type": "Circle",
+            "position": {
+                "x": 4000,
+                "y": 9150
+            },
+            "radius": 6
+        },
+        {
+            "id": 4,
+            "collisionable_type": "Circle",
+            "position": {
+                "x": 3000,
+                "y": 2150
+            },
+            "radius": 14
+        },
+        {
+            "id": 5,
+            "collisionable_type": "Circle",
+            "position": {
+                "x": 5000,
+                "y": 7150
+            },
+            "radius": 25
         }
     ]
 }
