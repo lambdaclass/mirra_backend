@@ -154,8 +154,19 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
+  def encode(map_collisionables, MapCollisionables) do
+    map_collisionables
+  end
+
+  def encode(map_collisionable, MapCollisionable) do
+    %MapCollisionable{
+      id: map_collisionable.id,
+      position: map_collisionable.position,
+      collisionable_type: map_collisionable_type_encode(map_collisionable.collisionable_type)
+    }
+  end
+
   def encode(data, _struct) do
-    IO.inspect("Paso por data: " <> inspect(data), label: "data")
     data
   end
 

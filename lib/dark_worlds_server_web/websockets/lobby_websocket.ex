@@ -41,7 +41,6 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
       Application.app_dir(:dark_worlds_server, "priv/map_collisionables.json") |> File.read()
 
     map_collisionables = GameBackend.parse_map_collisionables(game_map_collisionables_json)
-    IO.inspect(map_collisionables, label: "map_collisionables")
 
     reply_map = %{
       game_pid: game_pid,

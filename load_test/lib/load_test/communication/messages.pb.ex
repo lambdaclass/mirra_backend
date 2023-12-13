@@ -164,7 +164,7 @@ defmodule LoadTest.Communication.Proto.CollisionableType do
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:CIRCLE, 0)
-  field(:SQUARE, 1)
+  field(:RECTANGLE, 1)
 end
 
 defmodule LoadTest.Communication.Proto.GameEvent.SelectedCharactersEntry do
@@ -379,7 +379,8 @@ defmodule LoadTest.Communication.Proto.LobbyEvent do
   field(:capacity, 13, type: :uint64)
 
   field(:map_collisionables, 14,
-    type: LoadTest.Communication.Proto.MapCollisionables,
+    repeated: true,
+    type: LoadTest.Communication.Proto.MapCollisionable,
     json_name: "mapCollisionables"
   )
 end
@@ -571,18 +572,6 @@ defmodule LoadTest.Communication.Proto.Config do
   field(:loots, 4, repeated: true, type: LoadTest.Communication.Proto.GameLoot)
   field(:projectiles, 5, repeated: true, type: LoadTest.Communication.Proto.GameProjectile)
   field(:skills, 6, repeated: true, type: LoadTest.Communication.Proto.GameSkill)
-end
-
-defmodule LoadTest.Communication.Proto.MapCollisionables do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:map_collisionables, 1,
-    repeated: true,
-    type: LoadTest.Communication.Proto.MapCollisionable,
-    json_name: "mapCollisionables"
-  )
 end
 
 defmodule LoadTest.Communication.Proto.MapCollisionable do
