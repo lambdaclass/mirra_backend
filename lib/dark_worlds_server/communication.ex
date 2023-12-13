@@ -63,8 +63,7 @@ defmodule DarkWorldsServer.Communication do
   end
 
   def game_started!(new_game_state, old_game_state, player_timestamp, server_timestamp) do
-    old_game_event = %TransitionGameEvent{
-      old_game_event: %OldGameEvent{
+    old_game_event = %OldGameEvent{
         type: :GAME_STARTED,
         players: old_game_state.players,
         projectiles: old_game_state.projectiles,
@@ -75,7 +74,6 @@ defmodule DarkWorldsServer.Communication do
         player_timestamp: player_timestamp,
         server_timestamp: server_timestamp
       }
-    }
 
     new_game_event = %GameEvent{
       event: {:game_started, %GameStarted{

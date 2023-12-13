@@ -120,7 +120,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   @impl true
   def handle_cast({:move, user_id, %Move{angle: angle} = m, timestamp}, state) do
     player_id = state.user_to_player[user_id] || user_id
-    IO.inspect(m)
     game_state = GameBackend.move_player(state.game_state, player_id, angle)
 
     state =
