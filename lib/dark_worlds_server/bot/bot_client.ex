@@ -1,6 +1,6 @@
 defmodule DarkWorldsServer.Bot.BotClient do
-  alias DarkWorldsServer.Communication.Proto.TransitionGameEvent
   alias DarkWorldsServer.Communication
+  alias DarkWorldsServer.Communication.Proto.TransitionGameEvent
   alias DarkWorldsServer.RunnerSupervisor.BotPlayer
   use WebSockex, restart: :temporary
   require Logger

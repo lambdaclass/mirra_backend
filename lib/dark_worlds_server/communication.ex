@@ -64,29 +64,32 @@ defmodule DarkWorldsServer.Communication do
 
   def game_started!(new_game_state, old_game_state, player_timestamp, server_timestamp) do
     old_game_event = %OldGameEvent{
-        type: :GAME_STARTED,
-        players: old_game_state.players,
-        projectiles: old_game_state.projectiles,
-        killfeed: old_game_state.killfeed,
-        playable_radius: old_game_state.playable_radius,
-        shrinking_center: old_game_state.shrinking_center,
-        loots: old_game_state.loots,
-        player_timestamp: player_timestamp,
-        server_timestamp: server_timestamp
-      }
+      type: :GAME_STARTED,
+      players: old_game_state.players,
+      projectiles: old_game_state.projectiles,
+      killfeed: old_game_state.killfeed,
+      playable_radius: old_game_state.playable_radius,
+      shrinking_center: old_game_state.shrinking_center,
+      loots: old_game_state.loots,
+      player_timestamp: player_timestamp,
+      server_timestamp: server_timestamp
+    }
 
     new_game_event = %GameEvent{
-      event: {:game_started, %GameStarted{
-        starting_state: %GameState{
-          players: Map.values(new_game_state.players),
-          projectiles: new_game_state.projectiles,
-          items: new_game_state.loots,
-          zone_info: nil, #TODO
-          killfeed: new_game_state.killfeed,
-          player_timestamp: player_timestamp,
-          server_timestamp: server_timestamp
-        }
-      }}
+      event:
+        {:game_started,
+         %GameStarted{
+           starting_state: %GameState{
+             players: Map.values(new_game_state.players),
+             projectiles: new_game_state.projectiles,
+             items: new_game_state.loots,
+             # TODO
+             zone_info: nil,
+             killfeed: new_game_state.killfeed,
+             player_timestamp: player_timestamp,
+             server_timestamp: server_timestamp
+           }
+         }}
     }
 
     %TransitionGameEvent{old_game_event: old_game_event, new_game_event: new_game_event}
@@ -107,15 +110,18 @@ defmodule DarkWorldsServer.Communication do
     }
 
     new_game_event = %GameEvent{
-      event: {:game_state, %GameState{
-        players: Map.values(new_game_state.players),
-        projectiles: new_game_state.projectiles,
-        items: new_game_state.loots,
-        zone_info: nil, #TODO
-        killfeed: new_game_state.killfeed,
-        player_timestamp: player_timestamp,
-        server_timestamp: server_timestamp
-      }}
+      event:
+        {:game_state,
+         %GameState{
+           players: Map.values(new_game_state.players),
+           projectiles: new_game_state.projectiles,
+           items: new_game_state.loots,
+           # TODO
+           zone_info: nil,
+           killfeed: new_game_state.killfeed,
+           player_timestamp: player_timestamp,
+           server_timestamp: server_timestamp
+         }}
     }
 
     %TransitionGameEvent{old_game_event: old_game_event, new_game_event: new_game_event}
@@ -124,25 +130,32 @@ defmodule DarkWorldsServer.Communication do
 
   def encode!(%{latency: latency}) do
     old_game_event = %OldGameEvent{type: :PING_UPDATE, latency: latency}
+
     %TransitionGameEvent{old_game_event: old_game_event}
     |> TransitionGameEvent.encode()
   end
 
   def game_finished!(new_winner, new_players, old_winner, old_players) do
     old_game_event = %OldGameEvent{type: :GAME_FINISHED, winner_player: old_winner, players: old_players}
-    new_game_event = %GameEvent{event: {:game_finished, %GameFinished{winner: new_winner, players: Map.values(new_players)}}}
+
+    new_game_event = %GameEvent{
+      event: {:game_finished, %GameFinished{winner: new_winner, players: Map.values(new_players)}}
+    }
+
     %TransitionGameEvent{old_game_event: old_game_event, new_game_event: new_game_event}
     |> TransitionGameEvent.encode()
   end
 
   def game_player_joined(player_id, player_name) do
     old_game_event = %OldGameEvent{type: :PLAYER_JOINED, player_joined_id: player_id, player_joined_name: player_name}
+
     %TransitionGameEvent{old_game_event: old_game_event}
     |> TransitionGameEvent.encode()
   end
 
   def joined_game(player_id) do
     old_game_event = %OldGameEvent{type: :PLAYER_JOINED, player_joined_id: player_id}
+
     %TransitionGameEvent{old_game_event: old_game_event}
     |> TransitionGameEvent.encode()
   end

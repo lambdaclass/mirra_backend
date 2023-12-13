@@ -1,9 +1,4 @@
 defmodule DarkWorldsServer.Communication.ProtoTransform do
-  alias DarkWorldsServer.Communication.Proto.KillEvent
-  alias DarkWorldsServer.Communication.Proto.SkillCooldown
-  alias DarkWorldsServer.Communication.Proto.PlayerAction
-  alias DarkWorldsServer.Communication.Proto.Item
-  alias DarkWorldsServer.Communication.Proto.Player
   alias DarkWorldsServer.Communication.Proto.Config
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameCharacter
@@ -15,17 +10,22 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.GameProjectile
   alias DarkWorldsServer.Communication.Proto.GameSkill
   alias DarkWorldsServer.Communication.Proto.GameStateConfig
-  alias DarkWorldsServer.Communication.Proto.OldKillEvent
+  alias DarkWorldsServer.Communication.Proto.Item
+  alias DarkWorldsServer.Communication.Proto.KillEvent
   alias DarkWorldsServer.Communication.Proto.LootPackage
   alias DarkWorldsServer.Communication.Proto.MapModification
   alias DarkWorldsServer.Communication.Proto.Mechanic
   alias DarkWorldsServer.Communication.Proto.Modification
   alias DarkWorldsServer.Communication.Proto.Move
+  alias DarkWorldsServer.Communication.Proto.OldKillEvent
   alias DarkWorldsServer.Communication.Proto.OldPlayer, as: ProtoPlayer
-  alias DarkWorldsServer.Communication.Proto.PlayerInformation, as: ProtoPlayerInformation
   alias DarkWorldsServer.Communication.Proto.OldPosition, as: ProtoPosition
   alias DarkWorldsServer.Communication.Proto.OldProjectile, as: ProtoProjectile
+  alias DarkWorldsServer.Communication.Proto.Player
+  alias DarkWorldsServer.Communication.Proto.PlayerAction
+  alias DarkWorldsServer.Communication.Proto.PlayerInformation, as: ProtoPlayerInformation
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
+  alias DarkWorldsServer.Communication.Proto.SkillCooldown
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias GameBackend.Player, as: GamePlayer
   alias GameBackend.Position, as: GamePosition
