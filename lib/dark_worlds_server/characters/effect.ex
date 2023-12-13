@@ -27,7 +27,6 @@ defmodule DarkWorldsServer.Effect do
     |> cast_embed(:player_attributes)
     |> cast_embed(:projectile_attributes)
     |> cast_time_type(attrs[:effect_time_type])
-    |> IO.inspect(label: :changeset_after_casts)
     |> validate_required([
       :name,
       :is_reversable,
