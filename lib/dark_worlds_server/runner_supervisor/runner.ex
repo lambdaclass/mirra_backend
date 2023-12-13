@@ -67,10 +67,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     Process.flag(:priority, priority)
 
-    {:ok, game_config_json} =
-      Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
-
-    game_config = GameBackend.parse_config(game_config_json)
+    game_config = Utils.Config.read_config_backend()
 
     Process.send_after(self(), :game_timeout, @game_timeout_ms)
     Process.send_after(self(), :start_game_tick, @game_tick_start)
