@@ -447,11 +447,11 @@ message MapCollisionable {
     uint64 id = 1;
     CollisionableType collisionable_type = 2;
     Position position = 3;
+    uint64 radius = 4;
 }
 
 enum CollisionableType {
     CIRCLE = 0;
-    RECTANGLE = 1;
 }
 
 /* Represents the initial game state.

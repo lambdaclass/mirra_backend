@@ -164,7 +164,6 @@ defmodule LoadTest.Communication.Proto.CollisionableType do
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:CIRCLE, 0)
-  field(:RECTANGLE, 1)
 end
 
 defmodule LoadTest.Communication.Proto.GameEvent.SelectedCharactersEntry do
@@ -588,6 +587,7 @@ defmodule LoadTest.Communication.Proto.MapCollisionable do
   )
 
   field(:position, 3, type: LoadTest.Communication.Proto.Position)
+  field(:radius, 4, type: :uint64)
 end
 
 defmodule LoadTest.Communication.Proto.GameStateConfig do

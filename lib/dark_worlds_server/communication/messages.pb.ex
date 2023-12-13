@@ -164,7 +164,6 @@ defmodule DarkWorldsServer.Communication.Proto.CollisionableType do
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:CIRCLE, 0)
-  field(:RECTANGLE, 1)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
@@ -658,6 +657,7 @@ defmodule DarkWorldsServer.Communication.Proto.MapCollisionable do
   )
 
   field(:position, 3, type: DarkWorldsServer.Communication.Proto.Position)
+  field(:radius, 4, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

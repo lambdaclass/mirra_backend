@@ -6,15 +6,8 @@
             "position": {
                 "x": 15,
                 "y": 21
-            }
-        },
-        {
-            "id": 2,
-            "collisionable_type": "Rectangle",
-            "position": {
-                "x": 37,
-                "y": 42
-            }
+            },
+            "radius": 15
         }
     ]
 }
