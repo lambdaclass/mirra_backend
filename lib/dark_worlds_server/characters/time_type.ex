@@ -1,4 +1,4 @@
-defmodule DarkWorldsServer.TimeType do
+defmodule DarkWorldsServer.Characters.TimeType do
   use Ecto.Type
 
   def type, do: :string

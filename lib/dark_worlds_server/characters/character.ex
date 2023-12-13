@@ -1,8 +1,8 @@
-defmodule DarkWorldsServer.Character do
+defmodule DarkWorldsServer.Characters.Character do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias DarkWorldsServer.CharacterSkill
+  alias DarkWorldsServer.Characters.CharacterSkill
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "characters" do

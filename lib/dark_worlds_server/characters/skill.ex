@@ -1,9 +1,9 @@
-defmodule DarkWorldsServer.Skill do
+defmodule DarkWorldsServer.Characters.Skill do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias DarkWorldsServer.Effect
-  alias DarkWorldsServer.Skill.SkillMechanic
+  alias DarkWorldsServer.Characters.Effect
+  alias DarkWorldsServer.Characters.Skill.SkillMechanic
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "skills" do

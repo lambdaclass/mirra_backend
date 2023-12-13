@@ -1,10 +1,10 @@
-defmodule DarkWorldsServer.Effect do
+defmodule DarkWorldsServer.Characters.Effect do
   use Ecto.Schema
   import Ecto.Changeset
-  alias DarkWorldsServer.Effect.AttributesModifier
-  alias DarkWorldsServer.EffectSkill
-  alias DarkWorldsServer.Skill
-  alias DarkWorldsServer.TimeType
+  alias DarkWorldsServer.Characters.Effect.AttributesModifier
+  alias DarkWorldsServer.Characters.EffectSkill
+  alias DarkWorldsServer.Characters.Skill
+  alias DarkWorldsServer.Characters.TimeType
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
