@@ -35,6 +35,7 @@ defmodule DarkWorldsServer.Communication do
   def lobby_preparing_game!(%{
         game_pid: game_pid,
         game_config: game_config,
+        map_collisionables: map_collisionables,
         server_hash: server_hash
       }) do
     game_id = pid_to_external_id(game_pid)
@@ -43,6 +44,7 @@ defmodule DarkWorldsServer.Communication do
       type: :PREPARING_GAME,
       game_id: game_id,
       game_config: game_config,
+      map_collisionables: map_collisionables,
       server_hash: server_hash
     }
     |> LobbyEvent.encode()

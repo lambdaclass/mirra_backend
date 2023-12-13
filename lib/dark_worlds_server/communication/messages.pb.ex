@@ -158,6 +158,15 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:GIVE_EFFECT, 3)
 end
 
+defmodule DarkWorldsServer.Communication.Proto.CollisionableType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:CIRCLE, 0)
+  field(:SQUARE, 1)
+end
+
 defmodule DarkWorldsServer.Communication.Proto.GameEvent.SelectedCharactersEntry do
   @moduledoc false
 
@@ -407,6 +416,11 @@ defmodule DarkWorldsServer.Communication.Proto.LobbyEvent do
   field(:amount_of_players, 12, type: :uint64, json_name: "amountOfPlayers")
   field(:capacity, 13, type: :uint64)
 
+  field(:map_collisionables, 14,
+    type: DarkWorldsServer.Communication.Proto.MapCollisionables,
+    json_name: "mapCollisionables"
+  )
+
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
@@ -625,6 +639,38 @@ defmodule DarkWorldsServer.Communication.Proto.Config do
   field(:loots, 4, repeated: true, type: DarkWorldsServer.Communication.Proto.GameLoot)
   field(:projectiles, 5, repeated: true, type: DarkWorldsServer.Communication.Proto.GameProjectile)
   field(:skills, 6, repeated: true, type: DarkWorldsServer.Communication.Proto.GameSkill)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.MapCollisionables do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:map_collisionables, 1,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.MapCollisionable,
+    json_name: "mapCollisionables"
+  )
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.MapCollisionable do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :uint64)
+
+  field(:collisionable_type, 2,
+    type: DarkWorldsServer.Communication.Proto.CollisionableType,
+    json_name: "collisionableType",
+    enum: true
+  )
+
+  field(:position, 3, type: DarkWorldsServer.Communication.Proto.Position)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

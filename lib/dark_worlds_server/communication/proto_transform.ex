@@ -12,6 +12,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.GameStateConfig
   alias DarkWorldsServer.Communication.Proto.KillEvent
   alias DarkWorldsServer.Communication.Proto.LootPackage
+  alias DarkWorldsServer.Communication.Proto.MapCollisionable
+  alias DarkWorldsServer.Communication.Proto.MapCollisionables
   alias DarkWorldsServer.Communication.Proto.MapModification
   alias DarkWorldsServer.Communication.Proto.Mechanic
   alias DarkWorldsServer.Communication.Proto.Modification
@@ -153,6 +155,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   end
 
   def encode(data, _struct) do
+    IO.inspect("Paso por data: " <> inspect(data), label: "data")
     data
   end
 
@@ -161,6 +164,14 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   ###########
 
   def decode(config, Config) do
+    config
+  end
+
+  def decode(config, MapCollisionable) do
+    config
+  end
+
+  def decode(config, MapCollisionables) do
     config
   end
 
@@ -392,4 +403,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   defp mechanic_name_encode(:simple_shoot), do: :SIMPLE_SHOOT
   defp mechanic_name_encode(:multi_shoot), do: :MULTI_SHOOT
   defp mechanic_name_encode(:give_effect), do: :GIVE_EFFECT
+
+  defp map_collisionable_type_encode(:rectangle), do: :RECTANGLE
+  defp map_collisionable_type_encode(:circle), do: :CIRCLE
 end

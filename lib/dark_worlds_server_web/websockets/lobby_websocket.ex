@@ -37,9 +37,16 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
   def websocket_info({:preparing_game, game_pid, game_config}, state) do
     server_hash = Application.get_env(:dark_worlds_server, :information) |> Keyword.get(:version_hash)
 
+    {:ok, game_map_collisionables_json} =
+      Application.app_dir(:dark_worlds_server, "priv/map_collisionables.json") |> File.read()
+
+    map_collisionables = GameBackend.parse_map_collisionables(game_map_collisionables_json)
+    IO.inspect(map_collisionables, label: "map_collisionables")
+
     reply_map = %{
       game_pid: game_pid,
       game_config: game_config,
+      map_collisionables: map_collisionables,
       server_hash: server_hash
     }
 

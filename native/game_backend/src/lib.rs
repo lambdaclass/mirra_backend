@@ -8,7 +8,7 @@ mod player;
 mod projectile;
 mod skill;
 
-use crate::config::Config;
+use crate::config::{Config, MapCollisionable};
 use crate::game::{EntityOwner, GameError, GameState};
 use crate::map::Position;
 use crate::player::Player;
@@ -18,6 +18,11 @@ use std::collections::HashMap;
 #[rustler::nif()]
 fn parse_config(data: String) -> Config {
     config::parse_config(&data)
+}
+
+#[rustler::nif()]
+fn parse_map_collisionables(data: String) -> Vec<MapCollisionable> {
+    config::parse_map_collisionables(&data)
 }
 
 #[rustler::nif()]
@@ -116,6 +121,7 @@ rustler::init!(
     "Elixir.GameBackend",
     [
         parse_config,
+        parse_map_collisionables,
         new_game,
         add_player,
         move_player,

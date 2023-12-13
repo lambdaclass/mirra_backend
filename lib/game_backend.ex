@@ -9,6 +9,8 @@ defmodule GameBackend do
   # NIF dummies usually just error out when called when the NIF is not loaded, as that should never normally happen.
   @spec parse_config(binary()) :: map()
   def parse_config(_data), do: :erlang.nif_error(:nif_not_loaded)
+  @spec parse_map_collisionables(binary()) :: map()
+  def parse_map_collisionables(_data), do: :erlang.nif_error(:nif_not_loaded)
   @spec new_game(map()) :: map()
   def new_game(_config), do: :erlang.nif_error(:nif_not_loaded)
   @spec add_player(map(), binary()) :: {map(), nil | pos_integer()}
