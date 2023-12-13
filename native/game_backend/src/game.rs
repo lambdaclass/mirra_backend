@@ -537,8 +537,7 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
 
 fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
     players.values_mut().for_each(|player| {
-        player.update_actions();
-        player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+        player.update_actions(elapsed_time_ms);
     })
 }
 

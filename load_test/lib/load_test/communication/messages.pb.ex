@@ -268,7 +268,15 @@ defmodule LoadTest.Communication.Proto.Player do
 
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
-  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
+end
+
+defmodule LoadTest.Communication.Proto.ActionTracker do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:action, 1, type: LoadTest.Communication.Proto.PlayerAction, enum: true)
+  field(:duration, 2, type: LoadTest.Communication.Proto.MillisTime)
 end
 
 defmodule LoadTest.Communication.Proto.EffectInfo do

@@ -348,8 +348,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       death_count: 0,
       action: transform_action_to_game_action(player.actions),
       direction: transform_angle_to_game_relative_position(player.direction),
-      aoe_position: %GameBackend.Position{x: 0, y: 0},
-      action_duration_ms: player.action_duration_ms
+      aoe_position: %GameBackend.Position{x: 0, y: 0}
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end
@@ -436,18 +435,20 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   defp transform_action_to_game_action([]), do: []
   defp transform_action_to_game_action([:nothing | tail]), do: transform_action_to_game_action(tail)
-  defp transform_action_to_game_action([:moving | tail]), do: [:moving | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([{:using_skill, "1"} | tail]),
+  defp transform_action_to_game_action([%{action: :moving} | tail]),
+    do: [:moving | transform_action_to_game_action(tail)]
+
+  defp transform_action_to_game_action([%{action: {:using_skill, "1"}} | tail]),
     do: [:attacking | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([{:using_skill, "2"} | tail]),
+  defp transform_action_to_game_action([%{action: {:using_skill, "2"}} | tail]),
     do: [:startingskill1 | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([{:using_skill, "3"} | tail]),
+  defp transform_action_to_game_action([%{action: {:using_skill, "3"}} | tail]),
     do: [:executingskill1 | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([{:using_skill, "4"} | tail]),
+  defp transform_action_to_game_action([%{action: {:using_skill, "4"}} | tail]),
     do: [:executingskill4 | transform_action_to_game_action(tail)]
 
   defp transform_killfeed_to_game_killfeed([]), do: []

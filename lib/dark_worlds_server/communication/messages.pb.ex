@@ -290,7 +290,17 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
-  field(:action_duration_ms, 18, type: :uint64, json_name: "actionDurationMs")
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.ActionTracker do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:action, 1, type: DarkWorldsServer.Communication.Proto.PlayerAction, enum: true)
+  field(:duration, 2, type: DarkWorldsServer.Communication.Proto.MillisTime)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
