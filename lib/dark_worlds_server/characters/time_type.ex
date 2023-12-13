@@ -22,7 +22,7 @@ defmodule DarkWorldsServer.Characters.TimeType do
 
   def dump(time), do: {:ok, time_type_to_string(time)}
 
-  def time_type_to_string(effect_time_type) do
+  defp time_type_to_string(effect_time_type) do
     case effect_time_type do
       "Instant" ->
         "Instant"
@@ -45,10 +45,10 @@ defmodule DarkWorldsServer.Characters.TimeType do
     end
   end
 
-  def time_type_from_string("Instant"), do: "Instant"
-  def time_type_from_string("Permanent"), do: "Permanent"
+  defp time_type_from_string("Instant"), do: "Instant"
+  defp time_type_from_string("Permanent"), do: "Permanent"
 
-  def time_type_from_string(string) when is_binary(string) do
+  defp time_type_from_string(string) when is_binary(string) do
     case String.split(string, ",") do
       ["Duration", duration_ms] ->
         %{duration_ms: String.to_integer(duration_ms)}

@@ -17,7 +17,7 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateCharacters do
       add :cooldown_ms, :integer
       add :execution_duration_ms, :integer
       add :is_passive, :boolean, default: false, null: false
-      add :mechanics, :map # SkillMechanic
+      add :mechanics, {:array, :string} # SkillMechanic
       timestamps()
     end
 
