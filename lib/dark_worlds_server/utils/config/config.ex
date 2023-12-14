@@ -7,9 +7,9 @@ defmodule Utils.Config do
   end
 
   @doc """
-  Reads characters, skills, character_skills and effects & stores them.
+  Reads characters, skills, character_skills and effects & stores them. Deletes preexisting records.
 
-  Returns an {:ok, results} tuple where results is a map with :ok and :error keys, each with the amount of entries
+  Returns an {:ok, results} tuple where results is a map with :ok and :error keys, with integer values.
   """
   def clean_import_config() do
     Characters.delete_all()
