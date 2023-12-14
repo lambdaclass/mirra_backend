@@ -1,4 +1,5 @@
 mod character;
+mod collisionable;
 mod config;
 mod effect;
 mod game;
@@ -8,7 +9,8 @@ mod player;
 mod projectile;
 mod skill;
 
-use crate::config::{Config, MapCollisionable};
+use crate::collisionable::MapCollisionable;
+use crate::config::Config;
 use crate::game::{EntityOwner, GameError, GameState};
 use crate::map::Position;
 use crate::player::Player;
@@ -22,7 +24,7 @@ fn parse_config(data: String) -> Config {
 
 #[rustler::nif()]
 fn parse_map_collisionables(data: String) -> Vec<MapCollisionable> {
-    config::parse_map_collisionables(&data)
+    collisionable::parse_map_collisionables(&data)
 }
 
 #[rustler::nif()]

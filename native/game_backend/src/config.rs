@@ -1,4 +1,4 @@
-use rustler::{NifMap, NifTaggedEnum};
+use rustler::NifMap;
 use serde::Deserialize;
 
 use crate::{
@@ -6,7 +6,6 @@ use crate::{
     effect::Effect,
     game::{GameConfig, GameConfigFile},
     loot::{LootConfig, LootFileConfig},
-    map::Position,
     projectile::{ProjectileConfig, ProjectileConfigFile},
     skill::{SkillConfig, SkillConfigFile},
 };
@@ -29,24 +28,6 @@ pub struct Config {
     skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
     pub game: GameConfig,
-}
-
-#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
-pub enum CollisionableType {
-    CircularSection,
-}
-
-#[derive(Deserialize)]
-pub struct MapCollisionablesFile {
-    map_collisionables: Vec<MapCollisionable>,
-}
-
-#[derive(Deserialize, NifMap)]
-pub struct MapCollisionable {
-    pub id: u64,
-    pub collisionable_type: CollisionableType,
-    pub position: Position,
-    pub radius: u64,
 }
 
 impl Config {
@@ -79,9 +60,4 @@ pub fn parse_config(data: &str) -> Config {
         characters,
         game,
     }
-}
-
-pub fn parse_map_collisionables(data: &str) -> Vec<MapCollisionable> {
-    let map_collisionables_file: MapCollisionablesFile = serde_json::from_str(data).unwrap();
-    map_collisionables_file.map_collisionables
 }
