@@ -436,20 +436,20 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp transform_action_to_game_action([]), do: []
   defp transform_action_to_game_action([:nothing | tail]), do: transform_action_to_game_action(tail)
 
-  defp transform_action_to_game_action([%{action: :moving} | tail]),
-    do: [:moving | transform_action_to_game_action(tail)]
+  defp transform_action_to_game_action([%{action: :moving, duration: duration} | tail]),
+    do: [%{action: :moving, duration: duration} | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([%{action: {:using_skill, "1"}} | tail]),
-    do: [:attacking | transform_action_to_game_action(tail)]
+  defp transform_action_to_game_action([%{action: {:using_skill, "1"}, duration: duration} | tail]),
+    do: [%{action: :attacking, duration: duration} | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([%{action: {:using_skill, "2"}} | tail]),
-    do: [:startingskill1 | transform_action_to_game_action(tail)]
+  defp transform_action_to_game_action([%{action: {:using_skill, "2"}, duration: duration} | tail]),
+    do: [%{action: :startingskill1, duration: duration} | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([%{action: {:using_skill, "3"}} | tail]),
-    do: [:executingskill1 | transform_action_to_game_action(tail)]
+  defp transform_action_to_game_action([%{action: {:using_skill, "3"}, duration: duration} | tail]),
+    do: [%{action: :executingskill1, duration: duration} | transform_action_to_game_action(tail)]
 
-  defp transform_action_to_game_action([%{action: {:using_skill, "4"}} | tail]),
-    do: [:executingskill4 | transform_action_to_game_action(tail)]
+  defp transform_action_to_game_action([%{action: {:using_skill, "4"}, duration: duration} | tail]),
+    do: [%{action: :executingskill4, duration: duration} | transform_action_to_game_action(tail)]
 
   defp transform_killfeed_to_game_killfeed([]), do: []
 

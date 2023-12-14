@@ -228,7 +228,7 @@ defmodule LoadTest.Communication.Proto.Player do
   field(:health, 2, type: :sint64)
   field(:position, 3, type: LoadTest.Communication.Proto.Position)
   field(:status, 4, type: LoadTest.Communication.Proto.Status, enum: true)
-  field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.PlayerAction, enum: true)
+  field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.ActionTracker)
   field(:aoe_position, 6, type: LoadTest.Communication.Proto.Position, json_name: "aoePosition")
   field(:kill_count, 7, type: :uint64, json_name: "killCount")
   field(:death_count, 8, type: :uint64, json_name: "deathCount")
@@ -276,7 +276,7 @@ defmodule LoadTest.Communication.Proto.ActionTracker do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:action, 1, type: LoadTest.Communication.Proto.PlayerAction, enum: true)
-  field(:duration, 2, type: LoadTest.Communication.Proto.MillisTime)
+  field(:duration, 2, type: :uint64)
 end
 
 defmodule LoadTest.Communication.Proto.EffectInfo do
