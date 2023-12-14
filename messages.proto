@@ -61,7 +61,7 @@ message Player {
     sint64 health = 2;
     Position position = 3;
     Status status = 4;
-    repeated PlayerAction action = 5;
+    repeated ActionTracker action = 5;
     Position aoe_position = 6;
     uint64 kill_count = 7;
     uint64 death_count = 8;
@@ -78,7 +78,7 @@ message Player {
 
 message ActionTracker {
     PlayerAction action = 1;
-    MillisTime duration = 2;
+    uint64 duration = 2;
 }
 
 message EffectInfo {

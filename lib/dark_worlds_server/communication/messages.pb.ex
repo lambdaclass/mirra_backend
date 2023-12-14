@@ -240,12 +240,7 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   field(:health, 2, type: :sint64)
   field(:position, 3, type: DarkWorldsServer.Communication.Proto.Position)
   field(:status, 4, type: DarkWorldsServer.Communication.Proto.Status, enum: true)
-
-  field(:action, 5,
-    repeated: true,
-    type: DarkWorldsServer.Communication.Proto.PlayerAction,
-    enum: true
-  )
+  field(:action, 5, repeated: true, type: DarkWorldsServer.Communication.Proto.ActionTracker)
 
   field(:aoe_position, 6,
     type: DarkWorldsServer.Communication.Proto.Position,
@@ -300,7 +295,7 @@ defmodule DarkWorldsServer.Communication.Proto.ActionTracker do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:action, 1, type: DarkWorldsServer.Communication.Proto.PlayerAction, enum: true)
-  field(:duration, 2, type: DarkWorldsServer.Communication.Proto.MillisTime)
+  field(:duration, 2, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
