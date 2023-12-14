@@ -1,11 +1,11 @@
 defmodule DarkWorldsServer.Config.Characters do
   import Ecto.Query
 
-  alias DarkWorldsServer.Config.Characters.ProjectileEffect
   alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Config.Characters.CharacterSkill
   alias DarkWorldsServer.Config.Characters.Effect
   alias DarkWorldsServer.Config.Characters.Projectile
+  alias DarkWorldsServer.Config.Characters.ProjectileEffect
   alias DarkWorldsServer.Config.Characters.Skill
   alias DarkWorldsServer.Repo
 
@@ -66,13 +66,5 @@ defmodule DarkWorldsServer.Config.Characters do
   def delete_all_effects(), do: Repo.delete_all(Effect)
   def delete_all_character_skills(), do: Repo.delete_all(CharacterSkill)
   def delete_all_projectiles(), do: Repo.delete_all(Projectile)
-  def delete_all_projectile_effectss(), do: Repo.delete_all(ProjectileEffect)
-
-  def delete_all() do
-    delete_all_characters()
-    delete_all_skills()
-    delete_all_effects()
-    delete_all_character_skills()
-    delete_all_projectiles()
-  end
+  def delete_all_projectile_effects(), do: Repo.delete_all(ProjectileEffect)
 end

@@ -1,4 +1,4 @@
-defmodule DarkWorldsServer.Repo.Migrations.CreateCharacters do
+defmodule DarkWorldsServer.Repo.Migrations.CreateConfigs do
   use Ecto.Migration
 
   def change do
@@ -55,10 +55,24 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateCharacters do
       timestamps()
     end
 
+    create table(:loots) do
+      add :name, :string
+      add :size, :integer
+      add :pickup_mechanic, :string
+      timestamps()
+    end
+
+    create table(:loot_effects) do
+      add :loot_id, references(:loots, on_delete: :delete_all), null: false
+      add :effect_id, references(:effects, on_delete: :delete_all), null: false
+      timestamps()
+    end
+
     create unique_index(:characters, :name)
     create unique_index(:skills, :name)
     create unique_index(:effects, :name)
-    create unique_index(:projectile, :name)
+    create unique_index(:projectiles, :name)
+    create unique_index(:loots, :name)
     create unique_index(:character_skills, [:character_id, :skill_number])
   end
 end
