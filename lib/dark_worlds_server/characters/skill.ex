@@ -10,7 +10,6 @@ defmodule DarkWorldsServer.Characters.Skill do
     field(:cooldown_ms, :integer)
     field(:execution_duration_ms, :integer)
     field(:is_passive, :boolean)
-    field(:skills_keys_to_execute, {:array, :string})
     field(:mechanics, {:array, SkillMechanic})
 
     timestamps()
@@ -20,6 +19,6 @@ defmodule DarkWorldsServer.Characters.Skill do
   def changeset(skill, attrs),
     do:
       skill
-      |> cast(attrs, [:name, :cooldown_ms, :execution_duration_ms, :is_passive, :skills_keys_to_execute, :mechanics])
+      |> cast(attrs, [:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics])
       |> validate_required([:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics])
 end
