@@ -425,6 +425,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   defp transform_character_name_to_game_character_name("h4ck"), do: "H4ck"
   defp transform_character_name_to_game_character_name("muflus"), do: "Muflus"
+  defp transform_character_name_to_game_character_name("uma"), do: "Uma"
 
   defp transform_angle_to_game_relative_position(angle) do
     angle_radians = Nx.divide(Nx.Constants.pi(), 180) |> Nx.multiply(angle)
