@@ -8,22 +8,35 @@ defmodule Utils.Config do
 
   @doc """
   Reads characters, skills, character_skills and effects & stores them.
+
+  Returns an {:ok, results} tuple where results is a map with :ok and :error keys, each with the amount of entries
   """
   def clean_import_config() do
     Characters.delete_all()
     %{effects: effects, skills: skills, characters: characters} = read_config_backend()
 
-    _effects_result =
+    effects_result =
       Enum.map(
         effects,
         &(&1 |> adapt_effects_map() |> Characters.insert_effect())
       )
 
-    _skills_result = Enum.map(skills, &Characters.insert_skill(&1))
+    skills_result = Enum.map(skills, &Characters.insert_skill(&1))
 
-    _characters_result = Enum.map(characters, &Characters.insert_character(&1))
+    characters_result = Enum.map(characters, &Characters.insert_character(&1))
 
-    _character_skills_result = Enum.map(characters, &(&1 |> insert_character_skills()))
+    character_skills_result = Enum.map(characters, &insert_character_skills(&1)) |> List.flatten()
+
+    results = effects_result ++ skills_result ++ characters_result ++ character_skills_result
+
+    ok =
+      Enum.count(results, fn
+        {:ok, _} -> true
+        {:error, _} -> false
+        _other -> false
+      end)
+
+    {:ok, %{ok: ok, error: Enum.count(results) - ok}}
   end
 
   defp adapt_effects_map(
