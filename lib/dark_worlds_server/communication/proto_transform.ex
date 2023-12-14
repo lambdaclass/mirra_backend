@@ -328,7 +328,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   def player_action_encode([%{action: :attacking, duration: duration} | tail]),
     do: [%{action: :ATTACKING, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([%{action: :nothing, duration: duration} | tail]), do: player_action_encode(tail)
+  def player_action_encode([%{action: :nothing, duration: _duration} | tail]), do: player_action_encode(tail)
 
   def player_action_encode([%{action: :attackingaoe, duration: duration} | tail]),
     do: [%{action: :ATTACKING_AOE, duration: duration} | player_action_encode(tail)]
