@@ -1,4 +1,6 @@
 defmodule DarkWorldsServer.Characters do
+  import Ecto.Query
+
   alias DarkWorldsServer.Characters.Character
   alias DarkWorldsServer.Characters.CharacterSkill
   alias DarkWorldsServer.Characters.Effect
@@ -30,10 +32,13 @@ defmodule DarkWorldsServer.Characters do
   end
 
   def get_character(id), do: Repo.get(Character, id)
+  def get_character_by_name(name), do: Repo.one(from(c in Character, where: c.name == ^name))
 
   def get_skill(id), do: Repo.get(Skill, id)
+  def get_skill_by_name(name), do: Repo.one(from(s in Skill, where: s.name == ^name))
 
   def get_effect(id), do: Repo.get(Effect, id)
+  def get_effect_by_name(name), do: Repo.one(from(e in Effect, where: e.name == ^name))
 
   def get_character_skill(id), do: Repo.get(CharacterSkill, id)
 
