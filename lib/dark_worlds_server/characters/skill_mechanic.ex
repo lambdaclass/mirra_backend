@@ -28,10 +28,10 @@ defmodule DarkWorldsServer.Characters.SkillMechanic do
     # The map functions "un-preload" them. TODO: get rid of this extra step.
     case skill_mechanic do
       %{"effects" => effects} ->
-        "GiveEffect,#{effects |> Enum.map_join(& &1.name, @nested_list_separator)}"
+        "GiveEffect,#{effects |> Enum.map_join(@nested_list_separator, & &1.name)}"
 
       %{"damage" => damage, "range" => range, "cone_angle" => cone_angle, "on_hit_effects" => on_hit_effects} ->
-        "Hit,#{damage},#{range},#{cone_angle},#{on_hit_effects |> Enum.map_join(& &1.name, @nested_list_separator)}"
+        "Hit,#{damage},#{range},#{cone_angle},#{on_hit_effects |> Enum.map_join(@nested_list_separator, & &1.name)}"
 
       %{"cone_angle" => cone_angle, "projectile" => projectile, "count" => count} ->
         "MultiShoot,#{cone_angle},#{count},#{projectile.name}"
