@@ -41,7 +41,7 @@ pub enum PlayerStatus {
     Death,
 }
 
-#[derive(NifTaggedEnum, Clone)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
 pub enum Action {
     Nothing,
     Moving,
@@ -92,8 +92,10 @@ impl Player {
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
-        self.next_actions.push(action);
-        self.action_duration_ms += duration_ms;
+        if !self.actions.contains(&action) {
+            self.next_actions.push(action);
+            self.action_duration_ms += duration_ms;
+        }
     }
 
     pub fn update_actions(&mut self) {
