@@ -98,8 +98,15 @@ impl Player {
     }
 
     pub fn update_actions(&mut self) {
+        if !self.is_executing_action() {
+            self.next_actions
+                .retain(|action| matches!(action, Action::Moving));
+        }
         self.actions = self.next_actions.clone();
-        self.next_actions.clear();
+    }
+
+    fn is_executing_action(&mut self) -> bool {
+        self.action_duration_ms != 0
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
