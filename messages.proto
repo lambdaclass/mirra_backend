@@ -451,7 +451,7 @@ message MapCollisionable {
 }
 
 enum CollisionableType {
-    CIRCLE = 0;
+    CIRCULAR_SECTION = 0;
 }
 
 /* Represents the initial game state.

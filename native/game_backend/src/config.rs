@@ -33,8 +33,7 @@ pub struct Config {
 
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
 pub enum CollisionableType {
-    Circle,
-    Rectangle,
+    CircularSection,
 }
 
 #[derive(Deserialize)]

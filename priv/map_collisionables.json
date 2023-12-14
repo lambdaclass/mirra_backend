@@ -2,7 +2,7 @@
     "map_collisionables": [
         {
             "id": 1,
-            "collisionable_type": "Circle",
+            "collisionable_type": "CircularSection",
             "position": {
                 "x": 3000,
                 "y": 7150
@@ -11,7 +11,7 @@
         },
         {
             "id": 2,
-            "collisionable_type": "Circle",
+            "collisionable_type": "CircularSection",
             "position": {
                 "x": 2000,
                 "y": 1150
@@ -20,7 +20,7 @@
         },
         {
             "id": 3,
-            "collisionable_type": "Circle",
+            "collisionable_type": "CircularSection",
             "position": {
                 "x": 4000,
                 "y": 9150
@@ -29,7 +29,7 @@
         },
         {
             "id": 4,
-            "collisionable_type": "Circle",
+            "collisionable_type": "CircularSection",
             "position": {
                 "x": 3000,
                 "y": 2150
@@ -38,7 +38,7 @@
         },
         {
             "id": 5,
-            "collisionable_type": "Circle",
+            "collisionable_type": "CircularSection",
             "position": {
                 "x": 5000,
                 "y": 7150

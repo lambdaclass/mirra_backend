@@ -416,5 +416,5 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   defp mechanic_name_encode(:multi_shoot), do: :MULTI_SHOOT
   defp mechanic_name_encode(:give_effect), do: :GIVE_EFFECT
 
-  defp map_collisionable_type_encode(:circle), do: :CIRCLE
+  defp map_collisionable_type_encode(:circular_section), do: :CIRCULAR_SECTION
 end
