@@ -18,12 +18,10 @@ defmodule Utils.Config do
     _effects_result =
       Enum.map(
         effects,
-        &(&1 |> adapt_effects_map() |> Map.drop([:skills_keys_to_execute]) |> Characters.insert_effect())
+        &(&1 |> adapt_effects_map() |> Characters.insert_effect())
       )
 
     _skills_result = Enum.map(skills, &Characters.insert_skill(&1))
-
-    # _effect_skills = Enum.map(effects, &(&1.skills_keys_to_execute))
   end
 
   defp adapt_effects_map(
@@ -45,6 +43,4 @@ defmodule Utils.Config do
 
   defp adapt_attribute_modifiers(attribute_modifiers),
     do: Enum.map(attribute_modifiers, &%{&1 | modifier: Atom.to_string(&1.modifier)})
-
-  defp adapt_skills_map(map), do: map
 end

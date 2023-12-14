@@ -34,14 +34,12 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateCharacters do
       add :effect_time_type, :string
       add :player_attributes, :map
       add :projectile_attributes, :map
-      add :skills_keys_to_execute, :map
+      add :skills_keys_to_execute, {:array, :string}
       timestamps()
     end
 
-    create table(:effect_skills) do
-      add :effect_id, references(:effects, on_delete: :delete_all), null: false
-      add :skill_id, references(:skills, on_delete: :delete_all), null: false
-      timestamps()
-    end
+    create unique_index(:characters, :name)
+    create unique_index(:skills, :name)
+    create unique_index(:effects, :name)
   end
 end

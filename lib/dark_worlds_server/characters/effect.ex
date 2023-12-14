@@ -2,7 +2,6 @@ defmodule DarkWorldsServer.Characters.Effect do
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Characters.Effect.AttributesModifier
-  alias DarkWorldsServer.Characters.EffectSkill
   alias DarkWorldsServer.Characters.TimeType
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -10,11 +9,10 @@ defmodule DarkWorldsServer.Characters.Effect do
   schema "effects" do
     field(:name, :string)
     field(:is_reversable, :boolean)
+    field(:skills_keys_to_execute, {:array, :string})
     field(:effect_time_type, TimeType)
     embeds_many(:player_attributes, AttributesModifier)
     embeds_many(:projectile_attributes, AttributesModifier)
-
-    has_many(:skills_to_execute, EffectSkill)
 
     timestamps()
   end
@@ -22,19 +20,14 @@ defmodule DarkWorldsServer.Characters.Effect do
   @doc false
   def changeset(effect, attrs) do
     effect
-    |> cast(attrs, [:name, :is_reversable])
+    |> cast(attrs, [:name, :is_reversable, :skills_keys_to_execute, :effect_time_type])
     |> cast_embed(:player_attributes)
     |> cast_embed(:projectile_attributes)
-    |> cast_time_type(attrs[:effect_time_type])
     |> validate_required([
       :name,
       :is_reversable,
       :effect_time_type
     ])
-  end
-
-  defp cast_time_type(changeset, value) do
-    cast(changeset, %{effect_time_type: value}, [:effect_time_type])
   end
 
   defmodule AttributesModifier do
