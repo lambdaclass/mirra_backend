@@ -11,9 +11,7 @@ defmodule Utils.Config do
   """
   def clean_import_config() do
     Characters.delete_all()
-    config = read_config_backend()
-    effects = config.effects
-    skills = config.skills
+    %{effects: effects, skills: skills, characters: characters} = read_config_backend()
 
     _effects_result =
       Enum.map(
@@ -22,6 +20,10 @@ defmodule Utils.Config do
       )
 
     _skills_result = Enum.map(skills, &Characters.insert_skill(&1))
+
+    _characters_result = Enum.map(characters, &Characters.insert_character(&1))
+
+    _character_skills_result = Enum.map(characters, &(&1 |> insert_character_skills()))
   end
 
   defp adapt_effects_map(
@@ -43,4 +45,13 @@ defmodule Utils.Config do
 
   defp adapt_attribute_modifiers(attribute_modifiers),
     do: Enum.map(attribute_modifiers, &%{&1 | modifier: Atom.to_string(&1.modifier)})
+
+  defp insert_character_skills(%{name: character_name, skills: skills}) do
+    character_id = Characters.get_character_by_name(character_name).id
+
+    Enum.map(skills, fn {skill_number, skill} ->
+      skill_id = Characters.get_skill_by_name(skill.name).id
+      Characters.insert_character_skill(%{character_id: character_id, skill_number: skill_number, skill_id: skill_id})
+    end)
+  end
 end
