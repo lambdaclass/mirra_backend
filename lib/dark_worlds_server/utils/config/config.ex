@@ -1,5 +1,5 @@
 defmodule Utils.Config do
-  alias DarkWorldsServer.Characters
+  alias DarkWorldsServer.Config.Characters
 
   def read_config_backend() do
     {:ok, json_config} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
@@ -13,21 +13,23 @@ defmodule Utils.Config do
   """
   def clean_import_config() do
     Characters.delete_all()
-    %{effects: effects, skills: skills, characters: characters} = read_config_backend()
+    %{effects: effects, skills: skills, characters: characters, projectiles: projectiles} = read_config_backend()
 
-    effects_result =
-      Enum.map(
-        effects,
-        &(&1 |> adapt_effects_map() |> Characters.insert_effect())
-      )
+    effects_result = Enum.map(effects, &insert_effects/1)
 
-    skills_result = Enum.map(skills, &Characters.insert_skill(&1))
+    skills_result = Enum.map(skills, &Characters.insert_skill/1)
 
-    characters_result = Enum.map(characters, &Characters.insert_character(&1))
+    characters_result = Enum.map(characters, &Characters.insert_character/1)
 
-    character_skills_result = Enum.map(characters, &insert_character_skills(&1)) |> List.flatten()
+    character_skills_result = Enum.map(characters, &insert_character_skills/1) |> List.flatten()
 
-    results = effects_result ++ skills_result ++ characters_result ++ character_skills_result
+    projectiles_result = Enum.map(projectiles, &Characters.insert_projectile/1)
+
+    projectile_effects_result = Enum.map(projectiles, &insert_projectile_effects/1) |> List.flatten()
+
+    results =
+      effects_result ++
+        skills_result ++ characters_result ++ character_skills_result ++ projectiles_result ++ projectile_effects_result
 
     ok =
       Enum.count(results, fn
@@ -39,19 +41,20 @@ defmodule Utils.Config do
     {:ok, %{ok: ok, error: Enum.count(results) - ok}}
   end
 
-  defp adapt_effects_map(
+  defp insert_effects(
          %{
            effect_time_type: effect_time_type,
            player_attributes: player_attributes,
            projectile_attributes: projectile_attributes
          } = effect
-       ),
-       do: %{
-         effect
-         | effect_time_type: adapt_effect_time_type(effect_time_type),
-           player_attributes: adapt_attribute_modifiers(player_attributes),
-           projectile_attributes: adapt_attribute_modifiers(projectile_attributes)
-       }
+       ) do
+    Characters.insert_effect(%{
+      effect
+      | effect_time_type: adapt_effect_time_type(effect_time_type),
+        player_attributes: adapt_attribute_modifiers(player_attributes),
+        projectile_attributes: adapt_attribute_modifiers(projectile_attributes)
+    })
+  end
 
   defp adapt_effect_time_type({_type, value_map}), do: value_map
   defp adapt_effect_time_type(value_map), do: value_map
@@ -65,6 +68,15 @@ defmodule Utils.Config do
     Enum.map(skills, fn {skill_number, skill} ->
       skill_id = Characters.get_skill_by_name(skill.name).id
       Characters.insert_character_skill(%{character_id: character_id, skill_number: skill_number, skill_id: skill_id})
+    end)
+  end
+
+  defp insert_projectile_effects(%{name: projectile_name, on_hit_effects: on_hit_effects}) do
+    projectile_id = Characters.get_projectile_by_name(projectile_name) |> IO.inspect(label: :projectile) |> Map.get(:id)
+
+    Enum.map(on_hit_effects, fn effect ->
+      effect_id = Characters.get_effect_by_name(effect.name).id
+      Characters.insert_projectile_effect(%{projectile_id: projectile_id, effect_id: effect_id})
     end)
   end
 end

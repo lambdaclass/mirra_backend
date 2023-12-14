@@ -38,8 +38,27 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateCharacters do
       timestamps()
     end
 
+    create table(:projectiles) do
+      add :name, :string
+      add :base_damage, :integer
+      add :base_speed, :integer
+      add :base_size, :integer
+      add :duration_ms, :integer
+      add :max_distance, :integer
+      add :remove_on_collision, :boolean, default: false, null: false
+      timestamps()
+    end
+
+    create table(:projectile_effects) do
+      add :projectile_id, references(:projectiles, on_delete: :delete_all), null: false
+      add :effect_id, references(:effects, on_delete: :delete_all), null: false
+      timestamps()
+    end
+
     create unique_index(:characters, :name)
     create unique_index(:skills, :name)
     create unique_index(:effects, :name)
+    create unique_index(:projectile, :name)
+    create unique_index(:character_skills, [:character_id, :skill_number])
   end
 end

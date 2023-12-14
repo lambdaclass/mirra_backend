@@ -1,4 +1,4 @@
-defmodule DarkWorldsServer.Characters.SkillMechanic do
+defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
   use Ecto.Type
 
   # Should be something effect names never use

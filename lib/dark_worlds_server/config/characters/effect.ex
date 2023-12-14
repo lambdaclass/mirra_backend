@@ -1,14 +1,15 @@
-defmodule DarkWorldsServer.Characters.Effect do
+defmodule DarkWorldsServer.Config.Characters.Effect do
   use Ecto.Schema
   import Ecto.Changeset
-  alias DarkWorldsServer.Characters.Effect.AttributesModifier
-  alias DarkWorldsServer.Characters.TimeType
+  alias DarkWorldsServer.Config.Characters.Effect.AttributesModifier
+  alias DarkWorldsServer.Config.Characters.TimeType
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "effects" do
     field(:name, :string)
     field(:is_reversable, :boolean)
+    # We do it like this instead of a relation because the backend needs only the number, not the whole struct.
     field(:skills_keys_to_execute, {:array, :string})
     field(:effect_time_type, TimeType)
     embeds_many(:player_attributes, AttributesModifier)

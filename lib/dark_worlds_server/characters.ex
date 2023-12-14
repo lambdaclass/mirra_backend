@@ -1,10 +1,12 @@
-defmodule DarkWorldsServer.Characters do
+defmodule DarkWorldsServer.Config.Characters do
   import Ecto.Query
 
-  alias DarkWorldsServer.Characters.Character
-  alias DarkWorldsServer.Characters.CharacterSkill
-  alias DarkWorldsServer.Characters.Effect
-  alias DarkWorldsServer.Characters.Skill
+  alias DarkWorldsServer.Config.Characters.ProjectileEffect
+  alias DarkWorldsServer.Config.Characters.Character
+  alias DarkWorldsServer.Config.Characters.CharacterSkill
+  alias DarkWorldsServer.Config.Characters.Effect
+  alias DarkWorldsServer.Config.Characters.Projectile
+  alias DarkWorldsServer.Config.Characters.Skill
   alias DarkWorldsServer.Repo
 
   def insert_character(attrs \\ %{}) do
@@ -31,6 +33,18 @@ defmodule DarkWorldsServer.Characters do
     |> Repo.insert()
   end
 
+  def insert_projectile(attrs \\ %{}) do
+    %Projectile{}
+    |> Projectile.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def insert_projectile_effect(attrs \\ %{}) do
+    %ProjectileEffect{}
+    |> ProjectileEffect.changeset(attrs)
+    |> Repo.insert()
+  end
+
   def get_character(id), do: Repo.get(Character, id)
   def get_character_by_name(name), do: Repo.one(from(c in Character, where: c.name == ^name))
 
@@ -42,15 +56,23 @@ defmodule DarkWorldsServer.Characters do
 
   def get_character_skill(id), do: Repo.get(CharacterSkill, id)
 
+  def get_projectile(id), do: Repo.get(Projectile, id)
+  def get_projectile_by_name(name), do: Repo.one(from(e in Projectile, where: e.name == ^name))
+
+  def get_projectile_effect(id), do: Repo.get(ProjectileEffect, id)
+
   def delete_all_characters(), do: Repo.delete_all(Character)
   def delete_all_skills(), do: Repo.delete_all(Skill)
   def delete_all_effects(), do: Repo.delete_all(Effect)
   def delete_all_character_skills(), do: Repo.delete_all(CharacterSkill)
+  def delete_all_projectiles(), do: Repo.delete_all(Projectile)
+  def delete_all_projectile_effectss(), do: Repo.delete_all(ProjectileEffect)
 
   def delete_all() do
     delete_all_characters()
     delete_all_skills()
     delete_all_effects()
     delete_all_character_skills()
+    delete_all_projectiles()
   end
 end
