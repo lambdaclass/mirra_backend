@@ -25,7 +25,7 @@ pub struct Config {
     effects: Vec<Effect>,
     pub loots: Vec<LootConfig>,
     projectiles: Vec<ProjectileConfig>,
-    skills: Vec<SkillConfig>,
+    pub skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
     pub game: GameConfig,
 }
@@ -40,6 +40,10 @@ impl Config {
 
     pub fn find_effect(&self, name: String) -> Option<&Effect> {
         self.effects.iter().find(|effect| effect.name == name)
+    }
+    
+    pub fn find_skill(&self, name: String) -> Option<&SkillConfig> {
+        self.skills.iter().find(|skill_config| skill_config.name == name)
     }
 }
 

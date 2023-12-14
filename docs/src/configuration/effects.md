@@ -89,6 +89,7 @@ Examples of the JSON defining effects
     ],
     "projectile_attributes": [],
     "skills_keys_to_execute": []
+    "skills_to_execute": []
   },
   {
     "name": "gigantify"
@@ -142,7 +143,12 @@ However, if we change the order as follows:
 
 We will obtain the wrong value of 103.
 
-An example of an effect that executes a skill could be an Effect with effect_time_type: {"type": "Periodic", "interval_ms": 1000, "trigger_count": 3} and "skills_to_execute": ["1"].
+An example of an effect that executes a skill could be an Effect with effect_time_type: {"type": "Periodic", "interval_ms": 1000, "trigger_count": 3} and "skills_keys_to_execute": ["1"].
 
 With the above configuration, the player's character will execute the character skill number "1" 3 times in intervals of 1000 ms, when the effect is active.
+
+Another example of this behavior is:
+{"type": "Periodic", "interval_ms": 1000, "trigger_count": 3, "skills_to_execute": ["skill_name"]}
+
+which will execute any defined skill in the config file, this executed skill won't be notified to the client
 ```

@@ -16,6 +16,7 @@ use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
+use crate::skill::SkillConfig;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
@@ -205,73 +206,87 @@ impl GameState {
 
         self.players.values_mut().for_each(|player| {
             let skill_keys = player.skills_keys_to_execute.clone();
-            skill_keys.iter().for_each(|skill_key: &String| {
-                if let Some(skill) = player.character.clone().skills.get(skill_key) {
+            let mut skill_configs: Vec<SkillConfig> = vec![];
+            player
+                .skills_to_execute
+                .iter()
+                .for_each(|skill_name: &String|{
+                    if let Some(skill_config) = self.config.find_skill(skill_name.clone()) {
+                        skill_configs.push(skill_config.clone());
+                    } 
+                });
+
+            skill_keys.iter()
+            .for_each(|skill_key: &String| {
+                if let Some(skill_config) = player.character.skills.get(skill_key) {
+                    skill_configs.push(skill_config.clone());
                     player.add_action(
                         Action::UsingSkill(skill_key.to_string()),
-                        skill.execution_duration_ms,
+                        skill_config.execution_duration_ms,
                     );
+                } 
+            });
+            skill_configs.iter().for_each(|skill| {
+                for mechanic in skill.mechanics.iter() {
+                    match mechanic {
+                        SkillMechanic::SimpleShoot {
+                            projectile: projectile_config,
+                        } => {
+                            let id = get_next_id(&mut self.next_id);
 
-                    for mechanic in skill.mechanics.iter() {
-                        match mechanic {
-                            SkillMechanic::SimpleShoot {
-                                projectile: projectile_config,
-                            } => {
-                                let id = get_next_id(&mut self.next_id);
+                            let projectile = Projectile::new(
+                                id,
+                                player.position,
+                                player.direction,
+                                player.id,
+                                projectile_config,
+                            );
+                            self.projectiles.push(projectile);
+                        }
+                        SkillMechanic::Hit {
+                            damage,
+                            range,
+                            cone_angle,
+                            on_hit_effects,
+                        } => {
+                            let mut damage = *damage;
 
-                                let projectile = Projectile::new(
-                                    id,
-                                    player.position,
-                                    player.direction,
-                                    player.id,
-                                    projectile_config,
-                                );
-                                self.projectiles.push(projectile);
-                            }
-                            SkillMechanic::Hit {
-                                damage,
-                                range,
-                                cone_angle,
-                                on_hit_effects,
-                            } => {
-                                let mut damage = *damage;
-
-                                for (effect, _owner) in player.effects.iter() {
-                                    for change in effect.player_attributes.iter() {
-                                        if change.attribute == "damage" {
-                                            effect::modify_attribute(&mut damage, change)
-                                        }
+                            for (effect, _owner) in player.effects.iter() {
+                                for change in effect.player_attributes.iter() {
+                                    if change.attribute == "damage" {
+                                        effect::modify_attribute(&mut damage, change)
                                     }
                                 }
-
-                                cloned_players
-                                    .iter()
-                                    .filter(|list_player| {
-                                        list_player.status == PlayerStatus::Alive
-                                            && list_player.id != player.id
-                                            && player.is_targetable()
-                                            && map::in_cone_angle_range(
-                                                player,
-                                                list_player,
-                                                *range,
-                                                *cone_angle as f32,
-                                            )
-                                    })
-                                    .for_each(|target_player| {
-                                        self.pending_damages.push(DamageTracker {
-                                            attacked_id: target_player.id,
-                                            attacker: EntityOwner::Player(player.id),
-                                            damage: damage as i64,
-                                            on_hit_effects: on_hit_effects.clone(),
-                                        });
-                                    });
                             }
-                            _ => todo!("SkillMechanic not implemented"),
+
+                            cloned_players
+                                .iter()
+                                .filter(|list_player| {
+                                    list_player.status == PlayerStatus::Alive
+                                        && list_player.id != player.id
+                                        && player.is_targetable()
+                                        && map::in_cone_angle_range(
+                                            player,
+                                            list_player,
+                                            *range,
+                                            *cone_angle as f32,
+                                        )
+                                })
+                                .for_each(|target_player| {
+                                    self.pending_damages.push(DamageTracker {
+                                        attacked_id: target_player.id,
+                                        attacker: EntityOwner::Player(player.id),
+                                        damage: damage as i64,
+                                        on_hit_effects: on_hit_effects.clone(),
+                                    });
+                                });
                         }
+                        _ => todo!("SkillMechanic not implemented"),
                     }
                 }
-            })
-        });
+            });
+            });
+
     }
 
     pub fn activate_skill(

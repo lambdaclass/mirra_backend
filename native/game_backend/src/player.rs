@@ -32,6 +32,7 @@ pub struct Player {
     pub size: u64,
     pub speed: u64,
     pub skills_keys_to_execute: Vec<String>,
+    pub skills_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<ActionTracker>,
     skill_moving_params: Option<SkillMovingParams>,
@@ -75,7 +76,8 @@ impl Player {
             character: character_config,
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
-            skill_moving_params: None
+            skill_moving_params: None,
+            skills_to_execute: vec![]
         }
     }
 
@@ -288,6 +290,7 @@ impl Player {
 
     pub fn run_effects(&mut self, time_diff: u64) -> Vec<DamageTracker> {
         let mut skills_keys_to_execute: Vec<String> = Vec::new();
+        let mut skills_to_execute: Vec<String> = Vec::new();
         let mut damages: Vec<DamageTracker> = Vec::new();
 
         for (effect, owner) in self.effects.iter_mut() {
@@ -312,6 +315,11 @@ impl Player {
                             .iter()
                             .for_each(|skill| skills_keys_to_execute.push(skill.to_string()));
 
+                        effect
+                            .skills_to_execute
+                            .iter()
+                            .for_each(|skill| skills_to_execute.push(skill.to_string()));
+
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
                                 "health" => {
@@ -332,6 +340,7 @@ impl Player {
             }
         }
         self.skills_keys_to_execute = skills_keys_to_execute;
+        self.skills_to_execute = skills_to_execute;
         damages
     }
 

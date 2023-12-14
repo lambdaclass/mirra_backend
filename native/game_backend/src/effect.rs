@@ -9,6 +9,7 @@ pub struct Effect {
     pub player_attributes: Vec<AttributeChange>,
     pub projectile_attributes: Vec<AttributeChange>,
     pub skills_keys_to_execute: Vec<String>,
+    pub skills_to_execute: Vec<String>,
 }
 
 #[derive(Deserialize, NifMap, Clone, Debug)]
