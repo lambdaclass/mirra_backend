@@ -101,9 +101,9 @@ MIX_ENV=prod iex -S mix phx.server
 
 ### Starting the load test runner
 
-1. Set this env variable: `export SERVER_HOST=game_server_ip:game_server_port`.
-   Where `game_server_ip` is the ip of the load test server, and `game_server_port`,
-   the corresponding port.
+1. Set this env variable: 
+   ```sh
+   export SERVER_HOST=game_server_ip:game_server_port
 2. Run this command to increase the file descriptor amount.
    ```bash
    ulimit -n 65000
