@@ -1,5 +1,134 @@
 syntax = "proto3";
 
+option csharp_namespace = "Communication.Protobuf";
+
+message TransitionGameEvent {
+    GameEvent new_game_event = 1;
+    OldGameEvent old_game_event = 2;
+}
+
+message GameEvent {
+    oneof event {
+        GameState game_state = 1;
+        GameStarted game_started = 2;
+        GameFinished game_finished = 3;
+    }
+}
+
+message GameStarted {
+    GameState starting_state = 1; // TODO: can we not have this?
+}
+
+message GameFinished {
+    Player winner = 1;
+    repeated Player players = 2;
+}
+
+message GameState {
+    repeated Player players = 1;
+    repeated Projectile projectiles = 2;
+    repeated Item items = 3;
+    ZoneInfo zone_info = 4;
+    repeated KillEvent killfeed = 5;
+    int64 player_timestamp = 6;
+    int64 server_timestamp = 7;
+}
+
+message Player {
+    uint64 id = 1;
+    Position position = 2;
+    sint64 health = 3;
+    sint64 speed = 4;
+    float size = 5;
+    float direction = 6;
+    PlayerStatus status = 7;
+    uint64 kill_count = 8;
+    uint64 death_count = 9;
+    repeated PlayerAction actions = 10;
+    uint64 action_duration_ms = 11;
+    repeated SkillCooldown cooldowns = 12;
+    repeated Item inventory = 13;
+    repeated EffectInfo effects = 14;
+    string character_name = 15;
+}
+
+message PlayerAction {
+    PlayerActionEnum action = 1;
+    string action_skill_key = 2;
+}
+
+message SkillCooldown {
+    string skill_key = 1;
+    uint64 cooldown_ms = 2;
+}
+
+message EffectInfo {
+    string name = 1;
+    uint64 remaining_ms = 2;
+}
+
+message Item {
+    uint64 id = 1;
+    string name = 2;
+    float size = 3;
+    Position position = 4;
+}
+
+message Projectile {
+    uint64 id = 1;
+    string name = 2;
+    uint32 damage = 3;
+    uint32 speed = 4;
+    float size = 5;
+    Position position = 6;
+    float direction = 7;
+}
+
+message ZoneInfo {
+    Position center = 1;
+    float radius = 2;
+}
+
+message Position {
+    int64 x = 1;
+    int64 y = 2;
+}
+
+message KillEvent {
+    KillEntity killed_by_entity = 1;
+    uint64 killed_by_id = 2;
+    uint64 killed = 3;
+}
+
+enum PlayerStatus {
+    PLAYER_STATUS_UNDEFINED = 0;
+    PLAYER_STATUS_ALIVE = 1;
+    PLAYER_STATUS_DEAD = 2;
+}
+
+enum PlayerActionEnum {
+    PLAYER_ACTION_ENUM_UNDEFINED = 0;
+    PLAYER_ACTION_ENUM_NOTHING = 1;
+    PLAYER_ACTION_ENUM_MOVING = 2;
+    PLAYER_ACTION_ENUM_USING_SKILL = 3;
+}
+
+enum KillEntity {
+    KILL_ENTITY_UNDEFINED = 0;
+    KILL_ENTITY_PLAYER = 1;
+    KILL_ENTITY_ITEM = 2;
+    KILL_ENTITY_ZONE = 3;
+}
+
+
+/*****************************
+******************************
+*                            *
+*   OLD STUFF BELOW (REMOVE) *
+*                            *
+******************************
+*****************************/
+
 // import "communication/config.proto";
 
 /* Represents the events pushed by the server during a game
@@ -9,20 +138,20 @@ syntax = "proto3";
     - projectiles: projectile list, used on STATE_UPDATE
     - player_joined_id: ID of the player that joined the game
  */
-message GameEvent {
+message OldGameEvent {
     GameEventType type = 1;
-    repeated Player players = 2;
+    repeated OldPlayer players = 2;
     uint64 latency = 3;
-    repeated Projectile projectiles = 4;
+    repeated OldProjectile projectiles = 4;
     uint64 player_joined_id = 5;
     string player_joined_name = 6;
-    Player winner_player = 7;
+    OldPlayer winner_player = 7;
     map<uint64, string> selected_characters = 8;
     int64 player_timestamp = 9;
     int64 server_timestamp = 10;
-    repeated KillEvent killfeed = 11;
+    repeated OldKillEvent killfeed = 11;
     uint64 playable_radius = 12;
-    Position shrinking_center = 13;
+    OldPosition shrinking_center = 13;
     repeated LootPackage loots = 14;
 }
 
@@ -47,22 +176,22 @@ message PlayerCharacter{
 /* Information about a player
     - id: ID of the player, this ID is the identifier in the game session, the game object tied to it
     - health: Current health of the player
-    - position: Position of the player in the server game grid (see Position for more info)
+    - position: OldPosition of the player in the server game grid (see OldPosition for more info)
     - power: [Amin 2023-05-05:  not sure what this is, was copied from struct like this]
     - action: [Manu 2023-05-12: accion to renderize on client side]
     - status: currently if alive or dead
-    - aoe_position: Position of the aoe attack, only used when action == ATTACKING_AOE
+    - aoe_position: OldPosition of the aoe attack, only used when action == ATTACKING_AOE
     - {basic, first, second, third, fourth}_cooldown_left: Time remaining in seconds until the cooldown is over.
     - character_name: Name of the player's character
     - effects: The effects that are active on the player
  */
-message Player {
+message OldPlayer {
     uint64 id = 1;
     sint64 health = 2;
-    Position position = 3;
-    Status status = 4;
+    OldPosition position = 3;
+    OldStatus status = 4;
     repeated ActionTracker action = 5;
-    Position aoe_position = 6;
+    OldPosition aoe_position = 6;
     uint64 kill_count = 7;
     uint64 death_count = 8;
     MillisTime basic_skill_cooldown_left = 9;
@@ -71,7 +200,7 @@ message Player {
     MillisTime skill_3_cooldown_left = 12;
     MillisTime skill_4_cooldown_left = 13;
     string character_name = 14;
-    map<uint64, EffectInfo> effects = 15;
+    map<uint64, OldEffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
 }
@@ -81,20 +210,20 @@ message ActionTracker {
     uint64 duration = 2;
 }
 
-message EffectInfo {
+message OldEffectInfo {
     MillisTime ends_at = 1;
     uint64 caused_by = 2;
 }
 
-message KillEvent {
+message OldKillEvent {
     uint64 killed_by = 1;
     uint64 killed = 2;
 }
 
 /*
-Status of a player
+OldStatus of a player
 */
-enum Status {
+enum OldStatus {
     ALIVE = 0;
     DEAD = 1;
 }
@@ -103,7 +232,7 @@ enum Status {
     - x: X coordinate in the grid
     - y: Y coordinate in the grid
  */
-message Position {
+message OldPosition {
     uint64 x = 1;
     uint64 y = 2;
 }
@@ -143,8 +272,8 @@ message ClientAction {
     - ATTACK_AOE:
     - MOVE_WITH_JOYSTICK:
     - ADD_BOT: Ask the server to add a bot player to the game
-    - AUTO_ATTACK: Player attacks nearest oponent, if in range.
-    - BASIC_ATTACK, SKILL_{1, 2, 3, 4}: Player skills.
+    - AUTO_ATTACK: OldPlayer attacks nearest oponent, if in range.
+    - BASIC_ATTACK, SKILL_{1, 2, 3, 4}: OldPlayer skills.
     - ENABLE_BOTS: Bots are enabled (move, attack, etc)
     - DISABLE_BOTS: Bots are disabled (stand still)
  */
@@ -180,7 +309,7 @@ enum Direction {
     - NOTHING: nothing
     - ATTACKING: player is attacking
  */
-enum PlayerAction {
+enum OldPlayerAction {
     NOTHING = 0;
     ATTACKING = 1;
     ATTACKING_AOE = 2;
@@ -307,7 +436,7 @@ message SkillConfigItem {
     string Cooldown = 2;
     string Damage = 3;
     string Duration = 4;
-    string Projectile = 5;
+    string OldProjectile = 5;
     string SkillRange = 6;
     string Par1 = 7;
     string Par1Desc = 8;
@@ -352,7 +481,7 @@ enum ProjectileType {
     DISARMING_BULLET = 1;
 }
 
-/* Status of projectiles
+/* OldStatus of projectiles
     - ACTIVE: Active projectile
     - EXPLODED: Exploded projectile
  */
@@ -363,17 +492,17 @@ enum ProjectileStatus {
 
 /*
     - position: Current projectile prosition
-    - direction: Projectile direction
-    - speed: Projectile speed
+    - direction: OldProjectile direction
+    - speed: OldProjectile speed
     - range: Attack range, with center in position
-    - player_id: Player id who attacked
+    - player_id: OldPlayer id who attacked
     - damage: Damage dealt on opponents when hit
-    - remaining_ticks: Projectile remaining lifetime
-    - type: Projectile type depending on the attack
+    - remaining_ticks: OldProjectile remaining lifetime
+    - type: OldProjectile type depending on the attack
  */
-message Projectile {
+message OldProjectile {
     uint64 id = 1;
-    Position position = 2;
+    OldPosition position = 2;
     RelativePosition direction = 3;
     uint32 speed = 4;
     uint32 range = 5;
@@ -403,13 +532,13 @@ message MillisTime {
 
 /*
     - id: Unique identifier for the loot
-    - position: Position of the loot
+    - position: OldPosition of the loot
     - loot_type: Type of loot
  */
 message LootPackage {
 
     uint64 id = 1;
-    Position position = 2;
+    OldPosition position = 2;
     LootType loot_type = 3;
 }
 
@@ -554,18 +683,18 @@ message GameSkill {
 /*
 - GiveEffect: This makes the skill give a certain effect.
   * effects: List of effects given.
-- Hit: Player will hit all things in area of target.
+- Hit: OldPlayer will hit all things in area of target.
   * damage: Damage done to targets.
   * range: Up to how far away can things be hit.
   * cone_angle: Defines how the cone of hit is generated.
   * on_hit_effects: Effects given to targets hit by skill.
-- SimpleShoot: Player will shoot a projectile.
-  * projectile: Projectile to shoot.
-- MultiShoot: Player will shoot multiple shots of a projectile.
-  * projectile: Projectile to shoot.
+- SimpleShoot: OldPlayer will shoot a projectile.
+  * projectile: OldProjectile to shoot.
+- MultiShoot: OldPlayer will shoot multiple shots of a projectile.
+  * projectile: OldProjectile to shoot.
   * count: How many projectiles will be shot.
   * cone_angle: Defines how wide is the angle to spread the projectiles on.
-- MoveToTarget: Player will be moved to target position.
+- MoveToTarget: OldPlayer will be moved to target position.
   * duration_ms: How long it takes to move the player, 0 means instantly.
   * max_range: Maximum distance allowed to move, if target is beyond this limit movement will be capped to this point.
 */

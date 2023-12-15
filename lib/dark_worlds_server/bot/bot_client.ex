@@ -1,6 +1,6 @@
 defmodule DarkWorldsServer.Bot.BotClient do
   alias DarkWorldsServer.Communication
-  alias DarkWorldsServer.Communication.Proto.GameEvent
+  alias DarkWorldsServer.Communication.Proto.TransitionGameEvent
   alias DarkWorldsServer.RunnerSupervisor.BotPlayer
   use WebSockex, restart: :temporary
   require Logger
@@ -20,8 +20,8 @@ defmodule DarkWorldsServer.Bot.BotClient do
 
   @impl true
   def handle_frame({:binary, raw_msg}, state) do
-    msg = GameEvent.decode(raw_msg)
-    handle_msg(msg, state)
+    msg = TransitionGameEvent.decode(raw_msg)
+    handle_msg(msg.old_game_event, state)
   end
 
   @impl true
