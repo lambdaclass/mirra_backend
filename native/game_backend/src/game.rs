@@ -93,7 +93,7 @@ pub struct KillEvent {
     pub kill_by: EntityOwner,
     pub killed: u64,
 }
-#[derive(Clone, NifTuple, Debug)]
+#[derive(Clone, NifTuple)]
 pub struct DamageTracker {
     pub damage: i64,
     pub attacker: EntityOwner,
