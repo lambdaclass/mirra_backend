@@ -92,9 +92,8 @@ is to open htop, you should see the virtual cores as 'offline'.
     You will have to ask for them
 
 5. Now you can start the game server with: 
-```sh
-cd game_backend && MIX_ENV=prod iex -S mix phx.server
-```
+   ```sh
+   cd game_backend && MIX_ENV=prod iex -S mix phx.server
    From now on, you can just use: 
 ```sh
 MIX_ENV=prod iex -S mix phx.server
