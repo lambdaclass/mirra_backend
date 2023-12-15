@@ -184,7 +184,8 @@
             "cone_angle": 40
           }
         }
-      ]
+      ],
+      "burst_loads": 3
     },
     {
       "name": "poison_dart",
@@ -197,7 +198,8 @@
             "projectile": "projectile_poison_dart"
           }
         }
-      ]
+      ],
+      "burst_loads": 3
     },
     {
       "name": "hit",
@@ -213,7 +215,8 @@
             "on_hit_effects": ["muflus_hit_delay"]
           }
         }
-      ]
+      ],
+      "burst_loads": 3
     },
     {
       "name": "circle_hit",
@@ -229,7 +232,8 @@
             "on_hit_effects": []
           }
         }
-      ]
+      ],
+      "burst_loads": 1
     },
     {
       "name": "denial_of_service",
@@ -242,7 +246,8 @@
             "effects_to_give": ["auto_slingshot"]
           }
         }
-      ]
+      ],
+      "burst_loads": 1
     },
     {
       "name": "single_slingshot",
@@ -255,7 +260,8 @@
             "projectile": "projectile_slingshot"
           }
         }
-      ]
+      ],
+      "burst_loads": 1
     }
   ],
   "characters": [

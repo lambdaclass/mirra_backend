@@ -233,13 +233,7 @@ impl GameState {
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
-            // Check if player is still performing an action
-            if player.action_duration_ms > 0 {
-                return;
-            }
-
-            // Check if skill is still on cooldown
-            if player.cooldowns.contains_key(&skill_key) {
+            if !player.can_perform_attack(&skill_key) {
                 return;
             }
 

@@ -544,6 +544,7 @@ message GameSkill {
     uint64 cooldown_ms = 2;
     bool is_passive = 3;
     repeated Mechanic mechanics = 4;
+    uint64 burst_loads = 5;
 }
 
 /*

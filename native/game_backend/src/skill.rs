@@ -10,6 +10,7 @@ pub struct SkillConfigFile {
     execution_duration_ms: u64,
     is_passive: bool,
     mechanics: Vec<SkillMechanicConfigFile>,
+    burst_loads: u64,
 }
 
 #[derive(NifMap, Clone)]
@@ -19,6 +20,7 @@ pub struct SkillConfig {
     pub execution_duration_ms: u64,
     pub is_passive: bool,
     pub mechanics: Vec<SkillMechanic>,
+    pub burst_loads: u64,
 }
 
 #[derive(Deserialize)]
@@ -89,6 +91,7 @@ impl SkillConfig {
                     execution_duration_ms: config.execution_duration_ms,
                     is_passive: config.is_passive,
                     mechanics,
+                    burst_loads: config.burst_loads,
                 }
             })
             .collect()

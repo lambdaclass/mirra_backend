@@ -329,6 +329,11 @@ impl Player {
     pub fn inventory_take_at(&mut self, inventory_at: usize) -> Option<Loot> {
         self.inventory[inventory_at].take()
     }
+
+    pub fn can_perform_attack(&self, skill_key: &String) -> bool {
+        // Check if player is still performing an action or if skill is still on cooldown.
+        return self.action_duration_ms == 0 || !self.cooldowns.contains_key(skill_key);
+    }
 }
 
 fn update_status(player: &mut Player) {

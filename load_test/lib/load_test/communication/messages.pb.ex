@@ -674,6 +674,7 @@ defmodule LoadTest.Communication.Proto.GameSkill do
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:is_passive, 3, type: :bool, json_name: "isPassive")
   field(:mechanics, 4, repeated: true, type: LoadTest.Communication.Proto.Mechanic)
+  field(:burst_loads, 5, type: :uint64, json_name: "burstLoads")
 end
 
 defmodule LoadTest.Communication.Proto.Mechanic do
