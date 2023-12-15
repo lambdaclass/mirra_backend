@@ -14,7 +14,7 @@ defmodule DarkWorldsServer.Config.Games do
     |> Repo.insert()
   end
 
-  def insert_zone_modification(attrs \\ %{}) defp do
+  def insert_zone_modification(attrs \\ %{}) do
     %ZoneModification{}
     |> ZoneModification.changeset(attrs)
     |> Repo.insert()

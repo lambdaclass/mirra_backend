@@ -54,6 +54,8 @@ defmodule DarkWorldsServer.Config.Characters.Effect do
     def changeset(attributes_modifier, attrs) do
       attributes_modifier
       |> cast(attrs, [:attribute, :modifier, :value])
+      |> validate_inclusion(:modifier, ["additive", "multiplicative", "override"])
+      |> validate_required([:attribute, :modifier, :value])
     end
 
     def to_backend_map(attributes_modifier),
