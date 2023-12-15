@@ -30,3 +30,6 @@ game_backend-*.tar
 
 # Rustler creates a .so file for the NIFs
 /priv/native/
+
+# Ignore Rust build dir
+/target

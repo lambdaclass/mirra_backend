@@ -2,8 +2,17 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   use GenServer, restart: :transient
   require Logger
 
+  # The random factor will add a layer of randomness to bot actions
+  # The following actions will be afected:
+  # - Bot decision, the bot will start a wandering cicle with an fourth times
+  #   chance and an eight times chance to do nothing
+  # - Every attack the bot do will have a tilt that's decided with the random factor
+  # - Add an additive to the range of attacks they're not always accurate
+  # - Add some miliseconds to the time of decision of the bot
+  @random_factor Enum.random([10, 30, 60, 80])
+
   # This variable will decide how much time passes between bot decisions in milis
-  @decide_delay_ms 500
+  @decide_delay_ms 500 + @random_factor * 2
 
   # We'll decide the view range of a bot measured in grid cells
   # e.g. from {x=1, y=1} to {x=5, y=1} you have 4 cells
@@ -387,7 +396,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     # TODO: We should find a way to use the skill of the character distance
     case bot.character_name do
       "H4ck" -> distance_to_entity < 1000 and Enum.random(0..100) < 40
-      "Muflus" -> distance_to_entity < 450 and Enum.random(0..100) < 30
+      "Muflus" -> distance_to_entity < 975 and Enum.random(0..100) < 30
     end
   end
 
