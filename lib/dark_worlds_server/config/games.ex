@@ -14,6 +14,12 @@ defmodule DarkWorldsServer.Config.Games do
     |> Repo.insert()
   end
 
+  def insert_zone_modification(attrs \\ %{}) defp do
+    %ZoneModification{}
+    |> ZoneModification.changeset(attrs)
+    |> Repo.insert()
+  end
+
   def insert_zone_modification_effect(attrs \\ %{}) do
     %ZoneModificationEffect{}
     |> ZoneModificationEffect.changeset(attrs)
@@ -39,8 +45,6 @@ defmodule DarkWorldsServer.Config.Games do
 
   def get_loot(id), do: Repo.get(Loot, id)
   def get_loot_by_name(name), do: Repo.one(from(l in Loot, where: l.name == ^name))
-
-  def get_loot_effects(id), do: Repo.get(LootEffect, id)
 
   def all_zone_modifications(), do: Repo.all(ZoneModification)
 
