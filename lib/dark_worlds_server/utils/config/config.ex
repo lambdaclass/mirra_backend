@@ -1,5 +1,7 @@
 defmodule Utils.Config do
   alias DarkWorldsServer.Config.Characters
+  alias DarkWorldsServer.Config.Characters.Effect
+  alias DarkWorldsServer.Config.Characters.Skill
   alias DarkWorldsServer.Config.Games
   alias DarkWorldsServer.Config.Games.Game
   alias DarkWorldsServer.Config.Games.ZoneModification
@@ -133,6 +135,11 @@ defmodule Utils.Config do
   end
 
   def read_config_backend() do
+    # May need to add time_since_last_trigger to time_type
+    effects_config = Characters.get_effects() |> Enum.map(&Effect.to_backend_map/1)
+
+    # skills_config = Characters.get_skills() |> Enum.map(&Skill.to_backend_map/1)
+
     game_config = Games.get_game() |> Game.to_backend_map()
   end
 end

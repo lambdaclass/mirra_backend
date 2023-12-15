@@ -61,8 +61,8 @@ defmodule DarkWorldsServer.Config.Characters.Effect do
     def to_backend_map(attributes_modifier),
       do: %{
         attribute: attributes_modifier.attribute,
-        modifier: attributes_modifier.modifier,
-        value: String.to_atom(attributes_modifier.value)
+        modifier: String.to_atom(attributes_modifier.modifier),
+        value: attributes_modifier.value
       }
   end
 end
