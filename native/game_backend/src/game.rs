@@ -381,7 +381,7 @@ impl GameState {
                                 })
                         }
                         SkillMechanic::MoveToTarget {
-                            duration_ms,
+                            duration_ms: _,
                             max_range,
                             on_arrival_skills,
                         } => {
