@@ -68,6 +68,35 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateConfigs do
       timestamps()
     end
 
+    create table(:games) do
+      add :width, :integer
+      add :height, :integer
+      add :loot_interval_ms, :integer
+      add :zone_starting_radius, :integer
+      add :auto_aim_max_distance, :float
+      add :initial_positions, {:array, :map}
+      timestamps()
+    end
+
+    create table(:zone_modifications) do
+      add :duration_ms, :integer
+      add :interval_ms, :integer
+      add :min_radius, :integer
+      add :max_radius, :integer
+      add :modifier, :string
+      add :value, :float
+      add :effect_names, {:array, :string}
+
+      add :game_id, references(:games, on_delete: :delete_all), null: false
+      timestamps()
+    end
+
+    create table(:zone_effects) do
+      add :zone_modification_id, references(:zone_modifications, on_delete: :delete_all), null: false
+      add :effect_id, references(:effects, on_delete: :delete_all), null: false
+      timestamps()
+    end
+
     create unique_index(:characters, :name)
     create unique_index(:skills, :name)
     create unique_index(:effects, :name)

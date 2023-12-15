@@ -1,6 +1,7 @@
 defmodule Utils.Config do
   alias DarkWorldsServer.Config.Characters
-  alias DarkWorldsServer.Config.Game
+  alias DarkWorldsServer.Config.Games
+  alias DarkWorldsServer.Config.Games.ZoneModification
 
   def read_config_backend() do
     {:ok, json_config} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
@@ -8,13 +9,16 @@ defmodule Utils.Config do
   end
 
   def delete_all_configs() do
+    Games.delete_all_games()
+    Games.delete_all_zone_modifications()
+    Games.delete_all_zone_modification_effects()
+    Games.delete_all_loots()
+    Games.delete_all_loot_effects()
     Characters.delete_all_characters()
     Characters.delete_all_skills()
     Characters.delete_all_effects()
     Characters.delete_all_character_skills()
     Characters.delete_all_projectiles()
-    Game.delete_all_loot()
-    Game.delete_all_loot_effects()
   end
 
   @doc """
@@ -25,7 +29,7 @@ defmodule Utils.Config do
   def clean_import_config() do
     delete_all_configs()
 
-    %{effects: effects, skills: skills, characters: characters, projectiles: projectiles, loots: loots} =
+    %{effects: effects, skills: skills, characters: characters, projectiles: projectiles, loots: loots, game: game} =
       read_config_backend()
 
     effects_result = Enum.map(effects, &insert_effects/1)
@@ -40,16 +44,23 @@ defmodule Utils.Config do
 
     projectile_effects_result = Enum.map(projectiles, &insert_projectile_effects/1) |> List.flatten()
 
-    loots_result = Enum.map(loots, &Game.insert_loot/1)
+    loots_result = Enum.map(loots, &Games.insert_loot/1)
 
     loot_effects_result = Enum.map(loots, &insert_loot_effects/1) |> List.flatten()
+
+    # Also inserts its zone_modifications
+    game_result = Games.insert_game(game)
+
+    zone_modification_effects_result = Enum.map(Games.all_zone_modifications(), &insert_zone_modification_effects/1) |> List.flatten()
 
     results =
       effects_result ++
         skills_result ++
         characters_result ++
         character_skills_result ++
-        projectiles_result ++ projectile_effects_result ++ loots_result ++ loot_effects_result
+        projectiles_result ++
+        projectile_effects_result ++
+        loots_result ++ loot_effects_result ++ [game_result] ++ zone_modification_effects_result
 
     ok =
       Enum.count(results, fn
@@ -101,11 +112,20 @@ defmodule Utils.Config do
   end
 
   defp insert_loot_effects(%{name: loot_name, effects: effects}) do
-    loot_id = Game.get_loot_by_name(loot_name).id
+    loot_id = Games.get_loot_by_name(loot_name).id
 
     Enum.map(effects, fn effect ->
       effect_id = Characters.get_effect_by_name(effect.name).id
-      Game.insert_loot_effect(%{loot_id: loot_id, effect_id: effect_id})
+      Games.insert_loot_effect(%{loot_id: loot_id, effect_id: effect_id})
+    end)
+  end
+
+  # This one we handle a bit different since we can't identify zone modifications by name
+  defp insert_zone_modification_effects(%ZoneModification{effect_names: nil}), do: {:ok, nil}
+  defp insert_zone_modification_effects(%ZoneModification{id: zone_modification_id, effect_names: effect_names}) do
+    Enum.map(effect_names, fn effect_name ->
+      effect_id = Characters.get_effect_by_name(effect_name).id
+      Games.insert_zone_modification_effect(%{zone_modification_id: zone_modification_id, effect_id: effect_id})
     end)
   end
 end

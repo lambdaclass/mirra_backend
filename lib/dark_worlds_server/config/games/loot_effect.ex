@@ -1,8 +1,8 @@
-defmodule DarkWorldsServer.Config.Game.LootEffect do
+defmodule DarkWorldsServer.Config.Games.LootEffect do
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect
-  alias DarkWorldsServer.Config.Game.Loot
+  alias DarkWorldsServer.Config.Games.Loot
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
