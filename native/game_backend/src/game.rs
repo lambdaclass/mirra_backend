@@ -610,9 +610,8 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                     }
                 };
 
-                zone.radius = new_radius
-                    .max(zone_modification.min_radius)
-                    .min(zone_modification.max_radius);
+                zone.radius =
+                    new_radius.clamp(zone_modification.min_radius, zone_modification.max_radius);
             }
         }
         _ => {
