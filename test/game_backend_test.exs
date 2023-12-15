@@ -80,7 +80,8 @@ defmodule GameBackendTest do
     position = %{x: loot.position.x, y: loot.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = GameBackend.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0, true)
+    game = GameBackend.game_tick(game, 30)
 
     assert [] = game.loots
     assert 80 = get_in(game, [:players, context.player_id, :health])
@@ -93,7 +94,8 @@ defmodule GameBackendTest do
     position = %{x: loot.position.x, y: loot.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = GameBackend.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0, true)
+    game = GameBackend.game_tick(game, 30)
     assert [] = game.loots
 
     player = get_in(game, [:players, context.player_id])
@@ -116,7 +118,8 @@ defmodule GameBackendTest do
     position = %{x: loot1.position.x, y: loot1.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = GameBackend.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0, true)
+    game = GameBackend.game_tick(game, 30)
     assert [^loot2] = game.loots
 
     player = get_in(game, [:players, context.player_id])
@@ -125,7 +128,7 @@ defmodule GameBackendTest do
     position = %{x: loot2.position.x, y: loot2.position.y - 25}
     game = put_in(game, [:players, context.player_id, :position], position)
     game = put_in(game, [:players, context.player_id, :health], 50)
-    game = GameBackend.move_player(game, context.player_id, 90.0)
+    game = GameBackend.move_player(game, context.player_id, 90.0, true)
     assert [^loot2] = game.loots
     assert [^loot1] = player.inventory
   end
