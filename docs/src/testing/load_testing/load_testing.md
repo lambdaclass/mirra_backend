@@ -128,7 +128,7 @@ This is supposed to be done only once per server. If it was already done, you ca
 2. Then run `exit` and copy the script on this repo under
    `load_test/setup_game_server.sh` it installs all dependencies, clones the game server and compiles it:
    ```sh
-   scp load_test/setup_game_server.sh myrra_load_test_server:setup_game_server.sh && ssh myuser@myrra_load_test_server
+   scp /path_go_game_backend/game_backend/load_test/setup_game_server.sh myrra_load_test_server:setup_game_server.sh && ssh myuser@myrra_load_test_server
    ```
 
    From now on, you'll be running commands from the load test server's terminal. To return to your terminal you can run `exit`
