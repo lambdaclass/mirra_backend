@@ -211,14 +211,12 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     playable_radius_closed = game_state.playable_radius <= @min_playable_radius_flee
 
-    cond do
-      danger_zone and not playable_radius_closed ->
-        %{angle_direction_to_entity: angle} = hd(enemies_by_distance)
-        flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
-        Map.put(bot_state, :action, {:move, flee_angle_direction})
-
-      true ->
-        Map.put(bot_state, :action, {:try_attack, closest_enemy, "BasicAttack"})
+    if danger_zone and not playable_radius_closed do
+      %{angle_direction_to_entity: angle} = hd(enemies_by_distance)
+      flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
+      Map.put(bot_state, :action, {:move, flee_angle_direction})
+    else
+      Map.put(bot_state, :action, {:try_attack, closest_enemy, "BasicAttack"})
     end
   end
 
@@ -260,12 +258,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
        ) do
     bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
 
-    cond do
-      skill_would_hit?(bot, closest_enemy, config) ->
-        send(connection_pid, {:use_skill, angle, skill})
-
-      true ->
-        send(connection_pid, {:move, angle})
+    if skill_would_hit?(bot, closest_enemy, config) do
+      send(connection_pid, {:use_skill, angle, skill})
+    else
+      send(connection_pid, {:move, angle})
     end
   end
 
