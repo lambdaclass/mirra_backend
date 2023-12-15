@@ -89,7 +89,7 @@ is to open htop, you should see the virtual cores as 'offline'.
     export NEW_RELIC_LICENSE_KEY=
     ```
 
-    You will have to ask for them
+    ### You will have to ask for them
 
 5. Now you can start the game server with: 
    ```sh
