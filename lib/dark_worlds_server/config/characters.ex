@@ -68,11 +68,12 @@ defmodule DarkWorldsServer.Config.Characters do
     |> Repo.insert()
   end
 
-  def get_projectile(id), do: Repo.get(Projectile, id)
+  def get_projectile(id), do: Repo.get(Projectile, id) |> Repo.preload(:on_hit_effects)
 
-  def get_projectiles(), do: Repo.all(Projectile)
+  def get_projectiles(), do: Repo.all(Projectile) |> Repo.preload(:on_hit_effects)
 
-  def get_projectile_by_name(name), do: Repo.one(from(e in Projectile, where: e.name == ^name))
+  def get_projectile_by_name(name),
+    do: Repo.one(from(p in Projectile, where: p.name == ^name, preload: :on_hit_effects))
 
   def delete_all_projectiles(), do: Repo.delete_all(Projectile)
 

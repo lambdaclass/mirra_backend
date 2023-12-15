@@ -1,4 +1,7 @@
 defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
+  alias DarkWorldsServer.Config.Characters
+  alias DarkWorldsServer.Config.Characters.Effect
+  alias DarkWorldsServer.Config.Characters.Projectile
   use Ecto.Type
 
   # Should be something effect names never use
@@ -47,31 +50,76 @@ defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
   defp skill_mechanic_from_string(string) do
     case String.split(string, ",") do
       ["GiveEffect", effects] ->
-        %{effects: String.split(effects, @nested_list_separator)}
+        {:give_effect,
+         %{effects: Enum.map(String.split(effects, @nested_list_separator), &Characters.get_effect_by_name/1)}}
 
       ["Hit", damage, range, cone_angle, on_hit_effects] ->
-        %{
-          damage: String.to_integer(damage),
-          range: String.to_integer(range),
-          cone_angle: String.to_integer(cone_angle),
-          on_hit_effects: String.split(on_hit_effects, @nested_list_separator)
-        }
+        {:hit,
+         %{
+           damage: String.to_integer(damage),
+           range: String.to_integer(range),
+           cone_angle: String.to_integer(cone_angle),
+           on_hit_effects: parse_on_hit_effects(on_hit_effects)
+         }}
 
       ["MultiShoot", cone_angle, count, projectile] ->
-        %{
-          cone_angle: String.to_integer(cone_angle),
-          count: String.to_integer(count),
-          projectile: projectile
-        }
+        {:multi_shoot,
+         %{
+           cone_angle: String.to_integer(cone_angle),
+           count: String.to_integer(count),
+           projectile: Characters.get_projectile_by_name(projectile)
+         }}
 
       ["SimpleShoot", projectile] ->
-        %{projectile: projectile}
+        {:simple_shoot, %{projectile: Characters.get_projectile_by_name(projectile)}}
 
       ["MoveToTarget", duration_ms, max_range] ->
-        %{duration_ms: String.to_integer(duration_ms), max_range: String.to_integer(max_range)}
+        {:move_to_target, %{duration_ms: String.to_integer(duration_ms), max_range: String.to_integer(max_range)}}
 
       _ ->
         "Invalid"
     end
   end
+
+  # We need this so that we don't get a [nil] value
+  defp parse_on_hit_effects(on_hit_effects) do
+    names = String.split(on_hit_effects, @nested_list_separator)
+
+    if names == [""] do
+      []
+    else
+      Enum.map(names, &Characters.get_effect_by_name/1)
+    end
+  end
+
+  def to_backend_map({:give_effect, %{effects: effects}}),
+    do: {:give_effect, %{effects: Enum.map(effects, &Effect.to_backend_map/1)}}
+
+  def to_backend_map({:hit, %{on_hit_effects: [nil]} = hit}),
+    do: {:hit, %{hit | on_hit_effects: []}}
+
+  def to_backend_map({:hit, %{on_hit_effects: effects} = hit}),
+    do:
+      {:hit,
+       %{
+         hit
+         | on_hit_effects: Enum.map(effects, &Effect.to_backend_map/1)
+       }}
+
+  def to_backend_map({:multi_shoot, %{projectile: projectile} = multi_shoot}),
+    do:
+      {:multi_shoot,
+       %{
+         multi_shoot
+         | projectile: Projectile.to_backend_map(projectile)
+       }}
+
+  def to_backend_map({:simple_shoot, %{projectile: projectile}}),
+    do:
+      {:simple_shoot,
+       %{
+         projectile: Projectile.to_backend_map(projectile)
+       }}
+
+  def to_backend_map(skill_mechanic), do: skill_mechanic
 end

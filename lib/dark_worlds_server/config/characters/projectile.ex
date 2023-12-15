@@ -20,9 +20,9 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
   end
 
   @doc false
-  def changeset(skill, attrs),
+  def changeset(projectile, attrs),
     do:
-      skill
+      projectile
       |> cast(attrs, [:name, :base_damage, :base_speed, :base_size, :duration_ms, :max_distance, :remove_on_collision])
       |> validate_required([
         :name,
@@ -33,4 +33,16 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
         :max_distance,
         :remove_on_collision
       ])
+
+  def to_backend_map(projectile),
+    do: %{
+      name: projectile.name,
+      on_hit_effects: Enum.map(projectile.on_hit_effects, &Effect.to_backend_map/1),
+      duration_ms: projectile.duration_ms,
+      base_size: projectile.base_size,
+      base_speed: projectile.base_speed,
+      base_damage: projectile.base_damage,
+      max_distance: projectile.max_distance,
+      remove_on_collision: projectile.remove_on_collision
+    }
 end

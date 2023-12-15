@@ -21,4 +21,13 @@ defmodule DarkWorldsServer.Config.Characters.Skill do
       skill
       |> cast(attrs, [:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics])
       |> validate_required([:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics])
+
+  def to_backend_map(skill),
+    do: %{
+      name: skill.name,
+      cooldown_ms: skill.cooldown_ms,
+      execution_duration_ms: skill.execution_duration_ms,
+      is_passive: skill.is_passive,
+      mechanics: Enum.map(skill.mechanics, &SkillMechanic.to_backend_map/1)
+    }
 end
