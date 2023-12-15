@@ -16,6 +16,7 @@ use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
+use crate::skill;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
@@ -242,119 +243,117 @@ impl GameState {
             .partition(|player| player.id == player_id);
 
         if let Some(player) = player_in_list.get_mut(0) {
-            if !player.can_perform_attack(&skill_key) {
-                return;
-            }
-
-            if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                player.add_action(
-                    Action::UsingSkill(skill_key.clone()),
-                    skill.execution_duration_ms,
-                );
-                player.add_cooldown(&skill_key, skill.cooldown_ms);
-
-                let auto_aim = skill_params
-                    .get("auto_aim")
-                    .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
-                    .unwrap();
-
-                let direction_angle = if auto_aim {
-                    let nearest_player: Option<Position> = nearest_player_position(
-                        &other_players,
-                        &player.position,
-                        self.config.game.auto_aim_max_distance,
+            if player.can_perform_attack(&skill_key) {
+                if let Some(skill) = player.character.clone().skills.get(&skill_key) {
+                    player.add_action(
+                        Action::UsingSkill(skill_key.clone()),
+                        skill.execution_duration_ms,
                     );
+                    player.add_cooldown(&skill_key, skill.cooldown_ms);
 
-                    if let Some(target_player_position) = nearest_player {
-                        map::angle_between_positions(&player.position, &target_player_position)
-                    } else {
-                        player.direction
-                    }
-                } else {
-                    skill_params
-                        .get("direction_angle")
-                        .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                        .unwrap()
-                };
+                    let auto_aim = skill_params
+                        .get("auto_aim")
+                        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
+                        .unwrap();
 
-                player.direction = direction_angle;
+                    let direction_angle = if auto_aim {
+                        let nearest_player: Option<Position> = nearest_player_position(
+                            &other_players,
+                            &player.position,
+                            self.config.game.auto_aim_max_distance,
+                        );
 
-                for mechanic in skill.mechanics.iter() {
-                    match mechanic {
-                        SkillMechanic::SimpleShoot {
-                            projectile: projectile_config,
-                        } => {
-                            let id = get_next_id(&mut self.next_id);
-
-                            let projectile = Projectile::new(
-                                id,
-                                player.position,
-                                direction_angle,
-                                player.id,
-                                projectile_config,
-                            );
-                            self.projectiles.push(projectile);
+                        if let Some(target_player_position) = nearest_player {
+                            map::angle_between_positions(&player.position, &target_player_position)
+                        } else {
+                            player.direction
                         }
-                        SkillMechanic::MultiShoot {
-                            projectile: projectile_config,
-                            count,
-                            cone_angle,
-                        } => {
-                            let direction_distribution =
-                                distribute_angle(direction_angle, cone_angle, count);
-                            for direction in direction_distribution {
+                    } else {
+                        skill_params
+                            .get("direction_angle")
+                            .map(|angle_str| angle_str.parse::<f32>().unwrap())
+                            .unwrap()
+                    };
+
+                    player.direction = direction_angle;
+
+                    for mechanic in skill.mechanics.iter() {
+                        match mechanic {
+                            SkillMechanic::SimpleShoot {
+                                projectile: projectile_config,
+                            } => {
                                 let id = get_next_id(&mut self.next_id);
+
                                 let projectile = Projectile::new(
                                     id,
                                     player.position,
-                                    direction,
+                                    direction_angle,
                                     player.id,
                                     projectile_config,
                                 );
                                 self.projectiles.push(projectile);
                             }
-                        }
-                        SkillMechanic::GiveEffect { effects_to_give } => {
-                            for effect in effects_to_give.iter() {
-                                player.apply_effect(effect, EntityOwner::Player(player.id));
-                            }
-                        }
-                        SkillMechanic::Hit {
-                            damage,
-                            range,
-                            cone_angle,
-                            on_hit_effects,
-                        } => {
-                            let mut damage = *damage;
-
-                            for (effect, _owner) in player.effects.iter() {
-                                for change in effect.player_attributes.iter() {
-                                    if change.attribute == "damage" {
-                                        effect::modify_attribute(&mut damage, change)
-                                    }
+                            SkillMechanic::MultiShoot {
+                                projectile: projectile_config,
+                                count,
+                                cone_angle,
+                            } => {
+                                let direction_distribution =
+                                    distribute_angle(direction_angle, cone_angle, count);
+                                for direction in direction_distribution {
+                                    let id = get_next_id(&mut self.next_id);
+                                    let projectile = Projectile::new(
+                                        id,
+                                        player.position,
+                                        direction,
+                                        player.id,
+                                        projectile_config,
+                                    );
+                                    self.projectiles.push(projectile);
                                 }
                             }
+                            SkillMechanic::GiveEffect { effects_to_give } => {
+                                for effect in effects_to_give.iter() {
+                                    player.apply_effect(effect, EntityOwner::Player(player.id));
+                                }
+                            }
+                            SkillMechanic::Hit {
+                                damage,
+                                range,
+                                cone_angle,
+                                on_hit_effects,
+                            } => {
+                                let mut damage = *damage;
 
-                            other_players
-                                .iter_mut()
-                                .filter(|target_player| {
-                                    map::in_cone_angle_range(
-                                        player,
-                                        target_player,
-                                        *range,
-                                        *cone_angle as f32,
-                                    )
-                                })
-                                .for_each(|target_player| {
-                                    self.pending_damages.push(DamageTracker {
-                                        attacked_id: target_player.id,
-                                        attacker: EntityOwner::Player(player.id),
-                                        damage: damage as i64,
-                                        on_hit_effects: on_hit_effects.clone(),
-                                    });
-                                })
+                                for (effect, _owner) in player.effects.iter() {
+                                    for change in effect.player_attributes.iter() {
+                                        if change.attribute == "damage" {
+                                            effect::modify_attribute(&mut damage, change)
+                                        }
+                                    }
+                                }
+
+                                other_players
+                                    .iter_mut()
+                                    .filter(|target_player| {
+                                        map::in_cone_angle_range(
+                                            player,
+                                            target_player,
+                                            *range,
+                                            *cone_angle as f32,
+                                        )
+                                    })
+                                    .for_each(|target_player| {
+                                        self.pending_damages.push(DamageTracker {
+                                            attacked_id: target_player.id,
+                                            attacker: EntityOwner::Player(player.id),
+                                            damage: damage as i64,
+                                            on_hit_effects: on_hit_effects.clone(),
+                                        });
+                                    })
+                            }
+                            _ => todo!("SkillMechanic not implemented"),
                         }
-                        _ => todo!("SkillMechanic not implemented"),
                     }
                 }
             }

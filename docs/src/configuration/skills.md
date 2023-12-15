@@ -7,7 +7,6 @@
 - `execution_duration_ms`: Time in milliseconds it takes to perform the skill, player will be unable to move or attack in the meantime
 - `is_passive`: Marks the skill as a passive skill, this means it can't be triggered. Instead it will trigger on player spawn, so only `GiveEffect` makes sense for it
 - `mechanics`: Core mechanic of the skill (e.g hit, shoot, etc)
-- `burst_loads`: Number of times the skill can be used in a row before going on cooldown
 
 ### Mechanics
 

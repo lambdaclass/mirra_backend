@@ -27,6 +27,7 @@ pub struct Player {
     pub actions: Vec<Action>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
+    pub available_burst_loads: u64,
     pub effects: Vec<(Effect, EntityOwner)>,
     pub size: u64,
     pub speed: u64,
@@ -60,6 +61,7 @@ impl Player {
             direction: 0.0,
             actions: Vec::new(),
             cooldowns: HashMap::new(),
+            available_burst_loads: character_config.burst_loads,
             effects: Vec::new(),
             health: character_config.base_health,
             speed: character_config.base_speed,
@@ -113,6 +115,7 @@ impl Player {
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
         self.cooldowns.insert(skill_key.to_string(), cooldown_ms);
+        self.available_burst_loads -= 1;
     }
 
     pub fn reduce_cooldowns(&mut self, elapsed_time_ms: u64) {
@@ -330,7 +333,9 @@ impl Player {
 
     pub fn can_perform_attack(&self, skill_key: &String) -> bool {
         // Check if player is still performing an action or if skill is still on cooldown.
-        return self.action_duration_ms == 0 || !self.cooldowns.contains_key(skill_key);
+        return self.action_duration_ms == 0
+            || self.available_burst_loads == 0
+            || !self.cooldowns.contains_key(skill_key);
     }
 }
 

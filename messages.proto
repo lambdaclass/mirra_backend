@@ -660,6 +660,7 @@ message GameCharacter {
     uint64 base_size = 4;
     uint64 base_health = 5;
     map<string, GameSkill> skills = 6;
+    uint64 burst_loads = 7;
 }
 
 /* Represents a skill of a character
@@ -673,7 +674,6 @@ message GameSkill {
     uint64 cooldown_ms = 2;
     bool is_passive = 3;
     repeated Mechanic mechanics = 4;
-    uint64 burst_loads = 5;
 }
 
 /*

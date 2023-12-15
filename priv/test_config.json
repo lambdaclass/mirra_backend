@@ -166,8 +166,7 @@
             "cone_angle": 40
           }
         }
-      ],
-      "burst_loads": 3
+      ]
     },
     {
       "name": "poison_dart",
@@ -180,8 +179,7 @@
             "projectile": "projectile_poison_dart"
           }
         }
-      ],
-      "burst_loads": 1
+      ]
     },
     {
       "name": "hit",
@@ -197,8 +195,7 @@
             "on_hit_effects": []
           }
         }
-      ],
-      "burst_loads": 3
+      ]
     },
     {
       "name": "circle_hit",
@@ -214,8 +211,7 @@
             "on_hit_effects": []
           }
         }
-      ],
-      "burst_loads": 1
+      ]
     },
     {
       "name": "denial_of_service",
@@ -228,8 +224,7 @@
             "effects_to_give": ["auto_slingshot"]
           }
         }
-      ],
-      "burst_loads": 1
+      ]
     },
     {
       "name": "single_slingshot",
@@ -242,8 +237,7 @@
             "projectile": "projectile_slingshot"
           }
         }
-      ],
-      "burst_loads": 1
+      ]
     }
   ],
   "characters": [
@@ -258,7 +252,8 @@
         "1": "slingshot",
         "2": "denial_of_service",
         "3": "single_slingshot"
-      }
+      },
+      "burst_loads": 3
     },
     {
       "name": "muflus",
@@ -270,7 +265,8 @@
       "skills": {
         "1": "hit",
         "2": "circle_hit"
-      }
+      },
+      "burst_loads": 3
     }
   ],
   "game": {
