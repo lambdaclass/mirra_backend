@@ -45,20 +45,21 @@ defmodule DarkWorldsServer.Config.Characters.TimeType do
     end
   end
 
-  defp time_type_from_string("Instant"), do: "Instant"
-  defp time_type_from_string("Permanent"), do: "Permanent"
+  defp time_type_from_string("Instant"), do: :instant
+  defp time_type_from_string("Permanent"), do: :permanent
 
   defp time_type_from_string(string) when is_binary(string) do
     case String.split(string, ",") do
       ["Duration", duration_ms] ->
-        %{duration_ms: String.to_integer(duration_ms)}
+        {:duration, %{duration_ms: String.to_integer(duration_ms)}}
 
       ["Periodic", instant_application, interval_ms, triggers] ->
-        %{
-          instant_application: string_to_boolean(instant_application),
-          interval_ms: String.to_integer(interval_ms),
-          trigger_count: String.to_integer(triggers)
-        }
+        {:periodic,
+         %{
+           instant_application: string_to_boolean(instant_application),
+           interval_ms: String.to_integer(interval_ms),
+           trigger_count: String.to_integer(triggers)
+         }}
 
       _ ->
         "Invalid"

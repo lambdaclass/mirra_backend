@@ -3,6 +3,7 @@ defmodule DarkWorldsServer.Config.Characters.Character do
   import Ecto.Changeset
 
   alias DarkWorldsServer.Config.Characters.CharacterSkill
+  alias DarkWorldsServer.Config.Characters.Skill
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "characters" do
@@ -13,7 +14,7 @@ defmodule DarkWorldsServer.Config.Characters.Character do
     field(:base_health, :integer)
     field(:max_inventory_size, :integer)
 
-    has_many(:character_skills, CharacterSkill)
+    many_to_many(:character_skills, Skill, join_through: CharacterSkill)
 
     timestamps()
   end

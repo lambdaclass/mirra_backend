@@ -1,9 +1,10 @@
 defmodule Utils.Config do
   alias DarkWorldsServer.Config.Characters
   alias DarkWorldsServer.Config.Games
+  alias DarkWorldsServer.Config.Games.Game
   alias DarkWorldsServer.Config.Games.ZoneModification
 
-  def read_config_backend() do
+  def read_config_and_parse() do
     {:ok, json_config} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
     GameBackend.parse_config(json_config)
   end
@@ -30,7 +31,7 @@ defmodule Utils.Config do
     delete_all_configs()
 
     %{effects: effects, skills: skills, characters: characters, projectiles: projectiles, loots: loots, game: game} =
-      read_config_backend()
+      read_config_and_parse()
 
     effects_result = Enum.map(effects, &insert_effects/1)
 
@@ -51,7 +52,8 @@ defmodule Utils.Config do
     # Also inserts its zone_modifications
     game_result = Games.insert_game(game)
 
-    zone_modification_effects_result = Enum.map(Games.all_zone_modifications(), &insert_zone_modification_effects/1) |> List.flatten()
+    zone_modification_effects_result =
+      Enum.map(Games.all_zone_modifications(), &insert_zone_modification_effects/1) |> List.flatten()
 
     results =
       effects_result ++
@@ -122,10 +124,15 @@ defmodule Utils.Config do
 
   # This one we handle a bit different since we can't identify zone modifications by name
   defp insert_zone_modification_effects(%ZoneModification{effect_names: nil}), do: {:ok, nil}
+
   defp insert_zone_modification_effects(%ZoneModification{id: zone_modification_id, effect_names: effect_names}) do
     Enum.map(effect_names, fn effect_name ->
       effect_id = Characters.get_effect_by_name(effect_name).id
       Games.insert_zone_modification_effect(%{zone_modification_id: zone_modification_id, effect_id: effect_id})
     end)
+  end
+
+  def read_config_backend() do
+    game_config = Games.get_game() |> Game.to_backend_map()
   end
 end

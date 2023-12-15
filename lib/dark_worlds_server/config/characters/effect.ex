@@ -31,6 +31,16 @@ defmodule DarkWorldsServer.Config.Characters.Effect do
     ])
   end
 
+  def to_backend_map(effect),
+    do: %{
+      name: "damage_outside_area",
+      projectile_attributes: Enum.map(effect.projectile_attributes, &AttributesModifier.to_backend_map/1),
+      player_attributes: Enum.map(effect.player_attributes, &AttributesModifier.to_backend_map/1),
+      effect_time_type: effect.effect_time_type,
+      is_reversable: effect.is_reversable,
+      skills_keys_to_execute: effect.skills_keys_to_execute
+    }
+
   defmodule AttributesModifier do
     use Ecto.Schema
 
@@ -45,5 +55,12 @@ defmodule DarkWorldsServer.Config.Characters.Effect do
       attributes_modifier
       |> cast(attrs, [:attribute, :modifier, :value])
     end
+
+    def to_backend_map(attributes_modifier),
+      do: %{
+        attribute: attributes_modifier.attribute,
+        modifier: attributes_modifier.modifier,
+        value: String.to_atom(attributes_modifier.value)
+      }
   end
 end

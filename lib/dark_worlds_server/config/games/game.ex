@@ -31,4 +31,15 @@ defmodule DarkWorldsServer.Config.Games.Game do
     |> validate_required([:width, :height, :auto_aim_max_distance])
     |> cast_assoc(:zone_modifications)
   end
+
+  def to_backend_map(game),
+    do: %{
+      width: game.width,
+      auto_aim_max_distance: game.auto_aim_max_distance,
+      height: game.height,
+      initial_positions: game.initial_positions,
+      loot_interval_ms: game.loot_interval_ms,
+      zone_modifications: Enum.map(game.zone_modifications, &ZoneModification.to_backend_map/1),
+      zone_starting_radius: game.zone_starting_radius
+    }
 end

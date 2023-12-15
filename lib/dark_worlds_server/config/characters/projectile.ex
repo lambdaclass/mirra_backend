@@ -1,6 +1,7 @@
 defmodule DarkWorldsServer.Config.Characters.Projectile do
   use Ecto.Schema
   import Ecto.Changeset
+  alias DarkWorldsServer.Config.Characters.Effect
   alias DarkWorldsServer.Config.Characters.ProjectileEffect
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -14,7 +15,7 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
     field(:max_distance, :integer)
     field(:remove_on_collision, :boolean)
 
-    has_many(:on_hit_effects, ProjectileEffect)
+    many_to_many(:on_hit_effects, Effect, join_through: ProjectileEffect)
     timestamps()
   end
 

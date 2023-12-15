@@ -1,6 +1,7 @@
 defmodule DarkWorldsServer.Config.Games.Loot do
   use Ecto.Schema
   import Ecto.Changeset
+  alias DarkWorldsServer.Config.Characters.Effect
   alias DarkWorldsServer.Config.Games.LootEffect
 
   @pickup_mechanics ["collision_use", "collision_to_inventory"]
@@ -11,7 +12,7 @@ defmodule DarkWorldsServer.Config.Games.Loot do
     field(:size, :integer)
     field(:pickup_mechanic, :string)
 
-    has_many(:loot_effect, LootEffect)
+    many_to_many(:loot_effect, Effect, join_through: LootEffect)
 
     timestamps()
   end

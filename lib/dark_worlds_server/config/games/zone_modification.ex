@@ -38,5 +38,21 @@ defmodule DarkWorldsServer.Config.Games.ZoneModification do
        do: cast(changeset, %{modifier: Atom.to_string(modifier), value: value}, [:modifier, :value])
 
   defp cast_effect_names(changeset, %{outside_radius_effects: []}), do: changeset
-  defp cast_effect_names(changeset, %{outside_radius_effects: effects}), do: cast(changeset, %{effect_names: Enum.map(effects, & &1.name)}, [:effect_names])
+
+  defp cast_effect_names(changeset, %{outside_radius_effects: effects}),
+    do: cast(changeset, %{effect_names: Enum.map(effects, & &1.name)}, [:effect_names])
+
+  def to_backend_map(zone_modification),
+    do: %{
+      duration_ms: zone_modification.duration_ms,
+      interval_ms: zone_modification.interval_ms,
+      max_radius: zone_modification.max_radius,
+      min_radius: zone_modification.min_radius,
+      outside_radius_effects: Enum.map(zone_modification.outside_radius_effects, &Effect.to_backend_map/1),
+      modification: adapt_modification(zone_modification.modifier, zone_modification.value)
+    }
+
+  # Rust enum value type differs based on modifier type
+  defp adapt_modification("additive", value), do: {:additive, trunc(value)}
+  defp adapt_modification("multiplicative", value), do: {:multiplicative, value}
 end
