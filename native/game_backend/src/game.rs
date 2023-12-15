@@ -93,7 +93,7 @@ pub struct KillEvent {
     pub kill_by: EntityOwner,
     pub killed: u64,
 }
-#[derive(Clone, NifTuple, Debug)]
+#[derive(Clone, NifTuple)]
 pub struct DamageTracker {
     pub damage: i64,
     pub attacker: EntityOwner,
@@ -452,7 +452,7 @@ fn apply_damages_and_effects(
     while let Some(damage_tracker) = pending_damages.pop() {
         if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
             if victim.status != PlayerStatus::Death {
-                victim.decrease_health(damage_tracker.damage.abs() as u64);
+                victim.decrease_health(damage_tracker.damage.unsigned_abs());
                 victim.apply_effects(&damage_tracker.on_hit_effects, damage_tracker.attacker);
                 if victim.status == PlayerStatus::Death {
                     next_killfeed.push(KillEvent {
@@ -663,9 +663,8 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                     }
                 };
 
-                zone.radius = new_radius
-                    .max(zone_modification.min_radius)
-                    .min(zone_modification.max_radius);
+                zone.radius =
+                    new_radius.clamp(zone_modification.min_radius, zone_modification.max_radius);
             }
         }
         _ => {

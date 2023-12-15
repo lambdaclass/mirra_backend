@@ -37,7 +37,7 @@ pub struct Player {
     skill_moving_params: Option<SkillMovingParams>,
 }
 
-#[derive(NifTaggedEnum, Clone, PartialEq)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
 pub enum PlayerStatus {
     Alive,
     Death,
