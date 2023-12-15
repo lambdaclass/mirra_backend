@@ -43,7 +43,7 @@ pub enum PlayerStatus {
     Death,
 }
 
-#[derive(NifTaggedEnum, Clone, Debug)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq, Debug)]
 pub enum Action {
     Nothing,
     Moving,
