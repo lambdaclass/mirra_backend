@@ -1,3 +1,5 @@
+#![allow(non_snake_case)] // rustler macros generate non snake case names and dont use this allow themselves
+
 mod character;
 mod config;
 mod effect;

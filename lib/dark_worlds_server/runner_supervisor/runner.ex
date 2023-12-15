@@ -246,7 +246,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Phoenix.PubSub.broadcast(
       DarkWorldsServer.PubSub,
       topic,
-      {:game_state, transform_state_to_game_state(game_state)}
+      {:game_state, game_state, transform_state_to_game_state(game_state)}
     )
   end
 
@@ -254,7 +254,16 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Phoenix.PubSub.broadcast(
       DarkWorldsServer.PubSub,
       topic,
-      {:game_start, transform_state_to_game_state(game_state)}
+      {:game_start, game_state, transform_state_to_game_state(game_state)}
+    )
+  end
+
+  defp broadcast_game_ended(topic, winner, game_state) do
+    Phoenix.PubSub.broadcast(
+      DarkWorldsServer.PubSub,
+      topic,
+      {:game_ended, winner, game_state.players, transform_player_to_game_player(winner),
+       transform_players_to_game_players(game_state.players)}
     )
   end
 
@@ -265,17 +274,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       [] -> last_standing_players
       players_alive -> players_alive
     end
-  end
-
-  defp broadcast_game_ended(topic, winner, game_state) do
-    game_winner = transform_player_to_game_player(winner)
-    game_state = transform_state_to_game_state(game_state)
-
-    Phoenix.PubSub.broadcast(
-      DarkWorldsServer.PubSub,
-      topic,
-      {:game_ended, game_winner, game_state}
-    )
   end
 
   defp check_game_ended(players, last_standing_players) do
