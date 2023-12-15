@@ -105,9 +105,8 @@ MIX_ENV=prod iex -S mix phx.server
    Where `game_server_ip` is the ip of the load test server, and `game_server_port`,
    the corresponding port.
 2. Run this command to increase the file descriptor amount.
-```bash
-ulimit -n 65000
-```
+   ```bash
+   ulimit -n 65000
 3. Run:
    ```sh
        cd ./game_backend/load_test/ && iex -S mix 
