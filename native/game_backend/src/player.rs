@@ -9,6 +9,7 @@ use crate::config::Config;
 use crate::effect::AttributeModifier;
 use crate::effect::Effect;
 use crate::effect::TimeType;
+use crate::game::DamageTracker;
 use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
@@ -35,13 +36,13 @@ pub struct Player {
     next_actions: Vec<Action>,
 }
 
-#[derive(NifTaggedEnum, Clone, PartialEq)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
 pub enum PlayerStatus {
     Alive,
     Death,
 }
 
-#[derive(NifTaggedEnum, Clone)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
 pub enum Action {
     Nothing,
     Moving,
@@ -92,13 +93,22 @@ impl Player {
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
-        self.next_actions.push(action);
-        self.action_duration_ms += duration_ms;
+        if !self.actions.contains(&action) {
+            self.next_actions.push(action);
+            self.action_duration_ms += duration_ms;
+        }
     }
 
     pub fn update_actions(&mut self) {
+        if !self.is_executing_action() {
+            self.next_actions
+                .retain(|action| matches!(action, Action::Moving));
+        }
         self.actions = self.next_actions.clone();
-        self.next_actions.clear();
+    }
+
+    fn is_executing_action(&mut self) -> bool {
+        self.action_duration_ms != 0
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
@@ -251,8 +261,9 @@ impl Player {
         });
     }
 
-    pub fn run_effects(&mut self, time_diff: u64) -> Option<EntityOwner> {
+    pub fn run_effects(&mut self, time_diff: u64) -> Vec<DamageTracker> {
         let mut skills_keys_to_execute: Vec<String> = Vec::new();
+        let mut damages: Vec<DamageTracker> = Vec::new();
 
         for (effect, owner) in self.effects.iter_mut() {
             match &mut effect.effect_time_type {
@@ -279,30 +290,24 @@ impl Player {
                         effect.player_attributes.iter().for_each(|change| {
                             match change.attribute.as_str() {
                                 "health" => {
-                                    modify_attribute(
-                                        &mut self.health,
-                                        &change.modifier,
-                                        &change.value,
-                                    );
-                                    // TODO: refactor the use of references in order to use the update_status() remove the following duplicated code
-                                    if self.health == 0 {
-                                        self.status = PlayerStatus::Death;
-                                    }
+                                    damages.push(DamageTracker {
+                                        damage: change.value.parse::<i64>().unwrap(),
+                                        attacker: *owner,
+                                        attacked_id: self.id,
+                                        on_hit_effects: vec![],
+                                    });
                                 }
 
                                 _ => todo!(),
                             };
                         });
-                        if self.status == PlayerStatus::Death {
-                            return Some(*owner);
-                        }
                     }
                 }
                 _ => todo!(),
             }
         }
         self.skills_keys_to_execute = skills_keys_to_execute;
-        None
+        damages
     }
 
     pub fn put_in_inventory(&mut self, loot: &Loot) -> bool {

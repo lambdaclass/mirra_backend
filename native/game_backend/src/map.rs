@@ -33,6 +33,8 @@ pub fn in_cone_angle_range(
 
     if target_distance > (max_distance as f64) {
         return false;
+    } else if target_distance <= ((center_player.size * 3) as f64) {
+        return true;
     }
 
     let x_diff = (target_player.position.x - center_player.position.x) as f32;
@@ -51,8 +53,8 @@ pub fn next_position(
     width: f32,
 ) -> Position {
     let angle_rad = direction_angle * (PI / 180.0);
-    let new_x = (current_position.x as f32) + movement_amount * angle_rad.cos();
-    let new_y = (current_position.y as f32) + movement_amount * angle_rad.sin();
+    let new_x = movement_amount.mul_add(angle_rad.cos(), current_position.x as f32);
+    let new_y = movement_amount.mul_add(angle_rad.sin(), current_position.y as f32);
 
     // This is to avoid  the overflow on the front end
     let radius = (width - 200.0) / 2.0;
@@ -76,7 +78,7 @@ pub fn next_position(
     }
 }
 
-pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
+pub const fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
     let x_edge_positive = (width / 2) as i64;
     let x_position_positive = center.x + size as i64;
     if x_position_positive >= x_edge_positive {

@@ -46,7 +46,7 @@ For `Duration` and `Periodic` the configuration expects a JSON object with a `ty
 To learn more about attributes see the [Attributes](../attributes/attributes.md) section, below you can find quick links to the documentation for each entity with changeable attributes
 
 - [Player attributes](../attributes/players.md)
-- [Projectile attributes]()
+- [Projectile attributes](../attributes/projectiles.md)
 
 An attribute change is comprised of the following:
 - `attribute`: Attribute to modify, the exact values allowed depend on the entity you are modifying. If the attribute is a map you can either provide the attribute to modify all or use `.` syntax to only target a key in it
