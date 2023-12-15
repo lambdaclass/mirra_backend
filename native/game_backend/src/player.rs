@@ -51,9 +51,9 @@ pub enum Action {
 }
 
 #[derive(NifMap, Clone, Debug)]
-pub struct ActionTracker{
+pub struct ActionTracker {
     pub action: Action,
-    pub duration: u64
+    pub duration: u64,
 }
 
 impl Player {
@@ -75,7 +75,7 @@ impl Player {
             character: character_config,
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
-            skill_moving_params: None
+            skill_moving_params: None,
         }
     }
 
@@ -121,16 +121,19 @@ impl Player {
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
-        self.next_actions.push(ActionTracker{action, duration: duration_ms});
+        self.next_actions.push(ActionTracker {
+            action,
+            duration: duration_ms,
+        });
     }
 
     pub fn update_actions(&mut self, elapsed_time_ms: u64) {
-        if let Some (action_tracker) = self.next_actions.first_mut(){
-                action_tracker.duration = action_tracker.duration.saturating_sub(elapsed_time_ms);
+        if let Some(action_tracker) = self.next_actions.first_mut() {
+            action_tracker.duration = action_tracker.duration.saturating_sub(elapsed_time_ms);
 
-                if action_tracker.duration == 0 {
-                    self.next_actions.remove(0);
-                }
+            if action_tracker.duration == 0 {
+                self.next_actions.remove(0);
+            }
         }
         self.actions = self.next_actions.clone();
     }

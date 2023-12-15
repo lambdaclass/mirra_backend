@@ -25,7 +25,6 @@ pub enum AttributeModifier {
     Override,
 }
 
-
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq, Eq, Debug)]
 
 pub enum TimeType {
