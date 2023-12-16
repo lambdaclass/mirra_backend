@@ -291,12 +291,27 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   field(:status, 7, type: DarkWorldsServer.Communication.Proto.PlayerStatus, enum: true)
   field(:kill_count, 8, type: :uint64, json_name: "killCount")
   field(:death_count, 9, type: :uint64, json_name: "deathCount")
-  field(:actions, 10, repeated: true, type: DarkWorldsServer.Communication.Proto.PlayerAction)
+  field(:action, 10, repeated: true, type: DarkWorldsServer.Communication.Proto.ActionTracker)
   field(:action_duration_ms, 11, type: :uint64, json_name: "actionDurationMs")
   field(:cooldowns, 12, repeated: true, type: DarkWorldsServer.Communication.Proto.SkillCooldown)
   field(:inventory, 13, repeated: true, type: DarkWorldsServer.Communication.Proto.Item)
   field(:effects, 14, repeated: true, type: DarkWorldsServer.Communication.Proto.EffectInfo)
   field(:character_name, 15, type: :string, json_name: "characterName")
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
+defmodule DarkWorldsServer.Communication.Proto.ActionTracker do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:player_action, 1,
+    type: DarkWorldsServer.Communication.Proto.PlayerAction,
+    json_name: "playerAction"
+  )
+
+  field(:duration, 2, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -483,7 +498,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
   field(:health, 2, type: :sint64)
   field(:position, 3, type: DarkWorldsServer.Communication.Proto.OldPosition)
   field(:status, 4, type: DarkWorldsServer.Communication.Proto.OldStatus, enum: true)
-  field(:action, 5, repeated: true, type: DarkWorldsServer.Communication.Proto.ActionTracker)
+  field(:action, 5, repeated: true, type: DarkWorldsServer.Communication.Proto.OldActionTracker)
 
   field(:aoe_position, 6,
     type: DarkWorldsServer.Communication.Proto.OldPosition,
@@ -532,12 +547,17 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
-defmodule DarkWorldsServer.Communication.Proto.ActionTracker do
+defmodule DarkWorldsServer.Communication.Proto.OldActionTracker do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:action, 1, type: DarkWorldsServer.Communication.Proto.PlayerAction)
+  field(:player_action, 1,
+    type: DarkWorldsServer.Communication.Proto.OldPlayerAction,
+    json_name: "playerAction",
+    enum: true
+  )
+
   field(:duration, 2, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform

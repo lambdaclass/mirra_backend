@@ -25,7 +25,7 @@ pub struct Player {
     pub death_count: u64,
     pub position: Position,
     pub direction: f32,
-    pub actions: Vec<ActionTracker>,
+    pub action: Vec<ActionTracker>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<(Effect, EntityOwner)>,
@@ -65,7 +65,7 @@ impl Player {
             death_count: 0,
             position: initial_position,
             direction: 0.0,
-            actions: Vec::new(),
+            action: Vec::new(),
             cooldowns: HashMap::new(),
             effects: Vec::new(),
             health: character_config.base_health,
@@ -135,7 +135,7 @@ impl Player {
                 self.next_actions.remove(0);
             }
         }
-        self.actions = self.next_actions.clone();
+        self.action = self.next_actions.clone();
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
@@ -371,11 +371,11 @@ impl Player {
     }
 
     pub fn can_move(&self) -> bool {
-        self.actions.first().is_none() && self.skill_moving_params.is_none()
+        self.action.first().is_none() && self.skill_moving_params.is_none()
     }
 
     pub fn can_activate(&self) -> bool {
-        self.actions.first().is_none() && self.skill_moving_params.is_none()
+        self.action.first().is_none() && self.skill_moving_params.is_none()
     }
 
     pub fn is_targetable(&self) -> bool {

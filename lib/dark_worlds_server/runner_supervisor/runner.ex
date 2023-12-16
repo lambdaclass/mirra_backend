@@ -344,7 +344,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       kill_count: player.kill_count,
       effects: transform_effects_to_game_effects(player.effects),
       death_count: 0,
-      action: transform_action_to_game_action(player.actions),
+      action: transform_action_to_game_action(player.action),
       direction: transform_angle_to_game_relative_position(player.direction),
       aoe_position: %GameBackend.Position{x: 0, y: 0}
     }
