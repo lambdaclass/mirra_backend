@@ -33,7 +33,7 @@ defmodule DarkWorldsServer.Config.Characters.Effect do
 
   def to_backend_map(effect),
     do: %{
-      name: "damage_outside_area",
+      name: effect.name,
       projectile_attributes: Enum.map(effect.projectile_attributes, &AttributesModifier.to_backend_map/1),
       player_attributes: Enum.map(effect.player_attributes, &AttributesModifier.to_backend_map/1),
       effect_time_type: effect.effect_time_type,
