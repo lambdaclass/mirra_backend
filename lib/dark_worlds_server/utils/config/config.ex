@@ -67,7 +67,10 @@ defmodule Utils.Config do
         character_skills_result ++
         projectiles_result ++
         projectile_effects_result ++
-        loots_result ++ loot_effects_result ++ [game_result] ++ zone_modification_effects_result
+        loots_result ++
+        loot_effects_result ++
+        [game_result] ++
+        zone_modification_effects_result
 
     ok =
       Enum.count(results, fn
