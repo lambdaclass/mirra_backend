@@ -1,3 +1,4 @@
+use std::cmp::min;
 use std::collections::HashMap;
 
 use itertools::Itertools;
@@ -123,6 +124,14 @@ impl Player {
             *remaining = remaining.saturating_sub(elapsed_time_ms);
             *remaining > 0
         });
+
+        if !self.cooldowns.contains_key("1") {
+            self.available_burst_loads =
+                min(self.available_burst_loads + 1, self.character.burst_loads);
+            if self.available_burst_loads < self.character.burst_loads {
+                self.cooldowns.insert("1".to_string(), 5000);
+            }
+        }
     }
 
     pub fn apply_effects_if_not_present(
@@ -334,8 +343,8 @@ impl Player {
     pub fn can_perform_attack(&self, skill_key: &String) -> bool {
         // Check if player is still performing an action or if skill is still on cooldown.
         return self.action_duration_ms == 0
-            || self.available_burst_loads == 0
-            || !self.cooldowns.contains_key(skill_key);
+            && ((self.cooldowns.contains_key("1") && self.available_burst_loads > 0)
+                || (!self.cooldowns.contains_key("1") && !self.cooldowns.contains_key(skill_key)));
     }
 }
 

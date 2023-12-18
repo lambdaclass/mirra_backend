@@ -16,7 +16,6 @@ use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
-use crate::skill;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
