@@ -252,6 +252,8 @@ impl GameState {
                 return;
             }
 
+            player.moving = false;
+
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
                 player.add_action(
                     Action::UsingSkill(skill_key.clone()),
