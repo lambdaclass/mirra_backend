@@ -18,9 +18,20 @@ defmodule DarkWorldsServer.Config.Characters do
 
   def get_character(id), do: Repo.get(Character, id)
 
+  def get_characters(), do: Repo.all(Character) |> Repo.preload(:skills)
+
   def get_character_by_name(name), do: Repo.one(from(c in Character, where: c.name == ^name))
 
   def delete_all_characters(), do: Repo.delete_all(Character)
+
+  def get_character_skill_number(character_id, skill_id),
+    do:
+      Repo.one(
+        from(cs in CharacterSkill,
+          where: cs.character_id == ^character_id and cs.skill_id == ^skill_id,
+          select: cs.skill_number
+        )
+      )
 
   # Skill
   def insert_skill(attrs \\ %{}) do

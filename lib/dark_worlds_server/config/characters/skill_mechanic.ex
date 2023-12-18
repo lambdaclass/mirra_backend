@@ -93,7 +93,7 @@ defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
   end
 
   def to_backend_map({:give_effect, %{effects: effects}}),
-    do: {:give_effect, %{effects: Enum.map(effects, &Effect.to_backend_map/1)}}
+    do: {:give_effect, %{effects_to_give: Enum.map(effects, &Effect.to_backend_map/1)}}
 
   def to_backend_map({:hit, %{on_hit_effects: [nil]} = hit}),
     do: {:hit, %{hit | on_hit_effects: []}}

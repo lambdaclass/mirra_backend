@@ -1,5 +1,6 @@
 defmodule Utils.Config do
   alias DarkWorldsServer.Config.Characters
+  alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Config.Characters.Effect
   alias DarkWorldsServer.Config.Characters.Projectile
   alias DarkWorldsServer.Config.Characters.Skill
@@ -142,6 +143,8 @@ defmodule Utils.Config do
 
     skills_config = Characters.get_skills() |> Enum.map(&Skill.to_backend_map/1)
 
+    characters_config = Characters.get_characters() |> Enum.map(&Character.to_backend_map/1)
+
     projectiles_config = Characters.get_projectiles() |> Enum.map(&Projectile.to_backend_map/1)
 
     game_config = Games.get_game() |> Game.to_backend_map()
@@ -151,6 +154,7 @@ defmodule Utils.Config do
     %{
       effects: effects_config,
       skills: skills_config,
+      characters: characters_config,
       projectiles: projectiles_config,
       game: game_config,
       loots: loots_config
