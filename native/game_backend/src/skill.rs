@@ -105,18 +105,19 @@ impl SkillMechanic {
             .into_iter()
             .map(|config| match config {
                 SkillMechanicConfigFile::GiveEffect { effects_to_give } => {
-                    let effects : Vec<Effect> = effects
+                    let effects: Vec<Effect> = effects
                         .iter()
                         .filter(|effect| effects_to_give.contains(&effect.name))
                         .cloned()
                         .collect();
 
-                        if effects.len() != effects_to_give.len() {
-                            panic!(
-                                "GiveEffect.effects one of `{}` does not exist in effects config",
-                                effects_to_give.join(", "));
-                        }
-                    
+                    if effects.len() != effects_to_give.len() {
+                        panic!(
+                            "GiveEffect.effects one of `{}` does not exist in effects config",
+                            effects_to_give.join(", ")
+                        );
+                    }
+
                     SkillMechanic::GiveEffect {
                         effects_to_give: effects,
                     }
