@@ -9,12 +9,12 @@ defmodule Utils.Config do
   alias DarkWorldsServer.Config.Games.Loot
   alias DarkWorldsServer.Config.Games.ZoneModification
 
-  def read_config_and_parse() do
+  def read_and_parse() do
     {:ok, json_config} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
     GameBackend.parse_config(json_config)
   end
 
-  def delete_all_configs() do
+  def delete_all() do
     Games.delete_all_games()
     Games.delete_all_zone_modifications()
     Games.delete_all_zone_modification_effects()
@@ -32,11 +32,11 @@ defmodule Utils.Config do
 
   Returns an {:ok, results} tuple where results is a map with :ok and :error keys, with integer values.
   """
-  def clean_import_config() do
-    delete_all_configs()
+  def clean_import() do
+    delete_all()
 
     %{effects: effects, skills: skills, characters: characters, projectiles: projectiles, loots: loots, game: game} =
-      read_config_and_parse()
+      read_and_parse()
 
     effects_result = Enum.map(effects, &insert_effects/1)
 

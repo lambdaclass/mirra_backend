@@ -24,6 +24,7 @@ defmodule DarkWorldsServerWeb.Router do
     pipe_through(:api)
 
     post "/bot", BotController, :create
+    post "/config/clean_import", ConfigController, :clean_import
   end
 
   scope "/", DarkWorldsServerWeb do
