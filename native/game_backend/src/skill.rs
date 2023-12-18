@@ -113,7 +113,7 @@ impl SkillMechanic {
 
                         if effects.is_empty() {
                             panic!(
-                                "Effect.effects one of `{}` does not exist in effects config",
+                                "GiveEffect.effects one of `{}` does not exist in effects config",
                                 effects_to_give.join(","));
                         }
                     

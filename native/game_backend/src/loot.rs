@@ -46,16 +46,23 @@ impl LootConfig {
         loots
             .into_iter()
             .map(|config| {
-                let effects = effects
+                let loot_effects : Vec<Effect> = effects
                     .iter()
                     .filter(|effect| config.effects.contains(&effect.name))
                     .cloned()
                     .collect();
+
+                if loot_effects.is_empty() {
+                    panic!(
+                        "Loot.effects one of `{}` does not exist in effects config",
+                        config.effects.join(","));
+                }
+
                 LootConfig {
                     name: config.name,
                     size: config.size,
                     pickup_mechanic: config.pickup_mechanic,
-                    effects,
+                    effects: loot_effects,
                 }
             })
             .collect()
