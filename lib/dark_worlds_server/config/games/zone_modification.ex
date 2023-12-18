@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Games.ZoneModification do
+  @moduledoc """
+  ZoneModifications are changes done to the playable map.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect

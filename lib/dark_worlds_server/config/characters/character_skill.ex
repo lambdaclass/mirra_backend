@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.CharacterSkill do
+  @moduledoc """
+  The Character-Skill association intermediate table.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

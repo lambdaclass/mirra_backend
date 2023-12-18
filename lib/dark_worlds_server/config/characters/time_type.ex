@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.TimeType do
+  @moduledoc """
+  The TimeType type, corresponding to the TimeType Rust enum in effect.rs
+  """
+
   use Ecto.Type
 
   def type(), do: :string

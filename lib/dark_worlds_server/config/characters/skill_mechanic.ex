@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
+  @moduledoc """
+  The SkillMechanic type, corresponding to the SkillMechanicConfigFile Rust enum in skills.rs
+  """
+
   alias DarkWorldsServer.Config.Characters
   alias DarkWorldsServer.Config.Characters.Effect
   alias DarkWorldsServer.Config.Characters.Projectile

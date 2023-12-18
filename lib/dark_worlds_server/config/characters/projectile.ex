@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.Projectile do
+  @moduledoc """
+  Projectiles are the properties for shots fired by skills.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect
