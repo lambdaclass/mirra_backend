@@ -198,7 +198,6 @@ impl Player {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
                             "health" => {
-                                println!("apply");
                                 modify_attribute(
                                     &mut player.health,
                                     &change.modifier,

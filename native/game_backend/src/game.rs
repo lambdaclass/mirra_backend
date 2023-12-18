@@ -490,7 +490,7 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 }
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
-    if player.is_targetable() {
+    if !player.is_targetable() {
         return;
     }
 
