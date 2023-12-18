@@ -15,6 +15,9 @@ use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
+use crate::skill;
+
+const BASIC_SKILL_KEY: &str = "1";
 
 #[derive(NifMap)]
 pub struct Player {
@@ -125,11 +128,11 @@ impl Player {
             *remaining > 0
         });
 
-        if !self.cooldowns.contains_key("1") {
+        if !self.cooldowns.contains_key(BASIC_SKILL_KEY) {
             self.available_burst_loads =
                 min(self.available_burst_loads + 1, self.character.burst_loads);
             if self.available_burst_loads < self.character.burst_loads {
-                self.cooldowns.insert("1".to_string(), 5000);
+                self.cooldowns.insert(BASIC_SKILL_KEY.to_string(), 5000); // TODO: see how to get this value from the skill
             }
         }
     }
@@ -342,10 +345,17 @@ impl Player {
 
     pub fn can_perform_attack(&self, skill_key: &String) -> bool {
         // Check if player is still performing an action or if skill is still on cooldown.
-        return self.action_duration_ms == 0
-            && ((self.cooldowns.contains_key("1") && self.available_burst_loads > 0)
-                || (!self.cooldowns.contains_key("1") && !self.cooldowns.contains_key(skill_key)));
+        self.action_duration_ms == 0
+            && (can_perform_basic_attack(&self) || can_perform_skill_attack(&self, skill_key))
     }
+}
+
+fn can_perform_basic_attack(player: &Player) -> bool {
+    player.cooldowns.contains_key(BASIC_SKILL_KEY) && player.available_burst_loads > 0
+}
+
+fn can_perform_skill_attack(player: &Player, skill_key: &String) -> bool {
+    !player.cooldowns.contains_key(BASIC_SKILL_KEY) && !player.cooldowns.contains_key(skill_key)
 }
 
 fn update_status(player: &mut Player) {
