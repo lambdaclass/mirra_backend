@@ -23,10 +23,19 @@ Some things to keep in mind about load tests:
 - Use multiple sources of truth and data, like htop, New Relic, erlang's etop/fprop.
 - Feel free to experiment a bit, certain VM flags can improve or hinder performance,
   if you find improvements.
-- It's important for load tests to be reproducible.
+- **It's important for load tests to be reproducible**.
 
-### Setup
-I recommend you add each server ip to your ~/.ssh/config file to avoid confusions, like this:
+## Table of Contents
+1. [Setup SSH](#setup-ssh)
+2. [Running Load Tests](#running-load-tests)
+    - [Starting the load test server](#starting-the-load-test-server)
+    - [Starting the load test runner](#starting-the-load-test-runner)
+3. [Load Test Server First Time Setup](#load-test-server-first-time-setup)
+4. [Load Test Runner First Time Setup](#load-test-runner-first-time-setup)
+5. [Useful Tools](#useful-tools)
+
+## Setup SSH
+We recommend you add each server ip to your ~/.ssh/config file to avoid confusions, like this:
 First, open a terminal and run: 
 ```bash 
  open ~/.ssh/config
@@ -35,38 +44,27 @@ And paste this:
 ```conf 
 Host myrra_load_test_client
   Hostname client_ip
+  User user
 
 Host myrra_load_test_server
   Hostname game_ip
+  User user
 ```
 
-### Game Server Setup
-1. Check you can log into it with ssh: 
-   ```sh
-   ssh myuser@myrra_load_test_server
-   ```
-2. If it's not already there exit, copy the script on this repo under
-   `game_backend/load_test/setup_game_server.sh` it clones the game server and compiles it:
-   ```sh
-   scp /path_go_game_backend/game_backend/load_test/setup_game_server.sh myrra_load_test_server:/user/setup_game_server.sh
-   ```
-   Then relog (step 1) and relog into the server 
-   `setup_game_server` can also take a branch name as an argument. So if you want to run the load test on an specific branch, you can instead do:
-   ```sh
-   chmod +x ./setup_game_server.sh && ./setup_game_server.sh <BRANCH_NAME_TO_TEST>
-   ```
+(You don't have to literally put `user` there. Put the appropiate user based on the server you'll be using).
 
-3. Now you can start the game server with: 
-```sh
-export $(cat .env | xargs) && cd game_backend && MIX_ENV=prod iex -S mix phx.server
-```
-   You can check the logs with `journalctl -xefu curse_of_myrra`.
-   From now on, you can just use: 
-```sh
-MIX_ENV=prod iex -S mix phx.server
-```
-   
-4. Make sure to disable hyperthreading, if using an x86 CPU:
+## Running Load tests
+
+You're going to need 3 tabs in order to run load tests: 
+on the server ip: 
+    - one for the load test server
+    - one to monitor the load test server status (e.g. htop)
+On the client ip:
+   - load test runner
+
+### Starting the load test server
+
+1. Make sure to disable hyperthreading:
 ```sh
 # If active, this returns 1
 cat /sys/devices/system/cpu/smt/active
@@ -76,7 +74,91 @@ echo off | sudo tee /sys/devices/system/cpu/smt/control
 One way of checking this, besides the command above,
 is to open htop, you should see the virtual cores as 'offline'.
 
-### Load Test Client setup
+2. Run this command to increase the file descriptor amount.
+   ```bash
+   ulimit -n 65000
+
+3. Export the variables defined at `~/.env`
+    ```bash
+    export $(cat ~/.env | xargs)
+    ```
+4. Set the env variables for newrelic:
+
+    ```bash
+    export NEW_RELIC_APP_NAME=
+    export NEW_RELIC_LICENSE_KEY=
+    ```
+
+    ### You will have to ask for them
+
+5. Now you can start the game server with: 
+   ```sh
+   cd game_backend && MIX_ENV=prod iex -S mix phx.server
+   From now on, until you close the tab you can just use: 
+```sh
+MIX_ENV=prod iex -S mix phx.server
+```
+
+### Starting the load test runner
+
+1. Set this env variable: 
+   ```sh
+   export SERVER_HOST=game_server_ip:game_server_port
+2. Run this command to increase the file descriptor amount.
+   ```bash
+   ulimit -n 65000
+3. Run:
+   ```sh
+       cd ./game_backend/load_test/ && iex -S mix 
+   ``` 
+   this drops you into an Elixir shell from which you'll run the load tests.
+4. From the elixir shell, start the load test with:
+   ```elixir
+   LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
+   ``` 
+
+## Load Test Server First Time Setup
+
+This is supposed to be done only once per server. If it was already done, you can skip this step.
+
+1. Check you can log into it with ssh: 
+   ```sh
+   ssh myuser@myrra_load_test_server
+   ```
+2. Then run `exit` and copy the script on this repo under
+   `load_test/setup_game_server.sh` it installs all dependencies, clones the game server and compiles it:
+   ```sh
+   scp /path_go_game_backend/game_backend/load_test/setup_game_server.sh myrra_load_test_server:setup_game_server.sh && ssh myuser@myrra_load_test_server
+   ```
+
+   From now on, you'll be running commands from the load test server's terminal. To return to your terminal you can run `exit`
+
+3. Set the needed env variables on the $HOME/.env file.
+   First create it: 
+```sh
+cat <<EOF > ~/.env
+PHX_HOST=
+PHX_SERVER=true
+SECRET_KEY_BASE=
+DATABASE_URL=ecto://postgres:postgrespassword@localhost/dark_worlds_server
+EOF
+```
+   And then fill it. Lastly after that you also have to export those variables with:
+
+    ```bash
+    export $(cat ~/.env | xargs)
+    ```
+4. Run `setup_game_server.sh` with:
+   ```sh
+   chmod +x ./setup_game_server.sh && sudo ./setup_game_server.sh
+   ```
+
+   This installs dependencies, clones the repo and compiles the app *on the main branch*
+
+## Load Test Runner First Time Setup
+
+This is supposed to be done only once per server. If it was already done, you can skip this step.
+
 1. Log into it with ssh: 
    ```sh
    ssh myuser@myrra_load_test_client
@@ -90,18 +172,6 @@ is to open htop, you should see the virtual cores as 'offline'.
    ```sh
    ./setup_load_client.sh <BRANCH_NAME_TO_TEST>
    ```
-3. Set this env variable: `export SERVER_HOST=game_server_ip:game_server_port`.
-   Where `game_server_ip` is the ip of the load test server, and `game_server_port`,
-   the corresponding port.
-4. Run:
-   ```sh
-       cd ./curse_of_myrra/server/load_test/ && iex -S mix 
-   ``` 
-   this drops you into an Elixir shell from which you'll run the load tests.
-5. From the elixir shell, start the load test with:
-   ```elixir
-   LoadTest.PlayerSupervisor.spawn_players(number_of_players, play_time_in_seconds)
-   ``` 
 
 
 ### Useful tools
