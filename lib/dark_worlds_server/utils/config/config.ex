@@ -1,4 +1,4 @@
-defmodule Utils.Config do
+defmodule DarkWorldsServer.Utils.Config do
   alias DarkWorldsServer.Config.Characters
   alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Config.Characters.Effect
