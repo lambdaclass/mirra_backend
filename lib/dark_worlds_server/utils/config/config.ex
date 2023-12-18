@@ -145,7 +145,6 @@ defmodule Utils.Config do
   to the one returned by GameBackend.parse_config/1.
   """
   def get_config() do
-    # May need to add time_since_last_trigger to time_type
     effects_config = Characters.get_effects() |> Enum.map(&Effect.to_backend_map/1)
 
     skills_config = Characters.get_skills() |> Enum.map(&Skill.to_backend_map/1)
