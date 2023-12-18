@@ -284,7 +284,7 @@ defmodule DarkWorldsServer.Communication.Proto.Player do
   field(:id, 1, type: :uint64)
   field(:position, 2, type: DarkWorldsServer.Communication.Proto.Position)
   field(:health, 3, type: :sint64)
-  field(:speed, 4, type: :sint64)
+  field(:speed, 4, type: :float)
   field(:size, 5, type: :float)
   field(:direction, 6, type: :float)
   field(:status, 7, type: DarkWorldsServer.Communication.Proto.PlayerStatus, enum: true)
@@ -369,7 +369,7 @@ defmodule DarkWorldsServer.Communication.Proto.Projectile do
   field(:id, 1, type: :uint64)
   field(:name, 2, type: :string)
   field(:damage, 3, type: :uint32)
-  field(:speed, 4, type: :uint32)
+  field(:speed, 4, type: :float)
   field(:size, 5, type: :float)
   field(:position, 6, type: DarkWorldsServer.Communication.Proto.Position)
   field(:direction, 7, type: :float)
@@ -393,8 +393,8 @@ defmodule DarkWorldsServer.Communication.Proto.Position do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :int64)
-  field(:y, 2, type: :int64)
+  field(:x, 1, type: :float)
+  field(:y, 2, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -454,7 +454,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldGameEvent do
   field(:player_timestamp, 9, type: :int64, json_name: "playerTimestamp")
   field(:server_timestamp, 10, type: :int64, json_name: "serverTimestamp")
   field(:killfeed, 11, repeated: true, type: DarkWorldsServer.Communication.Proto.OldKillEvent)
-  field(:playable_radius, 12, type: :uint64, json_name: "playableRadius")
+  field(:playable_radius, 12, type: :float, json_name: "playableRadius")
 
   field(:shrinking_center, 13,
     type: DarkWorldsServer.Communication.Proto.OldPosition,
@@ -589,8 +589,8 @@ defmodule DarkWorldsServer.Communication.Proto.OldPosition do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :uint64)
-  field(:y, 2, type: :uint64)
+  field(:x, 1, type: :float)
+  field(:y, 2, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -730,8 +730,8 @@ defmodule DarkWorldsServer.Communication.Proto.BoardSize do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:width, 1, type: :float)
+  field(:height, 2, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -834,8 +834,8 @@ defmodule DarkWorldsServer.Communication.Proto.OldProjectile do
   field(:id, 1, type: :uint64)
   field(:position, 2, type: DarkWorldsServer.Communication.Proto.OldPosition)
   field(:direction, 3, type: DarkWorldsServer.Communication.Proto.RelativePosition)
-  field(:speed, 4, type: :uint32)
-  field(:range, 5, type: :uint32)
+  field(:speed, 4, type: :float)
+  field(:range, 5, type: :float)
   field(:player_id, 6, type: :uint64, json_name: "playerId")
   field(:damage, 7, type: :uint32)
   field(:remaining_ticks, 8, type: :sint64, json_name: "remainingTicks")
@@ -902,8 +902,8 @@ defmodule DarkWorldsServer.Communication.Proto.GameStateConfig do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:width, 1, type: :float)
+  field(:height, 2, type: :float)
 
   field(:map_modification, 3,
     type: DarkWorldsServer.Communication.Proto.MapModification,
@@ -921,9 +921,9 @@ defmodule DarkWorldsServer.Communication.Proto.MapModification do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:modification, 1, type: DarkWorldsServer.Communication.Proto.Modification)
-  field(:starting_radius, 2, type: :uint64, json_name: "startingRadius")
-  field(:minimum_radius, 3, type: :uint64, json_name: "minimumRadius")
-  field(:max_radius, 4, type: :uint64, json_name: "maxRadius")
+  field(:starting_radius, 2, type: :float, json_name: "startingRadius")
+  field(:minimum_radius, 3, type: :float, json_name: "minimumRadius")
+  field(:max_radius, 4, type: :float, json_name: "maxRadius")
 
   field(:outside_radius_effects, 5,
     repeated: true,
@@ -957,7 +957,7 @@ defmodule DarkWorldsServer.Communication.Proto.GameLoot do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:name, 1, type: :string)
-  field(:size, 2, type: :uint64)
+  field(:size, 2, type: :float)
   field(:effects, 3, repeated: true, type: DarkWorldsServer.Communication.Proto.GameEffect)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
@@ -970,8 +970,8 @@ defmodule DarkWorldsServer.Communication.Proto.GameProjectile do
 
   field(:name, 1, type: :string)
   field(:base_damage, 2, type: :uint64, json_name: "baseDamage")
-  field(:base_speed, 3, type: :uint64, json_name: "baseSpeed")
-  field(:base_size, 4, type: :uint64, json_name: "baseSize")
+  field(:base_speed, 3, type: :float, json_name: "baseSpeed")
+  field(:base_size, 4, type: :float, json_name: "baseSize")
   field(:remove_on_collision, 5, type: :bool, json_name: "removeOnCollision")
 
   field(:on_hit_effect, 6,
@@ -980,7 +980,7 @@ defmodule DarkWorldsServer.Communication.Proto.GameProjectile do
     json_name: "onHitEffect"
   )
 
-  field(:max_distance, 7, type: :uint64, json_name: "maxDistance")
+  field(:max_distance, 7, type: :float, json_name: "maxDistance")
   field(:duration_ms, 8, type: :float, json_name: "durationMs")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
@@ -1004,8 +1004,8 @@ defmodule DarkWorldsServer.Communication.Proto.GameCharacter do
 
   field(:name, 1, type: :string)
   field(:active, 2, type: :bool)
-  field(:base_speed, 3, type: :uint64, json_name: "baseSpeed")
-  field(:base_size, 4, type: :uint64, json_name: "baseSize")
+  field(:base_speed, 3, type: :float, json_name: "baseSpeed")
+  field(:base_size, 4, type: :float, json_name: "baseSize")
   field(:base_health, 5, type: :uint64, json_name: "baseHealth")
 
   field(:skills, 6,
@@ -1038,7 +1038,7 @@ defmodule DarkWorldsServer.Communication.Proto.Mechanic do
   field(:name, 1, type: DarkWorldsServer.Communication.Proto.MechanicType, enum: true)
   field(:effects, 2, repeated: true, type: DarkWorldsServer.Communication.Proto.GameEffect)
   field(:damage, 3, type: :uint64)
-  field(:range, 4, type: :uint64)
+  field(:range, 4, type: :float)
   field(:cone_angle, 5, type: :uint64, json_name: "coneAngle")
 
   field(:on_hit_effects, 6,
@@ -1050,7 +1050,7 @@ defmodule DarkWorldsServer.Communication.Proto.Mechanic do
   field(:projectile, 7, type: DarkWorldsServer.Communication.Proto.GameProjectile)
   field(:count, 8, type: :uint64)
   field(:duration_ms, 9, type: :uint64, json_name: "durationMs")
-  field(:max_range, 10, type: :uint64, json_name: "maxRange")
+  field(:max_range, 10, type: :float, json_name: "maxRange")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -1122,6 +1122,8 @@ defmodule DarkWorldsServer.Communication.Proto.UseSkill do
   field(:skill, 1, type: :string)
   field(:angle, 2, type: :float)
   field(:auto_aim, 3, type: :bool, json_name: "autoAim")
+  field(:target_x, 4, type: :float, json_name: "targetX")
+  field(:target_y, 5, type: :float, json_name: "targetY")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

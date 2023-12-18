@@ -38,7 +38,7 @@ message Player {
     uint64 id = 1;
     Position position = 2;
     sint64 health = 3;
-    sint64 speed = 4;
+    float speed = 4;
     float size = 5;
     float direction = 6;
     PlayerStatus status = 7;
@@ -84,7 +84,7 @@ message Projectile {
     uint64 id = 1;
     string name = 2;
     uint32 damage = 3;
-    uint32 speed = 4;
+    float speed = 4;
     float size = 5;
     Position position = 6;
     float direction = 7;
@@ -96,8 +96,8 @@ message ZoneInfo {
 }
 
 message Position {
-    int64 x = 1;
-    int64 y = 2;
+    float x = 1;
+    float y = 2;
 }
 
 message KillEvent {
@@ -156,7 +156,7 @@ message OldGameEvent {
     int64 player_timestamp = 9;
     int64 server_timestamp = 10;
     repeated OldKillEvent killfeed = 11;
-    uint64 playable_radius = 12;
+    float playable_radius = 12;
     OldPosition shrinking_center = 13;
     repeated LootPackage loots = 14;
 }
@@ -239,8 +239,8 @@ enum OldStatus {
     - y: Y coordinate in the grid
  */
 message OldPosition {
-    uint64 x = 1;
-    uint64 y = 2;
+    float x = 1;
+    float y = 2;
 }
 
 /* A relative position
@@ -410,8 +410,8 @@ message GameConfig {
 }
 
 message BoardSize {
-    uint64 width = 1;
-    uint64 height = 2;
+    float width = 1;
+    float height = 2;
 }
 
 message CharacterConfigItem {
@@ -510,8 +510,8 @@ message OldProjectile {
     uint64 id = 1;
     OldPosition position = 2;
     RelativePosition direction = 3;
-    uint32 speed = 4;
-    uint32 range = 5;
+    float speed = 4;
+    float range = 5;
     uint64 player_id = 6;
     uint32 damage = 7;
     sint64 remaining_ticks = 8;
@@ -588,8 +588,8 @@ message Config {
     - loot_interval_ms: If present, interval in milliseconds for spawning loot crates
 */
 message GameStateConfig {
-    uint64 width = 1;
-    uint64 height = 2;
+    float width = 1;
+    float height = 2;
     MapModification map_modification = 3;
     uint64 loot_interval_ms = 4;
 }
@@ -604,9 +604,9 @@ message GameStateConfig {
 */
 message MapModification {
     Modification modification = 1;
-    uint64 starting_radius = 2;
-    uint64 minimum_radius = 3;
-    uint64 max_radius = 4;
+    float starting_radius = 2;
+    float minimum_radius = 3;
+    float max_radius = 4;
     repeated GameEffect outside_radius_effects = 5;
     repeated GameEffect inside_radius_effects = 6;
 }
@@ -630,7 +630,7 @@ message Modification {
 */
 message GameLoot {
     string name = 1;
-    uint64 size = 2;
+    float size = 2;
     repeated GameEffect effects = 3;
 }
 
@@ -647,11 +647,11 @@ message GameLoot {
 message GameProjectile {
     string name = 1;
     uint64 base_damage = 2;
-    uint64 base_speed = 3;
-    uint64 base_size = 4;
+    float base_speed = 3;
+    float base_size = 4;
     bool remove_on_collision = 5;
     repeated GameEffect on_hit_effect = 6;
-    uint64 max_distance = 7;
+    float max_distance = 7;
     float duration_ms = 8;
 }
 
@@ -666,8 +666,8 @@ message GameProjectile {
 message GameCharacter {
     string name = 1;
     bool active = 2;
-    uint64 base_speed = 3;
-    uint64 base_size = 4;
+    float base_speed = 3;
+    float base_size = 4;
     uint64 base_health = 5;
     map<string, GameSkill> skills = 6;
 }
@@ -707,13 +707,13 @@ message Mechanic {
     MechanicType name = 1;
     repeated GameEffect effects = 2;
     uint64 damage = 3;
-    uint64 range = 4;
+    float range = 4;
     uint64 cone_angle = 5;
     repeated GameEffect on_hit_effects = 6;
     GameProjectile projectile = 7;
     uint64 count = 8;
     uint64 duration_ms = 9;
-    uint64 max_range = 10;
+    float max_range = 10;
 }
 
 /* Represents an effect acting on a player.
@@ -765,6 +765,8 @@ message UseSkill {
   string skill = 1;
   float angle = 2;
   bool auto_aim = 3;
+  float target_x = 4;
+  float target_y = 5;
 }
 
 message GameAction {
