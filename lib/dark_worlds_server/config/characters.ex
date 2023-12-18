@@ -9,7 +9,10 @@ defmodule DarkWorldsServer.Config.Characters do
   alias DarkWorldsServer.Config.Characters.Skill
   alias DarkWorldsServer.Repo
 
-  # Characters
+  ##############
+  # Characters #
+  ##############
+
   def insert_character(attrs \\ %{}) do
     %Character{}
     |> Character.changeset(attrs)
@@ -33,7 +36,10 @@ defmodule DarkWorldsServer.Config.Characters do
         )
       )
 
-  # Skill
+  ##########
+  # Skills #
+  ##########
+
   def insert_skill(attrs \\ %{}) do
     %Skill{}
     |> Skill.changeset(attrs)
@@ -48,7 +54,10 @@ defmodule DarkWorldsServer.Config.Characters do
 
   def delete_all_skills(), do: Repo.delete_all(Skill)
 
-  # Effect
+  ###########
+  # Effects #
+  ###########
+
   def insert_effect(attrs \\ %{}) do
     %Effect{}
     |> Effect.changeset(attrs)
@@ -63,7 +72,10 @@ defmodule DarkWorldsServer.Config.Characters do
 
   def delete_all_effects(), do: Repo.delete_all(Effect)
 
-  # CharacterSkill
+  ###################
+  # CharacterSkills #
+  ###################
+
   def insert_character_skill(attrs \\ %{}) do
     %CharacterSkill{}
     |> CharacterSkill.changeset(attrs)
@@ -72,7 +84,10 @@ defmodule DarkWorldsServer.Config.Characters do
 
   def delete_all_character_skills(), do: Repo.delete_all(CharacterSkill)
 
-  # Projectile
+  ###############
+  # Projectiles #
+  ###############
+
   def insert_projectile(attrs \\ %{}) do
     %Projectile{}
     |> Projectile.changeset(attrs)
@@ -88,7 +103,10 @@ defmodule DarkWorldsServer.Config.Characters do
 
   def delete_all_projectiles(), do: Repo.delete_all(Projectile)
 
-  # ProjectileEffect
+  #####################
+  # ProjectileEffects #
+  #####################
+
   def insert_projectile_effect(attrs \\ %{}) do
     %ProjectileEffect{}
     |> ProjectileEffect.changeset(attrs)
