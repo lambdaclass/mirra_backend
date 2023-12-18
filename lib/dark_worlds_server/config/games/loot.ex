@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Games.Loot do
+  @moduledoc """
+  Loots are things that drop in the ground that give effects to the player that activates them.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect

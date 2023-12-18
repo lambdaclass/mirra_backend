@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.Skill do
+  @moduledoc """
+  Skills are the abilities and attacks a player can cast.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

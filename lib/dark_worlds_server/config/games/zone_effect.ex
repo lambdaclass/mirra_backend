@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Games.ZoneModificationEffect do
+  @moduledoc """
+  The ZoneModification-Effect association intermediate table. These are the effects being outside a zone will apply.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect

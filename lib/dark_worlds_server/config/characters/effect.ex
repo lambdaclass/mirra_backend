@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.Effect do
+  @moduledoc """
+  Effects are modificators that players can be affected by, which can be inflicted by skills, projectiles, loots and the zone.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect.AttributesModifier

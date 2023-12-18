@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.Character do
+  @moduledoc """
+  Characters are the template on which players are based.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

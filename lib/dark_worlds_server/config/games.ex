@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Games do
+  @moduledoc """
+  Operations done to the Configuration storage related to the Game in general.
+  """
+
   import Ecto.Query
 
   alias DarkWorldsServer.Config.Games.Game

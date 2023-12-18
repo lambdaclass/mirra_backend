@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Games.Game do
+  @moduledoc """
+  The general configuration for a game. For now, we only have one game at a time.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Games.ZoneModification

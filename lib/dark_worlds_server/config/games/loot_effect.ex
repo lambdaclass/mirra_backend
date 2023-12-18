@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Games.LootEffect do
+  @moduledoc """
+  The Loot-Effect association intermediate table.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect

@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Config.Characters.ProjectileEffect do
+  @moduledoc """
+  The Projectile-Effect association intermediate table.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias DarkWorldsServer.Config.Characters.Effect
