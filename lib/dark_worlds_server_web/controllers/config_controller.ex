@@ -4,7 +4,10 @@ defmodule DarkWorldsServerWeb.ConfigController do
 
   def config(conn, _assigns) do
     {:ok, config} = Config.get_config() |> Jason.encode(%{})
-    send_resp(conn, 200, config)
+
+    conn
+    |> prepend_resp_headers([{"content-type", "application/json"}])
+    |> send_resp(200, config)
   end
 
   def clean_import(conn, _assigns) do
