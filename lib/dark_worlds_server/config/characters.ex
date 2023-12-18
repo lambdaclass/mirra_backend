@@ -19,7 +19,7 @@ defmodule DarkWorldsServer.Config.Characters do
     |> Repo.insert()
   end
 
-  def get_character(id), do: Repo.get(Character, id)
+  def get_character(id), do: Repo.get(Character, id) |> Repo.preload(:skills)
 
   def get_characters(), do: Repo.all(Character) |> Repo.preload(:skills)
 
