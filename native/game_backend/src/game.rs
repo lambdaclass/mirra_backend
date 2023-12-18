@@ -187,7 +187,7 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if player.action_duration_ms > 0 {
+            if !player.can_move() {
                 return;
             }
             player.move_position(angle, &self.config);
@@ -243,7 +243,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if player.action_duration_ms > 0 {
+            if !player.can_activate() {
                 return;
             }
 
@@ -490,8 +490,7 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
 
 fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
     players.values_mut().for_each(|player| {
-        player.update_actions();
-        player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+        player.update_actions(elapsed_time_ms);
     })
 }
 
