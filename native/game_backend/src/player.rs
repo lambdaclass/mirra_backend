@@ -15,7 +15,6 @@ use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
-use crate::skill;
 
 const BASIC_SKILL_KEY: &str = "1";
 
