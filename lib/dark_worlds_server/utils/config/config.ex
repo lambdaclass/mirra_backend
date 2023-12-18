@@ -5,6 +5,7 @@ defmodule Utils.Config do
   alias DarkWorldsServer.Config.Characters.Skill
   alias DarkWorldsServer.Config.Games
   alias DarkWorldsServer.Config.Games.Game
+  alias DarkWorldsServer.Config.Games.Loot
   alias DarkWorldsServer.Config.Games.ZoneModification
 
   def read_config_and_parse() do
@@ -137,12 +138,22 @@ defmodule Utils.Config do
 
   def read_config_backend() do
     # May need to add time_since_last_trigger to time_type
-    _effects_config = Characters.get_effects() |> Enum.map(&Effect.to_backend_map/1)
+    effects_config = Characters.get_effects() |> Enum.map(&Effect.to_backend_map/1)
 
-    _skills_config = Characters.get_skills() |> Enum.map(&Skill.to_backend_map/1)
+    skills_config = Characters.get_skills() |> Enum.map(&Skill.to_backend_map/1)
 
-    _projectiles_config = Characters.get_projectiles() |> Enum.map(&Projectile.to_backend_map/1)
+    projectiles_config = Characters.get_projectiles() |> Enum.map(&Projectile.to_backend_map/1)
 
-    _game_config = Games.get_game() |> Game.to_backend_map()
+    game_config = Games.get_game() |> Game.to_backend_map()
+
+    loots_config = Games.get_loots() |> Enum.map(&Loot.to_backend_map/1)
+
+    %{
+      effects: effects_config,
+      skills: skills_config,
+      projectiles: projectiles_config,
+      game: game_config,
+      loots: loots_config
+    }
   end
 end

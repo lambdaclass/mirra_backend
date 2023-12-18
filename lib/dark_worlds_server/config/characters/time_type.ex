@@ -58,7 +58,8 @@ defmodule DarkWorldsServer.Config.Characters.TimeType do
          %{
            instant_application: string_to_boolean(instant_application),
            interval_ms: String.to_integer(interval_ms),
-           trigger_count: String.to_integer(triggers)
+           trigger_count: String.to_integer(triggers),
+           time_since_last_trigger: 0
          }}
 
       _ ->

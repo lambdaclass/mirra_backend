@@ -37,7 +37,8 @@ defmodule DarkWorldsServer.Config.Games.Game do
       width: game.width,
       auto_aim_max_distance: game.auto_aim_max_distance,
       height: game.height,
-      initial_positions: game.initial_positions,
+      initial_positions:
+        Enum.map(game.initial_positions, &Enum.into(&1, %{}, fn {key, value} -> {String.to_atom(key), value} end)),
       loot_interval_ms: game.loot_interval_ms,
       zone_modifications: Enum.map(game.zone_modifications, &ZoneModification.to_backend_map/1),
       zone_starting_radius: game.zone_starting_radius

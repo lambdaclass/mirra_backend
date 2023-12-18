@@ -12,7 +12,7 @@ defmodule DarkWorldsServer.Config.Games.Loot do
     field(:size, :integer)
     field(:pickup_mechanic, :string)
 
-    many_to_many(:loot_effect, Effect, join_through: LootEffect)
+    many_to_many(:effects, Effect, join_through: LootEffect)
 
     timestamps()
   end
@@ -34,4 +34,11 @@ defmodule DarkWorldsServer.Config.Games.Loot do
 
   defp cast_pickup_mechanic(changeset, %{pickup_mechanic: pickup_mechanic}),
     do: cast(changeset, %{pickup_mechanic: pickup_mechanic}, [:pickup_mechanic])
+
+    def to_backend_map(loot), do: %{
+      name: loot.name,
+      size: loot.size,
+      effects: Enum.map(loot.effects, &Effect.to_backend_map/1),
+      pickup_mechanic: loot.pickup_mechanic
+    }
 end

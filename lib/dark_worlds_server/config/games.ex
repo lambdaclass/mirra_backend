@@ -43,7 +43,8 @@ defmodule DarkWorldsServer.Config.Games do
 
   def get_zone_modification(id), do: Repo.get(ZoneModification, id) |> Repo.preload(:outside_radius_effects)
 
-  def get_loot(id), do: Repo.get(Loot, id)
+  def get_loot(id), do: Repo.get(Loot, id) |> Repo.preload(:effects)
+  def get_loots(), do: Repo.all(Loot) |> Repo.preload(:effects)
   def get_loot_by_name(name), do: Repo.one(from(l in Loot, where: l.name == ^name))
 
   def all_zone_modifications(), do: Repo.all(ZoneModification)
