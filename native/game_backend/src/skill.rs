@@ -111,10 +111,10 @@ impl SkillMechanic {
                         .cloned()
                         .collect();
 
-                        if effects.is_empty() {
+                        if effects.len() != effects_to_give.len() {
                             panic!(
                                 "GiveEffect.effects one of `{}` does not exist in effects config",
-                                effects_to_give.join(","));
+                                effects_to_give.join(", "));
                         }
                     
                     SkillMechanic::GiveEffect {
