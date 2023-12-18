@@ -52,11 +52,15 @@ impl LootConfig {
                     .cloned()
                     .collect();
 
-                if loot_effects.is_empty() {
+                if config.effects.len() != loot_effects.len() {
                     panic!(
                         "Loot.effects one of `{}` does not exist in effects config",
                         config.effects.join(",")
                     );
+                }
+
+                if loot_effects.is_empty() {
+                    panic!("Loot.effects can't be empty");
                 }
 
                 LootConfig {

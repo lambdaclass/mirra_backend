@@ -118,6 +118,10 @@ impl SkillMechanic {
                         );
                     }
 
+                    if effects.is_empty() {
+                        panic!("GiveEffect.effects can't be empty");
+                    }
+
                     SkillMechanic::GiveEffect {
                         effects_to_give: effects,
                     }
