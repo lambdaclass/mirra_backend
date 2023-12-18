@@ -137,6 +137,10 @@ defmodule Utils.Config do
     end)
   end
 
+  @doc """
+  Reads all stored configs and transforms them into a map for backend to use. Transformed map is identical
+  to the one returned by GameBackend.parse_config/1.
+  """
   def get_config() do
     # May need to add time_since_last_trigger to time_type
     effects_config = Characters.get_effects() |> Enum.map(&Effect.to_backend_map/1)
