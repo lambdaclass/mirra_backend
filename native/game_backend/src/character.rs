@@ -9,8 +9,8 @@ use crate::skill::SkillConfig;
 pub struct CharacterConfigFile {
     name: String,
     active: bool,
-    base_speed: u64,
-    base_size: u64,
+    base_speed: f32,
+    base_size: f32,
     base_health: u64,
     max_inventory_size: u64,
     skills: HashMap<String, String>,
@@ -20,8 +20,8 @@ pub struct CharacterConfigFile {
 pub struct CharacterConfig {
     pub name: String,
     pub active: bool,
-    pub base_speed: u64,
-    pub base_size: u64,
+    pub base_speed: f32,
+    pub base_size: f32,
     pub base_health: u64,
     pub max_inventory_size: u64,
     pub skills: HashMap<String, SkillConfig>,

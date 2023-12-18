@@ -28,7 +28,7 @@ pub enum SkillMechanicConfigFile {
     },
     Hit {
         damage: u64,
-        range: u64,
+        range: f32,
         cone_angle: u64,
         on_hit_effects: Vec<String>,
     },
@@ -42,7 +42,7 @@ pub enum SkillMechanicConfigFile {
     },
     MoveToTarget {
         duration_ms: u64,
-        max_range: u64,
+        max_range: f32,
     },
 }
 
@@ -53,7 +53,7 @@ pub enum SkillMechanic {
     },
     Hit {
         damage: u64,
-        range: u64,
+        range: f32,
         cone_angle: u64,
         on_hit_effects: Vec<Effect>,
     },
@@ -67,7 +67,7 @@ pub enum SkillMechanic {
     },
     MoveToTarget {
         duration_ms: u64,
-        max_range: u64,
+        max_range: f32,
     },
 }
 

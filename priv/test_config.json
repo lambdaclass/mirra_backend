@@ -119,13 +119,13 @@
   "loots": [
     {
       "name": "loot_health",
-      "size": 50,
+      "size": 50.0,
       "pickup_mechanic": "CollisionUse",
       "effects": ["heal_30"]
     },
     {
       "name": "loot_health_inventory",
-      "size": 50,
+      "size": 50.0,
       "pickup_mechanic": "CollisionToInventory",
       "effects": ["heal_30"]
     }
@@ -134,22 +134,22 @@
     {
       "name": "projectile_slingshot",
       "base_damage": 8,
-      "base_speed": 40,
-      "base_size": 20,
+      "base_speed": 40.0,
+      "base_size": 20.0,
       "remove_on_collision": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
-      "max_distance": 999999
+      "max_distance": 999999.0
     },
     {
       "name": "projectile_poison_dart",
       "base_damage": 0,
-      "base_speed": 60,
-      "base_size": 10,
+      "base_speed": 60.0,
+      "base_size": 10.0,
       "remove_on_collision": false,
       "on_hit_effects": ["poison"],
       "duration_ms": 999999,
-      "max_distance": 500
+      "max_distance": 500.0
     }
   ],
   "skills": [
@@ -190,7 +190,7 @@
         {
           "Hit": {
             "damage": 14,
-            "range": 1000,
+            "range": 1000.0,
             "cone_angle": 120,
             "on_hit_effects": []
           }
@@ -206,7 +206,7 @@
         {
           "Hit": {
             "damage": 20,
-            "range": 500,
+            "range": 500.0,
             "cone_angle": 360,
             "on_hit_effects": []
           }
@@ -244,8 +244,8 @@
     {
       "name": "h4ck",
       "active": true,
-      "base_speed": 20,
-      "base_size": 80,
+      "base_speed": 20.0,
+      "base_size": 80.0,
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
@@ -257,8 +257,8 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 20,
-      "base_size": 100,
+      "base_speed": 20.0,
+      "base_size": 100.0,
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
@@ -268,9 +268,9 @@
     }
   ],
   "game": {
-    "width": 10000,
-    "height": 10000,
-    "zone_starting_radius": 14000,
+    "width": 10000.0,
+    "height": 10000.0,
+    "zone_starting_radius": 14000.0,
     "zone_modifications": [
       {
         "duration_ms": 30000,
@@ -279,8 +279,8 @@
           "value": 0
         },
         "interval_ms": 500,
-        "min_radius": 6000,
-        "max_radius": 10000,
+        "min_radius": 6000.0,
+        "max_radius": 10000.0,
         "outside_radius_effects": ["damage_outside_area"]
       },
       {
@@ -290,8 +290,8 @@
           "value": -45
         },
         "interval_ms": 100,
-        "min_radius": 3000,
-        "max_radius": 10000,
+        "min_radius": 3000.0,
+        "max_radius": 10000.0,
         "outside_radius_effects": ["damage_outside_area"]
       },
       {
@@ -301,27 +301,27 @@
           "value": -45
         },
         "interval_ms": 100,
-        "min_radius": 100,
-        "max_radius": 10000,
+        "min_radius": 100.0,
+        "max_radius": 10000.0,
         "outside_radius_effects": [
           "damage_outside_area"
         ]
       }
     ],
     "loot_interval_ms": 7000,
-    "auto_aim_max_distance": 1000,
+    "auto_aim_max_distance": 1000.0,
     "initial_positions": [
       {
-        "x": -4500,
-        "y": 1500
+        "x": -4500.0,
+        "y": 1500.0
       },
       {
-        "x": 3000,
-        "y": 4000
+        "x": 3000.0,
+        "y": 4000.0
       },
       {
-        "x": -4500,
-        "y": -1500
+        "x": -4500.0,
+        "y": -1500.0
       }
     ]
   }

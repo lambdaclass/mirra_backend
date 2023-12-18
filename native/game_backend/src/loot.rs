@@ -9,7 +9,7 @@ use crate::map::{self, Position};
 #[derive(Deserialize, NifMap)]
 pub struct LootFileConfig {
     name: String,
-    size: u64,
+    size: f32,
     pickup_mechanic: PickupMechanic,
     effects: Vec<String>,
 }
@@ -17,7 +17,7 @@ pub struct LootFileConfig {
 #[derive(NifMap)]
 pub struct LootConfig {
     name: String,
-    size: u64,
+    size: f32,
     pickup_mechanic: PickupMechanic,
     effects: Vec<Effect>,
 }
@@ -25,7 +25,7 @@ pub struct LootConfig {
 #[derive(NifMap, Clone)]
 pub struct Loot {
     pub name: String,
-    pub size: u64,
+    pub size: f32,
     pub pickup_mechanic: PickupMechanic,
     pub effects: Vec<Effect>,
     pub id: u64,

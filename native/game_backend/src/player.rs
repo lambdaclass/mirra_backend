@@ -28,8 +28,8 @@ pub struct Player {
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<(Effect, EntityOwner)>,
-    pub size: u64,
-    pub speed: u64,
+    pub size: f32,
+    pub speed: f32,
     pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<ActionTracker>,
@@ -82,18 +82,14 @@ impl Player {
 
     pub fn move_position(&mut self, angle_degrees: f32, config: &Config) {
         // A speed of 0 (or less) means the player can't move (e.g. paralyzed, frozen, etc)
-        if self.speed == 0 {
+        if self.speed < 0.0 {
             return;
         }
 
         self.add_action(Action::Moving, 0);
         self.direction = angle_degrees;
-        self.position = map::next_position(
-            &self.position,
-            angle_degrees,
-            self.speed as f32,
-            config.game.width as f32,
-        );
+        self.position =
+            map::next_position(&self.position, angle_degrees, self.speed, config.game.width);
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
@@ -172,14 +168,18 @@ impl Player {
                     .iter()
                     .fold(self, |player, change| {
                         match change.attribute.as_str() {
-                            "speed" => {
-                                modify_attribute(&mut player.speed, &change.modifier, &change.value)
-                            }
-                            "size" => {
-                                modify_attribute(&mut player.size, &change.modifier, &change.value)
-                            }
+                            "speed" => modify_attribute_f32(
+                                &mut player.speed,
+                                &change.modifier,
+                                &change.value,
+                            ),
+                            "size" => modify_attribute_f32(
+                                &mut player.size,
+                                &change.modifier,
+                                &change.value,
+                            ),
                             "health" => {
-                                modify_attribute(
+                                modify_attribute_u64(
                                     &mut player.health,
                                     &change.modifier,
                                     &change.value,
@@ -206,11 +206,13 @@ impl Player {
                 effect.player_attributes.iter().for_each(|change| {
                     match change.attribute.as_str() {
                         "health" => {
-                            revert_attribute(&mut self.health, &change.modifier, &change.value)
+                            revert_attribute_u64(&mut self.health, &change.modifier, &change.value)
                         }
-                        "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
+                        "size" => {
+                            revert_attribute_f32(&mut self.size, &change.modifier, &change.value)
+                        }
                         "speed" => {
-                            revert_attribute(&mut self.speed, &change.modifier, &change.value)
+                            revert_attribute_f32(&mut self.speed, &change.modifier, &change.value)
                         }
                         _ => todo!(),
                     };
@@ -248,9 +250,13 @@ impl Player {
 
             effect.player_attributes.iter().for_each(|change| {
                 match change.attribute.as_str() {
-                    "health" => revert_attribute(&mut self.health, &change.modifier, &change.value),
-                    "size" => revert_attribute(&mut self.size, &change.modifier, &change.value),
-                    "speed" => revert_attribute(&mut self.speed, &change.modifier, &change.value),
+                    "health" => {
+                        revert_attribute_u64(&mut self.health, &change.modifier, &change.value)
+                    }
+                    "size" => revert_attribute_f32(&mut self.size, &change.modifier, &change.value),
+                    "speed" => {
+                        revert_attribute_f32(&mut self.speed, &change.modifier, &change.value)
+                    }
                     _ => todo!(),
                 };
             });
@@ -350,7 +356,7 @@ fn update_status(player: &mut Player) {
     }
 }
 
-fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
+fn modify_attribute_u64(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
     match modifier {
         AttributeModifier::Additive => {
             *attribute_value =
@@ -363,7 +369,7 @@ fn modify_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
     }
 }
 
-fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
+fn revert_attribute_u64(attribute_value: &mut u64, modifier: &AttributeModifier, value: &str) {
     match modifier {
         AttributeModifier::Additive => {
             *attribute_value =
@@ -372,6 +378,23 @@ fn revert_attribute(attribute_value: &mut u64, modifier: &AttributeModifier, val
         AttributeModifier::Multiplicative => {
             *attribute_value = ((*attribute_value as f64) / value.parse::<f64>().unwrap()) as u64
         }
+        // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
+        _ => todo!(),
+    }
+}
+
+fn modify_attribute_f32(attribute_value: &mut f32, modifier: &AttributeModifier, value: &str) {
+    match modifier {
+        AttributeModifier::Additive => *attribute_value += value.parse::<i64>().unwrap() as f32,
+        AttributeModifier::Multiplicative => *attribute_value *= value.parse::<f32>().unwrap(),
+        AttributeModifier::Override => *attribute_value = value.parse::<u64>().unwrap() as f32,
+    }
+}
+
+fn revert_attribute_f32(attribute_value: &mut f32, modifier: &AttributeModifier, value: &str) {
+    match modifier {
+        AttributeModifier::Additive => *attribute_value -= value.parse::<i64>().unwrap() as f32,
+        AttributeModifier::Multiplicative => *attribute_value /= value.parse::<f32>().unwrap(),
         // We are not handling the possibility to revert an Override effect because we are not storing the previous value.
         _ => todo!(),
     }

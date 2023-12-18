@@ -7,11 +7,11 @@ use crate::{effect::Effect, map::Position};
 pub struct ProjectileConfigFile {
     name: String,
     base_damage: u64,
-    base_speed: u64,
-    base_size: u64,
+    base_speed: f32,
+    base_size: f32,
     on_hit_effects: Vec<String>,
     duration_ms: u64,
-    max_distance: u64,
+    max_distance: f32,
     remove_on_collision: bool,
 }
 
@@ -19,11 +19,11 @@ pub struct ProjectileConfigFile {
 pub struct ProjectileConfig {
     pub name: String,
     base_damage: u64,
-    base_speed: u64,
-    base_size: u64,
+    base_speed: f32,
+    base_size: f32,
     on_hit_effects: Vec<Effect>,
     duration_ms: u64,
-    max_distance: u64,
+    max_distance: f32,
     remove_on_collision: bool,
 }
 
@@ -31,11 +31,11 @@ pub struct ProjectileConfig {
 pub struct Projectile {
     pub name: String,
     pub damage: u64,
-    pub speed: u64,
-    pub size: u64,
+    pub speed: f32,
+    pub size: f32,
     pub on_hit_effects: Vec<Effect>,
     pub duration_ms: u64,
-    pub max_distance: u64,
+    pub max_distance: f32,
     pub id: u64,
     pub position: Position,
     pub direction_angle: f32,
