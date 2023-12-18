@@ -67,7 +67,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     Process.flag(:priority, priority)
 
-    game_config = Utils.Config.read_config_and_parse()
+    game_config = Utils.Config.get_config()
 
     Process.send_after(self(), :game_timeout, @game_timeout_ms)
     Process.send_after(self(), :start_game_tick, @game_tick_start)

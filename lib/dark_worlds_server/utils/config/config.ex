@@ -137,7 +137,7 @@ defmodule Utils.Config do
     end)
   end
 
-  def read_config_backend() do
+  def get_config() do
     # May need to add time_since_last_trigger to time_type
     effects_config = Characters.get_effects() |> Enum.map(&Effect.to_backend_map/1)
 
