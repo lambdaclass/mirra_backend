@@ -343,7 +343,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       death_count: 0,
       action: transform_action_to_game_action(player.action),
       direction: transform_angle_to_game_relative_position(player.direction),
-      aoe_position: %GameBackend.Position{x: 0, y: 0}
+      aoe_position: %GameBackend.Position{x: 0, y: 0},
+      available_burst_loads: player.available_burst_loads
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end

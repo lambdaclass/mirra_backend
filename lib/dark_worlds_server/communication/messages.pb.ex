@@ -542,6 +542,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:available_burst_loads, 18, type: :uint64, json_name: "availableBurstLoads")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

@@ -81,7 +81,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      available_burst_loads: available_burst_loads
     } = player
 
     %ProtoPlayer{
@@ -101,7 +102,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      available_burst_loads: available_burst_loads
     }
   end
 
@@ -310,7 +312,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      available_burst_loads: available_burst_loads
     } = player
 
     %GamePlayer{
@@ -330,7 +333,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      available_burst_loads: available_burst_loads
     }
   end
 

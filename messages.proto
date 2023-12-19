@@ -209,6 +209,7 @@ message OldPlayer {
     map<uint64, OldEffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
+    uint64 available_burst_loads = 18;
 }
 
 message OldActionTracker {

@@ -56,7 +56,8 @@ defmodule GameBackend do
       :character_name,
       :effects,
       :direction,
-      :body_size
+      :body_size,
+      :available_burst_loads
     ]
   end
 
