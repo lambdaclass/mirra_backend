@@ -378,7 +378,8 @@ impl Player {
         !self
             .action
             .iter()
-            .any(|action_tracker| action_tracker.action != Action::Moving) && self.skill_moving_params.is_none()
+            .any(|action_tracker| action_tracker.action != Action::Moving)
+            && self.skill_moving_params.is_none()
     }
 
     pub fn is_targetable(&self) -> bool {
