@@ -107,8 +107,8 @@
       "effect_time_type": {
         "Periodic": {
           "instant_applicaiton": true,
-          "interval_ms": 130,
-          "trigger_count": 10
+          "interval_ms": 100,
+          "trigger_count": 18
         }
       },
       "player_attributes": [],
@@ -246,14 +246,17 @@
       ]
     },
     {
-      "name": "single_slingshot",
+      "name": "random_shot",
       "cooldown_ms": 800,
       "execution_duration_ms": 250,
       "is_passive": false,
       "mechanics": [
         {
-          "SimpleShoot": {
-            "projectile": "projectile_slingshot"
+          "MultiShoot": {
+            "projectile": "projectile_slingshot",
+            "count": 1,
+            "cone_angle": 90,
+            "distribution": "Randomly"
           }
         }
       ]
@@ -271,7 +274,7 @@
         "1": "slingshot",
         "2": "denial_of_service",
         "3": "poison_dart",
-        "4": "single_slingshot"
+        "4": "random_shot"
       }
     },
     {
