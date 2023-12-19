@@ -10,8 +10,7 @@
 - `effects`: List of effects affecting the player
 - `position`: Current position
 - `direction`: angle where the player is facing
-- `actions`: Actions taken by the player since the last world tick
-- `action_duration_ms`: Time in milliseconds remaining before a player can do another action, usually only skills add to this value (e.g. moving is free)
+- `actions`: List of action taken by the player with their remaining duration
 - `inventory`: List of loots that the player is holding and can activate
 
 ## Changeable attributes

@@ -44,13 +44,19 @@ message Player {
     PlayerStatus status = 7;
     uint64 kill_count = 8;
     uint64 death_count = 9;
-    repeated PlayerAction actions = 10;
+    repeated ActionTracker action = 10;
     uint64 action_duration_ms = 11;
     repeated SkillCooldown cooldowns = 12;
     repeated Item inventory = 13;
     repeated EffectInfo effects = 14;
     string character_name = 15;
 }
+
+message ActionTracker {
+    PlayerAction player_action = 1;
+    uint64 duration = 2;
+}
+
 
 message PlayerAction {
     PlayerActionEnum action = 1;
@@ -190,7 +196,7 @@ message OldPlayer {
     sint64 health = 2;
     OldPosition position = 3;
     OldStatus status = 4;
-    repeated OldPlayerAction action = 5;
+    repeated OldActionTracker action = 5;
     OldPosition aoe_position = 6;
     uint64 kill_count = 7;
     uint64 death_count = 8;
@@ -203,7 +209,11 @@ message OldPlayer {
     map<uint64, OldEffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
-    uint64 action_duration_ms = 18;
+}
+
+message OldActionTracker {
+    OldPlayerAction player_action = 1;
+    uint64 duration = 2;
 }
 
 message OldEffectInfo {
