@@ -542,6 +542,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:inventory, 18, repeated: true, type: DarkWorldsServer.Communication.Proto.GameLoot)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
