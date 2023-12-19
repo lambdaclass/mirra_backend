@@ -24,16 +24,15 @@ pub struct Player {
     pub death_count: u64,
     pub position: Position,
     pub direction: f32,
-    pub actions: Vec<Action>,
+    pub action: Vec<ActionTracker>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<(Effect, EntityOwner)>,
     pub size: u64,
     pub speed: u64,
-    pub action_duration_ms: u64,
     pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
-    next_actions: Vec<Action>,
+    next_actions: Vec<ActionTracker>,
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
@@ -42,11 +41,17 @@ pub enum PlayerStatus {
     Death,
 }
 
-#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq, Debug)]
 pub enum Action {
     Nothing,
     Moving,
     UsingSkill(String),
+}
+
+#[derive(NifMap, Clone, Debug)]
+pub struct ActionTracker {
+    pub action: Action,
+    pub duration: u64,
 }
 
 impl Player {
@@ -58,7 +63,7 @@ impl Player {
             death_count: 0,
             position: initial_position,
             direction: 0.0,
-            actions: Vec::new(),
+            action: Vec::new(),
             cooldowns: HashMap::new(),
             effects: Vec::new(),
             health: character_config.base_health,
@@ -66,7 +71,6 @@ impl Player {
             size: character_config.base_size,
             inventory: vec![None; character_config.max_inventory_size as usize],
             character: character_config,
-            action_duration_ms: 0,
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
         }
@@ -93,22 +97,26 @@ impl Player {
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
-        if !self.actions.contains(&action) {
-            self.next_actions.push(action);
-            self.action_duration_ms += duration_ms;
+        if !self
+            .action
+            .iter()
+            .any(|action_tracker| action_tracker.action == action)
+        {
+            self.next_actions.push(ActionTracker {
+                action,
+                duration: duration_ms,
+            });
         }
     }
 
-    pub fn update_actions(&mut self) {
-        if !self.is_executing_action() {
-            self.next_actions
-                .retain(|action| matches!(action, Action::Moving));
-        }
-        self.actions = self.next_actions.clone();
-    }
+    pub fn update_actions(&mut self, elapsed_time_ms: u64) {
+        self.action = self.next_actions.clone();
+        self.next_actions.iter_mut().for_each(|action_tracker| {
+            action_tracker.duration = action_tracker.duration.saturating_sub(elapsed_time_ms);
+        });
 
-    fn is_executing_action(&mut self) -> bool {
-        self.action_duration_ms != 0
+        self.next_actions
+            .retain(|action_tracker| action_tracker.duration > 0);
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
@@ -326,6 +334,13 @@ impl Player {
 
     pub fn inventory_take_at(&mut self, inventory_at: usize) -> Option<Loot> {
         self.inventory[inventory_at].take()
+    }
+
+    pub fn can_do_action(&self) -> bool {
+        !self
+            .action
+            .iter()
+            .any(|action_tracker| action_tracker.action != Action::Moving)
     }
 }
 
