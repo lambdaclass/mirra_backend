@@ -181,7 +181,8 @@
           "MultiShoot": {
             "projectile": "projectile_slingshot",
             "count": 3,
-            "cone_angle": 40
+            "cone_angle": 40,
+            "distribution": "Evenly"
           }
         }
       ]

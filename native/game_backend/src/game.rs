@@ -305,6 +305,7 @@ impl GameState {
                             projectile: projectile_config,
                             count,
                             cone_angle,
+                            distribution: _,
                         } => {
                             let direction_distribution =
                                 distribute_angle(direction_angle, cone_angle, count);

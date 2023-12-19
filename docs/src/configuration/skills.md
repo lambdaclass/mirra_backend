@@ -25,6 +25,9 @@ These are the mechanics so far. Every mechanic will add a configuration field wi
   * `projectile`: Projectile to shoot
   * `count`: How many projectiles will be shot
   * `cone_angle`: Defines how wide is the angle to spread the projectiles on, see [Explaining cone_angle](#explaining-cone_angle)
+  * `distribution`: Defines how the projectiles are distributed in the `cone_angle`
+    - `Evenly`: Projectiles are distributed evenly
+    - `Randomly`: Projectiles are distributed randomly
 - `MoveToTarget`: Player will be moved to target position
   * `duration_ms`: How long it takes to move the player, 0 means instantly
   * `max_range`: Maximum distance allowed to move, if target is beyond this limit movement will be capped to this point

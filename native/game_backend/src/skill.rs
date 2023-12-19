@@ -39,6 +39,7 @@ pub enum SkillMechanicConfigFile {
         projectile: String,
         count: u64,
         cone_angle: u64,
+        distribution: MultiShootDistribution,
     },
     MoveToTarget {
         duration_ms: u64,
@@ -64,11 +65,18 @@ pub enum SkillMechanic {
         projectile: ProjectileConfig,
         count: u64,
         cone_angle: u64,
+        distribution: MultiShootDistribution,
     },
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
     },
+}
+
+#[derive(Deserialize, NifTaggedEnum, Clone)]
+pub enum MultiShootDistribution {
+    Evenly,
+    Randomly,
 }
 
 impl SkillConfig {
@@ -152,6 +160,7 @@ impl SkillMechanic {
                     projectile,
                     count,
                     cone_angle,
+                    distribution,
                 } => {
                     let projectile = projectiles
                         .iter()
@@ -167,6 +176,7 @@ impl SkillMechanic {
                         projectile: projectile.clone(),
                         count,
                         cone_angle,
+                        distribution,
                     }
                 }
                 SkillMechanicConfigFile::MoveToTarget {
