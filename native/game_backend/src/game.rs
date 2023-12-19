@@ -94,7 +94,7 @@ pub struct KillEvent {
     pub kill_by: EntityOwner,
     pub killed: u64,
 }
-#[derive(Clone, NifTuple, Debug)]
+#[derive(Clone, NifTuple)]
 pub struct DamageTracker {
     pub damage: i64,
     pub attacker: EntityOwner,
@@ -188,7 +188,7 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if !player.can_move() {
+            if !player.can_do_action() {
                 return;
             }
 
@@ -303,7 +303,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if !player.can_activate() {
+            if !player.can_do_action() {
                 return;
             }
 
@@ -396,7 +396,7 @@ impl GameState {
                                 })
                         }
                         SkillMechanic::MoveToTarget {
-                            duration_ms,
+                            duration_ms: _,
                             max_range,
                             on_arrival_skills,
                         } => {
@@ -422,7 +422,7 @@ impl GameState {
 
     pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
         if let Some(player) = self.players.get_mut(&player_id) {
-            if !player.can_activate() {
+            if !player.can_do_action() {
                 return;
             }
 
@@ -467,7 +467,7 @@ fn apply_damages_and_effects(
     while let Some(damage_tracker) = pending_damages.pop() {
         if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
             if victim.status != PlayerStatus::Death {
-                victim.decrease_health(damage_tracker.damage.abs() as u64);
+                victim.decrease_health(damage_tracker.damage.unsigned_abs());
                 victim.apply_effects(&damage_tracker.on_hit_effects, damage_tracker.attacker);
                 if victim.status == PlayerStatus::Death {
                     next_killfeed.push(KillEvent {
@@ -505,7 +505,7 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 }
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
-    if player.is_targetable() {
+    if !player.is_targetable() {
         return;
     }
 
@@ -678,9 +678,8 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                     }
                 };
 
-                zone.radius = new_radius
-                    .max(zone_modification.min_radius)
-                    .min(zone_modification.max_radius);
+                zone.radius =
+                    new_radius.clamp(zone_modification.min_radius, zone_modification.max_radius);
             }
         }
         _ => {

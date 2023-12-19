@@ -25,7 +25,7 @@ pub struct Player {
     pub death_count: u64,
     pub position: Position,
     pub direction: f32,
-    pub actions: Vec<ActionTracker>,
+    pub action: Vec<ActionTracker>,
     pub health: u64,
     pub cooldowns: HashMap<String, u64>,
     pub effects: Vec<(Effect, EntityOwner)>,
@@ -38,13 +38,13 @@ pub struct Player {
     skill_moving_params: Option<SkillMovingParams>,
 }
 
-#[derive(NifTaggedEnum, Clone, PartialEq)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
 pub enum PlayerStatus {
     Alive,
     Death,
 }
 
-#[derive(NifTaggedEnum, Clone, Debug)]
+#[derive(NifTaggedEnum, Clone, PartialEq, Eq, Debug)]
 pub enum Action {
     Nothing,
     Moving,
@@ -52,9 +52,9 @@ pub enum Action {
 }
 
 #[derive(NifMap, Clone, Debug)]
-pub struct ActionTracker{
+pub struct ActionTracker {
     pub action: Action,
-    pub duration: u64
+    pub duration: u64,
 }
 
 impl Player {
@@ -66,7 +66,7 @@ impl Player {
             death_count: 0,
             position: initial_position,
             direction: 0.0,
-            actions: Vec::new(),
+            action: Vec::new(),
             cooldowns: HashMap::new(),
             effects: Vec::new(),
             health: character_config.base_health,
@@ -123,18 +123,26 @@ impl Player {
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
-        self.next_actions.push(ActionTracker{action, duration: duration_ms});
+        if !self
+            .action
+            .iter()
+            .any(|action_tracker| action_tracker.action == action)
+        {
+            self.next_actions.push(ActionTracker {
+                action,
+                duration: duration_ms,
+            });
+        }
     }
 
     pub fn update_actions(&mut self, elapsed_time_ms: u64) {
-        if let Some (action_tracker) = self.next_actions.first_mut(){
-                action_tracker.duration = action_tracker.duration.saturating_sub(elapsed_time_ms);
+        self.action = self.next_actions.clone();
+        self.next_actions.iter_mut().for_each(|action_tracker| {
+            action_tracker.duration = action_tracker.duration.saturating_sub(elapsed_time_ms);
+        });
 
-                if action_tracker.duration == 0 {
-                    self.next_actions.remove(0);
-                }
-        }
-        self.actions = self.next_actions.clone();
+        self.next_actions
+            .retain(|action_tracker| action_tracker.duration > 0);
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
@@ -197,7 +205,6 @@ impl Player {
                                 modify_attribute(&mut player.size, &change.modifier, &change.value)
                             }
                             "health" => {
-                                println!("apply");
                                 modify_attribute(
                                     &mut player.health,
                                     &change.modifier,
@@ -376,12 +383,12 @@ impl Player {
         self.skill_moving_params = Some(moving_params);
     }
 
-    pub fn can_move(&self) -> bool {
-        self.actions.first().is_none() && self.skill_moving_params.is_none()
-    }
-
-    pub fn can_activate(&self) -> bool {
-        self.actions.first().is_none() && self.skill_moving_params.is_none()
+    pub fn can_do_action(&self) -> bool {
+        !self
+            .action
+            .iter()
+            .any(|action_tracker| action_tracker.action != Action::Moving)
+            && self.skill_moving_params.is_none()
     }
 
     pub fn is_targetable(&self) -> bool {
