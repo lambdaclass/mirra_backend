@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use rand::Rng;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
@@ -16,6 +17,7 @@ use crate::player::Action;
 use crate::player::Player;
 use crate::player::PlayerStatus;
 use crate::projectile::Projectile;
+use crate::skill::MultiShootDistribution;
 use crate::skill::SkillMechanic;
 
 #[derive(Clone, Copy, Debug, Deserialize, NifTaggedEnum)]
@@ -221,6 +223,30 @@ impl GameState {
                                 );
                                 self.projectiles.push(projectile);
                             }
+                            SkillMechanic::MultiShoot {
+                                projectile: projectile_config,
+                                count,
+                                cone_angle,
+                                distribution,
+                            } => {
+                                let direction_distribution = distribute_angle(
+                                    distribution,
+                                    player.direction,
+                                    cone_angle,
+                                    count,
+                                );
+                                for direction in direction_distribution {
+                                    let id = get_next_id(&mut self.next_id);
+                                    let projectile = Projectile::new(
+                                        id,
+                                        player.position,
+                                        direction,
+                                        player.id,
+                                        projectile_config,
+                                    );
+                                    self.projectiles.push(projectile);
+                                }
+                            }
                             _ => todo!("SkillMechanic not implemented"),
                         }
                     }
@@ -305,10 +331,10 @@ impl GameState {
                             projectile: projectile_config,
                             count,
                             cone_angle,
-                            distribution: _,
+                            distribution,
                         } => {
                             let direction_distribution =
-                                distribute_angle(direction_angle, cone_angle, count);
+                                distribute_angle(distribution, direction_angle, cone_angle, count);
                             for direction in direction_distribution {
                                 let id = get_next_id(&mut self.next_id);
                                 let projectile = Projectile::new(
@@ -463,7 +489,23 @@ fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
     });
 }
 
-fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<f32> {
+fn distribute_angle(
+    distribution: &MultiShootDistribution,
+    direction_angle: f32,
+    cone_angle: &u64,
+    count: &u64,
+) -> Vec<f32> {
+    match distribution {
+        MultiShootDistribution::Evenly => {
+            distribute_angle_evenly(direction_angle, cone_angle, count)
+        }
+        MultiShootDistribution::Randomly => {
+            distribute_angle_randomly(direction_angle, cone_angle, count)
+        }
+    }
+}
+
+fn distribute_angle_evenly(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<f32> {
     let mut angles = Vec::new();
     let half_cone_angle = cone_angle / 2;
     let half_count = count / 2;
@@ -483,6 +525,21 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
     // Generate the bottom angles
     for i in 1..=half_count {
         let angle = direction_angle - (cone_angle_diff * i) as f32;
+        angles.push(angle);
+    }
+
+    angles
+}
+
+fn distribute_angle_randomly(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<f32> {
+    let mut angles = Vec::new();
+    let half_cone_angle = (*cone_angle as f32) / 2.0;
+    let max_angle = direction_angle + half_cone_angle;
+    let min_angle = direction_angle - half_cone_angle;
+    let mut rand = rand::thread_rng();
+
+    for _ in 1..=(*count) {
+        let angle = rand.gen_range(min_angle..max_angle);
         angles.push(angle);
     }
 
