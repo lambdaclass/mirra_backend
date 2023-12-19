@@ -97,7 +97,11 @@ impl Player {
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
-        if !self.action.iter().any(|action_tracker| action_tracker.action == action) {
+        if !self
+            .action
+            .iter()
+            .any(|action_tracker| action_tracker.action == action)
+        {
             self.next_actions.push(ActionTracker {
                 action,
                 duration: duration_ms,
@@ -107,13 +111,12 @@ impl Player {
 
     pub fn update_actions(&mut self, elapsed_time_ms: u64) {
         self.action = self.next_actions.clone();
-        self.next_actions
-        .iter_mut()
-        .for_each(|action_tracker| {
+        self.next_actions.iter_mut().for_each(|action_tracker| {
             action_tracker.duration = action_tracker.duration.saturating_sub(elapsed_time_ms);
         });
-        
-        self.next_actions.retain(|action_tracker| action_tracker.duration > 0);
+
+        self.next_actions
+            .retain(|action_tracker| action_tracker.duration > 0);
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
@@ -334,9 +337,10 @@ impl Player {
     }
 
     pub fn can_do_action(&self) -> bool {
-        !self.action.iter().any(|action_tracker|{
-            action_tracker.action != Action::Moving
-        })
+        !self
+            .action
+            .iter()
+            .any(|action_tracker| action_tracker.action != Action::Moving)
     }
 }
 
