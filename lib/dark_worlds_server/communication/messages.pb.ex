@@ -1014,6 +1014,8 @@ defmodule DarkWorldsServer.Communication.Proto.GameCharacter do
     map: true
   )
 
+  field(:burst_loads, 7, type: :uint64, json_name: "burstLoads")
+
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
@@ -1026,7 +1028,6 @@ defmodule DarkWorldsServer.Communication.Proto.GameSkill do
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:is_passive, 3, type: :bool, json_name: "isPassive")
   field(:mechanics, 4, repeated: true, type: DarkWorldsServer.Communication.Proto.Mechanic)
-  field(:burst_loads, 5, type: :uint64, json_name: "burstLoads")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
