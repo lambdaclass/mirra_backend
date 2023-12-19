@@ -338,7 +338,7 @@ impl Player {
 
     pub fn can_do_action(&self) -> bool {
         !self
-            .action
+            .next_actions
             .iter()
             .any(|action_tracker| action_tracker.action != Action::Moving)
     }
