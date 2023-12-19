@@ -187,7 +187,7 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if !player.can_move() {
+            if !player.can_do_action() {
                 return;
             }
 
@@ -288,7 +288,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if !player.can_activate() {
+            if !player.can_do_action() {
                 return;
             }
 
@@ -407,7 +407,7 @@ impl GameState {
 
     pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
         if let Some(player) = self.players.get_mut(&player_id) {
-            if !player.can_activate() {
+            if !player.can_do_action() {
                 return;
             }
 
