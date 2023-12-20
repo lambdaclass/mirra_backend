@@ -163,7 +163,7 @@ impl Player {
         // Apply the effect
         match effect.effect_time_type {
             TimeType::Periodic {
-                instant_applicaiton: false,
+                instant_application: false,
                 ..
             } => (),
             _ => {
