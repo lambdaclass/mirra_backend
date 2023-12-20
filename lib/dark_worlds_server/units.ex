@@ -2,6 +2,7 @@ defmodule DarkWorldsServer.Units do
   alias DarkWorldsServer.Repo
   alias DarkWorldsServer.Units.Unit
   alias DarkWorldsServer.Units.UserUnit
+  alias Ecto.Multi
   import Ecto.Query
 
   #########
@@ -9,15 +10,10 @@ defmodule DarkWorldsServer.Units do
   #########
 
   def insert_unit(%{user_id: user_id} = attrs) do
-    case %Unit{}
-         |> Unit.changeset(attrs)
-         |> Repo.insert() do
-      {:ok, unit} ->
-        insert_user_unit(%{unit_id: unit.id, user_id: user_id})
-
-      {:error, reason} ->
-        {:error, reason}
-    end
+    Multi.new()
+    |> Multi.insert(:unit, Unit.changeset(%Unit{}, attrs))
+    |> Multi.run(:user_unit, fn _repo, %{unit: unit} -> insert_user_unit(%{unit_id: unit.id, user_id: user_id}) end)
+    |> Repo.transaction()
   end
 
   def insert_unit(_attrs), do: {:error, :no_user_id}
@@ -37,6 +33,8 @@ defmodule DarkWorldsServer.Units do
           where: user_unit.user_id == ^user_id and user_unit.selected
         )
       )
+
+  def delete_unit(id), do: Repo.get(Unit, id) |> Repo.delete()
 
   def insert_user_unit(attrs), do: %UserUnit{} |> UserUnit.changeset(attrs) |> Repo.insert()
 
@@ -61,10 +59,15 @@ defmodule DarkWorldsServer.Units do
     do:
       from(unit in Unit,
         join: user_unit in UserUnit,
-        on: unit.id == user_unit.id,
+        on: unit.id == user_unit.unit_id,
         where: user_unit.unit_id == ^unit_id and user_unit.user_id == ^user_id
       )
 
   defp user_units_query(user_id),
-    do: from(unit in Unit, join: user_unit in UserUnit, on: unit.id == user_unit.id, where: user_unit.id == ^user_id)
+    do:
+      from(unit in Unit,
+        join: user_unit in UserUnit,
+        on: unit.id == user_unit.unit_id,
+        where: user_unit.user_id == ^user_id
+      )
 end
