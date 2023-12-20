@@ -25,14 +25,7 @@ defmodule DarkWorldsServer.Units do
   def get_units(user_id), do: Repo.all(user_units_query(user_id))
 
   def get_selected_units(user_id),
-    do:
-      Repo.all(
-        from(unit in Unit,
-          join: user_unit in UserUnit,
-          on: unit.id == user_unit.id,
-          where: user_unit.user_id == ^user_id and user_unit.selected
-        )
-      )
+    do: Repo.all(from(unit in user_units_query(user_id), where: unit.selected))
 
   def delete_unit(id), do: Repo.get(Unit, id) |> Repo.delete()
 
