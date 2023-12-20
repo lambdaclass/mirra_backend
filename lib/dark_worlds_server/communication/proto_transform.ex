@@ -81,8 +81,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size,
-      action_duration_ms: action_duration_ms
+      body_size: body_size
     } = player
 
     %ProtoPlayer{
@@ -102,8 +101,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size,
-      action_duration_ms: action_duration_ms
+      body_size: body_size
     }
   end
 
@@ -118,8 +116,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       status: player_status_encode(player.status),
       kill_count: player.kill_count,
       death_count: player.death_count,
-      actions: player.actions,
-      action_duration_ms: player.action_duration_ms,
+      action: player.action,
       cooldowns: player.cooldowns,
       effects: Enum.map(player.effects, fn {effect, _} -> effect end),
       character_name: player.character.name
@@ -193,14 +190,14 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
-  def encode({action_enum, action_skill_key}, PlayerAction) do
+  def encode(%{action: {action_enum, action_skill_key}}, PlayerAction) do
     %PlayerAction{
       action: player_action_enum_encode(action_enum),
       action_skill_key: action_skill_key
     }
   end
 
-  def encode(action_enum, PlayerAction) do
+  def encode(%{action: action_enum}, PlayerAction) do
     %PlayerAction{action: player_action_enum_encode(action_enum)}
   end
 
@@ -313,8 +310,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size,
-      action_duration_ms: action_duration_ms
+      body_size: body_size
     } = player
 
     %GamePlayer{
@@ -334,8 +330,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size,
-      action_duration_ms: action_duration_ms
+      body_size: body_size
     }
   end
 
@@ -398,49 +393,72 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   defp player_old_status_decode(:DEAD), do: :dead
 
   def player_action_encode([]), do: []
-  def player_action_encode([:attacking | tail]), do: [:ATTACKING | player_action_encode(tail)]
-  def player_action_encode([:nothing | tail]), do: player_action_encode(tail)
-  def player_action_encode([:attackingaoe | tail]), do: [:ATTACKING_AOE | player_action_encode(tail)]
 
-  def player_action_encode([:startingskill1 | tail]),
-    do: [:STARTING_SKILL_1 | player_action_encode(tail)]
+  def player_action_encode([%{action: :attacking, duration: duration} | tail]),
+    do: [%{player_action: :ATTACKING, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:startingskill2 | tail]),
-    do: [:STARTING_SKILL_2 | player_action_encode(tail)]
+  def player_action_encode([%{action: :nothing} | tail]), do: player_action_encode(tail)
 
-  def player_action_encode([:startingskill3 | tail]),
-    do: [:STARTING_SKILL_3 | player_action_encode(tail)]
+  def player_action_encode([%{action: :attackingaoe, duration: duration} | tail]),
+    do: [%{player_action: :ATTACKING_AOE, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:startingskill4 | tail]),
-    do: [:STARTING_SKILL_4 | player_action_encode(tail)]
+  def player_action_encode([%{action: :startingskill1, duration: duration} | tail]),
+    do: [%{player_action: :STARTING_SKILL_1, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:executingskill1 | tail]),
-    do: [:EXECUTING_SKILL_1 | player_action_encode(tail)]
+  def player_action_encode([%{action: :startingskill2, duration: duration} | tail]),
+    do: [%{player_action: :STARTING_SKILL_2, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:executingskill2 | tail]),
-    do: [:EXECUTING_SKILL_2 | player_action_encode(tail)]
+  def player_action_encode([%{action: :startingskill3, duration: duration} | tail]),
+    do: [%{player_action: :STARTING_SKILL_3, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:executingskill3 | tail]),
-    do: [:EXECUTING_SKILL_3 | player_action_encode(tail)]
+  def player_action_encode([%{action: :startingskill4, duration: duration} | tail]),
+    do: [%{player_action: :STARTING_SKILL_4, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:executingskill4 | tail]),
-    do: [:EXECUTING_SKILL_4 | player_action_encode(tail)]
+  def player_action_encode([%{action: :executingskill1, duration: duration} | tail]),
+    do: [%{player_action: :EXECUTING_SKILL_1, duration: duration} | player_action_encode(tail)]
 
-  def player_action_encode([:moving | tail]), do: [:MOVING | player_action_encode(tail)]
+  def player_action_encode([%{action: :executingskill2, duration: duration} | tail]),
+    do: [%{player_action: :EXECUTING_SKILL_2, duration: duration} | player_action_encode(tail)]
+
+  def player_action_encode([%{action: :executingskill3, duration: duration} | tail]),
+    do: [%{player_action: :EXECUTING_SKILL_3, duration: duration} | player_action_encode(tail)]
+
+  def player_action_encode([%{action: :executingskill4, duration: duration} | tail]),
+    do: [%{player_action: :EXECUTING_SKILL_4, duration: duration} | player_action_encode(tail)]
+
+  def player_action_encode([%{action: :moving, duration: duration} | tail]),
+    do: [%{player_action: :MOVING, duration: duration} | player_action_encode(tail)]
 
   defp player_action_decode([]), do: []
-  defp player_action_decode([:ATTACKING | tail]), do: [:attacking, player_action_decode(tail)]
-  defp player_action_decode([:NOTHING | tail]), do: player_action_decode(tail)
-  defp player_action_decode([:ATTACKING_AOE | tail]), do: [:attackingaoe, player_action_decode(tail)]
-  defp player_action_decode([:STARTING_SKILL_1 | tail]), do: [:startingskill1, player_action_decode(tail)]
-  defp player_action_decode([:STARTING_SKILL_2 | tail]), do: [:startingskill2, player_action_decode(tail)]
-  defp player_action_decode([:STARTING_SKILL_3 | tail]), do: [:startingskill3, player_action_decode(tail)]
-  defp player_action_decode([:STARTING_SKILL_4 | tail]), do: [:startingskill4, player_action_decode(tail)]
-  defp player_action_decode([:EXECUTING_SKILL_1 | tail]), do: [:executingskill1, player_action_decode(tail)]
-  defp player_action_decode([:EXECUTING_SKILL_2 | tail]), do: [:executingskill2, player_action_decode(tail)]
-  defp player_action_decode([:EXECUTING_SKILL_3 | tail]), do: [:executingskill3, player_action_decode(tail)]
-  defp player_action_decode([:EXECUTING_SKILL_4 | tail]), do: [:executingskill4, player_action_decode(tail)]
-  defp player_action_decode([:MOVING | tail]), do: [:moving, player_action_decode(tail)]
+  defp player_action_decode([%{player_action: :ATTACKING} | tail]), do: [:attacking, player_action_decode(tail)]
+  defp player_action_decode([%{player_action: :NOTHING} | tail]), do: player_action_decode(tail)
+  defp player_action_decode([%{player_action: :ATTACKING_AOE} | tail]), do: [:attackingaoe, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :STARTING_SKILL_1} | tail]),
+    do: [:startingskill1, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :STARTING_SKILL_2} | tail]),
+    do: [:startingskill2, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :STARTING_SKILL_3} | tail]),
+    do: [:startingskill3, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :STARTING_SKILL_4} | tail]),
+    do: [:startingskill4, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :EXECUTING_SKILL_1} | tail]),
+    do: [:executingskill1, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :EXECUTING_SKILL_2} | tail]),
+    do: [:executingskill2, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :EXECUTING_SKILL_3} | tail]),
+    do: [:executingskill3, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :EXECUTING_SKILL_4} | tail]),
+    do: [:executingskill4, player_action_decode(tail)]
+
+  defp player_action_decode([%{player_action: :MOVING} | tail]), do: [:moving, player_action_decode(tail)]
 
   defp projectile_encode(:bullet), do: :BULLET
   defp projectile_encode(:disarmingbullet), do: :DISARMING_BULLET
