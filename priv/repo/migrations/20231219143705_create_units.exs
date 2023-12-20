@@ -7,7 +7,7 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateUnits do
       add :selected, :boolean, default: :false
       add :position, :integer
 
-      add :character_id, references(:characters, on_delete: :delete_all), null: :false
+      add :character_id, references(:characters, on_delete: :nilify_all)
       timestamps()
     end
 

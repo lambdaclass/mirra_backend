@@ -8,6 +8,7 @@ defmodule DarkWorldsServer.Utils.Config do
   alias DarkWorldsServer.Config.Games.Game
   alias DarkWorldsServer.Config.Games.Loot
   alias DarkWorldsServer.Config.Games.ZoneModification
+  alias DarkWorldsServer.Units
 
   def read_and_parse() do
     {:ok, json_config} = Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
@@ -33,6 +34,9 @@ defmodule DarkWorldsServer.Utils.Config do
   Returns an {:ok, results} tuple where results is a map with :ok and :error keys, with integer values.
   """
   def clean_import() do
+    # We save the character names of the units so that we can re-map them to the same characters
+    units = prepare_units_map()
+
     delete_all()
 
     %{effects: effects, skills: skills, characters: characters, projectiles: projectiles, loots: loots, game: game} =
@@ -78,6 +82,8 @@ defmodule DarkWorldsServer.Utils.Config do
         {:error, _} -> false
         _other -> false
       end)
+
+    Enum.each(units, &restore_unit_character/1)
 
     {:ok, %{ok: ok, error: Enum.count(results) - ok}}
   end
@@ -138,6 +144,19 @@ defmodule DarkWorldsServer.Utils.Config do
       effect_id = Characters.get_effect_by_name(effect_name).id
       Games.insert_zone_modification_effect(%{zone_modification_id: zone_modification_id, effect_id: effect_id})
     end)
+  end
+
+  defp prepare_units_map(), do: Units.get_units() |> Enum.map(&{&1.id, &1.character.name})
+
+  defp restore_unit_character({unit_id, character_name}) do
+    character = Characters.get_character_by_name(character_name)
+
+    if is_nil(character) do
+      nil
+    else
+      new_character_id = character.id
+      Units.update_unit_character(unit_id, new_character_id)
+    end
   end
 
   @doc """

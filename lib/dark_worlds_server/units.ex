@@ -18,14 +18,17 @@ defmodule DarkWorldsServer.Units do
 
   def insert_unit(_attrs), do: {:error, :no_user_id}
 
-  def get_unit(id), do: Repo.get(Unit, id)
+  def update_unit_character(unit_id, character_id),
+    do: Repo.update_all(from(u in Unit, where: u.id == ^unit_id, update: [set: [character_id: ^character_id]]), [])
 
-  def get_units(), do: Repo.all(Unit)
+  def get_unit(id), do: Repo.get(Unit, id) |> Repo.preload([:character, :user])
 
-  def get_units(user_id), do: Repo.all(user_units_query(user_id))
+  def get_units(), do: Repo.all(Unit) |> Repo.preload([:character, :user])
+
+  def get_units(user_id), do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character])
 
   def get_selected_units(user_id),
-    do: Repo.all(from(unit in user_units_query(user_id), where: unit.selected))
+    do: Repo.all(from(unit in user_units_query(user_id), where: unit.selected)) |> Repo.preload([:character, :user])
 
   def delete_unit(id), do: Repo.get(Unit, id) |> Repo.delete()
 
