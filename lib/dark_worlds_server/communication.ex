@@ -22,12 +22,16 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
-  def lobby_player_added!(player_id, player_name, character_name) do
+  def lobby_player_added!(player_id, player_name, character_name, players) do
     player_info = %PlayerInformation{player_id: player_id, player_name: player_name, character_name: character_name}
+
+    players_info =
+      Enum.map(players, fn {id, _name} -> %PlayerInformation{player_id: id, player_name: player_name} end)
 
     %LobbyEvent{
       type: :PLAYER_ADDED,
-      added_player_info: player_info
+      added_player_info: player_info,
+      players_info: players_info
     }
     |> LobbyEvent.encode()
   end

@@ -16,7 +16,7 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
   def websocket_init(%{user_id: user_id}) do
     :ok = MatchingCoordinator.join(user_id)
     ## TODO: Remove this once the old lobby screen is removed
-    send(self(), {:player_added, 1, user_id, 1, [{1, user_id}]})
+    send(self(), {:player_added, 1, "player_name", "character_name", [{1, user_id}]})
     {:reply, {:binary, Communication.lobby_connected!(user_id, 1, "player_name")}, %{user_id: user_id}}
   end
 
@@ -26,8 +26,8 @@ defmodule DarkWorldsServerWeb.LobbyWebsocket do
   end
 
   @impl true
-  def websocket_info({:player_added, player_id, player_name, character_name}, state) do
-    {:reply, {:binary, Communication.lobby_player_added!(player_id, player_name, character_name)}, state}
+  def websocket_info({:player_added, player_id, player_name, character_name, players}, state) do
+    {:reply, {:binary, Communication.lobby_player_added!(player_id, player_name, character_name, players)}, state}
   end
 
   def websocket_info({:notify_players_amount, amount_of_players, capacity}, state) do
