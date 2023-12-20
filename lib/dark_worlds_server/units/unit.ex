@@ -7,7 +7,7 @@ defmodule DarkWorldsServer.Units.Unit do
   import Ecto.Changeset
 
   alias DarkWorldsServer.Config.Characters.Character
-  alias DarkWorldsServer.Units.User
+  alias DarkWorldsServer.Accounts.User
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

@@ -1,7 +1,6 @@
 defmodule DarkWorldsServer.Units do
   alias DarkWorldsServer.Repo
   alias DarkWorldsServer.Units.Unit
-  alias Ecto.Multi
   import Ecto.Query
 
   #########
