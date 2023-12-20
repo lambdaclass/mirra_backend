@@ -1,7 +1,6 @@
 defmodule DarkWorldsServer.Units do
   alias DarkWorldsServer.Repo
   alias DarkWorldsServer.Units.Unit
-  alias DarkWorldsServer.Units.UserUnit
   alias Ecto.Multi
   import Ecto.Query
 
@@ -9,14 +8,11 @@ defmodule DarkWorldsServer.Units do
   # Units #
   #########
 
-  def insert_unit(%{user_id: user_id} = attrs) do
-    Multi.new()
-    |> Multi.insert(:unit, Unit.changeset(%Unit{}, attrs))
-    |> Multi.run(:user_unit, fn _repo, %{unit: unit} -> insert_user_unit(%{unit_id: unit.id, user_id: user_id}) end)
-    |> Repo.transaction()
+  def insert_unit(attrs) do
+    %Unit{}
+    |> Unit.changeset(attrs)
+    |> Repo.insert()
   end
-
-  def insert_unit(_attrs), do: {:error, :no_user_id}
 
   def update_unit_character(unit_id, character_id),
     do: Repo.update_all(from(u in Unit, where: u.id == ^unit_id, update: [set: [character_id: ^character_id]]), [])
@@ -28,22 +24,29 @@ defmodule DarkWorldsServer.Units do
   def get_units(user_id), do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character])
 
   def get_selected_units(user_id),
-    do: Repo.all(from(unit in user_units_query(user_id), where: unit.selected)) |> Repo.preload([:character, :user])
+    do: from(unit in user_units_query(user_id), where: unit.selected) |> Repo.all() |> Repo.preload([:character, :user])
 
   def delete_unit(id), do: Repo.get(Unit, id) |> Repo.delete()
 
-  def insert_user_unit(attrs), do: %UserUnit{} |> UserUnit.changeset(attrs) |> Repo.insert()
-
-  def unit_belongs_to_user(unit_id, user_id), do: Repo.exists?(user_unit_query(unit_id, user_id))
+  def unit_belongs_to_user(unit_id, user_id), do: user_unit_query(unit_id, user_id) |> Repo.exists?()
 
   def add_user_selected_unit(unit_id, user_id) do
-    Repo.one(user_unit_query(unit_id, user_id))
-    |> Unit.changeset(%{selected: true})
-    |> Repo.update()
+    case user_unit_query(unit_id, user_id) |> Repo.one() do
+      nil ->
+        {:error, :unit_not_found}
+
+      unit ->
+        unit
+        |> Unit.changeset(%{selected: true})
+        |> Repo.update()
+    end
   end
 
   def replace_user_selected_unit(unit_id, user_id) do
-    Repo.update_all(user_units_query(user_id), set: [selected: false])
+    user_id
+    |> user_units_query()
+    |> Repo.update_all(set: [selected: false])
+
     add_user_selected_unit(unit_id, user_id)
   end
 
@@ -51,19 +54,8 @@ defmodule DarkWorldsServer.Units do
     Repo.update_all(user_unit_query(unit_id, user_id), set: [selected: false])
   end
 
-  defp user_unit_query(unit_id, user_id),
-    do:
-      from(unit in Unit,
-        join: user_unit in UserUnit,
-        on: unit.id == user_unit.unit_id,
-        where: user_unit.unit_id == ^unit_id and user_unit.user_id == ^user_id
-      )
+  defp user_units_query(user_id), do: from(unit in Unit, where: unit.user_id == ^user_id)
 
-  defp user_units_query(user_id),
-    do:
-      from(unit in Unit,
-        join: user_unit in UserUnit,
-        on: unit.id == user_unit.unit_id,
-        where: user_unit.user_id == ^user_id
-      )
+  defp user_unit_query(unit_id, user_id),
+    do: from(unit in Unit, where: unit.id == ^unit_id and unit.user_id == ^user_id)
 end

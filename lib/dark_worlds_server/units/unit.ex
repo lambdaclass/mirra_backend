@@ -7,7 +7,7 @@ defmodule DarkWorldsServer.Units.Unit do
   import Ecto.Changeset
 
   alias DarkWorldsServer.Config.Characters.Character
-  alias DarkWorldsServer.Units.UserUnit
+  alias DarkWorldsServer.Units.User
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -16,9 +16,7 @@ defmodule DarkWorldsServer.Units.Unit do
     field(:selected, :boolean)
     field(:position, :integer)
 
-    has_one(:user_unit, UserUnit)
-    has_one(:user, through: [:user_unit, :user])
-
+    belongs_to(:user, User)
     belongs_to(:character, Character)
 
     timestamps()
@@ -27,7 +25,7 @@ defmodule DarkWorldsServer.Units.Unit do
   @doc false
   def changeset(character, attrs) do
     character
-    |> cast(attrs, [:level, :selected, :position, :character_id])
-    |> validate_required([:level, :selected, :position, :character_id])
+    |> cast(attrs, [:level, :selected, :position, :character_id, :user_id])
+    |> validate_required([:level, :selected, :position, :character_id, :user_id])
   end
 end

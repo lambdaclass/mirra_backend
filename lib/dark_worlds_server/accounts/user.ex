@@ -1,5 +1,5 @@
 defmodule DarkWorldsServer.Accounts.User do
-  alias DarkWorldsServer.Units.UserUnit
+  alias DarkWorldsServer.Units.Unit
   use DarkWorldsServer.Schema
   import Ecto.Changeset
 
@@ -12,11 +12,9 @@ defmodule DarkWorldsServer.Accounts.User do
     field(:device_client_id, :string)
     field(:total_kills, :integer)
     field(:total_wins, :integer)
-    field(:most_used_character, :string)
     field(:experience, :float)
 
-    has_many(:user_units, UserUnit)
-    has_many(:units, through: [:user_units, :unit])
+    has_many(:units, Unit)
 
     timestamps()
   end
