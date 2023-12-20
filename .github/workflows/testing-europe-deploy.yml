@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://europe-testing.curseofmyrra.com/board
+      url: https://europe-testing.curseofmirra.com/board
 
     steps:
       - uses: actions/checkout@v4
