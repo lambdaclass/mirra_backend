@@ -363,7 +363,7 @@ impl Player {
     pub fn can_perform_attack(&self, skill_key: &String) -> bool {
         // Check if player is still performing an action or if skill is still on cooldown.
         self.can_do_action()
-            && (can_perform_basic_attack(&self) || can_perform_skill_attack(&self, skill_key))
+            && (can_perform_basic_attack(self) || can_perform_skill_attack(self, skill_key))
     }
 }
 
