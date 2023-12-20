@@ -6,9 +6,10 @@ defmodule DarkWorldsServer.Bot.BotClient do
   require Logger
 
   def start_link(%{game_id: game_id, config: config}) do
+    character_name = Enum.random(["Muflus"])
     client_id = UUID.uuid4()
     ws_url = Application.fetch_env!(:dark_worlds_server, DarkWorldsServer.Bot) |> Keyword.get(:game_server_url)
-    WebSockex.start_link("#{ws_url}/play/#{game_id}/#{client_id}/2", __MODULE__, %{config: config}, [])
+    WebSockex.start_link("#{ws_url}/play/#{game_id}/#{client_id}/#{character_name}", __MODULE__, %{config: config}, [])
   end
 
   @impl true

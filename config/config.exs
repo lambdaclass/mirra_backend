@@ -15,7 +15,7 @@ config :dark_worlds_server, DarkWorldsServer.Repo, migration_primary_key: [type:
 # Configures the endpoint
 dispatch = [
   _: [
-    {"/play/:game_id/:client_id/:player_id", DarkWorldsServerWeb.PlayWebSocket, []},
+    {"/play/:game_id/:client_id/:selected_character", DarkWorldsServerWeb.PlayWebSocket, []},
     {"/matchmaking", DarkWorldsServerWeb.LobbyWebsocket, []},
     {:_, Plug.Cowboy.Handler, {DarkWorldsServerWeb.Endpoint, []}}
   ]

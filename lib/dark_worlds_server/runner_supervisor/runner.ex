@@ -95,7 +95,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_call({:join, user_id, character_name}, _from, state) do
-    case GameBackend.add_player(state.game_state, character_name) do
+    case GameBackend.add_player(state.game_state, String.downcase(character_name)) do
       {:ok, {game_state, player_id}} ->
         state =
           Map.put(state, :game_state, game_state)
