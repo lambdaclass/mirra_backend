@@ -67,12 +67,10 @@ make setup
 make start
 ```
 
-Then once you are inside the Elixir terminal, run:
+Whenever you make changes to the game's `config.json`, you will need to run this so that they get reflected:
 
 ```elixir
 DarkWorldsServer.Utils.Config.clean_import()
 ```
-
-You need to run this command so that changes to the `config.json` get reflected.
 
 ## Contributing
