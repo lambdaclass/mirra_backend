@@ -201,7 +201,7 @@
     },
     {
       "name": "hit",
-      "cooldown_ms": 5000,
+      "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
       "is_passive": false,
       "mechanics": [

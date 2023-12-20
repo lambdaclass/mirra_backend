@@ -139,7 +139,10 @@ impl Player {
             self.available_burst_loads =
                 min(self.available_burst_loads + 1, self.character.burst_loads);
             if self.available_burst_loads < self.character.burst_loads {
-                self.cooldowns.insert(BASIC_SKILL_KEY.to_string(), 5000); // TODO: see how to get this value from the skill
+                self.cooldowns.insert(
+                    BASIC_SKILL_KEY.to_string(),
+                    self.character.skills[BASIC_SKILL_KEY].cooldown_ms,
+                );
             }
         }
     }
