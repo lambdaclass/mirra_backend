@@ -44,7 +44,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   # This variable will determine an additive number to the chances of stoping chacing a player and
   # start wandering for the same time he has been chasing it
-  @chase_steps 10
+  # for example:
+  #   -if you want the bots no never chace you can can change this value to 100
+  #   -if you want the bots always chace you can can change this value to 0
+  # keep in mind that the chace timer is also determined by the random factor value
+  @chase_timer_adittive 5
 
   #######
   # API #
@@ -236,7 +240,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
           Map.put(bot_state, :action, {:move, closest_enemy.angle_direction_to_entity})
       end
 
-    Map.put(new_state, :chase_timer, new_state.chase_timer + @chase_steps)
+    Map.put(new_state, :chase_timer, new_state.chase_timer + @chase_timer_adittive)
   end
 
   defp decide_action(
@@ -330,7 +334,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
       bot_state.objective == :wander and bot_state.chase_timer > 0 ->
-        Map.put(bot_state, :chase_timer, bot_state.chase_timer - @chase_steps)
+        Map.put(bot_state, :chase_timer, bot_state.chase_timer - @chase_timer_adittive)
 
       random_decision = maybe_random_decision() ->
         Map.put(bot_state, :objective, random_decision)
