@@ -2,8 +2,17 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   use GenServer, restart: :transient
   require Logger
 
+  # The random factor will add a layer of randomness to bot actions
+  # The following actions will be afected:
+  # - Bot decision, the bot will start a wandering cicle with an fourth times
+  #   chance and an eight times chance to do nothing
+  # - Every attack the bot do will have a tilt that's decided with the random factor
+  # - Add an additive to the range of attacks they're not always accurate
+  # - Add some miliseconds to the time of decision of the bot
+  @random_factor Enum.random([10, 30, 60, 80])
+
   # This variable will decide how much time passes between bot decisions in milis
-  @decide_delay_ms 500
+  @decide_delay_ms 500 + @random_factor * 2
 
   # We'll decide the view range of a bot measured in grid cells
   # e.g. from {x=1, y=1} to {x=5, y=1} you have 4 cells
@@ -260,12 +269,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     |> Kernel.*(-1)
   end
 
-  defp maybe_add_inaccuracy_to_angle(angle, false), do: angle
-
-  defp maybe_add_inaccuracy_to_angle(angle, true) do
-    Nx.add(angle, Enum.random([-0.1, -0.01, 0, 0.01, 0.1]))
-  end
-
   def decide_objective(bot_state, %{bots_enabled: false}, _bot_id, _closest_entities) do
     Map.put(bot_state, :objective, :nothing)
   end
@@ -303,6 +306,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
+      random_decision = maybe_random_decision() ->
+        Map.put(bot_state, :objective, random_decision)
+
       closest_entity.type == :enemy ->
         Map.put(bot_state, :objective, :chase_enemy)
 
@@ -364,7 +370,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     # TODO: We should find a way to use the skill of the character distance
     case bot.character_name do
       "H4ck" -> distance_to_entity < 1000 and Enum.random(0..100) < 40
-      "Muflus" -> distance_to_entity < 450 and Enum.random(0..100) < 30
+      "Muflus" -> distance_to_entity < 975 and Enum.random(0..100) < 30
     end
   end
 
@@ -450,12 +456,29 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   end
 
   defp position_out_of_radius?(position, center, playable_radius) do
-    distance =
-      (:math.pow(position.x - center.x, 2) + :math.pow(position.y - center.y, 2))
-      |> :math.sqrt()
+    distance = get_distance_to_point(position, center)
 
     # We'll substract a fixed value to the playable radio to have some space between the bot
     # and the unplayable zone to avoid being on the edge of both
     distance > playable_radius - @radius_sub_to_escape
+  end
+
+  def maybe_random_decision() do
+    case :rand.uniform(100) do
+      x when x <= div(@random_factor, 8) ->
+        :nothing
+
+      x when x < div(@random_factor, 4) ->
+        :wander
+
+      _ ->
+        nil
+    end
+  end
+
+  defp maybe_add_inaccuracy_to_angle(angle, false), do: angle
+
+  defp maybe_add_inaccuracy_to_angle(angle, true) do
+    Nx.add(angle, Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1]))
   end
 end

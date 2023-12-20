@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing
-      url: https://brazil-testing.curseofmyrra.com/board
+      url: https://brazil-testing.curseofmirra.com/board
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +29,7 @@ jobs:
           chmod 400 ~/.ssh/id_ed25519
           ssh-keyscan $HOST >> ~/.ssh/known_hosts
 
-      - name: Copy deploy script 
+      - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ vars.BRAZIL_HOST }}

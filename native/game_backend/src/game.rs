@@ -93,6 +93,13 @@ pub struct KillEvent {
     pub kill_by: EntityOwner,
     pub killed: u64,
 }
+#[derive(Clone, NifTuple)]
+pub struct DamageTracker {
+    pub damage: i64,
+    pub attacker: EntityOwner,
+    pub attacked_id: u64,
+    pub on_hit_effects: Vec<Effect>,
+}
 
 #[derive(NifMap)]
 pub struct GameState {
@@ -104,6 +111,7 @@ pub struct GameState {
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
     next_id: u64,
+    pub pending_damages: Vec<DamageTracker>,
 }
 
 impl GameConfig {
@@ -159,6 +167,7 @@ impl GameState {
             next_killfeed: Vec::new(),
             killfeed: Vec::new(),
             next_id: 1,
+            pending_damages: Vec::new(),
         }
     }
 
@@ -178,7 +187,7 @@ impl GameState {
         let players = &mut self.players;
         let loots = &mut self.loots;
         if let Some(player) = players.get_mut(&player_id) {
-            if player.action_duration_ms > 0 {
+            if !player.can_do_action() {
                 return;
             }
             player.move_position(angle, &self.config);
@@ -234,7 +243,7 @@ impl GameState {
 
         if let Some(player) = player_in_list.get_mut(0) {
             // Check if player is still performing an action
-            if player.action_duration_ms > 0 {
+            if !player.can_do_action() {
                 return;
             }
 
@@ -343,19 +352,12 @@ impl GameState {
                                     )
                                 })
                                 .for_each(|target_player| {
-                                    target_player.decrease_health(damage);
-
-                                    if target_player.status == PlayerStatus::Death {
-                                        self.next_killfeed.push(KillEvent {
-                                            kill_by: EntityOwner::Player(player.id),
-                                            killed: target_player.id,
-                                        })
-                                    } else {
-                                        target_player.apply_effects(
-                                            on_hit_effects,
-                                            EntityOwner::Player(player.id),
-                                        );
-                                    }
+                                    self.pending_damages.push(DamageTracker {
+                                        attacked_id: target_player.id,
+                                        attacker: EntityOwner::Player(player.id),
+                                        damage: damage as i64,
+                                        on_hit_effects: on_hit_effects.clone(),
+                                    });
                                 })
                         }
                         _ => todo!("SkillMechanic not implemented"),
@@ -381,16 +383,42 @@ impl GameState {
         apply_projectiles_collisions(
             &mut self.projectiles,
             &mut self.players,
-            &mut self.next_killfeed,
+            &mut self.pending_damages,
         );
         remove_expired_effects(&mut self.players);
-        run_effects(&mut self.players, time_diff, &mut self.next_killfeed);
+        run_effects(&mut self.players, time_diff, &mut self.pending_damages);
         modify_zone(&mut self.zone, time_diff);
         apply_zone_effects(&mut self.players, &self.zone, &mut self.next_killfeed);
 
+        apply_damages_and_effects(
+            &mut self.pending_damages,
+            &mut self.players,
+            &mut self.next_killfeed,
+        );
         self.killfeed = self.next_killfeed.clone();
         self.next_killfeed.clear();
         update_kill_counts(&mut self.players, &self.killfeed);
+    }
+}
+
+fn apply_damages_and_effects(
+    pending_damages: &mut Vec<DamageTracker>,
+    players: &mut HashMap<u64, Player>,
+    next_killfeed: &mut Vec<KillEvent>,
+) {
+    while let Some(damage_tracker) = pending_damages.pop() {
+        if let Some(victim) = players.get_mut(&damage_tracker.attacked_id) {
+            if victim.status != PlayerStatus::Death {
+                victim.decrease_health(damage_tracker.damage.unsigned_abs());
+                victim.apply_effects(&damage_tracker.on_hit_effects, damage_tracker.attacker);
+                if victim.status == PlayerStatus::Death {
+                    next_killfeed.push(KillEvent {
+                        kill_by: damage_tracker.attacker,
+                        killed: victim.id,
+                    })
+                }
+            }
+        }
     }
 }
 
@@ -462,8 +490,7 @@ fn distribute_angle(direction_angle: f32, cone_angle: &u64, count: &u64) -> Vec<
 
 fn update_player_actions(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64) {
     players.values_mut().for_each(|player| {
-        player.update_actions();
-        player.action_duration_ms = player.action_duration_ms.saturating_sub(elapsed_time_ms);
+        player.update_actions(elapsed_time_ms);
     })
 }
 
@@ -512,7 +539,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
 fn apply_projectiles_collisions(
     projectiles: &mut [Projectile],
     players: &mut HashMap<u64, Player>,
-    next_killfeed: &mut Vec<KillEvent>,
+    pending_damages: &mut Vec<DamageTracker>,
 ) {
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
@@ -528,18 +555,12 @@ fn apply_projectiles_collisions(
                 if player.id == projectile.player_id {
                     continue;
                 }
-
-                player.decrease_health(projectile.damage);
-                if player.status == PlayerStatus::Death {
-                    next_killfeed.push(KillEvent {
-                        kill_by: EntityOwner::Player(projectile.player_id),
-                        killed: player.id,
-                    });
-                }
-                player.apply_effects(
-                    &projectile.on_hit_effects,
-                    EntityOwner::Player(projectile.player_id),
-                );
+                pending_damages.push(DamageTracker {
+                    attacked_id: player.id,
+                    attacker: EntityOwner::Player(projectile.player_id),
+                    damage: projectile.damage as i64,
+                    on_hit_effects: projectile.on_hit_effects.clone(),
+                });
 
                 projectile.attacked_player_ids.push(player.id);
                 if projectile.remove_on_collision {
@@ -554,16 +575,12 @@ fn apply_projectiles_collisions(
 fn run_effects(
     players: &mut HashMap<u64, Player>,
     time_diff: u64,
-    next_killfeed: &mut Vec<KillEvent>,
+    pending_damages: &mut Vec<DamageTracker>,
 ) {
     players.values_mut().for_each(|player| {
         if player.status == PlayerStatus::Alive {
-            if let Some(killer) = player.run_effects(time_diff) {
-                next_killfeed.push(KillEvent {
-                    kill_by: killer,
-                    killed: player.id,
-                })
-            }
+            let mut damages_on_player = player.run_effects(time_diff);
+            pending_damages.append(&mut damages_on_player);
         }
     });
 }
@@ -592,9 +609,8 @@ fn modify_zone(zone: &mut Zone, time_diff: u64) {
                     }
                 };
 
-                zone.radius = new_radius
-                    .max(zone_modification.min_radius)
-                    .min(zone_modification.max_radius);
+                zone.radius =
+                    new_radius.clamp(zone_modification.min_radius, zone_modification.max_radius);
             }
         }
         _ => {

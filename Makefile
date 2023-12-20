@@ -7,9 +7,9 @@ format:
 
 check:
 	mix credo --strict
-	cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings
+	cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings -D clippy::nursery -D clippy::all -D clippy::complexity -A clippy::use_self 
 
-.PHONY: setup dependencies db stop start run tests elixir-tests shell prepush credo
+.PHONY: setup dependencies db stop start run tests elixir-tests shell prepush credo docs
 
 setup: dependencies
 	mix deps.compile
@@ -64,3 +64,6 @@ gen-load-test-protobuf:
 # Elixir's protobuf lib does not add a new line nor formats the output file
 # so we do it here with a format:
 	mix format "./load_test/lib/load_test/communication/*"
+
+docs: 
+	cd docs && mdbook-mermaid install && mdbook serve --open
