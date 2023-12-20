@@ -3,6 +3,7 @@ defmodule DarkWorldsServerWeb.CharacterController do
 
   alias DarkWorldsServer.Accounts
   alias DarkWorldsServer.Accounts.User
+  alias DarkWorldsServer.Units
 
   def get_player(conn, %{"device_client_id" => device_client_id}) do
     user = DarkWorldsServer.Accounts.get_user_by_device_client_id(device_client_id)
@@ -26,14 +27,14 @@ defmodule DarkWorldsServerWeb.CharacterController do
 
   def update_player(
         conn,
-        %{"device_client_id" => device_client_id, "selected_character" => selected_character}
+        %{"device_client_id" => device_client_id, "selected_character" => selected_unit}
       ) do
     user = Accounts.get_user_by_device_client_id(device_client_id)
 
     if is_nil(user) do
       json(conn, %{error: "INEXISTENT_USER"})
     else
-      case Accounts.update_user_selected_character(user, selected_character) do
+      case Units.replace_user_selected_unit(user.id, selected_unit.id) do
         {:ok, user} ->
           json(conn, user_response(user))
 
@@ -50,10 +51,10 @@ defmodule DarkWorldsServerWeb.CharacterController do
     }
   end
 
-  defp user_response(%User{device_client_id: device_client_id, selected_character: selected_character}) do
+  defp user_response(%User{device_client_id: device_client_id, id: user_id}) do
     %{
       device_client_id: device_client_id,
-      selected_character: selected_character
+      selected_character: Units.get_selected_units(user_id) |> List.first()
     }
   end
 

@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Accounts.User do
+  alias DarkWorldsServer.Units.UserUnit
   use DarkWorldsServer.Schema
   import Ecto.Changeset
 
@@ -8,12 +9,14 @@ defmodule DarkWorldsServer.Accounts.User do
     field(:hashed_password, :string, redact: true)
     field(:confirmed_at, :naive_datetime)
     field(:username, :string)
-    field(:selected_character, :string)
     field(:device_client_id, :string)
     field(:total_kills, :integer)
     field(:total_wins, :integer)
     field(:most_used_character, :string)
     field(:experience, :float)
+
+    has_many(:user_units, UserUnit)
+    has_many(:units, through: [:user_units, :unit])
 
     timestamps()
   end
@@ -43,7 +46,7 @@ defmodule DarkWorldsServer.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :username, :password, :selected_character, :device_client_id])
+    |> cast(attrs, [:email, :username, :password, :device_client_id])
     |> validate_required(:username)
     |> validate_email(opts)
     |> validate_password(opts)
