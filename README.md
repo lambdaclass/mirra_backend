@@ -73,4 +73,6 @@ Then once you are inside the Elixir terminal, run:
 DarkWorldsServer.Utils.Config.clean_import()
 ```
 
+You need to run this command so that changes to the `config.json` get reflected.
+
 ## Contributing
