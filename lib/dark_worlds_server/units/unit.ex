@@ -26,6 +26,6 @@ defmodule DarkWorldsServer.Units.Unit do
   def changeset(character, attrs) do
     character
     |> cast(attrs, [:level, :selected, :position, :character_id, :user_id])
-    |> validate_required([:level, :selected, :position, :character_id, :user_id])
+    |> validate_required([:level, :selected, :character_id, :user_id])
   end
 end
