@@ -209,7 +209,7 @@
           "Hit": {
             "damage": 0,
             "range": 975,
-            "cone_angle": 120,
+            "cone_angle": 90,
             "on_hit_effects": ["muflus_hit_delay"]
           }
         }
