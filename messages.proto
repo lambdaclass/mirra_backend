@@ -209,6 +209,7 @@ message OldPlayer {
     map<uint64, OldEffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
+    uint64 speed = 18;
 }
 
 message OldActionTracker {
@@ -766,8 +767,7 @@ message UseSkill {
   string skill = 1;
   float angle = 2;
   bool auto_aim = 3;
-  float target_x = 4;
-  float target_y = 5;
+  float amount = 4;
 }
 
 message GameAction {

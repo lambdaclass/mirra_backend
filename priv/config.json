@@ -62,6 +62,24 @@
       "skills_keys_to_execute": []
     },
     {
+      "name": "leap_effect",
+      "is_reversable": true,
+      "effect_time_type": {
+        "Duration": {
+          "duration_ms": 500
+        }
+      },
+      "player_attributes": [
+        {
+          "attribute": "speed",
+          "modifier": "Multiplicative",
+          "value": "2."
+        }
+      ],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
+    },
+    {
       "name": "damage_outside_area",
       "is_reversable": false,
       "effect_time_type": {
@@ -224,7 +242,7 @@
         {
           "Hit": {
             "damage": 30,
-            "range": 2000,
+            "range": 400,
             "cone_angle": 360,
             "on_hit_effects": []
           }
@@ -260,12 +278,19 @@
     {
       "name": "leap",
       "cooldown_ms": 1000,
-      "execution_duration_ms": 5000,
+      "execution_duration_ms": 500,
       "is_passive": false,
       "mechanics": [
         {
+          "GiveEffect": {
+            "effects_to_give": [
+              "leap_effect"
+            ]
+          }
+        },
+        {
           "MoveToTarget": {
-            "duration_ms": 5000,
+            "duration_ms": 500,
             "max_range": 1000,
             "on_arrival_skills": ["3"]
           }

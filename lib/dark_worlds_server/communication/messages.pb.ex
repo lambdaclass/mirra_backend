@@ -543,6 +543,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:speed, 18, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -1123,8 +1124,7 @@ defmodule DarkWorldsServer.Communication.Proto.UseSkill do
   field(:skill, 1, type: :string)
   field(:angle, 2, type: :float)
   field(:auto_aim, 3, type: :bool, json_name: "autoAim")
-  field(:target_x, 4, type: :float, json_name: "targetX")
-  field(:target_y, 5, type: :float, json_name: "targetY")
+  field(:amount, 4, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

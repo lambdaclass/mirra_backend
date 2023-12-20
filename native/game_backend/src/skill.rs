@@ -76,7 +76,7 @@ pub enum SkillMechanic {
 #[derive(NifMap, Clone)]
 pub struct SkillMovingParams {
     pub duration_ms: u64,
-    pub speed_per_ms: f32,
+    pub speed: f32,
     pub skills_on_arrival: Vec<String>,
 }
 

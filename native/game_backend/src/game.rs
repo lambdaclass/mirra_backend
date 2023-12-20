@@ -381,22 +381,34 @@ impl GameState {
                                 })
                         }
                         SkillMechanic::MoveToTarget {
-                            duration_ms: _,
+                            duration_ms,
                             max_range,
                             on_arrival_skills,
                         } => {
-                            if let Some((target_position_x, _target_position_y)) =
-                                parse_skill_params_move_to_target(&skill_params)
-                            {
-                                let distance = target_position_x * (*max_range as f32);
-                                execution_duration_ms =
-                                    (distance / (player.speed as f32 / 20.)) as u64;
-                                player.set_moving_params(
-                                    execution_duration_ms,
-                                    (player.speed as f32) / 20.,
-                                    on_arrival_skills,
+
+                            let (mut amount, auto_aim) = parse_skill_params_move_to_target(&skill_params);
+
+                            if auto_aim {
+                                let nearest_player: Option<Position> = nearest_player_position(
+                                    &other_players,
+                                    &player.position,
+                                    self.config.game.auto_aim_max_distance,
                                 );
+
+                                amount = 1.;
+                                if let Some(target_player_position) = nearest_player {
+                                    let distance = map::distance_between_positions(&target_player_position, &player.position);
+                                    amount = (distance / (*max_range as f32)).min(1.).max(0.);
+                                }
                             }
+
+                            execution_duration_ms = (*duration_ms as f32 * amount) as u64;
+                            
+                            player.set_moving_params(
+                                execution_duration_ms, player.speed as f32,
+                                on_arrival_skills,
+                            );
+                            
                         }
                     }
                 }
@@ -769,18 +781,18 @@ fn get_direction_angle(
     }
 }
 
-fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> Option<(f32, f32)> {
-    let target_x = skill_params
-        .get("target_x")
-        .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
+fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> (f32, bool) {
+    let amount = skill_params
+        .get("amount")
+        .map(|amount| amount.parse::<f32>().unwrap());
 
-    let target_y = skill_params
-        .get("target_y")
-        .map(|auto_aim_str| auto_aim_str.parse::<f32>().unwrap());
+    let auto_aim = skill_params
+        .get("auto_aim")
+        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap()).unwrap_or(false);
 
-    if let (Some(x), Some(y)) = (target_x, target_y) {
-        Some((x, y))
+    if let Some(x) = amount {
+        (x.min(1.).max(0.), auto_aim)
     } else {
-        None
+        (1., auto_aim)
     }
 }

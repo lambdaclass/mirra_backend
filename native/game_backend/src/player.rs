@@ -101,8 +101,7 @@ impl Player {
 
     pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
         if let Some(moving_params) = self.skill_moving_params.as_mut() {
-            let actual_duration = moving_params.duration_ms.min(elapsed_time_ms);
-            let speed = moving_params.speed_per_ms * (actual_duration as f32);
+            let speed = moving_params.speed;
 
             self.position = map::next_position(
                 &self.position,
@@ -363,12 +362,12 @@ impl Player {
     pub fn set_moving_params(
         &mut self,
         duration_ms: u64,
-        speed_per_ms: f32,
+        speed: f32,
         skills_on_arrival: &[String],
     ) {
         let moving_params = SkillMovingParams {
             duration_ms,
-            speed_per_ms,
+            speed,
             skills_on_arrival: skills_on_arrival.to_vec(),
         };
         self.skill_moving_params = Some(moving_params);
