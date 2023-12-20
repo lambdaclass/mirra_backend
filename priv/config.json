@@ -122,27 +122,6 @@
       "skills_to_execute": []
     },
     {
-      "name": "muflus_hit_delay",
-      "is_reversable": false,
-      "effect_time_type": {
-        "Periodic": {
-          "instant_applicaiton": false,
-          "interval_ms": 300,
-          "trigger_count": 1
-        }
-      },
-      "player_attributes": [
-        {
-          "attribute": "health",
-          "modifier": "Additive",
-          "value": "-20"
-        }
-      ],
-      "projectile_attributes": [],
-      "skills_keys_to_execute": [],
-      "skills_to_execute": []
-    },
-    {
       "name": "uma_auto_attack",
       "is_reversable": false,
       "effect_time_type": {
@@ -156,6 +135,21 @@
       "projectile_attributes": [],
       "skills_keys_to_execute": [],
       "skills_to_execute": ["uma_hit"]
+    },
+    {
+      "name": "muflus_hit",
+      "is_reversable": false,
+      "effect_time_type": {
+        "Periodic": {
+          "instant_applicaiton": true,
+          "interval_ms": 300,
+          "trigger_count": 1
+        }
+      },
+      "player_attributes": [],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": [],
+      "skills_to_execute": ["hit"]
     }
   ],
   "loots": [
@@ -222,6 +216,19 @@
       ]
     },
     {
+      "name": "muflus_basic",
+      "cooldown_ms": 1000,
+      "execution_duration_ms": 1000,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "GiveEffect": {
+            "effects_to_give": ["muflus_hit"]
+          }
+        }
+      ]
+    },
+    {
       "name": "hit",
       "cooldown_ms": 1000,
       "execution_duration_ms": 1000,
@@ -229,10 +236,10 @@
       "mechanics": [
         {
           "Hit": {
-            "damage": 0,
+            "damage": 20,
             "range": 975,
-            "cone_angle": 120,
-            "on_hit_effects": ["muflus_hit_delay"]
+            "cone_angle": 90,
+            "on_hit_effects": []
           }
         }
       ]
@@ -347,7 +354,7 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "hit",
+        "1": "muflus_basic",
         "2": "leap",
         "3": "circle_hit"
       }
