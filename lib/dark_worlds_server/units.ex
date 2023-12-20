@@ -35,7 +35,7 @@ defmodule DarkWorldsServer.Units do
 
   def add_user_selected_unit(unit_id, user_id) do
     Repo.one(user_unit_query(unit_id, user_id))
-    |> UserUnit.changeset(%{selected: true})
+    |> Unit.changeset(%{selected: true})
     |> Repo.update()
   end
 
