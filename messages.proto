@@ -369,11 +369,12 @@ message LobbyEvent {
     PlayerInformation added_player_info = 4;
     string game_id = 5;
     uint64 player_count = 6;
-    PlayerInformation removed_player_info = 7;
-    Config game_config = 8;
-    string server_hash = 9;
-    uint64 amount_of_players = 10;
-    uint64 capacity = 11;
+    repeated PlayerInformation players_info = 7;
+    PlayerInformation removed_player_info = 8;
+    Config game_config = 9;
+    string server_hash = 10;
+    uint64 amount_of_players = 11;
+    uint64 capacity = 12;
 }
 
 /* Represents the information of a player/client

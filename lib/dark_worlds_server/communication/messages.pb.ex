@@ -654,19 +654,25 @@ defmodule DarkWorldsServer.Communication.Proto.LobbyEvent do
   field(:game_id, 5, type: :string, json_name: "gameId")
   field(:player_count, 6, type: :uint64, json_name: "playerCount")
 
-  field(:removed_player_info, 7,
+  field(:players_info, 7,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.PlayerInformation,
+    json_name: "playersInfo"
+  )
+
+  field(:removed_player_info, 8,
     type: DarkWorldsServer.Communication.Proto.PlayerInformation,
     json_name: "removedPlayerInfo"
   )
 
-  field(:game_config, 8,
+  field(:game_config, 9,
     type: DarkWorldsServer.Communication.Proto.Config,
     json_name: "gameConfig"
   )
 
-  field(:server_hash, 9, type: :string, json_name: "serverHash")
-  field(:amount_of_players, 10, type: :uint64, json_name: "amountOfPlayers")
-  field(:capacity, 11, type: :uint64)
+  field(:server_hash, 10, type: :string, json_name: "serverHash")
+  field(:amount_of_players, 11, type: :uint64, json_name: "amountOfPlayers")
+  field(:capacity, 12, type: :uint64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
