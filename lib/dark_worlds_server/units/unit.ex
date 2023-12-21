@@ -6,8 +6,8 @@ defmodule DarkWorldsServer.Units.Unit do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Accounts.User
+  alias DarkWorldsServer.Config.Characters.Character
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -23,9 +23,21 @@ defmodule DarkWorldsServer.Units.Unit do
   end
 
   @doc false
-  def changeset(character, attrs) do
-    character
+  def changeset(unit, attrs) do
+    unit
     |> cast(attrs, [:level, :selected, :position, :character_id, :user_id])
     |> validate_required([:level, :selected, :character_id, :user_id])
+  end
+
+  def selected_changeset(unit, attrs) do
+    unit
+    |> cast(attrs, [:selected])
+    |> validate_required([:selected])
+  end
+
+  def character_changeset(unit, attrs) do
+    unit
+    |> cast(attrs, [:character_id])
+    |> validate_required([:character_id])
   end
 end

@@ -4,6 +4,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Utils.Characters
   alias DarkWorldsServer.Utils.Config
 
   # This is the amount of time between state updates in milliseconds
@@ -334,7 +335,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       status: if(player.health <= 0, do: :dead, else: :alive),
       health: player.health,
       body_size: player.size,
-      character_name: transform_character_name_to_game_character_name(player.character.name),
+      character_name: Characters.transform_character_name_to_game_character_name(player.character.name),
       ## Placeholder values
       kill_count: player.kill_count,
       effects: transform_effects_to_game_effects(player.effects),
@@ -412,9 +413,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       y: position.x + div(height, 2)
     }
   end
-
-  defp transform_character_name_to_game_character_name("h4ck"), do: "H4ck"
-  defp transform_character_name_to_game_character_name("muflus"), do: "Muflus"
 
   defp transform_angle_to_game_relative_position(angle) do
     angle_radians = Nx.divide(Nx.Constants.pi(), 180) |> Nx.multiply(angle)

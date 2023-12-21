@@ -146,16 +146,16 @@ defmodule DarkWorldsServer.Utils.Config do
     end)
   end
 
-  defp prepare_units_map(), do: Units.get_units() |> Enum.map(&{&1.id, &1.character.name})
+  defp prepare_units_map(), do: Units.get_units() |> Enum.map(&{&1, &1.character.name})
 
-  defp restore_unit_character({unit_id, character_name}) do
+  defp restore_unit_character({unit, character_name}) do
     character = Characters.get_character_by_name(character_name)
 
     if is_nil(character) do
       nil
     else
       new_character_id = character.id
-      Units.update_unit_character(unit_id, new_character_id)
+      Units.update_unit_character(unit, new_character_id)
     end
   end
 
