@@ -3,7 +3,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   require Logger
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Utils.Config
 
   # Amount of time between loot spawn
   @loot_spawn_rate_ms 20_000
@@ -40,6 +42,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     GenServer.cast(runner_pid, {:attack, user_id, action, timestamp})
   end
 
+  def use_inventory(runner_pid, user_id, action, timestamp) do
+    GenServer.cast(runner_pid, {:use_inventory, user_id, action, timestamp})
+  end
+
   def skill(runner_pid, user_id, action) do
     GenServer.cast(runner_pid, {:skill, user_id, action})
   end
@@ -65,10 +71,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     Process.flag(:priority, priority)
 
-    {:ok, game_config_json} =
-      Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
-
-    game_config = GameBackend.parse_config(game_config_json)
+    game_config = Config.get_config()
 
     Process.send_after(self(), :game_timeout, @game_timeout_ms)
     Process.send_after(self(), :start_game_tick, @game_tick_start)
@@ -136,6 +139,23 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     skill_key = action_skill_to_key(skill)
     skill_params = extract_and_convert_params(use_skill)
     game_state = GameBackend.activate_skill(state.game_state, player_id, skill_key, skill_params)
+
+    state =
+      Map.put(state, :game_state, game_state)
+      |> put_in([:player_timestamps, user_id], timestamp)
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_cast(
+        {:use_inventory, user_id, %UseInventory{inventory_at: inventory_at}, timestamp},
+        state
+      ) do
+    player_id = state.user_to_player[user_id] || user_id
+
+    game_state =
+      GameBackend.activate_inventory(state.game_state, player_id, inventory_at)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -345,6 +365,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       action: transform_action_to_game_action(player.action),
       direction: transform_angle_to_game_relative_position(player.direction),
       aoe_position: %GameBackend.Position{x: 0, y: 0},
+      inventory: player.inventory,
       speed: player.speed,
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)

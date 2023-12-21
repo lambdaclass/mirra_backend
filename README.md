@@ -3,10 +3,13 @@ Open source backend developed by LambdaClass in Elixir, for the communication, a
 
 ## Table of Contents
 
-- [Documentation](#documentation)
-- [Installation](#installation)
-- [Running the Backend](#running-the-backend)
-- [Contributing](#contributing)
+- [Lambda Game Backend](#lambda-game-backend)
+  - [Table of Contents](#table-of-contents)
+  - [Documentation](#documentation)
+  - [Installation](#installation)
+  - [Running the Backend](#running-the-backend)
+    - [Requirements](#requirements)
+  - [Contributing](#contributing)
 
 
 ## Documentation
@@ -62,6 +65,12 @@ git clone https://github.com/lambdaclass/game_backend
 make db
 make setup
 make start
+```
+
+Whenever you make changes to the game's `config.json`, you will need to run this so that they get reflected:
+
+```elixir
+DarkWorldsServer.Utils.Config.clean_import()
 ```
 
 ## Contributing

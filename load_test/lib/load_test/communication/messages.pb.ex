@@ -496,7 +496,8 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
 
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
-  field(:speed, 18, type: :uint64)
+  field(:inventory, 18, repeated: true, type: LoadTest.Communication.Proto.GameLoot)
+  field(:speed, 19, type: :uint64)
 end
 
 defmodule LoadTest.Communication.Proto.OldActionTracker do
@@ -1004,6 +1005,14 @@ defmodule LoadTest.Communication.Proto.UseSkill do
   field(:amount, 4, type: :float)
 end
 
+defmodule LoadTest.Communication.Proto.UseInventory do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:inventory_at, 1, type: :uint64, json_name: "inventoryAt")
+end
+
 defmodule LoadTest.Communication.Proto.GameAction do
   @moduledoc false
 
@@ -1019,5 +1028,11 @@ defmodule LoadTest.Communication.Proto.GameAction do
     oneof: 0
   )
 
-  field(:timestamp, 3, type: :int64)
+  field(:use_inventory, 3,
+    type: LoadTest.Communication.Proto.UseInventory,
+    json_name: "useInventory",
+    oneof: 0
+  )
+
+  field(:timestamp, 4, type: :int64)
 end

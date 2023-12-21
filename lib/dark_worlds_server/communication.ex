@@ -9,6 +9,7 @@ defmodule DarkWorldsServer.Communication do
   alias DarkWorldsServer.Communication.Proto.OldGameEvent
   alias DarkWorldsServer.Communication.Proto.PlayerInformation
   alias DarkWorldsServer.Communication.Proto.TransitionGameEvent
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
 
   @moduledoc """
@@ -170,6 +171,11 @@ defmodule DarkWorldsServer.Communication do
       timestamp: timestamp(),
       action_type: {:use_skill, %UseSkill{skill: skill, angle: angle, auto_aim: false}}
     }
+    |> GameAction.encode()
+  end
+
+  def player_use_inventory(inventory_at) do
+    %GameAction{timestamp: timestamp(), action_type: {:use_inventory, %UseInventory{inventory_at: inventory_at}}}
     |> GameAction.encode()
   end
 

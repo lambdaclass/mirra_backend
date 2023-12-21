@@ -84,7 +84,7 @@
       "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
-          "instant_applicaiton": false,
+          "instant_application": false,
           "interval_ms": 1000,
           "trigger_count": 999999
         }
@@ -104,7 +104,7 @@
       "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
-          "instant_applicaiton": false,
+          "instant_application": false,
           "interval_ms": 1000,
           "trigger_count": 5
         }
@@ -124,7 +124,7 @@
       "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
-          "instant_applicaiton": true,
+          "instant_application": true,
           "interval_ms": 130,
           "trigger_count": 10
         }
@@ -138,7 +138,7 @@
       "is_reversable": false,
       "effect_time_type": {
         "Periodic": {
-          "instant_applicaiton": false,
+          "instant_application": false,
           "interval_ms": 300,
           "trigger_count": 1
         }
@@ -158,7 +158,7 @@
     {
       "name": "loot_health",
       "size": 50,
-      "pickup_mechanic": "CollisionUse",
+      "pickup_mechanic": "CollisionToInventory",
       "effects": [
         "heal_30"
       ]

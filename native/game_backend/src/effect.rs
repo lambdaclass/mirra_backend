@@ -34,7 +34,7 @@ pub enum TimeType {
         duration_ms: u64,
     },
     Periodic {
-        instant_applicaiton: bool,
+        instant_application: bool,
         interval_ms: u64,
         trigger_count: u64,
         #[serde(skip_deserializing)]
