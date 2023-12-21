@@ -209,6 +209,7 @@ message OldPlayer {
     map<uint64, OldEffectInfo> effects = 15;
     RelativePosition direction = 16;
     float body_size = 17;
+    repeated GameLoot inventory = 18;
 }
 
 message OldActionTracker {
@@ -770,10 +771,18 @@ message UseSkill {
   float target_y = 5;
 }
 
+/*
+Represents the action of using an item from the inventory
+*/
+message UseInventory {
+    uint64 inventory_at = 1;
+}
+
 message GameAction {
     oneof action_type {
         Move move = 1;
         UseSkill use_skill = 2;
+        UseInventory use_inventory = 3;
     }
-    int64 timestamp = 3;
+    int64 timestamp = 4;
 }

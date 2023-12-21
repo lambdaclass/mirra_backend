@@ -33,6 +33,23 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # This is the amount of time between bots messages
   @game_tick_rate_ms 30
 
+  # The random factor will add a layer of randomness to bot actions
+  # The following actions will be afected:
+  # - Bot decision, the bot will start a wandering cicle with an fourth times
+  #   chance and an eight times chance to do nothing
+  # - Every attack the bot do will have a tilt that's decided with the random factor
+  # - Add an additive to the range of attacks they're not always accurate
+  # - Add some miliseconds to the time of decision of the bot
+  @random_factor Enum.random([10, 30, 60, 80])
+
+  # This variable will determine an additive number to the chances of stoping chacing a player and
+  # start wandering for the same time he has been chasing it
+  # for example:
+  #   -if you want the bots no never chace you can can change this value to 100
+  #   -if you want the bots always chace you can can change this value to 0
+  # keep in mind that the chace timer is also determined by the random factor value
+  @chase_timer_adittive 5
+
   #######
   # API #
   #######
@@ -74,7 +91,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
      put_in(state, [:bots, bot_id], %{
        alive: true,
        objective: :nothing,
-       current_wandering_position: nil
+       current_wandering_position: nil,
+       chase_timer: 0
      })}
   end
 
@@ -92,7 +110,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
           bot_state
 
         bot_state ->
-          Process.send_after(self(), {:decide_action, bot_id}, @decide_delay_ms)
+          Process.send_after(self(), {:decide_action, bot_id}, @decide_delay_ms + @random_factor * 2)
 
           bot = Enum.find(state.players, fn player -> player.id == bot_id end)
 
@@ -185,7 +203,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
          %{objective: :chase_enemy} = bot_state,
          bot_id,
          _players,
-         %{game_state: game_state},
+         %{game_state: game_state, config: config},
          %{enemies_by_distance: enemies_by_distance}
        ) do
     bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
@@ -202,18 +220,27 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     playable_radius_closed = game_state.playable_radius <= @min_playable_radius_flee
 
-    cond do
-      danger_zone and not playable_radius_closed ->
-        %{angle_direction_to_entity: angle} = hd(enemies_by_distance)
-        flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
-        Map.put(bot_state, :action, {:move, flee_angle_direction})
+    new_state =
+      cond do
+        random_chance(bot_state.chase_timer / 10) ->
+          bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
 
-      skill_would_hit?(bot, closest_enemy) ->
-        Map.put(bot_state, :action, {:attack, closest_enemy, "BasicAttack"})
+          put_wandering_position(bot_state, bot, game_state, config)
+          |> Map.put(:chase_timer, 0)
 
-      true ->
-        Map.put(bot_state, :action, {:move, closest_enemy.angle_direction_to_entity})
-    end
+        danger_zone and not playable_radius_closed ->
+          %{angle_direction_to_entity: angle} = hd(enemies_by_distance)
+          flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
+          Map.put(bot_state, :action, {:move, flee_angle_direction})
+
+        skill_would_hit?(bot, closest_enemy) ->
+          Map.put(bot_state, :action, {:attack, closest_enemy, "BasicAttack"})
+
+        true ->
+          Map.put(bot_state, :action, {:move, closest_enemy.angle_direction_to_entity})
+      end
+
+    Map.put(new_state, :chase_timer, new_state.chase_timer + @chase_timer_adittive)
   end
 
   defp decide_action(
@@ -306,6 +333,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
+      bot_state.objective == :wander and bot_state.chase_timer > 0 ->
+        Map.put(bot_state, :chase_timer, bot_state.chase_timer - @chase_timer_adittive)
+
       random_decision = maybe_random_decision() ->
         Map.put(bot_state, :objective, random_decision)
 
@@ -481,5 +511,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   defp maybe_add_inaccuracy_to_angle(angle, true) do
     Nx.add(angle, Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1]))
+  end
+
+  def random_chance(chance \\ 100, additive)
+
+  def random_chance(chance, additive) do
+    :rand.uniform(chance) <= @random_factor + additive
   end
 end
