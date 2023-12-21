@@ -4,6 +4,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Utils.Config
 
   # This is the amount of time between state updates in milliseconds
   @game_tick_rate_ms 20
@@ -67,10 +68,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     Process.flag(:priority, priority)
 
-    {:ok, game_config_json} =
-      Application.app_dir(:dark_worlds_server, "priv/config.json") |> File.read()
-
-    game_config = GameBackend.parse_config(game_config_json)
+    game_config = Config.get_config()
 
     Process.send_after(self(), :game_timeout, @game_timeout_ms)
     Process.send_after(self(), :start_game_tick, @game_tick_start)
