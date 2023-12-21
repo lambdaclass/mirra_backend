@@ -233,11 +233,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
           flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
           Map.put(bot_state, :action, {:move, flee_angle_direction})
 
-        skill_would_hit?(bot, closest_enemy, config) ->
-          Map.put(bot_state, :action, {:attack, closest_enemy, "BasicAttack"})
-
         true ->
-          Map.put(bot_state, :action, {:move, closest_enemy.angle_direction_to_entity})
+          Map.put(bot_state, :action, {:try_attack, closest_enemy, "BasicAttack"})
       end
 
     Map.put(new_state, :chase_timer, new_state.chase_timer + @chase_timer_adittive)
@@ -542,19 +539,21 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     config["skills"]
     |> Enum.find(fn skill -> skill["name"] == basic_attack_name end)
     |> Map.get("mechanics")
+    |> hd()
+    |> Map.to_list()
     |> get_min_skill_range(0)
   end
 
-  defp get_min_skill_range([skill_mechanic], acc) do
+  defp get_min_skill_range([{_name, skill_mechanic}], acc) do
     range = Map.get(skill_mechanic, "range") || 0
 
-    min(acc, range)
+    max(acc, range)
   end
 
-  defp get_min_skill_range([skill_mechanic | tail], acc) do
+  defp get_min_skill_range([{_name, skill_mechanic} | tail], acc) do
     range = Map.get(skill_mechanic, "range") || 0
 
-    get_min_skill_range(tail, min(acc, range))
+    get_min_skill_range(tail, max(acc, range))
   end
 
   def random_chance(chance \\ 100, additive)
