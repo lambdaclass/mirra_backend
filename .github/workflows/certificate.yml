@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        HOST: [testing.dark-worlds.lambdaclass.com, aws-testing.dark-worlds.lambdaclass.com]
+        HOST: [curse-of-mirra-arm-loadtest-hetzner, curse-of-mirra-brazil-testing, curse-of-mirra-europe-testing, curse-of-mirra-loadtesting-client, curse-of-mirra-loadtesting-server]
 
     steps:
 
@@ -20,15 +20,22 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
       run: |
         set -ex
-        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_deploy
-        chmod 400 id_ed25519_deploy
+        mkdir -p ~/.ssh/
+        sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+        chmod 400 ~/.ssh/id_ed25519
+
+    - name: Tailscale
+      uses: tailscale/github-action@v2
+      with:
+        oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+        oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+        tags: tag:server
 
     - name: Renew certificates
       env:
         HOST: ${{ matrix.HOST }}
       run: |
           set -ex
-          mkdir -p ~/.ssh/
           ssh-keyscan $HOST >> ~/.ssh/known_hosts
-          ssh -i id_ed25519_deploy root@$HOST certbot renew 
+          ssh admin@$HOST "sudo bash -c 'systemctl stop nginx && certbot renew && systemctl start nginx'" # Stops nginx to let certbot create a webserver on port 80.
           set +ex

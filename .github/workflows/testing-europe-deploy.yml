@@ -4,13 +4,12 @@ on:
   push:
     branches:
       - main
-      - fix-ci
     paths:
       - .github/workflows/testing-europe-deploy.yml
 
 jobs:
   build-deploy:
-    name: Build and deploy to Europe testing
+    name: Build and deploy to Brazil testing
     runs-on: ubuntu-latest
     environment:
       name: testing
@@ -19,10 +18,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:server
+
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          HOST: ${{ vars.EUROPE_HOST }}
+          HOST: ${{ vars.TS_EUROPE_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -33,14 +39,14 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.EUROPE_HOST }}
+          SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
         run: |
-          set -ex
+          set -ex 
           rsync -avz --mkpath deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.EUROPE_HOST }}
+          SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}

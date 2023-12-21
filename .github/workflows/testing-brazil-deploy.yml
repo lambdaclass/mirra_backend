@@ -18,10 +18,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:server
+
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          HOST: ${{ vars.BRAZIL_HOST }}
+          HOST: ${{ vars.TS_BRAZIL_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -32,14 +39,14 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.BRAZIL_HOST }}
+          SSH_HOST: ${{ vars.TS_BRAZIL_HOST }}
         run: |
           set -ex 
           rsync -avz --mkpath deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.BRAZIL_HOST }}
+          SSH_HOST: ${{ vars.TS_BRAZIL_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
