@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Brazil testing
+    name: Build and deploy to Europe testing
     runs-on: ubuntu-latest
     environment:
       name: testing
