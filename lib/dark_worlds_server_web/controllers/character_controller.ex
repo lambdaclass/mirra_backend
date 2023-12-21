@@ -1,4 +1,4 @@
-defmodule DarkWorldsServerWeb.CharacterController do
+defmodule DarkWorldsServerWeb.UserController do
   use DarkWorldsServerWeb, :controller
 
   alias DarkWorldsServer.Accounts
@@ -7,12 +7,12 @@ defmodule DarkWorldsServerWeb.CharacterController do
   alias DarkWorldsServer.Units
   alias DarkWorldsServer.Utils
 
-  def get_player(conn, %{"device_client_id" => device_client_id}) do
+  def get_user(conn, %{"device_client_id" => device_client_id}) do
     user = DarkWorldsServer.Accounts.get_user_by_device_client_id(device_client_id)
     json(conn, user_response(user))
   end
 
-  def create_player(conn, %{
+  def create_user(conn, %{
         "device_client_id" => device_client_id,
         "selected_character" => selected_character
       }) do
