@@ -54,6 +54,79 @@ defmodule DarkWorldsServerWeb.CharacterController do
     end
   end
 
+  def add_selected_unit(
+        conn,
+        %{"device_client_id" => device_client_id, "unit_id" => added_unit} = params
+      ) do
+    case Accounts.get_user_by_device_client_id(device_client_id) do
+      nil ->
+        json(conn, %{error: "INEXISTENT_USER"})
+
+      user ->
+        unit_params = %{selected: true}
+
+        unit_params =
+          case Map.get(params, "position") do
+            nil -> unit_params
+            position -> Map.put(unit_params, :position, position)
+          end
+
+        case Units.get_unit(added_unit) |> Units.update_unit(unit_params) do
+          {:ok, _unit} ->
+            json(conn, user_response(user))
+
+          {:error, _changeset} ->
+            json(conn, %{error: "An error has occurred"})
+        end
+    end
+  end
+
+  def remove_selected_unit(
+        conn,
+        %{"device_client_id" => device_client_id, "unit_id" => removed_unit} = params
+      ) do
+    case Accounts.get_user_by_device_client_id(device_client_id) do
+      nil ->
+        json(conn, %{error: "INEXISTENT_USER"})
+
+      user ->
+        unit_params = %{selected: false}
+
+        unit_params =
+          case Map.get(params, "position") do
+            nil -> unit_params
+            position -> Map.put(unit_params, :position, position)
+          end
+
+        case Units.get_unit(removed_unit) |> Units.update_unit(unit_params) do
+          {:ok, _unit} ->
+            json(conn, user_response(user))
+
+          {:error, _changeset} ->
+            json(conn, %{error: "An error has occurred"})
+        end
+    end
+  end
+
+  def get_units(conn, %{"device_client_id" => device_client_id}) do
+    case Accounts.get_user_by_device_client_id(device_client_id) do
+      nil ->
+        json(conn, %{error: "INEXISTENT_USER"})
+
+      user ->
+        units = Units.get_units(user.id)
+
+        json(
+          conn,
+          Enum.into(
+            units,
+            %{},
+            &{&1.id, %{character: &1.character.name, selected: &1.selected, position: &1.position, level: &1.level}}
+          )
+        )
+    end
+  end
+
   defp user_response(nil) do
     %{
       device_client_id: "NOT_FOUND",

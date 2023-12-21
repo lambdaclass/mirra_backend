@@ -1,4 +1,8 @@
 defmodule DarkWorldsServer.Units do
+  @moduledoc """
+  Operations with Units.
+  """
+
   alias DarkWorldsServer.Config.Characters
   alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Repo
@@ -17,6 +21,15 @@ defmodule DarkWorldsServer.Units do
     %Unit{}
     |> Unit.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Sets the selected value of a unit.
+  """
+  def update_unit(unit, params) do
+    unit
+    |> Unit.edit_changeset(params)
+    |> Repo.update()
   end
 
   @doc """
@@ -41,9 +54,18 @@ defmodule DarkWorldsServer.Units do
   def get_units(user_id), do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character])
 
   @doc """
-  Gets the user's single selected unit. Fails if they have more than one or none.
+  Gets the user's selected unit. Takes the highest leveled one if there's many. Returns nil if there are none.
   """
   def get_selected_unit(user_id),
+    do:
+      from(unit in user_units_query(user_id), where: unit.selected, order_by: [desc: :level], limit: 1)
+      |> Repo.one()
+      |> Repo.preload([:character, :user])
+
+  @doc """
+  Gets the user's single selected unit. Fails if they have many or none.
+  """
+  def get_selected_unit!(user_id),
     do:
       from(unit in user_units_query(user_id), where: unit.selected) |> Repo.one!() |> Repo.preload([:character, :user])
 
@@ -72,15 +94,6 @@ defmodule DarkWorldsServer.Units do
   """
   def delete_unit(%Unit{} = unit), do: Repo.delete(unit)
   def delete_unit(id), do: Repo.get(Unit, id) |> delete_unit()
-
-  @doc """
-  Sets the selected value of a unit.
-  """
-  def set_selected(unit, value \\ true) do
-    unit
-    |> Unit.selected_changeset(%{selected: value})
-    |> Repo.update()
-  end
 
   @doc """
   Wrapper for replace_selected_unit/2 when unit is identifiable by character name.
@@ -137,7 +150,7 @@ defmodule DarkWorldsServer.Units do
     |> Multi.run(:set_selected, fn _repo, _changes ->
       unit_id
       |> get_unit()
-      |> set_selected()
+      |> update_unit(%{selected: true})
     end)
     |> Repo.transaction()
   end

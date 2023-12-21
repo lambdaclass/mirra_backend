@@ -29,12 +29,14 @@ defmodule DarkWorldsServer.Units.Unit do
     |> validate_required([:level, :selected, :character_id, :user_id])
   end
 
-  def selected_changeset(unit, attrs) do
-    unit
-    |> cast(attrs, [:selected])
-    |> validate_required([:selected])
-  end
+  @doc """
+  Changeset for editing a unit's basic attributes.
+  """
+  def edit_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :position, :level])
 
+  @doc """
+  Changeset for setting a unit's character id.
+  """
   def character_changeset(unit, attrs) do
     unit
     |> cast(attrs, [:character_id])
