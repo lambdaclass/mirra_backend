@@ -29,3 +29,7 @@ Configurable fields:
   }
 ]
 ```
+
+# Units
+
+Units are instances of characters tied to a user. Depending on the game, a user may have up to one or unlimited units of the same character. These also hold additional information like their level, slot, or if they are selected. For cases when a user has only one unit for each character, the unit's level may indicate their prowess with them.
