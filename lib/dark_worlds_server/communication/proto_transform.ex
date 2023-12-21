@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Communication.ProtoTransform do
+  alias DarkWorldsServer.Communication.Proto.ActionTracker
   alias DarkWorldsServer.Communication.Proto.Config
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameCharacter
@@ -205,6 +206,13 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     %SkillCooldown{
       skill_key: skill_key,
       cooldown_ms: cooldown_ms
+    }
+  end
+
+  def encode(action, ActionTracker) do
+    %ActionTracker{
+      player_action: action,
+      duration: action.duration
     }
   end
 
