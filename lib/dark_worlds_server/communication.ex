@@ -83,8 +83,7 @@ defmodule DarkWorldsServer.Communication do
              players: Map.values(new_game_state.players),
              projectiles: new_game_state.projectiles,
              items: new_game_state.loots,
-             # TODO
-             zone_info: nil,
+             zone_info: new_game_state.zone,
              killfeed: new_game_state.killfeed,
              player_timestamp: player_timestamp,
              server_timestamp: server_timestamp
@@ -116,8 +115,7 @@ defmodule DarkWorldsServer.Communication do
            players: Map.values(new_game_state.players),
            projectiles: new_game_state.projectiles,
            items: new_game_state.loots,
-           # TODO
-           zone_info: nil,
+           zone_info: new_game_state.zone,
            killfeed: new_game_state.killfeed,
            player_timestamp: player_timestamp,
            server_timestamp: server_timestamp
