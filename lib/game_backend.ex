@@ -57,6 +57,7 @@ defmodule GameBackend do
       :effects,
       :direction,
       :body_size,
+      :inventory,
       :available_burst_loads
     ]
   end

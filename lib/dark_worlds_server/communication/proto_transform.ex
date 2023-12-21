@@ -26,6 +26,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.PlayerInformation, as: ProtoPlayerInformation
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.SkillCooldown
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias GameBackend.Player, as: GamePlayer
   alias GameBackend.Position, as: GamePosition
@@ -82,6 +83,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
+      inventory: inventory,
       available_burst_loads: available_burst_loads
     } = player
 
@@ -103,6 +105,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
+      inventory: inventory,
       available_burst_loads: available_burst_loads
     }
   end
@@ -283,6 +286,11 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   end
 
   @impl Protobuf.TransformModule
+  def decode(value, UseInventory) do
+    value
+  end
+
+  @impl Protobuf.TransformModule
   def decode(%ProtoPosition{} = position, ProtoPosition) do
     %{x: x, y: y} = position
     %GamePosition{x: x, y: y}
@@ -313,6 +321,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
+      inventory: inventory,
       available_burst_loads: available_burst_loads
     } = player
 
@@ -334,6 +343,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       effects: effects,
       direction: direction,
       body_size: body_size,
+      inventory: inventory,
       available_burst_loads: available_burst_loads
     }
   end

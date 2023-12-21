@@ -183,7 +183,7 @@ impl Player {
         // Apply the effect
         match effect.effect_time_type {
             TimeType::Periodic {
-                instant_applicaiton: false,
+                instant_application: false,
                 ..
             } => (),
             _ => {
@@ -358,7 +358,7 @@ impl Player {
 
     pub fn can_do_action(&self) -> bool {
         !self
-            .action
+            .next_actions
             .iter()
             .any(|action_tracker| action_tracker.action != Action::Moving)
     }
