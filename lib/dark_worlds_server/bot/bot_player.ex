@@ -42,6 +42,14 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # - Add some miliseconds to the time of decision of the bot
   @random_factor Enum.random([10, 30, 60, 80])
 
+  # This variable will determine an additive number to the chances of stoping chacing a player and
+  # start wandering for the same time he has been chasing it
+  # for example:
+  #   -if you want the bots no never chace you can can change this value to 100
+  #   -if you want the bots always chace you can can change this value to 0
+  # keep in mind that the chace timer is also determined by the random factor value
+  @chase_timer_adittive 5
+
   #######
   # API #
   #######
@@ -83,7 +91,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
      put_in(state, [:bots, bot_id], %{
        alive: true,
        objective: :nothing,
-       current_wandering_position: nil
+       current_wandering_position: nil,
+       chase_timer: 0
      })}
   end
 
@@ -194,7 +203,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
          %{objective: :chase_enemy} = bot_state,
          bot_id,
          _players,
-         %{game_state: game_state},
+         %{game_state: game_state, config: config},
          %{enemies_by_distance: enemies_by_distance}
        ) do
     bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
@@ -211,13 +220,27 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
     playable_radius_closed = game_state.playable_radius <= @min_playable_radius_flee
 
-    if danger_zone and not playable_radius_closed do
-      %{angle_direction_to_entity: angle} = hd(enemies_by_distance)
-      flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
-      Map.put(bot_state, :action, {:move, flee_angle_direction})
-    else
-      Map.put(bot_state, :action, {:try_attack, closest_enemy, "BasicAttack"})
-    end
+    new_state =
+      cond do
+        random_chance(bot_state.chase_timer / 10) ->
+          bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
+
+          put_wandering_position(bot_state, bot, game_state, config)
+          |> Map.put(:chase_timer, 0)
+
+        danger_zone and not playable_radius_closed ->
+          %{angle_direction_to_entity: angle} = hd(enemies_by_distance)
+          flee_angle_direction = if angle <= 0, do: angle + 180, else: angle - 180
+          Map.put(bot_state, :action, {:move, flee_angle_direction})
+
+        skill_would_hit?(bot, closest_enemy, config) ->
+          Map.put(bot_state, :action, {:attack, closest_enemy, "BasicAttack"})
+
+        true ->
+          Map.put(bot_state, :action, {:move, closest_enemy.angle_direction_to_entity})
+      end
+
+    Map.put(new_state, :chase_timer, new_state.chase_timer + @chase_timer_adittive)
   end
 
   defp decide_action(
@@ -321,6 +344,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   defp set_objective(bot_state, _bot, _game_state, _config, closest_entity) do
     cond do
+      bot_state.objective == :wander and bot_state.chase_timer > 0 ->
+        Map.put(bot_state, :chase_timer, bot_state.chase_timer - @chase_timer_adittive)
+
       random_decision = maybe_random_decision() ->
         Map.put(bot_state, :objective, random_decision)
 
@@ -496,6 +522,15 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     Nx.add(angle, Enum.random(0..@random_factor) / 100 * Enum.random([-1, 1]))
   end
 
+  # This method will traverse the list of mechanics from the ability number 1
+  # from the bot's character and check if we can get a range from any mechanic
+  # and take the min of they in case more than one is found
+
+  # Maybe we should a better way to get this value since this will force to every skill to
+  # have a variabel "Range" in order to work, and if we would add a new range type variable
+  # we would need to update this.
+
+  # It returns 0 if no range is found
   defp get_skill_range(character_name, config) do
     character_name = String.downcase(character_name)
 
@@ -507,17 +542,24 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     config["skills"]
     |> Enum.find(fn skill -> skill["name"] == basic_attack_name end)
     |> Map.get("mechanics")
-    |> Enum.find(fn mechanic -> Map.has_key?(mechanic, "Hit") end)
-    |> get_skill_range()
+    |> get_min_skill_range(0)
   end
 
-  # TODO Fix projectile base mechanics
-  defp get_skill_range(%{
-         "Hit" => %{
-           "range" => range
-         }
-       }),
-       do: range
+  defp get_min_skill_range([skill_mechanic], acc) do
+    range = Map.get(skill_mechanic, "range") || 0
 
-  defp get_skill_range(_), do: nil
+    min(acc, range)
+  end
+
+  defp get_min_skill_range([skill_mechanic | tail], acc) do
+    range = Map.get(skill_mechanic, "range") || 0
+
+    get_min_skill_range(tail, min(acc, range))
+  end
+
+  def random_chance(chance \\ 100, additive)
+
+  def random_chance(chance, additive) do
+    :rand.uniform(chance) <= @random_factor + additive
+  end
 end
