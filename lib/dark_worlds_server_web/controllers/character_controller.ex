@@ -25,7 +25,11 @@ defmodule DarkWorldsServerWeb.UserController do
           selected: true,
           slot: nil,
           user_id: user.id,
-          character_id: Characters.get_character_by_name(String.downcase(selected_character)).id
+          character_id:
+            selected_character
+            |> Utils.Characters.game_character_name_to_character_name()
+            |> Characters.get_character_by_name()
+            |> Map.get(:id)
         })
 
         json(conn, user_response(user))
@@ -44,7 +48,11 @@ defmodule DarkWorldsServerWeb.UserController do
         json(conn, %{error: "INEXISTENT_USER"})
 
       user ->
-        case Units.replace_selected_character(String.downcase(selected_character), user.id, %{level: 1}) do
+        case Units.replace_selected_character(
+               Characters.game_character_name_to_character_name(selected_character),
+               user.id,
+               %{level: 1}
+             ) do
           {:ok, _unit} ->
             json(conn, user_response(user))
 
@@ -139,7 +147,7 @@ defmodule DarkWorldsServerWeb.UserController do
 
     %{
       device_client_id: device_client_id,
-      selected_character: Utils.Characters.transform_character_name_to_game_character_name(selected_unit.character.name)
+      selected_character: Utils.Characters.character_name_to_game_character_name(selected_unit.character.name)
     }
   end
 

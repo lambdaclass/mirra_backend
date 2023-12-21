@@ -96,7 +96,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_call({:join, user_id, character_name}, _from, state) do
-    case GameBackend.add_player(state.game_state, String.downcase(character_name)) do
+    case GameBackend.add_player(state.game_state, Characters.game_character_name_to_character_name(character_name)) do
       {:ok, {game_state, player_id}} ->
         state =
           Map.put(state, :game_state, game_state)
@@ -335,7 +335,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       status: if(player.health <= 0, do: :dead, else: :alive),
       health: player.health,
       body_size: player.size,
-      character_name: Characters.transform_character_name_to_game_character_name(player.character.name),
+      character_name: Characters.character_name_to_game_character_name(player.character.name),
       ## Placeholder values
       kill_count: player.kill_count,
       effects: transform_effects_to_game_effects(player.effects),
