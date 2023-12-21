@@ -3,6 +3,7 @@ defmodule DarkWorldsServer.Units do
   alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Repo
   alias DarkWorldsServer.Units.Unit
+  alias Ecto.Multi
   import Ecto.Query
 
   #########
@@ -88,18 +89,27 @@ defmodule DarkWorldsServer.Units do
   def replace_selected_character(character_name, user_id, creation_params) do
     case(get_unit_by_character_name(character_name, user_id)) do
       nil ->
-        remove_all_selected_units(user_id)
-
-        insert_unit(%{
-          user_id: user_id,
-          character_id: Characters.get_character_by_name(character_name).id,
-          selected: true,
-          level: Map.get(creation_params, :level, 1),
-          position: Map.get(creation_params, :position, nil)
-        })
+        Multi.new()
+        |> Multi.run(:remove_all_selected, fn _repo, _changes ->
+          {_amount, nil} = remove_all_selected_units(user_id)
+          {:ok, nil}
+        end)
+        |> Multi.run(
+          :insert_unit,
+          fn _repo, _changes ->
+            insert_unit(%{
+              user_id: user_id,
+              character_id: Characters.get_character_by_name(character_name).id,
+              selected: true,
+              level: Map.get(creation_params, :level, 1),
+              position: Map.get(creation_params, :position, nil)
+            })
+          end
+        )
+        |> Repo.transaction()
 
       unit ->
-        replace_selected_unit(unit, user_id)
+        replace_selected_unit(unit.id, user_id)
     end
   end
 
@@ -110,16 +120,26 @@ defmodule DarkWorldsServer.Units do
   def replace_selected_character(character_name, user_id) do
     case get_unit_by_character_name(character_name, user_id) do
       nil -> nil
-      unit -> replace_selected_unit(unit, user_id)
+      unit -> replace_selected_unit(unit.id, user_id)
     end
   end
 
   @doc """
   Sets a unit as selected and unselects all others for a user.
   """
-  def replace_selected_unit(%Unit{} = unit, user_id) do
-    remove_all_selected_units(user_id)
-    set_selected(unit)
+  def replace_selected_unit(unit_id, user_id) do
+    # We work with unit_id here because the remove selected function could affect the unit, making it outdated.
+    Multi.new()
+    |> Multi.run(:remove_all_selected, fn _repo, _changes ->
+      {_amount, nil} = remove_all_selected_units(user_id)
+      {:ok, nil}
+    end)
+    |> Multi.run(:set_selected, fn _repo, _changes ->
+      unit_id
+      |> get_unit()
+      |> set_selected()
+    end)
+    |> Repo.transaction()
   end
 
   @doc """
