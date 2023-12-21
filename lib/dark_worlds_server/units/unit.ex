@@ -14,7 +14,7 @@ defmodule DarkWorldsServer.Units.Unit do
   schema "units" do
     field(:level, :integer)
     field(:selected, :boolean)
-    field(:position, :integer)
+    field(:slot, :integer)
 
     belongs_to(:user, User)
     belongs_to(:character, Character)
@@ -25,14 +25,14 @@ defmodule DarkWorldsServer.Units.Unit do
   @doc false
   def changeset(unit, attrs) do
     unit
-    |> cast(attrs, [:level, :selected, :position, :character_id, :user_id])
+    |> cast(attrs, [:level, :selected, :slot, :character_id, :user_id])
     |> validate_required([:level, :selected, :character_id, :user_id])
   end
 
   @doc """
   Changeset for editing a unit's basic attributes.
   """
-  def edit_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :position, :level])
+  def edit_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :slot, :level])
 
   @doc """
   Changeset for setting a unit's character id.

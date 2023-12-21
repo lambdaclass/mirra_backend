@@ -115,7 +115,7 @@ defmodule DarkWorldsServer.Units do
               character_id: Characters.get_character_by_name(character_name).id,
               selected: true,
               level: Map.get(creation_params, :level, 1),
-              position: Map.get(creation_params, :position, nil)
+              slot: Map.get(creation_params, :slot, nil)
             })
           end
         )

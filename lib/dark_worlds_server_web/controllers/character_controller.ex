@@ -23,7 +23,7 @@ defmodule DarkWorldsServerWeb.UserController do
         Units.insert_unit(%{
           level: 1,
           selected: true,
-          position: nil,
+          slot: nil,
           user_id: user.id,
           character_id: Characters.get_character_by_name(String.downcase(selected_character)).id
         })
@@ -66,9 +66,9 @@ defmodule DarkWorldsServerWeb.UserController do
         unit_params = %{selected: true}
 
         unit_params =
-          case Map.get(params, "position") do
+          case Map.get(params, "slot") do
             nil -> unit_params
-            position -> Map.put(unit_params, :position, position)
+            slot -> Map.put(unit_params, :slot, slot)
           end
 
         case Units.get_unit(added_unit) |> Units.update_unit(unit_params) do
@@ -93,9 +93,9 @@ defmodule DarkWorldsServerWeb.UserController do
         unit_params = %{selected: false}
 
         unit_params =
-          case Map.get(params, "position") do
+          case Map.get(params, "slot") do
             nil -> unit_params
-            position -> Map.put(unit_params, :position, position)
+            slot -> Map.put(unit_params, :slot, slot)
           end
 
         case Units.get_unit(removed_unit) |> Units.update_unit(unit_params) do
@@ -121,7 +121,7 @@ defmodule DarkWorldsServerWeb.UserController do
           Enum.into(
             units,
             %{},
-            &{&1.id, %{character: &1.character.name, selected: &1.selected, position: &1.position, level: &1.level}}
+            &{&1.id, %{character: &1.character.name, selected: &1.selected, slot: &1.slot, level: &1.level}}
           )
         )
     end
