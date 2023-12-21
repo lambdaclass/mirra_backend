@@ -3,6 +3,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   require Logger
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias DarkWorldsServer.Utils.Config
 
@@ -41,6 +42,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   def attack(runner_pid, user_id, action, timestamp) do
     GenServer.cast(runner_pid, {:attack, user_id, action, timestamp})
+  end
+
+  def use_inventory(runner_pid, user_id, action, timestamp) do
+    GenServer.cast(runner_pid, {:use_inventory, user_id, action, timestamp})
   end
 
   def skill(runner_pid, user_id, action) do
@@ -140,6 +145,23 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
         "direction_angle" => Float.to_string(angle),
         "auto_aim" => to_string(auto_aim)
       })
+
+    state =
+      Map.put(state, :game_state, game_state)
+      |> put_in([:player_timestamps, user_id], timestamp)
+
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_cast(
+        {:use_inventory, user_id, %UseInventory{inventory_at: inventory_at}, timestamp},
+        state
+      ) do
+    player_id = state.user_to_player[user_id] || user_id
+
+    game_state =
+      GameBackend.activate_inventory(state.game_state, player_id, inventory_at)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -341,7 +363,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       death_count: 0,
       action: transform_action_to_game_action(player.action),
       direction: transform_angle_to_game_relative_position(player.direction),
-      aoe_position: %GameBackend.Position{x: 0, y: 0}
+      aoe_position: %GameBackend.Position{x: 0, y: 0},
+      inventory: player.inventory
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end
