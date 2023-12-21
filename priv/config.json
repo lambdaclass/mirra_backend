@@ -73,7 +73,7 @@
         {
           "attribute": "speed",
           "modifier": "Multiplicative",
-          "value": "2."
+          "value": "1.6"
         }
       ],
       "projectile_attributes": [],
@@ -330,6 +330,7 @@
   "game": {
     "width": 10000,
     "height": 10000,
+    "tick_interval_ms": 20,
     "zone_starting_radius": 14000,
     "zone_modifications": [
       {

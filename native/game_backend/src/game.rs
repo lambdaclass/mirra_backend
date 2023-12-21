@@ -39,6 +39,7 @@ pub struct GameConfigFile {
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
     initial_positions: Vec<Position>,
+    tick_interval_ms: u64,
 }
 
 #[derive(Deserialize)]
@@ -60,6 +61,7 @@ pub struct GameConfig {
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
     pub initial_positions: Vec<Position>,
+    pub tick_interval_ms: u64,
 }
 
 #[derive(NifMap, Clone)]
@@ -141,6 +143,7 @@ impl GameConfig {
             zone_modifications,
             auto_aim_max_distance: game_config.auto_aim_max_distance,
             initial_positions: game_config.initial_positions,
+            tick_interval_ms: game_config.tick_interval_ms,
         }
     }
 }
@@ -381,7 +384,7 @@ impl GameState {
                                 })
                         }
                         SkillMechanic::MoveToTarget {
-                            duration_ms,
+                            duration_ms: _,
                             max_range,
                             on_arrival_skills,
                         } => {
@@ -402,7 +405,9 @@ impl GameState {
                                 }
                             }
 
-                            execution_duration_ms = (*duration_ms as f32 * amount) as u64;
+                            let distance = (*max_range as f32 * amount) as u64;
+
+                            execution_duration_ms = (distance / player.speed) * self.config.game.tick_interval_ms;
                             
                             player.set_moving_params(
                                 execution_duration_ms, player.speed as f32,

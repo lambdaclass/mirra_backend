@@ -5,8 +5,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseSkill
 
-  # This is the amount of time between state updates in milliseconds
-  @game_tick_rate_ms 20
   # Amount of time between loot spawn
   @loot_spawn_rate_ms 20_000
   # Amount of time between loot spawn
@@ -77,7 +75,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     state = %{
       game_state: GameBackend.new_game(game_config),
-      game_tick: @game_tick_rate_ms,
+      game_tick: game_config.game.tick_interval_ms,
       player_timestamps: %{},
       broadcast_topic: Communication.pubsub_game_topic(self()),
       user_to_player: %{},
@@ -153,7 +151,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_info(:start_game_tick, state) do
-    Process.send_after(self(), :game_tick, @game_tick_rate_ms)
+    Process.send_after(self(), :game_tick, state.game_tick)
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
     broadcast_game_start(state.broadcast_topic, Map.put(state.game_state, :player_timestamps, state.player_timestamps))
@@ -163,7 +161,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   def handle_info(:game_tick, state) do
-    Process.send_after(self(), :game_tick, @game_tick_rate_ms)
+    Process.send_after(self(), :game_tick, state.game_tick)
 
     now = System.monotonic_time(:millisecond)
     time_diff = now - state.last_game_tick_at
