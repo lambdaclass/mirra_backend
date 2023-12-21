@@ -120,7 +120,6 @@ defmodule DarkWorldsServer.Units do
   def replace_selected_unit(%Unit{} = unit, user_id) do
     remove_all_selected_units(user_id)
     set_selected(unit)
-    res
   end
 
   @doc """
