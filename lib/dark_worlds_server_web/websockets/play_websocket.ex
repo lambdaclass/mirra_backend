@@ -155,43 +155,23 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   end
 
   ## The difference with :game_update messages is that these come from Runner
-  def websocket_info({:game_state, game_state}, web_socket_state) do
-    reply_map = %{
-      players: game_state.players,
-      projectiles: game_state.projectiles,
-      killfeed: game_state.killfeed,
-      player_timestamp: game_state.player_timestamps[web_socket_state.player_id],
-      playable_radius: game_state.playable_radius,
-      shrinking_center: game_state.shrinking_center,
-      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-      loots: game_state.loots
-    }
-
-    {:reply, {:binary, Communication.game_update!(reply_map)}, web_socket_state}
+  def websocket_info({:game_state, new_game_state, old_game_state}, web_socket_state) do
+    player_timestamp = new_game_state.player_timestamps[web_socket_state.player_id]
+    server_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    msg = Communication.game_update!(new_game_state, old_game_state, player_timestamp, server_timestamp)
+    {:reply, {:binary, msg}, web_socket_state}
   end
 
-  def websocket_info({:game_start, game_state}, web_socket_state) do
-    reply_map = %{
-      players: game_state.players,
-      projectiles: game_state.projectiles,
-      killfeed: game_state.killfeed,
-      player_timestamp: game_state.player_timestamps[web_socket_state.player_id],
-      playable_radius: game_state.playable_radius,
-      shrinking_center: game_state.shrinking_center,
-      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-      loots: game_state.loots
-    }
-
-    {:reply, {:binary, Communication.game_started!(reply_map)}, web_socket_state}
+  def websocket_info({:game_start, new_game_state, old_game_state}, web_socket_state) do
+    player_timestamp = new_game_state.player_timestamps[web_socket_state.player_id]
+    server_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    msg = Communication.game_started!(new_game_state, old_game_state, player_timestamp, server_timestamp)
+    {:reply, {:binary, msg}, web_socket_state}
   end
 
-  def websocket_info({:game_ended, winner, game_state}, web_socket_state) do
-    reply_map = %{
-      players: game_state.players,
-      winner: winner
-    }
-
-    {:reply, {:binary, Communication.game_finished!(reply_map)}, web_socket_state}
+  def websocket_info({:game_ended, new_winner, new_players, old_winner, old_players}, web_socket_state) do
+    msg = Communication.game_finished!(new_winner, new_players, old_winner, old_players)
+    {:reply, {:binary, msg}, web_socket_state}
   end
 
   def websocket_info(info, web_socket_state), do: {:reply, {:text, info}, web_socket_state}
