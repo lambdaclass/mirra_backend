@@ -11,9 +11,10 @@ defmodule DarkWorldsServerWeb.CharacterController do
 
   def create_player(conn, %{
         "device_client_id" => device_client_id,
-        "selected_character" => selected_character
+        "selected_character" => selected_character,
+        "username" => username
       }) do
-    user_params = create_user_data(device_client_id, selected_character)
+    user_params = create_user_data(device_client_id, selected_character, username)
 
     case Accounts.register_user(user_params) do
       {:ok, user} ->
@@ -46,18 +47,20 @@ defmodule DarkWorldsServerWeb.CharacterController do
   defp user_response(nil) do
     %{
       device_client_id: "NOT_FOUND",
-      selected_character: "NOT_FOUND"
+      selected_character: "NOT_FOUND",
+      username: "NOT_FOUND"
     }
   end
 
-  defp user_response(%User{device_client_id: device_client_id, selected_character: selected_character}) do
+  defp user_response(%User{device_client_id: device_client_id, selected_character: selected_character,username: username}) do
     %{
       device_client_id: device_client_id,
-      selected_character: selected_character
+      selected_character: selected_character,
+      username: username
     }
   end
 
-  defp create_user_data(device_client_id, selected_character) do
+  defp create_user_data(device_client_id, selected_character, username) do
     provisional_password = UUID.uuid4()
     user = UUID.uuid4()
 
@@ -66,7 +69,8 @@ defmodule DarkWorldsServerWeb.CharacterController do
       password: provisional_password,
       device_client_id: device_client_id,
       selected_character: selected_character,
-      username: "user_#{user}"
+      user: "user_#{user}",
+      username: username
     }
   end
 end
