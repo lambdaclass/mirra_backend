@@ -128,8 +128,9 @@ impl Player {
         self.cooldowns
             .entry(skill_key.to_string())
             .or_insert(cooldown_ms);
-        //insert(skill_key.to_string(), cooldown_ms);
-        self.available_burst_loads -= 1;
+        if self.cooldowns.contains_key(BASIC_SKILL_KEY) {
+            self.available_burst_loads -= 1;
+        }
     }
 
     pub fn reduce_cooldowns(&mut self, elapsed_time_ms: u64) {
