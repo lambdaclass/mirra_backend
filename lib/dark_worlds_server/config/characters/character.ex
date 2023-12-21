@@ -18,6 +18,7 @@ defmodule DarkWorldsServer.Config.Characters.Character do
     field(:base_size, :integer)
     field(:base_health, :integer)
     field(:max_inventory_size, :integer)
+    field(:burst_loads, :integer)
 
     many_to_many(:skills, Skill, join_through: CharacterSkill)
 
@@ -27,8 +28,8 @@ defmodule DarkWorldsServer.Config.Characters.Character do
   @doc false
   def changeset(character, attrs) do
     character
-    |> cast(attrs, [:name, :active, :base_speed, :base_size, :base_health, :max_inventory_size])
-    |> validate_required([:name, :active, :base_speed, :base_size, :base_health, :max_inventory_size])
+    |> cast(attrs, [:name, :active, :base_speed, :base_size, :base_health, :max_inventory_size, :burst_loads])
+    |> validate_required([:name, :active, :base_speed, :base_size, :base_health, :max_inventory_size, :burst_loads])
   end
 
   def to_backend_map(character),
@@ -39,6 +40,7 @@ defmodule DarkWorldsServer.Config.Characters.Character do
       base_size: character.base_size,
       base_health: character.base_health,
       max_inventory_size: character.max_inventory_size,
+      burst_loads: character.burst_loads,
       skills:
         Enum.into(character.skills, %{}, fn skill ->
           {Integer.to_string(Characters.get_character_skill_number(character.id, skill.id)),
