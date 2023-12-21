@@ -128,7 +128,7 @@ impl Player {
         self.cooldowns
             .entry(skill_key.to_string())
             .or_insert(cooldown_ms);
-        if self.cooldowns.contains_key(BASIC_SKILL_KEY) {
+        if skill_key == BASIC_SKILL_KEY {
             self.available_burst_loads -= 1;
         }
     }
