@@ -125,7 +125,10 @@ impl Player {
     }
 
     pub fn add_cooldown(&mut self, skill_key: &String, cooldown_ms: u64) {
-        self.cooldowns.insert(skill_key.to_string(), cooldown_ms);
+        self.cooldowns
+            .entry(skill_key.to_string())
+            .or_insert(cooldown_ms);
+        //insert(skill_key.to_string(), cooldown_ms);
         self.available_burst_loads -= 1;
     }
 
