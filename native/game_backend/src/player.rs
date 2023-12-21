@@ -376,7 +376,7 @@ fn can_perform_basic_attack(player: &Player) -> bool {
 }
 
 fn can_perform_skill_attack(player: &Player, skill_key: &String) -> bool {
-    !player.cooldowns.contains_key(BASIC_SKILL_KEY) && !player.cooldowns.contains_key(skill_key)
+    skill_key != BASIC_SKILL_KEY && !player.cooldowns.contains_key(skill_key)
 }
 
 fn update_status(player: &mut Player) {
