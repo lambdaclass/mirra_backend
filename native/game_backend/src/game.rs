@@ -387,6 +387,7 @@ impl GameState {
                             duration_ms: _,
                             max_range,
                             on_arrival_skills,
+                            effects_to_remove_on_arrival
                         } => {
 
                             let (mut amount, auto_aim) = parse_skill_params_move_to_target(&skill_params);
@@ -411,7 +412,7 @@ impl GameState {
                             
                             player.set_moving_params(
                                 execution_duration_ms, player.speed as f32,
-                                on_arrival_skills,
+                                on_arrival_skills, effects_to_remove_on_arrival
                             );
                             
                         }

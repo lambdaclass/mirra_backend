@@ -100,6 +100,8 @@ impl Player {
     }
 
     pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
+        let mut effects_to_remove: Vec<String> = Vec::new();
+
         if let Some(moving_params) = self.skill_moving_params.as_mut() {
             let speed = moving_params.speed;
 
@@ -114,9 +116,19 @@ impl Player {
             if moving_params.duration_ms == 0 {
                 self.skills_keys_to_execute
                     .append(&mut moving_params.skills_on_arrival);
+
+                moving_params
+                    .effects_to_remove_on_arrival
+                    .iter()
+                    .for_each(|effect_key| effects_to_remove.push(effect_key.to_string()));
+
                 self.skill_moving_params = None;
             }
         }
+
+        effects_to_remove.iter().for_each(|effect_key| {
+            self.remove_effect(effect_key);
+        });
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
@@ -364,11 +376,13 @@ impl Player {
         duration_ms: u64,
         speed: f32,
         skills_on_arrival: &[String],
+        effects_to_remove_on_arrival: &[String],
     ) {
         let moving_params = SkillMovingParams {
             duration_ms,
             speed,
             skills_on_arrival: skills_on_arrival.to_vec(),
+            effects_to_remove_on_arrival: effects_to_remove_on_arrival.to_vec(),
         };
         self.skill_moving_params = Some(moving_params);
     }
