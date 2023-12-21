@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Utils.Config do
+  require Logger
   alias DarkWorldsServer.Config.Characters
   alias DarkWorldsServer.Config.Characters.Character
   alias DarkWorldsServer.Config.Characters.Effect
@@ -38,27 +39,27 @@ defmodule DarkWorldsServer.Utils.Config do
     %{effects: effects, skills: skills, characters: characters, projectiles: projectiles, loots: loots, game: game} =
       read_and_parse()
 
-    effects_result = Enum.map(effects, &insert_effects/1)
+    effects_result = verified_insert(effects, &insert_effects/1)
 
-    skills_result = Enum.map(skills, &Characters.insert_skill/1)
+    skills_result = verified_insert(skills, &Characters.insert_skill/1)
 
-    characters_result = Enum.map(characters, &Characters.insert_character/1)
+    characters_result = verified_insert(characters, &Characters.insert_character/1)
 
-    character_skills_result = Enum.map(characters, &insert_character_skills/1) |> List.flatten()
+    character_skills_result = verified_insert(characters, &insert_character_skills/1)
 
-    projectiles_result = Enum.map(projectiles, &Characters.insert_projectile/1)
+    projectiles_result = verified_insert(projectiles, &Characters.insert_projectile/1)
 
-    projectile_effects_result = Enum.map(projectiles, &insert_projectile_effects/1) |> List.flatten()
+    projectile_effects_result = verified_insert(projectiles, &insert_projectile_effects/1)
 
-    loots_result = Enum.map(loots, &Games.insert_loot/1)
+    loots_result = verified_insert(loots, &Games.insert_loot/1)
 
-    loot_effects_result = Enum.map(loots, &insert_loot_effects/1) |> List.flatten()
+    loot_effects_result = verified_insert(loots, &insert_loot_effects/1)
 
     # Also inserts its zone_modifications
-    game_result = Games.insert_game(game)
+    game_result = verified_insert([game], &Games.insert_game/1)
 
     zone_modification_effects_result =
-      Enum.map(Games.all_zone_modifications(), &insert_zone_modification_effects/1) |> List.flatten()
+      verified_insert(Games.all_zone_modifications(), &insert_zone_modification_effects/1)
 
     results =
       effects_result ++
@@ -138,6 +139,20 @@ defmodule DarkWorldsServer.Utils.Config do
       effect_id = Characters.get_effect_by_name(effect_name).id
       Games.insert_zone_modification_effect(%{zone_modification_id: zone_modification_id, effect_id: effect_id})
     end)
+  end
+
+  defp verified_insert(items, insert_fn) do
+    results = Enum.map(items, insert_fn) |> List.flatten()
+
+    Enum.each(results, fn
+      {:error, changeset} ->
+        raise "Bad config #{inspect(changeset.errors)}"
+
+      _ ->
+        :ok
+    end)
+
+    results
   end
 
   @doc """

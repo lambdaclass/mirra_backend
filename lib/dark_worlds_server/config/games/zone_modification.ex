@@ -14,8 +14,8 @@ defmodule DarkWorldsServer.Config.Games.ZoneModification do
   schema "zone_modifications" do
     field(:duration_ms, :integer)
     field(:interval_ms, :integer)
-    field(:min_radius, :integer)
-    field(:max_radius, :integer)
+    field(:min_radius, :float)
+    field(:max_radius, :float)
     field(:modifier, :string)
     field(:value, :float)
 

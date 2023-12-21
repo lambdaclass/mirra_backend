@@ -13,7 +13,7 @@ defmodule DarkWorldsServer.Config.Games.Loot do
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "loots" do
     field(:name, :string)
-    field(:size, :integer)
+    field(:size, :float)
     field(:pickup_mechanic, :string)
 
     many_to_many(:effects, Effect, join_through: LootEffect)

@@ -61,7 +61,7 @@ defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
         {:hit,
          %{
            damage: String.to_integer(damage),
-           range: String.to_integer(range),
+           range: String.to_float(range),
            cone_angle: String.to_integer(cone_angle),
            on_hit_effects: parse_on_hit_effects(on_hit_effects)
          }}
@@ -78,7 +78,7 @@ defmodule DarkWorldsServer.Config.Characters.SkillMechanic do
         {:simple_shoot, %{projectile: Characters.get_projectile_by_name(projectile)}}
 
       ["MoveToTarget", duration_ms, max_range] ->
-        {:move_to_target, %{duration_ms: String.to_integer(duration_ms), max_range: String.to_integer(max_range)}}
+        {:move_to_target, %{duration_ms: String.to_integer(duration_ms), max_range: String.to_float(max_range)}}
 
       _ ->
         "Invalid"

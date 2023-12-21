@@ -9,10 +9,10 @@ defmodule DarkWorldsServer.Config.Games.Game do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "games" do
-    field(:width, :integer)
-    field(:height, :integer)
+    field(:width, :float)
+    field(:height, :float)
     field(:loot_interval_ms, :integer)
-    field(:zone_starting_radius, :integer)
+    field(:zone_starting_radius, :float)
     field(:auto_aim_max_distance, :float)
     field(:initial_positions, {:array, :map})
 

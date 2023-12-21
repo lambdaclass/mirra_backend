@@ -14,8 +14,8 @@ defmodule DarkWorldsServer.Config.Characters.Character do
   schema "characters" do
     field(:active, :boolean, default: false)
     field(:name, :string)
-    field(:base_speed, :integer)
-    field(:base_size, :integer)
+    field(:base_speed, :float)
+    field(:base_size, :float)
     field(:base_health, :integer)
     field(:max_inventory_size, :integer)
 
