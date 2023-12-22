@@ -147,6 +147,17 @@ impl Player {
             }
             *remaining > 0
         });
+
+        self.available_burst_loads
+            .iter_mut()
+            .for_each(|(key, load)| {
+                if *load < self.character.skills[key].burst_loads
+                    && !self.cooldowns.contains_key(key)
+                {
+                    self.cooldowns
+                        .insert(key.to_string(), self.character.skills[key].cooldown_ms);
+                }
+            });
     }
 
     pub fn apply_effects_if_not_present(
