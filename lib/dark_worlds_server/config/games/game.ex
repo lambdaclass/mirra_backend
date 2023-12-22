@@ -15,6 +15,7 @@ defmodule DarkWorldsServer.Config.Games.Game do
     field(:zone_starting_radius, :integer)
     field(:auto_aim_max_distance, :float)
     field(:initial_positions, {:array, :map})
+    field(:tick_interval_ms, :integer)
 
     has_many(:zone_modifications, ZoneModification)
 
@@ -30,9 +31,10 @@ defmodule DarkWorldsServer.Config.Games.Game do
       :loot_interval_ms,
       :zone_starting_radius,
       :auto_aim_max_distance,
-      :initial_positions
+      :initial_positions,
+      :tick_interval_ms
     ])
-    |> validate_required([:width, :height, :auto_aim_max_distance])
+    |> validate_required([:width, :height, :auto_aim_max_distance, :tick_interval_ms])
     |> cast_assoc(:zone_modifications)
   end
 
@@ -45,6 +47,7 @@ defmodule DarkWorldsServer.Config.Games.Game do
         Enum.map(game.initial_positions, &Enum.into(&1, %{}, fn {key, value} -> {String.to_atom(key), value} end)),
       loot_interval_ms: game.loot_interval_ms,
       zone_modifications: Enum.map(game.zone_modifications, &ZoneModification.to_backend_map/1),
-      zone_starting_radius: game.zone_starting_radius
+      zone_starting_radius: game.zone_starting_radius,
+      tick_interval_ms: game.tick_interval_ms
     }
 end

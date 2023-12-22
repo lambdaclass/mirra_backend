@@ -14,8 +14,9 @@ use crate::game::EntityOwner;
 use crate::loot::Loot;
 use crate::map;
 use crate::map::Position;
+use crate::skill::SkillMovingParams;
 
-#[derive(NifMap)]
+#[derive(NifMap, Clone)]
 pub struct Player {
     pub id: u64,
     pub character: CharacterConfig,
@@ -33,6 +34,7 @@ pub struct Player {
     pub skills_keys_to_execute: Vec<String>,
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<ActionTracker>,
+    skill_moving_params: Option<SkillMovingParams>,
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
@@ -73,6 +75,7 @@ impl Player {
             character: character_config,
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
+            skill_moving_params: None,
         }
     }
 
@@ -94,6 +97,38 @@ impl Player {
             self.speed as f32,
             config.game.width as f32,
         );
+    }
+
+    pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
+        let mut effects_to_remove: Vec<String> = Vec::new();
+
+        if let Some(moving_params) = self.skill_moving_params.as_mut() {
+            let speed = moving_params.speed;
+
+            self.position = map::next_position(
+                &self.position,
+                self.direction,
+                speed,
+                config.game.width as f32,
+            );
+            moving_params.duration_ms = moving_params.duration_ms.saturating_sub(elapsed_time_ms);
+
+            if moving_params.duration_ms == 0 {
+                self.skills_keys_to_execute
+                    .append(&mut moving_params.skills_on_arrival);
+
+                moving_params
+                    .effects_to_remove_on_arrival
+                    .iter()
+                    .for_each(|effect_key| effects_to_remove.push(effect_key.name.clone()));
+
+                self.skill_moving_params = None;
+            }
+        }
+
+        effects_to_remove.iter().for_each(|effect_key| {
+            self.remove_effect(effect_key);
+        });
     }
 
     pub fn add_action(&mut self, action: Action, duration_ms: u64) {
@@ -336,11 +371,32 @@ impl Player {
         self.inventory[inventory_at].take()
     }
 
+    pub fn set_moving_params(
+        &mut self,
+        duration_ms: u64,
+        speed: f32,
+        skills_on_arrival: &[String],
+        effects_to_remove_on_arrival: &[Effect],
+    ) {
+        let moving_params = SkillMovingParams {
+            duration_ms,
+            speed,
+            skills_on_arrival: skills_on_arrival.to_vec(),
+            effects_to_remove_on_arrival: effects_to_remove_on_arrival.to_vec(),
+        };
+        self.skill_moving_params = Some(moving_params);
+    }
+
     pub fn can_do_action(&self) -> bool {
         !self
             .next_actions
             .iter()
             .any(|action_tracker| action_tracker.action != Action::Moving)
+            && self.skill_moving_params.is_none()
+    }
+
+    pub const fn is_targetable(&self) -> bool {
+        self.skill_moving_params.is_none()
     }
 }
 

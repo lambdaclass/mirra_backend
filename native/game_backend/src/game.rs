@@ -39,6 +39,7 @@ pub struct GameConfigFile {
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
     initial_positions: Vec<Position>,
+    tick_interval_ms: u64,
 }
 
 #[derive(Deserialize)]
@@ -60,6 +61,7 @@ pub struct GameConfig {
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
     pub initial_positions: Vec<Position>,
+    pub tick_interval_ms: u64,
 }
 
 #[derive(NifMap, Clone)]
@@ -141,6 +143,7 @@ impl GameConfig {
             zone_modifications,
             auto_aim_max_distance: game_config.auto_aim_max_distance,
             initial_positions: game_config.initial_positions,
+            tick_interval_ms: game_config.tick_interval_ms,
         }
     }
 }
@@ -190,12 +193,19 @@ impl GameState {
             if !player.can_do_action() {
                 return;
             }
+
             player.move_position(angle, &self.config);
             collect_nearby_loot(loots, player);
         }
     }
 
     fn activate_skills(&mut self) {
+        let cloned_players: Vec<Player> = self
+            .players
+            .iter_mut()
+            .map(|(_, player)| player.clone())
+            .collect();
+
         self.players.values_mut().for_each(|player| {
             let skill_keys = player.skills_keys_to_execute.clone();
             skill_keys.iter().for_each(|skill_key: &String| {
@@ -220,6 +230,44 @@ impl GameState {
                                     projectile_config,
                                 );
                                 self.projectiles.push(projectile);
+                            }
+                            SkillMechanic::Hit {
+                                damage,
+                                range,
+                                cone_angle,
+                                on_hit_effects,
+                            } => {
+                                let mut damage = *damage;
+
+                                for (effect, _owner) in player.effects.iter() {
+                                    for change in effect.player_attributes.iter() {
+                                        if change.attribute == "damage" {
+                                            effect::modify_attribute(&mut damage, change)
+                                        }
+                                    }
+                                }
+
+                                cloned_players
+                                    .iter()
+                                    .filter(|list_player| {
+                                        list_player.status == PlayerStatus::Alive
+                                            && list_player.id != player.id
+                                            && player.is_targetable()
+                                            && map::in_cone_angle_range(
+                                                player,
+                                                list_player,
+                                                *range,
+                                                *cone_angle as f32,
+                                            )
+                                    })
+                                    .for_each(|target_player| {
+                                        self.pending_damages.push(DamageTracker {
+                                            attacked_id: target_player.id,
+                                            attacker: EntityOwner::Player(player.id),
+                                            damage: damage as i64,
+                                            on_hit_effects: on_hit_effects.clone(),
+                                        });
+                                    });
                             }
                             _ => todo!("SkillMechanic not implemented"),
                         }
@@ -253,37 +301,11 @@ impl GameState {
             }
 
             if let Some(skill) = player.character.clone().skills.get(&skill_key) {
-                player.add_action(
-                    Action::UsingSkill(skill_key.clone()),
-                    skill.execution_duration_ms,
-                );
+                let mut execution_duration_ms = skill.execution_duration_ms;
                 player.add_cooldown(&skill_key, skill.cooldown_ms);
 
-                let auto_aim = skill_params
-                    .get("auto_aim")
-                    .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
-                    .unwrap();
-
-                let direction_angle = if auto_aim {
-                    let nearest_player: Option<Position> = nearest_player_position(
-                        &other_players,
-                        &player.position,
-                        self.config.game.auto_aim_max_distance,
-                    );
-
-                    if let Some(target_player_position) = nearest_player {
-                        map::angle_between_positions(&player.position, &target_player_position)
-                    } else {
-                        player.direction
-                    }
-                } else {
-                    skill_params
-                        .get("direction_angle")
-                        .map(|angle_str| angle_str.parse::<f32>().unwrap())
-                        .unwrap()
-                };
-
-                player.direction = direction_angle;
+                player.direction =
+                    get_direction_angle(player, &other_players, &skill_params, &self.config);
 
                 for mechanic in skill.mechanics.iter() {
                     match mechanic {
@@ -295,7 +317,7 @@ impl GameState {
                             let projectile = Projectile::new(
                                 id,
                                 player.position,
-                                direction_angle,
+                                player.direction,
                                 player.id,
                                 projectile_config,
                             );
@@ -307,7 +329,7 @@ impl GameState {
                             cone_angle,
                         } => {
                             let direction_distribution =
-                                distribute_angle(direction_angle, cone_angle, count);
+                                distribute_angle(player.direction, cone_angle, count);
                             for direction in direction_distribution {
                                 let id = get_next_id(&mut self.next_id);
                                 let projectile = Projectile::new(
@@ -344,12 +366,13 @@ impl GameState {
                             other_players
                                 .iter_mut()
                                 .filter(|target_player| {
-                                    map::in_cone_angle_range(
-                                        player,
-                                        target_player,
-                                        *range,
-                                        *cone_angle as f32,
-                                    )
+                                    player.is_targetable()
+                                        && map::in_cone_angle_range(
+                                            player,
+                                            target_player,
+                                            *range,
+                                            *cone_angle as f32,
+                                        )
                                 })
                                 .for_each(|target_player| {
                                     self.pending_damages.push(DamageTracker {
@@ -360,15 +383,57 @@ impl GameState {
                                     });
                                 })
                         }
-                        _ => todo!("SkillMechanic not implemented"),
+                        SkillMechanic::MoveToTarget {
+                            duration_ms: _,
+                            max_range,
+                            on_arrival_skills,
+                            effects_to_remove_on_arrival,
+                        } => {
+                            let (mut amount, auto_aim) =
+                                parse_skill_params_move_to_target(&skill_params);
+
+                            if auto_aim {
+                                let nearest_player: Option<Position> = nearest_player_position(
+                                    &other_players,
+                                    &player.position,
+                                    self.config.game.auto_aim_max_distance,
+                                );
+
+                                amount = 1.;
+                                if let Some(target_player_position) = nearest_player {
+                                    let distance = map::distance_between_positions(
+                                        &target_player_position,
+                                        &player.position,
+                                    );
+                                    amount = (distance / (*max_range as f32)).clamp(0., 1.);
+                                }
+                            }
+
+                            let distance = (*max_range as f32 * amount) as u64;
+
+                            execution_duration_ms =
+                                (distance / player.speed) * self.config.game.tick_interval_ms;
+
+                            player.set_moving_params(
+                                execution_duration_ms,
+                                player.speed as f32,
+                                on_arrival_skills,
+                                effects_to_remove_on_arrival,
+                            );
+                        }
                     }
                 }
+                player.add_action(Action::UsingSkill(skill_key.clone()), execution_duration_ms);
             }
         }
     }
 
     pub fn activate_inventory(&mut self, player_id: u64, inventory_at: usize) {
         if let Some(player) = self.players.get_mut(&player_id) {
+            if !player.can_do_action() {
+                return;
+            }
+
             if let Some(loot) = player.inventory_take_at(inventory_at) {
                 player.apply_effects(&loot.effects, EntityOwner::Loot)
             }
@@ -376,6 +441,7 @@ impl GameState {
     }
 
     pub fn tick(&mut self, time_diff: u64) {
+        skill_move_players(&mut self.players, time_diff, &self.config);
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
@@ -447,6 +513,10 @@ fn get_next_id(next_id: &mut u64) -> u64 {
 }
 
 fn collect_nearby_loot(loots: &mut Vec<Loot>, player: &mut Player) {
+    if !player.is_targetable() {
+        return;
+    }
+
     loots.retain(|loot| {
         if map::hit_boxes_collide(&loot.position, &player.position, loot.size, player.size) {
             match loot.pickup_mechanic {
@@ -501,6 +571,12 @@ fn update_kill_counts(players: &mut HashMap<u64, Player>, killfeed: &[KillEvent]
                 player.add_kill();
             }
         }
+    });
+}
+
+fn skill_move_players(players: &mut HashMap<u64, Player>, elapsed_time_ms: u64, config: &Config) {
+    players.values_mut().for_each(|player| {
+        player.skill_move(elapsed_time_ms, config);
     })
 }
 
@@ -544,6 +620,7 @@ fn apply_projectiles_collisions(
     projectiles.iter_mut().for_each(|projectile| {
         for player in players.values_mut() {
             if player.status == PlayerStatus::Alive
+                && player.is_targetable()
                 && !projectile.attacked_player_ids.contains(&player.id)
                 && map::hit_boxes_collide(
                     &projectile.position,
@@ -682,4 +759,46 @@ fn nearest_player_position(
         }
     }
     nearest_player
+}
+
+fn get_direction_angle(
+    player: &Player,
+    other_players: &Vec<&mut Player>,
+    skill_params: &HashMap<String, String>,
+    config: &Config,
+) -> f32 {
+    let auto_aim = skill_params
+        .get("auto_aim")
+        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap());
+
+    match auto_aim {
+        Some(true) => {
+            let nearest_player: Option<Position> = nearest_player_position(
+                other_players,
+                &player.position,
+                config.game.auto_aim_max_distance,
+            );
+
+            nearest_player.map_or(player.direction, |target_player_position| {
+                map::angle_between_positions(&player.position, &target_player_position)
+            })
+        }
+        _ => skill_params
+            .get("angle")
+            .map(|angle_str| angle_str.parse::<f32>().unwrap())
+            .unwrap_or(player.direction),
+    }
+}
+
+fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> (f32, bool) {
+    let amount = skill_params
+        .get("amount")
+        .map(|amount| amount.parse::<f32>().unwrap());
+
+    let auto_aim = skill_params
+        .get("auto_aim")
+        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
+        .unwrap_or(false);
+
+    amount.map_or((1., auto_aim), |x| (x.clamp(0., 1.), auto_aim))
 }
