@@ -16,27 +16,23 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
   @impl true
   def init(req, _opts) do
     game_id = :cowboy_req.binding(:game_id, req)
-    player_id = :cowboy_req.binding(:player_id, req)
     client_id = :cowboy_req.binding(:client_id, req)
     player_name = :cowboy_req.binding(:player_name, req)
     client_hash = :cowboy_req.header("dark-worlds-client-hash", req)
+    selected_character = :cowboy_req.binding(:selected_character, req)
 
     {:cowboy_websocket, req,
      %{
        game_id: game_id,
-       player_id: player_id,
        client_id: client_id,
        player_name: player_name,
-       client_hash: client_hash
+       client_hash: client_hash,
+       selected_character: selected_character
      }}
   end
 
   @impl true
   def websocket_init(%{game_id: :undefined}) do
-    {:stop, %{}}
-  end
-
-  def websocket_init(%{player_id: :undefined}) do
     {:stop, %{}}
   end
 
@@ -51,16 +47,17 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
 
   def websocket_init(%{
         game_id: game_id,
-        player_id: _player_id,
         client_id: client_id,
-        player_name: player_name
+        player_name: player_name,
+        selected_character: selected_character
       }) do
     runner_pid = Communication.external_id_to_pid(game_id)
 
     with :ok <- Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}"),
          true <- runner_pid in RunnerSupervisor.list_runners_pids(),
          # String.to_integer(player_id) should be client_id
-         {:ok, player_id} <- Runner.join(runner_pid, client_id, "muflus") do
+
+         {:ok, player_id} <- Runner.join(runner_pid, client_id, selected_character) do
       web_socket_state = %{runner_pid: runner_pid, player_id: client_id, game_id: game_id, player_name: player_name}
 
       Process.send_after(self(), :send_ping, @ping_interval_ms)
