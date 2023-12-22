@@ -86,7 +86,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   @impl GenServer
   def handle_cast({:add_bot, bot_id}, state) do
+<<<<<<< Updated upstream
     #TODO remove this once we implement the server blocking the messages while the match loads
+=======
+    # FIXME remove this once we implement the server blocking the messages while the match loads
+>>>>>>> Stashed changes
     Process.send_after(self(), {:decide_action, bot_id}, @prepare_for_battle_time_ms)
     Process.send_after(self(), {:do_action, bot_id}, @prepare_for_battle_time_ms)
 
