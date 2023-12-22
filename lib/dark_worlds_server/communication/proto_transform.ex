@@ -85,6 +85,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       direction: direction,
       body_size: body_size,
       inventory: inventory,
+      speed: speed,
       available_burst_loads: available_burst_loads
     } = player
 
@@ -107,6 +108,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       direction: direction,
       body_size: body_size,
       inventory: inventory,
+      speed: speed,
       available_burst_loads: available_burst_loads
     }
   end
@@ -502,4 +504,5 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   defp mechanic_name_encode(:simple_shoot), do: :SIMPLE_SHOOT
   defp mechanic_name_encode(:multi_shoot), do: :MULTI_SHOOT
   defp mechanic_name_encode(:give_effect), do: :GIVE_EFFECT
+  defp mechanic_name_encode(:move_to_target), do: :MOVE_TO_TARGET
 end

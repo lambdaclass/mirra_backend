@@ -29,6 +29,8 @@ These are the mechanics so far. Every mechanic will add a configuration field wi
 - `MoveToTarget`: Player will be moved to target position
   * `duration_ms`: How long it takes to move the player, 0 means instantly
   * `max_range`: Maximum distance allowed to move, if target is beyond this limit movement will be capped to this point
+  * `on_arrival_skills`: List of skill keys of skills to execute once move destination is reached
+  * `effects_to_remove_on_arrival`: List of effects to remove once move destination is reached
 
 ### Explaining cone_angle
 
@@ -94,7 +96,9 @@ Some example configurations
       {
         "MoveToTarget": {
           "duration_ms": 1000
-          "max_range": 500
+          "max_range": 500,
+          "on_arrival_skills": ["1", "5"],
+          "effects_to_remove_on_arrival": ["leap_effect"]
         }
       },
       "Hit": {

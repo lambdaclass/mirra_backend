@@ -45,6 +45,8 @@ pub enum SkillMechanicConfigFile {
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
+        on_arrival_skills: Vec<String>,
+        effects_to_remove_on_arrival: Vec<String>,
     },
 }
 
@@ -70,7 +72,17 @@ pub enum SkillMechanic {
     MoveToTarget {
         duration_ms: u64,
         max_range: u64,
+        on_arrival_skills: Vec<String>,
+        effects_to_remove_on_arrival: Vec<Effect>,
     },
+}
+
+#[derive(NifMap, Clone)]
+pub struct SkillMovingParams {
+    pub duration_ms: u64,
+    pub speed: f32,
+    pub skills_on_arrival: Vec<String>,
+    pub effects_to_remove_on_arrival: Vec<Effect>,
 }
 
 impl SkillConfig {
@@ -187,10 +199,22 @@ impl SkillMechanic {
                 SkillMechanicConfigFile::MoveToTarget {
                     duration_ms,
                     max_range,
-                } => SkillMechanic::MoveToTarget {
-                    duration_ms,
-                    max_range,
-                },
+                    on_arrival_skills,
+                    effects_to_remove_on_arrival,
+                } => {
+                    let effects = effects
+                        .iter()
+                        .filter(|effect| effects_to_remove_on_arrival.contains(&effect.name))
+                        .cloned()
+                        .collect();
+
+                    SkillMechanic::MoveToTarget {
+                        duration_ms,
+                        max_range,
+                        on_arrival_skills,
+                        effects_to_remove_on_arrival: effects,
+                    }
+                }
             })
             .collect()
     }

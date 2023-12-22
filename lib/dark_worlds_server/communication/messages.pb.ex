@@ -188,6 +188,7 @@ defmodule DarkWorldsServer.Communication.Proto.MechanicType do
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
   field(:GIVE_EFFECT, 3)
+  field(:MOVE_TO_TARGET, 4)
 end
 
 defmodule DarkWorldsServer.Communication.Proto.TransitionGameEvent do
@@ -554,8 +555,9 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
   field(:inventory, 18, repeated: true, type: DarkWorldsServer.Communication.Proto.GameLoot)
+  field(:speed, 19, type: :uint64)
 
-  field(:available_burst_loads, 19,
+  field(:available_burst_loads, 20,
     repeated: true,
     type: DarkWorldsServer.Communication.Proto.OldPlayer.AvailableBurstLoadsEntry,
     json_name: "availableBurstLoads",
@@ -1142,6 +1144,7 @@ defmodule DarkWorldsServer.Communication.Proto.UseSkill do
   field(:skill, 1, type: :string)
   field(:angle, 2, type: :float)
   field(:auto_aim, 3, type: :bool, json_name: "autoAim")
+  field(:amount, 4, type: :float)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
