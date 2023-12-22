@@ -1,7 +1,7 @@
 name: Certificate Renewal
 
 on:
-  workflow-dispatch:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 1 */2 *' # Running at 1st of the month, every two months.
 
