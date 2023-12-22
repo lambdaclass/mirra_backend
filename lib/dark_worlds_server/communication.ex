@@ -9,6 +9,7 @@ defmodule DarkWorldsServer.Communication do
   alias DarkWorldsServer.Communication.Proto.OldGameEvent
   alias DarkWorldsServer.Communication.Proto.PlayerInformation
   alias DarkWorldsServer.Communication.Proto.TransitionGameEvent
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
 
   @moduledoc """
@@ -83,8 +84,7 @@ defmodule DarkWorldsServer.Communication do
              players: Map.values(new_game_state.players),
              projectiles: new_game_state.projectiles,
              items: new_game_state.loots,
-             # TODO
-             zone_info: nil,
+             zone_info: new_game_state.zone,
              killfeed: new_game_state.killfeed,
              player_timestamp: player_timestamp,
              server_timestamp: server_timestamp
@@ -116,8 +116,7 @@ defmodule DarkWorldsServer.Communication do
            players: Map.values(new_game_state.players),
            projectiles: new_game_state.projectiles,
            items: new_game_state.loots,
-           # TODO
-           zone_info: nil,
+           zone_info: new_game_state.zone,
            killfeed: new_game_state.killfeed,
            player_timestamp: player_timestamp,
            server_timestamp: server_timestamp
@@ -170,6 +169,11 @@ defmodule DarkWorldsServer.Communication do
       timestamp: timestamp(),
       action_type: {:use_skill, %UseSkill{skill: skill, angle: angle, auto_aim: false}}
     }
+    |> GameAction.encode()
+  end
+
+  def player_use_inventory(inventory_at) do
+    %GameAction{timestamp: timestamp(), action_type: {:use_inventory, %UseInventory{inventory_at: inventory_at}}}
     |> GameAction.encode()
   end
 
