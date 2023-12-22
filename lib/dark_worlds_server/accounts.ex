@@ -62,6 +62,8 @@ defmodule DarkWorldsServer.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  def get_all_usernames_and_ids(), do: Repo.all(from u in User, select: %{id: u.id, username: u.username})
+
   ## User registration
 
   @doc """

@@ -7,6 +7,10 @@ defmodule DarkWorldsServerWeb.UserController do
   alias DarkWorldsServer.Units
   alias DarkWorldsServer.Utils
 
+  def get_all_users(conn, _params) do
+    json(conn, %{users: Accounts.get_all_usernames_and_ids()})
+  end
+
   def get_user(conn, %{"device_client_id" => device_client_id}) do
     user = DarkWorldsServer.Accounts.get_user_by_device_client_id(device_client_id)
     json(conn, user_response(user))
