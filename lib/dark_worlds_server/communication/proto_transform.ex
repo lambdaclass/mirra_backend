@@ -1,4 +1,5 @@
 defmodule DarkWorldsServer.Communication.ProtoTransform do
+  alias DarkWorldsServer.Communication.Proto.ActionTracker
   alias DarkWorldsServer.Communication.Proto.Config
   alias DarkWorldsServer.Communication.Proto.GameAction
   alias DarkWorldsServer.Communication.Proto.GameCharacter
@@ -26,6 +27,7 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   alias DarkWorldsServer.Communication.Proto.PlayerInformation, as: ProtoPlayerInformation
   alias DarkWorldsServer.Communication.Proto.RelativePosition, as: ProtoRelativePosition
   alias DarkWorldsServer.Communication.Proto.SkillCooldown
+  alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias GameBackend.Player, as: GamePlayer
   alias GameBackend.Position, as: GamePosition
@@ -81,7 +83,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      inventory: inventory
     } = player
 
     %ProtoPlayer{
@@ -101,7 +104,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      inventory: inventory
     }
   end
 
@@ -208,6 +212,13 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
     }
   end
 
+  def encode(action, ActionTracker) do
+    %ActionTracker{
+      player_action: action,
+      duration: action.duration
+    }
+  end
+
   def encode(data, _struct) do
     data
   end
@@ -281,6 +292,11 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
   end
 
   @impl Protobuf.TransformModule
+  def decode(value, UseInventory) do
+    value
+  end
+
+  @impl Protobuf.TransformModule
   def decode(%ProtoPosition{} = position, ProtoPosition) do
     %{x: x, y: y} = position
     %GamePosition{x: x, y: y}
@@ -310,7 +326,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      inventory: inventory
     } = player
 
     %GamePlayer{
@@ -330,7 +347,8 @@ defmodule DarkWorldsServer.Communication.ProtoTransform do
       character_name: name,
       effects: effects,
       direction: direction,
-      body_size: body_size
+      body_size: body_size,
+      inventory: inventory
     }
   end
 

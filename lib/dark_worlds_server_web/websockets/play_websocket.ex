@@ -121,6 +121,14 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
               action_data,
               timestamp
             )
+
+          :use_inventory ->
+            Runner.use_inventory(
+              web_socket_state[:runner_pid],
+              web_socket_state[:player_id],
+              action_data,
+              timestamp
+            )
         end
 
         {:ok, web_socket_state}

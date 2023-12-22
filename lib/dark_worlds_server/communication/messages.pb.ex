@@ -542,6 +542,7 @@ defmodule DarkWorldsServer.Communication.Proto.OldPlayer do
 
   field(:direction, 16, type: DarkWorldsServer.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
+  field(:inventory, 18, repeated: true, type: DarkWorldsServer.Communication.Proto.GameLoot)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -1126,6 +1127,16 @@ defmodule DarkWorldsServer.Communication.Proto.UseSkill do
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
+defmodule DarkWorldsServer.Communication.Proto.UseInventory do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:inventory_at, 1, type: :uint64, json_name: "inventoryAt")
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
 defmodule DarkWorldsServer.Communication.Proto.GameAction do
   @moduledoc false
 
@@ -1141,7 +1152,13 @@ defmodule DarkWorldsServer.Communication.Proto.GameAction do
     oneof: 0
   )
 
-  field(:timestamp, 3, type: :int64)
+  field(:use_inventory, 3,
+    type: DarkWorldsServer.Communication.Proto.UseInventory,
+    json_name: "useInventory",
+    oneof: 0
+  )
+
+  field(:timestamp, 4, type: :int64)
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
