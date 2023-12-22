@@ -387,10 +387,10 @@ impl GameState {
                             duration_ms: _,
                             max_range,
                             on_arrival_skills,
-                            effects_to_remove_on_arrival
+                            effects_to_remove_on_arrival,
                         } => {
-
-                            let (mut amount, auto_aim) = parse_skill_params_move_to_target(&skill_params);
+                            let (mut amount, auto_aim) =
+                                parse_skill_params_move_to_target(&skill_params);
 
                             if auto_aim {
                                 let nearest_player: Option<Position> = nearest_player_position(
@@ -401,20 +401,25 @@ impl GameState {
 
                                 amount = 1.;
                                 if let Some(target_player_position) = nearest_player {
-                                    let distance = map::distance_between_positions(&target_player_position, &player.position);
-                                    amount = (distance / (*max_range as f32)).min(1.).max(0.);
+                                    let distance = map::distance_between_positions(
+                                        &target_player_position,
+                                        &player.position,
+                                    );
+                                    amount = (distance / (*max_range as f32)).clamp(0., 1.);
                                 }
                             }
 
                             let distance = (*max_range as f32 * amount) as u64;
 
-                            execution_duration_ms = (distance / player.speed) * self.config.game.tick_interval_ms;
-                            
+                            execution_duration_ms =
+                                (distance / player.speed) * self.config.game.tick_interval_ms;
+
                             player.set_moving_params(
-                                execution_duration_ms, player.speed as f32,
-                                on_arrival_skills, effects_to_remove_on_arrival
+                                execution_duration_ms,
+                                player.speed as f32,
+                                on_arrival_skills,
+                                effects_to_remove_on_arrival,
                             );
-                            
                         }
                     }
                 }
@@ -774,11 +779,9 @@ fn get_direction_angle(
                 config.game.auto_aim_max_distance,
             );
 
-            if let Some(target_player_position) = nearest_player {
+            nearest_player.map_or(player.direction, |target_player_position| {
                 map::angle_between_positions(&player.position, &target_player_position)
-            } else {
-                player.direction
-            }
+            })
         }
         _ => skill_params
             .get("angle")
@@ -794,11 +797,8 @@ fn parse_skill_params_move_to_target(skill_params: &HashMap<String, String>) -> 
 
     let auto_aim = skill_params
         .get("auto_aim")
-        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap()).unwrap_or(false);
+        .map(|auto_aim_str| auto_aim_str.parse::<bool>().unwrap())
+        .unwrap_or(false);
 
-    if let Some(x) = amount {
-        (x.min(1.).max(0.), auto_aim)
-    } else {
-        (1., auto_aim)
-    }
+    amount.map_or((1., auto_aim), |x| (x.clamp(0., 1.), auto_aim))
 }

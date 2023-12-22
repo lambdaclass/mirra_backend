@@ -206,11 +206,12 @@ impl SkillMechanic {
                         .collect();
 
                     SkillMechanic::MoveToTarget {
-                    duration_ms,
-                    max_range,
-                    on_arrival_skills,
-                    effects_to_remove_on_arrival: effects,
-                }},
+                        duration_ms,
+                        max_range,
+                        on_arrival_skills,
+                        effects_to_remove_on_arrival: effects,
+                    }
+                }
             })
             .collect()
     }

@@ -366,7 +366,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       direction: transform_angle_to_game_relative_position(player.direction),
       aoe_position: %GameBackend.Position{x: 0, y: 0},
       inventory: player.inventory,
-      speed: player.speed,
+      speed: player.speed
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end

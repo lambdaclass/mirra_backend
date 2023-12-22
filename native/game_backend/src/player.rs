@@ -395,7 +395,7 @@ impl Player {
             && self.skill_moving_params.is_none()
     }
 
-    pub fn is_targetable(&self) -> bool {
+    pub const fn is_targetable(&self) -> bool {
         self.skill_moving_params.is_none()
     }
 }

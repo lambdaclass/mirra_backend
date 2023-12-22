@@ -26,7 +26,6 @@ pub enum AttributeModifier {
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq, Eq, Debug)]
-
 pub enum TimeType {
     Instant,
     Permanent,
