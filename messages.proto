@@ -159,6 +159,7 @@ message OldGameEvent {
     uint64 playable_radius = 12;
     OldPosition shrinking_center = 13;
     repeated LootPackage loots = 14;
+    map<uint64, string> usernames = 15;
 }
 
 /* Type of game events

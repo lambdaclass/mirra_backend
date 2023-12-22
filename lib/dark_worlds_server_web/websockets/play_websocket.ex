@@ -170,10 +170,10 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
     {:reply, {:binary, msg}, web_socket_state}
   end
 
-  def websocket_info({:game_start, new_game_state, old_game_state}, web_socket_state) do
+  def websocket_info({:game_start, new_game_state, old_game_state, usernames}, web_socket_state) do
     player_timestamp = new_game_state.player_timestamps[web_socket_state.player_id]
     server_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    msg = Communication.game_started!(new_game_state, old_game_state, player_timestamp, server_timestamp)
+    msg = Communication.game_started!(new_game_state, old_game_state, usernames, player_timestamp, server_timestamp)
     {:reply, {:binary, msg}, web_socket_state}
   end
 

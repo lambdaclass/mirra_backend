@@ -1,6 +1,7 @@
 defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   use GenServer, restart: :transient
   require Logger
+  alias DarkWorldsServer.Accounts
   alias DarkWorldsServer.Communication
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseInventory
@@ -180,7 +181,12 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     Process.send_after(self(), :game_tick, @game_tick_rate_ms)
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
-    broadcast_game_start(state.broadcast_topic, Map.put(state.game_state, :player_timestamps, state.player_timestamps))
+
+    broadcast_game_start(
+      state.broadcast_topic,
+      Map.put(state.game_state, :player_timestamps, state.player_timestamps),
+      state.user_to_player
+    )
 
     state = Map.put(state, :last_game_tick_at, System.monotonic_time(:millisecond))
     {:noreply, state}
@@ -270,13 +276,22 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     )
   end
 
-  defp broadcast_game_start(topic, game_state) do
+  defp broadcast_game_start(topic, game_state, user_to_player) do
     Phoenix.PubSub.broadcast(
       DarkWorldsServer.PubSub,
       topic,
-      {:game_start, game_state, transform_state_to_game_state(game_state)}
+      {:game_start, game_state, transform_state_to_game_state(game_state), player_to_username(user_to_player)}
     )
   end
+
+  defp player_to_username(user_to_player) do
+    Enum.into(user_to_player, %{}, fn {client_id, player_id} ->
+      {player_id, Accounts.get_user_by_device_client_id(client_id) |> gen_username(player_id)}
+    end)
+  end
+
+  defp gen_username(nil, player_id), do: "Bot #{player_id}"
+  defp gen_username(user, _player_id), do: user.username
 
   defp broadcast_game_ended(topic, winner, game_state) do
     Phoenix.PubSub.broadcast(

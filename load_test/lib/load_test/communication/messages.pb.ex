@@ -395,6 +395,15 @@ defmodule LoadTest.Communication.Proto.OldGameEvent.SelectedCharactersEntry do
   field(:value, 2, type: :string)
 end
 
+defmodule LoadTest.Communication.Proto.OldGameEvent.UsernamesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: :string)
+end
+
 defmodule LoadTest.Communication.Proto.OldGameEvent do
   @moduledoc false
 
@@ -406,11 +415,7 @@ defmodule LoadTest.Communication.Proto.OldGameEvent do
   field(:projectiles, 4, repeated: true, type: LoadTest.Communication.Proto.OldProjectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
   field(:player_joined_name, 6, type: :string, json_name: "playerJoinedName")
-
-  field(:winner_player, 7,
-    type: LoadTest.Communication.Proto.OldPlayer,
-    json_name: "winnerPlayer"
-  )
+  field(:winner_player, 7, type: LoadTest.Communication.Proto.OldPlayer, json_name: "winnerPlayer")
 
   field(:selected_characters, 8,
     repeated: true,
@@ -430,6 +435,12 @@ defmodule LoadTest.Communication.Proto.OldGameEvent do
   )
 
   field(:loots, 14, repeated: true, type: LoadTest.Communication.Proto.LootPackage)
+
+  field(:usernames, 15,
+    repeated: true,
+    type: LoadTest.Communication.Proto.OldGameEvent.UsernamesEntry,
+    map: true
+  )
 end
 
 defmodule LoadTest.Communication.Proto.PlayerCharacter do
@@ -460,12 +471,7 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
   field(:position, 3, type: LoadTest.Communication.Proto.OldPosition)
   field(:status, 4, type: LoadTest.Communication.Proto.OldStatus, enum: true)
   field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.OldActionTracker)
-
-  field(:aoe_position, 6,
-    type: LoadTest.Communication.Proto.OldPosition,
-    json_name: "aoePosition"
-  )
-
+  field(:aoe_position, 6, type: LoadTest.Communication.Proto.OldPosition, json_name: "aoePosition")
   field(:kill_count, 7, type: :uint64, json_name: "killCount")
   field(:death_count, 8, type: :uint64, json_name: "deathCount")
 
