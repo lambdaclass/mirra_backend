@@ -427,6 +427,17 @@ defmodule DarkWorldsServer.Communication.Proto.OldGameEvent.SelectedCharactersEn
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
 
+defmodule DarkWorldsServer.Communication.Proto.OldGameEvent.UsernamesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: :string)
+
+  def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
+end
+
 defmodule DarkWorldsServer.Communication.Proto.OldGameEvent do
   @moduledoc false
 
@@ -462,6 +473,12 @@ defmodule DarkWorldsServer.Communication.Proto.OldGameEvent do
   )
 
   field(:loots, 14, repeated: true, type: DarkWorldsServer.Communication.Proto.LootPackage)
+
+  field(:usernames, 15,
+    repeated: true,
+    type: DarkWorldsServer.Communication.Proto.OldGameEvent.UsernamesEntry,
+    map: true
+  )
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end

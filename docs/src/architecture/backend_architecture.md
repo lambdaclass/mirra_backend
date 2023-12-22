@@ -19,7 +19,7 @@ The architecture of the server should be as simple as possible.
 2. Game state processes all messages in order
 3. The `tick`, which is the clock of the game, is updated and the game state process sends a small delta update to all the players with the changes that were realized during the tick.
 
-> Most of the work is done during 3 where collision is detected, powers get consumed, creates get spawned or assigned to a client, damage and death are resolved.
+> Most of the work is done during 3 where collision is detected, powers get consumed, crates get spawned or assigned to a client, damage and death are resolved.
 4. Go to 1.
 
 ## API

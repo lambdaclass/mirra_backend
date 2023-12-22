@@ -63,7 +63,7 @@ defmodule DarkWorldsServer.Communication do
     |> LobbyEvent.encode()
   end
 
-  def game_started!(new_game_state, old_game_state, player_timestamp, server_timestamp) do
+  def game_started!(new_game_state, old_game_state, usernames, player_timestamp, server_timestamp) do
     old_game_event = %OldGameEvent{
       type: :GAME_STARTED,
       players: old_game_state.players,
@@ -73,7 +73,8 @@ defmodule DarkWorldsServer.Communication do
       shrinking_center: old_game_state.shrinking_center,
       loots: old_game_state.loots,
       player_timestamp: player_timestamp,
-      server_timestamp: server_timestamp
+      server_timestamp: server_timestamp,
+      usernames: usernames
     }
 
     new_game_event = %GameEvent{
