@@ -120,7 +120,7 @@ impl Player {
                 moving_params
                     .effects_to_remove_on_arrival
                     .iter()
-                    .for_each(|effect_key| effects_to_remove.push(effect_key.to_string()));
+                    .for_each(|effect_key| effects_to_remove.push(effect_key.name.clone()));
 
                 self.skill_moving_params = None;
             }
@@ -376,7 +376,7 @@ impl Player {
         duration_ms: u64,
         speed: f32,
         skills_on_arrival: &[String],
-        effects_to_remove_on_arrival: &[String],
+        effects_to_remove_on_arrival: &[Effect],
     ) {
         let moving_params = SkillMovingParams {
             duration_ms,
