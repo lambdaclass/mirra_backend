@@ -16,33 +16,27 @@ jobs:
       url: http://10.150.20.186:4000/
 
     steps:
-      - name: Checkout deploy script
-        uses: Bhacaz/checkout-files@v2
-        with:
-          files: deploy.sh
+      - uses: actions/checkout@v4
 
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
+          HOST: ${{ secrets.SSH_HOST_LOCAL }}
         run: |
           set -ex
-          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > id_ed25519_testing
-          chmod 400 id_ed25519_testing
+          mkdir -p ~/.ssh/
+          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          ssh-keyscan $HOST >> ~/.ssh/known_hosts
 
       - name: Copy deploy script
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST_LOCAL }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME_LOCAL }}
           SSH_PORT: ${{ secrets.SSH_PORT_LOCAL }}
-          SCRIPT_SRC: "deploy.sh"
-          SCRIPT_DEST: "/root/deploy-script/"
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME_LOCAL }}
+          SSH_HOST: ${{ secrets.SSH_HOST_LOCAL }}
         run: |
           set -ex
-          scp -o StrictHostKeyChecking=no \
-              -i id_ed25519_testing \
-              -P ${SSH_PORT} \
-              ${SCRIPT_SRC} \
-              ${SSH_USERNAME}@${SSH_HOST}:${SCRIPT_DEST}
+          rsync -avz --mkpath deploy.sh --port=${SSH_PORT} ${SSH_USERNAME}@${SSH_HOST}:/root/deploy-scipt/
 
       - name: Execute deploy script
         env:
@@ -58,9 +52,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
-          ssh -o StrictHostKeyChecking=no \
-              -i id_ed25519_testing \
-              -p ${SSH_PORT} \
+          ssh -p ${SSH_PORT} \
               ${SSH_USERNAME}@${SSH_HOST} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
