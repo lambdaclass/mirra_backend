@@ -50,6 +50,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # keep in mind that the chace timer is also determined by the random factor value
   @chase_timer_adittive 5
 
+  @prepare_for_battle_time_ms 10_000
+
   #######
   # API #
   #######
@@ -84,8 +86,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   @impl GenServer
   def handle_cast({:add_bot, bot_id}, state) do
-    send(self(), {:decide_action, bot_id})
-    send(self(), {:do_action, bot_id})
+    #FIXME remove this once we implement the server blocking the messages while the match loads
+    Process.send_after(self(), {:decide_action, bot_id}, @prepare_for_battle_time_ms)
+    Process.send_after(self(), {:do_action, bot_id}, @prepare_for_battle_time_ms)
 
     {:noreply,
      put_in(state, [:bots, bot_id], %{
