@@ -1,4 +1,4 @@
-defmodule DarkWoldsServer.Autobattle do
+defmodule DarkWorldsServer.Autobattle do
   alias DarkWorldsServer.Units
 
   @doc """
