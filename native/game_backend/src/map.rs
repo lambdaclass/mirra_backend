@@ -43,7 +43,7 @@ pub fn in_cone_angle_range(
     let relative_angle = angle - center_player.direction;
     let normalized_angle = (relative_angle + 360.0) % 360.0;
 
-    normalized_angle < (cone_angle / 2.0)
+    360.0 - (cone_angle / 2.0) < normalized_angle || normalized_angle < (cone_angle / 2.0)
 }
 
 pub fn next_position(
