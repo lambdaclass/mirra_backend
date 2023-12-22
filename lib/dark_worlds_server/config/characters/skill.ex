@@ -15,7 +15,7 @@ defmodule DarkWorldsServer.Config.Characters.Skill do
     field(:execution_duration_ms, :integer)
     field(:is_passive, :boolean)
     field(:mechanics, {:array, SkillMechanic})
-
+    field(:burst_loads, :integer)
     timestamps()
   end
 
@@ -23,8 +23,8 @@ defmodule DarkWorldsServer.Config.Characters.Skill do
   def changeset(skill, attrs),
     do:
       skill
-      |> cast(attrs, [:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics])
-      |> validate_required([:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics])
+      |> cast(attrs, [:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics, :burst_loads])
+      |> validate_required([:name, :cooldown_ms, :execution_duration_ms, :is_passive, :mechanics, :burst_loads])
 
   def to_backend_map(skill),
     do: %{
@@ -32,6 +32,7 @@ defmodule DarkWorldsServer.Config.Characters.Skill do
       cooldown_ms: skill.cooldown_ms,
       execution_duration_ms: skill.execution_duration_ms,
       is_passive: skill.is_passive,
+      burst_loads: skill.burst_loads,
       mechanics: Enum.map(skill.mechanics, &SkillMechanic.to_backend_map/1)
     }
 end

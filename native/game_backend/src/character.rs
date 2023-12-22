@@ -14,7 +14,6 @@ pub struct CharacterConfigFile {
     base_health: u64,
     max_inventory_size: u64,
     skills: HashMap<String, String>,
-    burst_loads: u64,
 }
 
 #[derive(NifMap, Clone)]
@@ -26,7 +25,6 @@ pub struct CharacterConfig {
     pub base_health: u64,
     pub max_inventory_size: u64,
     pub skills: HashMap<String, SkillConfig>,
-    pub burst_loads: u64,
 }
 
 impl CharacterConfig {
@@ -51,7 +49,6 @@ impl CharacterConfig {
                     base_health: config.base_health,
                     max_inventory_size: config.max_inventory_size,
                     skills: character_skills,
-                    burst_loads: config.burst_loads,
                 }
             })
             .collect()

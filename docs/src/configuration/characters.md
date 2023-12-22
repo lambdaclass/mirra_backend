@@ -10,7 +10,6 @@ Configurable fields:
 - `base_health`: Base health of the character
 - `skills`: This is a map of integer (as string) to skills, the integers represent the id and ordering of skills for calling them
 - `max_inventory_size`: Maximum amount of loots that the character can hold in their inventory
-- `burst_loads`: Number of times the character's basic skill can be used in a row before going on cooldown
 
 ### Example
 

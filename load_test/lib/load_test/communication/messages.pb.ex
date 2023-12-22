@@ -406,11 +406,7 @@ defmodule LoadTest.Communication.Proto.OldGameEvent do
   field(:projectiles, 4, repeated: true, type: LoadTest.Communication.Proto.OldProjectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
   field(:player_joined_name, 6, type: :string, json_name: "playerJoinedName")
-
-  field(:winner_player, 7,
-    type: LoadTest.Communication.Proto.OldPlayer,
-    json_name: "winnerPlayer"
-  )
+  field(:winner_player, 7, type: LoadTest.Communication.Proto.OldPlayer, json_name: "winnerPlayer")
 
   field(:selected_characters, 8,
     repeated: true,
@@ -450,6 +446,15 @@ defmodule LoadTest.Communication.Proto.OldPlayer.EffectsEntry do
   field(:value, 2, type: LoadTest.Communication.Proto.OldEffectInfo)
 end
 
+defmodule LoadTest.Communication.Proto.OldPlayer.AvailableBurstLoadsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :string)
+  field(:value, 2, type: :uint64)
+end
+
 defmodule LoadTest.Communication.Proto.OldPlayer do
   @moduledoc false
 
@@ -460,12 +465,7 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
   field(:position, 3, type: LoadTest.Communication.Proto.OldPosition)
   field(:status, 4, type: LoadTest.Communication.Proto.OldStatus, enum: true)
   field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.OldActionTracker)
-
-  field(:aoe_position, 6,
-    type: LoadTest.Communication.Proto.OldPosition,
-    json_name: "aoePosition"
-  )
-
+  field(:aoe_position, 6, type: LoadTest.Communication.Proto.OldPosition, json_name: "aoePosition")
   field(:kill_count, 7, type: :uint64, json_name: "killCount")
   field(:death_count, 8, type: :uint64, json_name: "deathCount")
 
@@ -505,7 +505,13 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
   field(:inventory, 18, repeated: true, type: LoadTest.Communication.Proto.GameLoot)
-  field(:available_burst_loads, 19, type: :uint64, json_name: "availableBurstLoads")
+
+  field(:available_burst_loads, 19,
+    repeated: true,
+    type: LoadTest.Communication.Proto.OldPlayer.AvailableBurstLoadsEntry,
+    json_name: "availableBurstLoads",
+    map: true
+  )
 end
 
 defmodule LoadTest.Communication.Proto.OldActionTracker do
@@ -915,8 +921,6 @@ defmodule LoadTest.Communication.Proto.GameCharacter do
     type: LoadTest.Communication.Proto.GameCharacter.SkillsEntry,
     map: true
   )
-
-  field(:burst_loads, 7, type: :uint64, json_name: "burstLoads")
 end
 
 defmodule LoadTest.Communication.Proto.GameSkill do
@@ -928,6 +932,7 @@ defmodule LoadTest.Communication.Proto.GameSkill do
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:is_passive, 3, type: :bool, json_name: "isPassive")
   field(:mechanics, 4, repeated: true, type: LoadTest.Communication.Proto.Mechanic)
+  field(:burst_loads, 5, type: :uint64, json_name: "burstLoads")
 end
 
 defmodule LoadTest.Communication.Proto.Mechanic do
