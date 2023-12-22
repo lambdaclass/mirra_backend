@@ -49,7 +49,7 @@ defmodule DarkWorldsServerWeb.UserController do
 
       user ->
         case Units.replace_selected_character(
-               Characters.game_character_name_to_character_name(selected_character),
+               Utils.Characters.game_character_name_to_character_name(selected_character),
                user.id,
                %{level: 1}
              ) do
