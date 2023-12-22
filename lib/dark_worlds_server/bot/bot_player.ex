@@ -9,7 +9,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
   # - Every attack the bot do will have a tilt that's decided with the random factor
   # - Add an additive to the range of attacks they're not always accurate
   # - Add some miliseconds to the time of decision of the bot
-  @random_factor Enum.random([10, 30, 60, 80])
+  @random_factor Enum.random([10, 20, 30])
 
   # This variable will decide how much time passes between bot decisions in milis
   @decide_delay_ms 500 + @random_factor * 2
@@ -32,15 +32,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   # This is the amount of time between bots messages
   @game_tick_rate_ms 30
-
-  # The random factor will add a layer of randomness to bot actions
-  # The following actions will be afected:
-  # - Bot decision, the bot will start a wandering cicle with an fourth times
-  #   chance and an eight times chance to do nothing
-  # - Every attack the bot do will have a tilt that's decided with the random factor
-  # - Add an additive to the range of attacks they're not always accurate
-  # - Add some miliseconds to the time of decision of the bot
-  @random_factor Enum.random([10, 30, 60, 80])
 
   # This variable will determine an additive number to the chances of stoping chacing a player and
   # start wandering for the same time he has been chasing it
@@ -234,7 +225,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
           Map.put(bot_state, :action, {:move, flee_angle_direction})
 
         true ->
-          Map.put(bot_state, :action, {:try_attack, closest_enemy, "BasicAttack"})
+          Map.put(bot_state, :action, {:try_attack, closest_enemy, "1"})
       end
 
     Map.put(new_state, :chase_timer, new_state.chase_timer + @chase_timer_adittive)
@@ -272,14 +263,15 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
          connection_pid,
          %{config: config, game_state: game_state},
          %{
-           action: {:try_attack, %{type: :enemy, attacking_angle_direction: angle} = closest_enemy, skill}
+           action: {:try_attack, %{type: :enemy, attacking_angle_direction: angle} = closest_enemy, skill_key}
          },
          bot_id
        ) do
     bot = Enum.find(game_state.players, fn player -> player.id == bot_id end)
 
-    if skill_would_hit?(bot, closest_enemy, config) do
-      send(connection_pid, {:use_skill, angle, skill})
+    if skill_would_hit?(bot, closest_enemy, config, skill_key) do
+      # Replace this when more abilities are implemented
+      send(connection_pid, {:use_skill, angle, "BasicAttack"})
     else
       send(connection_pid, {:move, angle})
     end
@@ -404,9 +396,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
     |> Enum.filter(fn distances -> distances.distance_to_entity <= @visibility_max_range_cells end)
   end
 
-  defp skill_would_hit?(bot, %{distance_to_entity: distance_to_entity}, config) do
-    # TODO: We should find a way to use the skill of the character distance
-    skill_range = get_skill_range(bot.character_name, config)
+  defp skill_would_hit?(bot, %{distance_to_entity: distance_to_entity}, config, skill_key) do
+    skill_range = Map.get(map_skills_range(bot.character_name, config), skill_key)
     range_modifier = :rand.uniform(@random_factor) * Enum.random([-1, 1])
     distance_to_entity < skill_range + range_modifier
   end
@@ -521,39 +512,45 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
 
   # This method will traverse the list of mechanics from the ability number 1
   # from the bot's character and check if we can get a range from any mechanic
-  # and take the min of they in case more than one is found
+  # and take the max of they in case more than one is found
 
   # Maybe we should a better way to get this value since this will force to every skill to
   # have a variabel "Range" in order to work, and if we would add a new range type variable
   # we would need to update this.
 
   # It returns 0 if no range is found
-  defp get_skill_range(character_name, config) do
+  defp map_skills_range(character_name, config) do
     character_name = String.downcase(character_name)
 
-    basic_attack_name =
+    bot_skills =
       config["characters"]
       |> Enum.find(fn character -> character["name"] == character_name end)
-      |> get_in(["skills", "1"])
+      |> Map.get("skills")
 
-    config["skills"]
-    |> Enum.find(fn skill -> skill["name"] == basic_attack_name end)
-    |> Map.get("mechanics")
-    |> hd()
-    |> Map.to_list()
-    |> get_min_skill_range(0)
+    Enum.reduce(bot_skills, %{}, fn {skill_key, skill_name}, acc ->
+      skill_range =
+        config["skills"]
+        |> Enum.find(fn skill -> skill["name"] == skill_name end)
+        |> Map.get("mechanics")
+        |> hd()
+        |> Map.to_list()
+        |> get_max_skill_range(0)
+
+
+      Map.put(acc, skill_key, skill_range)
+    end)
   end
 
-  defp get_min_skill_range([{_name, skill_mechanic}], acc) do
+  defp get_max_skill_range([{_name, skill_mechanic}], acc) do
     range = Map.get(skill_mechanic, "range") || 0
 
     max(acc, range)
   end
 
-  defp get_min_skill_range([{_name, skill_mechanic} | tail], acc) do
+  defp get_max_skill_range([{_name, skill_mechanic} | tail], acc) do
     range = Map.get(skill_mechanic, "range") || 0
 
-    get_min_skill_range(tail, max(acc, range))
+    get_max_skill_range(tail, max(acc, range))
   end
 
   def random_chance(chance \\ 100, additive)
