@@ -31,7 +31,7 @@ jobs:
 
       - name: Copy deploy script
         env:
-          SSH_HOST: ${{ secrets.SSH_HOST_LOCAL }}
+          SSH_PORT: ${{ secrets.SSH_PORT_LOCAL }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME_LOCAL }}
           SSH_HOST: ${{ secrets.SSH_HOST_LOCAL }}
         run: |
