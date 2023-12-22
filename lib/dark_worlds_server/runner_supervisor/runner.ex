@@ -408,9 +408,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp transform_projectile_name_to_game_projectile_skill_name("projectile_slingshot"),
     do: "SLINGSHOT"
 
-  defp transform_projectile_name_to_game_projectile_skill_name("projectile_leap"),
-    do: "CIRCLE_HET"
-
   defp transform_projectile_name_to_game_projectile_skill_name("projectile_multishot"),
     do: "MULTISHOT"
 
