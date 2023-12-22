@@ -11,6 +11,7 @@ This is the meta configuration for the game, not for a particular thing in the g
 - `loot_interval_ms`: If present, interval in milliseconds for spawning loot crates
 - `auto_aim_max_distance`: Determines the max distance to auto aim
 - `initial_positions`: The predefined positions for players to spawn in the map.
+- `tick_interval_ms`: Tick rate.
 
 ### Zone modification
 
@@ -32,6 +33,7 @@ This "modifications" are compose of the following fields
   "width": 10000,
   "height": 10000,
   "zone_starting_radius": 10000,
+  "tick_interval_ms": 20,
   "zone_modification": [
     {
       "duration_ms": 1000,

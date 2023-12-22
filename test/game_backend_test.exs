@@ -131,7 +131,7 @@ defmodule GameBackendTest do
   end
 
   test "Cooldowns are removed", context do
-    skill_params = %{"direction_angle" => "90.0", "auto_aim" => "false"}
+    skill_params = %{"angle" => "90.0", "auto_aim" => "false"}
     game = GameBackend.activate_skill(context.game, context.player_id, "1", skill_params)
     %{"1" => cooldown} = game.players[context.player_id].cooldowns
 
