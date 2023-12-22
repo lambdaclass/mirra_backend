@@ -536,7 +536,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.BotPlayer do
         |> Map.to_list()
         |> get_max_skill_range(0)
 
-
       Map.put(acc, skill_key, skill_range)
     end)
   end
