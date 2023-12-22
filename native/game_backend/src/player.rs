@@ -364,11 +364,11 @@ impl Player {
 
     pub fn can_perform_attack(&self, skill_key: &String) -> bool {
         // Check if player is still performing an action or if an attack can be performed with the given skill.
-        self.can_do_action() && (can_perform_attack(self, skill_key))
+        self.can_do_action() && (can_use_skill(self, skill_key))
     }
 }
 
-fn can_perform_attack(player: &Player, skill_key: &String) -> bool {
+fn can_use_skill(player: &Player, skill_key: &String) -> bool {
     player.available_burst_loads[skill_key] > 0
 }
 
