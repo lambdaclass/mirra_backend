@@ -50,6 +50,8 @@ defmodule DarkWorldsServerWeb.Router do
     put "/:device_client_id/unselect_unit/:unit_id", UserController, :remove_selected_unit
   end
 
+  get "/autobattle/:device_client_id/:target_user_id", DarkWorldsServerWeb.AutobattleController, :run_battle
+
   scope "/", DarkWorldsServerWeb do
     pipe_through([:browser, :game])
 

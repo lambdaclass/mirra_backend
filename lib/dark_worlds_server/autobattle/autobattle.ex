@@ -12,14 +12,18 @@ defmodule DarkWorldsServer.Autobattle do
     user_2_units = Units.get_selected_units(user_2)
 
     cond do
-      user_1_units == [] -> {:error, {:user_1, :no_selected_units}}
-      user_2_units == [] -> {:error, {:user_2, :no_selected_units}}
+      user_1_units == [] ->
+        {:error, {:user_1, :no_selected_units}}
+
+      user_2_units == [] ->
+        {:error, {:user_2, :no_selected_units}}
+
       true ->
         user_1_agg_level = Enum.reduce(user_1_units, 0, fn unit, acc -> acc + unit.level end)
         user_2_agg_level = Enum.reduce(user_2_units, 0, fn unit, acc -> acc + unit.level end)
         total_level = user_1_agg_level + user_2_agg_level
 
         if Enum.random(1..total_level) <= user_1_agg_level, do: user_1, else: user_2
-      end
+    end
   end
 end
