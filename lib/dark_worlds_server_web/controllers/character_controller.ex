@@ -126,10 +126,9 @@ defmodule DarkWorldsServerWeb.UserController do
 
         json(
           conn,
-          Enum.into(
+          Enum.map(
             units,
-            %{},
-            &{&1.id, %{character: &1.character.name, selected: &1.selected, slot: &1.slot, level: &1.level}}
+            &%{id: &1.id, character: &1.character.name, selected: &1.selected, slot: &1.slot, level: &1.level}
           )
         )
     end
