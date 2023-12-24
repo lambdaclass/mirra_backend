@@ -144,10 +144,12 @@ defmodule DarkWorldsServerWeb.UserController do
   defp user_response(%User{device_client_id: device_client_id} = user) do
     selected_unit = Units.get_selected_unit(user.id)
 
-    %{
-      device_client_id: device_client_id,
-      selected_character: Utils.Characters.character_name_to_game_character_name(selected_unit.character.name)
-    }
+    if is_nil(selected_unit),
+      do: %{device_client_id: device_client_id},
+      else: %{
+        device_client_id: device_client_id,
+        selected_character: Utils.Characters.character_name_to_game_character_name(selected_unit.character.name)
+      }
   end
 
   defp create_user_data(device_client_id) do
