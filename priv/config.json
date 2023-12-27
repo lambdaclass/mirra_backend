@@ -329,6 +329,7 @@
     }
   ],
   "game": {
+    "laps_to_win": 3,
     "width": 10000,
     "height": 10000,
     "tick_interval_ms": 30,
