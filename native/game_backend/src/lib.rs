@@ -11,7 +11,7 @@ mod projectile;
 mod skill;
 
 use crate::config::Config;
-use crate::game::{EntityOwner, GameError, GameState, get_next_id};
+use crate::game::{EntityOwner, GameError, GameState};
 use crate::map::Position;
 use crate::player::Player;
 use std::collections::HashMap;
@@ -36,22 +36,21 @@ fn add_player(
     match game.config.find_character(character_name) {
         None => Err(GameError::CharacterNotFound),
         Some(character_config) => {
-            let player = Player::new(player_id, character_config, get_player_position(player_id));
+            let initial_position = match game.config
+            .game
+            .initial_positions
+            .remove(&player_id) {
+                Some(position) => position,
+                None => Position { x: 0, y: 0 }
+            }; 
+
+            let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
-            Ok((game, Some(player_id)))
+            Ok((game, Some(1)))
         }
     }
 }
 
-fn get_player_position(player_id: u64) -> Position{
-    match player_id {
-        1 => Position{x: 0, y: -2000},
-        2 => Position{x: 2000, y: 0},
-        3 => Position{x: 0, y: 2000},
-        4 => Position{x: -2000, y: 0},
-        _ => Position{x: 0, y: 0},
-    }
-}
 
 #[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
@@ -89,7 +88,7 @@ fn apply_effect(game: GameState, player_id: u64, effect_name: String) -> GameSta
 #[rustler::nif()]
 fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
     let mut game = game;
-    let loot_id = get_next_id(&mut game.next_id);
+    let loot_id = game.next_id();
     match loot::spawn_random_loot(&game.config, loot_id) {
         None => (game, None),
         Some(loot) => {

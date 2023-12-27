@@ -1,7 +1,4 @@
 use std::collections::HashMap;
-use std::vec;
-
-use rand::Rng;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
@@ -40,7 +37,7 @@ pub struct GameConfigFile {
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
-    initial_positions: Vec<Position>,
+    initial_positions: HashMap<u64, Position>,
     tick_interval_ms: u64,
 }
 
@@ -62,7 +59,7 @@ pub struct GameConfig {
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
-    pub initial_positions: Vec<Position>,
+    pub initial_positions: HashMap<u64, Position>,
     pub tick_interval_ms: u64,
 }
 
@@ -115,7 +112,6 @@ pub struct GameState {
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
     pub next_id: u64,
-    pub players_ids: Vec<u64>,
     pub pending_damages: Vec<DamageTracker>,
 }
 
@@ -174,13 +170,11 @@ impl GameState {
             killfeed: Vec::new(),
             next_id: 1,
             pending_damages: Vec::new(),
-            players_ids: vec![1, 2, 3, 4]
         }
     }
 
     pub fn next_id(&mut self) -> u64 {
-        let mut rng = rand::thread_rng();
-        self.players_ids.remove(rng.gen_range(0..self.players_ids.len()))
+        get_next_id(&mut self.next_id)
     }
 
     pub fn push_player(&mut self, player_id: u64, player: Player) {
@@ -511,7 +505,7 @@ fn find_effects(config_effects_names: &[String], effects: &[Effect]) -> Vec<Effe
         .collect()
 }
 
-pub fn get_next_id(next_id: &mut u64) -> u64 {
+fn get_next_id(next_id: &mut u64) -> u64 {
     let id = *next_id;
     *next_id += 1;
     id
