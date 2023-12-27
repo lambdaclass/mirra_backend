@@ -56,20 +56,10 @@ fn add_player(
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     let mut game: GameState = game;
 
-    if let Some(angle) = trasnform_angle(angle, player_id) {
-        game.move_player(player_id, angle);
-    }
+    game.move_player(player_id, angle);
     game
 }
 
-fn trasnform_angle(angle: f32, player_id: u64) -> Option<f32>{
-    if angle == 0. || angle == 180.{
-        let result = angle + (90. * (player_id - 1) as f32);
-            Some(result)
-    } else {
-        None
-    }
-}
 
 // TODO: Is this method necesary?
 #[rustler::nif()]
