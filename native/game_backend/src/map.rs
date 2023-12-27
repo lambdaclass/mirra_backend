@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::player::Player;
 
-#[derive(NifMap, Clone, Deserialize, Copy)]
+#[derive(NifMap, Clone, Deserialize, Copy, Debug)]
 pub struct Position {
     pub x: i64,
     pub y: i64,
@@ -52,7 +52,7 @@ pub fn next_position(
     movement_amount: f32,
     width: f32,
 ) -> Position {
-    let angle_rad = direction_angle * (PI / 180.0);
+    let angle_rad = direction_angle.to_radians();
     let new_x = movement_amount.mul_add(angle_rad.cos(), current_position.x as f32);
     let new_y = movement_amount.mul_add(angle_rad.sin(), current_position.y as f32);
 
@@ -78,7 +78,7 @@ pub fn next_position(
     }
 }
 
-pub const fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
+pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
     let x_edge_positive = (width / 2) as i64;
     let x_position_positive = center.x + size as i64;
     if x_position_positive >= x_edge_positive {
