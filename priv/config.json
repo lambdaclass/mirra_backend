@@ -172,7 +172,7 @@
       "base_damage": 7,
       "base_speed": 60,
       "base_size": 20,
-      "remove_on_collision": true,
+      "remove_on_collision": false,
       "bounce": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
@@ -334,7 +334,7 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "hit",
+        "1": "single_slingshot",
         "2": "leap",
         "3": "circle_hit"
       }
