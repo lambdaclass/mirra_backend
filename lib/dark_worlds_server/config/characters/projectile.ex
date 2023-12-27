@@ -18,6 +18,7 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
     field(:duration_ms, :integer)
     field(:max_distance, :integer)
     field(:remove_on_collision, :boolean)
+    field(:bounce, :boolean)
 
     many_to_many(:on_hit_effects, Effect, join_through: ProjectileEffect)
     timestamps()
@@ -27,7 +28,7 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
   def changeset(projectile, attrs),
     do:
       projectile
-      |> cast(attrs, [:name, :base_damage, :base_speed, :base_size, :duration_ms, :max_distance, :remove_on_collision])
+      |> cast(attrs, [:name, :base_damage, :base_speed, :base_size, :duration_ms, :max_distance, :remove_on_collision, :bounce])
       |> validate_required([
         :name,
         :base_damage,
@@ -35,7 +36,8 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
         :base_size,
         :duration_ms,
         :max_distance,
-        :remove_on_collision
+        :remove_on_collision,
+        :bounce
       ])
 
   def to_backend_map(projectile),
@@ -47,6 +49,7 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
       base_speed: projectile.base_speed,
       base_damage: projectile.base_damage,
       max_distance: projectile.max_distance,
-      remove_on_collision: projectile.remove_on_collision
+      remove_on_collision: projectile.remove_on_collision,
+      bounce: projectile.bounce
     }
 end
