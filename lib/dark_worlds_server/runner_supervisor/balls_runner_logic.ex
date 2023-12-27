@@ -13,7 +13,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.BallsRunnerLogic do
     |> put_in([:player_timestamps, user_id], timestamp)
   end
 
-  def perform_action(state, {:attack, user_id, %UseSkill{skill: skill} = use_skill, timestamp}) do
+  def perform_action(state, {:use_skill, user_id, %UseSkill{skill: skill} = use_skill, timestamp}) do
     player_id = state.user_to_player[user_id] || user_id
     skill_key = RunnerUtils.action_skill_to_key(skill)
     skill_params = RunnerUtils.extract_and_convert_params(use_skill)
