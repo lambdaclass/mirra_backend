@@ -220,7 +220,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
         0 ->
           check_game_ended_standing_players(
             Map.values(state.game_state.players),
-            state.game_state.config.game.last_standing_players
+            state.last_standing_players
           )
 
         laps_to_win ->
