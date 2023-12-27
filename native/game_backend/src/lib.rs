@@ -46,7 +46,7 @@ fn add_player(
 
             let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
-            Ok((game, Some(1)))
+            Ok((game, Some(player_id)))
         }
     }
 }
