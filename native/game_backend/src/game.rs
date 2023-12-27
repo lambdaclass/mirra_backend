@@ -1,5 +1,7 @@
 use std::collections::HashMap;
+use std::vec;
 
+use rand::Rng;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
@@ -112,7 +114,8 @@ pub struct GameState {
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
-    next_id: u64,
+    pub next_id: u64,
+    pub players_ids: Vec<u64>,
     pub pending_damages: Vec<DamageTracker>,
 }
 
@@ -171,11 +174,13 @@ impl GameState {
             killfeed: Vec::new(),
             next_id: 1,
             pending_damages: Vec::new(),
+            players_ids: vec![1, 2, 3, 4]
         }
     }
 
     pub fn next_id(&mut self) -> u64 {
-        get_next_id(&mut self.next_id)
+        let mut rng = rand::thread_rng();
+        self.players_ids.remove(rng.gen_range(0..self.players_ids.len()))
     }
 
     pub fn push_player(&mut self, player_id: u64, player: Player) {
@@ -506,7 +511,7 @@ fn find_effects(config_effects_names: &[String], effects: &[Effect]) -> Vec<Effe
         .collect()
 }
 
-fn get_next_id(next_id: &mut u64) -> u64 {
+pub fn get_next_id(next_id: &mut u64) -> u64 {
     let id = *next_id;
     *next_id += 1;
     id
