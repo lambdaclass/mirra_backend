@@ -32,8 +32,8 @@ pub enum EntityOwner {
 
 #[derive(Deserialize)]
 pub struct GameConfigFile {
-    width: u64,
-    height: u64,
+    outer_radius: u64,
+    inner_radius: u64,
     loot_interval_ms: u64,
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
@@ -54,8 +54,8 @@ pub struct ZoneModificationConfigFile {
 
 #[derive(NifMap)]
 pub struct GameConfig {
-    pub width: u64,
-    pub height: u64,
+    pub outer_radius: u64,
+    pub inner_radius: u64,
     pub loot_interval_ms: u64,
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
@@ -136,8 +136,8 @@ impl GameConfig {
             .collect();
 
         GameConfig {
-            width: game_config.width,
-            height: game_config.height,
+            outer_radius: game_config.outer_radius,
+            inner_radius: game_config.inner_radius,
             loot_interval_ms: game_config.loot_interval_ms,
             zone_starting_radius: game_config.zone_starting_radius,
             zone_modifications,
@@ -152,8 +152,8 @@ impl GameState {
     pub fn new(config: Config) -> Self {
         let zone_radius = config.game.zone_starting_radius;
         let zone_modifications = config.game.zone_modifications.clone();
-        let game_width = config.game.width;
-        let game_height = config.game.height;
+        let game_outer_radius = config.game.outer_radius;
+        let game_inner_radius = config.game.inner_radius;
 
         Self {
             config,
@@ -161,7 +161,7 @@ impl GameState {
             loots: Vec::new(),
             projectiles: Vec::new(),
             zone: Zone {
-                center: map::random_position(game_width, game_height),
+                center: map::random_position(game_outer_radius, game_inner_radius),
                 radius: zone_radius,
                 modifications: zone_modifications,
                 current_modification: None,
@@ -588,6 +588,9 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
     // Clear out projectiles that are no longer valid
+    let _ = projectiles
+        .iter()
+        .map(|projectile: &Projectile| print!("{}", projectile.name));
     projectiles.retain(|projectile| {
         projectile.active
             && projectile.duration_ms > 0
@@ -595,8 +598,8 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
             && !map::collision_with_edge(
                 &projectile.position,
                 projectile.size,
-                config.game.width,
-                config.game.height,
+                config.game.outer_radius,
+                config.game.inner_radius,
             )
     });
 
@@ -607,7 +610,8 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &
             &projectile.position,
             projectile.direction_angle,
             projectile.speed as f32,
-            config.game.width as f32,
+            config.game.inner_radius as f32,
+            config.game.outer_radius as f32,
         )
     });
 }

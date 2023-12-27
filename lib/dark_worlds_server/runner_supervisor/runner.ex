@@ -86,7 +86,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       last_standing_players: []
     }
 
-    Process.put(:map_size, {game_config.game.width, game_config.game.height})
+    Process.put(:map_inner_radius, {game_config.game.inner_radius})
+    Process.put(:map_outer_radius, {game_config.game.outer_radius})
 
     NewRelic.increment_custom_metric("GameBackend/TotalGames", 1)
     {:ok, state}
@@ -329,9 +330,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       __struct__: GameBackend.Game,
       players: transform_players_to_game_players(game_state.players),
       board: %{
-        width: game_state.config.game.width,
+        outer_radius: game_state.config.game.outer_radius,
         __struct__: GameBackend.Board,
-        height: game_state.config.game.height
+        inner_radius: game_state.config.game.inner_radius
       },
       projectiles: transform_projectiles_to_game_projectiles(game_state.projectiles),
       killfeed: transform_killfeed_to_game_killfeed(game_state.killfeed),
@@ -431,11 +432,11 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp transform_position_to_game_position(position) do
-    {width, height} = Process.get(:map_size)
+    {radius} = Process.get(:map_outer_radius)
 
     %GameBackend.Position{
-      x: -1 * position.y + div(width, 2),
-      y: position.x + div(height, 2)
+      x: -1 * position.y + radius,
+      y: position.x + radius
     }
   end
 

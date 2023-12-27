@@ -407,11 +407,7 @@ defmodule LoadTest.Communication.Proto.OldGameEvent do
   field(:projectiles, 4, repeated: true, type: LoadTest.Communication.Proto.OldProjectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
   field(:player_joined_name, 6, type: :string, json_name: "playerJoinedName")
-
-  field(:winner_player, 7,
-    type: LoadTest.Communication.Proto.OldPlayer,
-    json_name: "winnerPlayer"
-  )
+  field(:winner_player, 7, type: LoadTest.Communication.Proto.OldPlayer, json_name: "winnerPlayer")
 
   field(:selected_characters, 8,
     repeated: true,
@@ -461,12 +457,7 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
   field(:position, 3, type: LoadTest.Communication.Proto.OldPosition)
   field(:status, 4, type: LoadTest.Communication.Proto.OldStatus, enum: true)
   field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.OldActionTracker)
-
-  field(:aoe_position, 6,
-    type: LoadTest.Communication.Proto.OldPosition,
-    json_name: "aoePosition"
-  )
-
+  field(:aoe_position, 6, type: LoadTest.Communication.Proto.OldPosition, json_name: "aoePosition")
   field(:kill_count, 7, type: :uint64, json_name: "killCount")
   field(:death_count, 8, type: :uint64, json_name: "deathCount")
 
@@ -638,8 +629,8 @@ defmodule LoadTest.Communication.Proto.RunnerConfig do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:Name, 1, type: :string)
-  field(:board_width, 2, type: :uint64, json_name: "boardWidth")
-  field(:board_height, 3, type: :uint64, json_name: "boardHeight")
+  field(:board_outer_radius, 2, type: :uint64, json_name: "boardOuterRadius")
+  field(:board_inner_radius, 3, type: :uint64, json_name: "boardInnerRadius")
   field(:server_tickrate_ms, 4, type: :uint64, json_name: "serverTickrateMs")
   field(:game_timeout_ms, 5, type: :uint64, json_name: "gameTimeoutMs")
   field(:map_shrink_wait_ms, 6, type: :uint64, json_name: "mapShrinkWaitMs")
@@ -665,8 +656,8 @@ defmodule LoadTest.Communication.Proto.BoardSize do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:inner_radius, 1, type: :uint64, json_name: "innerRadius")
+  field(:outer_radius, 2, type: :uint64, json_name: "outerRadius")
 end
 
 defmodule LoadTest.Communication.Proto.CharacterConfigItem do
@@ -817,8 +808,8 @@ defmodule LoadTest.Communication.Proto.GameStateConfig do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:outer_radius, 1, type: :uint64, json_name: "outerRadius")
+  field(:inner_radius, 2, type: :uint64, json_name: "innerRadius")
 
   field(:map_modification, 3,
     type: LoadTest.Communication.Proto.MapModification,

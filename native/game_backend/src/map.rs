@@ -50,14 +50,12 @@ pub fn next_position(
     current_position: &Position,
     direction_angle: f32,
     movement_amount: f32,
-    width: f32,
+    inner_radius: f32,
+    outer_radius: f32,
 ) -> Position {
     let angle_rad = direction_angle * (PI / 180.0);
     let new_x = movement_amount.mul_add(angle_rad.cos(), current_position.x as f32);
     let new_y = movement_amount.mul_add(angle_rad.sin(), current_position.y as f32);
-
-    // This is to avoid  the overflow on the front end
-    let radius = (width - 200.0) / 2.0;
 
     let center = Position { x: 0, y: 0 };
 
@@ -66,51 +64,45 @@ pub fn next_position(
         y: new_y as i64,
     };
 
-    if distance_between_positions(&new_position, &center) <= radius {
-        new_position
-    } else {
+    let distance_between_positions = distance_between_positions(&new_position, &center);
+
+    if distance_between_positions >= outer_radius {
         let angle = angle_between_positions(&center, &new_position) * (PI / 180.0);
 
         Position {
-            x: (radius * angle.cos()) as i64,
-            y: (radius * angle.sin()) as i64,
+            x: (outer_radius * angle.cos()) as i64,
+            y: (outer_radius * angle.sin()) as i64,
         }
+    } else if distance_between_positions <= inner_radius {
+        let angle = angle_between_positions(&center, &new_position) * (PI / 180.0);
+
+        Position {
+            x: (inner_radius * angle.cos()) as i64,
+            y: (inner_radius * angle.sin()) as i64,
+        }
+    } else {
+        new_position
     }
 }
 
-pub const fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
-    let x_edge_positive = (width / 2) as i64;
-    let x_position_positive = center.x + size as i64;
-    if x_position_positive >= x_edge_positive {
+pub fn collision_with_edge(
+    pos: &Position,
+    size: u64,
+    outer_radius: u64,
+    inner_radius: u64,
+) -> bool {
+    let num = ((pos.x.pow(2) + pos.y.pow(2)) as f64).sqrt();
+
+    if num >= (outer_radius - size) as f64 || num <= (inner_radius + size) as f64 {
         return true;
     }
-
-    let x_edge_negative = width as i64 / -2;
-    let x_position_negative = center.x - size as i64;
-    if x_position_negative <= x_edge_negative {
-        return true;
-    }
-
-    let y_edge_positive = (height / 2) as i64;
-    let y_position_positive = center.y + size as i64;
-    if y_position_positive >= y_edge_positive {
-        return true;
-    }
-
-    let y_edge_negative = height as i64 / -2;
-    let y_position_negative = center.y - size as i64;
-    if y_position_negative <= y_edge_negative {
-        return true;
-    }
-
     false
 }
 
-pub fn random_position(width: u64, _height: u64) -> Position {
+pub fn random_position(outer_radius: u64, inner_radius: u64) -> Position {
     let rng = &mut rand::thread_rng();
 
-    let radius = (width / 2) as i64;
-    let random_radius = (rng.gen_range(0..radius.pow(2)) as f32).sqrt();
+    let random_radius = (rng.gen_range(inner_radius..outer_radius.pow(2)) as f32).sqrt();
     let angle = rng.gen_range(0.0..(2.0 * PI));
 
     Position {

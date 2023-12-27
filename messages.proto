@@ -393,8 +393,8 @@ message LobbyEvent {
 
 message RunnerConfig {
     string Name = 1;
-    uint64 board_width = 2;
-    uint64 board_height = 3;
+    uint64 board_outer_radius = 2;
+    uint64 board_inner_radius = 3;
     uint64 server_tickrate_ms = 4;
     uint64 game_timeout_ms = 5;
     uint64 map_shrink_wait_ms = 6;
@@ -412,8 +412,8 @@ message GameConfig {
 }
 
 message BoardSize {
-    uint64 width = 1;
-    uint64 height = 2;
+    uint64 inner_radius = 1;
+    uint64 outer_radius = 2;
 }
 
 message CharacterConfigItem {
@@ -591,8 +591,8 @@ message Config {
     - loot_interval_ms: If present, interval in milliseconds for spawning loot crates
 */
 message GameStateConfig {
-    uint64 width = 1;
-    uint64 height = 2;
+    uint64 outer_radius = 1;
+    uint64 inner_radius = 2;
     MapModification map_modification = 3;
     uint64 loot_interval_ms = 4;
 }

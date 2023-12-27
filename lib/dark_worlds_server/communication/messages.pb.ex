@@ -698,8 +698,8 @@ defmodule DarkWorldsServer.Communication.Proto.RunnerConfig do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:Name, 1, type: :string)
-  field(:board_width, 2, type: :uint64, json_name: "boardWidth")
-  field(:board_height, 3, type: :uint64, json_name: "boardHeight")
+  field(:board_outer_radius, 2, type: :uint64, json_name: "boardOuterRadius")
+  field(:board_inner_radius, 3, type: :uint64, json_name: "boardInnerRadius")
   field(:server_tickrate_ms, 4, type: :uint64, json_name: "serverTickrateMs")
   field(:game_timeout_ms, 5, type: :uint64, json_name: "gameTimeoutMs")
   field(:map_shrink_wait_ms, 6, type: :uint64, json_name: "mapShrinkWaitMs")
@@ -733,8 +733,8 @@ defmodule DarkWorldsServer.Communication.Proto.BoardSize do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:inner_radius, 1, type: :uint64, json_name: "innerRadius")
+  field(:outer_radius, 2, type: :uint64, json_name: "outerRadius")
 
   def transform_module(), do: DarkWorldsServer.Communication.ProtoTransform
 end
@@ -905,8 +905,8 @@ defmodule DarkWorldsServer.Communication.Proto.GameStateConfig do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:width, 1, type: :uint64)
-  field(:height, 2, type: :uint64)
+  field(:outer_radius, 1, type: :uint64, json_name: "outerRadius")
+  field(:inner_radius, 2, type: :uint64, json_name: "innerRadius")
 
   field(:map_modification, 3,
     type: DarkWorldsServer.Communication.Proto.MapModification,

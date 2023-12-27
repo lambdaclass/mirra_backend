@@ -329,8 +329,8 @@
     }
   ],
   "game": {
-    "width": 10000,
-    "height": 10000,
+    "outer_radius": 5000,
+    "inner_radius": 0,
     "tick_interval_ms": 30,
     "zone_starting_radius": 14000,
     "zone_modifications": [

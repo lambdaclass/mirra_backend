@@ -89,7 +89,7 @@ impl Loot {
 
 pub fn spawn_random_loot(config: &Config, id: u64) -> Option<Loot> {
     let rng = &mut rand::thread_rng();
-    let position = map::random_position(config.game.width, config.game.height);
+    let position = map::random_position(config.game.outer_radius, config.game.inner_radius);
 
     config
         .loots

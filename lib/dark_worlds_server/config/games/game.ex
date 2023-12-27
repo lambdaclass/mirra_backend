@@ -9,8 +9,8 @@ defmodule DarkWorldsServer.Config.Games.Game do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   schema "games" do
-    field(:width, :integer)
-    field(:height, :integer)
+    field(:outer_radius, :integer)
+    field(:inner_radius, :integer)
     field(:loot_interval_ms, :integer)
     field(:zone_starting_radius, :integer)
     field(:auto_aim_max_distance, :float)
@@ -26,23 +26,23 @@ defmodule DarkWorldsServer.Config.Games.Game do
   def changeset(game, attrs) do
     game
     |> cast(attrs, [
-      :width,
-      :height,
+      :outer_radius,
+      :inner_radius,
       :loot_interval_ms,
       :zone_starting_radius,
       :auto_aim_max_distance,
       :initial_positions,
       :tick_interval_ms
     ])
-    |> validate_required([:width, :height, :auto_aim_max_distance, :tick_interval_ms])
+    |> validate_required([:outer_radius, :inner_radius, :auto_aim_max_distance, :tick_interval_ms])
     |> cast_assoc(:zone_modifications)
   end
 
   def to_backend_map(game),
     do: %{
-      width: game.width,
+      outer_radius: game.outer_radius,
       auto_aim_max_distance: game.auto_aim_max_distance,
-      height: game.height,
+      inner_radius: game.inner_radius,
       initial_positions:
         Enum.map(game.initial_positions, &Enum.into(&1, %{}, fn {key, value} -> {String.to_atom(key), value} end)),
       loot_interval_ms: game.loot_interval_ms,
