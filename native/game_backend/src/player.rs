@@ -105,12 +105,20 @@ impl Player {
 
         let new_angle_to_center = libm::atan2(self.position.y as f64, self.position.x as f64);
 
-        if previous_angle_to_center > 0 as f64 && previous_angle_to_center < 1 as f64 && new_angle_to_center < 0 as f64 && new_angle_to_center > -1 as f64{
+        if previous_angle_to_center > 0 as f64
+            && previous_angle_to_center < 1 as f64
+            && new_angle_to_center < 0 as f64
+            && new_angle_to_center > -1 as f64
+        {
             println!("Lap done!");
             self.laps = self.laps + 1;
         }
 
-        if previous_angle_to_center < 0 as f64 && previous_angle_to_center > -1 as f64 && new_angle_to_center > 0 as f64 && new_angle_to_center < 1 as f64{
+        if previous_angle_to_center < 0 as f64
+            && previous_angle_to_center > -1 as f64
+            && new_angle_to_center > 0 as f64
+            && new_angle_to_center < 1 as f64
+        {
             println!("Lap undone!");
             self.laps = self.laps - 1;
         }
