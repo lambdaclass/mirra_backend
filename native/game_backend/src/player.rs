@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use itertools::Itertools;
+use libm;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 
@@ -35,6 +36,7 @@ pub struct Player {
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<ActionTracker>,
     skill_moving_params: Option<SkillMovingParams>,
+    pub laps: u8,
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
@@ -76,6 +78,7 @@ impl Player {
             next_actions: Vec::new(),
             skills_keys_to_execute: Vec::new(),
             skill_moving_params: None,
+            laps: 0,
         }
     }
 
@@ -89,6 +92,8 @@ impl Player {
             return;
         }
 
+        let previous_angle_to_center = libm::atan2(self.position.y as f64, self.position.x as f64);
+
         self.add_action(Action::Moving, 0);
         self.direction = angle_degrees;
         self.position = map::next_position(
@@ -97,6 +102,18 @@ impl Player {
             self.speed as f32,
             config.game.width as f32,
         );
+
+        let new_angle_to_center = libm::atan2(self.position.y as f64, self.position.x as f64);
+
+        if previous_angle_to_center > 0 as f64 && previous_angle_to_center < 1 as f64 && new_angle_to_center < 0 as f64 && new_angle_to_center > -1 as f64{
+            println!("Lap done!");
+            self.laps = self.laps + 1;
+        }
+
+        if previous_angle_to_center < 0 as f64 && previous_angle_to_center > -1 as f64 && new_angle_to_center > 0 as f64 && new_angle_to_center < 1 as f64{
+            println!("Lap undone!");
+            self.laps = self.laps - 1;
+        }
     }
 
     pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
