@@ -589,15 +589,17 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
 fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
     // Clear out projectiles that are no longer valid
     projectiles.retain(|projectile| {
+        let collides_with_edge = map::collision_with_edge(
+            &projectile.position,
+            projectile.size,
+            config.game.width,
+            config.game.height,
+        );
+
         projectile.active
             && projectile.duration_ms > 0
             && projectile.max_distance > 0
-            && !map::collision_with_edge(
-                &projectile.position,
-                projectile.size,
-                config.game.width,
-                config.game.height,
-            )
+            && (!collides_with_edge || collides_with_edge && projectile.bounce)
     });
 
     projectiles.iter_mut().for_each(|projectile| {
