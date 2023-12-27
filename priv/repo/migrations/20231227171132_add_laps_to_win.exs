@@ -3,7 +3,7 @@ defmodule DarkWorldsServer.Repo.Migrations.AddLapsToWin do
 
   def change do
     alter table("games") do
-      add :laps_to_win, :integer
+      add :laps_to_win, :integer, null: :false, default: 0
     end
   end
 end
