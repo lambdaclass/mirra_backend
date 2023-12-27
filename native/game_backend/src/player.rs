@@ -36,7 +36,7 @@ pub struct Player {
     pub inventory: Vec<Option<Loot>>,
     next_actions: Vec<ActionTracker>,
     skill_moving_params: Option<SkillMovingParams>,
-    pub laps: u8,
+    pub laps: i8,
 }
 
 #[derive(NifTaggedEnum, Clone, PartialEq, Eq)]
