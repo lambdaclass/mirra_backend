@@ -407,11 +407,7 @@ defmodule LoadTest.Communication.Proto.OldGameEvent do
   field(:projectiles, 4, repeated: true, type: LoadTest.Communication.Proto.OldProjectile)
   field(:player_joined_id, 5, type: :uint64, json_name: "playerJoinedId")
   field(:player_joined_name, 6, type: :string, json_name: "playerJoinedName")
-
-  field(:winner_player, 7,
-    type: LoadTest.Communication.Proto.OldPlayer,
-    json_name: "winnerPlayer"
-  )
+  field(:winner_player, 7, type: LoadTest.Communication.Proto.OldPlayer, json_name: "winnerPlayer")
 
   field(:selected_characters, 8,
     repeated: true,
@@ -461,12 +457,7 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
   field(:position, 3, type: LoadTest.Communication.Proto.OldPosition)
   field(:status, 4, type: LoadTest.Communication.Proto.OldStatus, enum: true)
   field(:action, 5, repeated: true, type: LoadTest.Communication.Proto.OldActionTracker)
-
-  field(:aoe_position, 6,
-    type: LoadTest.Communication.Proto.OldPosition,
-    json_name: "aoePosition"
-  )
-
+  field(:aoe_position, 6, type: LoadTest.Communication.Proto.OldPosition, json_name: "aoePosition")
   field(:kill_count, 7, type: :uint64, json_name: "killCount")
   field(:death_count, 8, type: :uint64, json_name: "deathCount")
 
@@ -889,6 +880,7 @@ defmodule LoadTest.Communication.Proto.GameProjectile do
 
   field(:max_distance, 7, type: :uint64, json_name: "maxDistance")
   field(:duration_ms, 8, type: :float, json_name: "durationMs")
+  field(:bounce, 9, type: :bool)
 end
 
 defmodule LoadTest.Communication.Proto.GameCharacter.SkillsEntry do

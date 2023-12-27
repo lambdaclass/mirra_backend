@@ -131,7 +131,9 @@
       },
       "player_attributes": [],
       "projectile_attributes": [],
-      "skills_keys_to_execute": ["4"]
+      "skills_keys_to_execute": [
+        "4"
+      ]
     },
     {
       "name": "muflus_hit_delay",
@@ -171,6 +173,7 @@
       "base_speed": 60,
       "base_size": 20,
       "remove_on_collision": true,
+      "bounce": false,
       "on_hit_effects": [],
       "duration_ms": 999999,
       "max_distance": 1500
@@ -181,9 +184,21 @@
       "base_speed": 60,
       "base_size": 10,
       "remove_on_collision": false,
+      "bounce": false,
       "on_hit_effects": [
         "poison"
       ],
+      "duration_ms": 999999,
+      "max_distance": 500
+    },
+    {
+      "name": "bouncing_ball",
+      "base_damage": 1,
+      "base_speed": 60,
+      "base_size": 10,
+      "remove_on_collision": false,
+      "bounce": true,
+      "on_hit_effects": [],
       "duration_ms": 999999,
       "max_distance": 500
     }
@@ -228,7 +243,9 @@
             "damage": 0,
             "range": 975,
             "cone_angle": 90,
-            "on_hit_effects": ["muflus_hit_delay"]
+            "on_hit_effects": [
+              "muflus_hit_delay"
+            ]
           }
         }
       ]
@@ -257,7 +274,9 @@
       "mechanics": [
         {
           "GiveEffect": {
-            "effects_to_give": ["auto_slingshot"]
+            "effects_to_give": [
+              "auto_slingshot"
+            ]
           }
         }
       ]
@@ -292,8 +311,12 @@
           "MoveToTarget": {
             "duration_ms": 500,
             "max_range": 1000,
-            "on_arrival_skills": ["3"],
-            "effects_to_remove_on_arrival": ["leap_effect"]
+            "on_arrival_skills": [
+              "3"
+            ],
+            "effects_to_remove_on_arrival": [
+              "leap_effect"
+            ]
           }
         }
       ]
