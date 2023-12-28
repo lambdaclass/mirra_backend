@@ -703,6 +703,10 @@ fn apply_projectiles_collisions(
                         projectile.direction_angle =
                             (player_projectile_angle - angle_between_projectile_player) % 360.;
                     }
+
+                    if player.effects.iter().any(|(effect, _owner)| effect.name == "bouncing") {
+                        projectile.speed = (projectile.speed as f32 * 1.5) as u64;
+                    }
                 }
                 break;
             }
