@@ -2,8 +2,8 @@ use std::collections::HashMap;
 use std::fmt::Debug;
 use std::sync::Arc;
 
-use libm;
 use itertools::Itertools;
+use libm;
 use libm::atan2;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
@@ -636,25 +636,26 @@ fn apply_projectiles_collisions(
                     player.size,
                 )
             {
-                if player.id == projectile.player_id {
+                if player.id == projectile.player_id{
                     continue;
                 }
 
-                pending_damages.push(DamageTracker {
-                    attacked_id: player.id,
-                    attacker: EntityOwner::Player(projectile.player_id),
-                    damage: projectile.damage as i64,
-                    on_hit_effects: projectile.on_hit_effects.clone(),
-                });
+                // Not needed for this game
+                // pending_damages.push(DamageTracker {
+                //     attacked_id: player.id,
+                //     attacker: EntityOwner::Player(projectile.player_id),
+                //     damage: projectile.damage as i64,
+                //     on_hit_effects: projectile.on_hit_effects.clone(),
+                // });
 
                 projectile.attacked_player_ids.push(player.id);
                 if projectile.remove_on_collision {
                     projectile.active = false;
                 }
 
-                if(projectile.bounce){
-                    let dx = projectile.position.x - (player.position.x + player.size as i64);
-                    let dy = projectile.position.y - (player.position.y + player.size as i64);
+                if (projectile.bounce) {
+                    let dx = -projectile.position.x + (player.position.x + player.size as i64);
+                    let dy = -projectile.position.y + (player.position.y + player.size as i64);
                     let angle_between = atan2(dy as f64, dx as f64) as f32;
 
                     let normalized_angle = (angle_between + 360.0) % 360.0;
