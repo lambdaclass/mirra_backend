@@ -173,7 +173,7 @@
       "remove_on_collision": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
-      "max_distance": 1500
+      "max_distance": 10000
     },
     {
       "name": "projectile_poison_dart",
@@ -322,7 +322,7 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "hit",
+        "1": "slingshot",
         "2": "leap",
         "3": "circle_hit"
       }
@@ -403,18 +403,18 @@
     "initial_positions": {
         "1": {
           "x": 0,
-          "y": -2000
+          "y": -1000
         },
         "2": {
-          "x": 2000,
+          "x": 1000,
           "y": 0
         },
         "3": {
           "x": 0, 
-          "y": 2000
+          "y": 1000
         },
         "4": {
-          "x": -2000, 
+          "x": -1000, 
           "y": 0
         }
     }
