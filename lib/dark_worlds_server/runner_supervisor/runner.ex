@@ -35,6 +35,10 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     GenServer.call(runner_pid, {:join, user_id, character_name})
   end
 
+  def perform_action(action, runner_pid, user_id, action_data, timestamp) do
+    GenServer.cast(runner_pid, {action, user_id, action_data, timestamp})
+  end
+
   def move(runner_pid, user_id, action, timestamp) do
     GenServer.cast(runner_pid, {:move, user_id, action, timestamp})
   end
@@ -120,53 +124,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   @impl true
-  def handle_cast({:move, user_id, %Move{angle: angle}, timestamp}, state) do
-    player_id = state.user_to_player[user_id] || user_id
-    game_state = GameBackend.move_player(state.game_state, player_id, angle)
-
-    state =
-      Map.put(state, :game_state, game_state)
-      |> put_in([:player_timestamps, user_id], timestamp)
-
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_cast(
-        {:attack, user_id, %UseSkill{skill: skill} = use_skill, timestamp},
-        state
-      ) do
-    player_id = state.user_to_player[user_id] || user_id
-    skill_key = action_skill_to_key(skill)
-    skill_params = extract_and_convert_params(use_skill)
-    game_state = GameBackend.activate_skill(state.game_state, player_id, skill_key, skill_params)
-
-    state =
-      Map.put(state, :game_state, game_state)
-      |> put_in([:player_timestamps, user_id], timestamp)
-
-    {:noreply, state}
-  end
-
-  @impl true
-  def handle_cast(
-        {:use_inventory, user_id, %UseInventory{inventory_at: inventory_at}, timestamp},
-        state
-      ) do
-    player_id = state.user_to_player[user_id] || user_id
-
-    game_state =
-      GameBackend.activate_inventory(state.game_state, player_id, inventory_at)
-
-    state =
-      Map.put(state, :game_state, game_state)
-      |> put_in([:player_timestamps, user_id], timestamp)
-
-    {:noreply, state}
-  end
-
   def handle_cast(msg, state) do
-    Logger.error("Unexpected handle_cast msg", %{msg: msg})
+    state =
+      case System.get_env("game_for") do
+        "crash_balls" -> DarkWorldsServer.RunnerSupervisor.BallsRunnerLogic.perform_action(state, msg)
+        _ -> DarkWorldsServer.RunnerSupervisor.RunnerLogic.perform_action(state, msg)
+      end
+
     {:noreply, state}
   end
 
@@ -308,20 +272,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
         # TODO we should use a tiebreaker instead of picking the 1st one in the list
         {:ended, hd(last_standing_players)}
     end
-  end
-
-  defp action_skill_to_key("BasicAttack"), do: "1"
-  defp action_skill_to_key("Skill1"), do: "2"
-  defp action_skill_to_key(:skill_1), do: "2"
-  defp action_skill_to_key(:skill_2), do: "3"
-  defp action_skill_to_key(:skill_3), do: "4"
-  defp action_skill_to_key(:skill_4), do: "5"
-
-  defp extract_and_convert_params(params) do
-    Map.from_struct(params)
-    |> Map.drop([:__unknown_fields__])
-    |> Enum.map(fn {key, value} -> {to_string(key), to_string(value)} end)
-    |> Map.new()
   end
 
   defp transform_state_to_game_state(game_state) do

@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
@@ -38,7 +37,7 @@ pub struct GameConfigFile {
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
-    initial_positions: Vec<Position>,
+    initial_positions: HashMap<u64, Position>,
     tick_interval_ms: u64,
 }
 
@@ -60,7 +59,7 @@ pub struct GameConfig {
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
-    pub initial_positions: Vec<Position>,
+    pub initial_positions: HashMap<u64, Position>,
     pub tick_interval_ms: u64,
 }
 
@@ -112,7 +111,7 @@ pub struct GameState {
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
-    next_id: u64,
+    pub next_id: u64,
     pub pending_damages: Vec<DamageTracker>,
 }
 

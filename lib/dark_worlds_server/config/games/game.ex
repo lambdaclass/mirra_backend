@@ -14,7 +14,7 @@ defmodule DarkWorldsServer.Config.Games.Game do
     field(:loot_interval_ms, :integer)
     field(:zone_starting_radius, :integer)
     field(:auto_aim_max_distance, :float)
-    field(:initial_positions, {:array, :map})
+    field(:initial_positions, :map)
     field(:tick_interval_ms, :integer)
 
     has_many(:zone_modifications, ZoneModification)
@@ -38,16 +38,21 @@ defmodule DarkWorldsServer.Config.Games.Game do
     |> cast_assoc(:zone_modifications)
   end
 
-  def to_backend_map(game),
-    do: %{
+  def to_backend_map(game) do
+    %{
       width: game.width,
       auto_aim_max_distance: game.auto_aim_max_distance,
       height: game.height,
       initial_positions:
-        Enum.map(game.initial_positions, &Enum.into(&1, %{}, fn {key, value} -> {String.to_atom(key), value} end)),
+        Enum.into(game.initial_positions, %{}, fn {player_id, positions} -> {String.to_integer(player_id), transform_map_keys_to_atoms(positions)} end),
       loot_interval_ms: game.loot_interval_ms,
       zone_modifications: Enum.map(game.zone_modifications, &ZoneModification.to_backend_map/1),
       zone_starting_radius: game.zone_starting_radius,
       tick_interval_ms: game.tick_interval_ms
     }
+  end
+
+  defp transform_map_keys_to_atoms(map) do
+    Enum.into(map, %{}, fn {key, value} -> {String.to_atom(key), value} end)
+  end
 end

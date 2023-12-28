@@ -4,9 +4,9 @@ defmodule DarkWorldsServer.Matchmaking.MatchingCoordinator do
   use GenServer
 
   ## Amount of players needed to start a game
-  @session_player_amount 10
+  @session_player_amount 4
   ## Time to wait for a matching session to be full
-  @start_game_timeout_ms 9_500
+  @start_game_timeout_ms 500
 
   #######
   # API #
