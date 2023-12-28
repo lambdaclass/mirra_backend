@@ -194,6 +194,10 @@ impl GameState {
         self.loots.push(loot);
     }
 
+    pub fn push_projectile(&mut self, projectile: Projectile) {
+        self.projectiles.push(projectile);
+    }
+
     pub fn move_player(&mut self, player_id: u64, angle: f32) {
         let players = &mut self.players;
         let loots = &mut self.loots;

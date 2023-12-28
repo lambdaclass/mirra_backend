@@ -166,6 +166,16 @@
   ],
   "projectiles": [
     {
+      "name": "ball",
+      "base_damage": 0,
+      "base_speed": 60,
+      "base_size": 20,
+      "remove_on_collision": false,
+      "on_hit_effects": [],
+      "duration_ms": 999999,
+      "max_distance": 999999
+    },
+    {
       "name": "projectile_slingshot",
       "base_damage": 7,
       "base_speed": 60,
