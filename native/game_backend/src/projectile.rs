@@ -1,7 +1,7 @@
-use rustler::NifMap;
-use serde::Deserialize;
 use crate::config::Config;
 use rand::Rng;
+use rustler::NifMap;
+use serde::Deserialize;
 
 use crate::{effect::Effect, map::Position};
 
@@ -15,6 +15,7 @@ pub struct ProjectileConfigFile {
     duration_ms: u64,
     max_distance: u64,
     remove_on_collision: bool,
+    bounce: bool,
 }
 
 #[derive(NifMap, Clone)]
@@ -27,6 +28,7 @@ pub struct ProjectileConfig {
     duration_ms: u64,
     max_distance: u64,
     remove_on_collision: bool,
+    bounce: bool,
 }
 
 #[derive(NifMap)]
@@ -45,6 +47,7 @@ pub struct Projectile {
     pub active: bool, // TODO: this should be `status` field with an enum value
     pub remove_on_collision: bool,
     pub attacked_player_ids: Vec<u64>,
+    pub bounce: bool,
 }
 
 impl ProjectileConfig {
@@ -70,6 +73,7 @@ impl ProjectileConfig {
                     duration_ms: config.duration_ms,
                     max_distance: config.max_distance,
                     remove_on_collision: config.remove_on_collision,
+                    bounce: config.bounce,
                 }
             })
             .collect()
@@ -99,6 +103,7 @@ impl Projectile {
             player_id,
             active: true,
             attacked_player_ids: vec![],
+            bounce: config.bounce,
         }
     }
 }
@@ -108,7 +113,7 @@ pub fn spawn_ball(config: &Config, id: u64) -> Option<Projectile> {
     let angle = rng.gen_range(0.0..360.);
     Some(Projectile::new(
         id,
-        Position {x: 0, y: 0},
+        Position { x: 0, y: 0 },
         angle,
         15,
         &config.projectiles[0],

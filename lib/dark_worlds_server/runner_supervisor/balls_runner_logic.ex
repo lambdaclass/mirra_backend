@@ -4,10 +4,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.BallsRunnerLogic do
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias DarkWorldsServer.RunnerUtils
 
-
   def perform_action(state, {:move, user_id, %Move{angle: angle}, timestamp}) when angle in [0.0, 180.0] do
     player_id = state.user_to_player[user_id] || user_id
-    game_state = GameBackend.move_player(state.game_state, player_id, angle + (90 * (player_id - 1)))
+    game_state = GameBackend.move_player(state.game_state, player_id, angle + 90 * (player_id - 1))
 
     Map.put(state, :game_state, game_state)
     |> put_in([:player_timestamps, user_id], timestamp)

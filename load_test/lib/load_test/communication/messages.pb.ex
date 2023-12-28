@@ -889,6 +889,7 @@ defmodule LoadTest.Communication.Proto.GameProjectile do
 
   field(:max_distance, 7, type: :uint64, json_name: "maxDistance")
   field(:duration_ms, 8, type: :float, json_name: "durationMs")
+  field(:bounce, 9, type: :bool)
 end
 
 defmodule LoadTest.Communication.Proto.GameCharacter.SkillsEntry do

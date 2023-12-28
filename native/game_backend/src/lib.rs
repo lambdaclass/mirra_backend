@@ -36,13 +36,10 @@ fn add_player(
     match game.config.find_character(character_name) {
         None => Err(GameError::CharacterNotFound),
         Some(character_config) => {
-            let initial_position = match game.config
-            .game
-            .initial_positions
-            .remove(&player_id) {
+            let initial_position = match game.config.game.initial_positions.remove(&player_id) {
                 Some(position) => position,
-                None => Position { x: 0, y: 0 }
-            }; 
+                None => Position { x: 0, y: 0 },
+            };
 
             let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
@@ -51,7 +48,6 @@ fn add_player(
     }
 }
 
-
 #[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     let mut game: GameState = game;
@@ -59,7 +55,6 @@ fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     game.move_player(player_id, angle);
     game
 }
-
 
 // TODO: Is this method necesary?
 #[rustler::nif()]

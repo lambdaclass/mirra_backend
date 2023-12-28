@@ -1,4 +1,10 @@
 use std::collections::HashMap;
+use std::fmt::Debug;
+use std::sync::Arc;
+
+use itertools::Itertools;
+use libm;
+use libm::atan2;
 use rustler::NifMap;
 use rustler::NifTaggedEnum;
 use rustler::NifTuple;
@@ -44,10 +50,9 @@ pub struct GameConfigFile {
 }
 
 #[derive(Deserialize, NifMap, Debug, Clone, Copy)]
-pub struct Obstacle{
+pub struct Obstacle {
     pub position: Position,
     pub size: u64,
-    
 }
 
 #[derive(Deserialize)]
@@ -461,7 +466,13 @@ impl GameState {
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
-        move_projectiles(&mut self.projectiles, &self.players, time_diff, &self.config, &mut self.pending_damages);
+        move_projectiles(
+            &mut self.projectiles,
+            &self.players,
+            time_diff,
+            &self.config,
+            &mut self.pending_damages,
+        );
         apply_projectiles_collisions(
             &mut self.projectiles,
             &mut self.players,
@@ -602,7 +613,13 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
     })
 }
 
-fn move_projectiles(projectiles: &mut Vec<Projectile>, players: &HashMap<u64, Player>, time_diff: u64, config: &Config, pending_damages: &mut Vec<DamageTracker>) {
+fn move_projectiles(
+    projectiles: &mut Vec<Projectile>,
+    players: &HashMap<u64, Player>,
+    time_diff: u64,
+    config: &Config,
+    pending_damages: &mut Vec<DamageTracker>,
+) {
     // Clear out projectiles that are no longer valid
     projectiles.retain(|projectile| {
         projectile.active
@@ -613,7 +630,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, players: &HashMap<u64, Pl
                 players,
                 config.game.width,
                 config.game.height,
-            ){
+            ) {
                 pending_damages.push(DamageTracker {
                     attacked_id: player_id,
                     attacker: EntityOwner::Player(projectile.player_id),
@@ -658,16 +675,34 @@ fn apply_projectiles_collisions(
                 if player.id == projectile.player_id {
                     continue;
                 }
-                pending_damages.push(DamageTracker {
-                    attacked_id: player.id,
-                    attacker: EntityOwner::Player(projectile.player_id),
-                    damage: projectile.damage as i64,
-                    on_hit_effects: projectile.on_hit_effects.clone(),
-                });
+
+                // Not needed for this game
+                // pending_damages.push(DamageTracker {
+                //     attacked_id: player.id,
+                //     attacker: EntityOwner::Player(projectile.player_id),
+                //     damage: projectile.damage as i64,
+                //     on_hit_effects: projectile.on_hit_effects.clone(),
+                // });
 
                 projectile.attacked_player_ids.push(player.id);
                 if projectile.remove_on_collision {
                     projectile.active = false;
+                }
+
+                if projectile.bounce {
+                    let player_projectile_angle =
+                        map::angle_between_positions(&projectile.position, &player.position);
+
+                    let angle_between_projectile_player =
+                        (player_projectile_angle + 180.) - projectile.direction_angle;
+
+                    if angle_between_projectile_player > 0. {
+                        projectile.direction_angle =
+                            (player_projectile_angle + angle_between_projectile_player) % 360.;
+                    } else {
+                        projectile.direction_angle =
+                            (player_projectile_angle - angle_between_projectile_player) % 360.;
+                    }
                 }
                 break;
             }

@@ -427,8 +427,8 @@ impl Player {
         self.skill_moving_params.is_none()
     }
 
-    fn any_obstacle_collide(&mut self, config: &Config) ->  bool{
-        config.game.obstacles.clone().into_iter().any(|obstacle|{
+    fn any_obstacle_collide(&mut self, config: &Config) -> bool {
+        config.game.obstacles.clone().into_iter().any(|obstacle| {
             map::hit_boxes_collide(&self.position, &obstacle.position, self.size, obstacle.size)
         })
     }

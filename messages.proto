@@ -656,6 +656,7 @@ message GameProjectile {
     repeated GameEffect on_hit_effect = 6;
     uint64 max_distance = 7;
     float duration_ms = 8;
+    bool bounce = 9;
 }
 
 /* Represents a character in the game

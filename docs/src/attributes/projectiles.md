@@ -18,3 +18,4 @@
 - `speed`: Speed of the projectile
 - `size`: Size for the projectile model and collision math
 - `remove_on_collision`: Determines if the projectile is removed from game after colliding with a player
+- `bounce`: Determines whether the projectile bounces against walls and players or not
