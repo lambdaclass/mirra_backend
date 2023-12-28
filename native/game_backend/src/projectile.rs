@@ -1,7 +1,7 @@
-use rustler::NifMap;
-use serde::Deserialize;
 use crate::config::Config;
 use rand::Rng;
+use rustler::NifMap;
+use serde::Deserialize;
 
 use crate::{effect::Effect, map::Position};
 
@@ -113,7 +113,7 @@ pub fn spawn_ball(config: &Config, id: u64) -> Option<Projectile> {
     let angle = rng.gen_range(0.0..360.);
     Some(Projectile::new(
         id,
-        Position {x: 0, y: 0},
+        Position { x: 0, y: 0 },
         angle,
         15,
         &config.projectiles[0],

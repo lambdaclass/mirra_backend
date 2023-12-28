@@ -4,7 +4,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.RunnerLogic do
   alias DarkWorldsServer.Communication.Proto.UseSkill
   alias DarkWorldsServer.RunnerUtils
 
-
   def perform_action(state, {:move, user_id, %Move{angle: angle}, timestamp}) do
     player_id = state.user_to_player[user_id] || user_id
     game_state = GameBackend.move_player(state.game_state, player_id, angle)

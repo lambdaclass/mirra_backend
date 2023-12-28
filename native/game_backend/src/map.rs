@@ -1,4 +1,4 @@
-use std::{f32::consts::PI, collections::HashMap};
+use std::{collections::HashMap, f32::consts::PI};
 
 use rand::Rng;
 use rustler::NifMap;
@@ -78,28 +78,33 @@ pub fn next_position(
     }
 }
 
-pub fn collision_with_edge(projectile: &Projectile, players: &HashMap<u64, Player>, width: u64, height: u64) -> Option<u64> {
+pub fn collision_with_edge(
+    projectile: &Projectile,
+    players: &HashMap<u64, Player>,
+    width: u64,
+    height: u64,
+) -> Option<u64> {
     let (_, x_edge_positive) = players.iter().max_by_key(|(_, player)| player.position.x)?;
     let x_position_positive = projectile.position.x + projectile.size as i64;
-    if x_position_positive > x_edge_positive.position.x && projectile.player_id != 2{
+    if x_position_positive > x_edge_positive.position.x && projectile.player_id != 2 {
         return Some(2);
     }
 
     let (_, x_edge_negative) = players.iter().min_by_key(|(_, player)| player.position.x)?;
     let x_position_negative = projectile.position.x - projectile.size as i64;
-    if x_position_negative < x_edge_negative.position.x && projectile.player_id != 4{
+    if x_position_negative < x_edge_negative.position.x && projectile.player_id != 4 {
         return Some(4);
     }
 
     let (_, y_edge_positive) = players.iter().max_by_key(|(_, player)| player.position.y)?;
     let y_position_positive = projectile.position.y + projectile.size as i64;
-    if y_position_positive > y_edge_positive.position.y && projectile.player_id != 3{
+    if y_position_positive > y_edge_positive.position.y && projectile.player_id != 3 {
         return Some(3);
     }
 
     let (_, y_edge_negative) = players.iter().min_by_key(|(_, player)| player.position.y)?;
     let y_position_negative = projectile.position.y - projectile.size as i64;
-    if y_position_negative < y_edge_negative.position.y && projectile.player_id != 1{
+    if y_position_negative < y_edge_negative.position.y && projectile.player_id != 1 {
         return Some(1);
     }
 

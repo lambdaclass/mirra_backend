@@ -169,7 +169,7 @@
   "projectiles": [
     {
       "name": "ball",
-      "base_damage": 0,
+      "base_damage": 10,
       "base_speed": 20,
       "base_size": 100,
       "remove_on_collision": false,

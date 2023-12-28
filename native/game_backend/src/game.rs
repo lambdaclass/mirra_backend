@@ -50,10 +50,9 @@ pub struct GameConfigFile {
 }
 
 #[derive(Deserialize, NifMap, Debug, Clone, Copy)]
-pub struct Obstacle{
+pub struct Obstacle {
     pub position: Position,
     pub size: u64,
-    
 }
 
 #[derive(Deserialize)]
@@ -691,15 +690,18 @@ fn apply_projectiles_collisions(
                 }
 
                 if projectile.bounce {
+                    let player_projectile_angle =
+                        map::angle_between_positions(&projectile.position, &player.position);
 
-                    let player_projectile_angle = map::angle_between_positions(&projectile.position, &player.position);
-
-                    let angle_between_projectile_player = (player_projectile_angle + 180.) - projectile.direction_angle;
+                    let angle_between_projectile_player =
+                        (player_projectile_angle + 180.) - projectile.direction_angle;
 
                     if angle_between_projectile_player > 0. {
-                        projectile.direction_angle = (player_projectile_angle + angle_between_projectile_player) % 360.;
+                        projectile.direction_angle =
+                            (player_projectile_angle + angle_between_projectile_player) % 360.;
                     } else {
-                        projectile.direction_angle = (player_projectile_angle - angle_between_projectile_player) % 360.;
+                        projectile.direction_angle =
+                            (player_projectile_angle - angle_between_projectile_player) % 360.;
                     }
                 }
                 break;

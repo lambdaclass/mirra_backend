@@ -28,7 +28,16 @@ defmodule DarkWorldsServer.Config.Characters.Projectile do
   def changeset(projectile, attrs),
     do:
       projectile
-      |> cast(attrs, [:name, :base_damage, :base_speed, :base_size, :duration_ms, :max_distance, :remove_on_collision, :bounce])
+      |> cast(attrs, [
+        :name,
+        :base_damage,
+        :base_speed,
+        :base_size,
+        :duration_ms,
+        :max_distance,
+        :remove_on_collision,
+        :bounce
+      ])
       |> validate_required([
         :name,
         :base_damage,

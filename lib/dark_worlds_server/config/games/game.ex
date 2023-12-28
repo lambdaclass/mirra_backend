@@ -16,7 +16,7 @@ defmodule DarkWorldsServer.Config.Games.Game do
     field(:auto_aim_max_distance, :float)
     field(:initial_positions, :map)
     field(:tick_interval_ms, :integer)
-    field(:obstacles, {:array ,:map})
+    field(:obstacles, {:array, :map})
     field(:laps_to_win, :integer)
 
     has_many(:zone_modifications, ZoneModification)
@@ -48,12 +48,15 @@ defmodule DarkWorldsServer.Config.Games.Game do
       auto_aim_max_distance: game.auto_aim_max_distance,
       height: game.height,
       initial_positions:
-        Enum.into(game.initial_positions, %{}, fn {player_id, positions} -> {String.to_integer(player_id), transform_map_keys_to_atoms(positions)} end),
+        Enum.into(game.initial_positions, %{}, fn {player_id, positions} ->
+          {String.to_integer(player_id), transform_map_keys_to_atoms(positions)}
+        end),
       loot_interval_ms: game.loot_interval_ms,
       zone_modifications: Enum.map(game.zone_modifications, &ZoneModification.to_backend_map/1),
       zone_starting_radius: game.zone_starting_radius,
       tick_interval_ms: game.tick_interval_ms,
-      obstacles: Enum.map(game.obstacles, fn map -> Enum.into(map, %{}, fn tuple -> transform_nested_map(tuple) end) end),
+      obstacles:
+        Enum.map(game.obstacles, fn map -> Enum.into(map, %{}, fn tuple -> transform_nested_map(tuple) end) end),
       laps_to_win: game.laps_to_win
     }
   end
@@ -61,6 +64,7 @@ defmodule DarkWorldsServer.Config.Games.Game do
   defp transform_nested_map({key, %{} = value}) do
     {String.to_atom(key), transform_map_keys_to_atoms(value)}
   end
+
   defp transform_nested_map({key, value}) do
     {String.to_atom(key), value}
   end
