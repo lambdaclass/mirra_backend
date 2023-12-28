@@ -39,7 +39,15 @@ pub struct GameConfigFile {
     auto_aim_max_distance: f32,
     initial_positions: HashMap<u64, Position>,
     tick_interval_ms: u64,
+    obstacles: Vec<Obstacle>,
     laps_to_win: i8,
+}
+
+#[derive(Deserialize, NifMap, Debug, Clone, Copy)]
+pub struct Obstacle{
+    pub position: Position,
+    pub size: u64,
+    
 }
 
 #[derive(Deserialize)]
@@ -52,7 +60,7 @@ pub struct ZoneModificationConfigFile {
     modification: ZoneModificationModifier,
 }
 
-#[derive(NifMap)]
+#[derive(NifMap, Debug)]
 pub struct GameConfig {
     pub width: u64,
     pub height: u64,
@@ -62,10 +70,11 @@ pub struct GameConfig {
     pub auto_aim_max_distance: f32,
     pub initial_positions: HashMap<u64, Position>,
     pub tick_interval_ms: u64,
+    pub obstacles: Vec<Obstacle>,
     pub laps_to_win: i8,
 }
 
-#[derive(NifMap, Clone)]
+#[derive(NifMap, Clone, Debug)]
 pub struct ZoneModificationConfig {
     duration_ms: u64,
     interval_ms: u64,
@@ -75,7 +84,7 @@ pub struct ZoneModificationConfig {
     modification: ZoneModificationModifier,
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone)]
+#[derive(Deserialize, NifTaggedEnum, Clone, Debug)]
 #[serde(tag = "modifier", content = "value")]
 pub enum ZoneModificationModifier {
     Additive(i64),
@@ -145,6 +154,7 @@ impl GameConfig {
             auto_aim_max_distance: game_config.auto_aim_max_distance,
             initial_positions: game_config.initial_positions,
             tick_interval_ms: game_config.tick_interval_ms,
+            obstacles: game_config.obstacles,
             laps_to_win: game_config.laps_to_win,
         }
     }
