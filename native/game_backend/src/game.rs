@@ -690,18 +690,17 @@ fn apply_projectiles_collisions(
                     projectile.active = false;
                 }
 
-                if (projectile.bounce) {
-                    let dy = -(projectile.position.y + (projectile.size / 2) as i64)
-                        + (player.position.y + (player.size / 2) as i64);
-                    let dx = -(projectile.position.x + (projectile.size / 2) as i64)
-                        + (player.position.x + (player.size / 2) as i64);
-                    let angle_between = atan2(dy as f64, dx as f64) as f32;
+                if projectile.bounce {
 
-                    let normalized_angle = (angle_between + 360.0) % 360.0;
+                    let player_projectile_angle = map::angle_between_positions(&projectile.position, &player.position);
 
-                    let reflection_angle = 2.0 * normalized_angle - projectile.direction_angle;
+                    let angle_between_projectile_player = (player_projectile_angle + 180.) - projectile.direction_angle;
 
-                    projectile.direction_angle = reflection_angle;
+                    if angle_between_projectile_player > 0. {
+                        projectile.direction_angle = (player_projectile_angle + angle_between_projectile_player) % 360.;
+                    } else {
+                        projectile.direction_angle = (player_projectile_angle - angle_between_projectile_player) % 360.;
+                    }
                 }
                 break;
             }
