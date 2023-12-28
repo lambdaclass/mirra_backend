@@ -357,6 +357,36 @@
     "height": 10000,
     "tick_interval_ms": 30,
     "zone_starting_radius": 14000,
+    "obstacles": [
+      {
+        "position": {
+          "x": 1000,
+          "y": -1000 
+        },
+        "size": 200
+      },
+      {
+        "position": {
+          "x": -1000,
+          "y": -1000 
+        },
+        "size": 200
+      },
+      {
+        "position": {
+          "x": 1000,
+          "y": 1000 
+        },
+        "size": 200
+      },
+      {
+        "position": {
+          "x": -1000,
+          "y": 1000 
+        },
+        "size": 200
+      }
+    ],
     "zone_modifications": [
       {
         "duration_ms": 180000,

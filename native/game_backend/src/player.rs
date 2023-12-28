@@ -96,6 +96,7 @@ impl Player {
 
         self.add_action(Action::Moving, 0);
         self.direction = angle_degrees;
+        let previous_position = self.position.clone();
         self.position = map::next_position(
             &self.position,
             angle_degrees,
@@ -103,6 +104,9 @@ impl Player {
             config.game.width as f32,
         );
 
+        if self.any_obstacle_collide(&config) {
+            self.position = previous_position
+        }
         let new_angle_to_center = libm::atan2(self.position.y as f64, self.position.x as f64);
 
         // Comparisons with 1 and -1 are to avoid counting laps when we go from pi to -pi
@@ -421,6 +425,12 @@ impl Player {
 
     pub const fn is_targetable(&self) -> bool {
         self.skill_moving_params.is_none()
+    }
+
+    fn any_obstacle_collide(&mut self, config: &Config) ->  bool{
+        config.game.obstacles.clone().into_iter().any(|obstacle|{
+            map::hit_boxes_collide(&self.position, &obstacle.position, self.size, obstacle.size)
+        })
     }
 }
 
