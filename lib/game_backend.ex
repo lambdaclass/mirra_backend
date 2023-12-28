@@ -26,6 +26,9 @@ defmodule GameBackend do
   @spec game_tick(map(), pos_integer()) :: map()
   def game_tick(_game_state, _time_diff), do: :erlang.nif_error(:nif_not_loaded)
 
+  @spec spawn_ball(map()) :: {map(), nil | pos_integer()}
+  def spawn_ball(_game_state), do: :erlang.nif_error(:nif_not_loaded)
+
   defmodule Board do
     defstruct []
   end
