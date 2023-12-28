@@ -45,6 +45,7 @@ pub struct GameConfigFile {
     auto_aim_max_distance: f32,
     initial_positions: HashMap<u64, Position>,
     tick_interval_ms: u64,
+    laps_to_win: i8,
 }
 
 #[derive(Deserialize)]
@@ -67,6 +68,7 @@ pub struct GameConfig {
     pub auto_aim_max_distance: f32,
     pub initial_positions: HashMap<u64, Position>,
     pub tick_interval_ms: u64,
+    pub laps_to_win: i8,
 }
 
 #[derive(NifMap, Clone)]
@@ -149,6 +151,7 @@ impl GameConfig {
             auto_aim_max_distance: game_config.auto_aim_max_distance,
             initial_positions: game_config.initial_positions,
             tick_interval_ms: game_config.tick_interval_ms,
+            laps_to_win: game_config.laps_to_win,
         }
     }
 }
@@ -189,6 +192,10 @@ impl GameState {
 
     pub fn push_loot(&mut self, loot: Loot) {
         self.loots.push(loot);
+    }
+
+    pub fn push_projectile(&mut self, projectile: Projectile) {
+        self.projectiles.push(projectile);
     }
 
     pub fn move_player(&mut self, player_id: u64, angle: f32) {

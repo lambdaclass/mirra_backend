@@ -24,7 +24,7 @@ pub struct ConfigFile {
 pub struct Config {
     effects: Vec<Effect>,
     pub loots: Vec<LootConfig>,
-    projectiles: Vec<ProjectileConfig>,
+    pub projectiles: Vec<ProjectileConfig>,
     skills: Vec<SkillConfig>,
     characters: Vec<CharacterConfig>,
     pub game: GameConfig,

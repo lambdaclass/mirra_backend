@@ -10,6 +10,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   # Amount of time between loot spawn
   @loot_spawn_rate_ms 20_000
+  # Amount of time between ball spawn
+  @ball_spawn_rate_ms 4_000
   # Amount of time between loot spawn
   @game_tick_start 5_000
   ## Time between checking that a game has ended
@@ -138,10 +140,12 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   def handle_info(:start_game_tick, state) do
     Process.send_after(self(), :game_tick, state.game_tick)
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
+    Process.send_after(self(), :spawn_ball, @ball_spawn_rate_ms)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
     broadcast_game_start(state.broadcast_topic, Map.put(state.game_state, :player_timestamps, state.player_timestamps))
 
     state = Map.put(state, :last_game_tick_at, System.monotonic_time(:millisecond))
+    state = Map.put(state, :ball_spawn_rate_ms, @ball_spawn_rate_ms)
     {:noreply, state}
   end
 
@@ -176,10 +180,32 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     {:noreply, %{state | game_state: game_state}}
   end
 
+  def handle_info(:spawn_ball, state) do
+    Process.send_after(self(), :spawn_ball, max(500, state.ball_spawn_rate_ms))
+
+    {game_state, _loot_id} = GameBackend.spawn_ball(state.game_state)
+
+    state = Map.put(state, :ball_spawn_rate_ms, round(state.ball_spawn_rate_ms * 0.9))
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
   def handle_info(:check_game_ended, state) do
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms)
 
-    case check_game_ended(Map.values(state.game_state.players), state.last_standing_players) do
+    game_ended =
+      case state.game_state.config.game.laps_to_win do
+        0 ->
+          check_game_ended_standing_players(
+            Map.values(state.game_state.players),
+            state.last_standing_players
+          )
+
+        laps_to_win ->
+          check_game_ended_laps(Map.values(state.game_state.players), laps_to_win)
+      end
+
+    case game_ended do
       :ongoing ->
         :skip
 
@@ -255,7 +281,17 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     end
   end
 
-  defp check_game_ended(players, last_standing_players) do
+  defp check_game_ended_laps(players, laps_to_win) do
+    case Enum.find(players, &(&1.laps >= laps_to_win)) do
+      nil ->
+        :ongoing
+
+      player ->
+        {:ended, player}
+    end
+  end
+
+  defp check_game_ended_standing_players(players, last_standing_players) do
     players_alive = Enum.filter(players, fn player -> player.status == :alive end)
 
     case players_alive do
@@ -357,6 +393,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp transform_projectile_name_to_game_projectile_skill_name("projectile_slingshot"),
+    do: "SLINGSHOT"
+
+  defp transform_projectile_name_to_game_projectile_skill_name("ball"),
     do: "SLINGSHOT"
 
   defp transform_projectile_name_to_game_projectile_skill_name("projectile_multishot"),

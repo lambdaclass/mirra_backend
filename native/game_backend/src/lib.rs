@@ -89,6 +89,19 @@ fn spawn_random_loot(game: GameState) -> (GameState, Option<u64>) {
 }
 
 #[rustler::nif()]
+fn spawn_ball(game: GameState) -> (GameState, Option<u64>) {
+    let mut game = game;
+    let ball_id = game.next_id();
+    match projectile::spawn_ball(&game.config, ball_id) {
+        None => (game, None),
+        Some(loot) => {
+            game.push_projectile(loot);
+            (game, Some(ball_id))
+        }
+    }
+}
+
+#[rustler::nif()]
 fn activate_skill(
     game: GameState,
     player_id: u64,
@@ -126,5 +139,6 @@ rustler::init!(
         activate_skill,
         activate_inventory,
         game_tick,
+        spawn_ball,
     ]
 );
