@@ -14,7 +14,6 @@ use crate::config::Config;
 use crate::game::{EntityOwner, GameError, GameState};
 use crate::map::Position;
 use crate::player::Player;
-use rand::Rng;
 use std::collections::HashMap;
 
 #[rustler::nif()]
@@ -37,15 +36,13 @@ fn add_player(
     match game.config.find_character(character_name) {
         None => Err(GameError::CharacterNotFound),
         Some(character_config) => {
-            let rng = &mut rand::thread_rng();
-            let initial_position = if game.config.game.initial_positions.is_empty() {
-                Position { x: 0, y: 0 }
-            } else {
-                game.config
-                    .game
-                    .initial_positions
-                    .swap_remove(rng.gen_range(0..game.config.game.initial_positions.len()))
-            };
+            let initial_position = match game.config
+            .game
+            .initial_positions
+            .remove(&player_id) {
+                Some(position) => position,
+                None => Position { x: 0, y: 0 }
+            }; 
 
             let player = Player::new(player_id, character_config, initial_position);
             game.push_player(player_id, player);
@@ -54,12 +51,15 @@ fn add_player(
     }
 }
 
+
 #[rustler::nif()]
 fn move_player(game: GameState, player_id: u64, angle: f32) -> GameState {
     let mut game: GameState = game;
+
     game.move_player(player_id, angle);
     game
 }
+
 
 // TODO: Is this method necesary?
 #[rustler::nif()]

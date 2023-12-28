@@ -105,31 +105,13 @@ defmodule DarkWorldsServerWeb.PlayWebSocket do
       {:ok, %GameAction{action_type: {action, action_data}, timestamp: timestamp}} ->
         RequestTracker.add_counter(web_socket_state[:runner_pid], web_socket_state[:player_id])
 
-        case action do
-          :move ->
-            Runner.move(
-              web_socket_state[:runner_pid],
-              web_socket_state[:player_id],
-              action_data,
-              timestamp
-            )
-
-          :use_skill ->
-            Runner.attack(
-              web_socket_state[:runner_pid],
-              web_socket_state[:player_id],
-              action_data,
-              timestamp
-            )
-
-          :use_inventory ->
-            Runner.use_inventory(
-              web_socket_state[:runner_pid],
-              web_socket_state[:player_id],
-              action_data,
-              timestamp
-            )
-        end
+        Runner.perform_action(
+          action,
+          web_socket_state[:runner_pid],
+          web_socket_state[:player_id],
+          action_data,
+          timestamp
+        )
 
         {:ok, web_socket_state}
 

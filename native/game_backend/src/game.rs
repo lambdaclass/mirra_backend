@@ -43,7 +43,7 @@ pub struct GameConfigFile {
     zone_starting_radius: u64,
     zone_modifications: Vec<ZoneModificationConfigFile>,
     auto_aim_max_distance: f32,
-    initial_positions: Vec<Position>,
+    initial_positions: HashMap<u64, Position>,
     tick_interval_ms: u64,
 }
 
@@ -65,7 +65,7 @@ pub struct GameConfig {
     pub zone_starting_radius: u64,
     pub zone_modifications: Vec<ZoneModificationConfig>,
     pub auto_aim_max_distance: f32,
-    pub initial_positions: Vec<Position>,
+    pub initial_positions: HashMap<u64, Position>,
     pub tick_interval_ms: u64,
 }
 
@@ -117,7 +117,7 @@ pub struct GameState {
     pub next_killfeed: Vec<KillEvent>,
     pub killfeed: Vec<KillEvent>,
     pub zone: Zone,
-    next_id: u64,
+    pub next_id: u64,
     pub pending_damages: Vec<DamageTracker>,
 }
 
@@ -450,7 +450,7 @@ impl GameState {
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
-        move_projectiles(&mut self.projectiles, time_diff, &self.config);
+        move_projectiles(&mut self.projectiles, &self.players, time_diff, &self.config, &mut self.pending_damages);
         apply_projectiles_collisions(
             &mut self.projectiles,
             &mut self.players,
@@ -591,20 +591,28 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
     })
 }
 
-fn move_projectiles(projectiles: &mut Vec<Projectile>, time_diff: u64, config: &Config) {
+fn move_projectiles(projectiles: &mut Vec<Projectile>, players: &HashMap<u64, Player>, time_diff: u64, config: &Config, pending_damages: &mut Vec<DamageTracker>) {
     // Clear out projectiles that are no longer valid
     projectiles.retain(|projectile| {
-        let collides_with_edge = map::collision_with_edge(
-            &projectile.position,
-            projectile.size,
-            config.game.width,
-            config.game.height,
-        );
-
         projectile.active
             && projectile.duration_ms > 0
             && projectile.max_distance > 0
-            && (!collides_with_edge || collides_with_edge && projectile.bounce)
+            && if let Some(player_id) = map::collision_with_edge(
+                &projectile,
+                players,
+                config.game.width,
+                config.game.height,
+            ){
+                pending_damages.push(DamageTracker {
+                    attacked_id: player_id,
+                    attacker: EntityOwner::Player(projectile.player_id),
+                    damage: projectile.damage as i64,
+                    on_hit_effects: projectile.on_hit_effects.clone(),
+                });
+                false
+            } else {
+                true
+            }
     });
 
     projectiles.iter_mut().for_each(|projectile| {

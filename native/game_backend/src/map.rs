@@ -1,10 +1,10 @@
-use std::f32::consts::PI;
+use std::{f32::consts::PI, collections::HashMap};
 
 use rand::Rng;
 use rustler::NifMap;
 use serde::Deserialize;
 
-use crate::player::Player;
+use crate::{player::Player, projectile::Projectile};
 
 #[derive(NifMap, Clone, Deserialize, Copy, Debug)]
 pub struct Position {
@@ -78,32 +78,32 @@ pub fn next_position(
     }
 }
 
-pub fn collision_with_edge(center: &Position, size: u64, width: u64, height: u64) -> bool {
-    let x_edge_positive = (width / 2) as i64;
-    let x_position_positive = center.x + size as i64;
-    if x_position_positive >= x_edge_positive {
-        return true;
+pub fn collision_with_edge(projectile: &Projectile, players: &HashMap<u64, Player>, width: u64, height: u64) -> Option<u64> {
+    let (_, x_edge_positive) = players.iter().max_by_key(|(_, player)| player.position.x)?;
+    let x_position_positive = projectile.position.x + projectile.size as i64;
+    if x_position_positive > x_edge_positive.position.x && projectile.player_id != 2{
+        return Some(2);
     }
 
-    let x_edge_negative = width as i64 / -2;
-    let x_position_negative = center.x - size as i64;
-    if x_position_negative <= x_edge_negative {
-        return true;
+    let (_, x_edge_negative) = players.iter().min_by_key(|(_, player)| player.position.x)?;
+    let x_position_negative = projectile.position.x - projectile.size as i64;
+    if x_position_negative < x_edge_negative.position.x && projectile.player_id != 4{
+        return Some(4);
     }
 
-    let y_edge_positive = (height / 2) as i64;
-    let y_position_positive = center.y + size as i64;
-    if y_position_positive >= y_edge_positive {
-        return true;
+    let (_, y_edge_positive) = players.iter().max_by_key(|(_, player)| player.position.y)?;
+    let y_position_positive = projectile.position.y + projectile.size as i64;
+    if y_position_positive > y_edge_positive.position.y && projectile.player_id != 3{
+        return Some(3);
     }
 
-    let y_edge_negative = height as i64 / -2;
-    let y_position_negative = center.y - size as i64;
-    if y_position_negative <= y_edge_negative {
-        return true;
+    let (_, y_edge_negative) = players.iter().min_by_key(|(_, player)| player.position.y)?;
+    let y_position_negative = projectile.position.y - projectile.size as i64;
+    if y_position_negative < y_edge_negative.position.y && projectile.player_id != 1{
+        return Some(1);
     }
 
-    false
+    None
 }
 
 pub fn random_position(width: u64, _height: u64) -> Position {

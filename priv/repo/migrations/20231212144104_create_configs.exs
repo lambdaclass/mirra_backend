@@ -74,7 +74,7 @@ defmodule DarkWorldsServer.Repo.Migrations.CreateConfigs do
       add :loot_interval_ms, :integer
       add :zone_starting_radius, :integer
       add :auto_aim_max_distance, :float
-      add :initial_positions, {:array, :map}
+      add :initial_positions, :map
       timestamps()
     end
 
