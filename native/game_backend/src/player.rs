@@ -91,12 +91,17 @@ impl Player {
 
         self.add_action(Action::Moving, 0);
         self.direction = angle_degrees;
+        let previous_position = self.position.clone();
         self.position = map::next_position(
             &self.position,
             angle_degrees,
             self.speed as f32,
             config.game.width as f32,
         );
+
+        if self.any_obstacle_collide(&config) {
+            self.position = previous_position
+        }
     }
 
     pub fn skill_move(&mut self, elapsed_time_ms: u64, config: &Config) {
@@ -397,6 +402,12 @@ impl Player {
 
     pub const fn is_targetable(&self) -> bool {
         self.skill_moving_params.is_none()
+    }
+
+    fn any_obstacle_collide(&mut self, config: &Config) ->  bool{
+        config.game.obstacles.clone().into_iter().any(|obstacle|{
+            map::hit_boxes_collide(&self.position, &obstacle.position, self.size, obstacle.size)
+        })
     }
 }
 
