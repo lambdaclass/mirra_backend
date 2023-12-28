@@ -173,6 +173,7 @@
       "base_speed": 60,
       "base_size": 20,
       "remove_on_collision": false,
+      "bounce": true,
       "on_hit_effects": [],
       "duration_ms": 999999,
       "max_distance": 999999
