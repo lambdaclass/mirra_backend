@@ -17,6 +17,7 @@ defmodule DarkWorldsServer.Config.Games.Game do
     field(:initial_positions, :map)
     field(:tick_interval_ms, :integer)
     field(:obstacles, {:array ,:map})
+    field(:laps_to_win, :integer)
 
     has_many(:zone_modifications, ZoneModification)
 
@@ -34,7 +35,8 @@ defmodule DarkWorldsServer.Config.Games.Game do
       :auto_aim_max_distance,
       :initial_positions,
       :tick_interval_ms,
-      :obstacles
+      :obstacles,
+      :laps_to_win
     ])
     |> validate_required([:width, :height, :auto_aim_max_distance, :tick_interval_ms])
     |> cast_assoc(:zone_modifications)
@@ -51,7 +53,8 @@ defmodule DarkWorldsServer.Config.Games.Game do
       zone_modifications: Enum.map(game.zone_modifications, &ZoneModification.to_backend_map/1),
       zone_starting_radius: game.zone_starting_radius,
       tick_interval_ms: game.tick_interval_ms,
-      obstacles: Enum.map(game.obstacles, fn map -> Enum.into(map, %{}, fn tuple -> transform_nested_map(tuple) end) end)
+      obstacles: Enum.map(game.obstacles, fn map -> Enum.into(map, %{}, fn tuple -> transform_nested_map(tuple) end) end),
+      laps_to_win: game.laps_to_win
     }
   end
 
