@@ -193,7 +193,19 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   def handle_info(:check_game_ended, state) do
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms)
 
-    case check_game_ended(Map.values(state.game_state.players), state.last_standing_players) do
+    game_ended =
+      case state.game_state.config.game.laps_to_win do
+        0 ->
+          check_game_ended_standing_players(
+            Map.values(state.game_state.players),
+            state.last_standing_players
+          )
+
+        laps_to_win ->
+          check_game_ended_laps(Map.values(state.game_state.players), laps_to_win)
+      end
+
+    case game_ended do
       :ongoing ->
         :skip
 
@@ -269,7 +281,17 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     end
   end
 
-  defp check_game_ended(players, last_standing_players) do
+  defp check_game_ended_laps(players, laps_to_win) do
+    case Enum.find(players, &(&1.laps >= laps_to_win)) do
+      nil ->
+        :ongoing
+
+      player ->
+        {:ended, player}
+    end
+  end
+
+  defp check_game_ended_standing_players(players, last_standing_players) do
     players_alive = Enum.filter(players, fn player -> player.status == :alive end)
 
     case players_alive do
