@@ -450,7 +450,13 @@ impl GameState {
         update_player_actions(&mut self.players, time_diff);
         self.activate_skills();
         update_player_cooldowns(&mut self.players, time_diff);
-        move_projectiles(&mut self.projectiles, &self.players, time_diff, &self.config, &mut self.pending_damages);
+        move_projectiles(
+            &mut self.projectiles,
+            &self.players,
+            time_diff,
+            &self.config,
+            &mut self.pending_damages,
+        );
         apply_projectiles_collisions(
             &mut self.projectiles,
             &mut self.players,
@@ -591,7 +597,13 @@ fn update_player_cooldowns(players: &mut HashMap<u64, Player>, elapsed_time_ms: 
     })
 }
 
-fn move_projectiles(projectiles: &mut Vec<Projectile>, players: &HashMap<u64, Player>, time_diff: u64, config: &Config, pending_damages: &mut Vec<DamageTracker>) {
+fn move_projectiles(
+    projectiles: &mut Vec<Projectile>,
+    players: &HashMap<u64, Player>,
+    time_diff: u64,
+    config: &Config,
+    pending_damages: &mut Vec<DamageTracker>,
+) {
     // Clear out projectiles that are no longer valid
     projectiles.retain(|projectile| {
         projectile.active
@@ -602,7 +614,7 @@ fn move_projectiles(projectiles: &mut Vec<Projectile>, players: &HashMap<u64, Pl
                 players,
                 config.game.width,
                 config.game.height,
-            ){
+            ) {
                 pending_damages.push(DamageTracker {
                     attacked_id: player_id,
                     attacker: EntityOwner::Player(projectile.player_id),
@@ -644,7 +656,7 @@ fn apply_projectiles_collisions(
                     player.size,
                 )
             {
-                if player.id == projectile.player_id{
+                if player.id == projectile.player_id {
                     continue;
                 }
 
@@ -662,8 +674,10 @@ fn apply_projectiles_collisions(
                 }
 
                 if (projectile.bounce) {
-                    let dx = -projectile.position.x + (player.position.x + player.size as i64);
-                    let dy = -projectile.position.y + (player.position.y + player.size as i64);
+                    let dy = -(projectile.position.y + (projectile.size / 2) as i64)
+                        + (player.position.y + (player.size / 2) as i64);
+                    let dx = -(projectile.position.x + (projectile.size / 2) as i64)
+                        + (player.position.x + (player.size / 2) as i64);
                     let angle_between = atan2(dy as f64, dx as f64) as f32;
 
                     let normalized_angle = (angle_between + 360.0) % 360.0;
