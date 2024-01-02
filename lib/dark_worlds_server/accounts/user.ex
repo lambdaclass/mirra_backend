@@ -56,6 +56,12 @@ defmodule DarkWorldsServer.Accounts.User do
     |> cast(attrs, [:selected_character])
   end
 
+  def username_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:username])
+  end
+
+
   defp validate_email(changeset, opts) do
     changeset
     |> validate_required([:email])

@@ -44,6 +44,25 @@ defmodule DarkWorldsServerWeb.CharacterController do
     end
   end
 
+  def update_player_username(
+        conn,
+        %{"device_client_id" => device_client_id, "username" => username}
+      ) do
+    user = Accounts.get_user_by_device_client_id(device_client_id)
+
+    if is_nil(user) do
+      json(conn, %{error: "INEXISTENT_USER"})
+    else
+      case Accounts.update_user_username(user, username) do
+        {:ok, user} ->
+          json(conn, user_response(user))
+
+        {:error, _changeset} ->
+          json(conn, %{error: "An error has occurred"})
+      end
+    end
+  end
+
   defp user_response(nil) do
     %{
       device_client_id: "NOT_FOUND",

@@ -398,4 +398,10 @@ defmodule DarkWorldsServer.Accounts do
     |> User.selected_character_changeset(%{selected_character: selected_character})
     |> Repo.update()
   end
+
+  def update_user_username(user, username) do
+    user
+    |> User.username_changeset(%{username: username})
+    |> Repo.update()
+  end
 end
