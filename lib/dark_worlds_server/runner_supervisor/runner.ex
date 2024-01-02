@@ -22,6 +22,29 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   ## does not detect a game ending and stays as a zombie
   @game_timeout_ms 600_000
 
+  @random_names [
+    "VortexStrikeri",
+    "BlazeHunteraX",
+    "PhantomFury",
+    "CyberB23litz",
+    "RogueWraith",
+    "ShadowPhoenix",
+    "Quant2umReaper",
+    "StormChaser007",
+    "Infe1rnoSniper",
+    "VenomVanguard",
+    "HavocSpecter",
+    "Nebul1aAssassin",
+    "NovaWarlord",
+    "ThunderB12ltZ",
+    "EclipseRanger",
+    "Starligsssla",
+    "FrostbiteNomad",
+    "ChaosProwler",
+    "SolarSpectre",
+    "MysticMarauder"
+  ]
+
   #######
   # API #
   #######
@@ -290,7 +313,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
     end)
   end
 
-  defp gen_username(nil, player_id), do: "Bot #{player_id}"
+  defp gen_username(nil, player_id) do
+    "#{Enum.at(@random_names,player_id)}"
+  end
   defp gen_username(user, _player_id), do: user.username
 
   defp broadcast_game_ended(topic, winner, game_state) do

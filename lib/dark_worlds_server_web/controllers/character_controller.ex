@@ -52,7 +52,11 @@ defmodule DarkWorldsServerWeb.CharacterController do
     }
   end
 
-  defp user_response(%User{device_client_id: device_client_id, selected_character: selected_character,username: username}) do
+  defp user_response(%User{
+         device_client_id: device_client_id,
+         selected_character: selected_character,
+         username: username
+       }) do
     %{
       device_client_id: device_client_id,
       selected_character: selected_character,
