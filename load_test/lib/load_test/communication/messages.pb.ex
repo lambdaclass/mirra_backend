@@ -188,6 +188,7 @@ defmodule LoadTest.Communication.Proto.MechanicType do
   field(:SIMPLE_SHOOT, 1)
   field(:MULTI_SHOOT, 2)
   field(:GIVE_EFFECT, 3)
+  field(:MOVE_TO_TARGET, 4)
 end
 
 defmodule LoadTest.Communication.Proto.TransitionGameEvent do
@@ -511,6 +512,7 @@ defmodule LoadTest.Communication.Proto.OldPlayer do
   field(:direction, 16, type: LoadTest.Communication.Proto.RelativePosition)
   field(:body_size, 17, type: :float, json_name: "bodySize")
   field(:inventory, 18, repeated: true, type: LoadTest.Communication.Proto.GameLoot)
+  field(:speed, 19, type: :uint64)
 end
 
 defmodule LoadTest.Communication.Proto.OldActionTracker do
@@ -1015,6 +1017,7 @@ defmodule LoadTest.Communication.Proto.UseSkill do
   field(:skill, 1, type: :string)
   field(:angle, 2, type: :float)
   field(:auto_aim, 3, type: :bool, json_name: "autoAim")
+  field(:amount, 4, type: :float)
 end
 
 defmodule LoadTest.Communication.Proto.UseInventory do

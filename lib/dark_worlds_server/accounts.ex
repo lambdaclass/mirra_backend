@@ -383,22 +383,6 @@ defmodule DarkWorldsServer.Accounts do
     Repo.aggregate(User, :count)
   end
 
-  @doc """
-  Updates the user's selected character
-
-  ## Examples
-    iex> update_user_selected_character(%User{}, selected_character)
-      {:ok, %User{}}
-
-    iex> update_user_password(user, "invalid password", %{password: ...})
-      {:error, %Ecto.Changeset{}}
-  """
-  def update_user_selected_character(user, selected_character) do
-    user
-    |> User.selected_character_changeset(%{selected_character: selected_character})
-    |> Repo.update()
-  end
-
   def update_user_username(user, username) do
     user
     |> User.username_changeset(%{username: username})

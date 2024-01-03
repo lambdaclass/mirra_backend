@@ -57,7 +57,8 @@ defmodule GameBackend do
       :effects,
       :direction,
       :body_size,
-      :inventory
+      :inventory,
+      :speed
     ]
   end
 

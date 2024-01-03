@@ -1,7 +1,7 @@
 name: Certificate Renewal
 
 on:
-  workflow-dispatch:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 1 */2 *' # Running at 1st of the month, every two months.
 
@@ -10,6 +10,7 @@ jobs:
   regenerate-certificate:
     name: Renew Certificates
     runs-on: ubuntu-latest
+    environment: testing
     strategy:
       matrix:
         HOST: [curse-of-mirra-arm-loadtest-hetzner, curse-of-mirra-brazil-testing, curse-of-mirra-europe-testing, curse-of-mirra-loadtesting-client, curse-of-mirra-loadtesting-server]

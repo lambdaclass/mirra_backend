@@ -42,10 +42,13 @@ defmodule DarkWorldsServerWeb.Router do
   end
 
   scope "/users-characters", DarkWorldsServerWeb do
-    get "/:device_client_id", CharacterController, :get_player
-    post "/new", CharacterController, :create_player
-    put "/:device_client_id/edit", CharacterController, :update_player
-    put "/:device_client_id/username/edit", CharacterController, :update_player_username
+    get "/:device_client_id", UserController, :get_user
+    post "/new", UserController, :create_user
+    put "/:device_client_id/edit", UserController, :update_selected_character
+    get "/:device_client_id/get_units/", UserController, :get_units
+    put "/:device_client_id/select_unit/:unit_id", UserController, :add_selected_unit
+    put "/:device_client_id/unselect_unit/:unit_id", UserController, :remove_selected_unit
+    put "/:device_client_id/username/edit", UserController, :update_player_username
   end
 
   scope "/", DarkWorldsServerWeb do

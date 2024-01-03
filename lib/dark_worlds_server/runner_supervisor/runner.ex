@@ -6,10 +6,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   alias DarkWorldsServer.Communication.Proto.Move
   alias DarkWorldsServer.Communication.Proto.UseInventory
   alias DarkWorldsServer.Communication.Proto.UseSkill
+  alias DarkWorldsServer.Utils.Characters
   alias DarkWorldsServer.Utils.Config
 
-  # This is the amount of time between state updates in milliseconds
-  @game_tick_rate_ms 20
   # Amount of time between loot spawn
   @loot_spawn_rate_ms 20_000
   # Amount of time between loot spawn
@@ -104,7 +103,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
     state = %{
       game_state: GameBackend.new_game(game_config),
-      game_tick: @game_tick_rate_ms,
+      game_tick: game_config.game.tick_interval_ms,
       player_timestamps: %{},
       broadcast_topic: Communication.pubsub_game_topic(self()),
       user_to_player: %{},
@@ -124,7 +123,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_call({:join, user_id, character_name}, _from, state) do
-    case GameBackend.add_player(state.game_state, String.downcase(character_name)) do
+    case GameBackend.add_player(state.game_state, Characters.game_character_name_to_character_name(character_name)) do
       {:ok, {game_state, player_id}} ->
         state =
           Map.put(state, :game_state, game_state)
@@ -158,17 +157,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_cast(
-        {:attack, user_id, %UseSkill{angle: angle, auto_aim: auto_aim, skill: skill}, timestamp},
+        {:attack, user_id, %UseSkill{skill: skill} = use_skill, timestamp},
         state
       ) do
     player_id = state.user_to_player[user_id] || user_id
     skill_key = action_skill_to_key(skill)
-
-    game_state =
-      GameBackend.activate_skill(state.game_state, player_id, skill_key, %{
-        "direction_angle" => Float.to_string(angle),
-        "auto_aim" => to_string(auto_aim)
-      })
+    skill_params = extract_and_convert_params(use_skill)
+    game_state = GameBackend.activate_skill(state.game_state, player_id, skill_key, skill_params)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -201,7 +196,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
 
   @impl true
   def handle_info(:start_game_tick, state) do
-    Process.send_after(self(), :game_tick, @game_tick_rate_ms)
+    Process.send_after(self(), :game_tick, state.game_tick)
     Process.send_after(self(), :spawn_loot, @loot_spawn_rate_ms)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
 
@@ -216,7 +211,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   def handle_info(:game_tick, state) do
-    Process.send_after(self(), :game_tick, @game_tick_rate_ms)
+    Process.send_after(self(), :game_tick, state.game_tick)
 
     now = System.monotonic_time(:millisecond)
     time_diff = now - state.last_game_tick_at
@@ -362,6 +357,13 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   defp action_skill_to_key(:skill_3), do: "4"
   defp action_skill_to_key(:skill_4), do: "5"
 
+  defp extract_and_convert_params(params) do
+    Map.from_struct(params)
+    |> Map.drop([:__unknown_fields__])
+    |> Enum.map(fn {key, value} -> {to_string(key), to_string(value)} end)
+    |> Map.new()
+  end
+
   defp transform_state_to_game_state(game_state) do
     %{
       __struct__: GameBackend.Game,
@@ -396,7 +398,7 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       status: if(player.health <= 0, do: :dead, else: :alive),
       health: player.health,
       body_size: player.size,
-      character_name: transform_character_name_to_game_character_name(player.character.name),
+      character_name: Characters.character_name_to_game_character_name(player.character.name),
       ## Placeholder values
       kill_count: player.kill_count,
       effects: transform_effects_to_game_effects(player.effects),
@@ -404,7 +406,8 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       action: transform_action_to_game_action(player.action),
       direction: transform_angle_to_game_relative_position(player.direction),
       aoe_position: %GameBackend.Position{x: 0, y: 0},
-      inventory: player.inventory
+      inventory: player.inventory,
+      speed: player.speed
     }
     |> transform_player_cooldowns_to_game_player_cooldowns(player)
   end
@@ -475,9 +478,6 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
       y: position.x + div(height, 2)
     }
   end
-
-  defp transform_character_name_to_game_character_name("h4ck"), do: "H4ck"
-  defp transform_character_name_to_game_character_name("muflus"), do: "Muflus"
 
   defp transform_angle_to_game_relative_position(angle) do
     angle_radians = Nx.divide(Nx.Constants.pi(), 180) |> Nx.multiply(angle)

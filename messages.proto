@@ -211,6 +211,7 @@ message OldPlayer {
     RelativePosition direction = 16;
     float body_size = 17;
     repeated GameLoot inventory = 18;
+    uint64 speed = 19;
 }
 
 message OldActionTracker {
@@ -572,6 +573,7 @@ enum MechanicType {
     SIMPLE_SHOOT = 1;
     MULTI_SHOOT = 2;
     GIVE_EFFECT = 3;
+    MOVE_TO_TARGET = 4;
 }
 
 message Config {
@@ -767,6 +769,7 @@ message UseSkill {
   string skill = 1;
   float angle = 2;
   bool auto_aim = 3;
+  float amount = 4;
 }
 
 /*

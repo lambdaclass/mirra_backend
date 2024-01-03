@@ -62,6 +62,24 @@
       "skills_keys_to_execute": []
     },
     {
+      "name": "leap_effect",
+      "is_reversable": true,
+      "effect_time_type": {
+        "Duration": {
+          "duration_ms": 1000
+        }
+      },
+      "player_attributes": [
+        {
+          "attribute": "speed",
+          "modifier": "Multiplicative",
+          "value": "1.8"
+        }
+      ],
+      "projectile_attributes": [],
+      "skills_keys_to_execute": []
+    },
+    {
       "name": "damage_outside_area",
       "is_reversable": false,
       "effect_time_type": {
@@ -199,14 +217,14 @@
     },
     {
       "name": "circle_hit",
-      "cooldown_ms": 1500,
-      "execution_duration_ms": 800,
+      "cooldown_ms": 100,
+      "execution_duration_ms": 500,
       "is_passive": false,
       "mechanics": [
         {
           "Hit": {
-            "damage": 20,
-            "range": 500,
+            "damage": 30,
+            "range": 400,
             "cone_angle": 360,
             "on_hit_effects": []
           }
@@ -238,6 +256,29 @@
           }
         }
       ]
+    },
+    {
+      "name": "leap",
+      "cooldown_ms": 1000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "GiveEffect": {
+            "effects_to_give": [
+              "leap_effect"
+            ]
+          }
+        },
+        {
+          "MoveToTarget": {
+            "duration_ms": 500,
+            "max_range": 1000,
+            "on_arrival_skills": ["3"],
+            "effects_to_remove_on_arrival": ["leap_effect"]
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -263,13 +304,15 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "hit",
-        "2": "circle_hit"
+        "2": "leap",
+        "3": "circle_hit"
       }
     }
   ],
   "game": {
     "width": 10000,
     "height": 10000,
+    "tick_interval_ms": 30,
     "zone_starting_radius": 14000,
     "zone_modifications": [
       {
