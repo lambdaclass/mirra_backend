@@ -63,7 +63,7 @@ defmodule DarkWorldsServerWeb.UserController do
     end
   end
 
- def update_player_username(
+  def update_player_username(
         conn,
         %{"device_client_id" => device_client_id, "username" => username}
       ) do
@@ -181,7 +181,7 @@ defmodule DarkWorldsServerWeb.UserController do
       password: provisional_password,
       device_client_id: device_client_id,
       user: "user_#{user}",
-      username: username,
+      username: username
     }
   end
 end

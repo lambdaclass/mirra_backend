@@ -309,8 +309,9 @@ defmodule DarkWorldsServer.RunnerSupervisor.Runner do
   end
 
   defp gen_username(nil, player_id) do
-    "#{Enum.at(@random_names,player_id)}"
+    "#{Enum.at(@random_names, player_id)}"
   end
+
   defp gen_username(user, _player_id), do: user.username
 
   defp broadcast_game_ended(topic, winner, game_state) do
