@@ -67,18 +67,18 @@ defmodule DarkWorldsServerWeb.UserController do
         conn,
         %{"device_client_id" => device_client_id, "username" => username}
       ) do
-    user = Accounts.get_user_by_device_client_id(device_client_id)
+    case Accounts.get_user_by_device_client_id(device_client_id) do
+      nil ->
+        json(conn, %{error: "INEXISTENT_USER"})
 
-    if is_nil(user) do
-      json(conn, %{error: "INEXISTENT_USER"})
-    else
-      case Accounts.update_user_username(user, username) do
-        {:ok, user} ->
-          json(conn, user_response(user))
+      user ->
+        case Accounts.update_user_username(user, username) do
+          {:ok, user} ->
+            json(conn, user_response(user))
 
-        {:error, _changeset} ->
-          json(conn, %{error: "An error has occurred"})
-      end
+          {:error, _changeset} ->
+            json(conn, %{error: "An error has ocurred"})
+        end
     end
   end
 
