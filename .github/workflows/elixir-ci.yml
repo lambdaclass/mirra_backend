@@ -1,6 +1,8 @@
-name: CI
+name: Elixir CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
 
@@ -20,12 +22,12 @@ jobs:
         otp: [26.0.2]
     services:
       db:
-        image: postgres:15-alpine
+        image: postgres:16-alpine
         ports: ["5432:5432"]
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: dark_worlds_server_test
+          POSTGRES_DB: lambda_game_backend_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -40,29 +42,22 @@ jobs:
           otp-version: ${{ matrix.otp }} # Define the OTP version [required]
         env:
           ImageOS: ubuntu20
-      - name: Setup Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
       - name: Restore dependencies cache
         uses: actions/cache@v3
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
-      - name: Install dependencies
-        run: make setup
-      - name: Check Rust Formatting
-        run: cargo fmt --check --manifest-path native/game_backend/Cargo.toml
-      - name: Check Rust code
-        run: cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings
+      - name: Elixir set up
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
       - name: Credo Elixir Check
-        run: make credo
+        run: mix credo
       - name: Check Elixir Formatting
         run: mix format --check-formatted
-      - name: (Load Test) Check Elixir Formatting
-        run: cd load_test && mix format --check-formatted
       - name: Compiles without warnings
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests
-        run: make tests
+        run: mix test
