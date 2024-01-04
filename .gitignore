@@ -19,17 +19,11 @@ erl_crash.dump
 # Also ignore archive artifacts (built via "mix archive.build").
 *.ez
 
-# Ignore package tarball (built via "mix hex.build").
-game_backend-*.tar
-
 # Temporary files, for example, from tests.
 /tmp/
 
 # Remove DS_Store files created by macOS
 .DS_Store
 
-# Rustler creates a .so file for the NIFs
-/priv/native/
-
-# Ignore Rust build dir
-/target
+# The directory NPM downloads your dependencies sources to.
+/assets/node_modules/
