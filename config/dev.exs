@@ -1,11 +1,11 @@
 import Config
 
 # Configure your database
-config :dark_worlds_server, DarkWorldsServer.Repo,
+config :lambda_game_backend, LambdaGameBackend.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "dark_worlds_server_dev",
+  database: "lambda_game_backend_dev",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -14,17 +14,20 @@ config :dark_worlds_server, DarkWorldsServer.Repo,
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
-# watchers to your application. For example, we use it
-# with esbuild to bundle .js and .css sources.
-config :dark_worlds_server, DarkWorldsServerWeb.Endpoint,
+# watchers to your application. For example, we can use it
+# to bundle .js and .css sources.
+config :lambda_game_backend, LambdaGameBackendWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "jtZ4kigZdR1GmZ9ol5+nJ42+yxurdWWdQT2kEhzh7ChWxZN68KwaWnFGDYpC01Dr",
-  watchers: []
+  secret_key_base: "0zq8I9ztj7kj4cLdFmvduHwXQJJi9yzNUAUFAlKHkdXS/nJkxUvNPjlSdJPDSUf5",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
@@ -49,8 +52,18 @@ config :dark_worlds_server, DarkWorldsServerWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
+# Watch static and templates for browser reloading.
+config :lambda_game_backend, LambdaGameBackendWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/gettext/.*(po)$",
+      ~r"lib/lambda_game_backend_web/(controllers|live|components)/.*(ex|heex)$"
+    ]
+  ]
+
 # Enable dev routes for dashboard and mailbox
-config :dark_worlds_server, dev_routes: true
+config :lambda_game_backend, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
@@ -61,6 +74,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+# Include HEEx debug annotations as HTML comments in rendered markup
+config :phoenix_live_view, :debug_heex_annotations, true
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

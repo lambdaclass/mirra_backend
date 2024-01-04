@@ -1,11 +1,11 @@
-defmodule DarkWorldsServer.MixProject do
+defmodule LambdaGameBackend.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :dark_worlds_server,
+      app: :lambda_game_backend,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
@@ -18,7 +18,7 @@ defmodule DarkWorldsServer.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {DarkWorldsServer.Application, []},
+      mod: {LambdaGameBackend.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -32,19 +32,16 @@ defmodule DarkWorldsServer.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:rustler, "~> 0.29.1"},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:bcrypt_elixir, "~> 3.0"},
-      {:phoenix, "~> 1.7.2"},
+      {:phoenix, "~> 1.7.10"},
       {:phoenix_ecto, "~> 4.4"},
-      {:ecto_sql, "~> 3.6"},
+      {:ecto_sql, "~> 3.10"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
-      {:phoenix_live_view, "~> 0.20.0"},
+      {:phoenix_live_view, "~> 0.20.1"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.2"},
-      {:esbuild, "~> 0.7", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.2.0", runtime: Mix.env() == :dev},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.13"},
@@ -52,21 +49,12 @@ defmodule DarkWorldsServer.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
+      {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
-      {:nx, "~> 0.5"},
-      {:exbase58, "~> 1.0.2"},
-      {:websockex, "~> 0.4.3"},
-      {:protobuf, "~> 0.10.0"},
-      {:new_relic_agent, "~> 1.0"},
-      {:etop, "~> 0.7"},
-      {:rexbug, ">= 1.0.0"},
-      {:eep, github: "virtan/eep"},
-      {:cors_plug, "~> 3.0"},
-      {:tesla, "~> 1.4", override: true},
-      {:toxiproxy_ex, "~> 1.0.0"},
-      {:uuid, "~> 1.1"},
-      {:eflambe, "~> 0.3.0"},
-      {:flame_on, "~> 0.6.0"}
+      {:rustler, "~> 0.30.0"},
+      {:protobuf, "~> 0.12.0"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:websockex, "~> 0.4.3"}
     ]
   end
 

@@ -7,28 +7,28 @@
 # General application configuration
 import Config
 
-config :dark_worlds_server,
-  ecto_repos: [DarkWorldsServer.Repo]
-
-config :dark_worlds_server, DarkWorldsServer.Repo, migration_primary_key: [type: :binary_id]
-
 # Configures the endpoint
 dispatch = [
   _: [
-    {"/play/:game_id/:client_id/:selected_character", DarkWorldsServerWeb.PlayWebSocket, []},
-    {"/matchmaking", DarkWorldsServerWeb.LobbyWebsocket, []},
-    {:_, Plug.Cowboy.Handler, {DarkWorldsServerWeb.Endpoint, []}}
+    {"/play/:player_id", LambdaGameBackend.SocketHandler, []},
+    {:_, Plug.Cowboy.Handler, {LambdaGameBackendWeb.Endpoint, []}}
   ]
 ]
 
-config :dark_worlds_server, DarkWorldsServerWeb.Endpoint,
+config :lambda_game_backend,
+  ecto_repos: [LambdaGameBackend.Repo],
+  generators: [timestamp_type: :utc_datetime]
+
+# Configures the endpoint
+config :lambda_game_backend, LambdaGameBackendWeb.Endpoint,
   url: [host: "localhost"],
+  adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
-    formats: [json: DarkWorldsServerWeb.ErrorJSON],
+    formats: [html: LambdaGameBackendWeb.ErrorHTML, json: LambdaGameBackendWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: DarkWorldsServer.PubSub,
-  live_view: [signing_salt: "HPijD5SN"],
+  pubsub_server: LambdaGameBackend.PubSub,
+  live_view: [signing_salt: "XED/NEZq"],
   http: [dispatch: dispatch]
 
 # Configures the mailer
@@ -38,26 +38,26 @@ config :dark_worlds_server, DarkWorldsServerWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :dark_worlds_server, DarkWorldsServer.Mailer, adapter: Swoosh.Adapters.Local
+config :lambda_game_backend, LambdaGameBackend.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
   default: [
     args:
-      ~w(css/game.css js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/* --external:/game/*),
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
 # Configure tailwind (the version is required)
 config :tailwind,
-  version: "3.2.7",
+  version: "3.3.2",
   default: [
     args: ~w(
       --config=tailwind.config.js
       --input=css/app.css
-      --output=../priv/static/assets/css/app.css
+      --output=../priv/static/assets/app.css
     ),
     cd: Path.expand("../assets", __DIR__)
   ]
@@ -69,17 +69,6 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
-
-# Configures game GenServer
-config :dark_worlds_server, DarkWorldsServer.RunnerSupervisor.Runner, process_priority: :high
-
-# Configure server hash
-{hash, _} = System.cmd("git", ["rev-parse", "--short=8", "HEAD"])
-hash = String.trim(hash)
-config :dark_worlds_server, :information, version_hash: hash
-
-# By default disable NewRelic agent
-config :new_relic_agent, license_key: nil
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

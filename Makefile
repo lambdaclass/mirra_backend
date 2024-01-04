@@ -1,69 +1,26 @@
-.PHONY: format check
-
-format:
-	mix format
-	cargo fmt --manifest-path native/game_backend/Cargo.toml
-	cd load_test && mix format
-
-check:
-	mix credo --strict
-	cargo clippy --manifest-path native/game_backend/Cargo.toml -- -D warnings -D clippy::nursery -D clippy::all -D clippy::complexity -A clippy::use_self 
-
-.PHONY: setup dependencies db stop start run tests elixir-tests shell prepush credo docs
-
-setup: dependencies
-	mix deps.compile
-	mix setup
-
-dependencies:
-	mix deps.get
-
-db:
-	docker compose up -d
-
-stop:
-	docker compose down
-
-start: db dependencies run
-
 run:
-	mix assets.build
 	iex -S mix phx.server
 
-tests: elixir-tests
+deps:
+	mix deps.get
+	cd assets && npm install
 
-elixir-tests:
-	mix test
+start:
+	docker-compose up -d
+	iex -S mix phx.server
 
-shell:
-	iex -S mix run --no-start --no-halt
+generate-ex-protos:
+	protoc \
+		--elixir_out=lib/lambda_game_backend/protobuf \
+		--elixir_opt=package_prefix=lambda_game_backend.protobuf \
+		messages.proto
 
-prepush: format credo tests
+generate-js-protos:
+	protoc messages.proto --js_out=import_style=commonjs:assets/js/protobuf
 
-credo:
+generate-protos: generate-ex-protos generate-js-protos
+
+check: 
+	mix format --check-formatted
 	mix credo --strict
-
-gen-protobuf: gen-server-protobuf gen-load-test-protobuf
-	
-gen-server-protobuf:
-	protoc \
-		--elixir_out=transform_module=DarkWorldsServer.Communication.ProtoTransform:./lib/dark_worlds_server/communication/ \
-		--elixir_opt=package_prefix=dark_worlds_server.communication.proto \
-		messages.proto
-
-# Elixir's protobuf lib does not add a new line nor formats the output file
-# so we do it here with a format:
-	mix format "./lib/dark_worlds_server/communication/*"
-
-gen-load-test-protobuf:
-	protoc \
-		--elixir_out=./load_test/lib/load_test/communication \
-		--elixir_opt=package_prefix=load_test.communication.proto \
-		messages.proto
-
-# Elixir's protobuf lib does not add a new line nor formats the output file
-# so we do it here with a format:
-	mix format "./load_test/lib/load_test/communication/*"
-
-docs: 
-	cd docs && mdbook-mermaid install && mdbook serve --open
+	mix test
