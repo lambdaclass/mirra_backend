@@ -13,6 +13,10 @@ Open source backend developed by LambdaClass in Elixir, for the communication, a
 
 ## Documentation
 
+⚠️ Disclaimer ⚠️
+
+*The following documentation corresponds to a previous version. It can be found in the branch named ```old```.*
+
 You can find our documentation in [docs](./docs/src/README.md) folder, or run it locally.
 
 To run locally, install:
