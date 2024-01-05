@@ -1,7 +1,7 @@
 #![allow(non_snake_case)] // rustler macros generate non snake case names and dont use this allow themselves
 
-mod player;
 mod game_state;
+mod player;
 
 use crate::game_state::GameState;
 use crate::player::{Player, Position};
@@ -27,30 +27,10 @@ fn add_player(game_state: GameState, player_id: u64) -> GameState {
 }
 
 #[rustler::nif()]
-fn move_player(game_state: GameState, player_id: u64, x: f64, y: f64) -> GameState {
+fn move_player(game_state: GameState, player_id: u64, direc_x: f64, direc_y: f64) -> GameState {
     let mut game_state: GameState = game_state;
-    let player = game_state.players.get_mut(&player_id).unwrap();
-    player.move_player(x, y);
+    game_state.move_player(player_id, direc_x, direc_y);
     game_state
-}
-
-#[rustler::nif()]
-/// Check players inside the player_id radius
-/// Return a list of the players id inside the radius Vec<player_id>
-fn check_collisions(game_state: GameState, player_id: u64, radius: f64) -> Vec<u64> {
-    let game_state: GameState = game_state;
-    let player = game_state.players.get(&player_id).unwrap();
-    let mut result = Vec::new();
-    for (id, other_player) in &game_state.players {
-        if id == &player.id {
-            continue;
-        }
-        let d = calculate_distance(&player.position, &other_player.position);
-        if d <= radius {
-            result.push(*id)
-        }
-    }
-    result
 }
 
 /// Calculate distance between two positions
@@ -60,11 +40,7 @@ fn calculate_distance(a: &Position, b: &Position) -> f64 {
     (x.powi(2) + y.powi(2)).sqrt()
 }
 
-
-rustler::init!("Elixir.StateManagerBackend", [
-    add,
-    move_player,
-    new_game,
-    add_player,
-    check_collisions
-]);
+rustler::init!(
+    "Elixir.StateManagerBackend",
+    [add, move_player, new_game, add_player,]
+);
