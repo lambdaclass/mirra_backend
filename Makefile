@@ -20,7 +20,10 @@ generate-js-protos:
 
 generate-protos: generate-ex-protos generate-js-protos
 
-check: 
-	mix format --check-formatted
+check: format
 	mix credo --strict
 	mix test
+
+format:
+	mix format --check-formatted
+	cd native/state_manager_backend && cargo fmt --all
