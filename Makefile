@@ -1,3 +1,5 @@
+.PHONY: deps run start stop generate-ex-protos generate-js-protos generate-protos check
+
 run:
 	iex -S mix phx.server
 
@@ -8,6 +10,9 @@ deps:
 start:
 	docker-compose up -d
 	iex -S mix phx.server
+
+stop:
+	docker-compose down
 
 generate-ex-protos:
 	protoc \
