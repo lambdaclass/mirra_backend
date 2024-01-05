@@ -18,6 +18,21 @@ message Player {
   uint64 life = 5;
 }
 
+message Polygon {
+  repeated Position vertices = 1;
+}
+
 message GameState {
   map<uint64, Player> players = 1;
+  map<uint64, Polygon> polygons = 2;
+}
+
+message Element {
+  uint64 id = 1;
+  string type = 2;
+  string shape = 3;
+  string name = 4;
+  Position position = 5;
+  float radius = 6;
+  repeated Position vertices = 7;
 }

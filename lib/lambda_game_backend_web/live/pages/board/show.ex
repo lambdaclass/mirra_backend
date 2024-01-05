@@ -31,32 +31,22 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
      )}
   end
 
-  def handle_info(encoded_players, socket) do
-    game_data =
-      Enum.reduce(Map.keys(encoded_players), [], fn player_id, acc ->
-        encoded_player = encoded_players[player_id]
-        %{position: %{x: x, y: y}} = LambdaGameBackend.Protobuf.Player.decode(encoded_player)
+  def handle_info(encoded_entities, socket) do
 
-        x = trunc(x) |> max(0) |> min(socket.assigns.board_width)
-        y = trunc(y) |> max(0) |> min(socket.assigns.board_height)
+    game_data = encoded_entities |> Enum.map(fn encoded_entity ->
+      decoded = LambdaGameBackend.Protobuf.Element.decode(encoded_entity)
 
-        acc ++ [%{id: player_id, type: "player", shape: "circle", name: player_name(player_id), x: x, y: y, radius: 5}]
-      end)
-
-    # Mocked obstacle
-    game_data =
-      game_data ++
-        [
-          %{
-            id: "obstacle_1",
-            type: "obstacle",
-            shape: "polygon",
-            name: "O1",
-            x: 120,
-            y: 50,
-            coords: [[80, 0], [80, 100], [30, 200], [0, 150], [0, 50]]
-          }
-        ]
+      %{
+        id: decoded.id,
+        type: decoded.type,
+        shape: decoded.shape,
+        name: decoded.name,
+        x: decoded.position.x,
+        y: decoded.position.y,
+        radius: decoded.radius,
+        coords: decoded.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end)
+      }
+    end)
 
     {:noreply, push_event(socket, "updateElements", %{elements: game_data})}
   end

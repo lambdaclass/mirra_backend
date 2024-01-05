@@ -67,17 +67,19 @@ fn add_polygon(game_state: GameState) -> GameState {
     let mut game_state: GameState = game_state;
     
     let polygon = Polygon::new(1, vec![
-        Position { x: 0.0, y: 0.0 }, 
-        Position { x: 0.0, y: 10.0 }, 
-        Position { x: 2.0, y: 10.0 }, 
-        Position { x: 2.0, y: 0.0 }]);
+        Position { x: 30.0, y: 0.0 }, 
+        Position { x: 30.0, y: 50.0 }, 
+        Position { x: 10.0, y: 50.0 }, 
+        Position { x: 0.0, y: 0.0 }]);
     game_state.polygons.insert(polygon.id, polygon);
 
     let polygon = Polygon::new(2, vec![
-        Position { x: 10.0, y: 10.0 }, 
-        Position { x: 10.0, y: 30.0 }, 
-        Position { x: 30.0, y: 30.0 }, 
-        Position { x: 30.0, y: 10.0 }]);
+        Position { x: 200.0, y: 200.0 },
+        Position { x: 400.0, y: 200.0 },
+        Position { x: 450.0, y: 300.0 },
+        Position { x: 300.0, y: 400.0 },
+        Position { x: 100.0, y: 300.0 },
+    ]);
     game_state.polygons.insert(polygon.id, polygon);
     game_state
 }

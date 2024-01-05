@@ -56,16 +56,16 @@ export const BoardGame = function () {
 
     document.addEventListener("keypress", function onPress(event) {
       if (event.key === "a") {
-        player.move(-10, 0);
+        player.move(-1, 0);
       }
       if (event.key === "w") {
-        player.move(0, -10);
+        player.move(0, -1);
       }
       if (event.key === "s") {
-        player.move(0, 10);
+        player.move(0, 1);
       }
       if (event.key === "d") {
-        player.move(10, 0);
+        player.move(1, 0);
       }
     });
   }),
