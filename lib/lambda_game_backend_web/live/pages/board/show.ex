@@ -56,10 +56,6 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
           }
         ]
 
-    assigns = [
-      game_data: game_data
-    ]
-
     {:noreply, push_event(socket, "updateElements", %{elements: game_data})}
   end
 
