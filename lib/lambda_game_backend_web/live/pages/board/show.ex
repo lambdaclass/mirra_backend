@@ -12,8 +12,8 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
   end
 
   def mount_connected(%{"game_id" => game_id, "player_id" => player_id} = _params, socket) do
-    mocked_grid_rows = 10
-    mocked_grid_cols = 10
+    mocked_board_width = 1000
+    mocked_board_height = 600
     game_data = %{0 => %{0 => player_name(player_id)}}
 
     PubSub.subscribe(LambdaGameBackend.PubSub, game_id)
@@ -23,31 +23,40 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
        game_id: game_id,
        player_id: player_id,
        game_status: :running,
-       grid_rows: mocked_grid_rows,
-       grid_cols: mocked_grid_cols,
+       board_width: mocked_board_width,
+       board_height: mocked_board_height,
        game_data: game_data
      )}
   end
 
   def handle_info(encoded_players, socket) do
     game_data =
-      Enum.reduce(Map.keys(encoded_players), %{}, fn player_id, acc ->
+      Enum.reduce(Map.keys(encoded_players), [], fn player_id, acc ->
         encoded_player = encoded_players[player_id]
         %{position: %{x: x, y: y}} = LambdaGameBackend.Protobuf.Player.decode(encoded_player)
 
-        x = trunc(x) |> max(0) |> min(9)
-        y = trunc(y) |> max(0) |> min(9)
+        x = trunc(x) |> max(0) |> min(socket.assigns.board_width)
+        y = trunc(y) |> max(0) |> min(socket.assigns.board_height)
 
-        Map.update(acc, y, %{x => player_name(player_id)}, fn players_map ->
-          Map.put(players_map, x, player_name(player_id))
-        end)
+        acc ++ [%{id: player_id, type: "player", shape: "circle", name: player_name(player_id), x: x, y: y, radius: 5}]
       end)
 
-    assigns = [
-      game_data: game_data
-    ]
+    # Mocked obstacle
+    game_data =
+      game_data ++
+        [
+          %{
+            id: "obstacle_1",
+            type: "obstacle",
+            shape: "polygon",
+            name: "O1",
+            x: 120,
+            y: 50,
+            coords: [[80, 0], [80, 100], [30, 200], [0, 150], [0, 50]]
+          }
+        ]
 
-    {:noreply, assign(socket, assigns)}
+    {:noreply, push_event(socket, "updateElements", %{elements: game_data})}
   end
 
   defp player_name(player_id), do: "P#{player_id}"

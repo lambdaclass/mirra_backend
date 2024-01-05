@@ -21,11 +21,12 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import * as PIXI from 'pixi.js';
 
-import {Play} from "./hooks/play"
+import {BoardGame} from "./hooks/board_game"
 
 let hooks = {
-    Play: new Play(),
+    BoardGame: new BoardGame(),
 }
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
