@@ -1,5 +1,6 @@
 # Lambda Game Backend
-Open source backend developed by LambdaClass in Elixir, for the communication, and Rust, for the state management.
+
+Multiplayer 2D physics engine, matchmaking, market and leaderboard for 2D and 3D Games. Developed in Elixir for communication and Rust for the physics engine.
 
 ## Table of Contents
 
