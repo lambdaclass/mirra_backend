@@ -13,9 +13,10 @@ Open source backend developed by LambdaClass in Elixir, for the communication, a
 
 ## Documentation
 
-⚠️ Disclaimer ⚠️
-
-*The following documentation corresponds to a previous version. It can be found in the branch named ```old```.*
+>⚠️ Disclaimer ⚠️
+>
+>*We are currently working on a new version of the backend. The following documentation corresponds to a previous one, 
+that can be found in the [old branch](https://github.com/lambdaclass/game_backend/tree/old).*
 
 You can find our documentation in [docs](./docs/src/README.md) folder, or run it locally.
 
