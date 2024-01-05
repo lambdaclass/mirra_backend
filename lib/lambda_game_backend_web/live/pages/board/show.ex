@@ -12,8 +12,8 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
   end
 
   def mount_connected(%{"game_id" => game_id, "player_id" => player_id} = _params, socket) do
-    mocked_grid_rows = 10
-    mocked_grid_cols = 10
+    mocked_grid_rows = 50
+    mocked_grid_cols = 50
     game_data = %{0 => %{0 => player_name(player_id)}}
 
     PubSub.subscribe(LambdaGameBackend.PubSub, game_id)
@@ -35,8 +35,8 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
         encoded_player = encoded_players[player_id]
         %{position: %{x: x, y: y}} = LambdaGameBackend.Protobuf.Player.decode(encoded_player)
 
-        x = trunc(x) |> max(0) |> min(9)
-        y = trunc(y) |> max(0) |> min(9)
+        x = trunc(x) |> max(0) |> min(49)
+        y = trunc(y) |> max(0) |> min(49)
 
         Map.update(acc, y, %{x => player_name(player_id)}, fn players_map ->
           Map.put(players_map, x, player_name(player_id))

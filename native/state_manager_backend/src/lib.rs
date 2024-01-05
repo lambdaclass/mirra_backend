@@ -2,9 +2,11 @@
 
 mod player;
 mod game_state;
+mod map;
 
 use crate::game_state::GameState;
 use crate::player::{Player, Position};
+use crate::map::Polygon;
 
 #[rustler::nif()]
 fn add(a: i64, b: i64) -> i64 {
@@ -60,11 +62,45 @@ fn calculate_distance(a: &Position, b: &Position) -> f64 {
     (x.powi(2) + y.powi(2)).sqrt()
 }
 
+#[rustler::nif()]
+fn add_polygon(game_state: GameState) -> GameState {
+    let mut game_state: GameState = game_state;
+    
+    let polygon = Polygon::new(1, vec![
+        Position { x: 0.0, y: 0.0 }, 
+        Position { x: 0.0, y: 10.0 }, 
+        Position { x: 2.0, y: 10.0 }, 
+        Position { x: 2.0, y: 0.0 }]);
+    game_state.polygons.insert(polygon.id, polygon);
+
+    let polygon = Polygon::new(2, vec![
+        Position { x: 10.0, y: 10.0 }, 
+        Position { x: 10.0, y: 30.0 }, 
+        Position { x: 30.0, y: 30.0 }, 
+        Position { x: 30.0, y: 10.0 }]);
+    game_state.polygons.insert(polygon.id, polygon);
+    game_state
+}
+
+#[rustler::nif()]
+fn exist_collision(game_state: GameState, position: Position) -> bool {
+    let mut game_state: GameState = game_state;
+    let mut collision = false;
+    for (_, polygon) in game_state.polygons.iter_mut() {
+        if polygon.exist_collision(&position) {
+            collision = true;
+            break;
+        }
+    }
+    collision
+}
 
 rustler::init!("Elixir.StateManagerBackend", [
     add,
     move_player,
     new_game,
     add_player,
-    check_collisions
+    check_collisions,
+    add_polygon,
+    exist_collision
 ]);

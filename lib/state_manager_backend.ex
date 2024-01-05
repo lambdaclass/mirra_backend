@@ -13,4 +13,6 @@ defmodule StateManagerBackend do
   def add_player(_game_state, _player_id), do: :erlang.nif_error(:nif_not_loaded)
   def move_player(_game_state, _player_id, _x, _y), do: :erlang.nif_error(:nif_not_loaded)
   def check_collisions(_game_state, _player_id, _radius), do: :erlang.nif_error(:nif_not_loaded)
+  def add_polygon(_game_state), do: :erlang.nif_error(:nif_not_loaded)
+  def exist_collision(_game_state, _position), do: :erlang.nif_error(:nif_not_loaded)
 end

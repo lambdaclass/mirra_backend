@@ -23,6 +23,9 @@ defmodule LambdaGameBackend.GameUpdater do
     state =
       StateManagerBackend.new_game()
       |> StateManagerBackend.add_player(String.to_integer(player_id))
+      |> StateManagerBackend.add_polygon()
+
+    IO.inspect(state.polygons, label: "polygons")
 
     Process.send_after(self(), :update_game, @game_tick)
     {:ok, state}
@@ -45,6 +48,12 @@ defmodule LambdaGameBackend.GameUpdater do
 
         Map.put(acc, player.id, player_encoded)
       end)
+
+    state.players
+    |> Enum.map(fn {_player_id, player} ->
+      StateManagerBackend.exist_collision(state, player.position)
+      |> IO.inspect(label: "collides?")
+    end)
 
     PubSub.broadcast(LambdaGameBackend.PubSub, _game_id = "1", encoded_players)
 
