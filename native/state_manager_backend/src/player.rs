@@ -16,8 +16,8 @@ pub struct Position {
 }
 
 impl Player {
-    pub fn new(id: u64, initial_position: Position, size: f64, life: u64, speed: f64,) -> Player {
-        Player{
+    pub fn new(id: u64, initial_position: Position, size: f64, life: u64, speed: f64) -> Player {
+        Player {
             id,
             position: initial_position,
             size,

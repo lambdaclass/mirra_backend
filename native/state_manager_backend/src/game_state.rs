@@ -1,5 +1,5 @@
-use rustler::NifMap;
 use crate::player::Player;
+use rustler::NifMap;
 use std::collections::HashMap;
 
 #[derive(NifMap)]
@@ -10,8 +10,8 @@ pub struct GameState {
 
 impl GameState {
     pub fn new(game_id: String) -> GameState {
-        GameState{
-            game_id: game_id,
+        GameState {
+            game_id,
             players: HashMap::new(),
         }
     }
