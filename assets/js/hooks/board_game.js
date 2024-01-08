@@ -1,6 +1,17 @@
 import { Application, Graphics } from "pixi.js";
 import { Player } from "../game/player.js";
 
+function Element({ id, name, shape, type, x, y, coords, radius }) {
+  this.id = id;
+  this.name = name;
+  this.shape = shape;
+  this.type = type;
+  this.x = x;
+  this.y = y;
+  this.coords = coords;
+  this.radius = radius;
+}
+
 export const BoardGame = function () {
   const easing = 0.2;
   const elements = new Map();
@@ -27,19 +38,19 @@ export const BoardGame = function () {
 
     window.addEventListener("phx:updateElements", (e) => {
       Array.from(e.detail.elements).forEach((backElement) => {
-        if (!elements.has(backElement["name"])) {
-          let elementInfo = this.createElement(backElement);
+        if (!elements.has(backElement.name)) {
+          let newElement = this.createElement(backElement);
 
-          app.stage.addChild(elementInfo["object"]);
-          elements.set(backElement["name"], elementInfo);
+          app.stage.addChild(newElement.boardObject);
+          elements.set(backElement.name, newElement);
         }
-        let element = elements.get(backElement["name"]);
-        this.updateElementColor(element, backElement["is_colliding"]);
+        let element = elements.get(backElement.name);
+        this.updateElementColor(element, backElement.is_colliding);
 
         this.updateElementPosition(
           element,
-          backElement["x"],
-          backElement["y"]
+          backElement.x,
+          backElement.y
         );
       });
     });
@@ -47,14 +58,14 @@ export const BoardGame = function () {
     app.ticker.add(() => {
       elements.forEach((element) => {
         // Use linear interpolation (lerp) for smoother movement
-        element["object"].x +=
-          (element["targetX"] - element["object"].x) * easing;
-        element["object"].y +=
-          (element["targetY"] - element["object"].y) * easing;
+        element.boardObject.x +=
+          (element.x - element.boardObject.x) * easing;
+        element.boardObject.y +=
+          (element.y - element.boardObject.y) * easing;
 
         // Update the element's position
-        element["object"].position.x = element["object"].x;
-        element["object"].position.y = element["object"].y;
+        element.boardObject.position.x = element.boardObject.x;
+        element.boardObject.position.y = element.boardObject.y;
       });
     });
 
@@ -74,51 +85,43 @@ export const BoardGame = function () {
     });
   }),
     (this.updateElementPosition = function (element, x, y) {
-      element["targetX"] = x;
-      element["targetY"] = y;
+      element.x = x;
+      element.y = y;
     }),
     (this.createElement = function (backElement) {
-      let elementInfo = new Map();
+      newElement = new Element(backElement);
+      newElement.boardObject = new Graphics();
 
-      elementInfo["id"] = backElement["id"];
-      elementInfo["name"] = backElement["name"];
-      elementInfo["targetX"] = backElement["x"];
-      elementInfo["targetY"] = backElement["y"];
-      elementInfo["shape"] = backElement["shape"];
-      elementInfo["type"] = backElement["type"];
-      elementInfo["object"] = new Graphics();
+      newElement.boardObject.beginFill(0xffffff);
 
-      elementInfo["object"].beginFill(0xffffff);
-
-      switch (backElement["shape"]) {
+      switch (newElement.shape) {
         case "circle":
-          elementInfo["object"].drawCircle(0, 0, backElement["radius"]);
+          newElement.boardObject.drawCircle(0, 0, newElement.radius);
           break;
         case "polygon":
-          elementInfo["coords"] = backElement["coords"];
-          elementInfo["object"].drawPolygon(elementInfo["coords"].flat());
+          newElement.boardObject.drawPolygon(newElement.coords.flat());
           break;
       }
 
-      elementInfo["object"].endFill();
+      newElement.boardObject.endFill();
 
-      elementInfo["object"].on("pointerover", (event) => {
+      newElement.boardObject.on("pointerover", (event) => {
         this.updateDebug(
-          elementInfo["name"] +
+          newElement.name +
             " - " +
             "pos: [" +
-            Math.round(elementInfo["object"].position.x) +
+            Math.round(newElement.boardObject.position.x) +
             "," +
-            Math.round(elementInfo["object"].position.y) +
+            Math.round(newElement.boardObject.position.y) +
             "]"
         );
       });
-      elementInfo["object"].on("pointerleave", (event) => {
+      newElement.boardObject.on("pointerleave", (event) => {
         this.updateDebug("");
       });
-      elementInfo["object"].eventMode = "static";
+      newElement.boardObject.eventMode = "static";
 
-      return elementInfo;
+      return newElement;
     }),
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
@@ -128,10 +131,10 @@ export const BoardGame = function () {
       if (is_colliding == true){
         color = colors.colliding;
       } else {
-        switch (element["type"]) {
+        switch (element.type) {
           case "player":
             color =
-              element["id"] == player_id
+              element.id == player_id
                 ? colors.currentPlayer
                 : colors.players;
             break;
@@ -140,6 +143,6 @@ export const BoardGame = function () {
             break;
         }
       }
-      element["object"].tint = color;
+      element.boardObject.tint = color;
     }
 };
