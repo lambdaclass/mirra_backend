@@ -24,8 +24,10 @@ import topbar from "../vendor/topbar"
 import * as PIXI from 'pixi.js';
 
 import {BoardGame} from "./hooks/board_game"
+import {GameQueue} from "./hooks/game_queue"
 
 let hooks = {
+    GameQueue: new GameQueue(),
     BoardGame: new BoardGame(),
 }
 

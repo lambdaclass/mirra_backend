@@ -1,4 +1,4 @@
-.PHONY: deps run start stop generate-ex-protos generate-js-protos generate-protos check
+.PHONY: deps run start stop generate-ex-protos generate-js-protos generate-protos format lints check
 
 run:
 	iex -S mix phx.server
@@ -25,7 +25,13 @@ generate-js-protos:
 
 generate-protos: generate-ex-protos generate-js-protos
 
-check: 
+format:
 	mix format --check-formatted
-	mix credo --strict
+	cd native/state_manager_backend && cargo fmt --all
+
+lints:
+	mix credo
+	cd native/state_manager_backend && cargo clippy --all-targets -- -D warnings
+
+check: format lints
 	mix test

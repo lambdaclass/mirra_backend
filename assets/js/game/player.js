@@ -1,8 +1,9 @@
 var messages = require('../protobuf/messages_pb');
 
 export class Player{
-    constructor(game_id) {
-        this.socket = new WebSocket(this.getplayConnection(game_id))
+    constructor(socketUrl) {
+        this.socket = new WebSocket(socketUrl)
+        this.socket.binaryType = "arraybuffer";
     }
 
     move(direction_x, direction_y) {
@@ -19,13 +20,5 @@ export class Player{
         console.log("Pressed: " + event.key + ". Msg: [" + message.getX() + ", " + message.getY() + "]");
 
         return message.serializeBinary();
-    }
-
-    getplayConnection(game_id) {
-        let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-        let host = window.location.host
-        let path = '/play'
-
-        return `${protocol}${host}${path}/${game_id}`
     }
 }

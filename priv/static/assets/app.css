@@ -973,6 +973,10 @@ select {
   height: 1.25rem;
 }
 
+.max-h-\[40rem\] {
+  max-height: 40rem;
+}
+
 .min-h-\[6rem\] {
   min-height: 6rem;
 }
@@ -1019,6 +1023,10 @@ select {
 
 .max-w-3xl {
   max-width: 48rem;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .flex-none {
@@ -1104,6 +1112,10 @@ select {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.overflow-scroll {
+  overflow: scroll;
 }
 
 .overflow-y-auto {

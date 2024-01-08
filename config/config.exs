@@ -10,6 +10,7 @@ import Config
 # Configures the endpoint
 dispatch = [
   _: [
+    {"/play/:game_id/:player_id", LambdaGameBackend.GameSocketHandler, []},
     {"/play/:player_id", LambdaGameBackend.SocketHandler, []},
     {:_, Plug.Cowboy.Handler, {LambdaGameBackendWeb.Endpoint, []}}
   ]

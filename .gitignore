@@ -29,3 +29,5 @@ erl_crash.dump
 /assets/node_modules/
 
 *.so
+
+**/*.so
