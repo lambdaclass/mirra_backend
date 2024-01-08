@@ -44,7 +44,8 @@ defmodule LambdaGameBackend.GameUpdater do
               y: player.position.y
             },
             radius: 5,
-            vertices: []
+            vertices: [],
+            is_colliding: StateManagerBackend.exist_collision(state, player.position)
           })
       end)
 
@@ -63,15 +64,10 @@ defmodule LambdaGameBackend.GameUpdater do
             vertices: Enum.map(polygon.vertices, fn vertex -> %LambdaGameBackend.Protobuf.Position{
               x: vertex.x,
               y: vertex.y
-            } end)
+            } end),
+            is_colliding: false
           })
       end)
-
-    state.players
-    |> Enum.map(fn {_player_id, player} ->
-      StateManagerBackend.exist_collision(state, player.position)
-      |> IO.inspect(label: "collides?")
-    end)
 
     PubSub.broadcast(LambdaGameBackend.PubSub, _game_id = "1", encoded_players ++ encoded_polygons)
 

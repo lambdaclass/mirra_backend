@@ -1118,7 +1118,8 @@ proto.Element.toObject = function(includeInstance, msg) {
     position: (f = msg.getPosition()) && proto.Position.toObject(includeInstance, f),
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     verticesList: jspb.Message.toObjectList(msg.getVerticesList(),
-    proto.Position.toObject, includeInstance)
+    proto.Position.toObject, includeInstance),
+    isColliding: jspb.Message.getBooleanFieldWithDefault(msg, 8, false)
   };
 
   if (includeInstance) {
@@ -1184,6 +1185,10 @@ proto.Element.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.Position;
       reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
       msg.addVertices(value);
+      break;
+    case 8:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsColliding(value);
       break;
     default:
       reader.skipField();
@@ -1263,6 +1268,13 @@ proto.Element.serializeBinaryToWriter = function(message, writer) {
       7,
       f,
       proto.Position.serializeBinaryToWriter
+    );
+  }
+  f = message.getIsColliding();
+  if (f) {
+    writer.writeBool(
+      8,
+      f
     );
   }
 };
@@ -1430,6 +1442,24 @@ proto.Element.prototype.addVertices = function(opt_value, opt_index) {
  */
 proto.Element.prototype.clearVerticesList = function() {
   return this.setVerticesList([]);
+};
+
+
+/**
+ * optional bool is_colliding = 8;
+ * @return {boolean}
+ */
+proto.Element.prototype.getIsColliding = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 8, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Element} returns this
+ */
+proto.Element.prototype.setIsColliding = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 8, value);
 };
 
 

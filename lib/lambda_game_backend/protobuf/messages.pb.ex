@@ -82,4 +82,5 @@ defmodule LambdaGameBackend.Protobuf.Element do
   field :position, 5, type: LambdaGameBackend.Protobuf.Position
   field :radius, 6, type: :float
   field :vertices, 7, repeated: true, type: LambdaGameBackend.Protobuf.Position
+  field :is_colliding, 8, type: :bool, json_name: "isColliding"
 end

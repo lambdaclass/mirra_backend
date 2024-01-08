@@ -44,7 +44,8 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
         x: decoded.position.x,
         y: decoded.position.y,
         radius: decoded.radius,
-        coords: decoded.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end)
+        coords: decoded.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
+        is_colliding: decoded.is_colliding
       }
     end)
 

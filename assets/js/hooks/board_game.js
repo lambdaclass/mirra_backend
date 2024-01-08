@@ -6,9 +6,10 @@ export const BoardGame = function () {
   const elements = new Map();
   const colors = {
     board: 0xb5b8c8,
-    currentPlayer: 0xff00d7,
+    currentPlayer: 0x007cff,
     players: 0x000000,
     obstacle: 0x00aa77,
+    colliding: 0xff0000
   };
   let player_id, player;
 
@@ -32,8 +33,11 @@ export const BoardGame = function () {
           app.stage.addChild(elementInfo["object"]);
           elements.set(backElement["name"], elementInfo);
         }
+        let element = elements.get(backElement["name"]);
+        this.updateElementColor(element, backElement["is_colliding"]);
+
         this.updateElementPosition(
-          elements.get(backElement["name"]),
+          element,
           backElement["x"],
           backElement["y"]
         );
@@ -75,26 +79,16 @@ export const BoardGame = function () {
     }),
     (this.createElement = function (backElement) {
       let elementInfo = new Map();
-      let color;
 
+      elementInfo["id"] = backElement["id"];
       elementInfo["name"] = backElement["name"];
       elementInfo["targetX"] = backElement["x"];
       elementInfo["targetY"] = backElement["y"];
+      elementInfo["shape"] = backElement["shape"];
+      elementInfo["type"] = backElement["type"];
       elementInfo["object"] = new Graphics();
 
-      switch (backElement["type"]) {
-        case "player":
-          color =
-            backElement["id"] == player_id
-              ? colors.currentPlayer
-              : colors.players;
-          break;
-        case "obstacle":
-          color = colors.obstacle;
-          break;
-      }
-
-      elementInfo["object"].beginFill(color);
+      elementInfo["object"].beginFill(0xffffff);
 
       switch (backElement["shape"]) {
         case "circle":
@@ -128,5 +122,24 @@ export const BoardGame = function () {
     }),
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
-    });
+    }),
+    this.updateElementColor = function (element, is_colliding){
+      let color;
+      if (is_colliding == true){
+        color = colors.colliding;
+      } else {
+        switch (element["type"]) {
+          case "player":
+            color =
+              element["id"] == player_id
+                ? colors.currentPlayer
+                : colors.players;
+            break;
+          case "obstacle":
+            color = colors.obstacle;
+            break;
+        }
+      }
+      element["object"].tint = color;
+    }
 };

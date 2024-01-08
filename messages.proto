@@ -35,4 +35,5 @@ message Element {
   Position position = 5;
   float radius = 6;
   repeated Position vertices = 7;
+  bool is_colliding = 8;
 }
