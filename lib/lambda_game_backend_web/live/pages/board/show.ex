@@ -34,11 +34,11 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
   def handle_info(encoded_entities, socket) do
 
     game_data = encoded_entities |> Enum.map(fn encoded_entity ->
-      decoded = LambdaGameBackend.Protobuf.Element.decode(encoded_entity)
+      decoded = LambdaGameBackend.Protobuf.Entity.decode(encoded_entity)
 
       %{
         id: decoded.id,
-        type: decoded.type,
+        category: decoded.category,
         shape: decoded.shape,
         name: decoded.name,
         x: decoded.position.x,
@@ -49,7 +49,7 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
       }
     end)
 
-    {:noreply, push_event(socket, "updateElements", %{elements: game_data})}
+    {:noreply, push_event(socket, "updateEntities", %{entities: game_data})}
   end
 
   defp player_name(player_id), do: "P#{player_id}"

@@ -10,30 +10,18 @@ message Position {
   float y = 2;
 }
 
-message Player {
-  uint64 id = 1;
-  float speed = 2;
-  Position position = 3;
-  float size = 4;
-  uint64 life = 5;
-}
-
-message Polygon {
-  repeated Position vertices = 1;
-}
-
 message GameState {
-  map<uint64, Player> players = 1;
-  map<uint64, Polygon> polygons = 2;
+  map<uint64, Entity> entities = 1;
 }
 
-message Element {
+message Entity {
   uint64 id = 1;
-  string type = 2;
+  string category = 2;
   string shape = 3;
   string name = 4;
   Position position = 5;
   float radius = 6;
   repeated Position vertices = 7;
   bool is_colliding = 8;
+  float speed = 9;
 }

@@ -1,11 +1,11 @@
 import { Application, Graphics } from "pixi.js";
 import { Player } from "../game/player.js";
 
-function Element({ id, name, shape, type, x, y, coords, radius }) {
+function Entity({ id, name, shape, category, x, y, coords, radius }) {
   this.id = id;
   this.name = name;
   this.shape = shape;
-  this.type = type;
+  this.category = category;
   this.x = x;
   this.y = y;
   this.coords = coords;
@@ -14,7 +14,7 @@ function Element({ id, name, shape, type, x, y, coords, radius }) {
 
 export const BoardGame = function () {
   const easing = 0.2;
-  const elements = new Map();
+  const entities = new Map();
   const colors = {
     board: 0xb5b8c8,
     currentPlayer: 0x007cff,
@@ -36,36 +36,36 @@ export const BoardGame = function () {
 
     document.getElementById("board_container").appendChild(app.view);
 
-    window.addEventListener("phx:updateElements", (e) => {
-      Array.from(e.detail.elements).forEach((backElement) => {
-        if (!elements.has(backElement.name)) {
-          let newElement = this.createElement(backElement);
+    window.addEventListener("phx:updateEntities", (e) => {
+      Array.from(e.detail.entities).forEach((backEntity) => {
+        if (!entities.has(backEntity.name)) {
+          let newEntity = this.createEntity(backEntity);
 
-          app.stage.addChild(newElement.boardObject);
-          elements.set(backElement.name, newElement);
+          app.stage.addChild(newEntity.boardObject);
+          entities.set(backEntity.name, newEntity);
         }
-        let element = elements.get(backElement.name);
-        this.updateElementColor(element, backElement.is_colliding);
+        let entity = entities.get(backEntity.name);
+        this.updateEntityColor(entity, backEntity.is_colliding);
 
-        this.updateElementPosition(
-          element,
-          backElement.x,
-          backElement.y
+        this.updateEntityPosition(
+          entity,
+          backEntity.x,
+          backEntity.y
         );
       });
     });
 
     app.ticker.add(() => {
-      elements.forEach((element) => {
+      entities.forEach((entity) => {
         // Use linear interpolation (lerp) for smoother movement
-        element.boardObject.x +=
-          (element.x - element.boardObject.x) * easing;
-        element.boardObject.y +=
-          (element.y - element.boardObject.y) * easing;
+        entity.boardObject.x +=
+          (entity.x - entity.boardObject.x) * easing;
+        entity.boardObject.y +=
+          (entity.y - entity.boardObject.y) * easing;
 
-        // Update the element's position
-        element.boardObject.position.x = element.boardObject.x;
-        element.boardObject.position.y = element.boardObject.y;
+        // Update the entity's position
+        entity.boardObject.position.x = entity.boardObject.x;
+        entity.boardObject.position.y = entity.boardObject.y;
       });
     });
 
@@ -84,57 +84,57 @@ export const BoardGame = function () {
       }
     });
   }),
-    (this.updateElementPosition = function (element, x, y) {
-      element.x = x;
-      element.y = y;
+    (this.updateEntityPosition = function (entity, x, y) {
+      entity.x = x;
+      entity.y = y;
     }),
-    (this.createElement = function (backElement) {
-      newElement = new Element(backElement);
-      newElement.boardObject = new Graphics();
+    (this.createEntity = function (backEntity) {
+      newEntity = new Entity(backEntity);
+      newEntity.boardObject = new Graphics();
 
-      newElement.boardObject.beginFill(0xffffff);
+      newEntity.boardObject.beginFill(0xffffff);
 
-      switch (newElement.shape) {
+      switch (newEntity.shape) {
         case "circle":
-          newElement.boardObject.drawCircle(0, 0, newElement.radius);
+          newEntity.boardObject.drawCircle(0, 0, newEntity.radius);
           break;
         case "polygon":
-          newElement.boardObject.drawPolygon(newElement.coords.flat());
+          newEntity.boardObject.drawPolygon(newEntity.coords.flat());
           break;
       }
 
-      newElement.boardObject.endFill();
+      newEntity.boardObject.endFill();
 
-      newElement.boardObject.on("pointerover", (event) => {
+      newEntity.boardObject.on("pointerover", (event) => {
         this.updateDebug(
-          newElement.name +
+          newEntity.name +
             " - " +
             "pos: [" +
-            Math.round(newElement.boardObject.position.x) +
+            Math.round(newEntity.boardObject.position.x) +
             "," +
-            Math.round(newElement.boardObject.position.y) +
+            Math.round(newEntity.boardObject.position.y) +
             "]"
         );
       });
-      newElement.boardObject.on("pointerleave", (event) => {
+      newEntity.boardObject.on("pointerleave", (event) => {
         this.updateDebug("");
       });
-      newElement.boardObject.eventMode = "static";
+      newEntity.boardObject.eventMode = "static";
 
-      return newElement;
+      return newEntity;
     }),
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
     }),
-    this.updateElementColor = function (element, is_colliding){
+    this.updateEntityColor = function (entity, is_colliding){
       let color;
       if (is_colliding == true){
         color = colors.colliding;
       } else {
-        switch (element.type) {
+        switch (entity.category) {
           case "player":
             color =
-              element.id == player_id
+              entity.id == player_id
                 ? colors.currentPlayer
                 : colors.players;
             break;
@@ -143,6 +143,6 @@ export const BoardGame = function () {
             break;
         }
       }
-      element.boardObject.tint = color;
+      entity.boardObject.tint = color;
     }
 };
