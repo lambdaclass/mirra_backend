@@ -1,4 +1,4 @@
-import { Application, Graphics } from "pixi.js";
+import { Application, Container, Graphics } from "pixi.js";
 import { Player } from "../game/player.js";
 
 function Entity({ id, name, shape, category, x, y, coords, radius }) {
@@ -33,6 +33,9 @@ export const BoardGame = function () {
       height: document.getElementById("board_game").dataset.boardHeight,
       backgroundColor: colors.board,
     });
+    const container = new Container();
+    app.stage.addChild(container);
+    container.sortableChildren = true;
 
     document.getElementById("board_container").appendChild(app.view);
 
@@ -41,7 +44,7 @@ export const BoardGame = function () {
         if (!entities.has(backEntity.name)) {
           let newEntity = this.createEntity(backEntity);
 
-          app.stage.addChild(newEntity.boardObject);
+          container.addChild(newEntity.boardObject);
           entities.set(backEntity.name, newEntity);
         }
         let entity = entities.get(backEntity.name);
@@ -100,6 +103,16 @@ export const BoardGame = function () {
           break;
         case "polygon":
           newEntity.boardObject.drawPolygon(newEntity.coords.flat());
+          break;
+      }
+
+      alert(newEntity.category);
+      switch (newEntity.category) {
+        case "player":
+          newEntity.boardObject.zIndex = 10;
+          break;
+        case "obstacle":
+          newEntity.boardObject.zIndex = 1;
           break;
       }
 
