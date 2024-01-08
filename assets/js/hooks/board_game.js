@@ -107,7 +107,6 @@ export const BoardGame = function () {
           break;
       }
 
-      alert(newEntity.category);
       switch (newEntity.category) {
         case "player":
           newEntity.boardObject.zIndex = 10;

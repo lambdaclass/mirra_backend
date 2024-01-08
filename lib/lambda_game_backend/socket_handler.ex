@@ -23,7 +23,7 @@ defmodule LambdaGameBackend.SocketHandler do
     game_state =
       GameState.encode(%GameState{
         game_id: nil,
-        players: %{}
+        entities: %{}
       })
 
     {:reply, {:binary, game_state}, state}
@@ -48,7 +48,7 @@ defmodule LambdaGameBackend.SocketHandler do
     game_state =
       GameState.encode(%GameState{
         game_id: game_id,
-        players: %{}
+        entities: %{}
       })
 
     {:reply, {:binary, game_state}, state}
