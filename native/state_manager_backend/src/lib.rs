@@ -1,7 +1,7 @@
 #![allow(non_snake_case)] // rustler macros generate non snake case names and dont use this allow themselves
 
-mod player;
 mod game_state;
+mod player;
 
 use crate::game_state::GameState;
 use crate::player::{Player, Position};
@@ -60,11 +60,7 @@ fn calculate_distance(a: &Position, b: &Position) -> f64 {
     (x.powi(2) + y.powi(2)).sqrt()
 }
 
-
-rustler::init!("Elixir.StateManagerBackend", [
-    add,
-    move_player,
-    new_game,
-    add_player,
-    check_collisions
-]);
+rustler::init!(
+    "Elixir.StateManagerBackend",
+    [add, move_player, new_game, add_player, check_collisions]
+);
