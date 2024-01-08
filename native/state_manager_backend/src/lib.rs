@@ -12,8 +12,8 @@ fn add(a: i64, b: i64) -> i64 {
 }
 
 #[rustler::nif()]
-fn new_game() -> GameState {
-    GameState::new()
+fn new_game(game_id: String) -> GameState {
+    GameState::new(game_id)
 }
 
 #[rustler::nif()]

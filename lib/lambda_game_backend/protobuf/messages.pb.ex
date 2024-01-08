@@ -42,7 +42,9 @@ defmodule LambdaGameBackend.Protobuf.GameState do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:players, 1,
+  field(:game_id, 1, type: :string, json_name: "gameId")
+
+  field(:players, 2,
     repeated: true,
     type: LambdaGameBackend.Protobuf.GameState.PlayersEntry,
     map: true

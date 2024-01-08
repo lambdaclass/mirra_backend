@@ -25,6 +25,7 @@ defmodule LambdaGameBackendWeb.Router do
     # pipe_through [:browser, :game]
 
     live "/board/:game_id/:player_id", BoardLive.Show
+    live "/board/:player_id", BoardLive.GameQueue
   end
 
   # Other scopes may use custom stacks.
