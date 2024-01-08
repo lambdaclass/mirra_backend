@@ -12,7 +12,6 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
   end
 
   def mount_connected(%{"game_id" => game_id, "player_id" => player_id} = _params, socket) do
-
     mocked_board_width = 1000
     mocked_board_height = 600
 
@@ -32,22 +31,23 @@ defmodule LambdaGameBackendWeb.BoardLive.Show do
   end
 
   def handle_info(encoded_entities, socket) do
+    game_data =
+      encoded_entities
+      |> Enum.map(fn encoded_entity ->
+        decoded = LambdaGameBackend.Protobuf.Entity.decode(encoded_entity)
 
-    game_data = encoded_entities |> Enum.map(fn encoded_entity ->
-      decoded = LambdaGameBackend.Protobuf.Entity.decode(encoded_entity)
-
-      %{
-        id: decoded.id,
-        category: decoded.category,
-        shape: decoded.shape,
-        name: decoded.name,
-        x: decoded.position.x,
-        y: decoded.position.y,
-        radius: decoded.radius,
-        coords: decoded.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-        is_colliding: decoded.is_colliding
-      }
-    end)
+        %{
+          id: decoded.id,
+          category: decoded.category,
+          shape: decoded.shape,
+          name: decoded.name,
+          x: decoded.position.x,
+          y: decoded.position.y,
+          radius: decoded.radius,
+          coords: decoded.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
+          is_colliding: decoded.is_colliding
+        }
+      end)
 
     {:noreply, push_event(socket, "updateEntities", %{entities: game_data})}
   end

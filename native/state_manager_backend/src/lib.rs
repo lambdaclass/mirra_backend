@@ -24,7 +24,13 @@ fn add_player(game_state: GameState, player_id: u64) -> GameState {
     let mut game_state: GameState = game_state;
     // Check here if the player doesn't exist.
     // If it does, it resets it to [0,0] position.
-    let player = Entity::new_circle(player_id, Position { x: 0.0, y: 0.0 }, 40.0, 15.0, map::Category::Player);
+    let player = Entity::new_circle(
+        player_id,
+        Position { x: 0.0, y: 0.0 },
+        40.0,
+        15.0,
+        map::Category::Player,
+    );
     game_state.entities.insert(player.id, player);
     game_state
 }
@@ -46,7 +52,7 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
     let ent = entities.into_values().collect();
 
     if entity.shape == map::Shape::Circle {
-        return entity.collides_with(ent).len() > 0;
+        return !entity.collides_with(ent).is_empty();
     }
 
     false

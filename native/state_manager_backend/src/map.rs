@@ -65,16 +65,22 @@ impl Entity {
             radius: 0.0,
             vertices,
             speed: 0.0,
-            category: Category::Obstacle
+            category: Category::Obstacle,
         }
     }
 
-    pub fn new_circle(id: u64, position: Position, radius: f64, speed: f64, category: Category) -> Entity {
+    pub fn new_circle(
+        id: u64,
+        position: Position,
+        radius: f64,
+        speed: f64,
+        category: Category,
+    ) -> Entity {
         Entity {
             id,
             shape: Shape::Circle,
             position,
-            radius: radius,
+            radius,
             vertices: Vec::new(),
             speed,
             category,
@@ -103,22 +109,22 @@ impl Entity {
 
             match entity.shape {
                 Shape::Circle => {
-                    if circle_circle_collision(&self, &entity) {
+                    if circle_circle_collision(self, &entity) {
                         result.push(entity);
                     }
                 }
                 Shape::Polygon => {
-                    if circle_polygon_collision(&self, &entity) {
+                    if circle_polygon_collision(self, &entity) {
                         result.push(entity);
                     }
                 }
                 Shape::Point => {
-                    if point_circle_collision(&self, &entity) {
+                    if point_circle_collision(self, &entity) {
                         result.push(entity);
                     }
                 }
                 Shape::Line => {
-                    if line_circle_collision(&self, &entity) {
+                    if line_circle_collision(self, &entity) {
                         result.push(entity);
                     }
                 }

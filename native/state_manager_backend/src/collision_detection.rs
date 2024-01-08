@@ -91,10 +91,10 @@ pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
 
         if ((current_vertex.y >= point.position.y && next_vertex.y < point.position.y)
             || (current_vertex.y < point.position.y && next_vertex.y >= point.position.y))
-            && (point.position.x < (next_vertex.x - current_vertex.x)
-                * (point.position.y - current_vertex.y)
-                / (next_vertex.y - current_vertex.y)
-                + current_vertex.x)
+            && (point.position.x
+                < (next_vertex.x - current_vertex.x) * (point.position.y - current_vertex.y)
+                    / (next_vertex.y - current_vertex.y)
+                    + current_vertex.x)
         {
             collision = !collision;
         }

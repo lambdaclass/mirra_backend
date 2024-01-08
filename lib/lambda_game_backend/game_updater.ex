@@ -23,10 +23,10 @@ defmodule LambdaGameBackend.GameUpdater do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
 
     state =
-    Enum.reduce(players, StateManagerBackend.new_game(game_id), fn {player_id, _client_id}, state ->
-      StateManagerBackend.add_player(state, String.to_integer(player_id))
-    end)
-    |> StateManagerBackend.add_polygon()
+      Enum.reduce(players, StateManagerBackend.new_game(game_id), fn {player_id, _client_id}, state ->
+        StateManagerBackend.add_player(state, String.to_integer(player_id))
+      end)
+      |> StateManagerBackend.add_polygon()
 
     Process.send_after(self(), :update_game, @game_tick)
     {:ok, state}
@@ -37,22 +37,25 @@ defmodule LambdaGameBackend.GameUpdater do
 
     encoded_entities =
       Enum.map(state.entities, fn {_entity_id, entity} ->
-          LambdaGameBackend.Protobuf.Entity.encode(%LambdaGameBackend.Protobuf.Entity{
-            id: entity.id,
-            category: to_string(entity.category),
-            shape: to_string(entity.shape),
-            name: "Entity" <> Integer.to_string(entity.id),
-            position: %LambdaGameBackend.Protobuf.Position{
-              x: entity.position.x,
-              y: entity.position.y
-            },
-            radius: entity.radius,
-            vertices:  Enum.map(entity.vertices, fn vertex -> %LambdaGameBackend.Protobuf.Position{
-              x: vertex.x,
-              y: vertex.y
-            } end),
-            is_colliding: StateManagerBackend.check_collisions(entity, state.entities)
-          })
+        LambdaGameBackend.Protobuf.Entity.encode(%LambdaGameBackend.Protobuf.Entity{
+          id: entity.id,
+          category: to_string(entity.category),
+          shape: to_string(entity.shape),
+          name: "Entity" <> Integer.to_string(entity.id),
+          position: %LambdaGameBackend.Protobuf.Position{
+            x: entity.position.x,
+            y: entity.position.y
+          },
+          radius: entity.radius,
+          vertices:
+            Enum.map(entity.vertices, fn vertex ->
+              %LambdaGameBackend.Protobuf.Position{
+                x: vertex.x,
+                y: vertex.y
+              }
+            end),
+          is_colliding: StateManagerBackend.check_collisions(entity, state.entities)
+        })
       end)
 
     PubSub.broadcast(LambdaGameBackend.PubSub, state.game_id, encoded_entities)
