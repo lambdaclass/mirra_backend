@@ -19,5 +19,6 @@ message Player {
 }
 
 message GameState {
-  map<uint64, Player> players = 1;
+  string game_id = 1;
+  map<uint64, Player> players = 2;
 }

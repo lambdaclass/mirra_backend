@@ -3,7 +3,8 @@ defmodule LambdaGameBackend.SocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias LambdaGameBackend.GameUpdater
+  alias LambdaGameBackend.GameLauncher
+  alias LambdaGameBackend.Protobuf.GameState
 
   @behaviour :cowboy_websocket
 
@@ -11,24 +12,21 @@ defmodule LambdaGameBackend.SocketHandler do
   def init(req, _opts) do
     player_id = :cowboy_req.binding(:player_id, req)
 
-    game_pid =
-      case Process.whereis(GameUpdater) do
-        nil ->
-          {:ok, pid} = GenServer.start_link(GameUpdater, %{player_id: player_id}, name: GameUpdater)
-          pid
-
-        game_pid ->
-          GameUpdater.join(game_pid, player_id)
-          game_pid
-      end
-
-    {:cowboy_websocket, req, %{game_pid: game_pid, player_id: player_id}}
+    {:cowboy_websocket, req, %{player_id: player_id}}
   end
 
   @impl true
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
-    {:reply, {:binary, Jason.encode!(%{})}, state}
+    GameLauncher.join(state.player_id)
+
+    game_state =
+      GameState.encode(%GameState{
+        game_id: nil,
+        players: %{}
+      })
+
+    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
@@ -37,17 +35,34 @@ defmodule LambdaGameBackend.SocketHandler do
     {:reply, {:pong, ""}, state}
   end
 
-  def websocket_handle({:binary, message}, state) do
-    direction = LambdaGameBackend.Protobuf.Direction.decode(message)
+  @impl true
+  def websocket_info(:leave_waiting_game, state) do
+    Logger.info("Websocket info, Message: left waiting game")
+    {:stop, state}
+  end
 
-    GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y})
+  @impl true
+  def websocket_info({:join_game, game_id}, state) do
+    Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
 
-    {:reply, {:binary, Jason.encode!(%{})}, state}
+    game_state =
+      GameState.encode(%GameState{
+        game_id: game_id,
+        players: %{}
+      })
+
+    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
   def websocket_info(message, state) do
     Logger.info("Websocket info, Message: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
+  end
+
+  @impl true
+  def terminate(_, _, _) do
+    Logger.info("Websocket terminated")
+    :ok
   end
 end

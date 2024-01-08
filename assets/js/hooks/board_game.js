@@ -13,8 +13,9 @@ export const BoardGame = function () {
   let player_id, player;
 
   (this.mounted = function () {
-    player_id = document.getElementById("board_game").dataset.playerId;
-    player = new Player(player_id);
+    let game_id = document.getElementById("board_game").dataset.gameId
+    let player_id = document.getElementById("board_game").dataset.playerId
+    let player = new Player(getGameSocketUrl(game_id, player_id))
 
     const app = new Application({
       width: document.getElementById("board_game").dataset.boardWidth,
@@ -130,3 +131,11 @@ export const BoardGame = function () {
       document.querySelector("#board-debug span").innerHTML = msg;
     });
 };
+
+function getGameSocketUrl(game_id, player_id) {
+  let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  let host = window.location.host
+  let path = '/play'
+
+  return `${protocol}${host}${path}/${game_id}/${player_id}`
+}

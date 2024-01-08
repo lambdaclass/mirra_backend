@@ -54,7 +54,8 @@ defmodule LambdaGameBackend.MixProject do
       {:rustler, "~> 0.30.0"},
       {:protobuf, "~> 0.12.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:websockex, "~> 0.4.3"}
+      {:websockex, "~> 0.4.3"},
+      {:exbase58, "~> 1.0.2"}
     ]
   end
 

@@ -19,10 +19,13 @@ defmodule LambdaGameBackend.GameUpdater do
   end
 
   # Callbacks
-  def init(%{player_id: player_id}) do
+  def init(%{players: players}) do
+    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
+
     state =
-      StateManagerBackend.new_game()
-      |> StateManagerBackend.add_player(String.to_integer(player_id))
+      Enum.reduce(players, StateManagerBackend.new_game(game_id), fn {player_id, _client_id}, state ->
+        StateManagerBackend.add_player(state, String.to_integer(player_id))
+      end)
 
     Process.send_after(self(), :update_game, @game_tick)
     {:ok, state}
@@ -46,7 +49,7 @@ defmodule LambdaGameBackend.GameUpdater do
         Map.put(acc, player.id, player_encoded)
       end)
 
-    PubSub.broadcast(LambdaGameBackend.PubSub, _game_id = "1", encoded_players)
+    PubSub.broadcast(LambdaGameBackend.PubSub, state.game_id, encoded_players)
 
     {:noreply, state}
   end

@@ -14,6 +14,8 @@ defmodule LambdaGameBackend.Application do
       {Phoenix.PubSub, name: LambdaGameBackend.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: LambdaGameBackend.Finch},
+      # Start game launcher genserver
+      LambdaGameBackend.GameLauncher,
       # Start a worker by calling: LambdaGameBackend.Worker.start_link(arg)
       # {LambdaGameBackend.Worker, arg},
       # Start to serve requests, typically the last entry
