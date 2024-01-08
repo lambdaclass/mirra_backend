@@ -28,7 +28,6 @@ defmodule LambdaGameBackend.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    Logger.info("Websocket MOVE handler")
     direction = LambdaGameBackend.Protobuf.Direction.decode(message)
 
     GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y})

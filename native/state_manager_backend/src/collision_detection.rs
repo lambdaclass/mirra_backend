@@ -64,7 +64,8 @@ pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> boo
             return true;
         };
     }
-    false
+
+    point_polygon_colision(circle, polygon)
 }
 
 pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
@@ -75,6 +76,31 @@ pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
     let buffer = 0.1;
 
     d1 + d2 >= line_length - buffer && d1 + d2 <= line_length + buffer
+}
+
+pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
+    let mut collision = false;
+    for current in 0..polygon.vertices.len() {
+        let mut next = current + 1;
+        if next == polygon.vertices.len() {
+            next = 0
+        };
+
+        let current_vertex = polygon.vertices[current];
+        let next_vertex = polygon.vertices[next];
+
+        if ((current_vertex.y >= point.position.y && next_vertex.y < point.position.y)
+            || (current_vertex.y < point.position.y && next_vertex.y >= point.position.y))
+            && (point.position.x < (next_vertex.x - current_vertex.x)
+                * (point.position.y - current_vertex.y)
+                / (next_vertex.y - current_vertex.y)
+                + current_vertex.x)
+        {
+            collision = !collision;
+        }
+    }
+
+    collision
 }
 
 pub(crate) fn calculate_distance(a: &Position, b: &Position) -> f64 {

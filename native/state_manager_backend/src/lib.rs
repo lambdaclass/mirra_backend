@@ -57,7 +57,7 @@ fn add_polygon(game_state: GameState) -> GameState {
     let mut game_state: GameState = game_state;
 
     let polygon = Entity::new_polygon(
-        2,
+        100,
         vec![
             Position { x: 200.0, y: 200.0 },
             Position { x: 400.0, y: 200.0 },
