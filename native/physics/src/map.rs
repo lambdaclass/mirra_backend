@@ -110,7 +110,7 @@ impl Entity {
         }
     }
 
-    pub fn collides_with(&mut self, entities: Vec<Entity>) -> Vec<Entity> {
+    pub fn collides_with(&mut self, entities: &Vec<Entity>) -> Vec<Entity> {
         let mut result = Vec::new();
 
         for entity in entities {
@@ -120,23 +120,23 @@ impl Entity {
 
             match entity.shape {
                 Shape::Circle => {
-                    if circle_circle_collision(self, &entity) {
-                        result.push(entity);
+                    if circle_circle_collision(self, entity) {
+                        result.push(entity.clone());
                     }
                 }
                 Shape::Polygon => {
-                    if circle_polygon_collision(self, &entity) {
-                        result.push(entity);
+                    if circle_polygon_collision(self, entity) {
+                        result.push(entity.clone());
                     }
                 }
                 Shape::Point => {
-                    if point_circle_collision(self, &entity) {
-                        result.push(entity);
+                    if point_circle_collision(self, entity) {
+                        result.push(entity.clone());
                     }
                 }
                 Shape::Line => {
-                    if line_circle_collision(self, &entity) {
-                        result.push(entity);
+                    if line_circle_collision(self, entity) {
+                        result.push(entity.clone());
                     }
                 }
             }
