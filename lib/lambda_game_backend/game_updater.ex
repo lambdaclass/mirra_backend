@@ -26,6 +26,7 @@ defmodule LambdaGameBackend.GameUpdater do
       Enum.reduce(players, StateManagerBackend.new_game(game_id), fn {player_id, _client_id}, state ->
         StateManagerBackend.add_player(state, String.to_integer(player_id))
       end)
+      |> StateManagerBackend.add_polygon()
 
     Process.send_after(self(), :update_game, @game_tick)
     {:ok, state}
@@ -34,22 +35,30 @@ defmodule LambdaGameBackend.GameUpdater do
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
-    encoded_players =
-      Enum.reduce(state.players, %{}, fn {_player_id, player}, acc ->
-        player_encoded =
-          LambdaGameBackend.Protobuf.Player.encode(%LambdaGameBackend.Protobuf.Player{
-            id: player.id,
-            speed: player.speed,
-            position: %LambdaGameBackend.Protobuf.Position{
-              x: player.position.x,
-              y: player.position.y
-            }
-          })
-
-        Map.put(acc, player.id, player_encoded)
+    encoded_entities =
+      Enum.map(state.entities, fn {_entity_id, entity} ->
+        LambdaGameBackend.Protobuf.Entity.encode(%LambdaGameBackend.Protobuf.Entity{
+          id: entity.id,
+          category: to_string(entity.category),
+          shape: to_string(entity.shape),
+          name: "Entity" <> Integer.to_string(entity.id),
+          position: %LambdaGameBackend.Protobuf.Position{
+            x: entity.position.x,
+            y: entity.position.y
+          },
+          radius: entity.radius,
+          vertices:
+            Enum.map(entity.vertices, fn vertex ->
+              %LambdaGameBackend.Protobuf.Position{
+                x: vertex.x,
+                y: vertex.y
+              }
+            end),
+          is_colliding: StateManagerBackend.check_collisions(entity, state.entities)
+        })
       end)
 
-    PubSub.broadcast(LambdaGameBackend.PubSub, state.game_id, encoded_players)
+    PubSub.broadcast(LambdaGameBackend.PubSub, state.game_id, encoded_entities)
 
     {:noreply, state}
   end

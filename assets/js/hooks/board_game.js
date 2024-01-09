@@ -1,14 +1,26 @@
-import { Application, Graphics } from "pixi.js";
+import { Application, Container, Graphics } from "pixi.js";
 import { Player } from "../game/player.js";
+
+function Entity({ id, name, shape, category, x, y, coords, radius }) {
+  this.id = id;
+  this.name = name;
+  this.shape = shape;
+  this.category = category;
+  this.x = x;
+  this.y = y;
+  this.coords = coords;
+  this.radius = radius;
+}
 
 export const BoardGame = function () {
   const easing = 0.2;
-  const elements = new Map();
+  const entities = new Map();
   const colors = {
     board: 0xb5b8c8,
-    currentPlayer: 0xff00d7,
+    currentPlayer: 0x007cff,
     players: 0x000000,
     obstacle: 0x00aa77,
+    colliding: 0xff0000
   };
   let player_id, player;
 
@@ -22,114 +34,130 @@ export const BoardGame = function () {
       height: document.getElementById("board_game").dataset.boardHeight,
       backgroundColor: colors.board,
     });
+    const container = new Container();
+    app.stage.addChild(container);
+    container.sortableChildren = true;
 
     document.getElementById("board_container").appendChild(app.view);
 
-    window.addEventListener("phx:updateElements", (e) => {
-      Array.from(e.detail.elements).forEach((backElement) => {
-        if (!elements.has(backElement["name"])) {
-          let elementInfo = this.createElement(backElement);
+    window.addEventListener("phx:updateEntities", (e) => {
+      Array.from(e.detail.entities).forEach((backEntity) => {
+        if (!entities.has(backEntity.name)) {
+          let newEntity = this.createEntity(backEntity);
 
-          app.stage.addChild(elementInfo["object"]);
-          elements.set(backElement["name"], elementInfo);
+          container.addChild(newEntity.boardObject);
+          entities.set(backEntity.name, newEntity);
         }
-        this.updateElementPosition(
-          elements.get(backElement["name"]),
-          backElement["x"],
-          backElement["y"]
+        let entity = entities.get(backEntity.name);
+        this.updateEntityColor(entity, backEntity.is_colliding);
+
+        this.updateEntityPosition(
+          entity,
+          backEntity.x,
+          backEntity.y
         );
       });
     });
 
     app.ticker.add(() => {
-      elements.forEach((element) => {
+      entities.forEach((entity) => {
         // Use linear interpolation (lerp) for smoother movement
-        element["object"].x +=
-          (element["targetX"] - element["object"].x) * easing;
-        element["object"].y +=
-          (element["targetY"] - element["object"].y) * easing;
+        entity.boardObject.x +=
+          (entity.x - entity.boardObject.x) * easing;
+        entity.boardObject.y +=
+          (entity.y - entity.boardObject.y) * easing;
 
-        // Update the element's position
-        element["object"].position.x = element["object"].x;
-        element["object"].position.y = element["object"].y;
+        // Update the entity's position
+        entity.boardObject.position.x = entity.boardObject.x;
+        entity.boardObject.position.y = entity.boardObject.y;
       });
     });
 
     document.addEventListener("keypress", function onPress(event) {
       if (event.key === "a") {
-        player.move(-10, 0);
+        player.move(-1, 0);
       }
       if (event.key === "w") {
-        player.move(0, -10);
+        player.move(0, -1);
       }
       if (event.key === "s") {
-        player.move(0, 10);
+        player.move(0, 1);
       }
       if (event.key === "d") {
-        player.move(10, 0);
+        player.move(1, 0);
       }
     });
   }),
-    (this.updateElementPosition = function (element, x, y) {
-      element["targetX"] = x;
-      element["targetY"] = y;
+    (this.updateEntityPosition = function (entity, x, y) {
+      entity.x = x;
+      entity.y = y;
     }),
-    (this.createElement = function (backElement) {
-      let elementInfo = new Map();
-      let color;
+    (this.createEntity = function (backEntity) {
+      newEntity = new Entity(backEntity);
+      newEntity.boardObject = new Graphics();
 
-      elementInfo["name"] = backElement["name"];
-      elementInfo["targetX"] = backElement["x"];
-      elementInfo["targetY"] = backElement["y"];
-      elementInfo["object"] = new Graphics();
+      newEntity.boardObject.beginFill(0xffffff);
 
-      switch (backElement["type"]) {
-        case "player":
-          color =
-            backElement["id"] == player_id
-              ? colors.currentPlayer
-              : colors.players;
-          break;
-        case "obstacle":
-          color = colors.obstacle;
-          break;
-      }
-
-      elementInfo["object"].beginFill(color);
-
-      switch (backElement["shape"]) {
+      switch (newEntity.shape) {
         case "circle":
-          elementInfo["object"].drawCircle(0, 0, backElement["radius"]);
+          newEntity.boardObject.drawCircle(0, 0, newEntity.radius);
           break;
         case "polygon":
-          elementInfo["coords"] = backElement["coords"];
-          elementInfo["object"].drawPolygon(elementInfo["coords"].flat());
+          newEntity.boardObject.drawPolygon(newEntity.coords.flat());
           break;
       }
 
-      elementInfo["object"].endFill();
+      switch (newEntity.category) {
+        case "player":
+          newEntity.boardObject.zIndex = 10;
+          break;
+        case "obstacle":
+          newEntity.boardObject.zIndex = 1;
+          break;
+      }
 
-      elementInfo["object"].on("pointerover", (event) => {
+      newEntity.boardObject.endFill();
+
+      newEntity.boardObject.on("pointerover", (event) => {
         this.updateDebug(
-          elementInfo["name"] +
+          newEntity.name +
             " - " +
             "pos: [" +
-            Math.round(elementInfo["object"].position.x) +
+            Math.round(newEntity.boardObject.position.x) +
             "," +
-            Math.round(elementInfo["object"].position.y) +
+            Math.round(newEntity.boardObject.position.y) +
             "]"
         );
       });
-      elementInfo["object"].on("pointerleave", (event) => {
+      newEntity.boardObject.on("pointerleave", (event) => {
         this.updateDebug("");
       });
-      elementInfo["object"].eventMode = "static";
+      newEntity.boardObject.eventMode = "static";
 
-      return elementInfo;
+      return newEntity;
     }),
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
-    });
+    }),
+    this.updateEntityColor = function (entity, is_colliding){
+      let color;
+      if (is_colliding == true){
+        color = colors.colliding;
+      } else {
+        switch (entity.category) {
+          case "player":
+            color =
+              entity.id == player_id
+                ? colors.currentPlayer
+                : colors.players;
+            break;
+          case "obstacle":
+            color = colors.obstacle;
+            break;
+        }
+      }
+      entity.boardObject.tint = color;
+    }
 };
 
 function getGameSocketUrl(game_id, player_id) {

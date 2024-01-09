@@ -4,7 +4,7 @@ defmodule LambdaGameBackend.GameLauncher do
   use GenServer
 
   # Amount of players needed to start a game
-  @players_needed 10
+  @players_needed 2
 
   # API
   def start_link(_) do
