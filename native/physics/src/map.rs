@@ -148,11 +148,21 @@ impl Entity {
     pub fn move_entity(&mut self) {
         self.position = self.next_position();
     }
+    pub fn revert_move_entity(&mut self) {
+        self.position = self.revert_position();
+    }
 
     pub fn next_position(&mut self) -> Position {
         Position {
             x: self.position.x + self.direction.x * self.speed,
             y: self.position.y + self.direction.y * self.speed,
+        }
+    }
+
+    pub fn revert_position(&mut self) -> Position {
+        Position {
+            x: self.position.x - self.direction.x * self.speed,
+            y: self.position.y - self.direction.y * self.speed,
         }
     }
 
