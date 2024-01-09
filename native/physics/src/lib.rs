@@ -26,7 +26,7 @@ fn add_player(game_state: GameState, player_id: u64) -> GameState {
     // If it does, it resets it to [0,0] position.
     let player = Entity::new_circle(
         player_id,
-        Position { x: 0.0, y: 0.0 },
+        Position { x: 500.0, y: 300.0 },
         40.0,
         15.0,
         map::Category::Player,
