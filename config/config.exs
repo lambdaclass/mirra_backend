@@ -10,25 +10,25 @@ import Config
 # Configures the endpoint
 dispatch = [
   _: [
-    {"/play/:game_id/:player_id", LambdaGameBackend.GameSocketHandler, []},
-    {"/play/:player_id", LambdaGameBackend.SocketHandler, []},
-    {:_, Plug.Cowboy.Handler, {LambdaGameBackendWeb.Endpoint, []}}
+    {"/play/:game_id/:player_id", GameBackend.GameSocketHandler, []},
+    {"/play/:player_id", GameBackend.SocketHandler, []},
+    {:_, Plug.Cowboy.Handler, {GameBackendWeb.Endpoint, []}}
   ]
 ]
 
-config :lambda_game_backend,
-  ecto_repos: [LambdaGameBackend.Repo],
+config :game_backend,
+  ecto_repos: [GameBackend.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :lambda_game_backend, LambdaGameBackendWeb.Endpoint,
+config :game_backend, GameBackendWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
-    formats: [html: LambdaGameBackendWeb.ErrorHTML, json: LambdaGameBackendWeb.ErrorJSON],
+    formats: [html: GameBackendWeb.ErrorHTML, json: GameBackendWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: LambdaGameBackend.PubSub,
+  pubsub_server: GameBackend.PubSub,
   live_view: [signing_salt: "XED/NEZq"],
   http: [dispatch: dispatch]
 
@@ -39,7 +39,7 @@ config :lambda_game_backend, LambdaGameBackendWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :lambda_game_backend, LambdaGameBackend.Mailer, adapter: Swoosh.Adapters.Local
+config :game_backend, GameBackend.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,
