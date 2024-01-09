@@ -10,14 +10,13 @@ pub(crate) fn point_circle_collision(point: &Entity, circle: &Entity) -> bool {
     distance <= circle.radius
 }
 
-/* 
+/*
  * Determines if a collision has occured between a line and a circle
  * If the distance between the center of the circle and the closest point
  * of the line is less than the radius of the circle, a collision has occured
  * Also that closest point should be on the segment
  */
 pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
-    
     // Check if the vertices are inside the circle
     let point_1 = Entity::new_point(0, line.vertices[0]);
     let inside_1 = point_circle_collision(&point_1, circle);
@@ -50,7 +49,7 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
     if !on_line {
         return false;
     };
-    
+
     // Check if the closest point is inside the circle
     point_circle_collision(&closest_point, circle)
 }
@@ -67,10 +66,9 @@ pub(crate) fn circle_circle_collision(circle_1: &Entity, circle_2: &Entity) -> b
 
 /*
  * Determines if a collision has occured between a circle and a polygon
- * 
+ *
  */
 pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> bool {
-    
     // For each line in the polygon, check if there is a collision between the line and the circle
     // If there is a collision, return true
     for current in 0..polygon.vertices.len() {
