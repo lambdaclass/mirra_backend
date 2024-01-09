@@ -46,11 +46,11 @@ fn move_player(game_state: GameState, player_id: u64, x: f64, y: f64) -> GameSta
 #[rustler::nif()]
 fn move_entities(game_state: GameState) -> GameState {
     let mut game_state: GameState = game_state;
-    
+
     for entity in game_state.entities.values_mut() {
         entity.move_entity();
     }
-    
+
     game_state
 }
 

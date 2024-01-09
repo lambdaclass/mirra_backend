@@ -149,7 +149,7 @@ impl Entity {
         self.position = self.next_position();
     }
 
-    pub fn next_position(&mut self) -> Position{
+    pub fn next_position(&mut self) -> Position {
         Position {
             x: self.position.x + self.direction.x * self.speed,
             y: self.position.y + self.direction.y * self.speed,
