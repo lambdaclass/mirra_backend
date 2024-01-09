@@ -20,7 +20,8 @@ export const BoardGame = function () {
     currentPlayer: 0x007cff,
     players: 0x000000,
     obstacle: 0x00aa77,
-    colliding: 0xff0000
+    colliding: 0xff0000,
+    projectile: 0x0000ff,
   };
   let player_id, player;
 
@@ -86,6 +87,9 @@ export const BoardGame = function () {
       if (event.key === "d") {
         player.move(1, 0);
       }
+      if (event.key === "p") {
+        player.attack();
+      }
     });
     document.addEventListener("keyup", function onPress(event) {
       if (event.key === "a") {
@@ -128,6 +132,9 @@ export const BoardGame = function () {
         case "obstacle":
           newEntity.boardObject.zIndex = 1;
           break;
+        case "projectile":
+          newEntity.boardObject.zIndex = 15;
+          break;
       }
 
       newEntity.boardObject.endFill();
@@ -167,6 +174,9 @@ export const BoardGame = function () {
             break;
           case "obstacle":
             color = colors.obstacle;
+            break;
+          case "projectile":
+            color = colors.projectile;
             break;
         }
       }

@@ -12,12 +12,32 @@ export class Player{
     }
     
     createMoveMessage(direction_x, direction_y) {
-        var message = new messages.Direction();
+        var direction = new messages.Direction();
+        direction.setX(direction_x);
+        direction.setY(direction_y);
+
+        var movement = new messages.Move();
+        movement.setDirection(direction);
+
+        var message = new messages.GameAction();
+        message.setMove(movement)
+
+        return message.serializeBinary();
+    }
+
+    attack() {
+        let attackMsg = this.createattackMessage();
+        this.socket.send(attackMsg);
+    }
+
+    createattackMessage() {
+        var skill = "basic";
         
-        message.setX(direction_x);
-        message.setY(direction_y);
-        
-        console.log("Pressed: " + event.key + ". Msg: [" + message.getX() + ", " + message.getY() + "]");
+        var attack = new messages.Attack();
+        attack.setSkill(skill);
+
+        var message = new messages.GameAction();
+        message.setAttack(attack)
 
         return message.serializeBinary();
     }

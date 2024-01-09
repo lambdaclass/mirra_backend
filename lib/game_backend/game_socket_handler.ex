@@ -28,9 +28,16 @@ defmodule GameBackend.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    direction = GameBackend.Protobuf.Direction.decode(message)
 
-    GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y})
+    case GameBackend.Protobuf.GameAction.decode(message) do
+      %{action_type: {:attack, %{skill: skill}}} ->
+        GameUpdater.attack(state.game_pid, state.player_id, skill)
+
+      %{action_type: {:move, %{direction: direction}}} ->
+        GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y})
+
+      _ -> {}
+    end
 
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end

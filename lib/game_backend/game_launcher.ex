@@ -4,7 +4,7 @@ defmodule GameBackend.GameLauncher do
   use GenServer
 
   # Amount of players needed to start a game
-  @players_needed 2
+  @players_needed 1
 
   # API
   def start_link(_) do

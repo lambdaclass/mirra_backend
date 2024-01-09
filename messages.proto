@@ -1,5 +1,8 @@
 syntax = "proto3";
 
+/*
+ * Shared structs
+ */
 message Direction {
   float x = 1;
   float y = 2;
@@ -26,4 +29,22 @@ message Entity {
   bool is_colliding = 8;
   float speed = 9;
   Direction direction = 10;
+}
+
+/*
+ * Player Actions
+ */
+message Move {
+  Direction direction = 1;
+}
+
+message Attack {
+  string skill = 1;
+}
+
+message GameAction {
+  oneof action_type {
+    Move move = 1;
+    Attack attack = 2;
+  }
 }
