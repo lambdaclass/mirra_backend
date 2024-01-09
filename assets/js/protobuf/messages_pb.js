@@ -641,7 +641,8 @@ proto.Entity.toObject = function(includeInstance, msg) {
     verticesList: jspb.Message.toObjectList(msg.getVerticesList(),
     proto.Position.toObject, includeInstance),
     isColliding: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    speed: jspb.Message.getFloatingPointFieldWithDefault(msg, 9, 0.0)
+    speed: jspb.Message.getFloatingPointFieldWithDefault(msg, 9, 0.0),
+    direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -715,6 +716,11 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
     case 9:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setSpeed(value);
+      break;
+    case 10:
+      var value = new proto.Direction;
+      reader.readMessage(value,proto.Direction.deserializeBinaryFromReader);
+      msg.setDirection(value);
       break;
     default:
       reader.skipField();
@@ -808,6 +814,14 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeFloat(
       9,
       f
+    );
+  }
+  f = message.getDirection();
+  if (f != null) {
+    writer.writeMessage(
+      10,
+      f,
+      proto.Direction.serializeBinaryToWriter
     );
   }
 };
@@ -1011,6 +1025,43 @@ proto.Entity.prototype.getSpeed = function() {
  */
 proto.Entity.prototype.setSpeed = function(value) {
   return jspb.Message.setProto3FloatField(this, 9, value);
+};
+
+
+/**
+ * optional Direction direction = 10;
+ * @return {?proto.Direction}
+ */
+proto.Entity.prototype.getDirection = function() {
+  return /** @type{?proto.Direction} */ (
+    jspb.Message.getWrapperField(this, proto.Direction, 10));
+};
+
+
+/**
+ * @param {?proto.Direction|undefined} value
+ * @return {!proto.Entity} returns this
+*/
+proto.Entity.prototype.setDirection = function(value) {
+  return jspb.Message.setWrapperField(this, 10, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.Entity} returns this
+ */
+proto.Entity.prototype.clearDirection = function() {
+  return this.setDirection(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Entity.prototype.hasDirection = function() {
+  return jspb.Message.getField(this, 10) != null;
 };
 
 

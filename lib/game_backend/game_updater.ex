@@ -35,6 +35,8 @@ defmodule GameBackend.GameUpdater do
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
+    state = Physics.move_entities(state)
+
     encoded_entities =
       Enum.map(state.entities, fn {_entity_id, entity} ->
         GameBackend.Protobuf.Entity.encode(%GameBackend.Protobuf.Entity{

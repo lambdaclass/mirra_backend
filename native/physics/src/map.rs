@@ -18,6 +18,12 @@ pub struct Position {
     pub(crate) y: f64,
 }
 
+#[derive(NifMap, Clone, Copy)]
+pub struct Direction {
+    pub(crate) x: f64,
+    pub(crate) y: f64,
+}
+
 #[derive(NifMap, Clone)]
 pub struct Entity {
     pub id: u64,
@@ -27,6 +33,7 @@ pub struct Entity {
     pub vertices: Vec<Position>,
     pub speed: f64,
     pub category: Category,
+    pub direction: Direction,
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
@@ -54,6 +61,7 @@ impl Entity {
             vertices: Vec::new(),
             speed: 0.0,
             category: Category::Obstacle,
+            direction: Direction { x: 0.0, y: 0.0 },
         }
     }
 
@@ -66,6 +74,7 @@ impl Entity {
             vertices,
             speed: 0.0,
             category: Category::Obstacle,
+            direction: Direction { x: 0.0, y: 0.0 },
         }
     }
 
@@ -84,6 +93,7 @@ impl Entity {
             vertices: Vec::new(),
             speed,
             category,
+            direction: Direction { x: 0.0, y: 0.0 },
         }
     }
 
@@ -96,6 +106,7 @@ impl Entity {
             vertices,
             speed: 0.0,
             category,
+            direction: Direction { x: 0.0, y: 0.0 },
         }
     }
 
@@ -134,8 +145,19 @@ impl Entity {
         result
     }
 
-    pub fn move_entity(&mut self, x: f64, y: f64) {
-        self.position.x += x * self.speed;
-        self.position.y += y * self.speed;
+    pub fn move_entity(&mut self) {
+        self.position = self.next_position();
+    }
+
+    pub fn next_position(&mut self) -> Position{
+        Position {
+            x: self.position.x + self.direction.x * self.speed,
+            y: self.position.y + self.direction.y * self.speed,
+        }
+    }
+
+    pub fn set_direction(&mut self, x: f64, y: f64) {
+        self.direction.x = x;
+        self.direction.y = y;
     }
 }
