@@ -1,11 +1,24 @@
 use crate::map::{Entity, Position};
 
+/*
+ * Determines if a collision has occured between a point and a circle
+ * If the distance between the point and the center of the circle is less
+ * than the radius of the circle, a collision has occured
+ */
 pub(crate) fn point_circle_collision(point: &Entity, circle: &Entity) -> bool {
     let distance = calculate_distance(&point.position, &circle.position);
     distance <= circle.radius
 }
 
+/* 
+ * Determines if a collision has occured between a line and a circle
+ * If the distance between the center of the circle and the closest point
+ * of the line is less than the radius of the circle, a collision has occured
+ * Also that closest point should be on the segment
+ */
 pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
+    
+    // Check if the vertices are inside the circle
     let point_1 = Entity::new_point(0, line.vertices[0]);
     let inside_1 = point_circle_collision(&point_1, circle);
     let point_2 = Entity::new_point(0, line.vertices[1]);
@@ -14,6 +27,7 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
         return true;
     };
 
+    // Find the closest point on the line to the circle
     let dist_x = point_1.position.x - point_2.position.x;
     let dist_y = point_1.position.y - point_2.position.y;
     let line_length = ((dist_x * dist_x) + (dist_y * dist_y)).sqrt();
@@ -31,25 +45,34 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
         },
     );
 
+    // Check if the closest point is on the line
     let on_line = line_point_colision(line, &closest_point);
     if !on_line {
         return false;
     };
-
-    let dist_x = closest_point.position.x - circle.position.x;
-    let dist_y = closest_point.position.y - circle.position.y;
-
-    let distance = ((dist_x * dist_x) + (dist_y * dist_y)).sqrt();
-
-    distance <= circle.radius
+    
+    // Check if the closest point is inside the circle
+    point_circle_collision(closest_point, circle)
 }
 
+/*
+ * Determines if a collision has occured between two circles
+ * If the distance between the centers of the circles is less than
+ * the sum of the radius, a collision has occured
+ */
 pub(crate) fn circle_circle_collision(circle_1: &Entity, circle_2: &Entity) -> bool {
     let distance = calculate_distance(&circle_1.position, &circle_2.position);
     distance <= circle_1.radius + circle_2.radius
 }
 
+/*
+ * Determines if a collision has occured between a circle and a polygon
+ * 
+ */
 pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> bool {
+    
+    // For each line in the polygon, check if there is a collision between the line and the circle
+    // If there is a collision, return true
     for current in 0..polygon.vertices.len() {
         let mut next = current + 1;
         if next == polygon.vertices.len() {
@@ -65,9 +88,18 @@ pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> boo
         };
     }
 
+    // Check if the center of the circle is inside the polygon
+    // If you doesn't want to check if the circle is inside the polygon,
+    // return false instead of calling point_polygon_colision
     point_polygon_colision(circle, polygon)
 }
 
+/*
+ * Determines if a collision has occured between a line and a polygon
+ * If the distance between vertex 1 and the point and vertex 2 and the point
+ * is equal (with a little bufer) to the distance between vertex 1 and vertex 2,
+ * a collision has occured
+ */
 pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
     let d1 = calculate_distance(&point.position, &line.vertices[0]);
     let d2 = calculate_distance(&point.position, &line.vertices[1]);
@@ -78,6 +110,9 @@ pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
     d1 + d2 >= line_length - buffer && d1 + d2 <= line_length + buffer
 }
 
+/*
+ * Determines if a collision has occured between a point and a polygon
+ */
 pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
     let mut collision = false;
     for current in 0..polygon.vertices.len() {
@@ -103,6 +138,9 @@ pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
     collision
 }
 
+/*
+ * Calculates the distance between two positions
+ */
 pub(crate) fn calculate_distance(a: &Position, b: &Position) -> f64 {
     let x = a.x - b.x;
     let y = a.y - b.y;
