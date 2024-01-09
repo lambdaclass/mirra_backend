@@ -153,6 +153,9 @@ export const BoardGame = function () {
 
       newEntity.boardObject.endFill();
 
+      newEntity.boardObject.position.x = newEntity.x;
+      newEntity.boardObject.position.y = newEntity.y;
+
       newEntity.boardObject.on("pointerover", (event) => {
         this.updateDebug(
           newEntity.name +
