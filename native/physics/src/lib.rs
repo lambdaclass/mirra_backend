@@ -69,20 +69,10 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
 }
 
 #[rustler::nif()]
-fn add_polygon(game_state: GameState) -> GameState {
+fn add_polygon(game_state: GameState, id: u64, vertices: Vec<Position>) -> GameState {
     let mut game_state: GameState = game_state;
 
-    let polygon = Entity::new_polygon(
-        100,
-        vec![
-            Position { x: 200.0, y: 200.0 },
-            Position { x: 400.0, y: 200.0 },
-            Position { x: 450.0, y: 300.0 },
-            Position { x: 300.0, y: 400.0 },
-            Position { x: 100.0, y: 300.0 },
-        ],
-        map::Category::Obstacle,
-    );
+    let polygon = Entity::new_polygon(id, vertices, map::Category::Obstacle);
     game_state.entities.insert(polygon.id, polygon);
     game_state
 }

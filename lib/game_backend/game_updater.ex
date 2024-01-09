@@ -22,11 +22,106 @@ defmodule GameBackend.GameUpdater do
   def init(%{players: players}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
 
+    left_wall_vertices = [
+      %GameBackend.Protobuf.Position{
+        x: 000.0,
+        y: 000.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 000.0,
+        y: 600.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 50.0,
+        y: 600.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 100.0,
+        y: 300.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 50.0,
+        y: 0.0
+      }
+    ]
+
+    right_wall_vertices = [
+      %GameBackend.Protobuf.Position{
+        x: 1000.0,
+        y: 600.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 1000.0,
+        y: 000.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 950.0,
+        y: 0.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 900.0,
+        y: 300.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 950.0,
+        y: 600.0
+      }
+    ]
+
+    bottom_wall_vertices = [
+      %GameBackend.Protobuf.Position{
+        x: 000.0,
+        y: 600.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 1000.0,
+        y: 600.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 1000.0,
+        y: 550.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 500.0,
+        y: 500.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 000.0,
+        y: 550.0
+      }
+    ]
+
+    top_wall_vertices = [
+      %GameBackend.Protobuf.Position{
+        x: 000.0,
+        y: 000.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 1000.0,
+        y: 000.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 1000.0,
+        y: 50.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 500.0,
+        y: 100.0
+      },
+      %GameBackend.Protobuf.Position{
+        x: 000.0,
+        y: 50.0
+      }
+    ]
+
     state =
       Enum.reduce(players, Physics.new_game(game_id), fn {player_id, _client_id}, state ->
         Physics.add_player(state, String.to_integer(player_id))
       end)
-      |> Physics.add_polygon()
+      |> Physics.add_polygon(100, left_wall_vertices)
+      |> Physics.add_polygon(101, bottom_wall_vertices)
+      |> Physics.add_polygon(102, right_wall_vertices)
+      |> Physics.add_polygon(103, top_wall_vertices)
 
     Process.send_after(self(), :update_game, @game_tick)
     {:ok, state}
