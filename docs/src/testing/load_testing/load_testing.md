@@ -140,7 +140,7 @@ cat <<EOF > ~/.env
 PHX_HOST=
 PHX_SERVER=true
 SECRET_KEY_BASE=
-DATABASE_URL=ecto://postgres:postgrespassword@localhost/dark_worlds_server
+DATABASE_URL=ecto://postgres:postgrespassword@localhost/game_backend
 EOF
 ```
    And then fill it. Lastly after that you also have to export those variables with:

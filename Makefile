@@ -16,8 +16,8 @@ stop:
 
 generate-ex-protos:
 	protoc \
-		--elixir_out=lib/lambda_game_backend/protobuf \
-		--elixir_opt=package_prefix=lambda_game_backend.protobuf \
+		--elixir_out=lib/game_backend/protobuf \
+		--elixir_opt=package_prefix=game_backend.protobuf \
 		messages.proto
 
 generate-js-protos:
@@ -27,11 +27,11 @@ generate-protos: generate-ex-protos generate-js-protos
 
 format:
 	mix format --check-formatted
-	cd native/state_manager_backend && cargo fmt --all
+	cd native/physics && cargo fmt --all
 
 lints:
 	mix credo
-	cd native/state_manager_backend && cargo clippy --all-targets -- -D warnings
+	cd native/physics && cargo clippy --all-targets -- -D warnings
 
 check: format lints
 	mix test

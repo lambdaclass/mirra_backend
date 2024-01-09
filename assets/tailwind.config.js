@@ -8,8 +8,8 @@ const path = require("path")
 module.exports = {
   content: [
     "./js/**/*.js",
-    "../lib/lambda_game_backend_web.ex",
-    "../lib/lambda_game_backend_web/**/*.*ex"
+    "../lib/game_backend_web.ex",
+    "../lib/game_backend_web/**/*.*ex"
   ],
   theme: {
     extend: {

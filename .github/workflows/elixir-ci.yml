@@ -27,7 +27,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: lambda_game_backend_test
+          POSTGRES_DB: game_backend_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -58,7 +58,7 @@ jobs:
       - name: Check Elixir Formatting
         run: mix format --check-formatted
       - name: Check Rust Formatting
-        run: cargo fmt --manifest-path native/state_manager_backend/Cargo.toml --all -- --check 
+        run: cargo fmt --manifest-path native/physics/Cargo.toml --all -- --check 
       - name: Compiles without warnings
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests

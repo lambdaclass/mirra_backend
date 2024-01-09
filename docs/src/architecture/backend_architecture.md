@@ -130,7 +130,7 @@ that matches with `:game_tick`.
 You'll notice the `websocket_init` function on the `PlayWebSocket` process does (among other things) the following:
 
 ```elixir
-:ok = Phoenix.PubSub.subscribe(DarkWorldsServer.PubSub, "game_play_#{game_id}")
+:ok = Phoenix.PubSub.subscribe(GameBackend.PubSub, "game_play_#{game_id}")
 ```
 
 This allows the socket processes to receive state updates they can then relay to the player.
@@ -197,7 +197,7 @@ def move_player(_a, _b, _c), do: :erlang.nif_error(:nif_not_loaded)
 The magic that makes this call Rust underneath is all inside this `use` declaration
 
 ```elixir
-use Rustler, otp_app: :dark_worlds_server, crate: "gamestate"
+use Rustler, otp_app: :game_backend, crate: "gamestate"
 ```
 
 Every Rust Struct has a corresponding Elixir struct that it maps to; calling the Elixir functions is transparent to someone using the API.

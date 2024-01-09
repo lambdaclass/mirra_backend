@@ -1,8 +1,8 @@
-defmodule StateManagerBackendTest do
+defmodule PhysicsTest do
   use ExUnit.Case
-  doctest StateManagerBackend
+  doctest Physics
 
   test "sum" do
-    assert StateManagerBackend.add(1, 2) == 3
+    assert Physics.add(1, 2) == 3
   end
 end

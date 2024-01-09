@@ -1,5 +1,5 @@
-defmodule LambdaGameBackendWeb.PageControllerTest do
-  use LambdaGameBackendWeb.ConnCase
+defmodule GameBackendWeb.PageControllerTest do
+  use GameBackendWeb.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
