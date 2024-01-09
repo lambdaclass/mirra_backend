@@ -12,19 +12,19 @@ pub struct Polygon {
     pub vertices: Vec<Position>,
 }
 
-#[derive(NifMap, Clone, Copy)]
+#[derive(NifMap, Clone, Copy, Debug)]
 pub struct Position {
     pub(crate) x: f64,
     pub(crate) y: f64,
 }
 
-#[derive(NifMap, Clone, Copy)]
+#[derive(NifMap, Clone, Copy, Debug)]
 pub struct Direction {
     pub(crate) x: f64,
     pub(crate) y: f64,
 }
 
-#[derive(NifMap, Clone)]
+#[derive(NifMap, Clone, Debug)]
 pub struct Entity {
     pub id: u64,
     pub shape: Shape,
@@ -36,7 +36,7 @@ pub struct Entity {
     pub direction: Direction,
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
+#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq, Debug)]
 pub enum Shape {
     Circle,
     Polygon,
@@ -44,7 +44,7 @@ pub enum Shape {
     Line,
 }
 
-#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
+#[derive(Deserialize, NifTaggedEnum, Clone, PartialEq, Debug)]
 pub enum Category {
     Player,
     Projectile,
