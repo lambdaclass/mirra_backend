@@ -80,7 +80,6 @@ defmodule GameBackend.GameUpdater do
   end
 
   def handle_call({:move, player_id, _skill}, _from, state) do
-
     # state = Physics.add_projetile(state, id, position, size, speed, direction)
     current_player = Map.get(state.entities, String.to_integer(player_id))
 

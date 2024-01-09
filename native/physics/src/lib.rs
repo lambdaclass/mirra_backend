@@ -20,7 +20,7 @@ fn new_game(game_id: String) -> GameState {
 }
 
 #[rustler::nif()]
-fn add_player(game_state: GameState, player_id: u64) -> GameState {
+fn add_player(game_state: GameState, _player_id: u64) -> GameState {
     let mut game_state: GameState = game_state;
     // Check here if the player doesn't exist.
     // If it does, it resets it to [0,0] position.
@@ -36,7 +36,13 @@ fn add_player(game_state: GameState, player_id: u64) -> GameState {
 }
 
 #[rustler::nif()]
-fn add_projectile(game_state: GameState, position: Position, size: f64, speed: f64, direction: Direction) -> GameState {
+fn add_projectile(
+    game_state: GameState,
+    position: Position,
+    size: f64,
+    speed: f64,
+    _direction: Direction,
+) -> GameState {
     let mut game_state: GameState = game_state;
     // Check here if the player doesn't exist.
     // If it does, it resets it to [0,0] position.
