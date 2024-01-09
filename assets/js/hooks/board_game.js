@@ -105,6 +105,20 @@ export const BoardGame = function () {
         player.move(0, 0);
       }
     });
+    document.addEventListener("keyup", function onPress(event) {
+      if (event.key === "a") {
+        player.move(0, 0);
+      }
+      if (event.key === "w") {
+        player.move(0, 0);
+      }
+      if (event.key === "s") {
+        player.move(0, 0);
+      }
+      if (event.key === "d") {
+        player.move(0, 0);
+      }
+    });
   }),
     (this.updateEntityPosition = function (entity, x, y) {
       entity.x = x;
