@@ -52,7 +52,7 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
     };
     
     // Check if the closest point is inside the circle
-    point_circle_collision(closest_point, circle)
+    point_circle_collision(&closest_point, circle)
 }
 
 /*
