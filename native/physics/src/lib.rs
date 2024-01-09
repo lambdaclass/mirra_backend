@@ -6,6 +6,8 @@ mod map;
 
 use std::collections::HashMap;
 
+use map::Category;
+
 use crate::game_state::GameState;
 use crate::map::{Entity, Position};
 
@@ -44,11 +46,19 @@ fn move_player(game_state: GameState, player_id: u64, x: f64, y: f64) -> GameSta
 }
 
 #[rustler::nif()]
-fn move_entities(game_state: GameState) -> GameState {
+fn move_entities(game_state: GameState, obstacles: Vec<Entity>) -> GameState {
     let mut game_state: GameState = game_state;
-
     for entity in game_state.entities.values_mut() {
+        // Avoid calculation for entities with no speed
+        if entity.speed == 0.0 {
+            continue;
+        }
         entity.move_entity();
+
+        // If a Player collides with an obstacle, rollback the move
+        if entity.category == Category::Player && !entity.collides_with(&obstacles).is_empty() {
+            entity.revert_move_entity();
+        }
     }
 
     game_state
@@ -62,7 +72,7 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
     let ent = entities.into_values().collect();
 
     if entity.shape == map::Shape::Circle {
-        return !entity.collides_with(ent).is_empty();
+        return !entity.collides_with(&ent).is_empty();
     }
 
     false

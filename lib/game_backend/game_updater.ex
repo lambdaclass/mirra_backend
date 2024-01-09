@@ -130,7 +130,12 @@ defmodule GameBackend.GameUpdater do
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
-    state = Physics.move_entities(state)
+    obstacles =
+      state.entities
+      |> Map.values()
+      |> Enum.filter(fn entity -> entity.category == :obstacle end)
+
+    state = Physics.move_entities(state, obstacles)
 
     encoded_entities =
       Enum.map(state.entities, fn {_entity_id, entity} ->
