@@ -39,12 +39,22 @@ fn add_player(game_state: GameState, player_id: u64) -> GameState {
 fn move_player(game_state: GameState, player_id: u64, x: f64, y: f64) -> GameState {
     let mut game_state: GameState = game_state;
     let entity = game_state.entities.get_mut(&player_id).unwrap();
-    entity.move_entity(x, y);
+    entity.set_direction(x, y);
     game_state
 }
 
 #[rustler::nif()]
+fn move_entities(game_state: GameState) -> GameState {
+    let mut game_state: GameState = game_state;
 
+    for entity in game_state.entities.values_mut() {
+        entity.move_entity();
+    }
+
+    game_state
+}
+
+#[rustler::nif()]
 /// Check players inside the player_id radius
 /// Return a list of the players id inside the radius Vec<player_id>
 fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
@@ -85,6 +95,7 @@ rustler::init!(
         new_game,
         add_player,
         check_collisions,
-        add_polygon
+        add_polygon,
+        move_entities
     ]
 );

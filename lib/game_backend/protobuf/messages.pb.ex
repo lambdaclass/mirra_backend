@@ -53,4 +53,5 @@ defmodule GameBackend.Protobuf.Entity do
   field(:vertices, 7, repeated: true, type: GameBackend.Protobuf.Position)
   field(:is_colliding, 8, type: :bool, json_name: "isColliding")
   field(:speed, 9, type: :float)
+  field(:direction, 10, type: GameBackend.Protobuf.Direction)
 end

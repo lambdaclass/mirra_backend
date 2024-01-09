@@ -25,4 +25,5 @@ message Entity {
   repeated Position vertices = 7;
   bool is_colliding = 8;
   float speed = 9;
+  Direction direction = 10;
 }
