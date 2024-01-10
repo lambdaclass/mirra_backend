@@ -30,7 +30,7 @@ fn add_player(game_state: GameState, _player_id: u64) -> GameState {
         game_state.next_id(),
         Position { x: 500.0, y: 300.0 },
         40.0,
-        5.0,
+        15.0,
         map::Category::Player,
     );
     game_state.entities.insert(player.id, player);
