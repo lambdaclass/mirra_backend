@@ -1,17 +1,12 @@
-.PHONY: deps run start stop generate-ex-protos generate-js-protos generate-protos format lints check
-
-run:
-	iex -S mix phx.server
+.PHONY: deps db down generate-ex-protos format lints check
 
 deps:
 	mix deps.get
-	cd assets && npm install
 
-start:
+db:
 	docker-compose up -d
-	iex -S mix phx.server
 
-stop:
+down:
 	docker-compose down
 
 generate-ex-protos:
@@ -19,11 +14,6 @@ generate-ex-protos:
 		--elixir_out=lib/game_backend/protobuf \
 		--elixir_opt=package_prefix=game_backend.protobuf \
 		messages.proto
-
-generate-js-protos:
-	protoc messages.proto --js_out=import_style=commonjs:assets/js/protobuf
-
-generate-protos: generate-ex-protos generate-js-protos
 
 format:
 	mix format --check-formatted
