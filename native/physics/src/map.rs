@@ -18,12 +18,6 @@ pub struct Position {
     pub(crate) y: f64,
 }
 
-impl Position {
-    pub fn new(x: f64, y: f64) -> Position {
-        Position { x, y }
-    }
-}
-
 #[derive(NifMap, Clone, Copy, Debug)]
 pub struct Direction {
     pub(crate) x: f64,
@@ -189,18 +183,18 @@ impl Entity {
                 let center_dist = ((self.position.x - entity.position.x).powi(2)
                     + (self.position.y - entity.position.y).powi(2))
                 .sqrt();
-                return self.radius > center_dist + entity.radius;
+                self.radius > center_dist + entity.radius
             }
             Shape::Polygon | Shape::Line => {
                 for vertice in &self.vertices {
-                    if !is_vertice_inside_circle(&vertice, &self.position, self.radius) {
+                    if !is_vertice_inside_circle(vertice, &self.position, self.radius) {
                         return false;
                     }
                 }
-                return true;
+                true
             }
             Shape::Point => {
-                return is_vertice_inside_circle(&entity.position, &self.position, self.radius)
+                is_vertice_inside_circle(&entity.position, &self.position, self.radius)
             }
         }
     }

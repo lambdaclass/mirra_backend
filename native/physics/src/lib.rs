@@ -81,7 +81,7 @@ fn move_entities(game_state: GameState, obstacles: Vec<Entity>) -> GameState {
         // If a Player collides with an obstacle or moves outside the map, rollback the move
         if entity.category == Category::Player
             && (!entity.collides_with(&obstacles).is_empty()
-                || !game_state.map.is_inside_map(&entity))
+                || !game_state.map.is_inside_map(entity))
         {
             entity.revert_move_entity();
         }
