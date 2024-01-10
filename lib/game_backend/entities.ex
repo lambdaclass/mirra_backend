@@ -1,4 +1,7 @@
 defmodule GameBackend.Entities do
+  @moduledoc """
+  Entities manager.
+  """
 
   def new_player(id) do
     %{
@@ -52,7 +55,7 @@ defmodule GameBackend.Entities do
             y: vertex.y
           }
         end),
-      is_colliding: entity.is_colliding,
+      is_colliding: entity.is_colliding
     })
   end
 end

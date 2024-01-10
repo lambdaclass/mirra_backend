@@ -7,7 +7,7 @@ mod map;
 use std::collections::HashMap;
 
 use crate::game_state::GameState;
-use crate::map::{Direction, Entity, Position};
+use crate::map::Entity;
 
 #[rustler::nif()]
 fn add(a: i64, b: i64) -> i64 {
@@ -54,11 +54,5 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
 
 rustler::init!(
     "Elixir.Physics",
-    [
-        add,
-        move_player,
-        new_game,
-        check_collisions,
-        move_entities
-    ]
+    [add, move_player, new_game, check_collisions, move_entities]
 );

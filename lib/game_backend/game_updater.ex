@@ -30,14 +30,15 @@ defmodule GameBackend.GameUpdater do
 
     state = Physics.new_game(game_id) |> Map.put(:last_id, 0)
 
-    state = Enum.reduce(players, state, fn  {_player_id, _client_id}, state ->
-      last_id = state.last_id + 1
-      entities = state.entities |> Map.put(last_id, Entities.new_player(last_id))
+    state =
+      Enum.reduce(players, state, fn {_player_id, _client_id}, state ->
+        last_id = state.last_id + 1
+        entities = state.entities |> Map.put(last_id, Entities.new_player(last_id))
 
-      state
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:entities, entities)
-    end)
+        state
+        |> Map.put(:last_id, last_id)
+        |> Map.put(:entities, entities)
+      end)
 
     Process.send_after(self(), :update_game, 5_000)
     {:ok, state}
@@ -69,10 +70,13 @@ defmodule GameBackend.GameUpdater do
     current_player = Map.get(state.entities, String.to_integer(player_id))
 
     last_id = state.last_id + 1
-    entities = state.entities
-    |> Map.put(last_id, Entities.new_projectile(last_id, current_player.position, current_player.direction))
 
-    state = state
+    entities =
+      state.entities
+      |> Map.put(last_id, Entities.new_projectile(last_id, current_player.position, current_player.direction))
+
+    state =
+      state
       |> Map.put(:last_id, last_id)
       |> Map.put(:entities, entities)
 
