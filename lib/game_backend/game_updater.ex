@@ -10,12 +10,16 @@ defmodule GameBackend.GameUpdater do
   @game_tick 30
 
   # API
-  def move(game_pid, player_id, new_position) do
-    GenServer.call(game_pid, {:move, player_id, new_position})
-  end
-
   def join(game_pid, player_id) do
     GenServer.call(game_pid, {:join, player_id})
+  end
+
+  def move(game_pid, player_id, direction) do
+    GenServer.call(game_pid, {:move, player_id, direction})
+  end
+
+  def attack(game_pid, player_id, skill) do
+    GenServer.call(game_pid, {:attack, player_id, skill})
   end
 
   # Callbacks
@@ -69,8 +73,16 @@ defmodule GameBackend.GameUpdater do
     {:reply, :ok, Physics.add_player(state, String.to_integer(player_id))}
   end
 
-  def handle_call({:move, player_id, _new_position = {x, y}}, _from, state) do
+  def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
     state = Physics.move_player(state, player_id |> String.to_integer(), x, y)
+
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:attack, player_id, _skill}, _from, state) do
+    current_player = Map.get(state.entities, String.to_integer(player_id))
+
+    state = Physics.add_projectile(state, current_player.position, 10.0, 10.0, current_player.direction)
 
     {:reply, :ok, state}
   end
