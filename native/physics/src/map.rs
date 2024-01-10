@@ -18,6 +18,12 @@ pub struct Position {
     pub(crate) y: f64,
 }
 
+impl Position {
+    pub fn new(x: f64, y: f64) -> Position {
+        Position { x, y }
+    }
+}
+
 #[derive(NifMap, Clone, Copy, Debug)]
 pub struct Direction {
     pub(crate) x: f64,
@@ -49,6 +55,7 @@ pub enum Category {
     Player,
     Projectile,
     Obstacle,
+    Map,
 }
 
 impl Entity {
@@ -170,4 +177,41 @@ impl Entity {
         self.direction.x = x;
         self.direction.y = y;
     }
+
+    pub fn is_inside_map(&self, entity: &Entity) -> bool {
+        // Todo Change to return errors
+        assert!(self.category == Category::Map);
+        // We assume that the map has a circle form
+        assert!(self.shape == Shape::Circle);
+
+        match entity.shape {
+            Shape::Circle => {
+                let center_dist = ((self.position.x - entity.position.x).powi(2)
+                    + (self.position.y - entity.position.y).powi(2))
+                .sqrt();
+                return self.radius > center_dist + entity.radius;
+            }
+            Shape::Polygon | Shape::Line => {
+                for vertice in &self.vertices {
+                    if !is_vertice_inside_circle(&vertice, &self.position, self.radius) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            Shape::Point => {
+                return is_vertice_inside_circle(&entity.position, &self.position, self.radius)
+            }
+        }
+    }
+}
+
+pub(crate) fn is_vertice_inside_circle(
+    vertice: &Position,
+    circle_center: &Position,
+    circle_radius: f64,
+) -> bool {
+    let circle_center_dist =
+        ((vertice.x - circle_center.x).powi(2) + (vertice.y - circle_center.y).powi(2)).sqrt();
+    circle_center_dist < circle_radius
 }

@@ -17,20 +17,20 @@ fn add(a: i64, b: i64) -> i64 {
 }
 
 #[rustler::nif()]
-fn new_game(game_id: String) -> GameState {
-    GameState::new(game_id)
+fn new_game(game_id: String, map: Entity) -> GameState {
+    GameState::new(game_id, map)
 }
 
 #[rustler::nif()]
 fn add_player(game_state: GameState, _player_id: u64) -> GameState {
     let mut game_state: GameState = game_state;
     // Check here if the player doesn't exist.
-    // If it does, it resets it to [0,0] position.
+    // If it does, it resets it to [500,300] position.
     let player = Entity::new_circle(
         game_state.next_id(),
         Position { x: 500.0, y: 300.0 },
         40.0,
-        15.0,
+        5.0,
         map::Category::Player,
     );
     game_state.entities.insert(player.id, player);
@@ -78,8 +78,11 @@ fn move_entities(game_state: GameState, obstacles: Vec<Entity>) -> GameState {
         }
         entity.move_entity();
 
-        // If a Player collides with an obstacle, rollback the move
-        if entity.category == Category::Player && !entity.collides_with(&obstacles).is_empty() {
+        // If a Player collides with an obstacle or moves outside the map, rollback the move
+        if entity.category == Category::Player
+            && (!entity.collides_with(&obstacles).is_empty()
+                || !game_state.map.is_inside_map(&entity))
+        {
             entity.revert_move_entity();
         }
     }

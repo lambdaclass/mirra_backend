@@ -8,14 +8,16 @@ pub struct GameState {
     pub(crate) game_id: String,
     pub(crate) entities: HashMap<u64, Entity>,
     pub(crate) last_id: u64,
+    pub(crate) map: Entity,
 }
 
 impl GameState {
-    pub fn new(game_id: String) -> GameState {
+    pub fn new(game_id: String, map: Entity) -> GameState {
         GameState {
             game_id,
             entities: HashMap::new(),
             last_id: 0,
+            map,
         }
     }
 
