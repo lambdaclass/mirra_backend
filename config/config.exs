@@ -7,7 +7,6 @@
 # General application configuration
 import Config
 
-# Ask if I should delete this.
 config :game_backend,
   ecto_repos: [GameBackend.Repo],
   generators: [timestamp_type: :utc_datetime]

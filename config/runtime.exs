@@ -7,7 +7,6 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 # The block below contains prod specific runtime configuration.
 
-# Should i delete this?
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

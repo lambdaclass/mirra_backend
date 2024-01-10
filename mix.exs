@@ -7,6 +7,7 @@ defmodule GameBackend.MixProject do
       version: "0.1.0",
       elixir: "~> 1.15",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps()
     ]
   end
@@ -14,8 +15,7 @@ defmodule GameBackend.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
-      # mod: {GameBackend.Application, []}
+      extra_applications: [:logger]
     ]
   end
 
@@ -30,6 +30,15 @@ defmodule GameBackend.MixProject do
       {:protobuf, "~> 0.12.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:exbase58, "~> 1.0.2"}
+    ]
+  end
+
+  defp aliases do
+    [
+      setup: ["deps.get", "ecto.setup"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

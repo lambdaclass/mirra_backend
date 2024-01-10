@@ -1,6 +1,5 @@
 import Config
 
-# Should I delete this?
 # Configure your database
 config :game_backend, GameBackend.Repo,
   username: "postgres",
