@@ -193,9 +193,7 @@ impl Entity {
                 }
                 true
             }
-            Shape::Point => {
-                is_vertice_inside_circle(&entity.position, &self.position, self.radius)
-            }
+            Shape::Point => is_vertice_inside_circle(&entity.position, &self.position, self.radius),
         }
     }
 }
