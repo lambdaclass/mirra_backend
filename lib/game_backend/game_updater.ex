@@ -19,7 +19,7 @@ defmodule GameBackend.GameUpdater do
   end
 
   def attack(game_pid, player_id, skill) do
-    GenServer.call(game_pid, {:move, player_id, skill})
+    GenServer.call(game_pid, {:attack, player_id, skill})
   end
 
   # Callbacks
@@ -79,8 +79,7 @@ defmodule GameBackend.GameUpdater do
     {:reply, :ok, state}
   end
 
-  def handle_call({:move, player_id, _skill}, _from, state) do
-    # state = Physics.add_projetile(state, id, position, size, speed, direction)
+  def handle_call({:attack, player_id, _skill}, _from, state) do
     current_player = Map.get(state.entities, String.to_integer(player_id))
 
     state = Physics.add_projectile(state, current_player.position, 10.0, 10.0, current_player.direction)
