@@ -5,11 +5,11 @@ services:
     container_name: server_game_backend_db
     image: postgres:16.1
     ports:
-      - 127.0.0.1:5432:5432
+      - 127.0.0.1:5433:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=game_backend_dev
+      - POSTGRES_DB=server_game_backend_dev
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - server_game_backend_data:/var/lib/postgresql/data/

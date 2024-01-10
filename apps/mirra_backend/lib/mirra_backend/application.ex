@@ -1,4 +1,4 @@
-defmodule GameBackend.Application do
+defmodule MirraBackend.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -8,23 +8,23 @@ defmodule GameBackend.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      GameBackendWeb.Telemetry,
-      GameBackend.Repo,
-      {DNSCluster, query: Application.get_env(:game_backend, :dns_cluster_query) || :ignore},
-      {Phoenix.PubSub, name: GameBackend.PubSub},
+      MirraBackendWeb.Telemetry,
+      MirraBackend.Repo,
+      {DNSCluster, query: Application.get_env(:mirra_backend, :dns_cluster_query) || :ignore},
+      {Phoenix.PubSub, name: MirraBackend.PubSub},
       # Start the Finch HTTP client for sending emails
-      {Finch, name: GameBackend.Finch},
+      {Finch, name: MirraBackend.Finch},
       # Start game launcher genserver
       GameBackend.GameLauncher,
-      # Start a worker by calling: GameBackend.Worker.start_link(arg)
-      # {GameBackend.Worker, arg},
+      # Start a worker by calling: MirraBackend.Worker.start_link(arg)
+      # {MirraBackend.Worker, arg},
       # Start to serve requests, typically the last entry
-      GameBackendWeb.Endpoint
+      MirraBackendWeb.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GameBackend.Supervisor]
+    opts = [strategy: :one_for_one, name: MirraBackend.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
@@ -32,7 +32,7 @@ defmodule GameBackend.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    GameBackendWeb.Endpoint.config_change(changed, removed)
+    MirraBackendWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 end

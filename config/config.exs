@@ -1,3 +1,12 @@
+# This file is responsible for configuring your umbrella
+# and **all applications** and their dependencies with the
+# help of the Config module.
+#
+# Note that all applications in your umbrella share the
+# same configuration and dependencies, which is why they
+# all use the same configuration file. If you want different
+# configurations or dependencies per app, it is best to
+# move said applications out of the umbrella.
 # This file is responsible for configuring your application
 # and its dependencies with the aid of the Config module.
 #
@@ -7,30 +16,20 @@
 # General application configuration
 import Config
 
-# Configures the endpoint
-dispatch = [
-  _: [
-    {"/play/:game_id/:player_id", GameBackend.GameSocketHandler, []},
-    {"/play/:player_id", GameBackend.SocketHandler, []},
-    {:_, Plug.Cowboy.Handler, {GameBackendWeb.Endpoint, []}}
-  ]
-]
-
-config :game_backend,
-  ecto_repos: [GameBackend.Repo],
+config :mirra_backend,
+  ecto_repos: [MirraBackend.Repo],
   generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
-config :game_backend, GameBackendWeb.Endpoint,
+config :mirra_backend, MirraBackendWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
-    formats: [html: GameBackendWeb.ErrorHTML, json: GameBackendWeb.ErrorJSON],
+    formats: [json: MirraBackendWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: GameBackend.PubSub,
-  live_view: [signing_salt: "XED/NEZq"],
-  http: [dispatch: dispatch]
+  pubsub_server: MirraBackend.PubSub,
+  live_view: [signing_salt: "DPoLmyCL"]
 
 # Configures the mailer
 #
@@ -39,29 +38,7 @@ config :game_backend, GameBackendWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :game_backend, GameBackend.Mailer, adapter: Swoosh.Adapters.Local
-
-# Configure esbuild (the version is required)
-config :esbuild,
-  version: "0.17.11",
-  default: [
-    args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
-  ]
-
-# Configure tailwind (the version is required)
-config :tailwind,
-  version: "3.3.2",
-  default: [
-    args: ~w(
-      --config=tailwind.config.js
-      --input=css/app.css
-      --output=../priv/static/assets/app.css
-    ),
-    cd: Path.expand("../assets", __DIR__)
-  ]
+config :mirra_backend, MirraBackend.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -74,3 +51,11 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+# Sample configuration:
+#
+#     config :logger, :console,
+#       level: :info,
+#       format: "$date $time [$level] $metadata$message\n",
+#       metadata: [:user_id]
+#
