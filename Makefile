@@ -26,7 +26,7 @@ generate-js-protos:
 generate-protos: generate-ex-protos generate-js-protos
 
 format:
-	mix format --check-formatted
+	mix format
 	cd native/physics && cargo fmt --all
 
 lints:

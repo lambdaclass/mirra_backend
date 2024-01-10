@@ -13,21 +13,30 @@ function Entity({ id, name, shape, category, x, y, coords, radius }) {
 }
 
 export const BoardGame = function () {
-  const easing = 0.2;
+  const easing = 0.4;
   const entities = new Map();
   const colors = {
     board: 0xb5b8c8,
     currentPlayer: 0x007cff,
     players: 0x000000,
     obstacle: 0x00aa77,
-    colliding: 0xff0000
+    colliding: 0xff0000,
+    projectile: 0x0000ff,
   };
   let player_id, player;
 
+  let movementKeys = {
+    W: { state: false, direction: { x: 0, y: -1 } },
+    A: { state: false, direction: { x: -1, y: 0 } },
+    S: { state: false, direction: { x: 0, y: 1 } },
+    D: { state: false, direction: { x: 1, y: 0 } },
+  };
+
   (this.mounted = function () {
-    let game_id = document.getElementById("board_game").dataset.gameId
-    let player_id = document.getElementById("board_game").dataset.playerId
-    let player = new Player(getGameSocketUrl(game_id, player_id))
+    let _this = this;
+    let game_id = document.getElementById("board_game").dataset.gameId;
+    let player_id = document.getElementById("board_game").dataset.playerId;
+    let player = new Player(getGameSocketUrl(game_id, player_id));
 
     const app = new Application({
       width: document.getElementById("board_game").dataset.boardWidth,
@@ -41,6 +50,7 @@ export const BoardGame = function () {
     document.getElementById("board_container").appendChild(app.view);
 
     window.addEventListener("phx:updateEntities", (e) => {
+      // Updates every entity's info and position, and creates it if it doesn't exist
       Array.from(e.detail.entities).forEach((backEntity) => {
         if (!entities.has(backEntity.name)) {
           let newEntity = this.createEntity(backEntity);
@@ -51,21 +61,15 @@ export const BoardGame = function () {
         let entity = entities.get(backEntity.name);
         this.updateEntityColor(entity, backEntity.is_colliding);
 
-        this.updateEntityPosition(
-          entity,
-          backEntity.x,
-          backEntity.y
-        );
+        this.updateEntityPosition(entity, backEntity.x, backEntity.y);
       });
     });
 
     app.ticker.add(() => {
       entities.forEach((entity) => {
         // Use linear interpolation (lerp) for smoother movement
-        entity.boardObject.x +=
-          (entity.x - entity.boardObject.x) * easing;
-        entity.boardObject.y +=
-          (entity.y - entity.boardObject.y) * easing;
+        entity.boardObject.x += (entity.x - entity.boardObject.x) * easing;
+        entity.boardObject.y += (entity.y - entity.boardObject.y) * easing;
 
         // Update the entity's position
         entity.boardObject.position.x = entity.boardObject.x;
@@ -73,32 +77,39 @@ export const BoardGame = function () {
       });
     });
 
-    document.addEventListener("keypress", function onPress(event) {
-      if (event.key === "a") {
-        player.move(-1, 0);
+    document.addEventListener("keydown", function onPress(event) {
+      if (event.repeat) return;
+
+      const key = event.key.toUpperCase();
+
+      if (Object.keys(movementKeys).includes(key)) {
+        movementKeys[key].state = true;
+        _this.sendMovement(player, movementKeys[key].direction);
+        _this.updateDebug("key: " + key);
       }
-      if (event.key === "w") {
-        player.move(0, -1);
-      }
-      if (event.key === "s") {
-        player.move(0, 1);
-      }
-      if (event.key === "d") {
-        player.move(1, 0);
+
+      if (event.key === "p") {
+        player.attack();
+        _this.updateDebug("key: " + key);
       }
     });
+
     document.addEventListener("keyup", function onPress(event) {
-      if (event.key === "a") {
-        player.move(0, 0);
-      }
-      if (event.key === "w") {
-        player.move(0, 0);
-      }
-      if (event.key === "s") {
-        player.move(0, 0);
-      }
-      if (event.key === "d") {
-        player.move(0, 0);
+      const key = event.key.toUpperCase();
+      if (Object.keys(movementKeys).includes(key)) {
+        movementKeys[key].state = false;
+
+        if (!Object.values(movementKeys).some((keyItem) => keyItem.state)) {
+          _this.clearMovement(player);
+          _this.updateDebug("");
+        } else {
+          const previousKey = Object.keys(movementKeys).find(
+            (keyItem) => movementKeys[keyItem].state
+          );
+          const previousDirection = movementKeys[previousKey].direction;
+          _this.updateDebug("key: " + previousKey);
+          _this.sendMovement(player, previousDirection);
+        }
       }
     });
   }),
@@ -112,6 +123,7 @@ export const BoardGame = function () {
 
       newEntity.boardObject.beginFill(0xffffff);
 
+      // Use the correct draw functions based on the shape
       switch (newEntity.shape) {
         case "circle":
           newEntity.boardObject.drawCircle(0, 0, newEntity.radius);
@@ -121,6 +133,7 @@ export const BoardGame = function () {
           break;
       }
 
+      // Set the display order position based on the category
       switch (newEntity.category) {
         case "player":
           newEntity.boardObject.zIndex = 10;
@@ -128,9 +141,15 @@ export const BoardGame = function () {
         case "obstacle":
           newEntity.boardObject.zIndex = 1;
           break;
+        case "projectile":
+          newEntity.boardObject.zIndex = 15;
+          break;
       }
 
       newEntity.boardObject.endFill();
+
+      newEntity.boardObject.position.x = newEntity.x;
+      newEntity.boardObject.position.y = newEntity.y;
 
       newEntity.boardObject.on("pointerover", (event) => {
         this.updateDebug(
@@ -153,31 +172,38 @@ export const BoardGame = function () {
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
     }),
-    this.updateEntityColor = function (entity, is_colliding){
+    (this.updateEntityColor = function (entity, is_colliding) {
       let color;
-      if (is_colliding == true){
+      if (is_colliding == true) {
         color = colors.colliding;
       } else {
         switch (entity.category) {
           case "player":
             color =
-              entity.id == player_id
-                ? colors.currentPlayer
-                : colors.players;
+              entity.id == player_id ? colors.currentPlayer : colors.players;
             break;
           case "obstacle":
             color = colors.obstacle;
             break;
+          case "projectile":
+            color = colors.projectile;
+            break;
         }
       }
       entity.boardObject.tint = color;
-    }
+    }),
+    (this.sendMovement = function (player, direction) {
+      player.move(direction.x, direction.y);
+    }),
+    (this.clearMovement = function (player) {
+      player.move(0, 0);
+    });
 };
 
 function getGameSocketUrl(game_id, player_id) {
-  let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-  let host = window.location.host
-  let path = '/play'
+  let protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  let host = window.location.host;
+  let path = "/play";
 
-  return `${protocol}${host}${path}/${game_id}/${player_id}`
+  return `${protocol}${host}${path}/${game_id}/${player_id}`;
 }

@@ -55,3 +55,30 @@ defmodule GameBackend.Protobuf.Entity do
   field(:speed, 9, type: :float)
   field(:direction, 10, type: GameBackend.Protobuf.Direction)
 end
+
+defmodule GameBackend.Protobuf.Move do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:direction, 1, type: GameBackend.Protobuf.Direction)
+end
+
+defmodule GameBackend.Protobuf.Attack do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill, 1, type: :string)
+end
+
+defmodule GameBackend.Protobuf.GameAction do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:action_type, 0)
+
+  field(:move, 1, type: GameBackend.Protobuf.Move, oneof: 0)
+  field(:attack, 2, type: GameBackend.Protobuf.Attack, oneof: 0)
+end

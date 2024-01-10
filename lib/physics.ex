@@ -13,6 +13,7 @@ defmodule Physics do
   def add_player(_game_state, _player_id), do: :erlang.nif_error(:nif_not_loaded)
   def move_player(_game_state, _player_id, _x, _y), do: :erlang.nif_error(:nif_not_loaded)
   def check_collisions(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
-  def add_polygon(_game_state, _id, _vertices), do: :erlang.nif_error(:nif_not_loaded)
+  def add_polygon(_game_state, _vertices), do: :erlang.nif_error(:nif_not_loaded)
   def move_entities(_game_state, _obstacles), do: :erlang.nif_error(:nif_not_loaded)
+  def add_projectile(_game_state, _position, _size, _speed, _direction), do: :erlang.nif_error(:nif_not_loaded)
 end
