@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+message Direction {
+  float x = 1;
+  float y = 2;
+}
+
+message Position {
+  float x = 1;
+  float y = 2;
+}
+
+message GameState {
+  string game_id = 1;
+  map<uint64, Entity> entities = 2;
+}
+
+message Entity {
+  uint64 id = 1;
+  string category = 2;
+  string shape = 3;
+  string name = 4;
+  Position position = 5;
+  float radius = 6;
+  repeated Position vertices = 7;
+  bool is_colliding = 8;
+  float speed = 9;
+  Direction direction = 10;
+}

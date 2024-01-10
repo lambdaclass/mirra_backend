@@ -1,0 +1,12 @@
+{application,rustler,
+             [{optional_applications,[]},
+              {applications,[kernel,stdlib,elixir,logger,eex]},
+              {description,"rustler"},
+              {modules,['Elixir.Mix.Tasks.Compile.Rustler',
+                        'Elixir.Mix.Tasks.Rustler.New','Elixir.Rustler',
+                        'Elixir.Rustler.Compiler',
+                        'Elixir.Rustler.Compiler.Config',
+                        'Elixir.Rustler.Compiler.Messages',
+                        'Elixir.Rustler.Compiler.Rustup']},
+              {registered,[]},
+              {vsn,"0.30.0"}]}.

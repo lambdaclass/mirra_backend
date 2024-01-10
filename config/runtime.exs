@@ -14,11 +14,11 @@ import Config
 #
 #     PHX_SERVER=true bin/game_backend start
 #
-# Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
-# script that automatically sets the env var above.
-if System.get_env("PHX_SERVER") do
-  config :game_backend, GameBackendWeb.Endpoint, server: true
-end
+# # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
+# # script that automatically sets the env var above.
+# if System.get_env("PHX_SERVER") do
+#   config :game_backend, WebWeb.Endpoint, server: true
+# end
 
 if config_env() == :prod do
   database_url =
@@ -41,36 +41,36 @@ if config_env() == :prod do
   # want to use a different value for prod and you most likely don't want
   # to check this value into version control, so we use an environment
   # variable instead.
-  secret_key_base =
-    System.get_env("SECRET_KEY_BASE") ||
-      raise """
-      environment variable SECRET_KEY_BASE is missing.
-      You can generate one by calling: mix phx.gen.secret
-      """
+  # secret_key_base =
+  #   System.get_env("SECRET_KEY_BASE") ||
+  #     raise """
+  #     environment variable SECRET_KEY_BASE is missing.
+  #     You can generate one by calling: mix phx.gen.secret
+  #     """
 
-  host = System.get_env("PHX_HOST") || "example.com"
-  port = String.to_integer(System.get_env("PORT") || "4000")
+  # host = System.get_env("PHX_HOST") || "example.com"
+  # port = String.to_integer(System.get_env("PORT") || "4000")
 
-  config :game_backend, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  # config :game_backend, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  config :game_backend, GameBackendWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
-    http: [
-      # Enable IPv6 and bind on all interfaces.
-      # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-      # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
-      # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-      ip: {0, 0, 0, 0, 0, 0, 0, 0},
-      port: port
-    ],
-    secret_key_base: secret_key_base
+  # config :game_backend, WebWeb.Endpoint,
+  #   url: [host: host, port: 443, scheme: "https"],
+  #   http: [
+  #     # Enable IPv6 and bind on all interfaces.
+  #     # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
+  #     # See the documentation on https://hexdocs.pm/plug_cowboy/Plug.Cowboy.html
+  #     # for details about using IPv6 vs IPv4 and loopback vs public addresses.
+  #     ip: {0, 0, 0, 0, 0, 0, 0, 0},
+  #     port: port
+  #   ],
+  #   secret_key_base: secret_key_base
 
   # ## SSL Support
   #
   # To get SSL working, you will need to add the `https` key
   # to your endpoint configuration:
   #
-  #     config :game_backend, GameBackendWeb.Endpoint,
+  #     config :game_backend, WebWeb.Endpoint,
   #       https: [
   #         ...,
   #         port: 443,
@@ -92,7 +92,7 @@ if config_env() == :prod do
   # We also recommend setting `force_ssl` in your endpoint, ensuring
   # no data is ever sent via http, always redirecting to https:
   #
-  #     config :game_backend, GameBackendWeb.Endpoint,
+  #     config :game_backend, WebWeb.Endpoint,
   #       force_ssl: [hsts: true]
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.

@@ -1,0 +1,1 @@
+/Users/nico/game_backend/.elixir_ls/build/test/lib/game_backend/native/physics/release/libphysics.dylib: /Users/nico/game_backend/native/physics/src/collision_detection.rs /Users/nico/game_backend/native/physics/src/game_state.rs /Users/nico/game_backend/native/physics/src/lib.rs /Users/nico/game_backend/native/physics/src/map.rs
