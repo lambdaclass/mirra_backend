@@ -529,7 +529,8 @@ proto.GameState.prototype.toObject = function(opt_includeInstance) {
 proto.GameState.toObject = function(includeInstance, msg) {
   var f, obj = {
     gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    entitiesMap: (f = msg.getEntitiesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    entitiesMap: (f = msg.getEntitiesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    map: (f = msg.getMap()) && proto.Entity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -576,6 +577,11 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 3:
+      var value = new proto.Entity;
+      reader.readMessage(value,proto.Entity.deserializeBinaryFromReader);
+      msg.setMap(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -615,6 +621,14 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getEntitiesMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getMap();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.Entity.serializeBinaryToWriter
+    );
   }
 };
 
@@ -657,6 +671,43 @@ proto.GameState.prototype.getEntitiesMap = function(opt_noLazyCreate) {
 proto.GameState.prototype.clearEntitiesMap = function() {
   this.getEntitiesMap().clear();
   return this;
+};
+
+
+/**
+ * optional Entity map = 3;
+ * @return {?proto.Entity}
+ */
+proto.GameState.prototype.getMap = function() {
+  return /** @type{?proto.Entity} */ (
+    jspb.Message.getWrapperField(this, proto.Entity, 3));
+};
+
+
+/**
+ * @param {?proto.Entity|undefined} value
+ * @return {!proto.GameState} returns this
+*/
+proto.GameState.prototype.setMap = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearMap = function() {
+  return this.setMap(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.GameState.prototype.hasMap = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

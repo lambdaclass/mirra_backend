@@ -26,6 +26,7 @@ message Position {
 message GameState {
   string game_id = 1;
   map<uint64, Entity> entities = 2;
+  Entity map = 3;
 }
 
 /*
