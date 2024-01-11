@@ -44,6 +44,8 @@ defmodule GameBackend.Protobuf.Entity do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
+  oneof(:aditional_info, 0)
+
   field(:id, 1, type: :uint64)
   field(:category, 2, type: :string)
   field(:shape, 3, type: :string)
@@ -54,6 +56,34 @@ defmodule GameBackend.Protobuf.Entity do
   field(:is_colliding, 8, type: :bool, json_name: "isColliding")
   field(:speed, 9, type: :float)
   field(:direction, 10, type: GameBackend.Protobuf.Direction)
+  field(:player, 11, type: GameBackend.Protobuf.Player, oneof: 0)
+  field(:projectile, 12, type: GameBackend.Protobuf.Projectile, oneof: 0)
+  field(:obstacle, 13, type: GameBackend.Protobuf.Obstacle, oneof: 0)
+end
+
+defmodule GameBackend.Protobuf.Player do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:health, 1, type: :uint64)
+end
+
+defmodule GameBackend.Protobuf.Projectile do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:damage, 1, type: :uint64)
+  field(:owner_id, 2, type: :uint64, json_name: "ownerId")
+end
+
+defmodule GameBackend.Protobuf.Obstacle do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:color, 1, type: :string)
 end
 
 defmodule GameBackend.Protobuf.Move do

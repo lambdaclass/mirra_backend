@@ -19,11 +19,14 @@ defmodule GameBackend.Entities do
       direction: %{
         x: 0.0,
         y: 0.0
+      },
+      aditional_info: %{
+        health: 100
       }
     }
   end
 
-  def new_projectile(id, position, direction) do
+  def new_projectile(id, position, direction, owner_id) do
     %{
       id: id,
       category: :projectile,
@@ -33,12 +36,22 @@ defmodule GameBackend.Entities do
       radius: 10.0,
       vertices: [],
       speed: 30.0,
-      direction: direction
+      direction: direction,
+      aditional_info: %{
+        damage: 10,
+        owner_id: owner_id
+      }
     }
   end
 
   def encode(entity) do
-    GameBackend.Protobuf.Entity.encode(%GameBackend.Protobuf.Entity{
+    entity
+    |> create_general_entity()
+    |> GameBackend.Protobuf.Entity.encode()
+  end
+
+  def create_general_entity(entity) do
+    %GameBackend.Protobuf.Entity{
       id: entity.id,
       category: to_string(entity.category),
       shape: to_string(entity.shape),
@@ -55,7 +68,26 @@ defmodule GameBackend.Entities do
             y: vertex.y
           }
         end),
-      is_colliding: entity.is_colliding
-    })
+      is_colliding: entity.is_colliding,
+      aditional_info: maybe_add_custom_info(entity)
+    }
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :player do
+    {:player,
+     %GameBackend.Protobuf.Player{
+       health: entity.aditional_info.health
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :projectile do
+    {:projectile,
+     %GameBackend.Protobuf.Projectile{
+       damage: entity.aditional_info.damage
+     }}
+  end
+
+  def maybe_add_custom_info(_entity) do
+    {}
   end
 end
