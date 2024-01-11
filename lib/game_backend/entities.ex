@@ -83,7 +83,8 @@ defmodule GameBackend.Entities do
   def maybe_add_custom_info(entity) when entity.category == :projectile do
     {:projectile,
      %GameBackend.Protobuf.Projectile{
-       damage: entity.aditional_info.damage
+       damage: entity.aditional_info.damage,
+       owner_id: entity.aditional_info.owner_id
      }}
   end
 
