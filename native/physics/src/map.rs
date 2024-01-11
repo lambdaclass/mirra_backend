@@ -78,38 +78,6 @@ impl Entity {
         }
     }
 
-    pub fn new_circle(
-        id: u64,
-        position: Position,
-        radius: f64,
-        speed: f64,
-        category: Category,
-    ) -> Entity {
-        Entity {
-            id,
-            shape: Shape::Circle,
-            position,
-            radius,
-            vertices: Vec::new(),
-            speed,
-            category,
-            direction: Direction { x: 0.0, y: 0.0 },
-        }
-    }
-
-    pub fn new_polygon(id: u64, vertices: Vec<Position>, category: Category) -> Entity {
-        Entity {
-            id,
-            shape: Shape::Polygon,
-            position: Position { x: 0.0, y: 0.0 },
-            radius: 0.0,
-            vertices,
-            speed: 0.0,
-            category,
-            direction: Direction { x: 0.0, y: 0.0 },
-        }
-    }
-
     pub fn collides_with(&mut self, entities: Vec<Entity>) -> Vec<Entity> {
         let mut result = Vec::new();
 

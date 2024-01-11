@@ -6,6 +6,8 @@ defmodule GameBackend.GameUpdater do
   use GenServer
   alias Phoenix.PubSub
 
+  alias GameBackend.Entities
+
   # Time between game updates in ms
   @game_tick 30
 
@@ -26,13 +28,19 @@ defmodule GameBackend.GameUpdater do
   def init(%{players: players}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
 
-    state =
-      Enum.reduce(players, Physics.new_game(game_id), fn {player_id, _client_id}, state ->
-        Physics.add_player(state, String.to_integer(player_id))
-      end)
-      |> Physics.add_polygon()
+    state = Physics.new_game(game_id) |> Map.put(:last_id, 0)
 
-    Process.send_after(self(), :update_game, @game_tick)
+    state =
+      Enum.reduce(players, state, fn {_player_id, _client_id}, state ->
+        last_id = state.last_id + 1
+        entities = state.entities |> Map.put(last_id, Entities.new_player(last_id))
+
+        state
+        |> Map.put(:last_id, last_id)
+        |> Map.put(:entities, entities)
+      end)
+
+    Process.send_after(self(), :update_game, 5_000)
     {:ok, state}
   end
 
@@ -43,25 +51,8 @@ defmodule GameBackend.GameUpdater do
 
     encoded_entities =
       Enum.map(state.entities, fn {_entity_id, entity} ->
-        GameBackend.Protobuf.Entity.encode(%GameBackend.Protobuf.Entity{
-          id: entity.id,
-          category: to_string(entity.category),
-          shape: to_string(entity.shape),
-          name: "Entity" <> Integer.to_string(entity.id),
-          position: %GameBackend.Protobuf.Position{
-            x: entity.position.x,
-            y: entity.position.y
-          },
-          radius: entity.radius,
-          vertices:
-            Enum.map(entity.vertices, fn vertex ->
-              %GameBackend.Protobuf.Position{
-                x: vertex.x,
-                y: vertex.y
-              }
-            end),
-          is_colliding: Physics.check_collisions(entity, state.entities)
-        })
+        entity = entity |> Map.put(:is_colliding, Physics.check_collisions(entity, state.entities))
+        Entities.encode(entity)
       end)
 
     PubSub.broadcast(GameBackend.PubSub, state.game_id, encoded_entities)
@@ -69,12 +60,8 @@ defmodule GameBackend.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_call({:join, player_id}, _from, state) do
-    {:reply, :ok, Physics.add_player(state, String.to_integer(player_id))}
-  end
-
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
-    state = Physics.move_player(state, player_id |> String.to_integer(), x, y)
+    state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
 
     {:reply, :ok, state}
   end
@@ -82,7 +69,16 @@ defmodule GameBackend.GameUpdater do
   def handle_call({:attack, player_id, _skill}, _from, state) do
     current_player = Map.get(state.entities, String.to_integer(player_id))
 
-    state = Physics.add_projectile(state, current_player.position, 10.0, 10.0, current_player.direction)
+    last_id = state.last_id + 1
+
+    entities =
+      state.entities
+      |> Map.put(last_id, Entities.new_projectile(last_id, current_player.position, current_player.direction))
+
+    state =
+      state
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:entities, entities)
 
     {:reply, :ok, state}
   end
