@@ -20,9 +20,9 @@ fn new_game(game_id: String) -> GameState {
 }
 
 #[rustler::nif()]
-fn move_player(game_state: GameState, player_id: u64, x: f64, y: f64) -> GameState {
+fn set_entity_direction(game_state: GameState, entity_id: u64, x: f64, y: f64) -> GameState {
     let mut game_state: GameState = game_state;
-    let entity = game_state.entities.get_mut(&player_id).unwrap();
+    let entity = game_state.entities.get_mut(&entity_id).unwrap();
     entity.set_direction(x, y);
     game_state
 }
@@ -54,5 +54,11 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
 
 rustler::init!(
     "Elixir.Physics",
-    [add, move_player, new_game, check_collisions, move_entities]
+    [
+        add,
+        set_entity_direction,
+        new_game,
+        check_collisions,
+        move_entities
+    ]
 );

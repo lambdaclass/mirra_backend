@@ -61,7 +61,7 @@ defmodule GameBackend.GameUpdater do
   end
 
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
-    state = Physics.move_player(state, player_id |> String.to_integer(), x, y)
+    state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
 
     {:reply, :ok, state}
   end
