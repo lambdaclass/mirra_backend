@@ -11,7 +11,9 @@ defmodule GameBackend.GameUpdater do
   # Time between game updates in ms
   @game_tick 30
 
+  ##################
   # API
+  ##################
   def join(game_pid, player_id) do
     GenServer.call(game_pid, {:join, player_id})
   end
@@ -24,21 +26,12 @@ defmodule GameBackend.GameUpdater do
     GenServer.call(game_pid, {:attack, player_id, skill})
   end
 
+  ##################
   # Callbacks
+  ##################
   def init(%{players: players}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-
-    state = Physics.new_game(game_id) |> Map.put(:last_id, 0)
-
-    state =
-      Enum.reduce(players, state, fn {_player_id, _client_id}, state ->
-        last_id = state.last_id + 1
-        entities = state.entities |> Map.put(last_id, Entities.new_player(last_id))
-
-        state
-        |> Map.put(:last_id, last_id)
-        |> Map.put(:entities, entities)
-      end)
+    state = new_game(game_id, players)
 
     Process.send_after(self(), :update_game, 1_000)
     {:ok, state}
@@ -47,54 +40,38 @@ defmodule GameBackend.GameUpdater do
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
-    new_state = Physics.move_entities(state)
+    new_players_state = update_entities(state.players)
+    new_projectiles_state = update_entities(state.projectiles)
 
     state =
-      Enum.reduce(new_state.entities, state, fn {new_entity_id, new_entity}, state ->
-        entity =
-          Map.get(state.entities, new_entity_id)
-          |> Map.merge(new_entity)
-          |> Map.put(:is_colliding, Physics.check_collisions(new_entity, state.entities))
+      state
+      |> Map.put(:players, new_players_state)
+      |> Map.put(:projectiles, new_projectiles_state)
 
-        entities = state.entities |> Map.put(new_entity_id, entity)
-        state |> Map.put(:entities, entities)
-      end)
-
-    encoded_entities =
-      Enum.map(state.entities, fn {_entity_id, entity} ->
-        Entities.encode(entity)
-      end)
-
-    PubSub.broadcast(GameBackend.PubSub, state.game_id, encoded_entities)
+    broadcast_game_update(state)
 
     {:noreply, state}
   end
 
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
-    new_state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
+    player = Map.get(state.players, String.to_integer(player_id))
+    player = Map.put(player, :direction, %{x: x, y: y})
+    players = state.players |> Map.put(String.to_integer(player_id), player)
 
     state =
-      Enum.reduce(new_state.entities, state, fn {new_entity_id, new_entity}, state ->
-        entity =
-          Map.get(state.entities, new_entity_id)
-          |> Map.merge(new_entity)
-
-        entities = state.entities |> Map.put(new_entity_id, entity)
-
-        state
-        |> Map.put(:entities, entities)
-      end)
+      state
+      |> Map.put(:players, players)
 
     {:reply, :ok, state}
   end
 
   def handle_call({:attack, player_id, _skill}, _from, state) do
-    current_player = Map.get(state.entities, String.to_integer(player_id))
+    current_player = Map.get(state.players, String.to_integer(player_id))
 
     last_id = state.last_id + 1
 
-    entities =
-      state.entities
+    projectiles =
+      state.projectiles
       |> Map.put(
         last_id,
         Entities.new_projectile(last_id, current_player.position, current_player.direction, current_player.id)
@@ -103,8 +80,54 @@ defmodule GameBackend.GameUpdater do
     state =
       state
       |> Map.put(:last_id, last_id)
-      |> Map.put(:entities, entities)
+      |> Map.put(:projectiles, projectiles)
 
     {:reply, :ok, state}
+  end
+
+  ##################
+  # Private
+  ##################
+
+  # Game creation
+  defp new_game(game_id, players) do
+    new_game =
+      Physics.new_game(game_id)
+      |> Map.put(:last_id, 0)
+      |> Map.put(:players, %{})
+      |> Map.put(:projectiles, %{})
+
+    Enum.reduce(players, new_game, fn {_player_id, _client_id}, new_game ->
+      last_id = new_game.last_id + 1
+      players = new_game.players |> Map.put(last_id, Entities.new_player(last_id))
+
+      new_game
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:players, players)
+    end)
+  end
+
+  # Move entities and add game fields
+  defp update_entities(entities) do
+    new_state = Physics.move_entities(entities)
+
+    Enum.reduce(new_state, %{}, fn {key, value}, acc ->
+      entity =
+        Map.get(entities, key)
+        |> Map.merge(value)
+        |> Map.put(:is_colliding, false)
+
+      acc |> Map.put(key, entity)
+    end)
+  end
+
+  # Broadcast game update to all players
+  defp broadcast_game_update(state) do
+    encoded_entities =
+      Enum.map(Map.merge(state.players, state.projectiles), fn {_entity_id, entity} ->
+        Entities.encode(entity)
+      end)
+
+    PubSub.broadcast(GameBackend.PubSub, state.game_id, encoded_entities)
   end
 end

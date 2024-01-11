@@ -68,7 +68,8 @@ defmodule GameBackend.Entities do
             y: vertex.y
           }
         end),
-      is_colliding: entity.is_colliding,
+      # entity.is_colliding,
+      is_colliding: false,
       aditional_info: maybe_add_custom_info(entity)
     }
   end
