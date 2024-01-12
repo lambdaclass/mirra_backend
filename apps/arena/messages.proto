@@ -52,6 +52,24 @@ message Entity {
   bool is_colliding = 8;
   float speed = 9;
   Direction direction = 10;
+  oneof aditional_info {
+    Player player = 11;
+    Projectile projectile = 12;
+    Obstacle obstacle = 13;
+  }
+}
+
+message Player {
+  uint64 health = 1;
+}
+
+message Projectile {
+  uint64 damage = 1;
+  uint64 owner_id = 2;
+}
+
+message Obstacle {
+  string color = 1;
 }
 
 /*

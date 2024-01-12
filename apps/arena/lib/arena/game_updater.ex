@@ -41,14 +41,25 @@ defmodule Arena.GameUpdater do
         |> Map.put(:entities, entities)
       end)
 
-    Process.send_after(self(), :update_game, 5_000)
+    Process.send_after(self(), :update_game, 1_000)
     {:ok, state}
   end
 
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
-    state = Physics.move_entities(state)
+    new_state = Physics.move_entities(state)
+
+    state =
+      Enum.reduce(new_state.entities, state, fn {new_entity_id, new_entity}, state ->
+        entity =
+          Map.get(state.entities, new_entity_id)
+          |> Map.merge(new_entity)
+          |> Map.put(:is_colliding, Physics.check_collisions(new_entity, state.entities))
+
+        entities = state.entities |> Map.put(new_entity_id, entity)
+        state |> Map.put(:entities, entities)
+      end)
 
     entities =
       Enum.reduce(state.entities, %{}, fn {entity_id, entity}, entities ->
@@ -57,6 +68,7 @@ defmodule Arena.GameUpdater do
           |> Map.put(:category, to_string(entity.category))
           |> Map.put(:shape, to_string(entity.shape))
           |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
+          |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
 
         Map.put(entities, entity_id, entity)
       end)
@@ -73,7 +85,19 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
-    state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
+    new_state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
+
+    state =
+      Enum.reduce(new_state.entities, state, fn {new_entity_id, new_entity}, state ->
+        entity =
+          Map.get(state.entities, new_entity_id)
+          |> Map.merge(new_entity)
+
+        entities = state.entities |> Map.put(new_entity_id, entity)
+
+        state
+        |> Map.put(:entities, entities)
+      end)
 
     {:reply, :ok, state}
   end
@@ -87,7 +111,12 @@ defmodule Arena.GameUpdater do
       state.entities
       |> Map.put(
         last_id,
-        Entities.new_projectile(last_id, current_player.position, current_player.direction)
+        Entities.new_projectile(
+          last_id,
+          current_player.position,
+          current_player.direction,
+          current_player.id
+        )
       )
 
     state =
