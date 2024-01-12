@@ -7,6 +7,8 @@ defmodule Arena.GameUpdater do
   use GenServer
   alias Phoenix.PubSub
 
+  alias Arena.Entities
+
   # Time between game updates in ms
   @game_tick 30
 
@@ -27,13 +29,19 @@ defmodule Arena.GameUpdater do
   def init(%{players: players}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
 
-    state =
-      Enum.reduce(players, Physics.new_game(game_id), fn {player_id, _client_id}, state ->
-        Physics.add_player(state, String.to_integer(player_id))
-      end)
-      |> Physics.add_polygon()
+    state = Physics.new_game(game_id) |> Map.put(:last_id, 0)
 
-    Process.send_after(self(), :update_game, @game_tick)
+    state =
+      Enum.reduce(players, state, fn {_player_id, _client_id}, state ->
+        last_id = state.last_id + 1
+        entities = state.entities |> Map.put(last_id, Entities.new_player(last_id))
+
+        state
+        |> Map.put(:last_id, last_id)
+        |> Map.put(:entities, entities)
+      end)
+
+    Process.send_after(self(), :update_game, 5_000)
     {:ok, state}
   end
 
@@ -64,12 +72,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_call({:join, player_id}, _from, state) do
-    {:reply, :ok, Physics.add_player(state, String.to_integer(player_id))}
-  end
-
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
-    state = Physics.move_player(state, player_id |> String.to_integer(), x, y)
+    state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
 
     {:reply, :ok, state}
   end
@@ -77,8 +81,16 @@ defmodule Arena.GameUpdater do
   def handle_call({:attack, player_id, _skill}, _from, state) do
     current_player = Map.get(state.entities, String.to_integer(player_id))
 
+    last_id = state.last_id + 1
+
+    entities =
+      state.entities
+      |> Map.put(last_id, Entities.new_projectile(last_id, current_player.position, current_player.direction))
+
     state =
-      Physics.add_projectile(state, current_player.position, 10.0, 10.0, current_player.direction)
+      state
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:entities, entities)
 
     {:reply, :ok, state}
   end

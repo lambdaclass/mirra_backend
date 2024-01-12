@@ -18,9 +18,4 @@ impl GameState {
             last_id: 0,
         }
     }
-
-    pub fn next_id(&mut self) -> u64 {
-        self.last_id += 1;
-        self.last_id
-    }
 }
