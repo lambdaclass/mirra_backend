@@ -15,7 +15,7 @@ defmodule MirraBackend.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: MirraBackend.Finch},
       # Start game launcher genserver
-      GameBackend.GameLauncher,
+      MirraBackend.GameLauncher,
       # Start a worker by calling: MirraBackend.Worker.start_link(arg)
       # {MirraBackend.Worker, arg},
       # Start to serve requests, typically the last entry

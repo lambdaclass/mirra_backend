@@ -3,7 +3,7 @@ defmodule Physics do
   Physics
   """
   use Rustler,
-    otp_app: :game_backend,
+    otp_app: :mirra_backend,
     crate: :physics
 
   # When loading a NIF module, dummy clauses for all NIF function are required.
@@ -15,5 +15,7 @@ defmodule Physics do
   def check_collisions(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
   def add_polygon(_game_state), do: :erlang.nif_error(:nif_not_loaded)
   def move_entities(_game_state), do: :erlang.nif_error(:nif_not_loaded)
-  def add_projectile(_game_state, _position, _size, _speed, _direction), do: :erlang.nif_error(:nif_not_loaded)
+
+  def add_projectile(_game_state, _position, _size, _speed, _direction),
+    do: :erlang.nif_error(:nif_not_loaded)
 end

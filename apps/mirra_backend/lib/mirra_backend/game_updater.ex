@@ -1,8 +1,9 @@
-defmodule GameBackend.GameUpdater do
+defmodule MirraBackend.GameUpdater do
   @moduledoc """
   GenServer that broadcasts the latest game update to every client
   (player websocket).
   """
+  alias MirraBackend.Protobuf.GameState
   use GenServer
   alias Phoenix.PubSub
 
@@ -41,30 +42,24 @@ defmodule GameBackend.GameUpdater do
 
     state = Physics.move_entities(state)
 
-    encoded_entities =
-      Enum.map(state.entities, fn {_entity_id, entity} ->
-        GameBackend.Protobuf.Entity.encode(%GameBackend.Protobuf.Entity{
-          id: entity.id,
-          category: to_string(entity.category),
-          shape: to_string(entity.shape),
-          name: "Entity" <> Integer.to_string(entity.id),
-          position: %GameBackend.Protobuf.Position{
-            x: entity.position.x,
-            y: entity.position.y
-          },
-          radius: entity.radius,
-          vertices:
-            Enum.map(entity.vertices, fn vertex ->
-              %GameBackend.Protobuf.Position{
-                x: vertex.x,
-                y: vertex.y
-              }
-            end),
-          is_colliding: Physics.check_collisions(entity, state.entities)
-        })
+    entities =
+      Enum.reduce(state.entities, %{}, fn {entity_id, entity}, entities ->
+        entity =
+          Map.put(entity, :is_colliding, Physics.check_collisions(entity, state.entities))
+          |> Map.put(:category, to_string(entity.category))
+          |> Map.put(:shape, to_string(entity.shape))
+          |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
+
+        Map.put(entities, entity_id, entity)
       end)
 
-    PubSub.broadcast(GameBackend.PubSub, state.game_id, encoded_entities)
+    encoded_state =
+      GameState.encode(%GameState{
+        game_id: state.game_id,
+        entities: entities
+      })
+
+    PubSub.broadcast(MirraBackend.PubSub, state.game_id, {:game_update, encoded_state})
 
     {:noreply, state}
   end
@@ -82,7 +77,8 @@ defmodule GameBackend.GameUpdater do
   def handle_call({:attack, player_id, _skill}, _from, state) do
     current_player = Map.get(state.entities, String.to_integer(player_id))
 
-    state = Physics.add_projectile(state, current_player.position, 10.0, 10.0, current_player.direction)
+    state =
+      Physics.add_projectile(state, current_player.position, 10.0, 10.0, current_player.direction)
 
     {:reply, :ok, state}
   end

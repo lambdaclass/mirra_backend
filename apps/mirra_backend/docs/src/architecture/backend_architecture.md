@@ -92,7 +92,7 @@ sequenceDiagram
 
 When a game starts, two things happen:
 
-- A game session is spawned by a `DynamicSupervisor` called `GameBackend`.  This `GameBackend` starts a new child `Runner` process, which holds the entire game's state and the logic to update it according to the players' actions. The PID of this `Runner` is encoded in a human friendly format and called the `game_session_id`.
+- A game session is spawned by a `DynamicSupervisor` called `MirraBackend`.  This `MirraBackend` starts a new child `Runner` process, which holds the entire game's state and the logic to update it according to the players' actions. The PID of this `Runner` is encoded in a human friendly format and called the `game_session_id`.
 - Every player connects to the game through websocket under the `/play/:game_id/:client_id/:player_id` path. Each player's connection is handled by a separate [cowboy websocket](https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy_websocket/) process, defined in the `PlayWebSocket` module. On startup, the process saves the runner's PID so it can communicate with it. Inside the game, a player is the same as a websocket connection.
 
 Let's go over the main gameplay flow. Let's say `player_1` wants to move to the right one square. To do this, they send a `JSON` frame over the socket that looks like this:
@@ -112,7 +112,7 @@ The `Runner`'s appropriate handler eventually picks up this message, which in th
 ```elixir
   def handle_cast({:move, user_id, %Move{angle: angle}, timestamp}, state) do
     player_id = state.user_to_player[user_id] || user_id
-    game_state = GameBackend.move_player(state.game_state, player_id, angle)
+    game_state = MirraBackend.move_player(state.game_state, player_id, angle)
 
     state =
       Map.put(state, :game_state, game_state)
@@ -130,7 +130,7 @@ that matches with `:game_tick`.
 You'll notice the `websocket_init` function on the `PlayWebSocket` process does (among other things) the following:
 
 ```elixir
-:ok = Phoenix.PubSub.subscribe(GameBackend.PubSub, "game_play_#{game_id}")
+:ok = Phoenix.PubSub.subscribe(MirraBackend.PubSub, "game_play_#{game_id}")
 ```
 
 This allows the socket processes to receive state updates they can then relay to the player.
@@ -143,14 +143,14 @@ Below are two diagrams summarizing the whole flow.
 sequenceDiagram
     participant Player (Unity Client)
     participant Server
-    participant GameBackend
+    participant MirraBackend
     participant Runner
     participant PlayerWebSocket
     Player (Unity Client)->>Server: Start Game
-    Server->>GameBackend: Start Runner
-    GameBackend->>Runner: Spawn child
-    Runner->>GameBackend: Runner PID
-    GameBackend->>Server: PID
+    Server->>MirraBackend: Start Runner
+    MirraBackend->>Runner: Spawn child
+    Runner->>MirraBackend: Runner PID
+    MirraBackend->>Server: PID
     Server->>Player (Unity Client): game_session_id
     Player (Unity Client)->>Server: ws://.../play/:game_session_id
     Server->>PlayerWebSocket: Handle connection
@@ -188,7 +188,7 @@ fn move_player(game: GameState, player_id: u64, direction: Direction) -> GameSta
 }
 ```
 
-The associated Elixir function is inside the `GameBackend.Game` module:
+The associated Elixir function is inside the `MirraBackend.Game` module:
 
 ```elixir
 def move_player(_a, _b, _c), do: :erlang.nif_error(:nif_not_loaded)
@@ -197,7 +197,7 @@ def move_player(_a, _b, _c), do: :erlang.nif_error(:nif_not_loaded)
 The magic that makes this call Rust underneath is all inside this `use` declaration
 
 ```elixir
-use Rustler, otp_app: :game_backend, crate: "gamestate"
+use Rustler, otp_app: :mirra_backend, crate: "gamestate"
 ```
 
 Every Rust Struct has a corresponding Elixir struct that it maps to; calling the Elixir functions is transparent to someone using the API.

@@ -1,10 +1,10 @@
-defmodule GameBackend.SocketHandler do
+defmodule MirraBackend.SocketHandler do
   @moduledoc """
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias GameBackend.GameLauncher
-  alias GameBackend.Protobuf.GameState
+  alias MirraBackend.GameLauncher
+  alias MirraBackend.Protobuf.GameState
 
   @behaviour :cowboy_websocket
 

@@ -4,10 +4,10 @@
 
 The following metrics are available in the APM Metric Explorer section in NewRelic
 
-- `GameBackend/GameTickExecutionTimeMs`: Timing in milliseconds for calling `GameBackend.game_tick/2`
+- `MirraBackend/GameTickExecutionTimeMs`: Timing in milliseconds for calling `MirraBackend.game_tick/2`
 
 This metrics are only visible by selecting them as `COUNT`
-- `GameBackend/TotalPlayers`: Count of players added across all games
-- `GameBackend/TotalBots`: Count of bots added across all games
-- `GameBackend/TotalGames`: Count of game gen_servers currently alive
-- `GameBackend/TotalGameWebSockets`: Count of websockets connected for games
+- `MirraBackend/TotalPlayers`: Count of players added across all games
+- `MirraBackend/TotalBots`: Count of bots added across all games
+- `MirraBackend/TotalGames`: Count of game gen_servers currently alive
+- `MirraBackend/TotalGameWebSockets`: Count of websockets connected for games

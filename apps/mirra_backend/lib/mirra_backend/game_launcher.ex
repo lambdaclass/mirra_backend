@@ -1,4 +1,4 @@
-defmodule GameBackend.GameLauncher do
+defmodule MirraBackend.GameLauncher do
   @moduledoc false
 
   use GenServer
@@ -41,7 +41,7 @@ defmodule GameBackend.GameLauncher do
   def handle_info(:start_game, state) do
     {game_players, remaining_players} = Enum.split(state.players, @players_needed)
 
-    {:ok, game_pid} = GenServer.start(GameBackend.GameUpdater, %{players: game_players})
+    {:ok, game_pid} = GenServer.start(MirraBackend.GameUpdater, %{players: game_players})
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 

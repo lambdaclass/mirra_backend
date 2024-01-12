@@ -1,22 +1,24 @@
-defmodule GameBackend.GameSocketHandler do
+defmodule MirraBackend.GameSocketHandler do
   @moduledoc """
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias GameBackend.GameUpdater
+  alias MirraBackend.GameUpdater
 
   @behaviour :cowboy_websocket
 
   @impl true
   def init(req, _opts) do
     player_id = :cowboy_req.binding(:player_id, req)
-    game_pid = :cowboy_req.binding(:game_id, req) |> Base58.decode() |> :erlang.binary_to_term([:safe])
+    game_id = :cowboy_req.binding(:game_id, req)
+    game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
 
-    {:cowboy_websocket, req, %{player_id: player_id, game_pid: game_pid}}
+    {:cowboy_websocket, req, %{player_id: player_id, game_pid: game_pid, game_id: game_id}}
   end
 
   @impl true
   def websocket_init(state) do
+    Phoenix.PubSub.subscribe(MirraBackend.PubSub, state.game_id)
     Logger.info("Websocket INIT called")
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
@@ -28,7 +30,7 @@ defmodule GameBackend.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    case GameBackend.Protobuf.GameAction.decode(message) do
+    case MirraBackend.Protobuf.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill)
 
@@ -40,6 +42,12 @@ defmodule GameBackend.GameSocketHandler do
     end
 
     {:reply, {:binary, Jason.encode!(%{})}, state}
+  end
+
+  @impl true
+  def websocket_info({:game_update, game_state}, state) do
+    # Logger.info("Websocket info, Message: GAME UPDATE")
+    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
