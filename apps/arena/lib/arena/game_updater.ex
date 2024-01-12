@@ -63,8 +63,6 @@ defmodule Arena.GameUpdater do
 
     entities =
       Enum.reduce(state.entities, %{}, fn {entity_id, entity}, entities ->
-        IO.inspect(entity.aditional_info)
-
         entity =
           Map.put(entity, :is_colliding, Physics.check_collisions(entity, state.entities))
           |> Map.put(:category, to_string(entity.category))
