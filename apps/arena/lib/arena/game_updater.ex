@@ -130,7 +130,6 @@ defmodule Arena.GameUpdater do
   # Broadcast game update to all players
   defp broadcast_game_update(state) do
     entities =
-
       state.players
       |> Map.merge(state.projectiles)
       |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
