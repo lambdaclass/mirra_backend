@@ -21,13 +21,3 @@ erl_crash.dump
 
 # Temporary files, for example, from tests.
 /tmp/
-
-# Remove DS_Store files created by macOS
-.DS_Store
-
-# The directory NPM downloads your dependencies sources to.
-/assets/node_modules/
-
-*.so
-
-**/*.so
