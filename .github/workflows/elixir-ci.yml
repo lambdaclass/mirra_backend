@@ -27,7 +27,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: game_backend_test
+          POSTGRES_DB: arena_test
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -49,17 +49,23 @@ jobs:
           key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: ${{ runner.os }}-mix-
       - name: Elixir set up
+        working-directory: ./app/arena/
         run: |
           mix local.hex --force
           mix local.rebar --force
           mix deps.get
       - name: Credo Elixir and Clippy Rust Check
+        working-directory: ./app/arena/
         run: make lints
       - name: Check Elixir Formatting
+        working-directory: ./app/arena/
         run: mix format --check-formatted
       - name: Check Rust Formatting
+        working-directory: ./app/arena/
         run: cargo fmt --manifest-path native/physics/Cargo.toml --all -- --check 
       - name: Compiles without warnings
+        working-directory: ./app/arena/
         run: mix compile --all-warnings --warnings-as-errors
       - name: Run tests
+        working-directory: ./app/arena/
         run: mix test
