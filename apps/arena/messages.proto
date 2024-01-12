@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+/*
+ * Shared structs
+ */
+
+/*
+ * Direction is a vector with a magnitude of 1
+ */
+message Direction {
+  float x = 1;
+  float y = 2;
+}
+
+/*
+ * Position of an entity in the arena
+ */
+message Position {
+  float x = 1;
+  float y = 2;
+}
+
+/*
+ * Game State
+ */
+message GameState {
+  string game_id = 1;
+  map<uint64, Entity> entities = 2;
+}
+
+/*
+ * Info about an entity
+ * id: unique identifier
+ * category: player, projectile, obstacle.
+ * shape: circle, point, line, polygon, point.
+ * name: unique name of the entity
+ * position: position of the entity (polyogns and lines don't have a position)
+ * radius: radius of the entity (only circles have a radius)
+ * vertices: vertices of the entity (only polygons and lines have vertices)
+ * is_colliding: whether the entity is colliding with another entity
+ * speed: speed of the entity
+ * direction: direction of the entity if it is moving
+ */
+message Entity {
+  uint64 id = 1;
+  string category = 2;
+  string shape = 3;
+  string name = 4;
+  Position position = 5;
+  float radius = 6;
+  repeated Position vertices = 7;
+  bool is_colliding = 8;
+  float speed = 9;
+  Direction direction = 10;
+}
+
+/*
+ * Player Actions
+ */
+message Move {
+  Direction direction = 1;
+}
+
+message Attack {
+  string skill = 1;
+}
+
+message GameAction {
+  oneof action_type {
+    Move move = 1;
+    Attack attack = 2;
+  }
+}
