@@ -1,21 +1,22 @@
 # Collision detection
 
+A collision detection library implementation based on [https://www.jeffreythompson.org/collision-detection/](https://www.jeffreythompson.org/collision-detection/).
+
 We are working with entities.
 
 These entities can be of any of these types: Point, Line, Circle, Polygon.
 
 Each entity has attributes, which can be mandatory or not:
-- id: unique identifier
-- shape: Point, Line, Circle, Polygon. To determine which collision algorithm to use
-- radius: in the case of a circle
-- speed: in case of movement
-- direction: in case of movement
-- name: unique name of the entity
-- category: Player, Projectile, Obstacle. We use it to know when to check for collisions
-- vertices: in case the entity is defined by points
-- position: position of the entity on the map
+- `id (unsigned int)`: unique identifier
+- `shape (Shape)`: Point, Line, Circle, Polygon. To determine which collision algorithm to use
+- `radius (float)`: in the case of a circle
+- `speed (float)`: in case of movement
+- `direction (Direction {x: float, y: float})`: in case of movement
+- `category (Category)`: Player, Projectile, Obstacle. We use it to know when to check for collisions
+- `vertices (array of Position {x: float, y: float})`: in case the entity is defined by points
+- `position (Position {x: float, y: float})`: position of the entity on the map
 
-For collision checking, we iterate through all entities searching for those that collide with the current one and return a list of all collisions.
+For collision checking, we iterate through entities searching for those that collide with the current one and return a list of all collisions.
 
 The possible collision detection algorithms we handle are:
 
@@ -50,3 +51,6 @@ If you want to detect that collision, you should add this function call at the e
 point_polygon_colision(circle, polygon)
 ```
 If you only need to detect when a circle collides with the "walls" of the polygon, you should `return false`, and that's it.
+
+It is necessary to clarify that there are other types of collisions that we do not need to implement at the moment, for example Polygon/Polygon.
+
