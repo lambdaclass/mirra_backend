@@ -1,6 +1,6 @@
 # Game Client
 
-Multiplayer 2D physics engine, matchmaking, market and leaderboard for 2D and 3D Games. Developed in Elixir for communication and Rust for the physics engine.
+Web client in browser for 2D Games. Developed in Elixir and Phoenix framework.
 
 ## Table of Contents
 
