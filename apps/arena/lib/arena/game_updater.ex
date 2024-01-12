@@ -85,7 +85,10 @@ defmodule Arena.GameUpdater do
 
     entities =
       state.entities
-      |> Map.put(last_id, Entities.new_projectile(last_id, current_player.position, current_player.direction))
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(last_id, current_player.position, current_player.direction)
+      )
 
     state =
       state
