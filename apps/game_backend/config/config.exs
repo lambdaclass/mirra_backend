@@ -7,15 +7,6 @@
 # General application configuration
 import Config
 
-# Configures the endpoint
-dispatch = [
-  _: [
-    {"/play/:game_id/:player_id", GameBackend.GameSocketHandler, []},
-    {"/play/:player_id", GameBackend.SocketHandler, []},
-    {:_, Plug.Cowboy.Handler, {GameBackendWeb.Endpoint, []}}
-  ]
-]
-
 config :game_backend,
   ecto_repos: [GameBackend.Repo],
   generators: [timestamp_type: :utc_datetime]
@@ -29,8 +20,7 @@ config :game_backend, GameBackendWeb.Endpoint,
     layout: false
   ],
   pubsub_server: GameBackend.PubSub,
-  live_view: [signing_salt: "XED/NEZq"],
-  http: [dispatch: dispatch]
+  live_view: [signing_salt: "XED/NEZq"]
 
 # Configures the mailer
 #

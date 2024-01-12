@@ -1,6 +1,5 @@
 defmodule GameBackendWeb.BoardLive.Show do
   require Logger
-  alias Phoenix.PubSub
   use GameBackendWeb, :live_view
 
   def mount(%{"game_id" => game_id} = params, _session, socket) do
@@ -12,12 +11,13 @@ defmodule GameBackendWeb.BoardLive.Show do
   end
 
   def mount_connected(%{"game_id" => game_id, "player_id" => player_id} = _params, socket) do
+    {:ok, game_socket_handler_pid} =
+      GameBackend.ClientSocketHandler.start_link(self() |> :erlang.pid_to_list(), player_id, game_id)
+
     mocked_board_width = 1000
     mocked_board_height = 600
 
     game_data = %{0 => %{0 => player_name(player_id)}}
-
-    PubSub.subscribe(GameBackend.PubSub, game_id)
 
     {:ok,
      assign(socket,
@@ -26,30 +26,48 @@ defmodule GameBackendWeb.BoardLive.Show do
        game_status: :running,
        board_width: mocked_board_width,
        board_height: mocked_board_height,
-       game_data: game_data
+       game_data: game_data,
+       game_socket_handler_pid: game_socket_handler_pid
      )}
   end
 
-  def handle_info(encoded_entities, socket) do
-    game_data =
-      encoded_entities
-      |> Enum.map(fn encoded_entity ->
-        decoded = GameBackend.Protobuf.Entity.decode(encoded_entity)
+  # The game state is empty until the 1st broadcast msg
+  def handle_info({:game_update, "{}"}, socket) do
+    {:noreply, socket}
+  end
 
+  def handle_info({:game_update, game_state}, socket) do
+    game_state = GameBackend.Protobuf.GameState.decode(game_state)
+
+    entities =
+      game_state.entities
+      |> Enum.map(fn {_entity_id, entity} ->
         %{
-          id: decoded.id,
-          category: decoded.category,
-          shape: decoded.shape,
-          name: decoded.name,
-          x: decoded.position.x,
-          y: decoded.position.y,
-          radius: decoded.radius,
-          coords: decoded.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: decoded.is_colliding
+          id: entity.id,
+          category: entity.category,
+          shape: entity.shape,
+          name: entity.name,
+          x: entity.position.x,
+          y: entity.position.y,
+          radius: entity.radius,
+          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
+          is_colliding: entity.is_colliding
         }
       end)
 
-    {:noreply, push_event(socket, "updateEntities", %{entities: game_data})}
+    {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
+  end
+
+  def handle_event("move", direction, socket) do
+    Process.send(socket.assigns.game_socket_handler_pid, {:move, direction}, [])
+
+    {:noreply, socket}
+  end
+
+  def handle_event("attack", skill, socket) do
+    Process.send(socket.assigns.game_socket_handler_pid, {:attack, skill}, [])
+
+    {:noreply, socket}
   end
 
   defp player_name(player_id), do: "P#{player_id}"

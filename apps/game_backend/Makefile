@@ -1,4 +1,4 @@
-.PHONY: deps run start stop generate-ex-protos generate-js-protos generate-protos format lints check
+.PHONY: run deps start stop generate-ex-protos generate-js-protos generate-protos format lints check
 
 run:
 	iex -S mix phx.server
@@ -27,11 +27,9 @@ generate-protos: generate-ex-protos generate-js-protos
 
 format:
 	mix format
-	cd native/physics && cargo fmt --all
 
 lints:
 	mix credo
-	cd native/physics && cargo clippy --all-targets -- -D warnings
 
 check: format lints
 	mix test

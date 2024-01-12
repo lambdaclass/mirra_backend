@@ -17,7 +17,8 @@ export const GameQueue = function () {
         
 function getQueueSocketUrl(player_id) {
     let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    let host = window.location.host
+    // TODO Remove hardcoded host
+    let host = '//localhost:4000'
     let path = '/play'
 
     return `${protocol}${host}${path}/${player_id}`

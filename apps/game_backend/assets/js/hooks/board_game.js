@@ -1,5 +1,4 @@
 import { Application, Container, Graphics } from "pixi.js";
-import { Player } from "../game/player.js";
 
 function Entity({ id, name, shape, category, x, y, coords, radius }) {
   this.id = id;
@@ -23,7 +22,7 @@ export const BoardGame = function () {
     colliding: 0xff0000,
     projectile: 0x0000ff,
   };
-  let player_id, player;
+  let player_id;
 
   let movementKeys = {
     W: { state: false, direction: { x: 0, y: -1 } },
@@ -36,7 +35,6 @@ export const BoardGame = function () {
     let _this = this;
     let game_id = document.getElementById("board_game").dataset.gameId;
     let player_id = document.getElementById("board_game").dataset.playerId;
-    let player = new Player(getGameSocketUrl(game_id, player_id));
 
     const app = new Application({
       width: document.getElementById("board_game").dataset.boardWidth,
@@ -84,12 +82,12 @@ export const BoardGame = function () {
 
       if (Object.keys(movementKeys).includes(key)) {
         movementKeys[key].state = true;
-        _this.sendMovement(player, movementKeys[key].direction);
+        _this.pushEvent("move", movementKeys[key].direction);
         _this.updateDebug("key: " + key);
       }
 
       if (event.key === "p") {
-        player.attack();
+        _this.pushEvent("attack", "basic");
         _this.updateDebug("key: " + key);
       }
     });
@@ -100,7 +98,7 @@ export const BoardGame = function () {
         movementKeys[key].state = false;
 
         if (!Object.values(movementKeys).some((keyItem) => keyItem.state)) {
-          _this.clearMovement(player);
+          _this.pushEvent("move", {x: 0, y: 0});
           _this.updateDebug("");
         } else {
           const previousKey = Object.keys(movementKeys).find(
@@ -108,7 +106,7 @@ export const BoardGame = function () {
           );
           const previousDirection = movementKeys[previousKey].direction;
           _this.updateDebug("key: " + previousKey);
-          _this.sendMovement(player, previousDirection);
+          _this.pushEvent("move", previousDirection);
         }
       }
     });
@@ -191,19 +189,5 @@ export const BoardGame = function () {
         }
       }
       entity.boardObject.tint = color;
-    }),
-    (this.sendMovement = function (player, direction) {
-      player.move(direction.x, direction.y);
-    }),
-    (this.clearMovement = function (player) {
-      player.move(0, 0);
-    });
+    })
 };
-
-function getGameSocketUrl(game_id, player_id) {
-  let protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-  let host = window.location.host;
-  let path = "/play";
-
-  return `${protocol}${host}${path}/${game_id}/${player_id}`;
-}
