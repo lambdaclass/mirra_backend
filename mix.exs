@@ -1,4 +1,4 @@
-defmodule GameBackend.MixProject do
+defmodule MirraBackendUmbrella.MixProject do
   use Mix.Project
 
   def project do
