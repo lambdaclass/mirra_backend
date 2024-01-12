@@ -52,7 +52,7 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_info(message, state) do
-    Logger.info("Websocket info, Message: #{inspect(message)}")
+    #Logger.info("Websocket info, Message: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 end
