@@ -1,4 +1,4 @@
-defmodule MirraBackendUmbrella.MixProject do
+defmodule MirraBackend.MixProject do
   use Mix.Project
 
   def project do

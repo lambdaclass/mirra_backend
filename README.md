@@ -1,4 +1,4 @@
-# MirraBackendUmbrella
+# MirraBackend
 
 **TODO: Add description**
 
