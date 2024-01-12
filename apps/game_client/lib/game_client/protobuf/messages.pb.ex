@@ -39,6 +39,8 @@ defmodule GameClient.Protobuf.Entity do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
+  oneof :aditional_info, 0
+
   field :id, 1, type: :uint64
   field :category, 2, type: :string
   field :shape, 3, type: :string
@@ -47,8 +49,37 @@ defmodule GameClient.Protobuf.Entity do
   field :radius, 6, type: :float
   field :vertices, 7, repeated: true, type: GameClient.Protobuf.Position
   field :is_colliding, 8, type: :bool, json_name: "isColliding"
-  field :speed, 9, type: :float
-  field :direction, 10, type: GameClient.Protobuf.Direction
+  field :collides_with, 9, repeated: true, type: :uint64, json_name: "collidesWith"
+  field :speed, 10, type: :float
+  field :direction, 11, type: GameClient.Protobuf.Direction
+  field :player, 12, type: GameClient.Protobuf.Player, oneof: 0
+  field :projectile, 13, type: GameClient.Protobuf.Projectile, oneof: 0
+  field :obstacle, 14, type: GameClient.Protobuf.Obstacle, oneof: 0
+end
+
+defmodule GameClient.Protobuf.Player do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :health, 1, type: :uint64
+end
+
+defmodule GameClient.Protobuf.Projectile do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :damage, 1, type: :uint64
+  field :owner_id, 2, type: :uint64, json_name: "ownerId"
+end
+
+defmodule GameClient.Protobuf.Obstacle do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :color, 1, type: :string
 end
 
 defmodule GameClient.Protobuf.Move do

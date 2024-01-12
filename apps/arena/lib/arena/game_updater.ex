@@ -150,6 +150,6 @@ defmodule Arena.GameUpdater do
         entities: entities
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, encoded_state)
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
   end
 end
