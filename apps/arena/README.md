@@ -36,6 +36,9 @@ make docs
 
 Open: [http://localhost:3000/](http://localhost:3000/)
 
+## Collition Detection
+You can find our documentation about this topic [here](./docs/collision-detection.md).
+
 ## Running the Backend
 
 ### Requirements
