@@ -1,8 +1,13 @@
-# MirraBackend
+# Mirra Backend
 
-MirraBackend is an umbrella project that contains several apps.
+Mirra Backend is an umbrella project that contains several apps.
 
 ## Apps
+
+To start all apps, run:
+`make start`
+
+Then, to start a game [here](http://localhost:3000/board/1)
 
 ### Arena
 
