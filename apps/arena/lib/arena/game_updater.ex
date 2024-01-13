@@ -3,7 +3,7 @@ defmodule Arena.GameUpdater do
   GenServer that broadcasts the latest game update to every client
   (player websocket).
   """
-  alias Arena.Protobuf.GameState
+  alias Arena.Serialization.GameState
   use GenServer
   alias Phoenix.PubSub
 

@@ -15,9 +15,9 @@ stop:
 
 generate-ex-protos:
 	protoc \
-		--elixir_out=lib/arena/protobuf \
-		--elixir_opt=package_prefix=arena.protobuf \
-		messages.proto
+		--elixir_out=lib/arena \
+		--elixir_opt=package_prefix=arena.serialization \
+		serialization/messages.proto
 
 generate-protos: generate-ex-protos
 

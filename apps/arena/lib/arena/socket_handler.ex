@@ -4,7 +4,7 @@ defmodule Arena.SocketHandler do
   """
   require Logger
   alias Arena.GameLauncher
-  alias Arena.Protobuf.GameState
+  alias Arena.Serialization.GameState
 
   @behaviour :cowboy_websocket
 

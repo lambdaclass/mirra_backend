@@ -46,14 +46,14 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
-     %Arena.Protobuf.Player{
+     %Arena.Serialization.Player{
        health: entity.aditional_info.health
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :projectile do
     {:projectile,
-     %Arena.Protobuf.Projectile{
+     %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
        owner_id: entity.aditional_info.owner_id
      }}
