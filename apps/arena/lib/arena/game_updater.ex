@@ -12,7 +12,9 @@ defmodule Arena.GameUpdater do
   # Time between game updates in ms
   @game_tick 30
 
+  ##################
   # API
+  ##################
   def join(game_pid, player_id) do
     GenServer.call(game_pid, {:join, player_id})
   end
@@ -25,21 +27,12 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:attack, player_id, skill})
   end
 
+  ##################
   # Callbacks
+  ##################
   def init(%{players: players}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-
-    state = Physics.new_game(game_id) |> Map.put(:last_id, 0)
-
-    state =
-      Enum.reduce(players, state, fn {_player_id, _client_id}, state ->
-        last_id = state.last_id + 1
-        entities = state.entities |> Map.put(last_id, Entities.new_player(last_id))
-
-        state
-        |> Map.put(:last_id, last_id)
-        |> Map.put(:entities, entities)
-      end)
+    state = new_game(game_id, players)
 
     Process.send_after(self(), :update_game, 1_000)
     {:ok, state}
@@ -48,24 +41,107 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
-    new_state = Physics.move_entities(state)
+    entities_to_collide = Map.merge(state.players, state.projectiles)
+    new_players_state = update_entities(state.players, entities_to_collide)
+    new_projectiles_state = update_entities(state.projectiles, entities_to_collide)
 
     state =
-      Enum.reduce(new_state.entities, state, fn {new_entity_id, new_entity}, state ->
-        entity =
-          Map.get(state.entities, new_entity_id)
-          |> Map.merge(new_entity)
-          |> Map.put(:is_colliding, Physics.check_collisions(new_entity, state.entities))
+      state
+      |> Map.put(:players, new_players_state)
+      |> Map.put(:projectiles, new_projectiles_state)
 
-        entities = state.entities |> Map.put(new_entity_id, entity)
-        state |> Map.put(:entities, entities)
-      end)
+    broadcast_game_update(state)
 
+    {:noreply, state}
+  end
+
+  def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
+    player =
+      state.players
+      |> Map.get(String.to_integer(player_id))
+      |> Map.put(:direction, %{x: x, y: y})
+
+    players = state.players |> Map.put(String.to_integer(player_id), player)
+
+    state =
+      state
+      |> Map.put(:players, players)
+
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:attack, player_id, _skill}, _from, state) do
+    current_player = Map.get(state.players, String.to_integer(player_id))
+
+    last_id = state.last_id + 1
+
+    projectiles =
+      state.projectiles
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(
+          last_id,
+          current_player.position,
+          current_player.direction,
+          current_player.id
+        )
+      )
+
+    state =
+      state
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:projectiles, projectiles)
+
+    {:reply, :ok, state}
+  end
+
+  ##################
+  # Private
+  ##################
+
+  # Game creation
+  defp new_game(game_id, players) do
+    new_game =
+      Physics.new_game(game_id)
+      |> Map.put(:last_id, 0)
+      |> Map.put(:players, %{})
+      |> Map.put(:projectiles, %{})
+
+    Enum.reduce(players, new_game, fn {_player_id, _client_id}, new_game ->
+      last_id = new_game.last_id + 1
+      players = new_game.players |> Map.put(last_id, Entities.new_player(last_id))
+
+      new_game
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:players, players)
+    end)
+  end
+
+  # Move entities and add game fields
+  defp update_entities(entities, entities_to_collide) do
+    new_state = Physics.move_entities(entities)
+
+    Enum.reduce(new_state, %{}, fn {key, value}, acc ->
+      entity =
+        Map.get(entities, key)
+        |> Map.merge(value)
+        |> Map.put(
+          :is_colliding,
+          Physics.check_collisions(value, entities_to_collide) |> Enum.any?()
+        )
+
+      acc |> Map.put(key, entity)
+    end)
+  end
+
+  # Broadcast game update to all players
+  defp broadcast_game_update(state) do
     entities =
-      Enum.reduce(state.entities, %{}, fn {entity_id, entity}, entities ->
+      state.players
+      |> Map.merge(state.projectiles)
+      |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
         entity =
-          Map.put(entity, :is_colliding, Physics.check_collisions(entity, state.entities))
-          |> Map.put(:category, to_string(entity.category))
+          Map.put(entity, :category, to_string(entity.category))
           |> Map.put(:shape, to_string(entity.shape))
           |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
           |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
@@ -80,50 +156,5 @@ defmodule Arena.GameUpdater do
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
-
-    {:noreply, state}
-  end
-
-  def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
-    new_state = Physics.set_entity_direction(state, player_id |> String.to_integer(), x, y)
-
-    state =
-      Enum.reduce(new_state.entities, state, fn {new_entity_id, new_entity}, state ->
-        entity =
-          Map.get(state.entities, new_entity_id)
-          |> Map.merge(new_entity)
-
-        entities = state.entities |> Map.put(new_entity_id, entity)
-
-        state
-        |> Map.put(:entities, entities)
-      end)
-
-    {:reply, :ok, state}
-  end
-
-  def handle_call({:attack, player_id, _skill}, _from, state) do
-    current_player = Map.get(state.entities, String.to_integer(player_id))
-
-    last_id = state.last_id + 1
-
-    entities =
-      state.entities
-      |> Map.put(
-        last_id,
-        Entities.new_projectile(
-          last_id,
-          current_player.position,
-          current_player.direction,
-          current_player.id
-        )
-      )
-
-    state =
-      state
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:entities, entities)
-
-    {:reply, :ok, state}
   end
 end

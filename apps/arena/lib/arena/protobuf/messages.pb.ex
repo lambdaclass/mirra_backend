@@ -49,11 +49,12 @@ defmodule Arena.Protobuf.Entity do
   field :radius, 6, type: :float
   field :vertices, 7, repeated: true, type: Arena.Protobuf.Position
   field :is_colliding, 8, type: :bool, json_name: "isColliding"
-  field :speed, 9, type: :float
-  field :direction, 10, type: Arena.Protobuf.Direction
-  field :player, 11, type: Arena.Protobuf.Player, oneof: 0
-  field :projectile, 12, type: Arena.Protobuf.Projectile, oneof: 0
-  field :obstacle, 13, type: Arena.Protobuf.Obstacle, oneof: 0
+  field :collides_with, 9, repeated: true, type: :uint64, json_name: "collidesWith"
+  field :speed, 10, type: :float
+  field :direction, 11, type: Arena.Protobuf.Direction
+  field :player, 12, type: Arena.Protobuf.Player, oneof: 0
+  field :projectile, 13, type: Arena.Protobuf.Projectile, oneof: 0
+  field :obstacle, 14, type: Arena.Protobuf.Obstacle, oneof: 0
 end
 
 defmodule Arena.Protobuf.Player do

@@ -50,12 +50,13 @@ message Entity {
   float radius = 6;
   repeated Position vertices = 7;
   bool is_colliding = 8;
-  float speed = 9;
-  Direction direction = 10;
+  repeated uint64 collides_with = 9;
+  float speed = 10;
+  Direction direction = 11;
   oneof aditional_info {
-    Player player = 11;
-    Projectile projectile = 12;
-    Obstacle obstacle = 13;
+    Player player = 12;
+    Projectile projectile = 13;
+    Obstacle obstacle = 14;
   }
 }
 
