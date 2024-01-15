@@ -39,8 +39,8 @@ defmodule GameClientWeb.BoardLive.Show do
   def handle_info({:game_update, game_state}, socket) do
     game_state = GameClient.Protobuf.GameState.decode(game_state)
 
-    entities =
-      game_state.entities
+    players =
+      game_state.players
       |> Enum.map(fn {_entity_id, entity} ->
         %{
           id: entity.id,
@@ -55,7 +55,23 @@ defmodule GameClientWeb.BoardLive.Show do
         }
       end)
 
-    {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
+    projectiles =
+      game_state.projectiles
+      |> Enum.map(fn {_entity_id, entity} ->
+        %{
+          id: entity.id,
+          category: entity.category,
+          shape: entity.shape,
+          name: entity.name,
+          x: entity.position.x,
+          y: entity.position.y,
+          radius: entity.radius,
+          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
+          is_colliding: entity.is_colliding
+        }
+      end)
+
+    {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
   end
 
   def handle_event("move", direction, socket) do

@@ -136,25 +136,29 @@ defmodule Arena.GameUpdater do
 
   # Broadcast game update to all players
   defp broadcast_game_update(state) do
-    entities =
-      state.players
-      |> Map.merge(state.projectiles)
-      |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
-        entity =
-          Map.put(entity, :category, to_string(entity.category))
-          |> Map.put(:shape, to_string(entity.shape))
-          |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
-          |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
-
-        Map.put(entities, entity_id, entity)
-      end)
+    players = complete_entities(state.players)
+    projectiles = complete_entities(state.projectiles)
 
     encoded_state =
       GameState.encode(%GameState{
         game_id: state.game_id,
-        entities: entities
+        players: players,
+        projectiles: projectiles
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+  end
+
+  defp complete_entities(entities) do
+    entities
+    |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
+      entity =
+        Map.put(entity, :category, to_string(entity.category))
+        |> Map.put(:shape, to_string(entity.shape))
+        |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
+        |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+
+      Map.put(entities, entity_id, entity)
+    end)
   end
 end
