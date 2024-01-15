@@ -118,9 +118,9 @@ defmodule Arena.GameUpdater do
       players = new_game.players |> Map.put(last_id, Entities.new_player(last_id))
 
       new_game
-        |> Map.put(:last_id, last_id)
-        |> Map.put(:players, players)
-        |> put_in([:client_to_player_map, client_id], last_id)
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:players, players)
+      |> put_in([:client_to_player_map, client_id], last_id)
     end)
   end
 
