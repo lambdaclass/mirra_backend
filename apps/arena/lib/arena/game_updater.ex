@@ -106,9 +106,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
-      |> Map.put(:obstacles, %{})
 
-    new_game = Enum.reduce(players, new_game, fn {_player_id, _client_id}, new_game ->
+    Enum.reduce(players, new_game, fn {_player_id, _client_id}, new_game ->
       last_id = new_game.last_id + 1
       players = new_game.players |> Map.put(last_id, Entities.new_player(last_id))
 
@@ -116,13 +115,6 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
     end)
-
-    last_id = new_game.last_id + 1
-    obstacles = new_game.obstacles |> Map.put(last_id, Entities.new_obstacle(last_id))
-
-    new_game
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:obstacles, obstacles)
   end
 
   # Move entities and add game fields
