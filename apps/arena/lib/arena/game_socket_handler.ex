@@ -9,11 +9,11 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def init(req, _opts) do
-    player_id = :cowboy_req.binding(:player_id, req)
+    client_id = :cowboy_req.binding(:client_id, req)
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
 
-    {:cowboy_websocket, req, %{player_id: player_id, game_pid: game_pid, game_id: game_id}}
+    {:cowboy_websocket, req, %{client_id: client_id, game_pid: game_pid, game_id: game_id}}
   end
 
   @impl true
@@ -32,10 +32,10 @@ defmodule Arena.GameSocketHandler do
   def websocket_handle({:binary, message}, state) do
     case Arena.Protobuf.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
-        GameUpdater.attack(state.game_pid, state.player_id, skill)
+        GameUpdater.attack(state.game_pid, state.client_id, skill)
 
       %{action_type: {:move, %{direction: direction}}} ->
-        GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y})
+        GameUpdater.move(state.game_pid, state.client_id, {direction.x, direction.y})
 
       _ ->
         {}

@@ -10,8 +10,8 @@ import Config
 # Configures the endpoint
 dispatch = [
   _: [
-    {"/play/:game_id/:player_id", Arena.GameSocketHandler, []},
-    {"/play/:player_id", Arena.SocketHandler, []},
+    {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
+    {"/play/:client_id", Arena.SocketHandler, []},
     {:_, Plug.Cowboy.Handler, {ArenaWeb.Endpoint, []}}
   ]
 ]
