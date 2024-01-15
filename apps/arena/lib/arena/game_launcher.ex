@@ -41,7 +41,7 @@ defmodule Arena.GameLauncher do
   def handle_info(:start_game, state) do
     {game_players, remaining_players} = Enum.split(state.players, @players_needed)
 
-    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{players: game_players})
+    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{clients: game_players})
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 

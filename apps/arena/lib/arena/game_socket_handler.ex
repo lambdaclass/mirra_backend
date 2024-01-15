@@ -18,8 +18,10 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_init(state) do
-    Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
     Logger.info("Websocket INIT called")
+    Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
+    {:ok, player_id} = GameUpdater.join(state.game_pid, state.client_id)
+    state = Map.put(state, :player_id, player_id)
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 
