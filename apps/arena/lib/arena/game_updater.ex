@@ -58,10 +58,10 @@ defmodule Arena.GameUpdater do
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
     player =
       state.players
-      |> Map.get(String.to_integer(player_id))
+      |> Map.get(player_id)
       |> Map.put(:direction, %{x: x, y: y})
 
-    players = state.players |> Map.put(String.to_integer(player_id), player)
+    players = state.players |> Map.put(player_id, player)
 
     state =
       state
@@ -71,7 +71,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:attack, player_id, _skill}, _from, state) do
-    current_player = Map.get(state.players, String.to_integer(player_id))
+    current_player = Map.get(state.players, player_id)
 
     last_id = state.last_id + 1
 
