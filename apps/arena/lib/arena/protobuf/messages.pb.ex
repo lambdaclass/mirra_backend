@@ -16,7 +16,16 @@ defmodule Arena.Protobuf.Position do
   field :y, 2, type: :float
 end
 
-defmodule Arena.Protobuf.GameState.EntitiesEntry do
+defmodule Arena.Protobuf.GameState.PlayersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: Arena.Protobuf.Entity
+end
+
+defmodule Arena.Protobuf.GameState.ProjectilesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -31,7 +40,12 @@ defmodule Arena.Protobuf.GameState do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :game_id, 1, type: :string, json_name: "gameId"
-  field :entities, 2, repeated: true, type: Arena.Protobuf.GameState.EntitiesEntry, map: true
+  field :players, 2, repeated: true, type: Arena.Protobuf.GameState.PlayersEntry, map: true
+
+  field :projectiles, 3,
+    repeated: true,
+    type: Arena.Protobuf.GameState.ProjectilesEntry,
+    map: true
 end
 
 defmodule Arena.Protobuf.Entity do

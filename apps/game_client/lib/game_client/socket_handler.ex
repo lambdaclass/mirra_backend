@@ -21,7 +21,8 @@ defmodule GameClient.SocketHandler do
     game_state =
       GameState.encode(%GameState{
         game_id: nil,
-        entities: %{}
+        players: %{},
+        projectiles: %{}
       })
 
     {:reply, {:binary, game_state}, state}
@@ -46,7 +47,8 @@ defmodule GameClient.SocketHandler do
     game_state =
       GameState.encode(%GameState{
         game_id: game_id,
-        entities: %{}
+        players: %{},
+        projectiles: %{}
       })
 
     {:reply, {:binary, game_state}, state}
