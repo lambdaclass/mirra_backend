@@ -41,8 +41,9 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, state) do
     Process.send_after(self(), :update_game, @game_tick)
 
-    new_players_state = update_entities(state.players)
-    new_projectiles_state = update_entities(state.projectiles)
+    entities_to_collide = Map.merge(state.players, state.projectiles)
+    new_players_state = update_entities(state.players, entities_to_collide)
+    new_projectiles_state = update_entities(state.projectiles, entities_to_collide)
 
     state =
       state
@@ -117,14 +118,17 @@ defmodule Arena.GameUpdater do
   end
 
   # Move entities and add game fields
-  defp update_entities(entities) do
+  defp update_entities(entities, entities_to_collide) do
     new_state = Physics.move_entities(entities)
 
     Enum.reduce(new_state, %{}, fn {key, value}, acc ->
       entity =
         Map.get(entities, key)
         |> Map.merge(value)
-        |> Map.put(:is_colliding, false)
+        |> Map.put(
+          :is_colliding,
+          Physics.check_collisions(value, entities_to_collide) |> Enum.any?()
+        )
 
       acc |> Map.put(key, entity)
     end)
@@ -137,8 +141,7 @@ defmodule Arena.GameUpdater do
       |> Map.merge(state.projectiles)
       |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
         entity =
-          Map.put(entity, :is_colliding, Physics.check_collisions(entity, state.entities))
-          |> Map.put(:category, to_string(entity.category))
+          Map.put(entity, :category, to_string(entity.category))
           |> Map.put(:shape, to_string(entity.shape))
           |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
           |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
