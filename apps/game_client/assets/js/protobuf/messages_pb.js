@@ -596,7 +596,8 @@ proto.GameState.prototype.toObject = function(opt_includeInstance) {
 proto.GameState.toObject = function(includeInstance, msg) {
   var f, obj = {
     gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    entitiesMap: (f = msg.getEntitiesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
   if (includeInstance) {
@@ -638,7 +639,13 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
       msg.setGameId(value);
       break;
     case 2:
-      var value = msg.getEntitiesMap();
+      var value = msg.getPlayersMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+         });
+      break;
+    case 3:
+      var value = msg.getProjectilesMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
@@ -679,9 +686,13 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getEntitiesMap(true);
+  f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getProjectilesMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
 };
 
@@ -705,12 +716,12 @@ proto.GameState.prototype.setGameId = function(value) {
 
 
 /**
- * map<uint64, Entity> entities = 2;
+ * map<uint64, Entity> players = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
  */
-proto.GameState.prototype.getEntitiesMap = function(opt_noLazyCreate) {
+proto.GameState.prototype.getPlayersMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,!proto.Entity>} */ (
       jspb.Message.getMapField(this, 2, opt_noLazyCreate,
       proto.Entity));
@@ -721,8 +732,31 @@ proto.GameState.prototype.getEntitiesMap = function(opt_noLazyCreate) {
  * Clears values from the map. The map will be non-null.
  * @return {!proto.GameState} returns this
  */
-proto.GameState.prototype.clearEntitiesMap = function() {
-  this.getEntitiesMap().clear();
+proto.GameState.prototype.clearPlayersMap = function() {
+  this.getPlayersMap().clear();
+  return this;
+};
+
+
+/**
+ * map<uint64, Entity> projectiles = 3;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!proto.Entity>}
+ */
+proto.GameState.prototype.getProjectilesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
+      proto.Entity));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearProjectilesMap = function() {
+  this.getProjectilesMap().clear();
   return this;
 };
 
