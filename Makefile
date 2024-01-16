@@ -6,8 +6,7 @@ start:
 	iex -S mix phx.server
 
 format:
-	cd apps/arena && mix format
-	cd apps/game_client && mix format
+	mix format
 
 generate-protos: generate-arena-protos generate-game-client-protos
 

@@ -8,7 +8,7 @@ To start all applications, run the following command:
 make start
 ```
 
-Then navigate to the following link http://localhost:3000/board/1
+Then navigate to the following link to start a game: http://localhost:3000/board/1
 
 Each of the applications, as mentioned in the previous paragraph, has a specific responsibility:
 
