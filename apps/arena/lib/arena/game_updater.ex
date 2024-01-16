@@ -15,8 +15,8 @@ defmodule Arena.GameUpdater do
   ##################
   # API
   ##################
-  def join(game_pid, player_id) do
-    GenServer.call(game_pid, {:join, player_id})
+  def join(game_pid, client_id) do
+    GenServer.call(game_pid, {:join, client_id})
   end
 
   def move(game_pid, player_id, direction) do
@@ -30,9 +30,9 @@ defmodule Arena.GameUpdater do
   ##################
   # Callbacks
   ##################
-  def init(%{players: players}) do
+  def init(%{clients: clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    state = new_game(game_id, players)
+    state = new_game(game_id, clients)
 
     Process.send_after(self(), :update_game, 1_000)
     {:ok, state}
@@ -58,10 +58,10 @@ defmodule Arena.GameUpdater do
   def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
     player =
       state.players
-      |> Map.get(String.to_integer(player_id))
+      |> Map.get(player_id)
       |> Map.put(:direction, %{x: x, y: y})
 
-    players = state.players |> Map.put(String.to_integer(player_id), player)
+    players = state.players |> Map.put(player_id, player)
 
     state =
       state
@@ -71,7 +71,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:attack, player_id, _skill}, _from, state) do
-    current_player = Map.get(state.players, String.to_integer(player_id))
+    current_player = Map.get(state.players, player_id)
 
     last_id = state.last_id + 1
 
@@ -95,25 +95,32 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, state}
   end
 
+  def handle_call({:join, client_id}, _from, state) do
+    player_id = get_in(state, [:client_to_player_map, client_id])
+    {:reply, {:ok, player_id}, state}
+  end
+
   ##################
   # Private
   ##################
 
   # Game creation
-  defp new_game(game_id, players) do
+  defp new_game(game_id, clients) do
     new_game =
       Physics.new_game(game_id)
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
+      |> Map.put(:client_to_player_map, %{})
 
-    Enum.reduce(players, new_game, fn {_player_id, _client_id}, new_game ->
+    Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
       players = new_game.players |> Map.put(last_id, Entities.new_player(last_id))
 
       new_game
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
+      |> put_in([:client_to_player_map, client_id], last_id)
     end)
   end
 

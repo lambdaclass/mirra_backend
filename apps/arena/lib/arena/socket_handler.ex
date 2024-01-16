@@ -10,15 +10,15 @@ defmodule Arena.SocketHandler do
 
   @impl true
   def init(req, _opts) do
-    player_id = :cowboy_req.binding(:player_id, req)
+    client_id = :cowboy_req.binding(:client_id, req)
 
-    {:cowboy_websocket, req, %{player_id: player_id}}
+    {:cowboy_websocket, req, %{client_id: client_id}}
   end
 
   @impl true
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
-    GameLauncher.join(state.player_id)
+    GameLauncher.join(state.client_id)
 
     game_state =
       GameState.encode(%GameState{

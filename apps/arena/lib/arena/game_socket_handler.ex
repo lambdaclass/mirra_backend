@@ -9,17 +9,19 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def init(req, _opts) do
-    player_id = :cowboy_req.binding(:player_id, req)
+    client_id = :cowboy_req.binding(:client_id, req)
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
 
-    {:cowboy_websocket, req, %{player_id: player_id, game_pid: game_pid, game_id: game_id}}
+    {:cowboy_websocket, req, %{client_id: client_id, game_pid: game_pid, game_id: game_id}}
   end
 
   @impl true
   def websocket_init(state) do
-    Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
     Logger.info("Websocket INIT called")
+    Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
+    {:ok, player_id} = GameUpdater.join(state.game_pid, state.client_id)
+    state = Map.put(state, :player_id, player_id)
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 
