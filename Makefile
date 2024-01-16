@@ -1,4 +1,4 @@
-.PHONY: start generate-protos generate-arena-protos generate-game-client-protos
+.PHONY: start format generate-protos generate-arena-protos generate-game-client-protos
 
 start:
 	cd apps/game_client/assets && npm install
