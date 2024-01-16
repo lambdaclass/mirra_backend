@@ -1,4 +1,4 @@
-.PHONY: run deps start stop generate-ex-protos generate-protos format lints check
+.PHONY: run deps start stop generate-protos format lints check
 
 run:
 	iex -S mix phx.server
@@ -13,13 +13,12 @@ start:
 stop:
 	docker-compose down
 
-generate-ex-protos:
+generate-protos:
 	protoc \
-		--elixir_out=lib/arena/protobuf \
-		--elixir_opt=package_prefix=arena.protobuf \
+		--elixir_out=lib/arena/serialization \
+		--elixir_opt=package_prefix=arena.serialization \
+		--proto_path=../serialization \
 		messages.proto
-
-generate-protos: generate-ex-protos
 
 format:
 	mix format
