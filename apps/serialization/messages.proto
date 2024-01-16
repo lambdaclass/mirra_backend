@@ -20,6 +20,32 @@ message Position {
   float y = 2;
 }
 
+message GameEvent {
+  oneof event {
+    GameJoined joined = 1;
+    GameState update = 2;
+  }
+}
+
+message GameJoined {
+  uint64 player_id = 1;
+  Configuration config = 2;
+}
+
+message Configuration {
+  ConfigGame game = 1;
+  ConfigMap map = 2;
+}
+
+message ConfigGame {
+  float tick_rate_ms = 1;
+}
+
+message ConfigMap {
+  float radius = 1;
+}
+
+
 /*
  * Game State
  */
