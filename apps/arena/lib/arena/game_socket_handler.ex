@@ -34,10 +34,10 @@ defmodule Arena.GameSocketHandler do
   def websocket_handle({:binary, message}, state) do
     case Arena.Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
-        GameUpdater.attack(state.game_pid, state.player_id, skill)
+        GameUpdater.attack(state.game_pid, String.to_integer(state.client_id), skill)
 
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y}, timestamp)
+        GameUpdater.move(state.game_pid, String.to_integer(state.client_id), {direction.x, direction.y}, timestamp)
 
       _ ->
         {}

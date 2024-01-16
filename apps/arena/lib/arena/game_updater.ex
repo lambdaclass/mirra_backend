@@ -4,6 +4,7 @@ defmodule Arena.GameUpdater do
   (player websocket).
   """
   alias Arena.Serialization.GameState
+  alias Arena.Utils
   use GenServer
   alias Phoenix.PubSub
 
@@ -59,7 +60,7 @@ defmodule Arena.GameUpdater do
     player =
       state.players
       |> Map.get(player_id)
-      |> Map.put(:direction, %{x: x, y: y})
+      |> Map.put(:direction, Utils.normalize(x, y))
 
     players = state.players |> Map.put(player_id, player)
 
