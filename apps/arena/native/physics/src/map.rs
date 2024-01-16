@@ -78,7 +78,7 @@ impl Entity {
         }
     }
 
-    pub fn collides_with(&mut self, entities: Vec<Entity>) -> Vec<Entity> {
+    pub fn collides_with(&mut self, entities: Vec<Entity>) -> Vec<u64> {
         let mut result = Vec::new();
 
         for entity in entities {
@@ -89,22 +89,22 @@ impl Entity {
             match entity.shape {
                 Shape::Circle => {
                     if circle_circle_collision(self, &entity) {
-                        result.push(entity);
+                        result.push(entity.id);
                     }
                 }
                 Shape::Polygon => {
                     if circle_polygon_collision(self, &entity) {
-                        result.push(entity);
+                        result.push(entity.id);
                     }
                 }
                 Shape::Point => {
                     if point_circle_collision(self, &entity) {
-                        result.push(entity);
+                        result.push(entity.id);
                     }
                 }
                 Shape::Line => {
                     if line_circle_collision(self, &entity) {
-                        result.push(entity);
+                        result.push(entity.id);
                     }
                 }
             }
@@ -122,10 +122,5 @@ impl Entity {
             x: self.position.x + self.direction.x * self.speed,
             y: self.position.y + self.direction.y * self.speed,
         }
-    }
-
-    pub fn set_direction(&mut self, x: f64, y: f64) {
-        self.direction.x = x;
-        self.direction.y = y;
     }
 }

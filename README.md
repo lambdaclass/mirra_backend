@@ -29,7 +29,9 @@ make start
 For more information, you can read its [documentation](apps/arena/README.md)
 
 ### Game Client
-This project allows visualizing the game in a simplified version of the UI, where shapes and polygons interact with each other. It provides a developer-friendly way to understand what is happening.
+This project is a representation of the arena using simple 2D shapes and polygons that interact with each other. This provides a developer-friendly way to understand what is happening.
+
+For now, this client is only connected with the Arena project, but it could be integrated with any other application.
 
 To run this project individually, you can use the following commands:
 

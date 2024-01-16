@@ -16,7 +16,16 @@ defmodule Arena.Serialization.Position do
   field :y, 2, type: :float
 end
 
-defmodule Arena.Serialization.GameState.EntitiesEntry do
+defmodule Arena.Serialization.GameState.PlayersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: Arena.Serialization.Entity
+end
+
+defmodule Arena.Serialization.GameState.ProjectilesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -31,7 +40,12 @@ defmodule Arena.Serialization.GameState do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :game_id, 1, type: :string, json_name: "gameId"
-  field :entities, 2, repeated: true, type: Arena.Serialization.GameState.EntitiesEntry, map: true
+  field :players, 2, repeated: true, type: Arena.Serialization.GameState.PlayersEntry, map: true
+
+  field :projectiles, 3,
+    repeated: true,
+    type: Arena.Serialization.GameState.ProjectilesEntry,
+    map: true
 end
 
 defmodule Arena.Serialization.Entity do
@@ -49,11 +63,12 @@ defmodule Arena.Serialization.Entity do
   field :radius, 6, type: :float
   field :vertices, 7, repeated: true, type: Arena.Serialization.Position
   field :is_colliding, 8, type: :bool, json_name: "isColliding"
-  field :speed, 9, type: :float
-  field :direction, 10, type: Arena.Serialization.Direction
-  field :player, 11, type: Arena.Serialization.Player, oneof: 0
-  field :projectile, 12, type: Arena.Serialization.Projectile, oneof: 0
-  field :obstacle, 13, type: Arena.Serialization.Obstacle, oneof: 0
+  field :collides_with, 9, repeated: true, type: :uint64, json_name: "collidesWith"
+  field :speed, 10, type: :float
+  field :direction, 11, type: Arena.Serialization.Direction
+  field :player, 12, type: Arena.Serialization.Player, oneof: 0
+  field :projectile, 13, type: Arena.Serialization.Projectile, oneof: 0
+  field :obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0
 end
 
 defmodule Arena.Serialization.Player do

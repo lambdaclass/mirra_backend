@@ -20,45 +20,27 @@ fn new_game(game_id: String) -> GameState {
 }
 
 #[rustler::nif()]
-fn set_entity_direction(game_state: GameState, entity_id: u64, x: f64, y: f64) -> GameState {
-    let mut game_state: GameState = game_state;
-    let entity = game_state.entities.get_mut(&entity_id).unwrap();
-    entity.set_direction(x, y);
-    game_state
-}
+fn move_entities(entities: HashMap<u64, Entity>) -> HashMap<u64, Entity> {
+    let mut entities: HashMap<u64, Entity> = entities;
 
-#[rustler::nif()]
-fn move_entities(game_state: GameState) -> GameState {
-    let mut game_state: GameState = game_state;
-
-    for entity in game_state.entities.values_mut() {
+    for entity in entities.values_mut() {
         entity.move_entity();
     }
 
-    game_state
+    entities
 }
 
 #[rustler::nif()]
 /// Check players inside the player_id radius
 /// Return a list of the players id inside the radius Vec<player_id>
-fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> bool {
+fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
     let mut entity: Entity = entity;
     let ent = entities.into_values().collect();
 
-    if entity.shape == map::Shape::Circle {
-        return !entity.collides_with(ent).is_empty();
-    }
-
-    false
+    entity.collides_with(ent)
 }
 
 rustler::init!(
     "Elixir.Physics",
-    [
-        add,
-        set_entity_direction,
-        new_game,
-        check_collisions,
-        move_entities
-    ]
+    [add, new_game, check_collisions, move_entities]
 );

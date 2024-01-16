@@ -596,7 +596,8 @@ proto.GameState.prototype.toObject = function(opt_includeInstance) {
 proto.GameState.toObject = function(includeInstance, msg) {
   var f, obj = {
     gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    entitiesMap: (f = msg.getEntitiesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
   if (includeInstance) {
@@ -638,7 +639,13 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
       msg.setGameId(value);
       break;
     case 2:
-      var value = msg.getEntitiesMap();
+      var value = msg.getPlayersMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+         });
+      break;
+    case 3:
+      var value = msg.getProjectilesMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
@@ -679,9 +686,13 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getEntitiesMap(true);
+  f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getProjectilesMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
 };
 
@@ -705,12 +716,12 @@ proto.GameState.prototype.setGameId = function(value) {
 
 
 /**
- * map<uint64, Entity> entities = 2;
+ * map<uint64, Entity> players = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
  */
-proto.GameState.prototype.getEntitiesMap = function(opt_noLazyCreate) {
+proto.GameState.prototype.getPlayersMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,!proto.Entity>} */ (
       jspb.Message.getMapField(this, 2, opt_noLazyCreate,
       proto.Entity));
@@ -721,8 +732,31 @@ proto.GameState.prototype.getEntitiesMap = function(opt_noLazyCreate) {
  * Clears values from the map. The map will be non-null.
  * @return {!proto.GameState} returns this
  */
-proto.GameState.prototype.clearEntitiesMap = function() {
-  this.getEntitiesMap().clear();
+proto.GameState.prototype.clearPlayersMap = function() {
+  this.getPlayersMap().clear();
+  return this;
+};
+
+
+/**
+ * map<uint64, Entity> projectiles = 3;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!proto.Entity>}
+ */
+proto.GameState.prototype.getProjectilesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+      jspb.Message.getMapField(this, 3, opt_noLazyCreate,
+      proto.Entity));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearProjectilesMap = function() {
+  this.getProjectilesMap().clear();
   return this;
 };
 
@@ -733,7 +767,7 @@ proto.GameState.prototype.clearEntitiesMap = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Entity.repeatedFields_ = [7];
+proto.Entity.repeatedFields_ = [7,9];
 
 /**
  * Oneof group definitions for this message. Each group defines the field
@@ -743,16 +777,16 @@ proto.Entity.repeatedFields_ = [7];
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.Entity.oneofGroups_ = [[11,12,13]];
+proto.Entity.oneofGroups_ = [[12,13,14]];
 
 /**
  * @enum {number}
  */
 proto.Entity.AditionalInfoCase = {
   ADITIONAL_INFO_NOT_SET: 0,
-  PLAYER: 11,
-  PROJECTILE: 12,
-  OBSTACLE: 13
+  PLAYER: 12,
+  PROJECTILE: 13,
+  OBSTACLE: 14
 };
 
 /**
@@ -802,7 +836,8 @@ proto.Entity.toObject = function(includeInstance, msg) {
     verticesList: jspb.Message.toObjectList(msg.getVerticesList(),
     proto.Position.toObject, includeInstance),
     isColliding: jspb.Message.getBooleanFieldWithDefault(msg, 8, false),
-    speed: jspb.Message.getFloatingPointFieldWithDefault(msg, 9, 0.0),
+    collidesWithList: (f = jspb.Message.getRepeatedField(msg, 9)) == null ? undefined : f,
+    speed: jspb.Message.getFloatingPointFieldWithDefault(msg, 10, 0.0),
     direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f),
     player: (f = msg.getPlayer()) && proto.Player.toObject(includeInstance, f),
     projectile: (f = msg.getProjectile()) && proto.Projectile.toObject(includeInstance, f),
@@ -878,25 +913,31 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setIsColliding(value);
       break;
     case 9:
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addCollidesWith(values[i]);
+      }
+      break;
+    case 10:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setSpeed(value);
       break;
-    case 10:
+    case 11:
       var value = new proto.Direction;
       reader.readMessage(value,proto.Direction.deserializeBinaryFromReader);
       msg.setDirection(value);
       break;
-    case 11:
+    case 12:
       var value = new proto.Player;
       reader.readMessage(value,proto.Player.deserializeBinaryFromReader);
       msg.setPlayer(value);
       break;
-    case 12:
+    case 13:
       var value = new proto.Projectile;
       reader.readMessage(value,proto.Projectile.deserializeBinaryFromReader);
       msg.setProjectile(value);
       break;
-    case 13:
+    case 14:
       var value = new proto.Obstacle;
       reader.readMessage(value,proto.Obstacle.deserializeBinaryFromReader);
       msg.setObstacle(value);
@@ -988,17 +1029,24 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getCollidesWithList();
+  if (f.length > 0) {
+    writer.writePackedUint64(
+      9,
+      f
+    );
+  }
   f = message.getSpeed();
   if (f !== 0.0) {
     writer.writeFloat(
-      9,
+      10,
       f
     );
   }
   f = message.getDirection();
   if (f != null) {
     writer.writeMessage(
-      10,
+      11,
       f,
       proto.Direction.serializeBinaryToWriter
     );
@@ -1006,7 +1054,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
   f = message.getPlayer();
   if (f != null) {
     writer.writeMessage(
-      11,
+      12,
       f,
       proto.Player.serializeBinaryToWriter
     );
@@ -1014,7 +1062,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
   f = message.getProjectile();
   if (f != null) {
     writer.writeMessage(
-      12,
+      13,
       f,
       proto.Projectile.serializeBinaryToWriter
     );
@@ -1022,7 +1070,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
   f = message.getObstacle();
   if (f != null) {
     writer.writeMessage(
-      13,
+      14,
       f,
       proto.Obstacle.serializeBinaryToWriter
     );
@@ -1214,11 +1262,48 @@ proto.Entity.prototype.setIsColliding = function(value) {
 
 
 /**
- * optional float speed = 9;
+ * repeated uint64 collides_with = 9;
+ * @return {!Array<number>}
+ */
+proto.Entity.prototype.getCollidesWithList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 9));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.Entity} returns this
+ */
+proto.Entity.prototype.setCollidesWithList = function(value) {
+  return jspb.Message.setField(this, 9, value || []);
+};
+
+
+/**
+ * @param {number} value
+ * @param {number=} opt_index
+ * @return {!proto.Entity} returns this
+ */
+proto.Entity.prototype.addCollidesWith = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 9, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.Entity} returns this
+ */
+proto.Entity.prototype.clearCollidesWithList = function() {
+  return this.setCollidesWithList([]);
+};
+
+
+/**
+ * optional float speed = 10;
  * @return {number}
  */
 proto.Entity.prototype.getSpeed = function() {
-  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 9, 0.0));
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 10, 0.0));
 };
 
 
@@ -1227,17 +1312,17 @@ proto.Entity.prototype.getSpeed = function() {
  * @return {!proto.Entity} returns this
  */
 proto.Entity.prototype.setSpeed = function(value) {
-  return jspb.Message.setProto3FloatField(this, 9, value);
+  return jspb.Message.setProto3FloatField(this, 10, value);
 };
 
 
 /**
- * optional Direction direction = 10;
+ * optional Direction direction = 11;
  * @return {?proto.Direction}
  */
 proto.Entity.prototype.getDirection = function() {
   return /** @type{?proto.Direction} */ (
-    jspb.Message.getWrapperField(this, proto.Direction, 10));
+    jspb.Message.getWrapperField(this, proto.Direction, 11));
 };
 
 
@@ -1246,7 +1331,7 @@ proto.Entity.prototype.getDirection = function() {
  * @return {!proto.Entity} returns this
 */
 proto.Entity.prototype.setDirection = function(value) {
-  return jspb.Message.setWrapperField(this, 10, value);
+  return jspb.Message.setWrapperField(this, 11, value);
 };
 
 
@@ -1264,17 +1349,17 @@ proto.Entity.prototype.clearDirection = function() {
  * @return {boolean}
  */
 proto.Entity.prototype.hasDirection = function() {
-  return jspb.Message.getField(this, 10) != null;
+  return jspb.Message.getField(this, 11) != null;
 };
 
 
 /**
- * optional Player player = 11;
+ * optional Player player = 12;
  * @return {?proto.Player}
  */
 proto.Entity.prototype.getPlayer = function() {
   return /** @type{?proto.Player} */ (
-    jspb.Message.getWrapperField(this, proto.Player, 11));
+    jspb.Message.getWrapperField(this, proto.Player, 12));
 };
 
 
@@ -1283,7 +1368,7 @@ proto.Entity.prototype.getPlayer = function() {
  * @return {!proto.Entity} returns this
 */
 proto.Entity.prototype.setPlayer = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 11, proto.Entity.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 12, proto.Entity.oneofGroups_[0], value);
 };
 
 
@@ -1301,17 +1386,17 @@ proto.Entity.prototype.clearPlayer = function() {
  * @return {boolean}
  */
 proto.Entity.prototype.hasPlayer = function() {
-  return jspb.Message.getField(this, 11) != null;
+  return jspb.Message.getField(this, 12) != null;
 };
 
 
 /**
- * optional Projectile projectile = 12;
+ * optional Projectile projectile = 13;
  * @return {?proto.Projectile}
  */
 proto.Entity.prototype.getProjectile = function() {
   return /** @type{?proto.Projectile} */ (
-    jspb.Message.getWrapperField(this, proto.Projectile, 12));
+    jspb.Message.getWrapperField(this, proto.Projectile, 13));
 };
 
 
@@ -1320,7 +1405,7 @@ proto.Entity.prototype.getProjectile = function() {
  * @return {!proto.Entity} returns this
 */
 proto.Entity.prototype.setProjectile = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 12, proto.Entity.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 13, proto.Entity.oneofGroups_[0], value);
 };
 
 
@@ -1338,17 +1423,17 @@ proto.Entity.prototype.clearProjectile = function() {
  * @return {boolean}
  */
 proto.Entity.prototype.hasProjectile = function() {
-  return jspb.Message.getField(this, 12) != null;
+  return jspb.Message.getField(this, 13) != null;
 };
 
 
 /**
- * optional Obstacle obstacle = 13;
+ * optional Obstacle obstacle = 14;
  * @return {?proto.Obstacle}
  */
 proto.Entity.prototype.getObstacle = function() {
   return /** @type{?proto.Obstacle} */ (
-    jspb.Message.getWrapperField(this, proto.Obstacle, 13));
+    jspb.Message.getWrapperField(this, proto.Obstacle, 14));
 };
 
 
@@ -1357,7 +1442,7 @@ proto.Entity.prototype.getObstacle = function() {
  * @return {!proto.Entity} returns this
 */
 proto.Entity.prototype.setObstacle = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 13, proto.Entity.oneofGroups_[0], value);
+  return jspb.Message.setOneofWrapperField(this, 14, proto.Entity.oneofGroups_[0], value);
 };
 
 
@@ -1375,7 +1460,7 @@ proto.Entity.prototype.clearObstacle = function() {
  * @return {boolean}
  */
 proto.Entity.prototype.hasObstacle = function() {
-  return jspb.Message.getField(this, 13) != null;
+  return jspb.Message.getField(this, 14) != null;
 };
 
 
