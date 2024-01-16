@@ -15,7 +15,7 @@ defmodule Arena.Entities do
       },
       radius: 50.0,
       vertices: [],
-      speed: 10.0,
+      speed: 25.0,
       direction: %{
         x: 0.0,
         y: 0.0

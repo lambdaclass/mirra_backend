@@ -27,6 +27,8 @@ message GameState {
   string game_id = 1;
   map<uint64, Entity> players = 2;
   map<uint64, Entity> projectiles = 3;
+  int64 player_timestamp = 4;
+  int64 server_timestamp = 5;
 }
 
 /*
@@ -90,4 +92,5 @@ message GameAction {
     Move move = 1;
     Attack attack = 2;
   }
+  int64 timestamp = 3;
 }

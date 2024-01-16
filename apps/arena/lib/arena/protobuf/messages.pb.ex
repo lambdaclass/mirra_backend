@@ -46,6 +46,9 @@ defmodule Arena.Protobuf.GameState do
     repeated: true,
     type: Arena.Protobuf.GameState.ProjectilesEntry,
     map: true
+
+  field :player_timestamp, 4, type: :int64, json_name: "playerTimestamp"
+  field :server_timestamp, 5, type: :int64, json_name: "serverTimestamp"
 end
 
 defmodule Arena.Protobuf.Entity do
@@ -53,7 +56,7 @@ defmodule Arena.Protobuf.Entity do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  oneof(:aditional_info, 0)
+  oneof :aditional_info, 0
 
   field :id, 1, type: :uint64
   field :category, 2, type: :string
@@ -117,8 +120,9 @@ defmodule Arena.Protobuf.GameAction do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  oneof(:action_type, 0)
+  oneof :action_type, 0
 
   field :move, 1, type: Arena.Protobuf.Move, oneof: 0
   field :attack, 2, type: Arena.Protobuf.Attack, oneof: 0
+  field :timestamp, 3, type: :int64
 end

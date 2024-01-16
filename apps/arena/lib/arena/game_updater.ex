@@ -19,8 +19,8 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:join, player_id})
   end
 
-  def move(game_pid, player_id, direction) do
-    GenServer.call(game_pid, {:move, player_id, direction})
+  def move(game_pid, player_id, direction, timestamp) do
+    GenServer.call(game_pid, {:move, player_id, direction, timestamp})
   end
 
   def attack(game_pid, player_id, skill) do
@@ -55,7 +55,7 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_call({:move, player_id, _direction = {x, y}}, _from, state) do
+  def handle_call({:move, player_id, _direction = {x, y}, timestamp}, _from, state) do
     player =
       state.players
       |> Map.get(String.to_integer(player_id))
@@ -66,6 +66,7 @@ defmodule Arena.GameUpdater do
     state =
       state
       |> Map.put(:players, players)
+      |> Map.put(:player_timestamp, timestamp)
 
     {:reply, :ok, state}
   end
@@ -106,6 +107,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
+      |> Map.put(:player_timestamp, 0)
+      |> Map.put(:server_timestamp, 0)
 
     Enum.reduce(players, new_game, fn {_player_id, _client_id}, new_game ->
       last_id = new_game.last_id + 1
@@ -143,7 +146,9 @@ defmodule Arena.GameUpdater do
       GameState.encode(%GameState{
         game_id: state.game_id,
         players: players,
-        projectiles: projectiles
+        projectiles: projectiles,
+        server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+        player_timestamp: state.player_timestamp
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
@@ -157,6 +162,7 @@ defmodule Arena.GameUpdater do
         |> Map.put(:shape, to_string(entity.shape))
         |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
         |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+
 
       Map.put(entities, entity_id, entity)
     end)
