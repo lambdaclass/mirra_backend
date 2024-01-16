@@ -4,6 +4,7 @@ defmodule MirraBackend.MixProject do
   def project do
     [
       apps_path: "apps",
+      apps: [:arena, :game_client],
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
       deps: deps()

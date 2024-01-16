@@ -32,7 +32,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    case Arena.Protobuf.GameAction.decode(message) do
+    case Arena.Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill)
 
