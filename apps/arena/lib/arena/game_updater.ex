@@ -4,6 +4,7 @@ defmodule Arena.GameUpdater do
   (player websocket).
   """
   alias Arena.Serialization.GameState
+  alias Arena.Serialization.GameEvent
   use GenServer
   alias Phoenix.PubSub
 
@@ -150,12 +151,14 @@ defmodule Arena.GameUpdater do
     projectiles = complete_entities(state.projectiles)
 
     encoded_state =
-      GameState.encode(%GameState{
-        game_id: state.game_id,
-        players: players,
-        projectiles: projectiles,
-        server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-        player_timestamp: state.player_timestamp
+      GameEvent.encode(%GameEvent{
+        event_type: {:game_state, %GameState{
+          game_id: state.game_id,
+          players: players,
+          projectiles: projectiles,
+          server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+          player_timestamp: state.player_timestamp
+        }}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})

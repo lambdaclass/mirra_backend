@@ -3,6 +3,7 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Serialization
   alias Arena.GameUpdater
 
   @behaviour :cowboy_websocket
@@ -22,7 +23,13 @@ defmodule Arena.GameSocketHandler do
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
     {:ok, player_id} = GameUpdater.join(state.game_pid, state.client_id)
     state = Map.put(state, :player_id, player_id)
-    {:reply, {:binary, Jason.encode!(%{})}, state}
+
+    player_id =
+      Serialization.GameEvent.encode(%Serialization.GameEvent{
+        event_type: {:player_id, %Serialization.PlayerJoined{player_id: player_id}}
+      })
+
+    {:reply, {:binary, player_id}, state}
   end
 
   @impl true
@@ -32,7 +39,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    case Arena.Serialization.GameAction.decode(message) do
+    case Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill)
 

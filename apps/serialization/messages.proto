@@ -94,3 +94,14 @@ message GameAction {
   }
   int64 timestamp = 3;
 }
+
+message PlayerJoined {
+  uint64 player_id = 1;
+}
+
+message GameEvent {
+  oneof event_type {
+    PlayerJoined player_id = 1;
+    GameState game_state = 2;
+  }
+}

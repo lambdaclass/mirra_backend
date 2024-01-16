@@ -5,6 +5,7 @@ defmodule Arena.SocketHandler do
   require Logger
   alias Arena.GameLauncher
   alias Arena.Serialization.GameState
+  alias Arena.Serialization.GameEvent
 
   @behaviour :cowboy_websocket
 
@@ -21,10 +22,14 @@ defmodule Arena.SocketHandler do
     GameLauncher.join(state.client_id)
 
     game_state =
-      GameState.encode(%GameState{
-        game_id: nil,
-        players: %{},
-        projectiles: %{}
+      GameEvent.encode(%GameEvent{
+        event_type:
+          {:game_state,
+           %GameState{
+             game_id: nil,
+             players: %{},
+             projectiles: %{}
+           }}
       })
 
     {:reply, {:binary, game_state}, state}
@@ -47,10 +52,14 @@ defmodule Arena.SocketHandler do
     Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
 
     game_state =
-      GameState.encode(%GameState{
-        game_id: game_id,
-        players: %{},
-        projectiles: %{}
+      GameEvent.encode(%GameEvent{
+        event_type:
+          {:game_state,
+           %GameState{
+             game_id: game_id,
+             players: %{},
+             projectiles: %{}
+           }}
       })
 
     {:reply, {:binary, game_state}, state}

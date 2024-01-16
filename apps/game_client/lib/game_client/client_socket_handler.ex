@@ -12,9 +12,9 @@ defmodule GameClient.ClientSocketHandler do
     })
   end
 
-  def handle_frame({:binary, game_state}, state) do
-    # Logger.info("Received Message: GAME UPDATE")
-    Process.send(state.live_pid |> :erlang.list_to_pid(), {:game_update, game_state}, [])
+  def handle_frame({:binary, game_event}, state) do
+    # Logger.info("Received Message: GAME EVENT")
+    Process.send(state.live_pid |> :erlang.list_to_pid(), {:game_event, game_event}, [])
     {:ok, state}
   end
 

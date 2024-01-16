@@ -32,46 +32,55 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   # The game state is empty until the 1st broadcast msg
-  def handle_info({:game_update, "{}"}, socket) do
+  def handle_info({:game_event, "{}"}, socket) do
     {:noreply, socket}
   end
 
-  def handle_info({:game_update, game_state}, socket) do
-    game_state = GameClient.Protobuf.GameState.decode(game_state)
+  def handle_info({:game_event, game_event}, socket) do
+    game_event = GameClient.Protobuf.GameEvent.decode(game_event)
 
-    players =
-      game_state.players
-      |> Enum.map(fn {_entity_id, entity} ->
-        %{
-          id: entity.id,
-          category: entity.category,
-          shape: entity.shape,
-          name: entity.name,
-          x: entity.position.x,
-          y: entity.position.y,
-          radius: entity.radius,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: entity.is_colliding
-        }
-      end)
+    case game_event.event_type do
+      {:player_id, _player_joined} ->
+        {:noreply, socket}
 
-    projectiles =
-      game_state.projectiles
-      |> Enum.map(fn {_entity_id, entity} ->
-        %{
-          id: entity.id,
-          category: entity.category,
-          shape: entity.shape,
-          name: entity.name,
-          x: entity.position.x,
-          y: entity.position.y,
-          radius: entity.radius,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: entity.is_colliding
-        }
-      end)
+      {:game_state, game_state} ->
+        players =
+          game_state.players
+          |> Enum.map(fn {_entity_id, entity} ->
+            %{
+              id: entity.id,
+              category: entity.category,
+              shape: entity.shape,
+              name: entity.name,
+              x: entity.position.x,
+              y: entity.position.y,
+              radius: entity.radius,
+              coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
+              is_colliding: entity.is_colliding
+            }
+          end)
 
-    {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
+        projectiles =
+          game_state.projectiles
+          |> Enum.map(fn {_entity_id, entity} ->
+            %{
+              id: entity.id,
+              category: entity.category,
+              shape: entity.shape,
+              name: entity.name,
+              x: entity.position.x,
+              y: entity.position.y,
+              radius: entity.radius,
+              coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
+              is_colliding: entity.is_colliding
+            }
+          end)
+
+        {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
+
+      true ->
+        {:noreply, socket}
+    end
   end
 
   def handle_event("move", direction, socket) do
