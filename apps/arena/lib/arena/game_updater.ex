@@ -163,7 +163,6 @@ defmodule Arena.GameUpdater do
         |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
         |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
 
-
       Map.put(entities, entity_id, entity)
     end)
   end
