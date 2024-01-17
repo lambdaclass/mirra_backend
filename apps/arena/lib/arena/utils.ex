@@ -1,4 +1,8 @@
 defmodule Arena.Utils do
+  @moduledoc """
+  Utils module.
+  It contains utility functions like math functions.
+  """
 
   def normalize(x, y) when x == 0 and y == 0 do
     %{x: x, y: y}
