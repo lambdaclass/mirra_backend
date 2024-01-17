@@ -36,8 +36,8 @@ defmodule Arena.GameSocketHandler do
       %{action_type: {:attack, %{skill: skill}}} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill)
 
-      %{action_type: {:move, %{direction: direction}}} ->
-        GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y})
+      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
+        GameUpdater.move(state.game_pid, state.player_id, {direction.x, direction.y}, timestamp)
 
       _ ->
         {}

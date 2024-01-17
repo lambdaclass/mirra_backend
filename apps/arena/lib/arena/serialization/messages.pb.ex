@@ -46,6 +46,9 @@ defmodule Arena.Serialization.GameState do
     repeated: true,
     type: Arena.Serialization.GameState.ProjectilesEntry,
     map: true
+
+  field :player_timestamp, 4, type: :int64, json_name: "playerTimestamp"
+  field :server_timestamp, 5, type: :int64, json_name: "serverTimestamp"
 end
 
 defmodule Arena.Serialization.Entity do
@@ -121,4 +124,5 @@ defmodule Arena.Serialization.GameAction do
 
   field :move, 1, type: Arena.Serialization.Move, oneof: 0
   field :attack, 2, type: Arena.Serialization.Attack, oneof: 0
+  field :timestamp, 3, type: :int64
 end

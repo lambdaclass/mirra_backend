@@ -597,7 +597,9 @@ proto.GameState.toObject = function(includeInstance, msg) {
   var f, obj = {
     gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    playerTimestamp: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    serverTimestamp: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
   if (includeInstance) {
@@ -650,6 +652,14 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 4:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setPlayerTimestamp(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setServerTimestamp(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -693,6 +703,20 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getProjectilesMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getPlayerTimestamp();
+  if (f !== 0) {
+    writer.writeInt64(
+      4,
+      f
+    );
+  }
+  f = message.getServerTimestamp();
+  if (f !== 0) {
+    writer.writeInt64(
+      5,
+      f
+    );
   }
 };
 
@@ -758,6 +782,42 @@ proto.GameState.prototype.getProjectilesMap = function(opt_noLazyCreate) {
 proto.GameState.prototype.clearProjectilesMap = function() {
   this.getProjectilesMap().clear();
   return this;
+};
+
+
+/**
+ * optional int64 player_timestamp = 4;
+ * @return {number}
+ */
+proto.GameState.prototype.getPlayerTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.setPlayerTimestamp = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional int64 server_timestamp = 5;
+ * @return {number}
+ */
+proto.GameState.prototype.getServerTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.setServerTimestamp = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -2224,7 +2284,8 @@ proto.GameAction.prototype.toObject = function(opt_includeInstance) {
 proto.GameAction.toObject = function(includeInstance, msg) {
   var f, obj = {
     move: (f = msg.getMove()) && proto.Move.toObject(includeInstance, f),
-    attack: (f = msg.getAttack()) && proto.Attack.toObject(includeInstance, f)
+    attack: (f = msg.getAttack()) && proto.Attack.toObject(includeInstance, f),
+    timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -2271,6 +2332,10 @@ proto.GameAction.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.Attack.deserializeBinaryFromReader);
       msg.setAttack(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setTimestamp(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2314,6 +2379,13 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       proto.Attack.serializeBinaryToWriter
+    );
+  }
+  f = message.getTimestamp();
+  if (f !== 0) {
+    writer.writeInt64(
+      3,
+      f
     );
   }
 };
@@ -2390,6 +2462,24 @@ proto.GameAction.prototype.clearAttack = function() {
  */
 proto.GameAction.prototype.hasAttack = function() {
   return jspb.Message.getField(this, 2) != null;
+};
+
+
+/**
+ * optional int64 timestamp = 3;
+ * @return {number}
+ */
+proto.GameAction.prototype.getTimestamp = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.GameAction} returns this
+ */
+proto.GameAction.prototype.setTimestamp = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
