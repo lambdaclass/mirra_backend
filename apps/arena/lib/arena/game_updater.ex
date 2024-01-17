@@ -6,6 +6,7 @@ defmodule Arena.GameUpdater do
   use GenServer
   alias Arena.Configuration
   alias Arena.Entities
+  alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameState
   alias Phoenix.PubSub
 
@@ -59,14 +60,14 @@ defmodule Arena.GameUpdater do
       |> Map.get(player_id)
       |> Map.put(:direction, %{x: x, y: y})
 
-    players = state.players |> Map.put(player_id, player)
+    players = state.game_state.players |> Map.put(player_id, player)
 
-    state =
-      state
+    game_state =
+      state.game_state
       |> Map.put(:players, players)
       |> Map.put(:player_timestamp, timestamp)
 
-    {:reply, :ok, state}
+    {:reply, :ok, %{state | game_state: game_state}}
   end
 
   def handle_call({:attack, player_id, _skill}, _from, %{game_state: game_state} = state) do
@@ -95,7 +96,8 @@ defmodule Arena.GameUpdater do
 
   def handle_call({:join, client_id}, _from, state) do
     player_id = get_in(state.game_state, [:client_to_player_map, client_id])
-    {:reply, {:ok, player_id}, state}
+    response = %{player_id: player_id, game_config: state.game_config}
+    {:reply, {:ok, response}, state}
   end
 
   ##################
@@ -143,16 +145,17 @@ defmodule Arena.GameUpdater do
 
   # Broadcast game update to all players
   defp broadcast_game_update(state) do
-    players = complete_entities(state.players)
-    projectiles = complete_entities(state.projectiles)
+    game_state = %GameState{
+      game_id: state.game_id,
+      players: complete_entities(state.players),
+      projectiles: complete_entities(state.projectiles),
+      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+      player_timestamp: state.player_timestamp
+    }
 
     encoded_state =
-      GameState.encode(%GameState{
-        game_id: state.game_id,
-        players: players,
-        projectiles: projectiles,
-        server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-        player_timestamp: state.player_timestamp
+      GameEvent.encode(%GameEvent{
+        event: {:update, game_state}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})

@@ -36,9 +36,30 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
-  def handle_info({:game_update, game_state}, socket) do
-    game_state = GameClient.Protobuf.GameState.decode(game_state)
+  def handle_info({:game_update, game_event}, socket) do
+    %{event: event} = GameClient.Protobuf.GameEvent.decode(game_event)
+    handle_game_event(event, socket)
+  end
 
+  def handle_event("move", direction, socket) do
+    Process.send(socket.assigns.game_socket_handler_pid, {:move, direction}, [])
+
+    {:noreply, socket}
+  end
+
+  def handle_event("attack", skill, socket) do
+    Process.send(socket.assigns.game_socket_handler_pid, {:attack, skill}, [])
+
+    {:noreply, socket}
+  end
+
+  defp player_name(player_id), do: "P#{player_id}"
+
+  defp handle_game_event({:joined, _joined_info}, socket) do
+    {:noreply, socket}
+  end
+
+  defp handle_game_event({:update, game_state}, socket) do
     players =
       game_state.players
       |> Enum.map(fn {_entity_id, entity} ->
@@ -73,18 +94,4 @@ defmodule GameClientWeb.BoardLive.Show do
 
     {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
   end
-
-  def handle_event("move", direction, socket) do
-    Process.send(socket.assigns.game_socket_handler_pid, {:move, direction}, [])
-
-    {:noreply, socket}
-  end
-
-  def handle_event("attack", skill, socket) do
-    Process.send(socket.assigns.game_socket_handler_pid, {:attack, skill}, [])
-
-    {:noreply, socket}
-  end
-
-  defp player_name(player_id), do: "P#{player_id}"
 end
