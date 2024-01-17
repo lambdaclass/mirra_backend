@@ -1,5 +1,4 @@
 defmodule Arena.Utils do
-
   def normalize(x, y) when x == 0 and y == 0 do
     %{x: x, y: y}
   end
