@@ -1,11 +1,6 @@
 name: Deploy to Brazil testing
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/testing-brazil-deploy.yml
 
 jobs:
   build-deploy:
