@@ -1,0 +1,8 @@
+{
+  "map": {
+    "radius": 10000.0
+  },
+  "game": {
+    "tick_rate_ms": 30
+  }
+}

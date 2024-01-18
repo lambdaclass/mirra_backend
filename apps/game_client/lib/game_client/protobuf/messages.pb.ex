@@ -16,6 +16,42 @@ defmodule GameClient.Protobuf.Position do
   field(:y, 2, type: :float)
 end
 
+defmodule GameClient.Protobuf.GameEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:event, 0)
+
+  field(:joined, 1, type: GameClient.Protobuf.GameJoined, oneof: 0)
+  field(:update, 2, type: GameClient.Protobuf.GameState, oneof: 0)
+end
+
+defmodule GameClient.Protobuf.GameJoined do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:player_id, 1, type: :uint64, json_name: "playerId")
+  field(:config, 2, type: GameClient.Protobuf.Configuration)
+end
+
+defmodule GameClient.Protobuf.Configuration do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:game, 1, type: GameClient.Protobuf.ConfigGame)
+end
+
+defmodule GameClient.Protobuf.ConfigGame do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
+end
+
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
   @moduledoc false
 
