@@ -44,6 +44,26 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_external_wall() do
+    %{
+      id: 0,
+      category: :obstacle,
+      shape: :circle,
+      name: "ExternalWall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 4800.0,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      }
+    }
+  end
+
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
      %Arena.Serialization.Player{

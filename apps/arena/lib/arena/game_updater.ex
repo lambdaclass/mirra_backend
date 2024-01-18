@@ -43,8 +43,10 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, @game_tick)
 
     entities_to_collide = Map.merge(state.players, state.projectiles)
-    new_players_state = update_entities(state.players, entities_to_collide)
-    new_projectiles_state = update_entities(state.projectiles, entities_to_collide)
+    new_players_state = update_entities(state.players, entities_to_collide, state.external_wall)
+
+    new_projectiles_state =
+      update_entities(state.projectiles, entities_to_collide, state.external_wall)
 
     state =
       state
@@ -109,13 +111,14 @@ defmodule Arena.GameUpdater do
   # Game creation
   defp new_game(game_id, clients) do
     new_game =
-      Physics.new_game(game_id)
+      Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
       |> Map.put(:player_timestamp, 0)
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
+      |> Map.put(:external_wall, Entities.new_external_wall())
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
@@ -129,8 +132,8 @@ defmodule Arena.GameUpdater do
   end
 
   # Move entities and add game fields
-  defp update_entities(entities, entities_to_collide) do
-    new_state = Physics.move_entities(entities)
+  defp update_entities(entities, entities_to_collide, external_wall) do
+    new_state = Physics.move_entities(entities, external_wall)
 
     Enum.reduce(new_state, %{}, fn {key, value}, acc ->
       entity =
