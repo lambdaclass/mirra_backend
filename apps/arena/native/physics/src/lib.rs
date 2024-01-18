@@ -19,9 +19,7 @@ fn move_entities(entities: HashMap<u64, Entity>, external_wall: Entity) -> HashM
     for entity in entities.values_mut() {
         entity.move_entity();
 
-        if entity.category == Category::Player
-            && !entity.is_inside_map(&external_wall)
-        {
+        if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
             entity.move_to_next_valid_position(&external_wall);
         }
     }
@@ -39,7 +37,4 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
     entity.collides_with(ent)
 }
 
-rustler::init!(
-    "Elixir.Physics",
-    [add, check_collisions, move_entities]
-);
+rustler::init!("Elixir.Physics", [add, check_collisions, move_entities]);

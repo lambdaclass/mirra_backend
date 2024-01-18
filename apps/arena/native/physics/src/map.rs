@@ -152,13 +152,21 @@ impl Entity {
             }
             Shape::Polygon | Shape::Line => {
                 for vertice in &external_wall.vertices {
-                    if !is_vertice_inside_circle(vertice, &external_wall.position, external_wall.radius) {
+                    if !is_vertice_inside_circle(
+                        vertice,
+                        &external_wall.position,
+                        external_wall.radius,
+                    ) {
                         return false;
                     }
                 }
                 true
             }
-            Shape::Point => is_vertice_inside_circle(&self.position, &external_wall.position, external_wall.radius),
+            Shape::Point => is_vertice_inside_circle(
+                &self.position,
+                &external_wall.position,
+                external_wall.radius,
+            ),
         }
     }
 }
