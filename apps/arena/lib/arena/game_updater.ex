@@ -3,11 +3,13 @@ defmodule Arena.GameUpdater do
   GenServer that broadcasts the latest game update to every client
   (player websocket).
   """
+
   use GenServer
   alias Arena.Configuration
   alias Arena.Entities
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameState
+  alias Arena.Utils
   alias Phoenix.PubSub
 
   ##################
@@ -31,7 +33,7 @@ defmodule Arena.GameUpdater do
   def init(%{clients: clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients)
+    game_state = new_game(game_id, clients, game_config.map.radius)
 
     Process.send_after(self(), :update_game, 1_000)
     {:ok, %{game_config: game_config, game_state: game_state}}
@@ -41,8 +43,12 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
-    new_players_state = update_entities(game_state.players, entities_to_collide)
-    new_projectiles_state = update_entities(game_state.projectiles, entities_to_collide)
+
+    new_players_state =
+      update_entities(game_state.players, entities_to_collide, game_state.external_wall)
+
+    new_projectiles_state =
+      update_entities(game_state.projectiles, entities_to_collide, game_state.external_wall)
 
     game_state =
       game_state
@@ -58,7 +64,7 @@ defmodule Arena.GameUpdater do
     player =
       state.game_state.players
       |> Map.get(player_id)
-      |> Map.put(:direction, %{x: x, y: y})
+      |> Map.put(:direction, Utils.normalize(x, y))
 
     players = state.game_state.players |> Map.put(player_id, player)
 
@@ -105,15 +111,16 @@ defmodule Arena.GameUpdater do
   ##################
 
   # Game creation
-  defp new_game(game_id, clients) do
+  defp new_game(game_id, clients, playable_radius) do
     new_game =
-      Physics.new_game(game_id)
+      Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
       |> Map.put(:player_timestamp, 0)
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
+      |> Map.put(:external_wall, Entities.new_external_wall(playable_radius))
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
@@ -127,8 +134,8 @@ defmodule Arena.GameUpdater do
   end
 
   # Move entities and add game fields
-  defp update_entities(entities, entities_to_collide) do
-    new_state = Physics.move_entities(entities)
+  defp update_entities(entities, entities_to_collide, external_wall) do
+    new_state = Physics.move_entities(entities, external_wall)
 
     Enum.reduce(new_state, %{}, fn {key, value}, acc ->
       entity =
