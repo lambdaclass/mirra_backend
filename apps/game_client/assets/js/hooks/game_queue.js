@@ -7,10 +7,9 @@ export const GameQueue = function () {
         let player = new Player(getQueueSocketUrl(player_id))
 
         player.socket.addEventListener("message", (event) => {
-            game_event = messages.GameEvent.deserializeBinary(event.data);
-            game_id = game_event.getGameState().getGameId();
-            if (game_id) {
-                this.pushEvent("join_game", { game_id: game_id, player_id: player_id });
+            game_state = messages.GameState.deserializeBinary(event.data);
+            if (game_state.getGameId()) {
+                this.pushEvent("join_game", { game_id: game_state.getGameId(), player_id: player_id });
             }
         });
     };

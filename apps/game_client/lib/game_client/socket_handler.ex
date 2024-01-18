@@ -4,7 +4,6 @@ defmodule GameClient.SocketHandler do
   """
   require Logger
   alias GameClient.Protobuf.GameState
-  alias GameClient.Protobuf.GameEvent
 
   @behaviour :cowboy_websocket
 
@@ -20,14 +19,10 @@ defmodule GameClient.SocketHandler do
     Logger.info("Websocket INIT called")
 
     game_state =
-      GameEvent.encode(%GameEvent{
-        event:
-          {:update,
-           %GameState{
-             game_id: nil,
-             players: %{},
-             projectiles: %{}
-           }}
+      GameState.encode(%GameState{
+        game_id: nil,
+        players: %{},
+        projectiles: %{}
       })
 
     {:reply, {:binary, game_state}, state}
@@ -50,14 +45,10 @@ defmodule GameClient.SocketHandler do
     Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
 
     game_state =
-      GameEvent.encode(%GameEvent{
-        event:
-          {:update,
-           %GameState{
-             game_id: game_id,
-             players: %{},
-             projectiles: %{}
-           }}
+      GameState.encode(%GameState{
+        game_id: game_id,
+        players: %{},
+        projectiles: %{}
       })
 
     {:reply, {:binary, game_state}, state}
