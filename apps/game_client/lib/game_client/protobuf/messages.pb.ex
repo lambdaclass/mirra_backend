@@ -16,6 +16,51 @@ defmodule GameClient.Protobuf.Position do
   field(:y, 2, type: :float)
 end
 
+defmodule GameClient.Protobuf.GameEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:event, 0)
+
+  field(:joined, 1, type: GameClient.Protobuf.GameJoined, oneof: 0)
+  field(:update, 2, type: GameClient.Protobuf.GameState, oneof: 0)
+end
+
+defmodule GameClient.Protobuf.GameJoined do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:player_id, 1, type: :uint64, json_name: "playerId")
+  field(:config, 2, type: GameClient.Protobuf.Configuration)
+end
+
+defmodule GameClient.Protobuf.Configuration do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:game, 1, type: GameClient.Protobuf.ConfigGame)
+  field(:map, 2, type: GameClient.Protobuf.ConfigMap)
+end
+
+defmodule GameClient.Protobuf.ConfigGame do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
+end
+
+defmodule GameClient.Protobuf.ConfigMap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:radius, 1, type: :float)
+end
+
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
   @moduledoc false
 
@@ -126,23 +171,4 @@ defmodule GameClient.Protobuf.GameAction do
   field(:move, 1, type: GameClient.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: GameClient.Protobuf.Attack, oneof: 0)
   field(:timestamp, 3, type: :int64)
-end
-
-defmodule GameClient.Protobuf.PlayerJoined do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:player_id, 1, type: :uint64, json_name: "playerId")
-end
-
-defmodule GameClient.Protobuf.GameEvent do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  oneof(:event_type, 0)
-
-  field(:player_id, 1, type: GameClient.Protobuf.PlayerJoined, json_name: "playerId", oneof: 0)
-  field(:game_state, 2, type: GameClient.Protobuf.GameState, json_name: "gameState", oneof: 0)
 end

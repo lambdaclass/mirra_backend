@@ -23,8 +23,8 @@ defmodule Arena.SocketHandler do
 
     game_state =
       GameEvent.encode(%GameEvent{
-        event_type:
-          {:game_state,
+        event:
+          {:update,
            %GameState{
              game_id: nil,
              players: %{},
@@ -53,8 +53,8 @@ defmodule Arena.SocketHandler do
 
     game_state =
       GameEvent.encode(%GameEvent{
-        event_type:
-          {:game_state,
+        event:
+          {:update,
            %GameState{
              game_id: game_id,
              players: %{},
