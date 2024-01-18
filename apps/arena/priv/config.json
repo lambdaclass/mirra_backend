@@ -4,5 +4,35 @@
   },
   "game": {
     "tick_rate_ms": 30
-  }
+  },
+  "skills": [
+    {
+      "name": "circle_bash",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "hit": {
+            "damage": 15,
+            "range": 500,
+            "cone_angle": 360,
+            "on_hit_effects": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "shot",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "SimpleShoot": {
+          }
+        }
+      ]
+    }
+  ]
 }
