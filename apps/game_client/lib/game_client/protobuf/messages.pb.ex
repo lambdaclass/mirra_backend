@@ -42,6 +42,7 @@ defmodule GameClient.Protobuf.Configuration do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:game, 1, type: GameClient.Protobuf.ConfigGame)
+  field(:map, 2, type: GameClient.Protobuf.ConfigMap)
 end
 
 defmodule GameClient.Protobuf.ConfigGame do
@@ -50,6 +51,14 @@ defmodule GameClient.Protobuf.ConfigGame do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
+end
+
+defmodule GameClient.Protobuf.ConfigMap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:radius, 1, type: :float)
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do

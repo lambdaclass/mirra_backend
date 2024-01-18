@@ -3,6 +3,7 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Serialization
   alias Arena.GameUpdater
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameJoined
@@ -43,7 +44,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    case Arena.Serialization.GameAction.decode(message) do
+    case Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill)
 
@@ -63,7 +64,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def websocket_info({:game_update, game_state}, state) do
+  def websocket_info({:game_event, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME UPDATE")
     {:reply, {:binary, game_state}, state}
   end

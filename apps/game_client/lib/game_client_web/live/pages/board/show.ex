@@ -32,11 +32,11 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   # The game state is empty until the 1st broadcast msg
-  def handle_info({:game_update, "{}"}, socket) do
+  def handle_info({:game_event, "{}"}, socket) do
     {:noreply, socket}
   end
 
-  def handle_info({:game_update, game_event}, socket) do
+  def handle_info({:game_event, game_event}, socket) do
     %{event: event} = GameClient.Protobuf.GameEvent.decode(game_event)
     handle_game_event(event, socket)
   end

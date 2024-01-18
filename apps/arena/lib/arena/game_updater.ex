@@ -152,20 +152,20 @@ defmodule Arena.GameUpdater do
 
   # Broadcast game update to all players
   defp broadcast_game_update(state) do
-    game_state = %GameState{
-      game_id: state.game_id,
-      players: complete_entities(state.players),
-      projectiles: complete_entities(state.projectiles),
-      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-      player_timestamp: state.player_timestamp
-    }
-
     encoded_state =
       GameEvent.encode(%GameEvent{
-        event: {:update, game_state}
+        event:
+          {:update,
+           %GameState{
+             game_id: state.game_id,
+             players: complete_entities(state.players),
+             projectiles: complete_entities(state.projectiles),
+             server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+             player_timestamp: state.player_timestamp
+           }}
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_event, encoded_state})
   end
 
   defp complete_entities(entities) do
