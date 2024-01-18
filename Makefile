@@ -1,6 +1,9 @@
-.PHONY: start format credo check generate-protos generate-arena-protos generate-game-client-protos
+.PHONY: start _start format credo check generate-protos generate-arena-protos generate-game-client-protos
 
 start:
+	nix-shell
+
+_start:
 	cd apps/arena && docker-compose up -d
 	cd apps/game_client && docker-compose up -d
 	cd apps/game_client/assets && npm install
