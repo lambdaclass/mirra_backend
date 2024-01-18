@@ -44,7 +44,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_external_wall() do
+  def new_external_wall(radius) do
     %{
       id: 0,
       category: :obstacle,
@@ -54,7 +54,7 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      radius: 4800.0,
+      radius: radius,
       vertices: [],
       speed: 0.0,
       direction: %{
