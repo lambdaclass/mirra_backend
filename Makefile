@@ -1,4 +1,4 @@
-.PHONY: start format generate-protos generate-arena-protos generate-game-client-protos
+.PHONY: start format credo check generate-protos generate-arena-protos generate-game-client-protos
 
 start:
 	cd apps/arena && docker-compose up -d
@@ -9,6 +9,11 @@ start:
 
 format:
 	mix format
+
+credo:
+	mix credo
+
+check: credo format
 
 generate-protos: generate-arena-protos generate-game-client-protos
 
