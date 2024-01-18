@@ -1,4 +1,9 @@
 defmodule GameClient.ClientSocketHandler do
+  @moduledoc """
+  GameClient socket handler.
+  It handles the communication with the server.
+  """
+
   use WebSockex, restart: :transient
   require Logger
 
@@ -48,7 +53,7 @@ defmodule GameClient.ClientSocketHandler do
   end
 
   defp ws_url(player_id, game_id) do
-    # TODO Remove hardcoded host
+    # FIX ME Remove hardcoded host
     host = "localhost:4000"
 
     case System.get_env("SSL_ENABLED") do

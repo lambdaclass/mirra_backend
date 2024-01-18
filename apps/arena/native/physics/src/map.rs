@@ -123,4 +123,60 @@ impl Entity {
             y: self.position.y + self.direction.y * self.speed,
         }
     }
+
+    pub fn move_to_next_valid_position(&mut self, external_wall: &Entity) {
+        self.position = self.find_edge_position(external_wall);
+    }
+
+    pub fn find_edge_position(&mut self, external_wall: &Entity) -> Position {
+        let x = self.position.x;
+        let y = self.position.y;
+        let length = (x.powf(2.) + y.powf(2.)).sqrt();
+        let normalized_position = Position {
+            x: self.position.x / length,
+            y: self.position.y / length,
+        };
+        Position {
+            x: normalized_position.x * (external_wall.radius - self.radius),
+            y: normalized_position.y * (external_wall.radius - self.radius),
+        }
+    }
+
+    pub fn is_inside_map(&self, external_wall: &Entity) -> bool {
+        match self.shape {
+            Shape::Circle => {
+                let center_dist = ((external_wall.position.x - self.position.x).powi(2)
+                    + (external_wall.position.y - self.position.y).powi(2))
+                .sqrt();
+                external_wall.radius > center_dist + self.radius
+            }
+            Shape::Polygon | Shape::Line => {
+                for vertice in &external_wall.vertices {
+                    if !is_vertice_inside_circle(
+                        vertice,
+                        &external_wall.position,
+                        external_wall.radius,
+                    ) {
+                        return false;
+                    }
+                }
+                true
+            }
+            Shape::Point => is_vertice_inside_circle(
+                &self.position,
+                &external_wall.position,
+                external_wall.radius,
+            ),
+        }
+    }
+}
+
+pub(crate) fn is_vertice_inside_circle(
+    vertice: &Position,
+    circle_center: &Position,
+    circle_radius: f64,
+) -> bool {
+    let circle_center_dist =
+        ((vertice.x - circle_center.x).powi(2) + (vertice.y - circle_center.y).powi(2)).sqrt();
+    circle_center_dist < circle_radius
 }
