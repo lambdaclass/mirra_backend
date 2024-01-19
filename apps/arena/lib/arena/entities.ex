@@ -3,7 +3,10 @@ defmodule Arena.Entities do
   Entities manager.
   """
 
-  def new_player(id) do
+  def new_player(id, skills_config) do
+    ## TODO: This hardcoding is to ensure the skills are in the correct skill_key
+    ##  after we have proper configuration for this we can remove this matching
+    [%{name: "shot"} = skill1, %{name: "circle_bash"} = skill2] = skills_config
     %{
       id: id,
       category: :player,
@@ -21,7 +24,8 @@ defmodule Arena.Entities do
         y: 0.0
       },
       aditional_info: %{
-        health: 100
+        health: 100,
+        skills: %{"1" => skill1, "2" => skill2}
       }
     }
   end

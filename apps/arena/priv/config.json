@@ -15,7 +15,7 @@
         {
           "hit": {
             "damage": 15,
-            "range": 500,
+            "range": 50.0,
             "cone_angle": 360,
             "on_hit_effects": []
           }
@@ -29,7 +29,7 @@
       "is_passive": false,
       "mechanics": [
         {
-          "SimpleShoot": {
+          "simple_shoot": {
           }
         }
       ]

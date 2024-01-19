@@ -33,7 +33,7 @@ defmodule Arena.GameUpdater do
   def init(%{clients: clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients, game_config.map.radius)
+    game_state = new_game(game_id, clients, game_config)
 
     Process.send_after(self(), :update_game, 1_000)
     {:ok, %{game_config: game_config, game_state: game_state}}
@@ -76,27 +76,8 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, _skill}, _from, %{game_state: game_state} = state) do
-    current_player = Map.get(game_state.players, player_id)
-    last_id = game_state.last_id + 1
-
-    projectiles =
-      game_state.projectiles
-      |> Map.put(
-        last_id,
-        Entities.new_projectile(
-          last_id,
-          current_player.position,
-          current_player.direction,
-          current_player.id
-        )
-      )
-
-    game_state =
-      game_state
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:projectiles, projectiles)
-
+  def handle_call({:attack, player_id, skill}, _from, %{game_state: game_state} = state) do
+    game_state = handle_attack(player_id, skill, game_state)
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
@@ -111,7 +92,7 @@ defmodule Arena.GameUpdater do
   ##################
 
   # Game creation
-  defp new_game(game_id, clients, playable_radius) do
+  defp new_game(game_id, clients, config) do
     new_game =
       Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
@@ -120,11 +101,11 @@ defmodule Arena.GameUpdater do
       |> Map.put(:player_timestamp, 0)
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
-      |> Map.put(:external_wall, Entities.new_external_wall(playable_radius))
+      |> Map.put(:external_wall, Entities.new_external_wall(config.map.radius))
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
-      players = new_game.players |> Map.put(last_id, Entities.new_player(last_id))
+      players = new_game.players |> Map.put(last_id, Entities.new_player(last_id, config.skills))
 
       new_game
       |> Map.put(:last_id, last_id)
@@ -179,5 +160,65 @@ defmodule Arena.GameUpdater do
 
       Map.put(entities, entity_id, entity)
     end)
+  end
+
+  defp handle_attack(player_id, skill_key, game_state) do
+    case Map.get(game_state.players, player_id) do
+      %{aditional_info: %{skills: %{^skill_key => skill}}} = player ->
+        Enum.reduce(skill.mechanics, game_state, fn (mechanic, game_state_acc) ->
+          do_mechanic(mechanic, player, game_state_acc)
+        end)
+      _ ->
+        game_state
+    end
+  end
+
+  defp do_mechanic({:hit, hit}, player, game_state) do
+    circular_damage_area = %{
+      id: player.id,
+      category: :obstacle,
+      shape: :circle,
+      name: "BashDamageArea",
+      position: player.position,
+      radius: hit.range,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      }
+    }
+
+    players =
+      Physics.check_collisions(circular_damage_area, game_state.players)
+      |> Enum.reduce(game_state.players, fn (player_id, players_acc) ->
+        player =
+          Map.get(players_acc, player_id)
+          |> update_in([:aditional_info, :health], fn health -> health - hit.damage end)
+
+        Map.put(players_acc, player_id, player)
+      end)
+
+    %{game_state | players: players}
+  end
+
+  defp do_mechanic({:simple_shoot, _}, player, game_state) do
+    last_id = game_state.last_id + 1
+
+    projectiles =
+      game_state.projectiles
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(
+          last_id,
+          player.position,
+          player.direction,
+          player.id
+        )
+      )
+
+    game_state
+    |> Map.put(:last_id, last_id)
+    |> Map.put(:projectiles, projectiles)
   end
 end
