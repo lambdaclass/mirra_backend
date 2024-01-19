@@ -1,4 +1,4 @@
-.PHONY: start format credo check generate-protos generate-arena-protos generate-game-client-protos
+.PHONY: start format credo check generate-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos
 
 start:
 	cd apps/arena && docker-compose up -d
@@ -15,7 +15,7 @@ credo:
 
 check: credo format
 
-generate-protos: generate-arena-protos generate-game-client-protos
+generate-protos: generate-arena-protos generate-game-client-protos generate-arena-load-test-protos
 
 generate-arena-protos:
 	protoc \
@@ -33,5 +33,12 @@ generate-game-client-protos:
 
 	protoc \
 		--js_out=import_style=commonjs:apps/game_client/assets/js/protobuf \
+		--proto_path=apps/serialization \
+		messages.proto
+
+generate-arena-load-test-protos:
+	protoc \
+		--elixir_out=apps/arena_load_test/lib/arena_load_test/serialization \
+		--elixir_opt=package_prefix=arena_load_test.serialization \
 		--proto_path=apps/serialization \
 		messages.proto
