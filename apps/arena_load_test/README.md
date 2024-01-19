@@ -1,21 +1,24 @@
 # ArenaLoadTest
 
-**TODO: Add description**
+Application to load test the Arena backend implementation. It simulates *N* clients joining the game queue.
 
-## Installation
+## How to do run our load tests?
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `arena_load_test` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:arena_load_test, "~> 0.1.0"}
-  ]
-end
+```bash
+# arena_server_ip is the IP of the server that's running the Arena application
+export SERVER_HOST=${arena_server_ip}:4000
+make run
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/arena_load_test>.
+Inside the Elixir shell:
+```elixir
+# number_of_simulated_players must be a positive integer
+ArenaLoadTest.SocketSupervisor.spawn_players(number_of_simulated_players)
+```
 
+This will create the requested amount of players that will connect to the server queue and wait to be assigned a
+game.
+Once it starts they send random game actions (such as move in some direction) every 300 ms.
+
+### Disclaimer
+It's important to note that the Arena application defines how many players play in the same game match. If you want to increase the number of players in a game, you have to deploy the Arena application in the desired server with that configuration.
