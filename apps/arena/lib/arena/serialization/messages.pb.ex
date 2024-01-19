@@ -42,6 +42,7 @@ defmodule Arena.Serialization.Configuration do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :game, 1, type: Arena.Serialization.ConfigGame
+  field :map, 2, type: Arena.Serialization.ConfigMap
 end
 
 defmodule Arena.Serialization.ConfigGame do
@@ -50,6 +51,14 @@ defmodule Arena.Serialization.ConfigGame do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :tick_rate_ms, 1, type: :float, json_name: "tickRateMs"
+end
+
+defmodule Arena.Serialization.ConfigMap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :radius, 1, type: :float
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
