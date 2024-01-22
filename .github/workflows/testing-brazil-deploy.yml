@@ -23,13 +23,13 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          HOST: ${{ vars.TS_BRAZIL_HOST }}
+          TS_HOST: ${{ vars.TS_BRAZIL_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
           sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 400 ~/.ssh/id_ed25519
-          ssh-keyscan $HOST >> ~/.ssh/known_hosts
+          retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
       - name: Copy deploy script
         env:
