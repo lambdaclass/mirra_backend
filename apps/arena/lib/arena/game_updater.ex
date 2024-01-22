@@ -7,10 +7,14 @@ defmodule Arena.GameUpdater do
   use GenServer
   alias Arena.Configuration
   alias Arena.Entities
-  alias Arena.Serialization.GameEvent
-  alias Arena.Serialization.GameState
+  alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Arena.Utils
   alias Phoenix.PubSub
+
+  ## Time between checking that a game has ended
+  @check_game_ended_interval_ms 1_000
+  ## Time to wait between a game ended detected and shutting down this process
+  @game_ended_shutdown_wait_ms 10_000
 
   ##################
   # API
@@ -36,6 +40,8 @@ defmodule Arena.GameUpdater do
     game_state = new_game(game_id, clients, game_config)
 
     Process.send_after(self(), :update_game, 1_000)
+    Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
 
@@ -131,6 +137,31 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  # End game
+  def handle_info(:game_ended, state) do
+    {:stop, :normal, state}
+  end
+
+
+  def handle_info(:check_game_ended, state) do
+    Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms)
+
+    case check_game_ended(Map.values(state.game_state.players), state.game_state.players) do
+      :ongoing ->
+        :skip
+
+      {:ended, winner} ->
+        broadcast_game_ended(winner, state.game_state)
+
+        ## The idea of having this waiting period is in case websocket processes keep
+        ## sending messages, this way we give some time before making them crash
+        ## (sending to inexistant process will cause them to crash)
+        Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
+    end
+
+    {:noreply, state}
+  end
+
   # Broadcast game update to all players
   defp broadcast_game_update(state) do
     game_state = %GameState{
@@ -149,17 +180,34 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
   end
 
+  defp broadcast_game_ended(winner, state) do
+    game_state = %GameFinished{
+      winner: complete_entity(winner),
+      players: complete_entities(state.players),
+    }
+
+    encoded_state =
+      GameEvent.encode(%GameEvent{
+        event: {:finished, game_state}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
+  end
+
   defp complete_entities(entities) do
     entities
     |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
-      entity =
-        Map.put(entity, :category, to_string(entity.category))
-        |> Map.put(:shape, to_string(entity.shape))
-        |> Map.put(:name, "Entity" <> Integer.to_string(entity_id))
-        |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+      entity = complete_entity(entity)
 
       Map.put(entities, entity_id, entity)
     end)
+  end
+
+  defp complete_entity(entity) do
+    Map.put(entity, :category, to_string(entity.category))
+      |> Map.put(:shape, to_string(entity.shape))
+      |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
+      |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
   defp handle_attack(player_id, skill_key, game_state) do
@@ -194,7 +242,7 @@ defmodule Arena.GameUpdater do
       |> Enum.reduce(game_state.players, fn (player_id, players_acc) ->
         player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health -> health - hit.damage end)
+          |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
 
         Map.put(players_acc, player_id, player)
       end)
@@ -220,5 +268,26 @@ defmodule Arena.GameUpdater do
     game_state
     |> Map.put(:last_id, last_id)
     |> Map.put(:projectiles, projectiles)
+  end
+
+  defp check_game_ended(players, last_standing_players) do
+    players_alive = Enum.filter(players, fn player ->
+      player.aditional_info.health > 0
+    end)
+
+    case players_alive do
+      ^players ->
+        :ongoing
+
+      [_, _ | _] ->
+        :ongoing
+
+      [player] ->
+        {:ended, player}
+
+      [] ->
+        # TODO we should use a tiebreaker instead of picking the 1st one in the list
+        {:ended, hd(last_standing_players)}
+    end
   end
 end

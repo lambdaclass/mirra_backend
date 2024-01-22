@@ -24,7 +24,18 @@ message GameEvent {
   oneof event {
     GameJoined joined = 1;
     GameState update = 2;
+    GameFinished finished = 3;
+    PingUpdate ping = 4;
   }
+}
+
+message GameFinished {
+  Entity winner = 1;
+  map<uint64, Entity> players = 2;
+}
+
+message PingUpdate {
+  uint64 latency = 1;
 }
 
 message GameJoined {
@@ -91,6 +102,7 @@ message Entity {
 
 message Player {
   uint64 health = 1;
+  uint64 kill_count = 2;
 }
 
 message Projectile {
