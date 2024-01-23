@@ -267,7 +267,7 @@ defmodule Arena.GameUpdater do
   end
 
   defp add_or_remove_moving_action(current_actions, direction) do
-    if direction == %{x: 0.0, y: 0.0} do
+    if direction == {0.0, 0.0} do
       current_actions -- [%{action: :MOVING, duration: 0}]
     else
       current_actions ++ [%{action: :MOVING, duration: 0}]
