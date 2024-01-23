@@ -6,6 +6,7 @@ defmodule Arena.GameLauncher do
   # Amount of clients needed to start a game
   @clients_needed 50
 
+
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)

@@ -7,11 +7,11 @@ deps:
 	mix deps.get
 
 start:
-	docker-compose up -d
+	docker compose up -d
 	iex -S mix phx.server
 
 stop:
-	docker-compose down
+	docker compose down
 
 generate-protos:
 	protoc \
