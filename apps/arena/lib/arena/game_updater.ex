@@ -72,11 +72,18 @@ defmodule Arena.GameUpdater do
 
   def handle_info({:remove_skill_action, player_id, skill_action}, state) do
     player = Map.get(state.game_state.players, player_id)
+
     actions =
       player.aditional_info.current_actions
       |> Enum.reject(fn action -> action.action == skill_action end)
 
-    state = put_in(state, [:game_state, :players, player_id, :aditional_info, :current_actions], actions)
+    state =
+      put_in(
+        state,
+        [:game_state, :players, player_id, :aditional_info, :current_actions],
+        actions
+      )
+
     {:noreply, state}
   end
 
@@ -109,11 +116,16 @@ defmodule Arena.GameUpdater do
       state.game_state.players
       |> Map.get(player_id)
 
-    current_actions = add_or_remove_moving_action(player.aditional_info.current_actions, direction)
+    current_actions =
+      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
-    player = player
-    |> Map.put(:direction, Utils.normalize(x, y))
-    |> Map.put(:aditional_info, Map.merge(player.aditional_info, %{current_actions: current_actions}))
+    player =
+      player
+      |> Map.put(:direction, Utils.normalize(x, y))
+      |> Map.put(
+        :aditional_info,
+        Map.merge(player.aditional_info, %{current_actions: current_actions})
+      )
 
     players = state.game_state.players |> Map.put(player_id, player)
 
@@ -165,7 +177,7 @@ defmodule Arena.GameUpdater do
   defp broadcast_game_ended(winner, state) do
     game_state = %GameFinished{
       winner: complete_entity(winner),
-      players: complete_entities(state.players),
+      players: complete_entities(state.players)
     }
 
     encoded_state =
@@ -187,9 +199,9 @@ defmodule Arena.GameUpdater do
 
   defp complete_entity(entity) do
     Map.put(entity, :category, to_string(entity.category))
-      |> Map.put(:shape, to_string(entity.shape))
-      |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
-      |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+    |> Map.put(:shape, to_string(entity.shape))
+    |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
+    |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
   ##########################
@@ -203,12 +215,11 @@ defmodule Arena.GameUpdater do
   defp handle_attack(player_id, skill_key, game_state) do
     case Map.get(game_state.players, player_id) do
       %{aditional_info: %{skills: %{^skill_key => skill}}} = player ->
-
         player = add_skill_action(player, skill, skill_key)
         players = Map.put(game_state.players, player_id, player)
         game_state = %{game_state | players: players}
 
-        Enum.reduce(skill.mechanics, game_state, fn (mechanic, game_state_acc) ->
+        Enum.reduce(skill.mechanics, game_state, fn mechanic, game_state_acc ->
           do_mechanic(mechanic, player, game_state_acc)
         end)
 
@@ -235,7 +246,7 @@ defmodule Arena.GameUpdater do
 
     players =
       Physics.check_collisions(circular_damage_area, game_state.players)
-      |> Enum.reduce(game_state.players, fn (player_id, players_acc) ->
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
@@ -276,12 +287,16 @@ defmodule Arena.GameUpdater do
   end
 
   defp add_skill_action(player, skill, skill_key) do
-
-    Process.send_after(self(), {:remove_skill_action, player.id, skill_key_to_atom(skill_key)}, skill.execution_duration_ms)
+    Process.send_after(
+      self(),
+      {:remove_skill_action, player.id, skill_key_to_atom(skill_key)},
+      skill.execution_duration_ms
+    )
 
     player
     |> update_in([:aditional_info, :current_actions], fn current_actions ->
-      current_actions ++ [%{action: skill_key_to_atom(skill_key), duration: skill.execution_duration_ms}]
+      current_actions ++
+        [%{action: skill_key_to_atom(skill_key), duration: skill.execution_duration_ms}]
     end)
   end
 
@@ -339,9 +354,10 @@ defmodule Arena.GameUpdater do
 
   # Check if game has ended
   defp check_game_ended(players, last_standing_players) do
-    players_alive = Enum.filter(players, fn player ->
-      player.aditional_info.health > 0
-    end)
+    players_alive =
+      Enum.filter(players, fn player ->
+        player.aditional_info.health > 0
+      end)
 
     case players_alive do
       ^players ->

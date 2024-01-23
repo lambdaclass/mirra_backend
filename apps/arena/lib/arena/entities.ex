@@ -7,6 +7,7 @@ defmodule Arena.Entities do
     ## TODO: This hardcoding is to ensure the skills are in the correct skill_key
     ##  after we have proper configuration for this we can remove this matching
     [%{name: "shot"} = _skill1, %{name: "circle_bash"} = skill2] = skills_config
+
     %{
       id: id,
       category: :player,
@@ -73,7 +74,7 @@ defmodule Arena.Entities do
     {:player,
      %Arena.Serialization.Player{
        health: entity.aditional_info.health,
-       current_actions: entity.aditional_info.current_actions,
+       current_actions: entity.aditional_info.current_actions
      }}
   end
 

@@ -14,7 +14,7 @@ defmodule Arena.Configuration do
   end
 
   defp parse_skills_config(skills_config) do
-    Enum.reduce(skills_config, [], fn (skill_config, skills) ->
+    Enum.reduce(skills_config, [], fn skill_config, skills ->
       mechanics = parse_mechanics_config(skill_config.mechanics)
       skill = %{skill_config | mechanics: mechanics}
       [skill | skills]
@@ -29,7 +29,7 @@ defmodule Arena.Configuration do
   end
 
   defp parse_mechanic_config(mechanic) when map_size(mechanic) > 1 do
-    raise "Config has mechanic with 2 values: #{inspect mechanic}"
+    raise "Config has mechanic with 2 values: #{inspect(mechanic)}"
   end
 
   defp parse_mechanic_config(mechanic) do
