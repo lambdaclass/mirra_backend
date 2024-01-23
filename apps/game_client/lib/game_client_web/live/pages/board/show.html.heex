@@ -1,0 +1,28 @@
+<%= unless @game_status == :pending do %>
+  <div class="flex items-top justify-between mb-4 w-full">
+    <div>
+      <div class="text-2xl font-bold text-yellow-400">Game #<%= @game_id %></div>
+      <ul class="mt-2">
+        <li>
+          <%= "Grid: [#{@board_width}, #{@board_height}]" %>
+        </li>
+        <li>
+          Status: <%= @game_status %>
+        </li>
+      </ul>
+    </div>
+    <div>
+      <div class="text-md uppercase"></div>
+    </div>
+    <div>
+      <div class="text-2xl font-bold text-yellow-400">Player #<%= @player_id %></div>
+    </div>
+  </div>
+
+  <div id="board_game" phx-hook="BoardGame" data-game-id={@game_id} data-player-id={@player_id} data-board-width={@board_width} data-board-height={@board_height} class="mb-20">
+    <div id="board-debug" class="mb-2">
+      Info: <span>-</span>
+    </div>
+    <div id="board_container" phx-update="ignore"></div>
+  </div>
+<% end %>
