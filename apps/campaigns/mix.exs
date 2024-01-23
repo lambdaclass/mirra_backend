@@ -9,7 +9,7 @@ defmodule Campaigns.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.15",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -29,6 +29,10 @@ defmodule Campaigns.MixProject do
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
       # {:sibling_app_in_umbrella, in_umbrella: true}
+      {:matrix, "~> 0.3.2"},
+      {:math, "~> 0.7.0"},
+      {:ecto_sql, "~> 3.6"},
+      {:units, in_umbrella: true}
     ]
   end
 end
