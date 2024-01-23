@@ -79,6 +79,15 @@ defmodule GameClient.Protobuf.GameState.ProjectilesEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.PlayerTimestampsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: :int64)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -93,7 +102,13 @@ defmodule GameClient.Protobuf.GameState do
     map: true
   )
 
-  field(:player_timestamp, 4, type: :int64, json_name: "playerTimestamp")
+  field(:player_timestamps, 4,
+    repeated: true,
+    type: GameClient.Protobuf.GameState.PlayerTimestampsEntry,
+    json_name: "playerTimestamps",
+    map: true
+  )
+
   field(:server_timestamp, 5, type: :int64, json_name: "serverTimestamp")
 end
 

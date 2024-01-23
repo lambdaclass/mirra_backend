@@ -71,7 +71,7 @@ defmodule Arena.GameUpdater do
     game_state =
       state.game_state
       |> Map.put(:players, players)
-      |> Map.put(:player_timestamp, timestamp)
+      |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -117,7 +117,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
-      |> Map.put(:player_timestamp, 0)
+      |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(playable_radius))
@@ -130,6 +130,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
       |> put_in([:client_to_player_map, client_id], last_id)
+      |> put_in([:player_timestamps, last_id], 0)
     end)
   end
 
@@ -161,7 +162,7 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-             player_timestamp: state.player_timestamp
+             player_timestamps: state.player_timestamps
            }}
       })
 

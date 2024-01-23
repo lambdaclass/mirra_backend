@@ -1580,7 +1580,7 @@ proto.GameState.toObject = function(includeInstance, msg) {
     gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    playerTimestamp: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    playerTimestampsMap: (f = msg.getPlayerTimestampsMap()) ? f.toObject(includeInstance, undefined) : [],
     serverTimestamp: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
@@ -1635,8 +1635,10 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
          });
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readInt64());
-      msg.setPlayerTimestamp(value);
+      var value = msg.getPlayerTimestampsMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readInt64, null, 0, 0);
+         });
       break;
     case 5:
       var value = /** @type {number} */ (reader.readInt64());
@@ -1686,12 +1688,9 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   if (f && f.getLength() > 0) {
     f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
-  f = message.getPlayerTimestamp();
-  if (f !== 0) {
-    writer.writeInt64(
-      4,
-      f
-    );
+  f = message.getPlayerTimestampsMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeInt64);
   }
   f = message.getServerTimestamp();
   if (f !== 0) {
@@ -1768,20 +1767,25 @@ proto.GameState.prototype.clearProjectilesMap = function() {
 
 
 /**
- * optional int64 player_timestamp = 4;
- * @return {number}
+ * map<uint64, int64> player_timestamps = 4;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,number>}
  */
-proto.GameState.prototype.getPlayerTimestamp = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+proto.GameState.prototype.getPlayerTimestampsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,number>} */ (
+      jspb.Message.getMapField(this, 4, opt_noLazyCreate,
+      null));
 };
 
 
 /**
- * @param {number} value
+ * Clears values from the map. The map will be non-null.
  * @return {!proto.GameState} returns this
  */
-proto.GameState.prototype.setPlayerTimestamp = function(value) {
-  return jspb.Message.setProto3IntField(this, 4, value);
+proto.GameState.prototype.clearPlayerTimestampsMap = function() {
+  this.getPlayerTimestampsMap().clear();
+  return this;
 };
 
 
