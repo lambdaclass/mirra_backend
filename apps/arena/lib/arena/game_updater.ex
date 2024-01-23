@@ -116,7 +116,6 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:attack, player_id, skill}, _from, %{game_state: game_state} = state) do
-    IO.inspect(skill, label: "skill")
     game_state = handle_attack(player_id, skill, game_state)
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -194,6 +193,7 @@ defmodule Arena.GameUpdater do
   defp handle_attack(player_id, skill_key, game_state) do
     case Map.get(game_state.players, player_id) do
       %{aditional_info: %{skills: %{^skill_key => skill}}} = player ->
+
         player = add_skill_action(player, skill, skill_key)
         players = Map.put(game_state.players, player_id, player)
         game_state = %{game_state | players: players}
@@ -266,6 +266,9 @@ defmodule Arena.GameUpdater do
   end
 
   defp add_skill_action(player, skill, skill_key) do
+
+    # Process.send_after(self(), {:remove_skill_action, player.id, skill_key}, skill.execution_duration_ms)
+
     player
     |> update_in([:aditional_info, :current_actions], fn current_actions ->
       current_actions ++ [%{action: skill_key_to_atom(skill_key), duration: skill.execution_duration_ms}]
