@@ -1,3 +1,15 @@
+defmodule GameClient.Protobuf.PlayerActionType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :MOVING, 0
+  field :STARTING_SKILL_1, 1
+  field :STARTING_SKILL_2, 2
+  field :EXECUTING_SKILL_1, 3
+  field :EXECUTING_SKILL_2, 4
+end
+
 defmodule GameClient.Protobuf.Direction do
   @moduledoc false
 
@@ -157,7 +169,11 @@ defmodule GameClient.Protobuf.Player do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :health, 1, type: :uint64
-  field :kill_count, 2, type: :uint64, json_name: "killCount"
+
+  field :current_actions, 2,
+    repeated: true,
+    type: GameClient.Protobuf.PlayerAction,
+    json_name: "currentActions"
 end
 
 defmodule GameClient.Protobuf.Projectile do
@@ -175,6 +191,15 @@ defmodule GameClient.Protobuf.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :color, 1, type: :string
+end
+
+defmodule GameClient.Protobuf.PlayerAction do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :action, 1, type: GameClient.Protobuf.PlayerActionType, enum: true
+  field :duration, 2, type: :uint64
 end
 
 defmodule GameClient.Protobuf.Move do

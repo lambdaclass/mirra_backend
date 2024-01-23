@@ -6,7 +6,7 @@ defmodule Arena.Entities do
   def new_player(id, skills_config) do
     ## TODO: This hardcoding is to ensure the skills are in the correct skill_key
     ##  after we have proper configuration for this we can remove this matching
-    [%{name: "shot"} = skill1, %{name: "circle_bash"} = skill2] = skills_config
+    [%{name: "shot"} = _skill1, %{name: "circle_bash"} = skill2] = skills_config
     %{
       id: id,
       category: :player,
@@ -25,7 +25,8 @@ defmodule Arena.Entities do
       },
       aditional_info: %{
         health: 100,
-        skills: %{"1" => skill1, "2" => skill2}
+        skills: %{"1" => skill2, "2" => skill2},
+        current_actions: []
       }
     }
   end
@@ -71,7 +72,8 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
      %Arena.Serialization.Player{
-       health: entity.aditional_info.health
+       health: entity.aditional_info.health,
+       current_actions: entity.aditional_info.current_actions,
      }}
   end
 
