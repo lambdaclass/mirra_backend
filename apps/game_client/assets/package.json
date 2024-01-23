@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "google-protobuf": "^3.21.2",
-    "pixi.js": "^7.3.3",
-    "protoc-gen-js": "^3.21.2"
-  }
-}

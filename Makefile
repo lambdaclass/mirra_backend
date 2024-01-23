@@ -1,9 +1,7 @@
 .PHONY: start format credo check generate-protos generate-arena-protos generate-game-client-protos
 
 start:
-	cd apps/arena && docker-compose up -d
-	cd apps/game_client && docker-compose up -d
-	cd apps/game_client/assets && npm install
+	docker-compose up -d
 	mix deps.get
 	iex -S mix phx.server
 
