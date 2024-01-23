@@ -70,6 +70,16 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
+  def handle_info({:remove_skill_action, player_id, skill_action}, state) do
+    player = Map.get(state.game_state.players, player_id)
+    actions =
+      player.aditional_info.current_actions
+      |> Enum.reject(fn action -> action.action == skill_action end)
+
+    state = put_in(state, [:game_state, :players, player_id, :aditional_info, :current_actions], actions)
+    {:noreply, state}
+  end
+
   # End game
   def handle_info(:game_ended, state) do
     {:stop, :normal, state}
@@ -267,7 +277,7 @@ defmodule Arena.GameUpdater do
 
   defp add_skill_action(player, skill, skill_key) do
 
-    # Process.send_after(self(), {:remove_skill_action, player.id, skill_key}, skill.execution_duration_ms)
+    Process.send_after(self(), {:remove_skill_action, player.id, skill_key_to_atom(skill_key)}, skill.execution_duration_ms)
 
     player
     |> update_in([:aditional_info, :current_actions], fn current_actions ->
@@ -276,7 +286,7 @@ defmodule Arena.GameUpdater do
   end
 
   defp skill_key_to_atom(skill_key) do
-    "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_atom()
+    "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
   end
 
   ##########################
