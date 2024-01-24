@@ -3,18 +3,19 @@ defmodule Units.Unit do
   Units are instances of characters tied to a user.
   """
 
-  use Ecto.Schema
+  use Units.Schema
   import Ecto.Changeset
   alias Users.User
   alias Units.Characters.Character
 
-  @derive {Jason.Encoder, only: [:level, :tier, :selected, :slot, :user_id, :character_id]}
+  @derive {Jason.Encoder, only: [:unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
   schema "units" do
-    field(:level, :integer)
+    field(:unit_level, :integer)
     field(:tier, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
 
+    belongs_to(:level, User)
     belongs_to(:user, User)
     belongs_to(:character, Character)
 
@@ -24,8 +25,8 @@ defmodule Units.Unit do
   @doc false
   def changeset(unit, attrs) do
     unit
-    |> cast(attrs, [:level, :tier, :selected, :slot, :character_id, :user_id])
-    |> validate_required([:level, :tier, :selected, :character_id, :user_id])
+    |> cast(attrs, [:unit_level, :tier, :selected, :slot, :character_id, :user_id, :level_id])
+    |> validate_required([:unit_level, :tier, :selected, :character_id])
   end
 
   @doc """

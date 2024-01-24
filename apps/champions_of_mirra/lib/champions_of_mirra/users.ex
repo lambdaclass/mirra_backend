@@ -3,6 +3,8 @@ defmodule ChampionsOfMirra.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias Users.Repo
+
   @game_id 2
 
   def register(username) do
@@ -10,7 +12,7 @@ defmodule ChampionsOfMirra.Users do
 
     add_sample_units(user)
 
-    user
+    Users.get_user!(user.id) |> Repo.preload(:units)
   end
 
   def get_user(user_id), do: Users.get_user!(user_id)

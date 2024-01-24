@@ -11,6 +11,9 @@ config :champions_of_mirra,
   ecto_repos: [ChampionsOfMirra.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Configures Ecto migrations
+config :champions_of_mirra, ChampionsOfMirra.Repo, migration_primary_key: [type: :binary_id]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

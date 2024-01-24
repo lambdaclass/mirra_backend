@@ -17,12 +17,19 @@ defmodule Gateway.Repo.Migrations.CreateUnitsUsersAndCharacters do
       timestamps()
     end
 
+    create table(:levels) do
+      add :level_number, :integer
+      add :campaign, :integer
+      timestamps()
+    end
+
     create table(:units) do
-      add :level, :integer
+      add :unit_level, :integer
       add :tier, :integer
       add :selected, :boolean, null: false
       add :slot, :integer
       add :user_id, references(:users, on_delete: :delete_all)
+      add :level_id, references(:levels, on_delete: :delete_all)
       add :character_id, references(:characters, on_delete: :delete_all), null: false
       timestamps()
     end

@@ -67,7 +67,7 @@ defmodule ChampionsOfMirra.Campaigns do
 
   defp add_remainder_unit_levels(units, amount_to_add) do
     Enum.reduce(0..(amount_to_add - 1), units, fn index, units ->
-      List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
+      List.update_at(units, index, fn unit -> %{unit | unit_level: unit.unit_level + 1} end)
     end)
   end
 end

@@ -5,11 +5,14 @@ defmodule Users.User do
 
   use Users.Schema
   import Ecto.Changeset
+  alias Units.Unit
 
-  @derive {Jason.Encoder, only: [:username]}
+  @derive {Jason.Encoder, only: [:id, :username, :units]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
+
+    has_many(:units, Unit)
 
     timestamps()
   end
