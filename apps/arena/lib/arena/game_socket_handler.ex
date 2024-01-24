@@ -5,10 +5,11 @@ defmodule Arena.GameSocketHandler do
   require Logger
   alias Arena.Serialization
   alias Arena.GameUpdater
-  alias Arena.Serialization.GameEvent
-  alias Arena.Serialization.GameJoined
+  alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
 
   @behaviour :cowboy_websocket
+
+  @ping_interval_ms 500
 
   @impl true
   def init(req, _opts) do
@@ -34,12 +35,27 @@ defmodule Arena.GameSocketHandler do
         event: {:joined, %GameJoined{player_id: player_id, config: config}}
       })
 
+    Process.send_after(self(), :send_ping, @ping_interval_ms)
+
     {:reply, {:binary, encoded_msg}, state}
   end
 
   @impl true
+  def websocket_handle(:pong, state) do
+    last_ping_time = state.last_ping_time
+    time_now = Time.utc_now()
+    latency = Time.diff(time_now, last_ping_time, :millisecond)
+
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:ping, %PingUpdate{latency: latency}}
+      })
+
+    # Send back the player's ping
+    {:reply, {:binary, encoded_msg}, state}
+  end
+
   def websocket_handle(:ping, state) do
-    Logger.info("Websocket PING handler")
     {:reply, {:pong, ""}, state}
   end
 
@@ -61,6 +77,14 @@ defmodule Arena.GameSocketHandler do
     end
 
     {:ok, state}
+  end
+
+  # Send a ping frame every once in a while
+  @impl true
+  def websocket_info(:send_ping, state) do
+    Process.send_after(self(), :send_ping, @ping_interval_ms)
+    time_now = Time.utc_now()
+    {:reply, :ping, Map.put(state, :last_ping_time, time_now)}
   end
 
   @impl true
