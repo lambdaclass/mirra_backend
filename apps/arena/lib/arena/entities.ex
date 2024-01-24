@@ -27,7 +27,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: 100,
         skills: %{"1" => skill2, "2" => skill2},
-        current_actions: []
+        current_actions: [],
+        kill_count: 0
       }
     }
   end
@@ -74,7 +75,8 @@ defmodule Arena.Entities do
     {:player,
      %Arena.Serialization.Player{
        health: entity.aditional_info.health,
-       current_actions: entity.aditional_info.current_actions
+       current_actions: entity.aditional_info.current_actions,
+       kill_count: 0
      }}
   end
 
