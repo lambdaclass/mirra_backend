@@ -52,7 +52,8 @@ defmodule Gateway.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:ecto_sql, "~> 3.4"},
       {:scrivener_ecto, "~> 2.7"},
-      {:postgrex, ">= 0.0.0"}
+      {:postgrex, ">= 0.0.0"},
+      {:champions_of_mirra, in_umbrella: true}
     ]
   end
 

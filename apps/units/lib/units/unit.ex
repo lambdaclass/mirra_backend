@@ -7,6 +7,7 @@ defmodule Units.Unit do
   import Ecto.Changeset
   alias Users.User
   alias Units.Characters.Character
+  alias Items.Item
 
   @derive {Jason.Encoder,
            only: [:id, :unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
@@ -19,6 +20,8 @@ defmodule Units.Unit do
     belongs_to(:level, User)
     belongs_to(:user, User)
     belongs_to(:character, Character)
+
+    has_many(:items, Item)
 
     timestamps()
   end
