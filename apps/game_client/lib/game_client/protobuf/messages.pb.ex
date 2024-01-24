@@ -171,8 +171,9 @@ defmodule GameClient.Protobuf.Player do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:health, 1, type: :uint64)
+  field(:kill_count, 2, type: :uint64, json_name: "killCount")
 
-  field(:current_actions, 2,
+  field(:current_actions, 3,
     repeated: true,
     type: GameClient.Protobuf.PlayerAction,
     json_name: "currentActions"

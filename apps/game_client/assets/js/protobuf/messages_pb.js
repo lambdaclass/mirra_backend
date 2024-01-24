@@ -2998,7 +2998,7 @@ proto.Entity.prototype.hasObstacle = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Player.repeatedFields_ = [2];
+proto.Player.repeatedFields_ = [3];
 
 
 
@@ -3032,6 +3032,7 @@ proto.Player.prototype.toObject = function(opt_includeInstance) {
 proto.Player.toObject = function(includeInstance, msg) {
   var f, obj = {
     health: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    killCount: jspb.Message.getFieldWithDefault(msg, 2, 0),
     currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
     proto.PlayerAction.toObject, includeInstance)
   };
@@ -3075,6 +3076,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setHealth(value);
       break;
     case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setKillCount(value);
+      break;
+    case 3:
       var value = new proto.PlayerAction;
       reader.readMessage(value,proto.PlayerAction.deserializeBinaryFromReader);
       msg.addCurrentActions(value);
@@ -3115,10 +3120,17 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getKillCount();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
   f = message.getCurrentActionsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      2,
+      3,
       f,
       proto.PlayerAction.serializeBinaryToWriter
     );
@@ -3145,12 +3157,30 @@ proto.Player.prototype.setHealth = function(value) {
 
 
 /**
- * repeated PlayerAction current_actions = 2;
+ * optional uint64 kill_count = 2;
+ * @return {number}
+ */
+proto.Player.prototype.getKillCount = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setKillCount = function(value) {
+  return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * repeated PlayerAction current_actions = 3;
  * @return {!Array<!proto.PlayerAction>}
  */
 proto.Player.prototype.getCurrentActionsList = function() {
   return /** @type{!Array<!proto.PlayerAction>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.PlayerAction, 2));
+    jspb.Message.getRepeatedWrapperField(this, proto.PlayerAction, 3));
 };
 
 
@@ -3159,7 +3189,7 @@ proto.Player.prototype.getCurrentActionsList = function() {
  * @return {!proto.Player} returns this
 */
 proto.Player.prototype.setCurrentActionsList = function(value) {
-  return jspb.Message.setRepeatedWrapperField(this, 2, value);
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
@@ -3169,7 +3199,7 @@ proto.Player.prototype.setCurrentActionsList = function(value) {
  * @return {!proto.PlayerAction}
  */
 proto.Player.prototype.addCurrentActions = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 2, opt_value, proto.PlayerAction, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.PlayerAction, opt_index);
 };
 
 
