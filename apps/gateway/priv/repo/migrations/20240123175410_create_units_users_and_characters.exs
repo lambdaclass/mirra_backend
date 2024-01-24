@@ -3,11 +3,13 @@ defmodule Gateway.Repo.Migrations.CreateUnitsUsersAndCharacters do
 
   def change do
     create table(:users) do
+      add :game_id, :integer, null: false
       add :username, :string, null: false
       timestamps()
     end
 
     create table(:characters) do
+      add :game_id, :integer, null: false
       add :active, :boolean, null: false
       add :name, :string, null: false
       add :faction, :string, null: false

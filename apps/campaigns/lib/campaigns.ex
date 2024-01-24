@@ -15,10 +15,7 @@ defmodule Campaigns do
       base_level = campaign_rules.base_level
       level_scaler = campaign_rules.scaler
       # This should be a Units.all_characters_from_factions() call
-      possible_characters =
-        Units.Repo.all(
-          from(q in Character, where: q.faction in ^campaign_rules.possible_factions)
-        )
+      possible_characters = Units.all_characters_from_factions(campaign_rules.possible_factions)
 
       Enum.reduce(0..(campaign_rules.length - 1), campaigns_matrix, fn level_index,
                                                                        matrix_accum ->
@@ -39,27 +36,20 @@ defmodule Campaigns do
       Enum.map(campaign, fn {level_aggregate_unit_levels, possible_characters} ->
         create_units(
           possible_characters,
-          div(level_aggregate_unit_levels |> IO.inspect(label: :agg), 5)
+          div(level_aggregate_unit_levels, 5)
         )
-        |> add_remainder_levels(rem(level_aggregate_unit_levels, 5))
+        |> add_remainder_unit_levels(rem(level_aggregate_unit_levels, 5))
       end)
     end)
   end
 
-  # This doesn't go here, it should go inside Units. Waiting on: DB
-  defp get_random_unit(possible_characters, level) do
-    character = Enum.random(possible_characters)
-
-    %Unit{level: level, tier: 1, selected: true, character_id: character.id}
-  end
-
   defp create_units(possible_characters, level) do
     Enum.map(0..4, fn _ ->
-      get_random_unit(possible_characters, level)
+      Units.create_unit_for_level(possible_characters, level)
     end)
   end
 
-  defp add_remainder_levels(units, amount_to_add) do
+  defp add_remainder_unit_levels(units, amount_to_add) do
     Enum.reduce(0..(amount_to_add - 1), units, fn index, units ->
       List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
     end)

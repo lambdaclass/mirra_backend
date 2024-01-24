@@ -3,10 +3,12 @@ defmodule Users.User do
   Users.
   """
 
-  use Ecto.Schema
+  use Users.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:username]}
   schema "users" do
+    field(:game_id, :integer)
     field(:username, :string)
 
     timestamps()
@@ -15,8 +17,8 @@ defmodule Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username])
-    |> validate_required([:username])
+    |> cast(attrs, [:game_id, :username])
+    |> validate_required([:game_id, :username])
   end
 
   @doc """

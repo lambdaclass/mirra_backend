@@ -24,6 +24,7 @@ defmodule GatewayWeb.Router do
     pipe_through :api
 
     get "/campaigns", ChampionsOfMirraController, :get_campaigns
+    post "/users/:username", ChampionsOfMirraController, :create_user
   end
 
   # Other scopes may use custom stacks.

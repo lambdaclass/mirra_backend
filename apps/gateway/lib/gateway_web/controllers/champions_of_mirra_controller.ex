@@ -3,14 +3,11 @@ defmodule GatewayWeb.ChampionsOfMirraController do
 
   def get_campaigns(conn, _params) do
     response = ChampionsOfMirra.process(:get_campaigns)
-    json(conn, format_response(response))
+    json(conn, response)
   end
 
-  defp format_response(campaigns) do
-    Enum.map(campaigns, fn campaign ->
-      Enum.map(campaign, fn units ->
-        Enum.map(units, fn unit -> Map.from_struct(unit) |> Map.drop([:__meta__, :user, :character]) end)
-      end)
-    end)
+  def create_user(conn, %{"username" => username}) do
+    response = ChampionsOfMirra.process(:create_user, username)
+    json(conn, response)
   end
 end

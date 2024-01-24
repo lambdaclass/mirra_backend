@@ -1,6 +1,9 @@
 alias Units.Characters
 
+champions_of_mirra_id = 2
+
 Characters.insert_character(%{
+  game_id: champions_of_mirra_id,
   active: true,
   name: "Muflus",
   faction: "Araban",
@@ -8,6 +11,7 @@ Characters.insert_character(%{
 })
 
 Characters.insert_character(%{
+  game_id: champions_of_mirra_id,
   active: true,
   name: "Uma",
   faction: "Kaline",
@@ -15,6 +19,7 @@ Characters.insert_character(%{
 })
 
 Characters.insert_character(%{
+  game_id: champions_of_mirra_id,
   active: true,
   name: "Dagna",
   faction: "Merliot",
@@ -22,6 +27,7 @@ Characters.insert_character(%{
 })
 
 Characters.insert_character(%{
+  game_id: champions_of_mirra_id,
   active: true,
   name: "H4ck",
   faction: "Otobi",

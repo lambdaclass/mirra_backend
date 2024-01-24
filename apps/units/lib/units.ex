@@ -7,6 +7,7 @@ defmodule Units do
 
   alias Units.Repo
   alias Units.Unit
+  alias Units.Characters.Character
 
   #########
   # Units #
@@ -106,4 +107,23 @@ defmodule Units do
       |> Repo.update_all(set: [selected: false])
 
   defp user_units_query(user_id), do: from(unit in Unit, where: unit.user_id == ^user_id)
+
+  @doc """
+  Get all existing characters.
+  """
+  def all_characters(), do: Repo.all(Character)
+
+  @doc """
+  Get all existing characters from given factions.
+  """
+  def all_characters_from_factions(possible_factions), do:
+    Units.Repo.all(from(q in Character, where: q.faction in ^possible_factions))
+
+  # No insertion to the DB, we use this for levels only
+  def create_unit_for_level(possible_characters, level) do
+    character = Enum.random(possible_characters)
+
+    %Unit{level: level, tier: 1, selected: true, character_id: character.id}
+  end
+
 end
