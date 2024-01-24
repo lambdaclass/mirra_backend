@@ -64,7 +64,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def websocket_info({:game_event, game_state}, state) do
+  def websocket_info({:game_update, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME UPDATE")
     {:reply, {:binary, game_state}, state}
   end
@@ -76,8 +76,8 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def websocket_info(_message, state) do
-    # Logger.info("Websocket info, Message: #{inspect(message)}")
+  def websocket_info(message, state) do
+    Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 end
