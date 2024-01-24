@@ -24,7 +24,18 @@ message GameEvent {
   oneof event {
     GameJoined joined = 1;
     GameState update = 2;
+    GameFinished finished = 3;
+    PingUpdate ping = 4;
   }
+}
+
+message GameFinished {
+  Entity winner = 1;
+  map<uint64, Entity> players = 2;
+}
+
+message PingUpdate {
+  uint64 latency = 1;
 }
 
 message GameJoined {
@@ -91,6 +102,7 @@ message Entity {
 
 message Player {
   uint64 health = 1;
+  repeated PlayerAction current_actions = 2;
 }
 
 message Projectile {
@@ -100,6 +112,19 @@ message Projectile {
 
 message Obstacle {
   string color = 1;
+}
+
+message PlayerAction {
+    PlayerActionType action = 1;
+    uint64 duration = 2;
+}
+
+enum PlayerActionType {
+    MOVING = 0;
+    STARTING_SKILL_1 = 1;
+    STARTING_SKILL_2 = 2;  
+    EXECUTING_SKILL_1 = 3;
+    EXECUTING_SKILL_2 = 4;
 }
 
 /*
