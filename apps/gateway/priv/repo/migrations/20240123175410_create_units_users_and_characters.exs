@@ -33,5 +33,19 @@ defmodule Gateway.Repo.Migrations.CreateUnitsUsersAndCharacters do
       add :character_id, references(:characters, on_delete: :delete_all), null: false
       timestamps()
     end
+
+    create table(:item_templates) do
+      add :name, :string
+      add :type, :string
+      timestamps()
+    end
+
+    create table(:items) do
+      add :level, :integer
+      add :template_id, references(:item_templates, on_delete: :delete_all)
+      add :user_id, references(:users, on_delete: :delete_all)
+      add :unit_id, references(:units, on_delete: :delete_all)
+      timestamps()
+    end
   end
 end

@@ -31,6 +31,7 @@ defmodule ChampionsOfMirra.MixProject do
       # {:sibling_app_in_umbrella, in_umbrella: true}
       {:units, in_umbrella: true},
       {:users, in_umbrella: true},
+      {:items, in_umbrella: true},
       {:math, "~> 0.7.0"},
       {:ecto, "~> 3.11"},
       {:ecto_sql, "~> 3.6"}

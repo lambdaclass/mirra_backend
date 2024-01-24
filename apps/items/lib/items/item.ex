@@ -1,32 +1,35 @@
 defmodule Items.Item do
   @moduledoc """
-  Items are instances of characters tied to a user.
+  Items are instances of ItemTemplates tied to a user that can be equipped to units.
   """
 
   use Items.Schema
   import Ecto.Changeset
+
+  alias Items.ItemTemplate
   alias Users.User
   alias Units.Unit
 
-  @derive {Jason.Encoder, only: [:id, :name, :item_level, :type, :user_id, :unit_id]}
+  @derive {Jason.Encoder, only: [:id, :level, :template_id, :user_id, :unit_id]}
   schema "items" do
-    field(:name, :string)
-    field(:item_level, :integer)
-    field(:type, :string)
+    field(:level, :integer)
 
+    belongs_to(:template, ItemTemplate)
     belongs_to(:user, User)
     belongs_to(:unit, Unit)
-
     timestamps()
   end
 
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :item_level, :type, :user_id, :unit_id])
-    |> validate_required([:name, :item_level, :type, :user_id])
+    |> cast(attrs, [:level, :template_id, :user_id, :unit_id])
+    |> validate_required([:level, :template_id, :user_id])
   end
 
+  @doc false
   def unit_changeset(item, attrs), do: cast(item, attrs, [:unit_id])
-  def level_changeset(item, attrs), do: cast(item, attrs, [:level])
+
+  @doc false
+  def level_up_changeset(item), do: cast(item, %{level: item.level + 1}, [:level])
 end

@@ -11,11 +11,12 @@ defmodule ChampionsOfMirra.Users do
     {:ok, user} = Users.register_user(%{username: username, game_id: @game_id})
 
     add_sample_units(user)
+    add_sample_items(user)
 
-    Users.get_user!(user.id) |> Repo.preload(:units)
+    Users.get_user!(user.id)
   end
 
-  def get_user(user_id), do: Users.get_user!(user_id) |> Repo.preload(:units)
+  def get_user(user_id), do: Users.get_user!(user_id) |> Repo.preload([:units, :items])
 
   defp add_sample_units(user) do
     characters = Units.all_characters()
@@ -29,6 +30,13 @@ defmodule ChampionsOfMirra.Users do
         selected: true,
         slot: index
       })
+    end)
+  end
+
+  defp add_sample_items(user) do
+    Items.get_item_templates()
+    |> Enum.each(fn template ->
+      Items.insert_item(%{user_id: user.id, template_id: template.id, level: Enum.random(1..5)})
     end)
   end
 end

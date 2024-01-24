@@ -13,10 +13,12 @@ defmodule GatewayWeb.Router do
     scope "/users/:user_id" do
       get "/campaigns", CampaignsController, :get_campaigns
       get "/campaigns/:campaign_number", CampaignsController, :get_campaign
-      get "/level/:level_id", CampaignsController, :get_level
-      get "/level/:level_id/battle", CampaignsController, :fight_level
+      get "/levels/:level_id", CampaignsController, :get_level
+      get "/levels/:level_id/battle", CampaignsController, :fight_level
       post "/units/:unit_id/select/:slot", UnitsController, :select
       post "/units/:unit_id/unselect", UnitsController, :unselect
+      get "/items/:item_id", ItemsController, :get_item
+      post "/items/:item_id/level_up", ItemsController, :level_up
     end
   end
 

@@ -48,7 +48,15 @@ defmodule ChampionsOfMirra do
     ChampionsOfMirra.Campaigns.fight_level(user_id, level_id)
   end
 
-  # def process(:battle, user_1, user_2) do
-  #   ChampionsOfMirra.Battle.pvp_battle(user_1, user_2)
-  # end
+  ###########
+  ## ITEMS ##
+  ###########
+
+  def process_items(:get_item, item_id) do
+    ChampionsOfMirra.Items.get_item(item_id)
+  end
+
+  def process_items(:level_up, item_id) do
+    ChampionsOfMirra.Items.level_up(item_id)
+  end
 end

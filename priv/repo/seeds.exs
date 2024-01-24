@@ -35,3 +35,8 @@ Characters.insert_character(%{
 })
 
 ChampionsOfMirra.Campaigns.create_campaigns()
+
+Items.insert_item_template(%{name: "Epic Sword of Epicness", type: "weapon"})
+Items.insert_item_template(%{name: "Mythical Helmet of Mythicness", type: "helmet"})
+Items.insert_item_template(%{name: "Legendary Chestplate of Legendaryness", type: "chest"})
+Items.insert_item_template(%{name: "Magical Boots of Magicness", type: "boots"})
