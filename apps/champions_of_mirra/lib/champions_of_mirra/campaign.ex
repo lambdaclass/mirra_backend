@@ -1,6 +1,6 @@
-defmodule ChampionsOfMirra.Campaign do
+defmodule ChampionsOfMirra.Campaigns do
   @moduledoc """
-  Documentation for `ChampionsOfMirra.Campaign`.
+  Documentation for `ChampionsOfMirra.Campaigns`.
   """
 
   def get_campaigns() do

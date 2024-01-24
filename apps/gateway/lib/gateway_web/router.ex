@@ -1,23 +1,9 @@
 defmodule GatewayWeb.Router do
+  alias GatewayWeb.ChampionsOfMirraController
   use GatewayWeb, :router
-
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, html: {GatewayWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-  end
 
   pipeline :api do
     plug :accepts, ["json"]
-  end
-
-  scope "/", GatewayWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
   end
 
   scope "/championsofmirra", GatewayWeb do
@@ -25,6 +11,7 @@ defmodule GatewayWeb.Router do
 
     get "/campaigns", ChampionsOfMirraController, :get_campaigns
     post "/users/:username", ChampionsOfMirraController, :create_user
+    post "/battle", ChampionsOfMirraController, :battle
   end
 
   # Other scopes may use custom stacks.
