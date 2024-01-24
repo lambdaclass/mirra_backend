@@ -13,8 +13,20 @@ defmodule ChampionsOfMirra.Users do
     user
   end
 
+  def get_user(user_id), do: Users.get_user!(user_id)
+
   defp add_sample_units(user) do
     characters = Units.all_characters()
-    Enum.each(0..4, fn index -> Units.insert_unit(%{character_id: Enum.random(characters).id, user_id: user.id, level: Enum.random(1..5), tier: 1, selected: true, slot: index}) end)
+
+    Enum.each(0..4, fn index ->
+      Units.insert_unit(%{
+        character_id: Enum.random(characters).id,
+        user_id: user.id,
+        level: Enum.random(1..5),
+        tier: 1,
+        selected: true,
+        slot: index
+      })
+    end)
   end
 end

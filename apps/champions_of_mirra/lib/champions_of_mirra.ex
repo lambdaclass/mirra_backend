@@ -7,23 +7,27 @@ defmodule ChampionsOfMirra do
   ## USERS ##
   ###########
 
-  def process(:create_user, username) do
+  def process_users(:create_user, username) do
     ChampionsOfMirra.Users.register(username)
+  end
+
+  def process_users(:get_user, user_id) do
+    ChampionsOfMirra.Users.get_user(user_id)
   end
 
   #############
   ## BATTLES ##
   #############
 
-  def process(:get_campaigns) do
+  def process_battles(:get_campaigns) do
     ChampionsOfMirra.Campaigns.get_campaigns()
   end
 
-  def process(:level, id) do
+  def process_battles(:get_level, id) do
     ChampionsOfMirra.Campaigns.get_level(id)
   end
 
-  def process(:fight_level, id) do
+  def process_battles(:fight_level, id) do
     ChampionsOfMirra.Campaigns.fight_level(id)
   end
 

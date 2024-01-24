@@ -1,5 +1,4 @@
 defmodule GatewayWeb.Router do
-  alias GatewayWeb.ChampionsOfMirraController
   use GatewayWeb, :router
 
   pipeline :api do

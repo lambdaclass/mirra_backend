@@ -33,3 +33,5 @@ Characters.insert_character(%{
   faction: "Otobi",
   rarity: "Epic",
 })
+
+ChampionsOfMirra.Campaigns.create_campaigns()

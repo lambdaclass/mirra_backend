@@ -10,6 +10,7 @@ defmodule ChampionsOfMirra.Application do
     children = [
       # Starts a worker by calling: ChampionsOfMirra.Worker.start_link(arg)
       # {ChampionsOfMirra.Worker, arg}
+      ChampionsOfMirra.Repo
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
