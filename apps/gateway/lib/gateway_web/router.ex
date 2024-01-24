@@ -5,12 +5,17 @@ defmodule GatewayWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/championsofmirra", GatewayWeb do
+  scope "/championsofmirra", GatewayWeb.ChampionsOfMirra do
     pipe_through :api
+    post "/users/:username", UsersController, :create_user
 
-    get "/campaigns", ChampionsOfMirraController, :get_campaigns
-    post "/users/:username", ChampionsOfMirraController, :create_user
-    post "/battle", ChampionsOfMirraController, :battle
+    scope "/:user_id" do
+      get "/campaigns", CampaignsController, :get_campaigns
+      get "/campaign/:campaign_number", CampaignsController, :get_campaign
+      get "/level/:level_id", CampaignsController, :get_level
+      get "/level/:level_id/battle", CampaignsController, :fight_level
+    end
+
   end
 
   # Other scopes may use custom stacks.
