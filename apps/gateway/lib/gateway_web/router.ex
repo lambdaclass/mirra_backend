@@ -7,13 +7,16 @@ defmodule GatewayWeb.Router do
 
   scope "/championsofmirra", GatewayWeb.ChampionsOfMirra do
     pipe_through :api
+    get "/users/:user_id", UsersController, :get_user
     post "/users/:username", UsersController, :create_user
 
-    scope "/:user_id" do
+    scope "/users/:user_id" do
       get "/campaigns", CampaignsController, :get_campaigns
       get "/campaigns/:campaign_number", CampaignsController, :get_campaign
       get "/level/:level_id", CampaignsController, :get_level
       get "/level/:level_id/battle", CampaignsController, :fight_level
+      post "/units/:unit_id/select/:slot", UnitsController, :select
+      post "/units/:unit_id/unselect", UnitsController, :unselect
     end
   end
 

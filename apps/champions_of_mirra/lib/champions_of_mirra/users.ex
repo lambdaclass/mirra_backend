@@ -15,7 +15,7 @@ defmodule ChampionsOfMirra.Users do
     Users.get_user!(user.id) |> Repo.preload(:units)
   end
 
-  def get_user(user_id), do: Users.get_user!(user_id)
+  def get_user(user_id), do: Users.get_user!(user_id) |> Repo.preload(:units)
 
   defp add_sample_units(user) do
     characters = Units.all_characters()

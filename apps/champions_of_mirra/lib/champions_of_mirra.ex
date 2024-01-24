@@ -15,6 +15,19 @@ defmodule ChampionsOfMirra do
     ChampionsOfMirra.Users.get_user(user_id)
   end
 
+  ###########
+  ## UNITS ##
+  ###########
+
+  def process_units(:select_unit, user_id, unit_id, slot) do
+    {slot, _rem} = Integer.parse(slot)
+    ChampionsOfMirra.Units.select_unit(user_id, unit_id, slot)
+  end
+
+  def process_units(:unselect_unit, unit) do
+    ChampionsOfMirra.Units.unselect_unit(unit)
+  end
+
   #############
   ## BATTLES ##
   #############

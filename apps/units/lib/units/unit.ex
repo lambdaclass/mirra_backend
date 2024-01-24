@@ -9,7 +9,7 @@ defmodule Units.Unit do
   alias Units.Characters.Character
 
   @derive {Jason.Encoder,
-           only: [:unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
+           only: [:id, :unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
   schema "units" do
     field(:unit_level, :integer)
     field(:tier, :integer)
@@ -31,16 +31,7 @@ defmodule Units.Unit do
   end
 
   @doc """
-  Changeset for editing a unit's basic attributes.
+  Changeset for when selecting or unselecting a unit.
   """
-  def edit_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :slot, :level])
-
-  @doc """
-  Changeset for setting a unit's character id.
-  """
-  def character_changeset(unit, attrs) do
-    unit
-    |> cast(attrs, [:character_id])
-    |> validate_required([:character_id])
-  end
+  def selected_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :slot])
 end

@@ -25,9 +25,9 @@ defmodule Units do
   @doc """
   Sets the selected value of a unit.
   """
-  def update_unit(unit, params) do
+  def update_selected(unit, params) do
     unit
-    |> Unit.edit_changeset(params)
+    |> Unit.selected_changeset(params)
     |> Repo.update()
   end
 
