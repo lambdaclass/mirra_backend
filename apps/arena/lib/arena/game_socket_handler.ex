@@ -55,6 +55,10 @@ defmodule Arena.GameSocketHandler do
     {:reply, {:binary, encoded_msg}, state}
   end
 
+  def websocket_handle(:ping, state) do
+    {:reply, {:pong, ""}, state}
+  end
+
   def websocket_handle({:binary, message}, state) do
     case Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill}}} ->
