@@ -24,7 +24,7 @@ defmodule ChampionsOfMirra.Users do
       Units.insert_unit(%{
         character_id: Enum.random(characters).id,
         user_id: user.id,
-        level: Enum.random(1..5),
+        unit_level: Enum.random(1..5),
         tier: 1,
         selected: true,
         slot: index

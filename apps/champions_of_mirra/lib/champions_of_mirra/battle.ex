@@ -36,8 +36,8 @@ defmodule ChampionsOfMirra.Battle do
   with the higher aggregate level of their selected units. Returns `:team_1` or `:team_2`.
   """
   def battle(team_1, team_2) do
-    team_1_agg_level = Enum.reduce(team_1, 0, fn unit, acc -> unit.level + acc end)
-    team_2_agg_level = Enum.reduce(team_2, 0, fn unit, acc -> unit.level + acc end)
+    team_1_agg_level = Enum.reduce(team_1, 0, fn unit, acc -> unit.unit_level + acc end)
+    team_2_agg_level = Enum.reduce(team_2, 0, fn unit, acc -> unit.unit_level + acc end)
     total_level = team_1_agg_level + team_2_agg_level
 
     if Enum.random(1..total_level) <= team_1_agg_level, do: :team_1, else: :team_2

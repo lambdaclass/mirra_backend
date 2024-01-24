@@ -8,7 +8,8 @@ defmodule Units.Unit do
   alias Users.User
   alias Units.Characters.Character
 
-  @derive {Jason.Encoder, only: [:unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
+  @derive {Jason.Encoder,
+           only: [:unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
   schema "units" do
     field(:unit_level, :integer)
     field(:tier, :integer)

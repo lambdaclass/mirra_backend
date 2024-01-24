@@ -23,12 +23,16 @@ defmodule ChampionsOfMirra do
     ChampionsOfMirra.Campaigns.get_campaigns()
   end
 
+  def process_battles(:get_campaign, campaing_number) do
+    ChampionsOfMirra.Campaigns.get_campaign(campaing_number)
+  end
+
   def process_battles(:get_level, id) do
     ChampionsOfMirra.Campaigns.get_level(id)
   end
 
-  def process_battles(:fight_level, id) do
-    ChampionsOfMirra.Campaigns.fight_level(id)
+  def process_battles(:fight_level, user_id, level_id) do
+    ChampionsOfMirra.Campaigns.fight_level(user_id, level_id)
   end
 
   # def process(:battle, user_1, user_2) do

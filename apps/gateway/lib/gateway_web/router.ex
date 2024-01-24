@@ -11,11 +11,10 @@ defmodule GatewayWeb.Router do
 
     scope "/:user_id" do
       get "/campaigns", CampaignsController, :get_campaigns
-      get "/campaign/:campaign_number", CampaignsController, :get_campaign
+      get "/campaigns/:campaign_number", CampaignsController, :get_campaign
       get "/level/:level_id", CampaignsController, :get_level
       get "/level/:level_id/battle", CampaignsController, :fight_level
     end
-
   end
 
   # Other scopes may use custom stacks.

@@ -7,9 +7,19 @@ defmodule ChampionsOfMirra.Campaigns do
   import Ecto.Query
   alias ChampionsOfMirra.Repo
   alias ChampionsOfMirra.Campaigns.Level
+  alias ChampionsOfMirra.Battle
+  alias Users.User
 
   def get_campaigns() do
-    Repo.all(from(l in Level, group_by: l.campaign))
+    Repo.all(from(l in Level))
+    |> Repo.preload(:units)
+    |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
+    |> Enum.group_by(fn l -> l.campaign end)
+  end
+
+  def get_campaign(campaign_number) do
+    Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
+    |> Repo.preload(:units)
   end
 
   def insert_level(attrs) do
@@ -26,7 +36,7 @@ defmodule ChampionsOfMirra.Campaigns do
     user = Repo.get(User, user_id) |> Repo.preload(:units)
     level = Repo.get(Level, level_id) |> Repo.preload(:units)
 
-    if (Battle.battle(user.units, level.units) == :team_1) do
+    if Battle.battle(user.units, level.units) == :team_1 do
       :win
     else
       :loss
