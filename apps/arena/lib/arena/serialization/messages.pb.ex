@@ -33,7 +33,7 @@ defmodule Arena.Serialization.GameEvent do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  oneof :event, 0
+  oneof(:event, 0)
 
   field :joined, 1, type: Arena.Serialization.GameJoined, oneof: 0
   field :update, 2, type: Arena.Serialization.GameState, oneof: 0
@@ -145,7 +145,7 @@ defmodule Arena.Serialization.Entity do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  oneof :aditional_info, 0
+  oneof(:aditional_info, 0)
 
   field :id, 1, type: :uint64
   field :category, 2, type: :string
@@ -224,7 +224,7 @@ defmodule Arena.Serialization.GameAction do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  oneof :action_type, 0
+  oneof(:action_type, 0)
 
   field :move, 1, type: Arena.Serialization.Move, oneof: 0
   field :attack, 2, type: Arena.Serialization.Attack, oneof: 0
