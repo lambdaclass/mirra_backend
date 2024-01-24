@@ -33,8 +33,8 @@ defmodule ChampionsOfMirra.Campaigns do
   end
 
   def fight_level(user_id, level_id) do
-    user = Repo.get(User, user_id) |> Repo.preload(:units)
-    level = Repo.get(Level, level_id) |> Repo.preload(:units)
+    user = Repo.get(User, user_id) |> Repo.preload(units: :items)
+    level = Repo.get(Level, level_id) |> Repo.preload(units: :items)
 
     if Battle.battle(user.units, level.units) == :team_1 do
       :win

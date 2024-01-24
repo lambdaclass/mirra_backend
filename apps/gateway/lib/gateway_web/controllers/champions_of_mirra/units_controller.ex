@@ -8,8 +8,8 @@ defmodule GatewayWeb.ChampionsOfMirra.UnitsController do
         |> put_status(400)
         |> json(reason)
 
-      :ok ->
-        json(conn, :ok)
+      {:ok, unit} ->
+        json(conn, unit)
     end
   end
 

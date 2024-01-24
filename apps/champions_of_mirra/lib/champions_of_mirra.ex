@@ -59,4 +59,12 @@ defmodule ChampionsOfMirra do
   def process_items(:level_up, item_id) do
     ChampionsOfMirra.Items.level_up(item_id)
   end
+
+  def process_items(:unequip_item, user_id, item_id) do
+    ChampionsOfMirra.Units.unequip_item(user_id, item_id)
+  end
+
+  def process_items(:equip_item, user_id, item_id, unit_id) do
+    ChampionsOfMirra.Units.equip_item(user_id, item_id, unit_id)
+  end
 end

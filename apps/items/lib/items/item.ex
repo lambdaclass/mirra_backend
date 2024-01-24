@@ -28,7 +28,7 @@ defmodule Items.Item do
   end
 
   @doc false
-  def unit_changeset(item, attrs), do: cast(item, attrs, [:unit_id])
+  def equip_changeset(item, unit_id), do: cast(item, %{unit_id: unit_id}, [:unit_id])
 
   @doc false
   def level_up_changeset(item), do: cast(item, %{level: item.level + 1}, [:level])

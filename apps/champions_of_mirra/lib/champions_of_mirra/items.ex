@@ -1,7 +1,7 @@
 defmodule ChampionsOfMirra.Items do
   def get_item(item_id) do
     case Items.get_item(item_id) do
-      nil -> {:error, :none_found}
+      nil -> {:error, :not_found}
       item -> {:ok, item}
     end
   end

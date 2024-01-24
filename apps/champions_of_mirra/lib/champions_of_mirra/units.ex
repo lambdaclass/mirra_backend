@@ -5,19 +5,21 @@ defmodule ChampionsOfMirra.Units do
     if Units.get_selected_units(user_id) |> Enum.any?(&(&1.slot == slot)) do
       {:error, :slot_occupied}
     else
-      {:ok, _unit} =
-        Units.get_unit(unit_id)
-        |> Units.update_selected(%{selected: true, slot: slot})
-
-      :ok
+      Units.get_unit(unit_id)
+      |> Units.update_selected(%{selected: true, slot: slot})
     end
   end
 
   def unselect_unit(unit_id) do
-    {:ok, _unit} =
-      Units.get_unit(unit_id)
-      |> Units.update_selected(%{selected: false, slot: nil})
+    Units.get_unit(unit_id)
+    |> Units.update_selected(%{selected: false, slot: nil})
+  end
 
-    :ok
+  def equip_item(user_id, item_id, unit_id) do
+    Items.equip_item(user_id, item_id, unit_id)
+  end
+
+  def unequip_item(user_id, item_id) do
+    Items.unequip_item(user_id, item_id)
   end
 end

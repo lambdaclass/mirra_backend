@@ -17,6 +17,8 @@ defmodule GatewayWeb.Router do
       get "/levels/:level_id/battle", CampaignsController, :fight_level
       post "/units/:unit_id/select/:slot", UnitsController, :select
       post "/units/:unit_id/unselect", UnitsController, :unselect
+      post "/items/:item_id/equip_to/:unit_id", ItemsController, :equip_item
+      post "/items/:item_id/unequip/", ItemsController, :unequip_item
       get "/items/:item_id", ItemsController, :get_item
       post "/items/:item_id/level_up", ItemsController, :level_up
     end

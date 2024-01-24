@@ -6,6 +6,30 @@ defmodule Items do
   alias Items.ItemTemplate
   alias Items.Repo
 
+  def equip_item(user_id, item_id, unit_id) do
+    case get_item(item_id) do
+      nil ->
+        {:error, :not_found}
+
+      item ->
+        if item.user_id == user_id,
+          do: Item.equip_changeset(item, unit_id) |> Repo.update(),
+          else: {:error, :not_found}
+    end
+  end
+
+  def unequip_item(user_id, item_id) do
+    case get_item(item_id) do
+      nil ->
+        {:error, :not_found}
+
+      item ->
+        if item.user_id == user_id,
+          do: Item.equip_changeset(item, nil) |> Repo.update(),
+          else: {:error, :not_found}
+    end
+  end
+
   def insert_item_template(attrs) do
     %ItemTemplate{}
     |> ItemTemplate.changeset(attrs)
