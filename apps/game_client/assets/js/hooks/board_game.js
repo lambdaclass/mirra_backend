@@ -87,7 +87,7 @@ export const BoardGame = function () {
       }
 
       if (event.key === "p") {
-        _this.pushEvent("attack", "basic");
+        _this.pushEvent("attack", "2");
         _this.updateDebug("key: " + key);
       }
     });

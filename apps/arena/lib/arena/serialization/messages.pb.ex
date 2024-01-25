@@ -1,3 +1,24 @@
+defmodule Arena.Serialization.ProjectileStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :ACTIVE, 0
+  field :EXPLODED, 1
+end
+
+defmodule Arena.Serialization.PlayerActionType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :MOVING, 0
+  field :STARTING_SKILL_1, 1
+  field :STARTING_SKILL_2, 2
+  field :EXECUTING_SKILL_1, 3
+  field :EXECUTING_SKILL_2, 4
+end
+
 defmodule Arena.Serialization.Direction do
   @moduledoc false
 
@@ -25,6 +46,38 @@ defmodule Arena.Serialization.GameEvent do
 
   field :joined, 1, type: Arena.Serialization.GameJoined, oneof: 0
   field :update, 2, type: Arena.Serialization.GameState, oneof: 0
+  field :finished, 3, type: Arena.Serialization.GameFinished, oneof: 0
+  field :ping, 4, type: Arena.Serialization.PingUpdate, oneof: 0
+end
+
+defmodule Arena.Serialization.GameFinished.PlayersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: Arena.Serialization.Entity
+end
+
+defmodule Arena.Serialization.GameFinished do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :winner, 1, type: Arena.Serialization.Entity
+
+  field :players, 2,
+    repeated: true,
+    type: Arena.Serialization.GameFinished.PlayersEntry,
+    map: true
+end
+
+defmodule Arena.Serialization.PingUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :latency, 1, type: :uint64
 end
 
 defmodule Arena.Serialization.GameJoined do
@@ -124,10 +177,10 @@ defmodule Arena.Serialization.Entity do
   field :position, 5, type: Arena.Serialization.Position
   field :radius, 6, type: :float
   field :vertices, 7, repeated: true, type: Arena.Serialization.Position
-  field :is_colliding, 8, type: :bool, json_name: "isColliding"
-  field :collides_with, 9, repeated: true, type: :uint64, json_name: "collidesWith"
-  field :speed, 10, type: :float
-  field :direction, 11, type: Arena.Serialization.Direction
+  field :collides_with, 8, repeated: true, type: :uint64, json_name: "collidesWith"
+  field :speed, 9, type: :float
+  field :direction, 10, type: Arena.Serialization.Direction
+  field :is_moving, 11, type: :bool, json_name: "isMoving"
   field :player, 12, type: Arena.Serialization.Player, oneof: 0
   field :projectile, 13, type: Arena.Serialization.Projectile, oneof: 0
   field :obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0
@@ -139,6 +192,12 @@ defmodule Arena.Serialization.Player do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :health, 1, type: :uint64
+  field :kill_count, 2, type: :uint64, json_name: "killCount"
+
+  field :current_actions, 3,
+    repeated: true,
+    type: Arena.Serialization.PlayerAction,
+    json_name: "currentActions"
 end
 
 defmodule Arena.Serialization.Projectile do
@@ -148,6 +207,7 @@ defmodule Arena.Serialization.Projectile do
 
   field :damage, 1, type: :uint64
   field :owner_id, 2, type: :uint64, json_name: "ownerId"
+  field :status, 3, type: Arena.Serialization.ProjectileStatus, enum: true
 end
 
 defmodule Arena.Serialization.Obstacle do
@@ -156,6 +216,15 @@ defmodule Arena.Serialization.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :color, 1, type: :string
+end
+
+defmodule Arena.Serialization.PlayerAction do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :action, 1, type: Arena.Serialization.PlayerActionType, enum: true
+  field :duration, 2, type: :uint64
 end
 
 defmodule Arena.Serialization.Move do

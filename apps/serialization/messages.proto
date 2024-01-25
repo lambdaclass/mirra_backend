@@ -24,7 +24,18 @@ message GameEvent {
   oneof event {
     GameJoined joined = 1;
     GameState update = 2;
+    GameFinished finished = 3;
+    PingUpdate ping = 4;
   }
+}
+
+message GameFinished {
+  Entity winner = 1;
+  map<uint64, Entity> players = 2;
+}
+
+message PingUpdate {
+  uint64 latency = 1;
 }
 
 message GameJoined {
@@ -66,9 +77,10 @@ message GameState {
  * position: position of the entity (polyogns and lines don't have a position)
  * radius: radius of the entity (only circles have a radius)
  * vertices: vertices of the entity (only polygons and lines have vertices)
- * is_colliding: whether the entity is colliding with another entity
+ * collides_with: entities that the entity is colliding with
  * speed: speed of the entity
  * direction: direction of the entity if it is moving
+ * is_moving: true if the entity is moving
  */
 message Entity {
   uint64 id = 1;
@@ -78,10 +90,10 @@ message Entity {
   Position position = 5;
   float radius = 6;
   repeated Position vertices = 7;
-  bool is_colliding = 8;
-  repeated uint64 collides_with = 9;
-  float speed = 10;
-  Direction direction = 11;
+  repeated uint64 collides_with = 8;
+  float speed = 9;
+  Direction direction = 10;
+  bool is_moving = 11;
   oneof aditional_info {
     Player player = 12;
     Projectile projectile = 13;
@@ -91,15 +103,36 @@ message Entity {
 
 message Player {
   uint64 health = 1;
+  uint64 kill_count = 2;
+  repeated PlayerAction current_actions = 3;
 }
 
 message Projectile {
   uint64 damage = 1;
   uint64 owner_id = 2;
+  ProjectileStatus status = 3;
+}
+
+enum ProjectileStatus {
+  ACTIVE = 0;
+  EXPLODED = 1;
 }
 
 message Obstacle {
   string color = 1;
+}
+
+message PlayerAction {
+    PlayerActionType action = 1;
+    uint64 duration = 2;
+}
+
+enum PlayerActionType {
+    MOVING = 0;
+    STARTING_SKILL_1 = 1;
+    STARTING_SKILL_2 = 2;  
+    EXECUTING_SKILL_1 = 3;
+    EXECUTING_SKILL_2 = 4;
 }
 
 /*

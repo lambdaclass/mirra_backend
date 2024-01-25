@@ -8,7 +8,6 @@ deps:
 	cd assets && npm install
 
 start:
-	docker compose up -d
 	iex -S mix phx.server
 
 stop:
