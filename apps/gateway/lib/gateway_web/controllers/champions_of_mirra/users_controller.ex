@@ -1,4 +1,10 @@
 defmodule GatewayWeb.ChampionsOfMirra.UsersController do
+  @moduledoc """
+  Controller for Champions Of Mirra requests involving users.
+
+  No logic should be handled here. All logic should be handled through the ChampionsOfMirra app.
+  """
+
   use GatewayWeb, :controller
 
   def create_user(conn, %{"username" => username}) do

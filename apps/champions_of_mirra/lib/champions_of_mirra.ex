@@ -1,6 +1,7 @@
 defmodule ChampionsOfMirra do
   @moduledoc """
-  Champions of Mirra request handler.
+  Champions of Mirra request handler. Receives messages from the Gateway app and
+  routes them to the appropiate ChampionsOfMirra modules.
   """
 
   ###########
@@ -24,8 +25,8 @@ defmodule ChampionsOfMirra do
     ChampionsOfMirra.Units.select_unit(user_id, unit_id, slot)
   end
 
-  def process_units(:unselect_unit, unit) do
-    ChampionsOfMirra.Units.unselect_unit(unit)
+  def process_units(:unselect_unit, user_id, unit_id) do
+    ChampionsOfMirra.Units.unselect_unit(user_id, unit_id)
   end
 
   #############

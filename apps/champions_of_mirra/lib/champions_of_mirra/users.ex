@@ -1,5 +1,5 @@
 defmodule ChampionsOfMirra.Users do
-  @doc """
+  @moduledoc """
   Users logic for Champions Of Mirra.
   """
 
@@ -7,6 +7,11 @@ defmodule ChampionsOfMirra.Users do
 
   @game_id 2
 
+  @doc """
+  Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
+
+  Sample data is filled to the user for testing purposes.
+  """
   def register(username) do
     {:ok, user} = Users.register_user(%{username: username, game_id: @game_id})
 
@@ -18,6 +23,9 @@ defmodule ChampionsOfMirra.Users do
     Users.get_user!(user.id)
   end
 
+  @doc """
+  Get a user by id.
+  """
   def get_user(user_id), do: Users.get_user!(user_id)
 
   defp add_sample_units(user) do

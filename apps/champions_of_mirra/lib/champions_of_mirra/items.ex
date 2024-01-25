@@ -1,4 +1,11 @@
 defmodule ChampionsOfMirra.Items do
+  @moduledoc """
+  Items logic for Champions of Mirra.
+  """
+
+  @doc """
+  Get an item by id.
+  """
   def get_item(item_id) do
     case Items.get_item(item_id) do
       nil -> {:error, :not_found}
@@ -6,6 +13,13 @@ defmodule ChampionsOfMirra.Items do
     end
   end
 
+  @doc """
+  Level up a user's item and substracts the currency cost from the user.
+
+  Returns :not_found if item doesn't exist or if it's not owned by user.
+  Returns :cant_afford if user cannot afford the cost.
+  Returns :ok if succesful.
+  """
   def level_up(user_id, item_id) do
     item = Items.get_item(item_id) || %{}
 

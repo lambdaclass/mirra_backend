@@ -9,10 +9,6 @@ defmodule Units do
   alias Units.Unit
   alias Units.Characters.Character
 
-  #########
-  # Units #
-  #########
-
   @doc """
   Inserts a unit.
   """
@@ -29,6 +25,32 @@ defmodule Units do
     unit
     |> Unit.selected_changeset(params)
     |> Repo.update()
+  end
+
+  def select_unit(user_id, unit_id, slot \\ nil) do
+    unit = Units.get_unit(unit_id) || %{}
+
+    if Map.get(unit, :user_id, nil) == user_id do
+      case update_selected(unit, %{selected: true, slot: slot}) do
+        {:ok, unit} -> unit
+        {:error, reason} -> %{error: reason}
+      end
+    else
+      %{error: :not_found}
+    end
+  end
+
+  def unselect_unit(user_id, unit_id) do
+    unit = Units.get_unit(unit_id) || %{}
+
+    if Map.get(unit, :user_id, nil) == user_id do
+      case update_selected(unit, %{selected: false, slot: nil}) do
+        {:ok, unit} -> unit
+        {:error, reason} -> %{error: reason}
+      end
+    else
+      %{error: :not_found}
+    end
   end
 
   @doc """
@@ -119,10 +141,12 @@ defmodule Units do
   def all_characters_from_factions(possible_factions),
     do: Repo.all(from(q in Character, where: q.faction in ^possible_factions))
 
-  # No insertion to the DB, we use this for levels only
-  def unit_params_for_level(possible_characters, level) do
+  @doc """
+  Create params for a level with a random character.
+  """
+  def unit_params_for_level(possible_characters, unit_level) do
     character = Enum.random(possible_characters)
 
-    %{unit_level: level, tier: 1, selected: true, character_id: character.id}
+    %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id}
   end
 end

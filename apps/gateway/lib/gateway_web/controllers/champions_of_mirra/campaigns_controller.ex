@@ -1,4 +1,10 @@
 defmodule GatewayWeb.ChampionsOfMirra.CampaignsController do
+  @moduledoc """
+  Controller for Champions Of Mirra requests involving campaigns.
+
+  No logic should be handled here. All logic should be handled through the ChampionsOfMirra app.
+  """
+
   use GatewayWeb, :controller
 
   def get_campaigns(conn, _params) do
