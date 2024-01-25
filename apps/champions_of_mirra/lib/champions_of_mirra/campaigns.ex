@@ -1,6 +1,6 @@
 defmodule ChampionsOfMirra.Campaigns do
   @moduledoc """
-  Module for generating, accessing and battling Levels & Campaigns for Curse Of Mirra.
+  Module for generating, accessing and battling Levels & Campaigns for Champions Of Mirra.
   """
   @units_per_level 5
 
@@ -58,7 +58,7 @@ defmodule ChampionsOfMirra.Campaigns do
   end
 
   @doc """
-  Creates levels for Curse of Mirra with a given set of rules, storing them and their units in the DB.
+  Creates levels for Champions of Mirra with a given set of rules, storing them and their units in the DB.
 
   Rules needed are:
   - `base_level`: the aggregate level of all units in the first level of the campaign
