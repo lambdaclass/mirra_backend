@@ -41,5 +41,5 @@ defmodule Users do
 
   """
   def get_user!(id),
-    do: Repo.get!(User, id) |> Repo.preload([:units, :items, [currencies: :currency]])
+    do: Repo.get!(User, id) |> Repo.preload([[units: :items], :items, [currencies: :currency]])
 end

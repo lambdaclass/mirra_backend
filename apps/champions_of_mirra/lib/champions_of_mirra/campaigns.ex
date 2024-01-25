@@ -1,6 +1,6 @@
 defmodule ChampionsOfMirra.Campaigns do
   @moduledoc """
-  Documentation for `ChampionsOfMirra.Campaigns`.
+  Module for generating, accessing and battling Levels & Campaigns for Curse Of Mirra.
   """
   @units_per_level 5
 
@@ -8,8 +8,10 @@ defmodule ChampionsOfMirra.Campaigns do
   alias ChampionsOfMirra.Repo
   alias ChampionsOfMirra.Campaigns.Level
   alias ChampionsOfMirra.Battle
-  alias Users.User
 
+  @doc """
+  Gets all levels, grouped by campaign and sorted ascendingly.
+  """
   def get_campaigns() do
     Repo.all(from(l in Level))
     |> Repo.preload(:units)
@@ -22,19 +24,31 @@ defmodule ChampionsOfMirra.Campaigns do
     |> Repo.preload(:units)
   end
 
+  @doc """
+  Inserts a level.
+  """
   def insert_level(attrs) do
     %Level{}
     |> Level.changeset(attrs)
     |> Repo.insert()
   end
 
+  @doc """
+  Get a level by id.
+  """
   def get_level(level_id) do
     Repo.get(Level, level_id) |> Repo.preload(:units)
   end
 
+  @doc """
+  Plays a level for a user, which means fighting its units with their selected ones.
+  Returns :win or :loss accordingly.
+
+  No tracking for level progress is done yet.
+  """
   def fight_level(user_id, level_id) do
-    user = Repo.get(User, user_id) |> Repo.preload(units: :items)
-    level = Repo.get(Level, level_id) |> Repo.preload(units: :items)
+    user = Users.get_user!(user_id)
+    level = get_level(level_id)
 
     if Battle.battle(user.units, level.units) == :team_1 do
       :win
@@ -43,6 +57,20 @@ defmodule ChampionsOfMirra.Campaigns do
     end
   end
 
+  @doc """
+  Creates levels for Curse of Mirra with a given set of rules, storing them and their units in the DB.
+
+  Rules needed are:
+  - `base_level`: the aggregate level of all units in the first level of the campaign
+  - `scaler`: used to calculate the aggregate level of the campaign's levels, multiplying the previous level's aggregate by this value
+  - `possible_factions`: which factions the randomly generated units can belong to
+  - `length`: the length of the campaign.
+
+  Each of the rule maps given represents a campaign, and the number of the campaign (stored in the Level)
+  will be equal to the index of its rules in the list (1-based).
+
+  Returns an :ok atom.
+  """
   def create_campaigns() do
     create_campaigns([
       %{base_level: 5, scaler: 1.5, possible_factions: ["Araban", "Kaline"], length: 10},
