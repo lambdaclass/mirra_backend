@@ -71,7 +71,7 @@ defmodule Arena.GameUpdater do
             entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id)
           end)
 
-        case collision_player_id do
+        case Map.get(players, collision_player_id) do
           nil ->
             {projectiles_acc, players_acc}
 
