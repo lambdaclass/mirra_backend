@@ -178,7 +178,7 @@ defmodule Arena.GameUpdater do
     game_state =
       state.game_state
       |> Map.put(:players, players)
-      |> Map.put(:player_timestamp, timestamp)
+      |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -204,17 +204,17 @@ defmodule Arena.GameUpdater do
 
   # Broadcast game update to all players
   defp broadcast_game_update(state) do
-    game_state = %GameState{
-      game_id: state.game_id,
-      players: complete_entities(state.players),
-      projectiles: complete_entities(state.projectiles),
-      server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-      player_timestamp: state.player_timestamp
-    }
-
     encoded_state =
       GameEvent.encode(%GameEvent{
-        event: {:update, game_state}
+        event:
+          {:update,
+           %GameState{
+             game_id: state.game_id,
+             players: complete_entities(state.players),
+             projectiles: complete_entities(state.projectiles),
+             server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+             player_timestamps: state.player_timestamps
+           }}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
@@ -366,7 +366,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
-      |> Map.put(:player_timestamp, 0)
+      |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
@@ -379,6 +379,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
       |> put_in([:client_to_player_map, client_id], last_id)
+      |> put_in([:player_timestamps, last_id], 0)
     end)
   end
 

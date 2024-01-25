@@ -132,6 +132,15 @@ defmodule Arena.Serialization.GameState.ProjectilesEntry do
   field :value, 2, type: Arena.Serialization.Entity
 end
 
+defmodule Arena.Serialization.GameState.PlayerTimestampsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: :int64
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -145,7 +154,12 @@ defmodule Arena.Serialization.GameState do
     type: Arena.Serialization.GameState.ProjectilesEntry,
     map: true
 
-  field :player_timestamp, 4, type: :int64, json_name: "playerTimestamp"
+  field :player_timestamps, 4,
+    repeated: true,
+    type: Arena.Serialization.GameState.PlayerTimestampsEntry,
+    json_name: "playerTimestamps",
+    map: true
+
   field :server_timestamp, 5, type: :int64, json_name: "serverTimestamp"
 end
 

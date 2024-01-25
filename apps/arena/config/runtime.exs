@@ -20,6 +20,16 @@ if System.get_env("PHX_SERVER") do
   config :arena, ArenaWeb.Endpoint, server: true
 end
 
+if System.get_env("USE_PROXY") do
+  ToxiproxyEx.populate!([
+    %{
+      name: "game_proxy",
+      listen: "0.0.0.0:5000",
+      upstream: "127.0.0.1:4000"
+    }
+  ])
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
