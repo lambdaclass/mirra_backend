@@ -56,8 +56,8 @@ defmodule ChampionsOfMirra do
     ChampionsOfMirra.Items.get_item(item_id)
   end
 
-  def process_items(:level_up, item_id) do
-    ChampionsOfMirra.Items.level_up(item_id)
+  def process_items(:level_up, user_id, item_id) do
+    ChampionsOfMirra.Items.level_up(user_id, item_id)
   end
 
   def process_items(:unequip_item, user_id, item_id) do

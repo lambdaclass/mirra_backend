@@ -80,4 +80,12 @@ defmodule Users.Currencies do
     |> UserCurrency.changeset(attrs)
     |> Repo.insert()
   end
+
+  @doc """
+  Returns a boolean indicating whether the user can afford the required amount of the specified currency.
+  """
+  def can_afford(user_id, currency_id, required_amount) do
+    user_balance = get_amount_of_currency(user_id, currency_id)
+    user_balance >= required_amount
+  end
 end

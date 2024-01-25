@@ -37,8 +37,8 @@ defmodule GatewayWeb.ChampionsOfMirra.ItemsController do
     end
   end
 
-  def level_up(conn, %{"item_id" => item_id}) do
-    response = ChampionsOfMirra.process_items(:level_up, item_id)
+  def level_up(conn, %{"user_id" => user_id, "item_id" => item_id}) do
+    response = ChampionsOfMirra.process_items(:level_up, user_id, item_id)
     json(conn, response)
   end
 end

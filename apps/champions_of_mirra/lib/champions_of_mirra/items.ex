@@ -6,10 +6,29 @@ defmodule ChampionsOfMirra.Items do
     end
   end
 
-  def level_up(item_id) do
-    case Items.level_up(item_id) do
-      {:ok, _item} -> :ok
-      {:error, error} -> {:error, error}
+  def level_up(user_id, item_id) do
+    item = Items.get_item(item_id) || %{}
+
+    if Map.get(item, :user_id, nil) == user_id do
+      {level_up_currency_id, level_up_cost} = calculate_level_up_cost(item)
+
+      if Users.Currencies.can_afford(user_id, level_up_currency_id, level_up_cost) do
+        case Items.level_up(item) do
+          {:ok, _item} ->
+            Users.Currencies.add_currency(user_id, level_up_currency_id, -level_up_cost)
+            :ok
+
+          {:error, error} ->
+            %{error: error}
+        end
+      else
+        %{error: :cant_afford}
+      end
+    else
+      %{error: :not_found}
     end
   end
+
+  defp calculate_level_up_cost(item),
+    do: {Users.Currencies.get_currency_by_name!("Gold").id, item.level |> Math.pow(2) |> round()}
 end

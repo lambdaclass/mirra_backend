@@ -48,8 +48,8 @@ defmodule Items do
 
   def get_item(item_id), do: Repo.get(Item, item_id)
 
-  def level_up(item_id) do
-    get_item(item_id)
+  def level_up(item) do
+    item
     |> Item.level_up_changeset()
     |> Repo.update()
   end
