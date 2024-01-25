@@ -10,6 +10,7 @@ defmodule ChampionsOfMirra.Campaigns.Level do
 
   @derive {Jason.Encoder, only: [:id, :level_number, :campaign, :units]}
   schema "levels" do
+    field(:game_id, :integer)
     field(:level_number, :integer)
     field(:campaign, :integer)
 
@@ -21,9 +22,9 @@ defmodule ChampionsOfMirra.Campaigns.Level do
   @doc false
   def changeset(level, attrs) do
     level
-    |> cast(attrs, [:level_number, :campaign])
+    |> cast(attrs, [:game_id, :level_number, :campaign])
     |> cast_assoc(:units)
-    |> validate_required([:level_number, :campaign])
+    |> validate_required([:game_id, :level_number, :campaign])
   end
 
   @doc """

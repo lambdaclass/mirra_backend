@@ -8,6 +8,7 @@ defmodule Items.ItemTemplate do
 
   @derive {Jason.Encoder, only: [:id, :name, :type]}
   schema "item_templates" do
+    field(:game_id, :integer)
     field(:name, :string)
     field(:type, :string)
 
@@ -17,7 +18,7 @@ defmodule Items.ItemTemplate do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:name, :type])
-    |> validate_required([:name, :type])
+    |> cast(attrs, [:game_id, :name, :type])
+    |> validate_required([:game_id, :name, :type])
   end
 end

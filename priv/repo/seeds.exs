@@ -36,7 +36,11 @@ Characters.insert_character(%{
 
 ChampionsOfMirra.Campaigns.create_campaigns()
 
-Items.insert_item_template(%{name: "Epic Sword of Epicness", type: "weapon"})
-Items.insert_item_template(%{name: "Mythical Helmet of Mythicness", type: "helmet"})
-Items.insert_item_template(%{name: "Legendary Chestplate of Legendaryness", type: "chest"})
-Items.insert_item_template(%{name: "Magical Boots of Magicness", type: "boots"})
+Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Epic Sword of Epicness", type: "weapon"})
+Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Mythical Helmet of Mythicness", type: "helmet"})
+Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Legendary Chestplate of Legendaryness", type: "chest"})
+Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Magical Boots of Magicness", type: "boots"})
+
+Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
+Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})

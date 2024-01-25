@@ -3,20 +3,22 @@ defmodule ChampionsOfMirra.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias Users.Repo
+  alias Users.Currencies
 
   @game_id 2
 
   def register(username) do
     {:ok, user} = Users.register_user(%{username: username, game_id: @game_id})
 
+    # For testing purposes, we assign some things to our user.
     add_sample_units(user)
     add_sample_items(user)
+    add_sample_currencies(user)
 
     Users.get_user!(user.id)
   end
 
-  def get_user(user_id), do: Users.get_user!(user_id) |> Repo.preload([:units, :items])
+  def get_user(user_id), do: Users.get_user!(user_id)
 
   defp add_sample_units(user) do
     characters = Units.all_characters()
@@ -38,5 +40,10 @@ defmodule ChampionsOfMirra.Users do
     |> Enum.each(fn template ->
       Items.insert_item(%{user_id: user.id, template_id: template.id, level: Enum.random(1..5)})
     end)
+  end
+
+  defp add_sample_currencies(user) do
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
   end
 end

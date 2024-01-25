@@ -7,12 +7,14 @@ defmodule Users.User do
   import Ecto.Changeset
   alias Items.Item
   alias Units.Unit
+  alias Users.Currencies.UserCurrency
 
-  @derive {Jason.Encoder, only: [:id, :username, :units, :items]}
+  @derive {Jason.Encoder, only: [:id, :username, :currencies, :units, :items]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
 
+    has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)
 
@@ -24,14 +26,5 @@ defmodule Users.User do
     user
     |> cast(attrs, [:game_id, :username])
     |> validate_required([:game_id, :username])
-  end
-
-  @doc """
-  Changeset for setting a user's character id.
-  """
-  def character_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:username])
-    |> validate_required([:username])
   end
 end

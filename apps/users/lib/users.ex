@@ -40,5 +40,6 @@ defmodule Users do
       ** (Ecto.NoResultsError)
 
   """
-  def get_user!(id), do: Repo.get!(User, id) |> Repo.preload([:units, :items])
+  def get_user!(id),
+    do: Repo.get!(User, id) |> Repo.preload([:units, :items, [currencies: :currency]])
 end
