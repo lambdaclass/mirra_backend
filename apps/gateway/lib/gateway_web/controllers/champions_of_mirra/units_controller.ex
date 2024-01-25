@@ -14,7 +14,7 @@ defmodule GatewayWeb.ChampionsOfMirra.UnitsController do
         |> put_status(400)
         |> json(reason)
 
-      {:ok, unit} ->
+      unit ->
         json(conn, unit)
     end
   end
