@@ -3,6 +3,7 @@ defmodule ChampionsOfMirra.Campaigns do
   Module for generating, accessing and battling Levels & Campaigns for Champions Of Mirra.
   """
   @units_per_level 5
+  @champions_of_mirra_id 2
 
   import Ecto.Query
   alias ChampionsOfMirra.Repo
@@ -37,7 +38,7 @@ defmodule ChampionsOfMirra.Campaigns do
   Get a level by id.
   """
   def get_level(level_id) do
-    Repo.get(Level, level_id) |> Repo.preload(:units)
+    Repo.get(Level, level_id) |> Repo.preload([units: :items])
   end
 
   @doc """
@@ -92,7 +93,7 @@ defmodule ChampionsOfMirra.Campaigns do
           create_unit_params(possible_characters, div(agg_difficulty, @units_per_level))
           |> add_remainder_unit_levels(rem(agg_difficulty, @units_per_level))
 
-        insert_level(%{units: level_units, campaign: campaign_index, level_number: level_index})
+        insert_level(%{game_id: @champions_of_mirra_id, units: level_units, campaign: campaign_index, level_number: level_index})
       end)
     end)
   end
