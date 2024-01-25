@@ -1,3 +1,15 @@
+defmodule GameClient.Protobuf.PlayerActionType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:MOVING, 0)
+  field(:STARTING_SKILL_1, 1)
+  field(:STARTING_SKILL_2, 2)
+  field(:EXECUTING_SKILL_1, 3)
+  field(:EXECUTING_SKILL_2, 4)
+end
+
 defmodule GameClient.Protobuf.Direction do
   @moduledoc false
 
@@ -25,6 +37,39 @@ defmodule GameClient.Protobuf.GameEvent do
 
   field(:joined, 1, type: GameClient.Protobuf.GameJoined, oneof: 0)
   field(:update, 2, type: GameClient.Protobuf.GameState, oneof: 0)
+  field(:finished, 3, type: GameClient.Protobuf.GameFinished, oneof: 0)
+  field(:ping, 4, type: GameClient.Protobuf.PingUpdate, oneof: 0)
+end
+
+defmodule GameClient.Protobuf.GameFinished.PlayersEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
+defmodule GameClient.Protobuf.GameFinished do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:winner, 1, type: GameClient.Protobuf.Entity)
+
+  field(:players, 2,
+    repeated: true,
+    type: GameClient.Protobuf.GameFinished.PlayersEntry,
+    map: true
+  )
+end
+
+defmodule GameClient.Protobuf.PingUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:latency, 1, type: :uint64)
 end
 
 defmodule GameClient.Protobuf.GameJoined do
@@ -126,6 +171,13 @@ defmodule GameClient.Protobuf.Player do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:health, 1, type: :uint64)
+  field(:kill_count, 2, type: :uint64, json_name: "killCount")
+
+  field(:current_actions, 3,
+    repeated: true,
+    type: GameClient.Protobuf.PlayerAction,
+    json_name: "currentActions"
+  )
 end
 
 defmodule GameClient.Protobuf.Projectile do
@@ -143,6 +195,15 @@ defmodule GameClient.Protobuf.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:color, 1, type: :string)
+end
+
+defmodule GameClient.Protobuf.PlayerAction do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:action, 1, type: GameClient.Protobuf.PlayerActionType, enum: true)
+  field(:duration, 2, type: :uint64)
 end
 
 defmodule GameClient.Protobuf.Move do
