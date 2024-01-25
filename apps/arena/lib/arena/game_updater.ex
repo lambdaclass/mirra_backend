@@ -66,30 +66,24 @@ defmodule Arena.GameUpdater do
     {projectiles, players} =
       Enum.reduce(projectiles, {projectiles, players}, fn {projectile_id, projectile},
                                                           {projectiles_acc, players_acc} ->
-        case projectile.collides_with |> List.delete(projectile.aditional_info.owner_id) do
-          [] ->
+        collision_player_id =
+          Enum.find(projectile.collides_with, fn entity_id ->
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id)
+          end)
+
+        case collision_player_id do
+          nil ->
             {projectiles_acc, players_acc}
 
-          [entity_id | _] ->
-            case Map.get(players, entity_id) do
-              nil ->
-                {projectiles_acc, players_acc}
+          player ->
+            health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
+            player = put_in(player, [:aditional_info, :health], health)
+            projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
-              player ->
-                player =
-                  player
-                  |> update_in([:aditional_info, :health], fn health ->
-                    max(health - projectile.aditional_info.damage, 0)
-                  end)
-
-                projectile =
-                  projectile |> update_in([:aditional_info, :status], fn _ -> :EXPLODED end)
-
-                {
-                  Map.put(projectiles_acc, projectile_id, projectile),
-                  Map.put(players_acc, player.id, player)
-                }
-            end
+            {
+              Map.put(projectiles_acc, projectile_id, projectile),
+              Map.put(players_acc, player.id, player)
+            }
         end
       end)
 
