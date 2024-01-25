@@ -220,8 +220,6 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
   end
 
-
-
   defp broadcast_game_ended(winner, state) do
     game_state = %GameFinished{
       winner: complete_entity(winner),
