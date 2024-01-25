@@ -72,7 +72,7 @@ defmodule GameClientWeb.BoardLive.Show do
           y: entity.position.y,
           radius: entity.radius,
           coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: entity.is_colliding
+          is_colliding: entity.collides_with |> Enum.any?()
         }
       end)
 
@@ -88,7 +88,7 @@ defmodule GameClientWeb.BoardLive.Show do
           y: entity.position.y,
           radius: entity.radius,
           coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: entity.is_colliding
+          is_colliding: entity.collides_with |> Enum.any?()
         }
       end)
 

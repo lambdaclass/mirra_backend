@@ -1,3 +1,12 @@
+defmodule GameClient.Protobuf.ProjectileStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ACTIVE, 0)
+  field(:EXPLODED, 1)
+end
+
 defmodule GameClient.Protobuf.PlayerActionType do
   @moduledoc false
 
@@ -156,10 +165,10 @@ defmodule GameClient.Protobuf.Entity do
   field(:position, 5, type: GameClient.Protobuf.Position)
   field(:radius, 6, type: :float)
   field(:vertices, 7, repeated: true, type: GameClient.Protobuf.Position)
-  field(:is_colliding, 8, type: :bool, json_name: "isColliding")
-  field(:collides_with, 9, repeated: true, type: :uint64, json_name: "collidesWith")
-  field(:speed, 10, type: :float)
-  field(:direction, 11, type: GameClient.Protobuf.Direction)
+  field(:collides_with, 8, repeated: true, type: :uint64, json_name: "collidesWith")
+  field(:speed, 9, type: :float)
+  field(:direction, 10, type: GameClient.Protobuf.Direction)
+  field(:is_moving, 11, type: :bool, json_name: "isMoving")
   field(:player, 12, type: GameClient.Protobuf.Player, oneof: 0)
   field(:projectile, 13, type: GameClient.Protobuf.Projectile, oneof: 0)
   field(:obstacle, 14, type: GameClient.Protobuf.Obstacle, oneof: 0)
@@ -187,6 +196,7 @@ defmodule GameClient.Protobuf.Projectile do
 
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
+  field(:status, 3, type: GameClient.Protobuf.ProjectileStatus, enum: true)
 end
 
 defmodule GameClient.Protobuf.Obstacle do

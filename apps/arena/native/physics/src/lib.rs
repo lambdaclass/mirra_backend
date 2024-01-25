@@ -17,10 +17,12 @@ fn move_entities(entities: HashMap<u64, Entity>, external_wall: Entity) -> HashM
     let mut entities: HashMap<u64, Entity> = entities;
 
     for entity in entities.values_mut() {
-        entity.move_entity();
+        if entity.is_moving {
+            entity.move_entity();
 
-        if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-            entity.move_to_next_valid_position(&external_wall);
+            if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
+                entity.move_to_next_valid_position(&external_wall);
+            }
         }
     }
 

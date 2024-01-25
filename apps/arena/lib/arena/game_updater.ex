@@ -54,16 +54,59 @@ defmodule Arena.GameUpdater do
 
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
 
-    new_players_state =
+    players =
       update_entities(game_state.players, entities_to_collide, game_state.external_wall)
 
-    new_projectiles_state =
-      update_entities(game_state.projectiles, entities_to_collide, game_state.external_wall)
+    projectiles =
+      game_state.projectiles
+      |> remove_exploded_projectiles()
+      |> update_entities(entities_to_collide, game_state.external_wall)
+
+    # Resolve collisions between players and projectiles
+    {projectiles, players} =
+      Enum.reduce(projectiles, {projectiles, players}, fn {projectile_id, projectile},
+                                                          {projectiles_acc, players_acc} ->
+        case projectile.collides_with |> List.delete(projectile.aditional_info.owner_id) do
+          [] ->
+            {projectiles_acc, players_acc}
+
+          [entity_id | _] ->
+            case Map.get(players, entity_id) do
+              nil ->
+                {projectiles_acc, players_acc}
+
+              player ->
+                player =
+                  player
+                  |> update_in([:aditional_info, :health], fn health ->
+                    max(health - projectile.aditional_info.damage, 0)
+                  end)
+
+                projectile =
+                  projectile |> update_in([:aditional_info, :status], fn _ -> :EXPLODED end)
+
+                {
+                  Map.put(projectiles_acc, projectile_id, projectile),
+                  Map.put(players_acc, player.id, player)
+                }
+            end
+        end
+      end)
+
+    # Resolve collisions between projectiles and the external wall
+    # projectiles = Enum.reduce(projectiles, projectiles, fn {projectile_id, projectile}, projectiles_acc ->
+    #     case Enum.member?(projectile.collide_with, game_state.external_wall.id) do
+    #       false ->
+    #         projectile = projectile |> update_in([:aditional_info, :status], fn _ -> :EXPLODED end)
+    #         Map.put(projectiles_acc, projectile_id, projectile)
+    #       _ -> projectiles_acc
+    #     end
+    #   end)
 
     game_state =
       game_state
-      |> Map.put(:players, new_players_state)
-      |> Map.put(:projectiles, new_projectiles_state)
+      |> Map.put(:players, players)
+      |> Map.put(:projectiles, projectiles)
 
     broadcast_game_update(game_state)
 
@@ -119,9 +162,18 @@ defmodule Arena.GameUpdater do
     current_actions =
       add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
+    is_moving = x != 0.0 || y != 0.0
+
+    direction =
+      case is_moving do
+        true -> Utils.normalize(x, y)
+        _ -> player.direction
+      end
+
     player =
       player
-      |> Map.put(:direction, Utils.normalize(x, y))
+      |> Map.put(:direction, direction)
+      |> Map.put(:is_moving, is_moving)
       |> Map.put(
         :aditional_info,
         Map.merge(player.aditional_info, %{current_actions: current_actions})
@@ -241,7 +293,8 @@ defmodule Arena.GameUpdater do
       direction: %{
         x: 0.0,
         y: 0.0
-      }
+      },
+      is_moving: false
     }
 
     players =
@@ -322,7 +375,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:player_timestamp, 0)
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
-      |> Map.put(:external_wall, Entities.new_external_wall(config.map.radius))
+      |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
@@ -344,8 +397,8 @@ defmodule Arena.GameUpdater do
         Map.get(entities, key)
         |> Map.merge(value)
         |> Map.put(
-          :is_colliding,
-          Physics.check_collisions(value, entities_to_collide) |> Enum.any?()
+          :collides_with,
+          Physics.check_collisions(value, entities_to_collide)
         )
 
       acc |> Map.put(key, entity)
@@ -373,6 +426,12 @@ defmodule Arena.GameUpdater do
         # TODO we should use a tiebreaker instead of picking the 1st one in the list
         {:ended, hd(last_standing_players)}
     end
+  end
+
+  def remove_exploded_projectiles(projectiles) do
+    Map.filter(projectiles, fn {_key, projectile} ->
+      projectile.aditional_info.status != :EXPLODED
+    end)
   end
 
   ##########################

@@ -6,7 +6,7 @@ defmodule Arena.Entities do
   def new_player(id, skills_config) do
     ## TODO: This hardcoding is to ensure the skills are in the correct skill_key
     ##  after we have proper configuration for this we can remove this matching
-    [%{name: "shot"} = _skill1, %{name: "circle_bash"} = skill2] = skills_config
+    [%{name: "shot"} = skill1, %{name: "circle_bash"} = _skill2] = skills_config
 
     %{
       id: id,
@@ -24,9 +24,10 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
+      is_moving: false,
       aditional_info: %{
         health: 100,
-        skills: %{"1" => skill2, "2" => skill2},
+        skills: %{"1" => skill1, "2" => skill1},
         current_actions: [],
         kill_count: 0
       }
@@ -42,18 +43,20 @@ defmodule Arena.Entities do
       position: position,
       radius: 10.0,
       vertices: [],
-      speed: 30.0,
+      speed: 40.0,
       direction: direction,
+      is_moving: true,
       aditional_info: %{
         damage: 10,
-        owner_id: owner_id
+        owner_id: owner_id,
+        status: :ACTIVE
       }
     }
   end
 
-  def new_external_wall(radius) do
+  def new_external_wall(id, radius) do
     %{
-      id: 0,
+      id: id,
       category: :obstacle,
       shape: :circle,
       name: "ExternalWall",
@@ -67,7 +70,8 @@ defmodule Arena.Entities do
       direction: %{
         x: 0.0,
         y: 0.0
-      }
+      },
+      is_moving: false
     }
   end
 
@@ -84,7 +88,8 @@ defmodule Arena.Entities do
     {:projectile,
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
-       owner_id: entity.aditional_info.owner_id
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status
      }}
   end
 
