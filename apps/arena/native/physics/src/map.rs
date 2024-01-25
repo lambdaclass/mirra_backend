@@ -34,6 +34,7 @@ pub struct Entity {
     pub speed: f64,
     pub category: Category,
     pub direction: Direction,
+    pub is_moving: bool,
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
@@ -62,6 +63,7 @@ impl Entity {
             speed: 0.0,
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
+            is_moving: false,
         }
     }
 
@@ -75,6 +77,7 @@ impl Entity {
             speed: 0.0,
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
+            is_moving: false,
         }
     }
 
