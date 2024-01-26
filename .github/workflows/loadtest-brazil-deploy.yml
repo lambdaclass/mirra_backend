@@ -37,7 +37,7 @@ jobs:
           SSH_HOST: ${{ vars.TS_LOADTEST_HOST }}
         run: |
           set -ex 
-          rsync -avz --mkpath apps/arena/deploy_arena.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
+          rsync -avz --mkpath apps/arena/devops/deploy_arena.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
