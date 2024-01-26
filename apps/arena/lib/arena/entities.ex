@@ -2,7 +2,7 @@ defmodule Arena.Entities do
   @moduledoc """
   Entities manager.
   """
-alias Arena.Configuration
+  alias Arena.Configuration
 
   def new_player(id, character_name, config) do
     character = Configuration.get_character_config(character_name, config)

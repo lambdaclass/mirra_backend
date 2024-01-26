@@ -42,22 +42,27 @@ defmodule Arena.Configuration do
     |> hd()
   end
 
-  defp parse_characters_config(characters, skills) do
+  defp parse_characters_config(characters, config_skills) do
     Enum.map(characters, fn character ->
       character_skills =
         Enum.map(character.skills, fn {skill_key, skill_name} ->
-          skill = Enum.find(skills, fn skill -> skill.name == skill_name end)
-
-          ## This is a sanity check when loading the config
-          if skill == nil do
-            raise "Character #{inspect character.name} skill #{inspect skill_name} does not exist in config"
-          end
-
+          skill = find_skill!(skill_name, config_skills)
           {:erlang.atom_to_binary(skill_key), skill}
         end)
         |> Map.new()
 
       %{character | skills: character_skills}
     end)
+  end
+
+  defp find_skill!(skill_name, skills) do
+    skill = Enum.find(skills, fn skill -> skill.name == skill_name end)
+
+    ## This is a sanity check when loading the config
+    if skill == nil do
+      raise "Skill #{inspect(skill_name)} does not exist in config"
+    else
+      skill
+    end
   end
 end
