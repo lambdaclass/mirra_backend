@@ -8,11 +8,7 @@
 import Config
 
 config :gateway,
-  ecto_repos: [Gateway.Repo],
   generators: [timestamp_type: :utc_datetime]
-
-# Configures Ecto migrations
-config :gateway, Gateway.Repo, migration_primary_key: [type: :binary_id]
 
 # Configures Elixir's Logger
 config :logger, :console,

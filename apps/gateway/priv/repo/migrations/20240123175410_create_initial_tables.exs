@@ -1,4 +1,4 @@
-defmodule Gateway.Repo.Migrations.CreateUnitsUsersAndCharacters do
+defmodule ChampionsOfMirra.Repo.Migrations.CreateInitialTables do
   use Ecto.Migration
 
   def change do
