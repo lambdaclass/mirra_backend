@@ -3,6 +3,10 @@ defmodule Arena.Configuration do
   Module in charge of configuration related things
   """
 
+  def get_character_config(name, config) do
+    Enum.find(config.characters, fn character -> character.name == name end)
+  end
+
   def get_game_config() do
     {:ok, config_json} =
       Application.app_dir(:arena, "priv/config.json")
