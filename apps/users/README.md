@@ -1,6 +1,9 @@
 # Users
 
-**TODO: Add description**
+The Users application defines utilites for interacting with Users, that are common across all games. Also defines the data structures themselves. Operations that can be done to a User are:
+- Create
+
+For now, users consist of only a username. No authentication of any sort has been implemented.
 
 ## Installation
 
@@ -18,4 +21,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/users>.
-
