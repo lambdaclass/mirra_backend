@@ -16,10 +16,6 @@ dispatch = [
   ]
 ]
 
-config :arena,
-  ecto_repos: [Arena.Repo],
-  generators: [timestamp_type: :utc_datetime]
-
 # Configures the endpoint
 config :arena, ArenaWeb.Endpoint,
   url: [host: "localhost"],

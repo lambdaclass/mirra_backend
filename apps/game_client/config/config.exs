@@ -7,10 +7,6 @@
 # General application configuration
 import Config
 
-config :game_client,
-  ecto_repos: [GameClient.Repo],
-  generators: [timestamp_type: :utc_datetime]
-
 # Configures the endpoint
 config :game_client, GameClientWeb.Endpoint,
   url: [host: "localhost"],
