@@ -1,11 +1,13 @@
-.PHONY: db run start format credo check generate-protos generate-arena-protos generate-game-client-protos
+.PHONY: deps db run start format credo check generate-protos generate-arena-protos generate-game-client-protos
 
-db: 
+deps:
+	mix deps.get
+
+db: deps
 	docker compose up -d
 	mix ecto.reset
 
 run:
-	mix deps.get
 	iex -S mix phx.server
 
 start: db run
