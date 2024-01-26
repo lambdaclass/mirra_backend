@@ -5,7 +5,7 @@ defmodule GameClient.WsClient do
   use WebSockex
 
   def start_link(_url, state) do
-    WebSockex.start_link("http://localhost:4000/play/1", __MODULE__, state)
+    WebSockex.start_link("http://localhost:4001/play/1", __MODULE__, state)
   end
 
   def handle_frame({type, msg}, state) do

@@ -54,7 +54,7 @@ defmodule GameClient.ClientSocketHandler do
 
   defp ws_url(player_id, game_id) do
     # FIX ME Remove hardcoded host
-    host = "localhost:4000"
+    host = "localhost:4001"
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
