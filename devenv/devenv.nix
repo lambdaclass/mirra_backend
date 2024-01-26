@@ -19,8 +19,8 @@
       { name = "arena_db"; }
       { name = "game_client_db"; }
     ];
+    port = 5432;
     listen_addresses = "127.0.0.1";
-    #port = "5432";
     initialScript = "CREATE USER postgres WITH PASSWORD 'postgres';";
   };
 }
