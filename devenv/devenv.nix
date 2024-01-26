@@ -2,13 +2,13 @@
 
 {
   languages = {
-    nix = {
-      enable = true;
-    };
-
     elixir = {
       enable = true;
-      package = pkgs.beam.packages.erlangR25.elixir_1_13;
+      package = pkgs.beam.packages.erlangR26.elixir_1_15;
+    };
+
+    erlang = {
+      enable = true;
     };
   };
 
@@ -17,9 +17,9 @@
     package = pkgs.postgresql_16;
     initialDatabases = [
       { name = "arena_db"; }
-      #{ name = "game_client_db"; }
+      { name = "game_client_db"; }
     ];
-    #listen_addresses = "127.0.0.1";
+    listen_addresses = "127.0.0.1";
     #port = "5432";
     initialScript = "CREATE USER postgres WITH PASSWORD 'postgres';";
   };
