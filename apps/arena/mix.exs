@@ -48,7 +48,8 @@ defmodule Arena.MixProject do
       {:protobuf, "~> 0.12.0"},
       {:exbase58, "~> 1.0.2"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:plug_cowboy, "~> 2.5"}
+      {:plug_cowboy, "~> 2.5"},
+      {:toxiproxy_ex, "~> 1.1.1"}
     ]
   end
 

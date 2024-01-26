@@ -7,7 +7,6 @@ deps:
 	mix deps.get
 
 start:
-	docker compose up -d
 	iex -S mix phx.server
 
 stop:

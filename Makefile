@@ -1,6 +1,7 @@
 .PHONY: deps db run start format credo check generate-protos generate-arena-protos generate-game-client-protos
 
 deps:
+	cd apps/game_client/assets && npm install
 	mix deps.get
 
 db: deps

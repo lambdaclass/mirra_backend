@@ -4,7 +4,7 @@ defmodule Arena.GameLauncher do
   use GenServer
 
   # Amount of clients needed to start a game
-  @clients_needed 2
+  @clients_needed 1
 
   # API
   def start_link(_) do
