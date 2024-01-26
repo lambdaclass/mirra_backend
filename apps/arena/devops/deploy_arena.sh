@@ -15,7 +15,6 @@ chmod +x devops/entrypoint.sh
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
 mix deps.compile
-mix assets.deploy
 mix compile
 mix phx.gen.release
 mix release --overwrite
