@@ -48,6 +48,7 @@ cat <<EOF >$HOME/.env
 PHX_HOST=${PHX_HOST}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
+PORT=${PORT}
 EOF
 
 systemctl --user stop arena

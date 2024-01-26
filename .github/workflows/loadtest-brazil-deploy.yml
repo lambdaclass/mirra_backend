@@ -46,6 +46,7 @@ jobs:
           MIX_ENV: ${{ vars.MIX_ENV }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_HOST }}
+          PORT: ${{ vars.ARENA_PORT }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_LOADTEST }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
@@ -57,6 +58,7 @@ jobs:
                 MIX_ENV=${MIX_ENV} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
+                PORT=${PORT} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
