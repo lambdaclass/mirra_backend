@@ -62,4 +62,4 @@ jobs:
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                /home/${SSH_USERNAME}/deploy-script/deploy.sh
+                /home/${SSH_USERNAME}/deploy-script/deploy_arena.sh
