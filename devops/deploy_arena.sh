@@ -10,7 +10,7 @@ cd /tmp
 git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME}
 cd mirra_backend/apps/arena
 
-chmod +x entrypoint.sh
+chmod +x devops/entrypoint.sh
 
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
@@ -33,7 +33,7 @@ After=network-online.target
 [Service]
 WorkingDirectory=$HOME/mirra_backend
 Restart=on-failure
-ExecStart=$HOME/mirra_backend/entrypoint.sh
+ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env
