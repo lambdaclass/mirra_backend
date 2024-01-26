@@ -28,18 +28,18 @@ defmodule ChampionsOfMirra.Items do
 
       if Users.Currencies.can_afford(user_id, level_up_currency_id, level_up_cost) do
         case Items.level_up(item) do
-          {:ok, _item} ->
+          {:ok, item} ->
             Users.Currencies.add_currency(user_id, level_up_currency_id, -level_up_cost)
-            :ok
+            {:ok, item}
 
           {:error, error} ->
-            %{error: error}
+            {:error, error}
         end
       else
-        %{error: :cant_afford}
+        {:error, :cant_afford}
       end
     else
-      %{error: :not_found}
+      {:error, :not_found}
     end
   end
 
