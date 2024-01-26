@@ -1,7 +1,7 @@
 defmodule ChampionsOfMirra do
   @moduledoc """
-  Champions of Mirra request handler. Receives messages from the Gateway app and
-  routes them to the appropiate ChampionsOfMirra modules.
+  Champions of Mirra API. This module is called by the Gateway to process received requests.
+  Redirects calls to appropiate modules.
   """
 
   ###########
