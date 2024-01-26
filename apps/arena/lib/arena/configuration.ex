@@ -15,7 +15,7 @@ defmodule Arena.Configuration do
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
-    %{config | skills: skills, characters: characters} |> IO.inspect()
+    %{config | skills: skills, characters: characters}
   end
 
   defp parse_skills_config(skills_config) do
