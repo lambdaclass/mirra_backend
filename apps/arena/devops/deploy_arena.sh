@@ -33,7 +33,7 @@ After=network-online.target
 [Service]
 WorkingDirectory=$HOME/mirra_backend
 Restart=on-failure
-ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
+ExecStart=$HOME/mirra_backend/apps/arena/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env
