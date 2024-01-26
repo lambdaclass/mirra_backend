@@ -4,7 +4,9 @@ defmodule Arena.GameLauncher do
   use GenServer
 
   # Amount of clients needed to start a game
-  @clients_needed 1
+  @clients_needed 2
+  # Time to wait to start game with any amount of clients
+  @start_timeout_ms 10_000
 
   # API
   def start_link(_) do
@@ -19,20 +21,24 @@ defmodule Arena.GameLauncher do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
-    {:ok, %{clients: []}}
+    {:ok, %{clients: [], batch_start_at: 0}}
   end
 
   @impl true
   def handle_call({:join, client_id}, {from_pid, _}, %{clients: clients} = state) do
-    {:reply, :ok, %{state | clients: clients ++ [{client_id, from_pid}]}}
+    batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
+
+    {:reply, :ok,
+     %{state | batch_start_at: batch_start_at, clients: clients ++ [{client_id, from_pid}]}}
   end
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
+    diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    if length(clients) >= @clients_needed do
-      Process.send(self(), :start_game, [])
+    if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
+      send(self(), :start_game)
     end
 
     {:noreply, state}
@@ -51,5 +57,13 @@ defmodule Arena.GameLauncher do
     end)
 
     {:noreply, %{state | clients: remaining_clients}}
+  end
+
+  defp maybe_make_batch_start_at([], _) do
+    System.monotonic_time(:millisecond)
+  end
+
+  defp maybe_make_batch_start_at([_ | _], batch_start_at) do
+    batch_start_at
   end
 end
