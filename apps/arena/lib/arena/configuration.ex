@@ -10,7 +10,8 @@ defmodule Arena.Configuration do
 
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
-    %{config | skills: skills}
+    characters = parse_characters_config(config.characters, skills)
+    %{config | skills: skills, characters: characters} |> IO.inspect()
   end
 
   defp parse_skills_config(skills_config) do
@@ -35,5 +36,24 @@ defmodule Arena.Configuration do
   defp parse_mechanic_config(mechanic) do
     Map.to_list(mechanic)
     |> hd()
+  end
+
+  defp parse_characters_config(characters, skills) do
+    Enum.map(characters, fn character ->
+      character_skills =
+        Enum.map(character.skills, fn {skill_key, skill_name} ->
+          skill = Enum.find(skills, fn skill -> skill.name == skill_name end)
+
+          ## This is a sanity check when loading the config
+          if skill == nil do
+            raise "Character #{inspect character.name} skill #{inspect skill_name} does not exist in config"
+          end
+
+          {:erlang.atom_to_binary(skill_key), skill}
+        end)
+        |> Map.new()
+
+      %{character | skills: character_skills}
+    end)
   end
 end
