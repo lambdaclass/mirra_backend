@@ -7,9 +7,6 @@
 # General application configuration
 import Config
 
-config :game_client,
-  generators: [timestamp_type: :utc_datetime]
-
 # Configures the endpoint
 config :game_client, GameClientWeb.Endpoint,
   url: [host: "localhost"],

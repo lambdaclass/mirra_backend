@@ -30,9 +30,4 @@ defmodule ArenaWeb.ConnCase do
       import ArenaWeb.ConnCase
     end
   end
-
-  setup tags do
-    Arena.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
-  end
 end

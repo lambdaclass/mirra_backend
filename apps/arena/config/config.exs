@@ -16,9 +16,6 @@ dispatch = [
   ]
 ]
 
-config :arena,
-  generators: [timestamp_type: :utc_datetime]
-
 # Configures the endpoint
 config :arena, ArenaWeb.Endpoint,
   url: [host: "localhost"],
