@@ -10,6 +10,10 @@
     erlang = {
       enable = true;
     };
+
+    rust = {
+      enable = true;
+    };
   };
 
   services.postgres = {
