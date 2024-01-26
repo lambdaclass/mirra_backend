@@ -124,6 +124,23 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:stop_dash, player_id, previous_speed}, state) do
+    player = Map.get(state.game_state.players, player_id)
+
+    player = player
+    |> Map.put(:is_moving, false)
+    |> Map.put(:speed, previous_speed)
+
+    state =
+      put_in(
+        state,
+        [:game_state, :players, player_id],
+        player
+      )
+
+    {:noreply, state}
+  end
+
   # End game
   def handle_info(:game_ended, state) do
     {:stop, :normal, state}
@@ -304,6 +321,18 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
+  defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
+    Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
+
+    player = player
+    |> Map.put(:is_moving, true)
+    |> Map.put(:speed, speed)
+
+    players = Map.put(game_state.players, player.id, player)
+
+    %{game_state | players: players}
+  end
+
   defp do_mechanic({:simple_shoot, _}, player, game_state) do
     last_id = game_state.last_id + 1
 
@@ -348,7 +377,11 @@ defmodule Arena.GameUpdater do
   end
 
   defp skill_key_to_atom(skill_key) do
-    "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+    case skill_key do
+      "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+      _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+    end
+
   end
 
   ##########################

@@ -33,6 +33,20 @@
           }
         }
       ]
+    },
+    {
+      "name": "dash",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ]
     }
   ]
 }
