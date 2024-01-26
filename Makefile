@@ -6,7 +6,7 @@ deps:
 
 db: deps
 	docker compose up -d
-	mix ecto.create
+	mix ecto.reset
 
 run:
 	iex -S mix phx.server
