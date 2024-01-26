@@ -25,7 +25,7 @@ if System.get_env("USE_PROXY") do
     %{
       name: "game_proxy",
       listen: "0.0.0.0:5000",
-      upstream: "127.0.0.1:4001"
+      upstream: "127.0.0.1:4000"
     }
   ])
 end
