@@ -127,9 +127,10 @@ defmodule Arena.GameUpdater do
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player = Map.get(state.game_state.players, player_id)
 
-    player = player
-    |> Map.put(:is_moving, false)
-    |> Map.put(:speed, previous_speed)
+    player =
+      player
+      |> Map.put(:is_moving, false)
+      |> Map.put(:speed, previous_speed)
 
     state =
       put_in(
@@ -324,9 +325,10 @@ defmodule Arena.GameUpdater do
   defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 
-    player = player
-    |> Map.put(:is_moving, true)
-    |> Map.put(:speed, speed)
+    player =
+      player
+      |> Map.put(:is_moving, true)
+      |> Map.put(:speed, speed)
 
     players = Map.put(game_state.players, player.id, player)
 
@@ -381,7 +383,6 @@ defmodule Arena.GameUpdater do
       "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
       _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
     end
-
   end
 
   ##########################

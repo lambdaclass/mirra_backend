@@ -6,7 +6,8 @@ defmodule Arena.Entities do
   def new_player(id, skills_config) do
     ## TODO: This hardcoding is to ensure the skills are in the correct skill_key
     ##  after we have proper configuration for this we can remove this matching
-    [%{name: "dash"} = skill3, %{name: "shot"} = _skill1, %{name: "circle_bash"} = skill2] = skills_config
+    [%{name: "dash"} = skill3, %{name: "shot"} = _skill1, %{name: "circle_bash"} = skill2] =
+      skills_config
 
     %{
       id: id,
