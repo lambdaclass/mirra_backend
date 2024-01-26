@@ -42,7 +42,6 @@ make start
 ```
 For more information, you can read its [documentation](apps/game_client/README.md)
 
-
 ### Future iterations
 In future iterations, we will add the following apps:
 

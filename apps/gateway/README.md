@@ -1,18 +1,23 @@
 # Gateway
 
-To start your Phoenix server:
+After starting all applications with `make start`, you can start sending requests to the gateway.
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+For example, to create a new user called JohnDoe in Champions of Mirra, you can run the following command:
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+```
+$ curl --request POST http://localhost:4000/championsofmirra/users/JohnDoe
+```
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+This should return a response with the new user.
 
-## Learn more
+To get all the campaigns available to that user in Champions of Mirra, you can run the following command (replace `:user_id` with the user id returned in the previous request):
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+```
+$ curl --request GET http://localhost:4000/championsofmirra/users/:user_id/campaigns
+```
+
+Now, to play a battle in the first level of the first campaign, get the level id from the previous request and run the following command (replace `:level_id` with the level id returned in the previous request):
+
+```
+$ curl --request POST http://localhost:4000/championsofmirra/users/:user_id/levels/:level_id/battle
+```
