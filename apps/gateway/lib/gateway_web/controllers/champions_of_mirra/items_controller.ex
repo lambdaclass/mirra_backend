@@ -13,7 +13,8 @@ defmodule GatewayWeb.ChampionsOfMirra.ItemsController do
   end
 
   def unequip_item(conn, %{"user_id" => user_id, "item_id" => item_id}) do
-    ChampionsOfMirra.Units.unequip_item(user_id, item_id) |> GatewayWeb.Utils.format_response(conn)
+    ChampionsOfMirra.Units.unequip_item(user_id, item_id)
+    |> GatewayWeb.Utils.format_response(conn)
   end
 
   def get_item(conn, %{"item_id" => item_id}) do

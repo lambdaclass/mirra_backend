@@ -12,7 +12,8 @@ defmodule GatewayWeb.ChampionsOfMirra.CampaignsController do
   end
 
   def get_campaign(conn, %{"campaign_number" => campaign_number}) do
-    ChampionsOfMirra.Campaigns.get_campaign(campaign_number) |> GatewayWeb.Utils.format_response(conn)
+    ChampionsOfMirra.Campaigns.get_campaign(campaign_number)
+    |> GatewayWeb.Utils.format_response(conn)
   end
 
   def get_level(conn, %{"level_id" => level_id}) do
