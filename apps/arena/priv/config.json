@@ -40,7 +40,7 @@
     {
       "name": "shot",
       "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
+      "execution_duration_ms": 1000,
       "is_passive": false,
       "mechanics": [
         {

@@ -409,7 +409,7 @@ defmodule Arena.GameUpdater do
       last_id = new_game.last_id + 1
 
       players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "uma", config))
+        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "h4ck", config))
 
       new_game
       |> Map.put(:last_id, last_id)
