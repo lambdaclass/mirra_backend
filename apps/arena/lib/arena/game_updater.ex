@@ -148,6 +148,32 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:recharge_stamina, player_id}, state) do
+    player = Map.get(state.game_state.players, player_id)
+
+    player =
+      case player.aditional_info.available_stamina do
+        3 ->
+          player
+          |> Map.put(:aditional_info, Map.put(player.aditional_info, :recharging_stamina, false))
+
+        n ->
+          Process.send_after(self(), {:recharge_stamina, player_id}, 5_000)
+
+          player
+          |> put_in([:aditional_info, :available_stamina], n + 1)
+      end
+
+    state =
+      put_in(
+        state,
+        [:game_state, :players, player_id],
+        player
+      )
+
+    {:noreply, state}
+  end
+
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -260,8 +286,31 @@ defmodule Arena.GameUpdater do
 
   defp handle_attack(player_id, skill_key, game_state) do
     case Map.get(game_state.players, player_id) do
-      %{aditional_info: %{skills: %{^skill_key => skill}}} = player ->
-        player = add_skill_action(player, skill, skill_key)
+      %{aditional_info: %{skills: %{^skill_key => skill}}} = player
+      when player.aditional_info.available_stamina > 0 ->
+        player =
+          add_skill_action(player, skill, skill_key)
+          |> put_in(
+            [:aditional_info, :available_stamina],
+            player.aditional_info.available_stamina - 1
+          )
+
+        player =
+          case player.aditional_info.recharging_stamina do
+            false ->
+              Process.send_after(
+                self(),
+                {:recharge_stamina, player_id},
+                5000
+              )
+
+              player
+              |> put_in([:aditional_info, :recharging_stamina], true)
+
+            _ ->
+              player
+          end
+
         players = Map.put(game_state.players, player_id, player)
         game_state = %{game_state | players: players}
 

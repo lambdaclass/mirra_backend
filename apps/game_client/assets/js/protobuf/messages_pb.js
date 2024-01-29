@@ -3647,7 +3647,9 @@ proto.Player.toObject = function(includeInstance, msg) {
     health: jspb.Message.getFieldWithDefault(msg, 1, 0),
     killCount: jspb.Message.getFieldWithDefault(msg, 2, 0),
     currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
-    proto.PlayerAction.toObject, includeInstance)
+    proto.PlayerAction.toObject, includeInstance),
+    availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
   };
 
   if (includeInstance) {
@@ -3696,6 +3698,14 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.PlayerAction;
       reader.readMessage(value,proto.PlayerAction.deserializeBinaryFromReader);
       msg.addCurrentActions(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setAvailableStamina(value);
+      break;
+    case 5:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRechargingStamina(value);
       break;
     default:
       reader.skipField();
@@ -3746,6 +3756,20 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       proto.PlayerAction.serializeBinaryToWriter
+    );
+  }
+  f = message.getAvailableStamina();
+  if (f !== 0) {
+    writer.writeUint64(
+      4,
+      f
+    );
+  }
+  f = message.getRechargingStamina();
+  if (f) {
+    writer.writeBool(
+      5,
+      f
     );
   }
 };
@@ -3822,6 +3846,42 @@ proto.Player.prototype.addCurrentActions = function(opt_value, opt_index) {
  */
 proto.Player.prototype.clearCurrentActionsList = function() {
   return this.setCurrentActionsList([]);
+};
+
+
+/**
+ * optional uint64 available_stamina = 4;
+ * @return {number}
+ */
+proto.Player.prototype.getAvailableStamina = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setAvailableStamina = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional bool recharging_stamina = 5;
+ * @return {boolean}
+ */
+proto.Player.prototype.getRechargingStamina = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setRechargingStamina = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 5, value);
 };
 
 

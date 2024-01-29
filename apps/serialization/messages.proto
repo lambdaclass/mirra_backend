@@ -122,6 +122,8 @@ message Player {
   uint64 health = 1;
   uint64 kill_count = 2;
   repeated PlayerAction current_actions = 3;
+  uint64 available_stamina = 4;
+  bool recharging_stamina = 5;
 }
 
 message Projectile {
