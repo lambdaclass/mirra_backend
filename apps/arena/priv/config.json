@@ -48,5 +48,31 @@
         }
       ]
     }
+  ],
+  "characters": [
+    {
+      "name": "muflus",
+      "active": true,
+      "base_speed": 25.0,
+      "base_size": 50.0,
+      "base_health": 100,
+      "max_inventory_size": 1,
+      "skills": {
+        "1": "circle_bash",
+        "2": "circle_bash"
+      }
+    },
+    {
+      "name": "h4ck",
+      "active": true,
+      "base_speed": 20.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "max_inventory_size": 1,
+      "skills": {
+        "1": "shot",
+        "2": "shot"
+      }
+    }
   ]
 }
