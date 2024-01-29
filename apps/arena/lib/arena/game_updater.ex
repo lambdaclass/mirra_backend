@@ -68,7 +68,8 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and players[entity_id].aditional_info.health > 0
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and
+              players[entity_id].aditional_info.health > 0
           end)
 
         case Map.get(players, collision_player_id) do
@@ -321,7 +322,9 @@ defmodule Arena.GameUpdater do
       is_moving: false
     }
 
-    alive_players = Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+    alive_players =
+      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
