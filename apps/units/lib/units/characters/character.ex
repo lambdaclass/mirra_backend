@@ -6,6 +6,7 @@ defmodule Units.Characters.Character do
   use Units.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:active, :name, :faction, :rarity]}
   schema "characters" do
     field(:game_id, :integer)
     field(:active, :boolean, default: true)
