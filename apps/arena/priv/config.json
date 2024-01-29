@@ -33,6 +33,20 @@
           }
         }
       ]
+    },
+    {
+      "name": "dash",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -45,7 +59,7 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "circle_bash",
-        "2": "circle_bash"
+        "2": "dash"
       }
     },
     {
@@ -57,7 +71,7 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "shot",
-        "2": "shot"
+        "2": "dash"
       }
     }
   ]
