@@ -45,6 +45,8 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :update_game, 1_000)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+    Process.send_after(self(), :start_zone_shrink, 10_000)
+
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -147,6 +149,31 @@ defmodule Arena.GameUpdater do
 
     {:noreply, state}
   end
+
+  def handle_info(:start_zone_shrink, state) do
+    Process.send_after(self(), :stop_zone_shrink, 10_000)
+    send(self(), :zone_shrink)
+    state = put_in(state, [:game_state, :zone, :shrinking], :enabled)
+    {:noreply, state}
+  end
+
+  def handle_info(:stop_zone_shrink, state) do
+    Process.send_after(self(), :stop_zone_shrink, 10_000)
+    state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
+    {:noreply, state}
+  end
+
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
+    Process.send_after(self(), :zone_shrink, 100)
+    radius = max(state.game_state.zone.radius - 10, 0)
+    state = put_in(state, [:game_state, :zone, :radius], radius)
+    {:noreply, state}
+  end
+
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
+    {:noreply, state}
+  end
+
 
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
@@ -370,6 +397,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
+      |> Map.put(:zone, %{radius: config.map.radius * 2, shrinking: :disabled})
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
