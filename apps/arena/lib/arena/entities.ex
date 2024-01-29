@@ -30,6 +30,8 @@ defmodule Arena.Entities do
         current_actions: [],
         kill_count: 0,
         available_stamina: character.base_stamina,
+        max_stamina: character.base_stamina,
+        stamina_interval: character.stamina_interval,
         recharging_stamina: false
       }
     }
@@ -83,6 +85,8 @@ defmodule Arena.Entities do
        current_actions: entity.aditional_info.current_actions,
        kill_count: 0,
        available_stamina: entity.aditional_info.available_stamina,
+       max_stamina: entity.aditional_info.max_stamina,
+       stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina
      }}
   end

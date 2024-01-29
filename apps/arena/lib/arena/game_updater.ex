@@ -152,16 +152,26 @@ defmodule Arena.GameUpdater do
     player = Map.get(state.game_state.players, player_id)
 
     player =
-      case player.aditional_info.available_stamina do
-        3 ->
-          player
-          |> Map.put(:aditional_info, Map.put(player.aditional_info, :recharging_stamina, false))
+      case player.aditional_info.available_stamina == player.aditional_info.max_stamina do
+        true ->
+          Map.put(
+            player,
+            :aditional_info,
+            Map.put(player.aditional_info, :recharging_stamina, false)
+          )
 
-        n ->
-          Process.send_after(self(), {:recharge_stamina, player_id}, 5_000)
+        _ ->
+          Process.send_after(
+            self(),
+            {:recharge_stamina, player_id},
+            player.aditional_info.stamina_interval
+          )
 
-          player
-          |> put_in([:aditional_info, :available_stamina], n + 1)
+          put_in(
+            player,
+            [:aditional_info, :available_stamina],
+            player.aditional_info.available_stamina + 1
+          )
       end
 
     state =
@@ -301,11 +311,10 @@ defmodule Arena.GameUpdater do
               Process.send_after(
                 self(),
                 {:recharge_stamina, player_id},
-                5000
+                player.aditional_info.stamina_interval
               )
 
-              player
-              |> put_in([:aditional_info, :recharging_stamina], true)
+              put_in(player, [:aditional_info, :recharging_stamina], true)
 
             _ ->
               player

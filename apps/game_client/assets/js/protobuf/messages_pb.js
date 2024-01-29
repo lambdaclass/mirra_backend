@@ -3649,7 +3649,9 @@ proto.Player.toObject = function(includeInstance, msg) {
     currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
     proto.PlayerAction.toObject, includeInstance),
     availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
-    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 5, false)
+    maxStamina: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    staminaInterval: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -3704,6 +3706,14 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setAvailableStamina(value);
       break;
     case 5:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxStamina(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setStaminaInterval(value);
+      break;
+    case 7:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setRechargingStamina(value);
       break;
@@ -3765,10 +3775,24 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getMaxStamina();
+  if (f !== 0) {
+    writer.writeUint64(
+      5,
+      f
+    );
+  }
+  f = message.getStaminaInterval();
+  if (f !== 0) {
+    writer.writeUint64(
+      6,
+      f
+    );
+  }
   f = message.getRechargingStamina();
   if (f) {
     writer.writeBool(
-      5,
+      7,
       f
     );
   }
@@ -3868,11 +3892,47 @@ proto.Player.prototype.setAvailableStamina = function(value) {
 
 
 /**
- * optional bool recharging_stamina = 5;
+ * optional uint64 max_stamina = 5;
+ * @return {number}
+ */
+proto.Player.prototype.getMaxStamina = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setMaxStamina = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional uint64 stamina_interval = 6;
+ * @return {number}
+ */
+proto.Player.prototype.getStaminaInterval = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setStaminaInterval = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional bool recharging_stamina = 7;
  * @return {boolean}
  */
 proto.Player.prototype.getRechargingStamina = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 5, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
 };
 
 
@@ -3881,7 +3941,7 @@ proto.Player.prototype.getRechargingStamina = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setRechargingStamina = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 5, value);
+  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 
