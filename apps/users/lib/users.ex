@@ -56,5 +56,5 @@ defmodule Users do
   """
   def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
 
-  defp preload(user), do: Repo.preload(user, [:items, units: :items, currencies: :currency])
+  defp preload(user), do: Repo.preload(user, [items: :template, units: [:character, :items], currencies: :currency])
 end

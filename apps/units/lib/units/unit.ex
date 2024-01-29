@@ -6,6 +6,7 @@ defmodule Units.Unit do
   use Units.Schema
   import Ecto.Changeset
   alias Users.User
+  alias ChampionsOfMirra.Campaigns.Level
   alias Units.Characters.Character
   alias Items.Item
 
@@ -17,7 +18,7 @@ defmodule Units.Unit do
     field(:selected, :boolean)
     field(:slot, :integer)
 
-    belongs_to(:level, User)
+    belongs_to(:level, Level)
     belongs_to(:user, User)
     belongs_to(:character, Character)
 

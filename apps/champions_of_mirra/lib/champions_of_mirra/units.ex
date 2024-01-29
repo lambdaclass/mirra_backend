@@ -23,12 +23,4 @@ defmodule ChampionsOfMirra.Units do
   def unselect_unit(user_id, unit_id) do
     Units.unselect_unit(user_id, unit_id)
   end
-
-  def equip_item(user_id, item_id, unit_id) do
-    Items.equip_item(user_id, item_id, unit_id)
-  end
-
-  def unequip_item(user_id, item_id) do
-    Items.unequip_item(user_id, item_id)
-  end
 end

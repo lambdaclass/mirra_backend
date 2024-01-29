@@ -8,12 +8,12 @@ defmodule GatewayWeb.ChampionsOfMirra.ItemsController do
   use GatewayWeb, :controller
 
   def equip_item(conn, %{"user_id" => user_id, "item_id" => item_id, "unit_id" => unit_id}) do
-    ChampionsOfMirra.Units.equip_item(user_id, item_id, unit_id)
+    ChampionsOfMirra.Items.equip_item(user_id, item_id, unit_id)
     |> GatewayWeb.Utils.format_response(conn)
   end
 
   def unequip_item(conn, %{"user_id" => user_id, "item_id" => item_id}) do
-    ChampionsOfMirra.Units.unequip_item(user_id, item_id)
+    ChampionsOfMirra.Items.unequip_item(user_id, item_id)
     |> GatewayWeb.Utils.format_response(conn)
   end
 

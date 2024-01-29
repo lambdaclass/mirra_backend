@@ -149,4 +149,6 @@ defmodule Units do
 
     %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id}
   end
+
+  def unit_belongs_to_user(unit_id, user_id), do: Map.get(get_unit(unit_id) || %{}, :user_id) == user_id
 end

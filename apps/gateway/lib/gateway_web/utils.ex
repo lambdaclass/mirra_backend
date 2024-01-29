@@ -10,6 +10,9 @@ defmodule GatewayWeb.Utils do
         |> put_status(400)
         |> json(reason)
 
+      {:ok, result} ->
+        json(conn, result)
+
       result ->
         json(conn, result)
     end
