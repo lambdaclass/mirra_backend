@@ -8,17 +8,14 @@ defmodule GatewayWeb.ChampionsOfMirra.UsersController do
   use GatewayWeb, :controller
 
   def create_user(conn, %{"username" => username}) do
-    response = ChampionsOfMirra.Users.register(username)
-    json(conn, response)
+    ChampionsOfMirra.Users.register(username) |> GatewayWeb.Utils.format_response(conn)
   end
 
   def get_id(conn, %{"username" => username}) do
-    response = ChampionsOfMirra.Users.get_id(username)
-    json(conn, response)
+    ChampionsOfMirra.Users.get_id(username) |> GatewayWeb.Utils.format_response(conn)
   end
 
   def get_user(conn, %{"user_id" => user_id}) do
-    response = ChampionsOfMirra.Users.get_user(user_id)
-    json(conn, response)
+    ChampionsOfMirra.Users.get_user(user_id) |> GatewayWeb.Utils.format_response(conn)
   end
 end

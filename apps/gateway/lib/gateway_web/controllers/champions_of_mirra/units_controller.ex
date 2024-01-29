@@ -10,19 +10,10 @@ defmodule GatewayWeb.ChampionsOfMirra.UnitsController do
   def select(conn, %{"user_id" => user_id, "unit_id" => unit_id, "slot" => slot}) do
     {slot, _rem} = Integer.parse(slot)
 
-    case ChampionsOfMirra.Units.select_unit(user_id, unit_id, slot) do
-      {:error, reason} ->
-        conn
-        |> put_status(400)
-        |> json(reason)
-
-      unit ->
-        json(conn, unit)
-    end
+    ChampionsOfMirra.Units.select_unit(user_id, unit_id, slot) |> GatewayWeb.Utils.format_response(conn)
   end
 
   def unselect(conn, %{"user_id" => user_id, "unit_id" => unit_id}) do
-    response = ChampionsOfMirra.Units.unselect_unit(user_id, unit_id)
-    json(conn, response)
+    ChampionsOfMirra.Units.unselect_unit(user_id, unit_id) |> GatewayWeb.Utils.format_response(conn)
   end
 end

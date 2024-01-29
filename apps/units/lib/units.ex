@@ -33,10 +33,10 @@ defmodule Units do
     if Map.get(unit, :user_id, nil) == user_id do
       case update_selected(unit, %{selected: true, slot: slot}) do
         {:ok, unit} -> unit
-        {:error, reason} -> %{error: reason}
+        {:error, reason} -> {:error, reason}
       end
     else
-      %{error: :not_found}
+      {:error, :not_found}
     end
   end
 
@@ -46,10 +46,10 @@ defmodule Units do
     if Map.get(unit, :user_id, nil) == user_id do
       case update_selected(unit, %{selected: false, slot: nil}) do
         {:ok, unit} -> unit
-        {:error, reason} -> %{error: reason}
+        {:error, reason} -> {:error, reason}
       end
     else
-      %{error: :not_found}
+      {:error, :not_found}
     end
   end
 
