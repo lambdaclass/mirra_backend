@@ -20,10 +20,7 @@ defmodule ChampionsOfMirra.Campaigns do
       |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
       |> Enum.group_by(fn l -> l.campaign end)
 
-    case campaigns do
-      %{} -> {:error, :no_campaigns}
-      campaigns -> campaigns
-    end
+    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
   end
 
   def get_campaign(campaign_number) do
