@@ -80,6 +80,10 @@ defmodule Arena.GameUpdater do
             player = put_in(player, [:aditional_info, :health], health)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
+            if player.health == 0 do
+              send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
+            end
+
             {
               Map.put(projectiles_acc, projectile_id, projectile),
               Map.put(players_acc, player.id, player)
@@ -103,6 +107,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
 
     broadcast_game_update(game_state)
+    game_state = %{game_state | killfeed: []}
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -163,6 +168,12 @@ defmodule Arena.GameUpdater do
         Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
     end
 
+    {:noreply, state}
+  end
+
+  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+    entry = %{killer_id: killer_id, victim_id: victim_id}
+    state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
     {:noreply, state}
   end
 
@@ -312,11 +323,15 @@ defmodule Arena.GameUpdater do
     players =
       Physics.check_collisions(circular_damage_area, game_state.players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        player =
+        target_player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
 
-        Map.put(players_acc, player_id, player)
+        if target_player.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
       end)
 
     %{game_state | players: players}
@@ -414,6 +429,7 @@ defmodule Arena.GameUpdater do
       new_game
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
+      |> Map.put(:killfeed, [])
       |> put_in([:client_to_player_map, client_id], last_id)
       |> put_in([:player_timestamps, last_id], 0)
     end)
