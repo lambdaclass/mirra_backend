@@ -45,6 +45,7 @@
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
+      "natural_healing_interval": 5000,
       "skills": {
         "1": "circle_bash",
         "2": "circle_bash"
@@ -59,6 +60,7 @@
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
+      "natural_healing_interval": 5000,
       "skills": {
         "1": "shot",
         "2": "shot"

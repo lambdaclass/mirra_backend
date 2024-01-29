@@ -4,7 +4,7 @@ defmodule Arena.Entities do
   """
   alias Arena.Configuration
 
-  def new_player(id, character_name, config) do
+  def new_player(id, character_name, config, now) do
     character = Configuration.get_character_config(character_name, config)
 
     %{
@@ -32,7 +32,9 @@ defmodule Arena.Entities do
         available_stamina: character.base_stamina,
         max_stamina: character.base_stamina,
         stamina_interval: character.stamina_interval,
-        recharging_stamina: false
+        recharging_stamina: false,
+        last_natural_healing_update: now,
+        natural_healing_interval: character.natural_healing_interval
       }
     }
   end
@@ -81,13 +83,15 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
      %Arena.Serialization.Player{
-       health: entity.aditional_info.health,
-       current_actions: entity.aditional_info.current_actions,
-       kill_count: 0,
-       available_stamina: entity.aditional_info.available_stamina,
-       max_stamina: entity.aditional_info.max_stamina,
-       stamina_interval: entity.aditional_info.stamina_interval,
-       recharging_stamina: entity.aditional_info.recharging_stamina
+      health: entity.aditional_info.health,
+      current_actions: entity.aditional_info.current_actions,
+      kill_count: 0,
+      available_stamina: entity.aditional_info.available_stamina,
+      max_stamina: entity.aditional_info.max_stamina,
+      stamina_interval: entity.aditional_info.stamina_interval,
+      recharging_stamina: entity.aditional_info.recharging_stamina,
+      last_natural_healing_update: entity.aditional_info.last_natural_healing_update,
+      natural_healing_interval: entity.aditional_info.natural_healing_interval
      }}
   end
 

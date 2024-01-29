@@ -15,6 +15,8 @@ defmodule Arena.GameUpdater do
   @check_game_ended_interval_ms 1_000
   ## Time to wait between a game ended detected and shutting down this process
   @game_ended_shutdown_wait_ms 10_000
+  ## Time between natural healing intervals
+  @natural_healing_interval_ms 1_000
 
   ##########################
   # API
@@ -45,12 +47,15 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :update_game, 1_000)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
 
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
 
@@ -78,6 +83,7 @@ defmodule Arena.GameUpdater do
           player ->
             health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
             player = put_in(player, [:aditional_info, :health], health)
+            |> put_in([:aditional_info, :last_natural_healing_update], now)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
             {
@@ -144,6 +150,31 @@ defmodule Arena.GameUpdater do
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
     end
+
+    {:noreply, state}
+  end
+
+  # Natural healing
+  def handle_info(:natural_healing, state) do
+    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
+
+    players = Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
+
+        now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+        player = case player.aditional_info.last_natural_healing_update + player.aditional_info.natural_healing_interval < now do
+          true ->
+            player
+            |> put_in([:aditional_info, :health], min(player.aditional_info.health + 10, 100))
+            |> put_in([:aditional_info, :last_natural_healing_update], now)
+          _ ->
+            player
+        end
+
+        Map.put(players_acc, player_id, player)
+      end)
+
+    state = put_in(state, [:game_state, :players], players)
 
     {:noreply, state}
   end
@@ -349,12 +380,15 @@ defmodule Arena.GameUpdater do
       is_moving: false
     }
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     players =
       Physics.check_collisions(circular_damage_area, game_state.players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
+          |> put_in([:aditional_info, :last_natural_healing_update], now)
 
         Map.put(players_acc, player_id, player)
       end)
@@ -419,6 +453,9 @@ defmodule Arena.GameUpdater do
 
   # Create a new game
   defp new_game(game_id, clients, config) do
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     new_game =
       Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
@@ -433,7 +470,7 @@ defmodule Arena.GameUpdater do
       last_id = new_game.last_id + 1
 
       players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "muflus", config))
+        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "muflus", config, now))
 
       new_game
       |> Map.put(:last_id, last_id)

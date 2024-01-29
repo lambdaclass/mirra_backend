@@ -3651,7 +3651,9 @@ proto.Player.toObject = function(includeInstance, msg) {
     availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
     maxStamina: jspb.Message.getFieldWithDefault(msg, 5, 0),
     staminaInterval: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
+    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+    naturalHealingInterval: jspb.Message.getFieldWithDefault(msg, 8, 0),
+    lastNaturalHealingUpdate: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -3716,6 +3718,14 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setRechargingStamina(value);
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setNaturalHealingInterval(value);
+      break;
+    case 9:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setLastNaturalHealingUpdate(value);
       break;
     default:
       reader.skipField();
@@ -3793,6 +3803,20 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       7,
+      f
+    );
+  }
+  f = message.getNaturalHealingInterval();
+  if (f !== 0) {
+    writer.writeUint64(
+      8,
+      f
+    );
+  }
+  f = message.getLastNaturalHealingUpdate();
+  if (f !== 0) {
+    writer.writeUint64(
+      9,
       f
     );
   }
@@ -3942,6 +3966,42 @@ proto.Player.prototype.getRechargingStamina = function() {
  */
 proto.Player.prototype.setRechargingStamina = function(value) {
   return jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+/**
+ * optional uint64 natural_healing_interval = 8;
+ * @return {number}
+ */
+proto.Player.prototype.getNaturalHealingInterval = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setNaturalHealingInterval = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
+};
+
+
+/**
+ * optional uint64 last_natural_healing_update = 9;
+ * @return {number}
+ */
+proto.Player.prototype.getLastNaturalHealingUpdate = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setLastNaturalHealingUpdate = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 

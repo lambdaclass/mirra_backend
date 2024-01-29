@@ -126,6 +126,8 @@ message Player {
   uint64 max_stamina = 5;
   uint64 stamina_interval = 6;
   bool recharging_stamina = 7;
+  uint64 natural_healing_interval = 8;
+  uint64 last_natural_healing_update = 9;
 }
 
 message Projectile {
