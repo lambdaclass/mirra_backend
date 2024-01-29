@@ -2,11 +2,10 @@ defmodule Arena.Entities do
   @moduledoc """
   Entities manager.
   """
+  alias Arena.Configuration
 
-  def new_player(id, skills_config) do
-    ## TODO: This hardcoding is to ensure the skills are in the correct skill_key
-    ##  after we have proper configuration for this we can remove this matching
-    [%{name: "shot"} = _skill1, %{name: "circle_bash"} = skill2] = skills_config
+  def new_player(id, character_name, config) do
+    character = Configuration.get_character_config(character_name, config)
 
     %{
       id: id,
@@ -17,17 +16,17 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      radius: 50.0,
+      radius: character.base_size,
       vertices: [],
-      speed: 25.0,
+      speed: character.base_speed,
       direction: %{
         x: 0.0,
         y: 0.0
       },
       is_moving: false,
       aditional_info: %{
-        health: 100,
-        skills: %{"1" => skill2, "2" => skill2},
+        health: character.base_health,
+        skills: character.skills,
         current_actions: [],
         kill_count: 0
       }

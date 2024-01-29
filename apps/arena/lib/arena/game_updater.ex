@@ -373,7 +373,9 @@ defmodule Arena.GameUpdater do
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
-      players = new_game.players |> Map.put(last_id, Entities.new_player(last_id, config.skills))
+
+      players =
+        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "muflus", config))
 
       new_game
       |> Map.put(:last_id, last_id)

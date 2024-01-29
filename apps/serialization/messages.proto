@@ -46,6 +46,7 @@ message GameJoined {
 message Configuration {
   ConfigGame game = 1;
   ConfigMap map = 2;
+  repeated ConfigCharacter characters = 3;
 }
 
 message ConfigGame {
@@ -54,6 +55,22 @@ message ConfigGame {
 
 message ConfigMap {
   float radius = 1;
+}
+
+message ConfigCharacter {
+  string name = 1;
+  bool active = 2;
+  float base_speed = 3;
+  float base_size = 4;
+  uint64 base_health = 5;
+  uint64 max_inventory_size = 6;
+  map<string, ConfigSkill> skills = 7;
+}
+
+message ConfigSkill {
+  string name = 1;
+  uint64 cooldown_ms = 2;
+  uint64 execution_duration_ms = 3;
 }
 
 
@@ -130,7 +147,7 @@ message PlayerAction {
 enum PlayerActionType {
     MOVING = 0;
     STARTING_SKILL_1 = 1;
-    STARTING_SKILL_2 = 2;  
+    STARTING_SKILL_2 = 2;
     EXECUTING_SKILL_1 = 3;
     EXECUTING_SKILL_2 = 4;
 }
