@@ -8,6 +8,7 @@ defmodule GatewayWeb.Router do
   scope "/championsofmirra", GatewayWeb.ChampionsOfMirra do
     pipe_through :api
     get "/users/:user_id", UsersController, :get_user
+    get "/users/:username/id", UsersController, :get_id
     post "/users/:username", UsersController, :create_user
 
     scope "/users/:user_id" do

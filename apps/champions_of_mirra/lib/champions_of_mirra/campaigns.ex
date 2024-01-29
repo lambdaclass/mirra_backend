@@ -14,15 +14,27 @@ defmodule ChampionsOfMirra.Campaigns do
   Gets all levels, grouped by campaign and sorted ascendingly.
   """
   def get_campaigns() do
-    Repo.all(from(l in Level))
-    |> Repo.preload(:units)
-    |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
-    |> Enum.group_by(fn l -> l.campaign end)
+    campaigns =
+      Repo.all(from(l in Level))
+      |> Repo.preload(:units)
+      |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
+      |> Enum.group_by(fn l -> l.campaign end)
+
+    case campaigns do
+      %{} -> {:error, :no_campaigns}
+      campaigns -> campaigns
+    end
   end
 
   def get_campaign(campaign_number) do
-    Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
-    |> Repo.preload(:units)
+    campaign =
+      Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
+      |> Repo.preload(:units)
+
+    case campaign do
+      [] -> {:error, :not_found}
+      campaign -> campaign
+    end
   end
 
   @doc """
@@ -38,7 +50,7 @@ defmodule ChampionsOfMirra.Campaigns do
   Get a level by id.
   """
   def get_level(level_id) do
-    Repo.get(Level, level_id) |> Repo.preload([units: :items])
+    Repo.get(Level, level_id) |> Repo.preload(units: :items)
   end
 
   @doc """
@@ -48,13 +60,22 @@ defmodule ChampionsOfMirra.Campaigns do
   No tracking for level progress is done yet.
   """
   def fight_level(user_id, level_id) do
-    user = Users.get_user!(user_id)
+    user = Users.get_user(user_id)
     level = get_level(level_id)
 
-    if Battle.battle(user.units, level.units) == :team_1 do
-      :win
-    else
-      :loss
+    cond do
+      user == {:error, :not_found} ->
+        {:error, :user_not_found}
+
+      level == {:error, :not_found} ->
+        {:error, :level_not_found}
+
+      true ->
+        if Battle.battle(user.units, level.units) == :team_1 do
+          :win
+        else
+          :loss
+        end
     end
   end
 
@@ -80,6 +101,7 @@ defmodule ChampionsOfMirra.Campaigns do
   end
 
   defp create_campaigns(rules) do
+    # TODO: Add transaction
     Enum.each(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
       base_level = campaign_rules.base_level
       level_scaler = campaign_rules.scaler
@@ -93,7 +115,12 @@ defmodule ChampionsOfMirra.Campaigns do
           create_unit_params(possible_characters, div(agg_difficulty, @units_per_level))
           |> add_remainder_unit_levels(rem(agg_difficulty, @units_per_level))
 
-        insert_level(%{game_id: @champions_of_mirra_id, units: level_units, campaign: campaign_index, level_number: level_index})
+        insert_level(%{
+          game_id: @champions_of_mirra_id,
+          units: level_units,
+          campaign: campaign_index,
+          level_number: level_index
+        })
       end)
     end)
   end
