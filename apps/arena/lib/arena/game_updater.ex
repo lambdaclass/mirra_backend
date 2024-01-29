@@ -68,7 +68,7 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id)
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and players[entity_id].aditional_info.health > 0
           end)
 
         case Map.get(players, collision_player_id) do
@@ -80,7 +80,7 @@ defmodule Arena.GameUpdater do
             player = put_in(player, [:aditional_info, :health], health)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
-            if player.health == 0 do
+            if player.aditional_info.health != 0 and health == 0 do
               send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
             end
 
@@ -242,7 +242,8 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-             player_timestamps: state.player_timestamps
+             player_timestamps: state.player_timestamps,
+             killfeed: state.killfeed
            }}
       })
 
@@ -320,14 +321,15 @@ defmodule Arena.GameUpdater do
       is_moving: false
     }
 
+    alive_players = Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
     players =
-      Physics.check_collisions(circular_damage_area, game_state.players)
+      Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
 
-        if target_player.health == 0 do
+        if target_player.aditional_info.health == 0 do
           send(self(), {:to_killfeed, player.id, target_player.id})
         end
 
