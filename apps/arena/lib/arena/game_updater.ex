@@ -45,7 +45,7 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :update_game, 1_000)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
-    Process.send_after(self(), :start_zone_shrink, 10_000)
+    Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -152,14 +152,14 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:start_zone_shrink, state) do
-    Process.send_after(self(), :stop_zone_shrink, 100_000)
+    Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
     send(self(), :zone_shrink)
     state = put_in(state, [:game_state, :zone, :shrinking], :enabled)
     {:noreply, state}
   end
 
   def handle_info(:stop_zone_shrink, state) do
-    Process.send_after(self(), :stop_zone_shrink, 10_000)
+    Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
     state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
     {:noreply, state}
   end
