@@ -90,6 +90,18 @@
       }
     },
     {
+      "name": "valtimer",
+      "active": true,
+      "base_speed": 25.0,
+      "base_size": 50.0,
+      "base_health": 100,
+      "max_inventory_size": 1,
+      "skills": {
+        "1": "avenge",
+        "2": "circle_bash"
+      }
+    },
+    {
       "name": "h4ck",
       "active": true,
       "base_speed": 20.0,
