@@ -99,6 +99,8 @@ defmodule Arena.GameUpdater do
     #     end
     #   end)
 
+    players = apply_zone_damage(players, game_state.zone)
+
     game_state =
       game_state
       |> Map.put(:players, players)
@@ -151,7 +153,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:start_zone_shrink, state) do
-    Process.send_after(self(), :stop_zone_shrink, 10_000)
+    Process.send_after(self(), :stop_zone_shrink, 100_000)
     send(self(), :zone_shrink)
     state = put_in(state, [:game_state, :zone, :shrinking], :enabled)
     {:noreply, state}
@@ -165,7 +167,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
     Process.send_after(self(), :zone_shrink, 100)
-    radius = max(state.game_state.zone.radius - 10, 0)
+    radius = max(state.game_state.zone.radius - 10.0, 0.0)
     state = put_in(state, [:game_state, :zone, :radius], radius)
     {:noreply, state}
   end
@@ -240,7 +242,8 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-             player_timestamps: state.player_timestamps
+             player_timestamps: state.player_timestamps,
+             zone: state.zone
            }}
       })
 
@@ -397,7 +400,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:zone, %{radius: config.map.radius * 2, shrinking: :disabled})
+      |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
@@ -462,4 +465,32 @@ defmodule Arena.GameUpdater do
   ##########################
   # End game flow
   ##########################
+
+  defp apply_zone_damage(players, zone) do
+    safe_zone = %{
+      id: 0,
+      category: :obstacle,
+      shape: :circle,
+      name: "SafeZoneArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: zone.radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+
+    safe_ids = Physics.check_collisions(safe_zone, players)
+    to_damage_ids = Map.keys(players) -- safe_ids
+    Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
+      player =
+        Map.get(players_acc, player_id)
+        |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
+
+      Map.put(players_acc, player_id, player)
+    end)
+  end
 end
