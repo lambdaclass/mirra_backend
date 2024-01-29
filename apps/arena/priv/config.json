@@ -59,7 +59,7 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "circle_bash",
-        "2": "circle_bash"
+        "2": "dash"
       }
     },
     {
@@ -71,7 +71,7 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "shot",
-        "2": "shot"
+        "2": "dash"
       }
     }
   ]
