@@ -47,7 +47,6 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, 10_000)
 
-
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
 
@@ -175,7 +174,6 @@ defmodule Arena.GameUpdater do
   def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
     {:noreply, state}
   end
-
 
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
@@ -485,6 +483,7 @@ defmodule Arena.GameUpdater do
 
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
+
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
       player =
         Map.get(players_acc, player_id)
