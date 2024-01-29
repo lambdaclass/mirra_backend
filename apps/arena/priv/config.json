@@ -21,6 +21,21 @@
           }
         }
       ]
+    },{
+      "name": "avenge",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 1000,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "hit": {
+            "damage": 15,
+            "range": 1000.0,
+            "cone_angle": 360,
+            "on_hit_effects": []
+          }
+        }
+      ]
     },
     {
       "name": "shot",
@@ -70,7 +85,7 @@
       "base_health": 100,
       "max_inventory_size": 1,
       "skills": {
-        "1": "circle_bash",
+        "1": "avenge",
         "2": "circle_bash"
       }
     },

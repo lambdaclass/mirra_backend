@@ -380,7 +380,7 @@ defmodule Arena.GameUpdater do
 
   defp skill_key_to_atom(skill_key) do
     case skill_key do
-      "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+      # "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
       _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
     end
   end
@@ -409,7 +409,7 @@ defmodule Arena.GameUpdater do
       last_id = new_game.last_id + 1
 
       players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "muflus", config))
+        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "uma", config))
 
       new_game
       |> Map.put(:last_id, last_id)
