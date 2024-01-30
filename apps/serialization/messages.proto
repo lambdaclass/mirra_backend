@@ -83,6 +83,7 @@ message GameState {
   map<uint64, Entity> projectiles = 3;
   map<uint64, int64> player_timestamps = 4;
   int64 server_timestamp = 5;
+  repeated KillEntry killfeed = 6;
 }
 
 /*
@@ -173,4 +174,9 @@ message GameAction {
     Attack attack = 2;
   }
   int64 timestamp = 3;
+}
+
+message KillEntry {
+  uint64 killer_id = 1;
+  uint64 victim_id = 2;
 }

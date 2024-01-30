@@ -68,7 +68,8 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id)
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and
+              players[entity_id].aditional_info.health > 0
           end)
 
         case Map.get(players, collision_player_id) do
@@ -79,6 +80,10 @@ defmodule Arena.GameUpdater do
             health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
             player = put_in(player, [:aditional_info, :health], health)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
+            if player.aditional_info.health == 0 do
+              send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
+            end
 
             {
               Map.put(projectiles_acc, projectile_id, projectile),
@@ -103,6 +108,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
 
     broadcast_game_update(game_state)
+    game_state = %{game_state | killfeed: []}
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -162,6 +168,13 @@ defmodule Arena.GameUpdater do
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
     end
+
+    {:noreply, state}
+  end
+
+  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+    entry = %{killer_id: killer_id, victim_id: victim_id}
+    state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
 
     {:noreply, state}
   end
@@ -267,7 +280,8 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-             player_timestamps: state.player_timestamps
+             player_timestamps: state.player_timestamps,
+             killfeed: state.killfeed
            }}
       })
 
@@ -367,14 +381,21 @@ defmodule Arena.GameUpdater do
       is_moving: false
     }
 
+    alive_players =
+      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+
     players =
-      Physics.check_collisions(circular_damage_area, game_state.players)
+      Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        player =
+        target_player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
 
-        Map.put(players_acc, player_id, player)
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
       end)
 
     %{game_state | players: players}
@@ -475,6 +496,7 @@ defmodule Arena.GameUpdater do
       new_game
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
+      |> Map.put(:killfeed, [])
       |> put_in([:client_to_player_map, client_id], last_id)
       |> put_in([:player_timestamps, last_id], 0)
     end)

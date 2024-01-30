@@ -203,6 +203,7 @@ defmodule GameClient.Protobuf.GameState do
   )
 
   field(:server_timestamp, 5, type: :int64, json_name: "serverTimestamp")
+  field(:killfeed, 6, repeated: true, type: GameClient.Protobuf.KillEntry)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -301,4 +302,13 @@ defmodule GameClient.Protobuf.GameAction do
   field(:move, 1, type: GameClient.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: GameClient.Protobuf.Attack, oneof: 0)
   field(:timestamp, 3, type: :int64)
+end
+
+defmodule GameClient.Protobuf.KillEntry do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:killer_id, 1, type: :uint64, json_name: "killerId")
+  field(:victim_id, 2, type: :uint64, json_name: "victimId")
 end
