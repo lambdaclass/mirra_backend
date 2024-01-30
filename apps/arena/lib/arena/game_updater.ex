@@ -247,7 +247,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:repeated_shoot, player_id, interval_ms, amount}, state) do
-    Process.send_after(self(), {:repeated_shoot, player_id, interval_ms, amount-1}, interval_ms)
+    Process.send_after(self(), {:repeated_shoot, player_id, interval_ms, amount - 1}, interval_ms)
 
     player = get_in(state, [:game_state, :players, player_id])
     last_id = state.game_state.last_id + 1
@@ -473,7 +473,11 @@ defmodule Arena.GameUpdater do
   end
 
   defp do_mechanic({:repeated_shoot, repeated_shoot}, player, game_state) do
-    Process.send_after(self(), {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount-1}, repeated_shoot.interval_ms)
+    Process.send_after(
+      self(),
+      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1},
+      repeated_shoot.interval_ms
+    )
 
     last_id = game_state.last_id + 1
 
