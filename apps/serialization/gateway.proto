@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+  message WebSocketRequest {
+    oneof request_type {
+      GetUser get_user = 1;
+      GetUserId get_user_id = 2;
+      CreateUser create_user = 3;
+      GetCampaigns get_campaigns = 4;
+      GetCampaign get_campaign = 5;
+      GetLevel get_level = 6;
+      FightLevel fight_level = 7;
+      SelectUnit select_unit = 8;
+      UnselectUnit unselect_unit = 9;
+      EquipItem equip_item = 10;
+      UnequipItem unequip_item = 11;
+      GetItem get_item = 12;
+      LevelUpItem level_up_item = 13;
+    }
+  }
+
+ message GetUser {
+    string user_id = 1;
+ }
+ 
+ message GetUserId {
+    string username = 1;
+  }
+  
+  message CreateUser {
+    string usernme = 1;
+  }
+
+  message GetCampaigns {
+    string user_id = 1;
+  }
+  
+  message GetCampaign {
+    string user_id = 1;
+    uint32 number = 2;
+  }
+  
+  message GetLevel {
+   string user_id = 1;
+   string level_id = 2;
+  }
+
+  message FightLevel {
+   string user_id = 1;
+   string level_id = 2;
+  }
+  
+  message SelectUnit {
+   string user_id = 1;
+   string unit_id = 2;
+   uint32 slot = 3;
+  }
+
+  message UnselectUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+  
+  message EquipItem {
+    string user_id = 1;
+    string item_id = 2;
+    string unit_id = 3;
+  }
+  
+  message UnequipItem {
+    string user_id = 1;
+    string item_id = 2;
+  }
+  
+  message GetItem {
+    string user_id = 1;
+    string item_id = 2;
+  }
+ 
+ message LevelUpItem {
+    string user_id = 1;
+    string item_id = 2;
+}
