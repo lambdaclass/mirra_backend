@@ -48,6 +48,7 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, 1_000)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
+    Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -73,7 +74,8 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id)
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and
+              players[entity_id].aditional_info.health > 0
           end)
 
         case Map.get(players, collision_player_id) do
@@ -85,6 +87,10 @@ defmodule Arena.GameUpdater do
             player = put_in(player, [:aditional_info, :health], health)
             |> put_in([:aditional_info, :last_natural_healing_update], now)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
+            if player.aditional_info.health == 0 do
+              send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
+            end
 
             {
               Map.put(projectiles_acc, projectile_id, projectile),
@@ -103,12 +109,15 @@ defmodule Arena.GameUpdater do
     #     end
     #   end)
 
+    players = apply_zone_damage(players, game_state.zone)
+
     game_state =
       game_state
       |> Map.put(:players, players)
       |> Map.put(:projectiles, projectiles)
 
     broadcast_game_update(game_state)
+    game_state = %{game_state | killfeed: []}
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -194,6 +203,36 @@ defmodule Arena.GameUpdater do
 
     state = put_in(state, [:game_state, :players], players)
 
+    {:noreply, state}
+  end
+
+  def handle_info(:start_zone_shrink, state) do
+    Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
+    send(self(), :zone_shrink)
+    state = put_in(state, [:game_state, :zone, :shrinking], :enabled)
+    {:noreply, state}
+  end
+
+  def handle_info(:stop_zone_shrink, state) do
+    Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
+    state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
+    {:noreply, state}
+  end
+
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
+    Process.send_after(self(), :zone_shrink, 100)
+    radius = max(state.game_state.zone.radius - 10.0, 0.0)
+    state = put_in(state, [:game_state, :zone, :radius], radius)
+    {:noreply, state}
+  end
+
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+    entry = %{killer_id: killer_id, victim_id: victim_id}
+    state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
     {:noreply, state}
   end
 
@@ -298,7 +337,9 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
-             player_timestamps: state.player_timestamps
+             player_timestamps: state.player_timestamps,
+             zone: state.zone,
+             killfeed: state.killfeed
            }}
       })
 
@@ -400,15 +441,22 @@ defmodule Arena.GameUpdater do
 
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
+    alive_players =
+      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+
     players =
-      Physics.check_collisions(circular_damage_area, game_state.players)
+      Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        player =
+        target_player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
           |> put_in([:aditional_info, :last_natural_healing_update], now)
 
-        Map.put(players_acc, player_id, player)
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
       end)
 
     %{game_state | players: players}
@@ -472,7 +520,7 @@ defmodule Arena.GameUpdater do
 
   defp skill_key_to_atom(skill_key) do
     case skill_key do
-      "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+      # "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
       _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
     end
   end
@@ -499,16 +547,21 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
+      |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
 
+      # "h4ck"
+      character_name = "muflus"
+
       players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "muflus", config, now))
+        new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config, now))
 
       new_game
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
+      |> Map.put(:killfeed, [])
       |> put_in([:client_to_player_map, client_id], last_id)
       |> put_in([:player_timestamps, last_id], 0)
     end)
@@ -563,4 +616,33 @@ defmodule Arena.GameUpdater do
   ##########################
   # End game flow
   ##########################
+
+  defp apply_zone_damage(players, zone) do
+    safe_zone = %{
+      id: 0,
+      category: :obstacle,
+      shape: :circle,
+      name: "SafeZoneArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: zone.radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+
+    safe_ids = Physics.check_collisions(safe_zone, players)
+    to_damage_ids = Map.keys(players) -- safe_ids
+
+    Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
+      player =
+        Map.get(players_acc, player_id)
+        |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
+
+      Map.put(players_acc, player_id, player)
+    end)
+  end
 end

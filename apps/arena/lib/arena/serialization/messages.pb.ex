@@ -199,6 +199,8 @@ defmodule Arena.Serialization.GameState do
     map: true
 
   field :server_timestamp, 5, type: :int64, json_name: "serverTimestamp"
+  field :zone, 6, type: Arena.Serialization.Zone
+  field :killfeed, 7, repeated: true, type: Arena.Serialization.KillEntry
 end
 
 defmodule Arena.Serialization.Entity do
@@ -298,4 +300,21 @@ defmodule Arena.Serialization.GameAction do
   field :move, 1, type: Arena.Serialization.Move, oneof: 0
   field :attack, 2, type: Arena.Serialization.Attack, oneof: 0
   field :timestamp, 3, type: :int64
+end
+
+defmodule Arena.Serialization.Zone do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :radius, 1, type: :float
+end
+
+defmodule Arena.Serialization.KillEntry do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :killer_id, 1, type: :uint64, json_name: "killerId"
+  field :victim_id, 2, type: :uint64, json_name: "victimId"
 end
