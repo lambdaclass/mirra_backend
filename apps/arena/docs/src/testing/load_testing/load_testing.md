@@ -51,7 +51,7 @@ Host myrra_load_test_server
   User user
 ```
 
-(You don't have to literally put `user` there. Put the appropiate user based on the server you'll be using).
+(You don't have to literally put `user` there. Put the appropriate user based on the server you'll be using).
 
 ## Running Load tests
 

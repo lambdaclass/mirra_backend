@@ -22,7 +22,7 @@ This "modifications" are compose of the following fields
 - `duration_ms`: Duration the modification should be applied for
 - `modification`: Defines how to modify the playable zone radius, similar to attributes changes it has a `modifier` and `value` fields
 - `interval_ms`: Every X milliseconds the modification is applied
-- `min_radius`: Mininum radius for the playable zone, how small can the playable zone get
+- `min_radius`: Minimum radius for the playable zone, how small can the playable zone get
 - `max_radius`: Max radius for the playable zone, how big can the playable zone get
 - `outside_radius_effects`: Effects given when a player is outside the playable zone
 

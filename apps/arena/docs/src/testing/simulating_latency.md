@@ -30,7 +30,7 @@ To use it, do the following:
     ```
     toxiproxy-cli toxic update -n latency -a latency=500 game_proxy
     ```
-    To continuosly change latency to simulate lag spikes, there's a small bash script on the root directory called `lag_spikes.sh` that will randomly set the latency to values in the range of `100-300` ms. With everything setup all you need to do is run
+    To continuously change latency to simulate lag spikes, there's a small bash script on the root directory called `lag_spikes.sh` that will randomly set the latency to values in the range of `100-300` ms. With everything setup all you need to do is run
     ```
     ./lag_spikes.sh
     ``````
