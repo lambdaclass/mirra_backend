@@ -36,6 +36,7 @@ defmodule Gateway.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:champions_of_mirra, in_umbrella: true},
       {:phoenix, "~> 1.7.10"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
@@ -49,8 +50,7 @@ defmodule Gateway.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:plug_cowboy, "~> 2.5"},
-      {:champions_of_mirra, in_umbrella: true}
+      {:plug_cowboy, "~> 2.5"}
     ]
   end
 

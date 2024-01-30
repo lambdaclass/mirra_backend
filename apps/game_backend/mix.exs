@@ -1,9 +1,9 @@
-defmodule ChampionsOfMirra.MixProject do
+defmodule GameBackend.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :champions_of_mirra,
+      app: :game_backend,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -19,7 +19,7 @@ defmodule ChampionsOfMirra.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ChampionsOfMirra.Application, []}
+      mod: {GameBackend.Application, []}
     ]
   end
 
@@ -29,10 +29,9 @@ defmodule ChampionsOfMirra.MixProject do
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
       # {:sibling_app_in_umbrella, in_umbrella: true}
-      {:game_backend, in_umbrella: true},
-      {:math, "~> 0.7.0"},
       {:ecto, "~> 3.11"},
-      {:ecto_sql, "~> 3.6"}
+      {:ecto_sql, "~> 3.6"},
+      {:math, "~> 0.7.0"}
     ]
   end
 end

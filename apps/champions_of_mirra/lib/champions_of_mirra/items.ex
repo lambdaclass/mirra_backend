@@ -3,6 +3,9 @@ defmodule ChampionsOfMirra.Items do
   Items logic for Champions of Mirra.
   """
 
+  alias GameBackend.Items
+  alias GameBackend.Users.Currencies
+
   @doc """
   Get an item by id.
   """
@@ -26,10 +29,10 @@ defmodule ChampionsOfMirra.Items do
     if Map.get(item, :user_id, nil) == user_id do
       {level_up_currency_id, level_up_cost} = calculate_level_up_cost(item)
 
-      if Users.Currencies.can_afford(user_id, level_up_currency_id, level_up_cost) do
+      if Currencies.can_afford(user_id, level_up_currency_id, level_up_cost) do
         case Items.level_up(item) do
           {:ok, item} ->
-            Users.Currencies.add_currency(user_id, level_up_currency_id, -level_up_cost)
+            Currencies.add_currency(user_id, level_up_currency_id, -level_up_cost)
             {:ok, item}
 
           {:error, error} ->
@@ -44,5 +47,5 @@ defmodule ChampionsOfMirra.Items do
   end
 
   defp calculate_level_up_cost(item),
-    do: {Users.Currencies.get_currency_by_name!("Gold").id, item.level |> Math.pow(2) |> round()}
+    do: {Currencies.get_currency_by_name!("Gold").id, item.level |> Math.pow(2) |> round()}
 end

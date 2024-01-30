@@ -7,6 +7,13 @@
 # General application configuration
 import Config
 
+config :game_backend,
+  ecto_repos: [GameBackend.Repo],
+  generators: [timestamp_type: :utc_datetime]
+
+# Configures Ecto migrations
+config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id]
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

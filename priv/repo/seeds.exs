@@ -1,4 +1,6 @@
-alias Units.Characters
+alias GameBackend.Units.Characters
+alias GameBackend.Items
+alias GameBackend.Users
 
 champions_of_mirra_id = 2
 

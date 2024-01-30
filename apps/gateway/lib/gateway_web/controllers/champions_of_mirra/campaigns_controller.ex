@@ -23,7 +23,7 @@ defmodule GatewayWeb.ChampionsOfMirra.CampaignsController do
   end
 
   def fight_level(conn, %{"user_id" => user_id, "level_id" => level_id}) do
-    response = ChampionsOfMirra.Campaigns.fight_level(user_id, level_id)
+    response = ChampionsOfMirra.Battle.fight_level(user_id, level_id)
     json(conn, response)
   end
 end

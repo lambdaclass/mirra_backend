@@ -3,7 +3,10 @@ defmodule ChampionsOfMirra.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias Users.Currencies
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users
+  alias GameBackend.Units
+  alias GameBackend.Items
 
   @game_id 2
 

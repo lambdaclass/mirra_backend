@@ -5,7 +5,8 @@ defmodule ChampionsOfMirra.Battle do
   Fight outcomes are decided randomly, favoring the team with the higher aggregate level.
   """
 
-  alias Units
+  alias GameBackend.Campaigns
+  alias GameBackend.Users
 
   # @doc """
   # Run an automatic battle between two users. Only validation done is for empty teams.
@@ -30,6 +31,23 @@ defmodule ChampionsOfMirra.Battle do
   #       end
   #   end
   # end
+
+  @doc """
+  Plays a level for a user, which means fighting its units with their selected ones.
+  Returns :win or :loss accordingly.
+
+  No tracking for level progress is done yet.
+  """
+  def fight_level(user_id, level_id) do
+    user = Users.get_user!(user_id)
+    level = Campaigns.get_level(level_id)
+
+    if battle(user.units, level.units) == :team_1 do
+      :win
+    else
+      :loss
+    end
+  end
 
   @doc """
   Run a battle between two teams. The outcome is decided randomly, favoring the team
