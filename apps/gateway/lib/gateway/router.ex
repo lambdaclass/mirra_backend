@@ -5,7 +5,7 @@ defmodule Gateway.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/championsofmirra", Gateway.ChampionsOfMirra do
+  scope "/champions", Gateway.Champions do
     pipe_through :api
     get "/users/:user_id", UsersController, :get_user
     get "/users/:username/id", UsersController, :get_id

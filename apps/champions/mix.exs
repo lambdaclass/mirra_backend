@@ -1,4 +1,4 @@
-defmodule ChampionsOfMirra.MixProject do
+defmodule Champions.MixProject do
   use Mix.Project
 
   def project do
@@ -19,7 +19,7 @@ defmodule ChampionsOfMirra.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ChampionsOfMirra.Application, []}
+      mod: {Champions.Application, []}
     ]
   end
 

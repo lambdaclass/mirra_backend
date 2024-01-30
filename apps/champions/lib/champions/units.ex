@@ -1,4 +1,4 @@
-defmodule ChampionsOfMirra.Units do
+defmodule Champions.Units do
   @moduledoc """
   Units logic for Champions Of Mirra.
   """

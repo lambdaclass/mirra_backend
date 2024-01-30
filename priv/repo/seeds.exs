@@ -36,7 +36,7 @@ Characters.insert_character(%{
   rarity: "Epic",
 })
 
-ChampionsOfMirra.Campaigns.create_campaigns()
+Champions.Campaigns.create_campaigns()
 
 Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Epic Sword of Epicness", type: "weapon"})
 Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Mythical Helmet of Mythicness", type: "helmet"})
