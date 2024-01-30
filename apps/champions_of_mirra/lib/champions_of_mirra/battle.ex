@@ -39,13 +39,22 @@ defmodule ChampionsOfMirra.Battle do
   No tracking for level progress is done yet.
   """
   def fight_level(user_id, level_id) do
-    user = Users.get_user!(user_id)
-    level = Campaigns.get_level(level_id)
+    user = Users.get_user(user_id)
+    level = get_level(level_id)
 
-    if battle(user.units, level.units) == :team_1 do
-      :win
-    else
-      :loss
+    cond do
+      user == {:error, :not_found} ->
+        {:error, :user_not_found}
+
+      level == {:error, :not_found} ->
+        {:error, :level_not_found}
+
+      true ->
+        if Battle.battle(user.units, level.units) == :team_1 do
+          :win
+        else
+          :loss
+        end
     end
   end
 

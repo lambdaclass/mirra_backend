@@ -14,15 +14,24 @@ defmodule GameBackend.Campaigns do
   Gets all levels, grouped by campaign and sorted ascendingly.
   """
   def get_campaigns() do
-    Repo.all(from(l in Level))
-    |> Repo.preload(:units)
-    |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
-    |> Enum.group_by(fn l -> l.campaign end)
+    campaigns =
+      Repo.all(from(l in Level))
+      |> Repo.preload(:units)
+      |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
+      |> Enum.group_by(fn l -> l.campaign end)
+
+    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
   end
 
   def get_campaign(campaign_number) do
-    Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
-    |> Repo.preload(:units)
+    campaign =
+      Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
+      |> Repo.preload(:units)
+
+    case campaign do
+      [] -> {:error, :not_found}
+      campaign -> campaign
+    end
   end
 
   @doc """
@@ -63,6 +72,7 @@ defmodule GameBackend.Campaigns do
   end
 
   defp create_campaigns(rules) do
+    # TODO: Add transaction
     Enum.each(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
       base_level = campaign_rules.base_level
       level_scaler = campaign_rules.scaler

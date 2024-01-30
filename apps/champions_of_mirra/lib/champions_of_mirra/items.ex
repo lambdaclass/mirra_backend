@@ -11,8 +11,8 @@ defmodule ChampionsOfMirra.Items do
   """
   def get_item(item_id) do
     case Items.get_item(item_id) do
-      nil -> {:error, :not_found}
-      item -> {:ok, item}
+      {:ok, item} -> item
+      error -> error
     end
   end
 
@@ -44,6 +44,14 @@ defmodule ChampionsOfMirra.Items do
     else
       {:error, :not_found}
     end
+  end
+
+  def equip_item(user_id, item_id, unit_id) do
+    Items.equip_item(user_id, item_id, unit_id)
+  end
+
+  def unequip_item(user_id, item_id) do
+    Items.unequip_item(user_id, item_id)
   end
 
   defp calculate_level_up_cost(item),

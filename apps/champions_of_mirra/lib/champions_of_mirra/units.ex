@@ -17,7 +17,7 @@ defmodule ChampionsOfMirra.Units do
 
   def select_unit(user_id, unit_id, slot) do
     if Units.get_selected_units(user_id) |> Enum.any?(&(&1.slot == slot)) do
-      %{error: :slot_occupied}
+      {:error, :slot_occupied}
     else
       Units.select_unit(user_id, unit_id, slot)
     end
@@ -25,13 +25,5 @@ defmodule ChampionsOfMirra.Units do
 
   def unselect_unit(user_id, unit_id) do
     Units.unselect_unit(user_id, unit_id)
-  end
-
-  def equip_item(user_id, item_id, unit_id) do
-    Items.equip_item(user_id, item_id, unit_id)
-  end
-
-  def unequip_item(user_id, item_id) do
-    Items.unequip_item(user_id, item_id)
   end
 end

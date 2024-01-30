@@ -23,13 +23,32 @@ defmodule ChampionsOfMirra.Users do
     add_sample_items(user)
     add_sample_currencies(user)
 
-    Users.get_user!(user.id)
+    Users.get_user(user.id)
   end
 
   @doc """
   Get a user by id.
+
+  Returns `{:error, :not_found}` if no user is found.
   """
-  def get_user(user_id), do: Users.get_user!(user_id)
+  def get_user(user_id) do
+    case Users.get_user(user_id) do
+      nil -> {:error, :not_found}
+      user -> user
+    end
+  end
+
+  @doc """
+  Get a user's id by their username.
+
+  Returns `{:error, :not_found}` if no user is found.
+  """
+  def get_id(username) do
+    case Users.get_user_by_username(username) do
+      nil -> {:error, :not_found}
+      user -> user.id
+    end
+  end
 
   defp add_sample_units(user) do
     characters = Units.all_characters()

@@ -5,19 +5,20 @@ defmodule GameBackend.Units.Unit do
 
   use GameBackend.Schema
   import Ecto.Changeset
-  alias GameBackend.Users.User
-  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Campaigns.Level
   alias GameBackend.Items.Item
+  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Users.User
 
   @derive {Jason.Encoder,
-           only: [:id, :unit_level, :tier, :selected, :slot, :user_id, :character_id, :level_id]}
+           only: [:id, :unit_level, :tier, :selected, :slot, :level_id, :user_id, :character]}
   schema "units" do
     field(:unit_level, :integer)
     field(:tier, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
 
-    belongs_to(:level, User)
+    belongs_to(:level, Level)
     belongs_to(:user, User)
     belongs_to(:character, Character)
 

@@ -1,13 +1,14 @@
-defmodule GatewayWeb.Router do
-  use GatewayWeb, :router
+defmodule Gateway.Router do
+  use Gateway, :router
 
   pipeline :api do
     plug :accepts, ["json"]
   end
 
-  scope "/championsofmirra", GatewayWeb.ChampionsOfMirra do
+  scope "/championsofmirra", Gateway.ChampionsOfMirra do
     pipe_through :api
     get "/users/:user_id", UsersController, :get_user
+    get "/users/:username/id", UsersController, :get_id
     post "/users/:username", UsersController, :create_user
 
     scope "/users/:user_id" do
@@ -25,7 +26,7 @@ defmodule GatewayWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", GatewayWeb do
+  # scope "/api", Gateway do
   #   pipe_through :api
   # end
 
@@ -41,7 +42,7 @@ defmodule GatewayWeb.Router do
     scope "/dev" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: GatewayWeb.Telemetry
+      live_dashboard "/dashboard", metrics: Gateway.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
   end

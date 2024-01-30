@@ -38,10 +38,10 @@ defmodule GameBackend.Units do
     if Map.get(unit, :user_id, nil) == user_id do
       case update_selected(unit, %{selected: true, slot: slot}) do
         {:ok, unit} -> unit
-        {:error, reason} -> %{error: reason}
+        {:error, reason} -> {:error, reason}
       end
     else
-      %{error: :not_found}
+      {:error, :not_found}
     end
   end
 
@@ -51,10 +51,10 @@ defmodule GameBackend.Units do
     if Map.get(unit, :user_id, nil) == user_id do
       case update_selected(unit, %{selected: false, slot: nil}) do
         {:ok, unit} -> unit
-        {:error, reason} -> %{error: reason}
+        {:error, reason} -> {:error, reason}
       end
     else
-      %{error: :not_found}
+      {:error, :not_found}
     end
   end
 
@@ -154,4 +154,7 @@ defmodule GameBackend.Units do
 
     %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id}
   end
+
+  def unit_belongs_to_user(unit_id, user_id),
+    do: Map.get(get_unit(unit_id) || %{}, :user_id) == user_id
 end
