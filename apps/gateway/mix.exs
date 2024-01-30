@@ -36,7 +36,7 @@ defmodule Gateway.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:champions_of_mirra, in_umbrella: true},
+      {:champions, in_umbrella: true},
       {:phoenix, "~> 1.7.10"},
       {:phoenix_html, "~> 3.3"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
