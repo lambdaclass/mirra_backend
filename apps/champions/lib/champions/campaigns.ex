@@ -1,4 +1,4 @@
-defmodule ChampionsOfMirra.Campaigns do
+defmodule Champions.Campaigns do
   @moduledoc """
   Campaigns logic for Champions of Mirra.
   """

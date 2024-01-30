@@ -1,4 +1,4 @@
-defmodule ChampionsOfMirra.Battle do
+defmodule Champions.Battle do
   @moduledoc """
   The Battle module focuses on simulating the fights between teams, whether they are PvE or PvP.
 

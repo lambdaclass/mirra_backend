@@ -1,8 +1,8 @@
 defmodule ChampionsOfMirraTest do
   use ExUnit.Case
-  doctest ChampionsOfMirra
+  doctest Champions
 
   test "greets the world" do
-    assert ChampionsOfMirra.hello() == :world
+    assert Champions.hello() == :world
   end
 end

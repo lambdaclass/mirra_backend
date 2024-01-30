@@ -1,9 +1,9 @@
-defmodule ChampionsOfMirra.MixProject do
+defmodule Champions.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :champions_of_mirra,
+      app: :champions,
       version: "0.1.0",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
@@ -19,7 +19,7 @@ defmodule ChampionsOfMirra.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      mod: {ChampionsOfMirra.Application, []}
+      mod: {Champions.Application, []}
     ]
   end
 
