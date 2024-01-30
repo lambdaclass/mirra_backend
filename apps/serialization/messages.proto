@@ -83,7 +83,8 @@ message GameState {
   map<uint64, Entity> projectiles = 3;
   map<uint64, int64> player_timestamps = 4;
   int64 server_timestamp = 5;
-  repeated KillEntry killfeed = 6;
+  Zone zone = 6;
+  repeated KillEntry killfeed = 7;
 }
 
 /*
@@ -174,6 +175,10 @@ message GameAction {
     Attack attack = 2;
   }
   int64 timestamp = 3;
+}
+
+message Zone {
+  float radius = 1;
 }
 
 message KillEntry {
