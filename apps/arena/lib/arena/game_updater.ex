@@ -238,6 +238,7 @@ defmodule Arena.GameUpdater do
         [:game_state, :players, player_id],
         player
       )
+
     {:noreply, state}
   end
 
