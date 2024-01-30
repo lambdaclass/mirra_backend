@@ -29,7 +29,11 @@ defmodule Arena.GameLauncher do
     batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
 
     {:reply, :ok,
-     %{state | batch_start_at: batch_start_at, clients: clients ++ [{client_id, character_name, from_pid}]}}
+     %{
+       state
+       | batch_start_at: batch_start_at,
+         clients: clients ++ [{client_id, character_name, from_pid}]
+     }}
   end
 
   @impl true
