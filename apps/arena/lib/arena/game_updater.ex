@@ -84,8 +84,11 @@ defmodule Arena.GameUpdater do
 
           player ->
             health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
-            player = put_in(player, [:aditional_info, :health], health)
-            |> put_in([:aditional_info, :last_natural_healing_update], now)
+
+            player =
+              put_in(player, [:aditional_info, :health], health)
+              |> put_in([:aditional_info, :last_natural_healing_update], now)
+
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
             if player.aditional_info.health == 0 do
@@ -185,18 +188,21 @@ defmodule Arena.GameUpdater do
   def handle_info(:natural_healing, state) do
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
 
-    players = Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
-
+    players =
+      Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
         now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-        player = case player.aditional_info.last_natural_healing_update + player.aditional_info.natural_healing_interval < now do
-          true ->
-            player
-            |> put_in([:aditional_info, :health], min(player.aditional_info.health + 10, 100))
-            |> put_in([:aditional_info, :last_natural_healing_update], now)
-          _ ->
-            player
-        end
+        player =
+          case player.aditional_info.last_natural_healing_update +
+                 player.aditional_info.natural_healing_interval < now do
+            true ->
+              player
+              |> put_in([:aditional_info, :health], min(player.aditional_info.health + 10, 100))
+              |> put_in([:aditional_info, :last_natural_healing_update], now)
+
+            _ ->
+              player
+          end
 
         Map.put(players_acc, player_id, player)
       end)
@@ -535,7 +541,6 @@ defmodule Arena.GameUpdater do
 
   # Create a new game
   defp new_game(game_id, clients, config) do
-
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     new_game =
@@ -556,7 +561,8 @@ defmodule Arena.GameUpdater do
       character_name = "muflus"
 
       players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config, now))
+        new_game.players
+        |> Map.put(last_id, Entities.new_player(last_id, character_name, config, now))
 
       new_game
       |> Map.put(:last_id, last_id)
