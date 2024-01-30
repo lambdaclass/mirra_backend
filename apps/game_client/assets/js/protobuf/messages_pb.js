@@ -5425,7 +5425,8 @@ proto.PlayerActionType = {
   STARTING_SKILL_1: 1,
   STARTING_SKILL_2: 2,
   EXECUTING_SKILL_1: 3,
-  EXECUTING_SKILL_2: 4
+  EXECUTING_SKILL_2: 4,
+  EXECUTING_SKILL_3: 5
 };
 
 goog.object.extend(exports, proto);
