@@ -139,7 +139,7 @@ pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
 /*
  * Calculates the distance between two positions
  */
-pub(crate) fn calculate_distance(a: &Position, b: &Position) -> f64 {
+pub(crate) fn calculate_distance(a: &Position, b: &Position) -> f32 {
     let x = a.x - b.x;
     let y = a.y - b.y;
     (x.powi(2) + y.powi(2)).sqrt()
