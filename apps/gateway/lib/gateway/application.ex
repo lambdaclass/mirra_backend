@@ -8,7 +8,7 @@ defmodule Gateway.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      GatewayWeb.Telemetry,
+      Gateway.Telemetry,
       {DNSCluster, query: Application.get_env(:gateway, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Gateway.PubSub},
       # Start the Finch HTTP client for sending emails
@@ -16,7 +16,7 @@ defmodule Gateway.Application do
       # Start a worker by calling: Gateway.Worker.start_link(arg)
       # {Gateway.Worker, arg},
       # Start to serve requests, typically the last entry
-      GatewayWeb.Endpoint
+      Gateway.Endpoint
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -29,7 +29,7 @@ defmodule Gateway.Application do
   # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
-    GatewayWeb.Endpoint.config_change(changed, removed)
+    Gateway.Endpoint.config_change(changed, removed)
     :ok
   end
 end

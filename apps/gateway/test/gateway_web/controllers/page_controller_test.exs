@@ -1,5 +1,5 @@
-defmodule GatewayWeb.PageControllerTest do
-  use GatewayWeb.ConnCase
+defmodule Gateway.PageControllerTest do
+  use Gateway.ConnCase
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")

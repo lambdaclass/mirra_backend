@@ -1,4 +1,4 @@
-defmodule GatewayWeb.Endpoint do
+defmodule Gateway.Endpoint do
   use Phoenix.Endpoint, otp_app: :gateway
 
   # The session will be stored in the cookie and signed,
@@ -21,7 +21,7 @@ defmodule GatewayWeb.Endpoint do
     at: "/",
     from: :gateway,
     gzip: false,
-    only: GatewayWeb.static_paths()
+    only: Gateway.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -46,5 +46,5 @@ defmodule GatewayWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug GatewayWeb.Router
+  plug Gateway.Router
 end

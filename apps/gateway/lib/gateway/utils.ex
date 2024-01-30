@@ -1,7 +1,7 @@
-defmodule GatewayWeb.Utils do
+defmodule Gateway.Utils do
   @moduledoc false
 
-  use GatewayWeb, :controller
+  use Gateway, :controller
 
   def format_response(result, conn) do
     case result do
