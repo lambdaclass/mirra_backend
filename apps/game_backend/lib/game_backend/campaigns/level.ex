@@ -20,7 +20,7 @@ defmodule GameBackend.Campaigns.Level do
   end
 
   @doc false
-  def changeset(level, attrs) do
+  def changeset(level, attrs \\ %{}) do
     level
     |> cast(attrs, [:game_id, :level_number, :campaign])
     |> cast_assoc(:units)
