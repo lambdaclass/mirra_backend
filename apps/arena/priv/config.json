@@ -38,6 +38,20 @@
       ]
     },
     {
+      "name": "repeated_shot",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "repeated_shoot": {
+            "interval_ms": 250,
+            "amount": 18
+          }
+        }
+      ]
+    },
+    {
       "name": "dash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
@@ -78,7 +92,8 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "shot",
-        "2": "dash"
+        "2": "dash",
+        "3": "repeated_shot"
       }
     }
   ]
