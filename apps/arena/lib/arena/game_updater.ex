@@ -56,12 +56,12 @@ defmodule Arena.GameUpdater do
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
 
     players =
-      update_collisions(game_state.players, entities_to_collide)
+      update_collisions(game_state.players, game_state.players, entities_to_collide)
 
     projectiles =
       remove_exploded_projectiles(game_state.projectiles)
       |> Physics.move_entities(game_state.external_wall)
-      |> update_collisions(entities_to_collide)
+      |> update_collisions(game_state.projectiles, entities_to_collide)
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
@@ -530,10 +530,10 @@ defmodule Arena.GameUpdater do
   end
 
   # Check entities collisiona
-  defp update_collisions(entities, entities_to_collide) do
-    Enum.reduce(entities, %{}, fn {key, value}, acc ->
+  defp update_collisions(new_entities, old_entities, entities_to_collide) do
+    Enum.reduce(new_entities, %{}, fn {key, value}, acc ->
       entity =
-        Map.get(entities, key)
+        Map.get(old_entities, key)
         |> Map.merge(value)
         |> Map.put(
           :collides_with,
