@@ -56,6 +56,8 @@
       "base_speed": 25.0,
       "base_size": 50.0,
       "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
       "max_inventory_size": 1,
       "skills": {
         "1": "circle_bash",
@@ -68,6 +70,8 @@
       "base_speed": 20.0,
       "base_size": 80.0,
       "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
       "max_inventory_size": 1,
       "skills": {
         "1": "shot",

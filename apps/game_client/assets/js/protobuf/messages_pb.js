@@ -3647,7 +3647,11 @@ proto.Player.toObject = function(includeInstance, msg) {
     health: jspb.Message.getFieldWithDefault(msg, 1, 0),
     killCount: jspb.Message.getFieldWithDefault(msg, 2, 0),
     currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
-    proto.PlayerAction.toObject, includeInstance)
+    proto.PlayerAction.toObject, includeInstance),
+    availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    maxStamina: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    staminaInterval: jspb.Message.getFieldWithDefault(msg, 6, 0),
+    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
   };
 
   if (includeInstance) {
@@ -3696,6 +3700,22 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.PlayerAction;
       reader.readMessage(value,proto.PlayerAction.deserializeBinaryFromReader);
       msg.addCurrentActions(value);
+      break;
+    case 4:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setAvailableStamina(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMaxStamina(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setStaminaInterval(value);
+      break;
+    case 7:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setRechargingStamina(value);
       break;
     default:
       reader.skipField();
@@ -3746,6 +3766,34 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       3,
       f,
       proto.PlayerAction.serializeBinaryToWriter
+    );
+  }
+  f = message.getAvailableStamina();
+  if (f !== 0) {
+    writer.writeUint64(
+      4,
+      f
+    );
+  }
+  f = message.getMaxStamina();
+  if (f !== 0) {
+    writer.writeUint64(
+      5,
+      f
+    );
+  }
+  f = message.getStaminaInterval();
+  if (f !== 0) {
+    writer.writeUint64(
+      6,
+      f
+    );
+  }
+  f = message.getRechargingStamina();
+  if (f) {
+    writer.writeBool(
+      7,
+      f
     );
   }
 };
@@ -3822,6 +3870,78 @@ proto.Player.prototype.addCurrentActions = function(opt_value, opt_index) {
  */
 proto.Player.prototype.clearCurrentActionsList = function() {
   return this.setCurrentActionsList([]);
+};
+
+
+/**
+ * optional uint64 available_stamina = 4;
+ * @return {number}
+ */
+proto.Player.prototype.getAvailableStamina = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setAvailableStamina = function(value) {
+  return jspb.Message.setProto3IntField(this, 4, value);
+};
+
+
+/**
+ * optional uint64 max_stamina = 5;
+ * @return {number}
+ */
+proto.Player.prototype.getMaxStamina = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setMaxStamina = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional uint64 stamina_interval = 6;
+ * @return {number}
+ */
+proto.Player.prototype.getStaminaInterval = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setStaminaInterval = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * optional bool recharging_stamina = 7;
+ * @return {boolean}
+ */
+proto.Player.prototype.getRechargingStamina = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setRechargingStamina = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
 
