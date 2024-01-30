@@ -39,7 +39,7 @@ fn move_entity(entity: Entity, external_wall: Entity) -> Entity {
             entity.move_to_next_valid_position(&external_wall);
         }
     }
-    
+
     entity
 }
 
@@ -53,4 +53,7 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
     entity.collides_with(ent)
 }
 
-rustler::init!("Elixir.Physics", [add, check_collisions, move_entities, move_entity]);
+rustler::init!(
+    "Elixir.Physics",
+    [add, check_collisions, move_entities, move_entity]
+);
