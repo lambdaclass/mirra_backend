@@ -24,7 +24,7 @@ defmodule ChampionsOfMirra.Items do
   Returns :ok if succesful.
   """
   def level_up(user_id, item_id) do
-    item = Items.get_item(item_id) || %{}
+    {:ok, item} = Items.get_item(item_id) || %{}
 
     if Map.get(item, :user_id, nil) == user_id do
       {level_up_currency_id, level_up_cost} = calculate_level_up_cost(item)

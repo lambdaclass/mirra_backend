@@ -4,7 +4,6 @@ defmodule ChampionsOfMirra.Units do
   """
 
   alias GameBackend.Units
-  alias GameBackend.Items
 
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.

@@ -40,7 +40,7 @@ defmodule ChampionsOfMirra.Battle do
   """
   def fight_level(user_id, level_id) do
     user = Users.get_user(user_id)
-    level = get_level(level_id)
+    level = Campaigns.get_level(level_id)
 
     cond do
       user == {:error, :not_found} ->
@@ -50,7 +50,7 @@ defmodule ChampionsOfMirra.Battle do
         {:error, :level_not_found}
 
       true ->
-        if Battle.battle(user.units, level.units) == :team_1 do
+        if battle(user.units, level.units) == :team_1 do
           :win
         else
           :loss

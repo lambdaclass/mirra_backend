@@ -11,6 +11,7 @@ defmodule GameBackend.Items do
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
   alias GameBackend.Repo
+  alias GameBackend.Units
 
   @doc """
   Equips an item to a unit. Returns an `{:ok, %Item{}}` tuple with the item's updated state.

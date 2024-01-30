@@ -16,7 +16,7 @@ defmodule GameBackend.Campaigns do
   def get_campaigns() do
     campaigns =
       Repo.all(from(l in Level))
-      |> Repo.preload(:units)
+      |> Repo.preload(units: :character)
       |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
       |> Enum.group_by(fn l -> l.campaign end)
 
@@ -26,7 +26,7 @@ defmodule GameBackend.Campaigns do
   def get_campaign(campaign_number) do
     campaign =
       Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
-      |> Repo.preload(:units)
+      |> Repo.preload(units: :character)
 
     case campaign do
       [] -> {:error, :not_found}
@@ -47,7 +47,7 @@ defmodule GameBackend.Campaigns do
   Get a level by id.
   """
   def get_level(level_id) do
-    Repo.get(Level, level_id) |> Repo.preload(units: :items)
+    Repo.get(Level, level_id) |> Repo.preload(units: :items, units: :character)
   end
 
   @doc """
