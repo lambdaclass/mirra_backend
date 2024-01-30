@@ -513,11 +513,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
-    Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
+    Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
-
-      # "h4ck"
-      character_name = "muflus"
 
       players =
         new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config))
