@@ -242,6 +242,11 @@ defmodule Arena.Serialization.Player do
     type: Arena.Serialization.PlayerAction,
     json_name: "currentActions"
   )
+
+  field(:available_stamina, 4, type: :uint64, json_name: "availableStamina")
+  field(:max_stamina, 5, type: :uint64, json_name: "maxStamina")
+  field(:stamina_interval, 6, type: :uint64, json_name: "staminaInterval")
+  field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
 end
 
 defmodule Arena.Serialization.Projectile do

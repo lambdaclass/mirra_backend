@@ -28,7 +28,11 @@ defmodule Arena.Entities do
         health: character.base_health,
         skills: character.skills,
         current_actions: [],
-        kill_count: 0
+        kill_count: 0,
+        available_stamina: character.base_stamina,
+        max_stamina: character.base_stamina,
+        stamina_interval: character.stamina_interval,
+        recharging_stamina: false
       }
     }
   end
@@ -79,7 +83,11 @@ defmodule Arena.Entities do
      %Arena.Serialization.Player{
        health: entity.aditional_info.health,
        current_actions: entity.aditional_info.current_actions,
-       kill_count: 0
+       kill_count: 0,
+       available_stamina: entity.aditional_info.available_stamina,
+       max_stamina: entity.aditional_info.max_stamina,
+       stamina_interval: entity.aditional_info.stamina_interval,
+       recharging_stamina: entity.aditional_info.recharging_stamina
      }}
   end
 
