@@ -45,7 +45,13 @@ fn add_angle_to_direction(direction: Direction, angle: f64) -> Direction {
     let angle_y = angle.to_radians().sin();
     let result_x = direction.x + angle_x;
     let result_y = direction.y + angle_y;
-    Direction { x: result_x, y: result_y }
+    Direction {
+        x: result_x,
+        y: result_y,
+    }
 }
 
-rustler::init!("Elixir.Physics", [add, check_collisions, move_entities, add_angle_to_direction]);
+rustler::init!(
+    "Elixir.Physics",
+    [add, check_collisions, move_entities, add_angle_to_direction]
+);
