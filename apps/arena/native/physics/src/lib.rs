@@ -5,7 +5,7 @@ mod map;
 
 use std::collections::HashMap;
 
-use crate::map::{Category, Entity};
+use crate::map::{Category, Direction, Entity};
 
 #[rustler::nif()]
 fn add(a: i64, b: i64) -> i64 {
@@ -39,4 +39,13 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
     entity.collides_with(ent)
 }
 
-rustler::init!("Elixir.Physics", [add, check_collisions, move_entities]);
+#[rustler::nif()]
+fn add_angle_to_direction(direction: Direction, angle: f64) -> Direction {
+    let angle_x = angle.to_radians().cos();
+    let angle_y = angle.to_radians().sin();
+    let result_x = direction.x + angle_x;
+    let result_y = direction.y + angle_y;
+    Direction { x: result_x, y: result_y }
+}
+
+rustler::init!("Elixir.Physics", [add, check_collisions, move_entities, add_angle_to_direction]);
