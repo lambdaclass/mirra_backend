@@ -69,7 +69,8 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id)
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and
+              players[entity_id].aditional_info.health > 0
           end)
 
         case Map.get(players, collision_player_id) do
@@ -80,6 +81,10 @@ defmodule Arena.GameUpdater do
             health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
             player = put_in(player, [:aditional_info, :health], health)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
+            if player.aditional_info.health == 0 do
+              send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
+            end
 
             {
               Map.put(projectiles_acc, projectile_id, projectile),
@@ -106,6 +111,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
 
     broadcast_game_update(game_state)
+    game_state = %{game_state | killfeed: []}
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -122,6 +128,24 @@ defmodule Arena.GameUpdater do
         state,
         [:game_state, :players, player_id, :aditional_info, :current_actions],
         actions
+      )
+
+    {:noreply, state}
+  end
+
+  def handle_info({:stop_dash, player_id, previous_speed}, state) do
+    player = Map.get(state.game_state.players, player_id)
+
+    player =
+      player
+      |> Map.put(:is_moving, false)
+      |> Map.put(:speed, previous_speed)
+
+    state =
+      put_in(
+        state,
+        [:game_state, :players, player_id],
+        player
       )
 
     {:noreply, state}
@@ -172,6 +196,48 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+    entry = %{killer_id: killer_id, victim_id: victim_id}
+    state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:recharge_stamina, player_id}, state) do
+    player = Map.get(state.game_state.players, player_id)
+
+    player =
+      case player.aditional_info.available_stamina == player.aditional_info.max_stamina do
+        true ->
+          Map.put(
+            player,
+            :aditional_info,
+            Map.put(player.aditional_info, :recharging_stamina, false)
+          )
+
+        _ ->
+          Process.send_after(
+            self(),
+            {:recharge_stamina, player_id},
+            player.aditional_info.stamina_interval
+          )
+
+          put_in(
+            player,
+            [:aditional_info, :available_stamina],
+            player.aditional_info.available_stamina + 1
+          )
+      end
+
+    state =
+      put_in(
+        state,
+        [:game_state, :players, player_id],
+        player
+      )
     {:noreply, state}
   end
 
@@ -241,7 +307,8 @@ defmodule Arena.GameUpdater do
              projectiles: complete_entities(state.projectiles),
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
              player_timestamps: state.player_timestamps,
-             zone: state.zone
+             zone: state.zone,
+             killfeed: state.killfeed
            }}
       })
 
@@ -288,8 +355,30 @@ defmodule Arena.GameUpdater do
 
   defp handle_attack(player_id, skill_key, game_state) do
     case Map.get(game_state.players, player_id) do
-      %{aditional_info: %{skills: %{^skill_key => skill}}} = player ->
-        player = add_skill_action(player, skill, skill_key)
+      %{aditional_info: %{skills: %{^skill_key => skill}}} = player
+      when player.aditional_info.available_stamina > 0 ->
+        player =
+          add_skill_action(player, skill, skill_key)
+          |> put_in(
+            [:aditional_info, :available_stamina],
+            player.aditional_info.available_stamina - 1
+          )
+
+        player =
+          case player.aditional_info.recharging_stamina do
+            false ->
+              Process.send_after(
+                self(),
+                {:recharge_stamina, player_id},
+                player.aditional_info.stamina_interval
+              )
+
+              put_in(player, [:aditional_info, :recharging_stamina], true)
+
+            _ ->
+              player
+          end
+
         players = Map.put(game_state.players, player_id, player)
         game_state = %{game_state | players: players}
 
@@ -319,15 +408,35 @@ defmodule Arena.GameUpdater do
       is_moving: false
     }
 
+    alive_players =
+      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+
     players =
-      Physics.check_collisions(circular_damage_area, game_state.players)
+      Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        player =
+        target_player =
           Map.get(players_acc, player_id)
           |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
 
-        Map.put(players_acc, player_id, player)
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
       end)
+
+    %{game_state | players: players}
+  end
+
+  defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
+    Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
+
+    player =
+      player
+      |> Map.put(:is_moving, true)
+      |> Map.put(:speed, speed)
+
+    players = Map.put(game_state.players, player.id, player)
 
     %{game_state | players: players}
   end
@@ -376,7 +485,10 @@ defmodule Arena.GameUpdater do
   end
 
   defp skill_key_to_atom(skill_key) do
-    "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+    case skill_key do
+      # "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+      _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
+    end
   end
 
   ##########################
@@ -403,12 +515,16 @@ defmodule Arena.GameUpdater do
     Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
 
+      # "h4ck"
+      character_name = "muflus"
+
       players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, "muflus", config))
+        new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config))
 
       new_game
       |> Map.put(:last_id, last_id)
       |> Map.put(:players, players)
+      |> Map.put(:killfeed, [])
       |> put_in([:client_to_player_map, client_id], last_id)
       |> put_in([:player_timestamps, last_id], 0)
     end)
