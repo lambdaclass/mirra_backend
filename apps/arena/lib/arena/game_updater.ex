@@ -56,12 +56,12 @@ defmodule Arena.GameUpdater do
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
 
     players =
-      update_entities(game_state.players, entities_to_collide, game_state.external_wall)
+      update_collisions(game_state.players, entities_to_collide)
 
     projectiles =
-      game_state.projectiles
-      |> remove_exploded_projectiles()
-      |> update_entities(entities_to_collide, game_state.external_wall)
+      remove_exploded_projectiles(game_state.projectiles)
+      |> Physics.move_entities(game_state.external_wall)
+      |> update_collisions(entities_to_collide)
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
@@ -262,6 +262,7 @@ defmodule Arena.GameUpdater do
       player
       |> Map.put(:direction, direction)
       |> Map.put(:is_moving, is_moving)
+      |> Physics.move_entity(state.game_state.external_wall)
       |> Map.put(
         :aditional_info,
         Map.merge(player.aditional_info, %{current_actions: current_actions})
@@ -551,11 +552,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
-    Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
+    Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
-
-      # "h4ck"
-      character_name = "muflus"
 
       players =
         new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config))
@@ -569,11 +567,9 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  # Move entities and add game fields
-  defp update_entities(entities, entities_to_collide, external_wall) do
-    new_state = Physics.move_entities(entities, external_wall)
-
-    Enum.reduce(new_state, %{}, fn {key, value}, acc ->
+  # Check entities collisiona
+  defp update_collisions(entities, entities_to_collide) do
+    Enum.reduce(entities, %{}, fn {key, value}, acc ->
       entity =
         Map.get(entities, key)
         |> Map.merge(value)
