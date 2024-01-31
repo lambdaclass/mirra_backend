@@ -43,10 +43,10 @@ defmodule Champions.Users do
 
   Returns `{:error, :not_found}` if no user is found.
   """
-  def get_id(username) do
+  def get_user_by_username(username) do
     case Users.get_user_by_username(username) do
       nil -> {:error, :not_found}
-      user -> user.id
+      user -> user
     end
   end
 

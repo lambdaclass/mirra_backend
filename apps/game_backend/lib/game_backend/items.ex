@@ -133,7 +133,7 @@ defmodule GameBackend.Items do
       {:error, :not_found}
   """
   def get_item(item_id) do
-    case Repo.get(Item, item_id) |> Repo.preload(:template) do
+    case Repo.get(Item, item_id) |> Repo.preload([:template]) do
       nil -> {:error, :not_found}
       item -> {:ok, item}
     end

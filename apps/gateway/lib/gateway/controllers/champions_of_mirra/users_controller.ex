@@ -11,8 +11,8 @@ defmodule Gateway.Champions.UsersController do
     Champions.Users.register(username) |> Gateway.Utils.format_response(conn)
   end
 
-  def get_id(conn, %{"username" => username}) do
-    Champions.Users.get_id(username) |> Gateway.Utils.format_response(conn)
+  def get_user_by_username(conn, %{"username" => username}) do
+    Champions.Users.get_user_by_username(username) |> Gateway.Utils.format_response(conn)
   end
 
   def get_user(conn, %{"user_id" => user_id}) do

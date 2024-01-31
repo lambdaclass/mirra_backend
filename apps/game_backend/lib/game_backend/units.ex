@@ -61,17 +61,18 @@ defmodule GameBackend.Units do
   @doc """
   Gets a unit given its id.
   """
-  def get_unit(id), do: Repo.get(Unit, id) |> Repo.preload([:character, :user])
+  def get_unit(id), do: Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
 
   @doc """
   Gets all units from all users.
   """
-  def get_units(), do: Repo.all(Unit) |> Repo.preload([:character, :user])
+  def get_units(), do: Repo.all(Unit) |> Repo.preload([:character, :user, :items])
 
   @doc """
   Gets all units for a user.
   """
-  def get_units(user_id), do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character])
+  def get_units(user_id),
+    do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character, :user, :items])
 
   @doc """
   Gets the user's selected unit. Takes the highest leveled one if there's many. Returns nil if there are none.

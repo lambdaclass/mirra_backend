@@ -4,6 +4,25 @@ defmodule Gateway.ChampionsSocketHandler do
   """
 
   require Logger
+  alias Gateway.Serialization.WebSocketResponse
+  alias Champions.{Battle, Campaigns, Items, Users, Units}
+
+  alias Gateway.Serialization.{
+    WebSocketRequest,
+    GetUser,
+    GetUserByUsername,
+    CreateUser,
+    GetCampaigns,
+    GetCampaign,
+    GetLevel,
+    FightLevel,
+    SelectUnit,
+    UnselectUnit,
+    EquipItem,
+    UnequipItem,
+    GetItem,
+    LevelUpItem
+  }
 
   @behaviour :cowboy_websocket
 
@@ -22,23 +41,67 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    case Serialization.GameAction.decode(message) do
-      %{action_type: {:attack, %{skill: skill}}} ->
-        GameUpdater.attack(state.game_pid, state.player_id, skill)
+    with %WebSocketRequest{request_type: {_type, request}} <- WebSocketRequest.decode(message) do
+      response =
+        case request do
+          %GetUser{user_id: user_id} ->
+            {:user, Users.get_user(user_id)}
 
-      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        GameUpdater.move(
-          state.game_pid,
-          state.player_id,
-          {direction.x, direction.y},
-          timestamp
+          %GetUserByUsername{username: username} ->
+            {:user, Users.get_user_by_username(username)}
+
+          %CreateUser{username: username} ->
+            {:user, Users.register(username)}
+
+          %GetCampaigns{user_id: _user_id} ->
+            {:campaigns, %{campaigns: Campaigns.get_campaigns() |> Enum.map(&%{levels: &1})}}
+
+          %GetCampaign{user_id: _user_id, campaign_number: campaign_number} ->
+            {:campaign, %{levels: Campaigns.get_campaign(campaign_number)}}
+
+          %GetLevel{user_id: _user_id, level_id: level_id} ->
+            {:level, Campaigns.get_level(level_id)}
+
+          %FightLevel{user_id: user_id, level_id: level_id} ->
+            {:battle_result, %{result: Battle.fight_level(user_id, level_id) |> Atom.to_string()}}
+
+          %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot} ->
+            {:unit, Units.select_unit(user_id, unit_id, slot)}
+
+          %UnselectUnit{user_id: user_id, unit_id: unit_id} ->
+            {:unit, Units.unselect_unit(user_id, unit_id)}
+
+          %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id} ->
+            {:item, Items.equip_item(user_id, item_id, unit_id)}
+
+          %UnequipItem{user_id: user_id, item_id: item_id} ->
+            {:item, Items.unequip_item(user_id, item_id)}
+
+          %GetItem{user_id: _user_id, item_id: item_id} ->
+            {:item, Items.get_item(item_id)}
+
+          %LevelUpItem{user_id: user_id, item_id: item_id} ->
+            {:ok, item} = Items.level_up(user_id, item_id)
+            {:item, item}
+
+          unknown_request ->
+            Logger.error(
+              "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
+            )
+        end
+
+      encode =
+        WebSocketResponse.encode(%WebSocketResponse{response_type: response})
+
+      {:reply, {:binary, encode}, state}
+    else
+      unknown_request ->
+        Logger.error(
+          "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
         )
 
-      _ ->
-        {}
+        {:ok, state}
     end
-
-    {:ok, state}
   end
 
   @impl true
@@ -46,26 +109,6 @@ defmodule Gateway.ChampionsSocketHandler do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:text, "error"}, state}
   end
-
-  # # Send a ping frame every once in a while
-  # @impl true
-  # def websocket_info(:send_ping, state) do
-  #   Process.send_after(self(), :send_ping, @ping_interval_ms)
-  #   time_now = Time.utc_now()
-  #   {:reply, :ping, Map.put(state, :last_ping_time, time_now)}
-  # end
-
-  # @impl true
-  # def websocket_info({:game_update, game_state}, state) do
-  #   # Logger.info("Websocket info, Message: GAME UPDATE")
-  #   {:reply, {:binary, game_state}, state}
-  # end
-
-  # @impl true
-  # def websocket_info({:game_finished, game_state}, state) do
-  #   # Logger.info("Websocket info, Message: GAME FINISHED")
-  #   {:reply, {:binary, game_state}, state}
-  # end
 
   @impl true
   def websocket_info(message, state) do

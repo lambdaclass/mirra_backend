@@ -31,8 +31,9 @@ defmodule Champions.Items do
 
       if Currencies.can_afford(user_id, level_up_currency_id, level_up_cost) do
         case Items.level_up(item) do
-          {:ok, item} ->
+          {:ok, _item} ->
             Currencies.add_currency(user_id, level_up_currency_id, -level_up_cost)
+            item = get_item(item_id)
             {:ok, item}
 
           {:error, error} ->
@@ -48,10 +49,12 @@ defmodule Champions.Items do
 
   def equip_item(user_id, item_id, unit_id) do
     Items.equip_item(user_id, item_id, unit_id)
+    get_item(item_id)
   end
 
   def unequip_item(user_id, item_id) do
     Items.unequip_item(user_id, item_id)
+    get_item(item_id)
   end
 
   defp calculate_level_up_cost(item),

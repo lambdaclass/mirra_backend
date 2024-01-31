@@ -3,7 +3,7 @@ syntax = "proto3";
   message WebSocketRequest {
     oneof request_type {
       GetUser get_user = 1;
-      GetUserId get_user_id = 2;
+      GetUserByUsername get_user_by_username = 2;
       CreateUser create_user = 3;
       GetCampaigns get_campaigns = 4;
       GetCampaign get_campaign = 5;
@@ -22,12 +22,12 @@ syntax = "proto3";
     string user_id = 1;
  }
  
- message GetUserId {
+ message GetUserByUsername {
     string username = 1;
   }
   
   message CreateUser {
-    string usernme = 1;
+    string username = 1;
   }
 
   message GetCampaigns {
@@ -36,7 +36,7 @@ syntax = "proto3";
   
   message GetCampaign {
     string user_id = 1;
-    uint32 number = 2;
+    uint32 campaign_number = 2;
   }
   
   message GetLevel {
@@ -79,4 +79,87 @@ syntax = "proto3";
  message LevelUpItem {
     string user_id = 1;
     string item_id = 2;
-}
+  }
+
+  ////////////////////////////////////////
+
+  message WebSocketResponse {
+    oneof response_type {
+      User user = 1;
+      Unit unit = 2;
+      Item item = 3;
+      Campaigns campaigns = 4;
+      Campaign campaign = 5;
+      Level level = 6;
+      BattleResult battle_result = 7;
+    }
+  }
+  
+  message User {
+    string id = 1;
+    string username = 2;
+    repeated UserCurrency currencies = 3;
+    repeated Unit units = 4;
+    repeated Item items = 5;    
+  }
+
+  message UserCurrency {
+    Currency currency = 1;
+    uint32 amount = 2;
+  }
+
+  message Currency {
+    string name = 1;
+  }
+
+  message Unit {
+    string id = 1;
+    uint32 unit_level = 2;
+    uint32 tier = 3;
+    bool selected = 4;
+    uint32 slot = 5;
+    string level_id = 6;
+    string user_id = 7;
+    Character character = 8;
+    repeated Item items = 9;
+  }
+  
+  message Character {
+    bool active = 1;
+    string name = 2;
+    string faction = 3;
+    string rarity = 4;
+  }
+  
+  message Item {
+    string id = 1;
+    uint32 level = 2;
+    ItemTemplate template = 3;
+    string user_id = 4;
+    string unit_id = 5;    
+  }
+
+  message ItemTemplate {
+    string id = 1;
+    string name = 2;
+    string type = 3;
+  }
+
+  message Campaigns {
+    repeated Campaign campaigns = 1;
+  }
+
+  message Campaign {
+    repeated Level levels = 1;
+  }
+
+  message Level {
+    string id = 1;
+    uint32 level_number = 2;
+    uint32 campaign = 3;
+    repeated Unit units = 4;
+  }
+
+  message BattleResult {
+    string result = 1;
+  }

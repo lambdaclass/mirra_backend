@@ -7,21 +7,6 @@ defmodule Gateway.Router do
 
   scope "/champions", Gateway.Champions do
     pipe_through :api
-    get "/users/:user_id", UsersController, :get_user
-    get "/users/:username/id", UsersController, :get_id
-    post "/users/:username", UsersController, :create_user
-
-    scope "/users/:user_id" do
-      get "/campaigns", CampaignsController, :get_campaigns
-      get "/campaigns/:campaign_number", CampaignsController, :get_campaign
-      get "/levels/:level_id", CampaignsController, :get_level
-      post "/levels/:level_id/battle", CampaignsController, :fight_level
-      post "/units/:unit_id/select/:slot", UnitsController, :select
-      post "/units/:unit_id/unselect", UnitsController, :unselect
-      post "/items/:item_id/equip_to/:unit_id", ItemsController, :equip_item
-      post "/items/:item_id/unequip/", ItemsController, :unequip_item
-      get "/items/:item_id", ItemsController, :get_item
-      post "/items/:item_id/level_up", ItemsController, :level_up
     end
   end
 
