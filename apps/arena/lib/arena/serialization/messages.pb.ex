@@ -181,15 +181,6 @@ defmodule Arena.Serialization.GameState.PlayerTimestampsEntry do
   field(:value, 2, type: :int64)
 end
 
-defmodule Arena.Serialization.GameState.PlayerTimestampsEntry do
-  @moduledoc false
-
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field :key, 1, type: :uint64
-  field :value, 2, type: :int64
-end
-
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
