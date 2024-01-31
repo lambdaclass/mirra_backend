@@ -56,13 +56,14 @@ defmodule ArenaLoadTest.SocketHandler do
   # Private
   defp ws_url(player_id) do
     host = SocketSupervisor.server_host()
+    character = Enum.random(["h4ck", "muflus"])
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
-        "wss://#{host}/play/#{player_id}"
+        "wss://#{host}/join/#{player_id}/#{character}"
 
       _ ->
-        "ws://#{host}/play/#{player_id}"
+        "ws://#{host}/join/#{player_id}/#{character}"
     end
   end
 end
