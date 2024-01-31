@@ -430,6 +430,44 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
+  defp do_mechanic({:cone_hit, cone_hit}, player, game_state) do
+    IO.inspect("CONE HIT")
+    cone_area = %{
+      id: player.id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices: Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle) |> IO.inspect(),
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+
+    alive_players =
+      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+
+    players =
+      Physics.check_collisions(cone_area, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        target_player =
+          Map.get(players_acc, player_id)
+          |> update_in([:aditional_info, :health], fn health -> max(health - cone_hit.damage, 0) end)
+
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    %{game_state | players: players}
+  end
+
   defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 
