@@ -443,6 +443,29 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
+  defp do_mechanic({:multi_shoot, multishot}, player, game_state) do
+    calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
+    |> Enum.reduce(game_state, fn direction, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+
+      projectiles =
+        game_state_acc.projectiles
+        |> Map.put(
+          last_id,
+          Entities.new_projectile(
+            last_id,
+            player.position,
+            direction,
+            player.id
+          )
+        )
+
+      game_state_acc
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:projectiles, projectiles)
+    end)
+  end
+
   defp do_mechanic({:simple_shoot, _}, player, game_state) do
     last_id = game_state.last_id + 1
 
@@ -491,6 +514,21 @@ defmodule Arena.GameUpdater do
       # "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
       _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
     end
+  end
+
+  defp calculate_angle_directions(amount, angle_between, base_direction) do
+    middle = if rem(amount, 2) == 1, do: [base_direction], else: []
+    side_amount = div(amount, 2)
+    angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
+
+    {add_side, sub_side} =
+      Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
+        add_side_acc = [Physics.add_angle_to_direction(base_direction, angle) | add_side_acc]
+        sub_side_acc = [Physics.add_angle_to_direction(base_direction, -angle) | sub_side_acc]
+        {add_side_acc, sub_side_acc}
+      end)
+
+    Enum.concat([add_side, middle, sub_side])
   end
 
   ##########################
