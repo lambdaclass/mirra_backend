@@ -118,7 +118,7 @@ impl Entity {
                         result.push(entity.id);
                     }
                 }
-                _ => todo!("Collision matching not implemented")
+                _ => todo!("Collision matching not implemented"),
             }
         }
 

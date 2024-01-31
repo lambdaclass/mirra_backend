@@ -70,7 +70,12 @@ fn add_angle_to_direction(direction: Direction, angle: f32) -> Direction {
 }
 
 #[rustler::nif()]
-fn calculate_triangle_vertices(starting_point: Position, direction: Direction, range: f32, angle: f32) -> Vec<Position> {
+fn calculate_triangle_vertices(
+    starting_point: Position,
+    direction: Direction,
+    range: f32,
+    angle: f32,
+) -> Vec<Position> {
     let direction_angle = direction.y.atan2(direction.x);
     let angle_x = (angle.to_radians() + direction_angle).cos();
     let angle_y = (angle.to_radians() + direction_angle).sin();

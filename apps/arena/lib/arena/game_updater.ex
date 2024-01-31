@@ -418,7 +418,9 @@ defmodule Arena.GameUpdater do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health -> max(health - circle_hit.damage, 0) end)
+          |> update_in([:aditional_info, :health], fn health ->
+            max(health - circle_hit.damage, 0)
+          end)
 
         if target_player.aditional_info.health == 0 do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -431,7 +433,6 @@ defmodule Arena.GameUpdater do
   end
 
   defp do_mechanic({:cone_hit, cone_hit}, player, game_state) do
-    IO.inspect("CONE HIT")
     cone_area = %{
       id: player.id,
       category: :obstacle,
@@ -439,7 +440,13 @@ defmodule Arena.GameUpdater do
       name: "BashDamageArea",
       position: %{x: 0.0, y: 0.0},
       radius: 0.0,
-      vertices: Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle) |> IO.inspect(),
+      vertices:
+        Physics.calculate_triangle_vertices(
+          player.position,
+          player.direction,
+          cone_hit.range,
+          cone_hit.angle
+        ),
       speed: 0.0,
       direction: %{
         x: 0.0,
@@ -456,7 +463,9 @@ defmodule Arena.GameUpdater do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health -> max(health - cone_hit.damage, 0) end)
+          |> update_in([:aditional_info, :health], fn health ->
+            max(health - cone_hit.damage, 0)
+          end)
 
         if target_player.aditional_info.health == 0 do
           send(self(), {:to_killfeed, player.id, target_player.id})
