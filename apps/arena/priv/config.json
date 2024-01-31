@@ -52,6 +52,20 @@
       ]
     },
     {
+      "name": "multishot",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "multi_shoot": {
+            "angle_between": 10.0,
+            "amount": 3
+          }
+        }
+      ]
+    },
+    {
       "name": "dash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
@@ -91,7 +105,7 @@
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "skills": {
-        "1": "shot",
+        "1": "multishot",
         "2": "dash",
         "3": "repeated_shot"
       }

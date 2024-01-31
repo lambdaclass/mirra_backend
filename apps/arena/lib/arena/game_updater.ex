@@ -56,12 +56,12 @@ defmodule Arena.GameUpdater do
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
 
     players =
-      update_entities(game_state.players, entities_to_collide, game_state.external_wall)
+      update_collisions(game_state.players, game_state.players, entities_to_collide)
 
     projectiles =
-      game_state.projectiles
-      |> remove_exploded_projectiles()
-      |> update_entities(entities_to_collide, game_state.external_wall)
+      remove_exploded_projectiles(game_state.projectiles)
+      |> Physics.move_entities(game_state.external_wall)
+      |> update_collisions(game_state.projectiles, entities_to_collide)
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
@@ -292,6 +292,7 @@ defmodule Arena.GameUpdater do
       player
       |> Map.put(:direction, direction)
       |> Map.put(:is_moving, is_moving)
+      |> Physics.move_entity(state.game_state.external_wall)
       |> Map.put(
         :aditional_info,
         Map.merge(player.aditional_info, %{current_actions: current_actions})
@@ -498,6 +499,29 @@ defmodule Arena.GameUpdater do
     |> Map.put(:projectiles, projectiles)
   end
 
+  defp do_mechanic({:multi_shoot, multishot}, player, game_state) do
+    calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
+    |> Enum.reduce(game_state, fn direction, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+
+      projectiles =
+        game_state_acc.projectiles
+        |> Map.put(
+          last_id,
+          Entities.new_projectile(
+            last_id,
+            player.position,
+            direction,
+            player.id
+          )
+        )
+
+      game_state_acc
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:projectiles, projectiles)
+    end)
+  end
+
   defp do_mechanic({:simple_shoot, _}, player, game_state) do
     last_id = game_state.last_id + 1
 
@@ -548,6 +572,21 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  defp calculate_angle_directions(amount, angle_between, base_direction) do
+    middle = if rem(amount, 2) == 1, do: [base_direction], else: []
+    side_amount = div(amount, 2)
+    angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
+
+    {add_side, sub_side} =
+      Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
+        add_side_acc = [Physics.add_angle_to_direction(base_direction, angle) | add_side_acc]
+        sub_side_acc = [Physics.add_angle_to_direction(base_direction, -angle) | sub_side_acc]
+        {add_side_acc, sub_side_acc}
+      end)
+
+    Enum.concat([add_side, middle, sub_side])
+  end
+
   ##########################
   # End skills mechaninc
   ##########################
@@ -569,11 +608,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
-    Enum.reduce(clients, new_game, fn {client_id, _from_pid}, new_game ->
+    Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
       last_id = new_game.last_id + 1
-
-      # "h4ck"
-      character_name = "h4ck"
 
       players =
         new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config))
@@ -587,13 +623,11 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  # Move entities and add game fields
-  defp update_entities(entities, entities_to_collide, external_wall) do
-    new_state = Physics.move_entities(entities, external_wall)
-
-    Enum.reduce(new_state, %{}, fn {key, value}, acc ->
+  # Check entities collisiona
+  defp update_collisions(new_entities, old_entities, entities_to_collide) do
+    Enum.reduce(new_entities, %{}, fn {key, value}, acc ->
       entity =
-        Map.get(entities, key)
+        Map.get(old_entities, key)
         |> Map.merge(value)
         |> Map.put(
           :collides_with,

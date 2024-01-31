@@ -7,6 +7,8 @@ defmodule ArenaWeb.Router do
 
   scope "/api", ArenaWeb do
     pipe_through :api
+
+    get "/health", HealthController, :check
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
