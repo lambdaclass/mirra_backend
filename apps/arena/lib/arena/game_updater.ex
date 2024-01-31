@@ -7,6 +7,7 @@ defmodule Arena.GameUpdater do
   use GenServer
   alias Arena.Configuration
   alias Arena.Entities
+  alias Arena.Game.Player
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Arena.Utils
   alias Phoenix.PubSub
@@ -69,8 +70,7 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and
-              players[entity_id].aditional_info.health > 0
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and Player.is_alive?(players, entity_id)
           end)
 
         case Map.get(players, collision_player_id) do
@@ -78,11 +78,10 @@ defmodule Arena.GameUpdater do
             {projectiles_acc, players_acc}
 
           player ->
-            health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
-            player = put_in(player, [:aditional_info, :health], health)
+            player = Player.change_health(player, projectile.aditional_info.damage)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
-            if player.aditional_info.health == 0 do
+            unless Player.is_alive?(player) do
               send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
             end
 
@@ -210,7 +209,7 @@ defmodule Arena.GameUpdater do
     player = Map.get(state.game_state.players, player_id)
 
     player =
-      case player.aditional_info.available_stamina == player.aditional_info.max_stamina do
+      case Player.stamina_full?(player) do
         true ->
           Map.put(
             player,
@@ -225,11 +224,7 @@ defmodule Arena.GameUpdater do
             player.aditional_info.stamina_interval
           )
 
-          put_in(
-            player,
-            [:aditional_info, :available_stamina],
-            player.aditional_info.available_stamina + 1
-          )
+          Player.change_stamina(player, 1)
       end
 
     state =
@@ -361,10 +356,7 @@ defmodule Arena.GameUpdater do
       when player.aditional_info.available_stamina > 0 ->
         player =
           add_skill_action(player, skill, skill_key)
-          |> put_in(
-            [:aditional_info, :available_stamina],
-            player.aditional_info.available_stamina - 1
-          )
+          |> Player.change_stamina(-1)
 
         player =
           case player.aditional_info.recharging_stamina do
@@ -411,16 +403,16 @@ defmodule Arena.GameUpdater do
     }
 
     alive_players =
-      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+      Map.filter(game_state.players, fn {_id, player} -> Player.is_alive?(player) end)
 
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
+          |> Player.change_health(hit.damage)
 
-        if target_player.aditional_info.health == 0 do
+        unless Player.is_alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
         end
 
@@ -584,10 +576,7 @@ defmodule Arena.GameUpdater do
 
   # Check if game has ended
   defp check_game_ended(players, last_standing_players) do
-    players_alive =
-      Enum.filter(players, fn player ->
-        player.aditional_info.health > 0
-      end)
+    players_alive = Enum.filter(players, &Player.is_alive?/1)
 
     case players_alive do
       ^players ->
@@ -636,11 +625,7 @@ defmodule Arena.GameUpdater do
     to_damage_ids = Map.keys(players) -- safe_ids
 
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
-      player =
-        Map.get(players_acc, player_id)
-        |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
-
-      Map.put(players_acc, player_id, player)
+      Player.change_health(players_acc, player_id, 1)
     end)
   end
 end
