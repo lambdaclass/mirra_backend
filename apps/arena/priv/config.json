@@ -16,10 +16,9 @@
       "is_passive": false,
       "mechanics": [
         {
-          "hit": {
+          "circle_hit": {
             "damage": 15,
             "range": 1000.0,
-            "cone_angle": 360,
             "on_hit_effects": []
           }
         }

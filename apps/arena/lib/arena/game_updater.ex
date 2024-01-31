@@ -393,14 +393,14 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp do_mechanic({:hit, hit}, player, game_state) do
+  defp do_mechanic({:circle_hit, circle_hit}, player, game_state) do
     circular_damage_area = %{
       id: player.id,
       category: :obstacle,
       shape: :circle,
       name: "BashDamageArea",
       position: player.position,
-      radius: hit.range,
+      radius: circle_hit.range,
       vertices: [],
       speed: 0.0,
       direction: %{
@@ -418,7 +418,7 @@ defmodule Arena.GameUpdater do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
+          |> update_in([:aditional_info, :health], fn health -> max(health - circle_hit.damage, 0) end)
 
         if target_player.aditional_info.health == 0 do
           send(self(), {:to_killfeed, player.id, target_player.id})
