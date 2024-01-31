@@ -92,7 +92,7 @@
       "max_inventory_size": 1,
       "skills": {
         "1": "multishot",
-        "2": "multishot"
+        "2": "dash"
       }
     }
   ]

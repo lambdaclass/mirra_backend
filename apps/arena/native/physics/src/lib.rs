@@ -69,5 +69,11 @@ fn add_angle_to_direction(direction: Direction, angle: f32) -> Direction {
 
 rustler::init!(
     "Elixir.Physics",
-    [add, check_collisions, move_entities, move_entity, add_angle_to_direction]
+    [
+        add,
+        check_collisions,
+        move_entities,
+        move_entity,
+        add_angle_to_direction
+    ]
 );
