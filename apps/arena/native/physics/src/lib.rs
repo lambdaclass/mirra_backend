@@ -5,6 +5,8 @@ mod map;
 
 use std::collections::HashMap;
 
+use map::Position;
+
 use crate::map::{Category, Direction, Entity};
 
 #[rustler::nif()]
@@ -67,6 +69,31 @@ fn add_angle_to_direction(direction: Direction, angle: f32) -> Direction {
     }
 }
 
+#[rustler::nif()]
+fn calculate_triangle_vertices(starting_point: Position, direction: Direction, range: f32, angle: f32) -> Vec<Position> {
+    let direction_angle = direction.y.atan2(direction.x);
+    let angle_x = (angle.to_radians() + direction_angle).cos();
+    let angle_y = (angle.to_radians() + direction_angle).sin();
+    let result_x = direction.x + angle_x;
+    let result_y = direction.y + angle_y;
+    let len_result = (result_x.powi(2) + result_y.powi(2)).sqrt();
+    let direction = Direction {
+        x: result_x / len_result,
+        y: result_y / len_result,
+    };
+
+    let vertix_1 = Position {
+        x: starting_point.x + direction.x * range,
+        y: starting_point.y + direction.y * range,
+    };
+    let vertix_2 = Position {
+        x: starting_point.x + direction.x * range,
+        y: starting_point.y - direction.y * range,
+    };
+
+    vec![starting_point, vertix_1, vertix_2]
+}
+
 rustler::init!(
     "Elixir.Physics",
     [
@@ -74,6 +101,7 @@ rustler::init!(
         check_collisions,
         move_entities,
         move_entity,
-        add_angle_to_direction
+        add_angle_to_direction,
+        calculate_triangle_vertices
     ]
 );
