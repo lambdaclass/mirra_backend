@@ -54,7 +54,7 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
 }
 
 #[rustler::nif()]
-fn add_angle_to_direction(direction: Direction, angle: f64) -> Direction {
+fn add_angle_to_direction(direction: Direction, angle: f32) -> Direction {
     let angle_x = angle.to_radians().cos();
     let angle_y = angle.to_radians().sin();
     let result_x = direction.x + angle_x;
