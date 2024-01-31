@@ -3,6 +3,97 @@
     "radius": 4800.0
   },
   "game": {
-    "tick_rate_ms": 30
-  }
+    "tick_rate_ms": 30,
+    "zone_shrink_start_ms": 10000,
+    "zone_stop_interval_ms": 30000,
+    "zone_start_interval_ms": 15000
+  },
+  "skills": [
+    {
+      "name": "circle_bash",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "hit": {
+            "damage": 15,
+            "range": 1000.0,
+            "cone_angle": 360,
+            "on_hit_effects": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "shot",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "simple_shoot": {
+          }
+        }
+      ]
+    },
+    {
+      "name": "multishot",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "multi_shoot": {
+            "angle_between": 10.0,
+            "amount": 3
+          }
+        }
+      ]
+    },
+    {
+      "name": "dash",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ]
+    }
+  ],
+  "characters": [
+    {
+      "name": "muflus",
+      "active": true,
+      "base_speed": 25.0,
+      "base_size": 50.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "skills": {
+        "1": "circle_bash",
+        "2": "dash"
+      }
+    },
+    {
+      "name": "h4ck",
+      "active": true,
+      "base_speed": 20.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "skills": {
+        "1": "multishot",
+        "2": "dash"
+      }
+    }
+  ]
 }

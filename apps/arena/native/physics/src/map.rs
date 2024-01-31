@@ -14,14 +14,14 @@ pub struct Polygon {
 
 #[derive(NifMap, Clone, Copy)]
 pub struct Position {
-    pub(crate) x: f64,
-    pub(crate) y: f64,
+    pub(crate) x: f32,
+    pub(crate) y: f32,
 }
 
 #[derive(NifMap, Clone, Copy)]
 pub struct Direction {
-    pub(crate) x: f64,
-    pub(crate) y: f64,
+    pub(crate) x: f32,
+    pub(crate) y: f32,
 }
 
 #[derive(NifMap, Clone)]
@@ -29,11 +29,12 @@ pub struct Entity {
     pub id: u64,
     pub shape: Shape,
     pub position: Position,
-    pub radius: f64,
+    pub radius: f32,
     pub vertices: Vec<Position>,
-    pub speed: f64,
+    pub speed: f32,
     pub category: Category,
     pub direction: Direction,
+    pub is_moving: bool,
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
@@ -62,6 +63,7 @@ impl Entity {
             speed: 0.0,
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
+            is_moving: false,
         }
     }
 
@@ -75,6 +77,7 @@ impl Entity {
             speed: 0.0,
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
+            is_moving: false,
         }
     }
 
@@ -174,7 +177,7 @@ impl Entity {
 pub(crate) fn is_vertice_inside_circle(
     vertice: &Position,
     circle_center: &Position,
-    circle_radius: f64,
+    circle_radius: f32,
 ) -> bool {
     let circle_center_dist =
         ((vertice.x - circle_center.x).powi(2) + (vertice.y - circle_center.y).powi(2)).sqrt();

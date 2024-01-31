@@ -2,8 +2,11 @@ defmodule Arena.Entities do
   @moduledoc """
   Entities manager.
   """
+  alias Arena.Configuration
 
-  def new_player(id) do
+  def new_player(id, character_name, config) do
+    character = Configuration.get_character_config(character_name, config)
+
     %{
       id: id,
       category: :player,
@@ -13,15 +16,23 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      radius: 50.0,
+      radius: character.base_size,
       vertices: [],
-      speed: 25.0,
+      speed: character.base_speed,
       direction: %{
         x: 0.0,
         y: 0.0
       },
+      is_moving: false,
       aditional_info: %{
-        health: 100
+        health: character.base_health,
+        skills: character.skills,
+        current_actions: [],
+        kill_count: 0,
+        available_stamina: character.base_stamina,
+        max_stamina: character.base_stamina,
+        stamina_interval: character.stamina_interval,
+        recharging_stamina: false
       }
     }
   end
@@ -35,18 +46,20 @@ defmodule Arena.Entities do
       position: position,
       radius: 10.0,
       vertices: [],
-      speed: 30.0,
+      speed: 40.0,
       direction: direction,
+      is_moving: true,
       aditional_info: %{
         damage: 10,
-        owner_id: owner_id
+        owner_id: owner_id,
+        status: :ACTIVE
       }
     }
   end
 
-  def new_external_wall(radius) do
+  def new_external_wall(id, radius) do
     %{
-      id: 0,
+      id: id,
       category: :obstacle,
       shape: :circle,
       name: "ExternalWall",
@@ -60,14 +73,21 @@ defmodule Arena.Entities do
       direction: %{
         x: 0.0,
         y: 0.0
-      }
+      },
+      is_moving: false
     }
   end
 
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
      %Arena.Serialization.Player{
-       health: entity.aditional_info.health
+       health: entity.aditional_info.health,
+       current_actions: entity.aditional_info.current_actions,
+       kill_count: 0,
+       available_stamina: entity.aditional_info.available_stamina,
+       max_stamina: entity.aditional_info.max_stamina,
+       stamina_interval: entity.aditional_info.stamina_interval,
+       recharging_stamina: entity.aditional_info.recharging_stamina
      }}
   end
 
@@ -75,7 +95,8 @@ defmodule Arena.Entities do
     {:projectile,
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
-       owner_id: entity.aditional_info.owner_id
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status
      }}
   end
 

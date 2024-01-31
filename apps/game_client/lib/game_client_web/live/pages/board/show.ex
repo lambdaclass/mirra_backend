@@ -24,6 +24,7 @@ defmodule GameClientWeb.BoardLive.Show do
        game_id: game_id,
        player_id: player_id,
        game_status: :running,
+       ping_latency: 0,
        board_width: mocked_board_width,
        board_height: mocked_board_height,
        game_data: game_data,
@@ -72,7 +73,7 @@ defmodule GameClientWeb.BoardLive.Show do
           y: entity.position.y,
           radius: entity.radius,
           coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: entity.is_colliding
+          is_colliding: entity.collides_with |> Enum.any?()
         }
       end)
 
@@ -88,10 +89,14 @@ defmodule GameClientWeb.BoardLive.Show do
           y: entity.position.y,
           radius: entity.radius,
           coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x, vertex.y] end),
-          is_colliding: entity.is_colliding
+          is_colliding: entity.collides_with |> Enum.any?()
         }
       end)
 
     {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
+  end
+
+  defp handle_game_event({:ping, ping_event}, socket) do
+    {:noreply, assign(socket, :ping_latency, ping_event.latency)}
   end
 end

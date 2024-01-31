@@ -30,9 +30,4 @@ defmodule GameClientWeb.ConnCase do
       import GameClientWeb.ConnCase
     end
   end
-
-  setup tags do
-    GameClient.DataCase.setup_sandbox(tags)
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
-  end
 end

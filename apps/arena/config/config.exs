@@ -11,14 +11,10 @@ import Config
 dispatch = [
   _: [
     {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
-    {"/play/:client_id", Arena.SocketHandler, []},
+    {"/join/:client_id/:character_name", Arena.SocketHandler, []},
     {:_, Plug.Cowboy.Handler, {ArenaWeb.Endpoint, []}}
   ]
 ]
-
-config :arena,
-  ecto_repos: [Arena.Repo],
-  generators: [timestamp_type: :utc_datetime]
 
 # Configures the endpoint
 config :arena, ArenaWeb.Endpoint,
