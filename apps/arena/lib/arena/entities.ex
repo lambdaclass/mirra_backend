@@ -32,7 +32,8 @@ defmodule Arena.Entities do
         available_stamina: character.base_stamina,
         max_stamina: character.base_stamina,
         stamina_interval: character.stamina_interval,
-        recharging_stamina: false
+        recharging_stamina: false,
+        character_name: character.name
       }
     }
   end
@@ -87,7 +88,8 @@ defmodule Arena.Entities do
        available_stamina: entity.aditional_info.available_stamina,
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
-       recharging_stamina: entity.aditional_info.recharging_stamina
+       recharging_stamina: entity.aditional_info.recharging_stamina,
+       character_name: entity.aditional_info.character_name
      }}
   end
 
