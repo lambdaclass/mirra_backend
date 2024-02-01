@@ -1,6 +1,6 @@
 defmodule SocketTester do
   @moduledoc """
-  Module for manually testing the CoM websocket.
+  Module for manually testing the CoM websocket. Prints received messages.
 
   Example usage:
       {_ok, pid} = SocketTester.start_link "123"
@@ -8,7 +8,7 @@ defmodule SocketTester do
       SocketTester.get_user_by_username(pid, "Username")
   """
 
-  @ws_url "ws://127.0.0.1:4001/2/123"
+  @ws_url "ws://127.0.0.1:4001/2"
 
   use WebSockex
 
@@ -169,7 +169,7 @@ defmodule SocketTester do
       )
 
   def handle_frame({:binary, message}, state) do
-    WebSocketResponse.decode(message) |> IO.inspect(label: :Response)
+    WebSocketResponse.decode(message) |> IO.inspect(label: :response)
     {:ok, state}
   end
 end
