@@ -1,9 +1,9 @@
 { pkgs, ... }:
 
 {
-  enterShell = ''
-    make start
-  ''; 
+  processes = {
+    main.exec = "make start";
+  };
 
   languages = {
     elixir = {
@@ -20,7 +20,7 @@
     };
 
     javascript = {
-        enable = true;
+      enable = true;
     };
   };
 
