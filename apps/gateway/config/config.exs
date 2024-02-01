@@ -22,7 +22,7 @@ config :phoenix, :json_library, Jason
 dispatch = [
   _: [
     # {"/1", Gateway.CurseSocketHandler, []},
-    {"/2/:client_id", Gateway.ChampionsSocketHandler, []},
+    {"/2", Gateway.ChampionsSocketHandler, []},
     {:_, Plug.Cowboy.Handler, {Gateway.Endpoint, []}}
   ]
 ]

@@ -28,9 +28,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   @impl true
   def init(req, _opts) do
-    client_id = :cowboy_req.binding(:client_id, req)
-
-    {:cowboy_websocket, req, %{client_id: client_id}}
+    {:cowboy_websocket, req, %{}}
   end
 
   @impl true
