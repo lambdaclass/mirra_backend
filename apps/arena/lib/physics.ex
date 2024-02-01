@@ -16,4 +16,7 @@ defmodule Physics do
 
   def calculate_triangle_vertices(_starting_point, _direction, _range, _angle),
     do: :erlang.nif_error(:nif_not_loaded)
+
+  def get_direction_from_positions(_position_a, _position_b),
+    do: :erlang.nif_error(:nif_not_loaded)
 end
