@@ -150,10 +150,10 @@ defmodule GameBackend.Units do
   @doc """
   Create params for a level with a random character.
   """
-  def unit_params_for_level(possible_characters, unit_level) do
+  def unit_params_for_level(possible_characters, unit_level, slot) do
     character = Enum.random(possible_characters)
 
-    %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id}
+    %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id, slot: slot}
   end
 
   def unit_belongs_to_user(unit_id, user_id),

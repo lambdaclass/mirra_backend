@@ -9,13 +9,12 @@ alias GameBackend.Users
 champions_of_mirra_id = 2
 units_per_level = 5
 
-
 Characters.insert_character(%{
   game_id: champions_of_mirra_id,
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: "Epic",
+  rarity: "Epic"
 })
 
 Characters.insert_character(%{
@@ -23,7 +22,7 @@ Characters.insert_character(%{
   active: true,
   name: "Uma",
   faction: "Kaline",
-  rarity: "Epic",
+  rarity: "Epic"
 })
 
 Characters.insert_character(%{
@@ -31,7 +30,7 @@ Characters.insert_character(%{
   active: true,
   name: "Dagna",
   faction: "Merliot",
-  rarity: "Epic",
+  rarity: "Epic"
 })
 
 Characters.insert_character(%{
@@ -39,29 +38,55 @@ Characters.insert_character(%{
   active: true,
   name: "H4ck",
   faction: "Otobi",
-  rarity: "Epic",
+  rarity: "Epic"
 })
 
-Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Epic Sword of Epicness", type: "weapon"})
-Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Mythical Helmet of Mythicness", type: "helmet"})
-Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Legendary Chestplate of Legendaryness", type: "chest"})
-Items.insert_item_template(%{game_id: champions_of_mirra_id, name: "Magical Boots of Magicness", type: "boots"})
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Epic Sword of Epicness",
+  type: "weapon"
+})
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Mythical Helmet of Mythicness",
+  type: "helmet"
+})
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Legendary Chestplate of Legendaryness",
+  type: "chest"
+})
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Magical Boots of Magicness",
+  type: "boots"
+})
 
 Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
 
-
 ######################
 # Campaigns creation #
 ######################
 
-# TODO: Add transaction
+# Rules needed are:
+#   - `base_level`: the aggregate level of all units in the first level of the campaign
+#   - `scaler`: used to calculate the aggregate level of the campaign's levels, multiplying the previous level's aggregate by this value
+#   - `possible_factions`: which factions the randomly generated units can belong to
+#   - `length`: the length of the campaign.
+# Each of the rule maps given represents a campaign, and the number of the campaign (stored in the Level)
+# will be equal to the index of its rules in the list (1-based).
+
 rules = [
-  %{base_level: 5, scaler: 1.5, possible_factions: ["Araban", "Kaline"], length: 10},
-  %{base_level: 50, scaler: 1.7, possible_factions: ["Merliot", "Otobi"], length: 20}
+  %{base_level: 5, scaler: 1.5, possible_factions: ["Araban", "Kaline"], length: 1}
+  # %{base_level: 50, scaler: 1.7, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
+# Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
   Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
     Enum.map(1..campaign_rules.length, fn level_index ->
@@ -90,14 +115,27 @@ units =
     agg_difficulty = (base_level * (level_scaler |> Math.pow(level_index))) |> round()
 
     units =
-      Enum.map(0..4, fn _ ->
-        Units.unit_params_for_level(possible_characters, div(agg_difficulty, units_per_level))
+      Enum.map(0..4, fn slot ->
+        Units.unit_params_for_level(
+          possible_characters,
+          div(agg_difficulty, units_per_level),
+          slot
+        )
         |> Map.put(:inserted_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
         |> Map.put(:updated_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
       end)
-      level_units = Enum.reduce(0..(rem(agg_difficulty, units_per_level) - 1), units, fn index, units ->
-        List.update_at(units, index, fn unit -> %{unit | unit_level: unit.unit_level + 1} end)
-      end)
+
+    # Add the remaining unit levels to match the level difficulty
+    level_units =
+      case rem(agg_difficulty, units_per_level) do
+        0 ->
+          units
+
+        missing_levels ->
+          Enum.reduce(0..missing_levels, units, fn index, units ->
+            List.update_at(units, index, fn unit -> %{unit | unit_level: unit.unit_level + 1} end)
+          end)
+      end
 
     Enum.map(level_units, fn unit_attrs ->
       Map.put(unit_attrs, :level_id, level.id)
