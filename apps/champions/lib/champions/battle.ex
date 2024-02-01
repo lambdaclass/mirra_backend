@@ -43,10 +43,10 @@ defmodule Champions.Battle do
     level = Campaigns.get_level(level_id)
 
     cond do
-      user == {:error, :not_found} ->
+      is_nil(user) ->
         {:error, :user_not_found}
 
-      level == {:error, :not_found} ->
+      is_nil(level) ->
         {:error, :level_not_found}
 
       true ->

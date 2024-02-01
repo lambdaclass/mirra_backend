@@ -31,10 +31,8 @@ defmodule SocketTester do
     LevelUpItem
   }
 
-  def start_link(client_id) do
-    WebSockex.start_link(@ws_url, __MODULE__, %{
-      "client_id" => client_id
-    })
+  def start_link() do
+    WebSockex.start_link(@ws_url, __MODULE__, %{})
   end
 
   def get_user(pid, user_id),

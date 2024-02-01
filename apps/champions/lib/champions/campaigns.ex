@@ -27,6 +27,9 @@ defmodule Champions.Campaigns do
   Get a level by id.
   """
   def get_level(level_id) do
-    Campaigns.get_level(level_id)
+    case Campaigns.get_level(level_id) do
+      nil -> {:error, :not_found}
+      level -> level
+    end
   end
 end

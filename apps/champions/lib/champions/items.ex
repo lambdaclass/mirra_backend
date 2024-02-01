@@ -19,31 +19,21 @@ defmodule Champions.Items do
   @doc """
   Level up a user's item and substracts the currency cost from the user.
 
-  Returns :not_found if item doesn't exist or if it's not owned by user.
-  Returns :cant_afford if user cannot afford the cost.
-  Returns :ok if succesful.
+  Returns `{:error, :not_found}` if item doesn't exist or if it's not owned by user.
+  Returns `{:error, :cant_afford}` if user cannot afford the cost.
+  Returns `{:ok, item: %Item{}, user_currency: %UserCurrency{}}` if succesful.
   """
   def level_up(user_id, item_id) do
-    {:ok, item} = Items.get_item(item_id) || %{}
-
-    if Map.get(item, :user_id, nil) == user_id do
-      {level_up_currency_id, level_up_cost} = calculate_level_up_cost(item)
-
-      if Currencies.can_afford(user_id, level_up_currency_id, level_up_cost) do
-        case Items.level_up(item) do
-          {:ok, _item} ->
-            Currencies.add_currency(user_id, level_up_currency_id, -level_up_cost)
-            item = get_item(item_id)
-            {:ok, item}
-
-          {:error, error} ->
-            {:error, error}
-        end
-      else
-        {:error, :cant_afford}
-      end
+    with {:item, {:ok, item}} <- {:item, Items.get_item(item_id)},
+         {:item_owned, true} <- {:item_owned, item.user_id == user_id},
+         {level_up_currency_id, level_up_cost} = calculate_level_up_cost(item),
+         {:can_afford, true} <-
+           {:can_afford, Currencies.can_afford(user_id, level_up_currency_id, level_up_cost)} do
+      Items.level_up(item, level_up_currency_id, level_up_cost)
     else
-      {:error, :not_found}
+      {:item, {:error, :not_found}} -> {:error, :not_found}
+      {:item_owned, false} -> {:error, :not_found}
+      {:can_afford, false} -> {:error, :cant_afford}
     end
   end
 

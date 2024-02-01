@@ -8,6 +8,8 @@ defmodule GameBackend.Items do
   Items are created by instantiating copies of ItemTemplates. This way, many users can have their own copy of the "Epic Sword" item. Likewise, this allows for a user to have many copies of it, each with their own level and equipped to a different unit.
   """
 
+  alias Ecto.Multi
+  alias GameBackend.Users.Currencies
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
   alias GameBackend.Repo
@@ -144,12 +146,21 @@ defmodule GameBackend.Items do
 
   ## Examples
 
-      iex> level_up(%Item{level: 41})
+      iex> level_up(%Item{level: 41}, 1)
       {:ok, %Item{level: 42}}
   """
-  def level_up(item) do
+  def add_level(item, level \\ 1) do
     item
-    |> Item.level_up_changeset()
+    |> Item.level_up_changeset(%{level: item.level + level})
     |> Repo.update()
+  end
+
+  def level_up(item, currency_id, cost) do
+    Multi.new()
+    |> Multi.run(:item, fn _, _ -> add_level(item) end)
+    |> Multi.run(:user_currency, fn _, _ ->
+      Currencies.add_currency(item.user_id, currency_id, -cost)
+    end)
+    |> Repo.transaction()
   end
 end

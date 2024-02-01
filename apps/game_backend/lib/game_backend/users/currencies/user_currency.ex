@@ -22,6 +22,7 @@ defmodule GameBackend.Users.Currencies.UserCurrency do
   def changeset(user_currency, attrs) do
     user_currency
     |> cast(attrs, [:currency_id, :user_id, :amount])
+    |> validate_number(:amount, greater_than_or_equal_to: 0)
     |> validate_required([:currency_id, :user_id, :amount])
   end
 

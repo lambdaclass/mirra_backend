@@ -58,22 +58,26 @@ defmodule GameBackend.Users.Currencies do
       )
 
   def add_currency(user_id, currency_id, amount) do
-    case Repo.one(
-           from(uc in UserCurrency,
-             where: uc.user_id == ^user_id and uc.currency_id == ^currency_id
-           )
-         ) do
+    with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id),
+         changeset <-
+           UserCurrency.update_changeset(user_currency, %{
+             amount: max(user_currency.amount + amount, 0)
+           }) do
+      Repo.update(changeset)
+    else
       nil ->
         # User has none of this currency, create it with given amount
-        if amount > 0,
-          do: insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
-
-      user_currency ->
-        user_currency
-        |> UserCurrency.update_changeset(%{amount: max(user_currency.amount + amount, 0)})
-        |> Repo.update()
+        insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
     end
   end
+
+  def get_user_currency(user_id, currency_id),
+    do:
+      Repo.one(
+        from(uc in UserCurrency,
+          where: uc.user_id == ^user_id and uc.currency_id == ^currency_id
+        )
+      )
 
   defp insert_user_currency(attrs) do
     %UserCurrency{}
