@@ -82,8 +82,8 @@ Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scroll
 # will be equal to the index of its rules in the list (1-based).
 
 rules = [
-  %{base_level: 5, scaler: 1.5, possible_factions: ["Araban", "Kaline"], length: 1}
-  # %{base_level: 50, scaler: 1.7, possible_factions: ["Merliot", "Otobi"], length: 20}
+  %{base_level: 5, scaler: 1.2, possible_factions: ["Araban", "Kaline"], length: 10},
+  %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
@@ -112,7 +112,7 @@ units =
 
     possible_characters = Units.all_characters_from_factions(campaign_rules.possible_factions)
 
-    agg_difficulty = (base_level * (level_scaler |> Math.pow(level_index))) |> round()
+    agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
 
     units =
       Enum.map(0..4, fn slot ->
