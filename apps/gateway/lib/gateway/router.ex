@@ -7,7 +7,6 @@ defmodule Gateway.Router do
 
   scope "/champions", Gateway.Champions do
     pipe_through :api
-    end
   end
 
   # Other scopes may use custom stacks.
