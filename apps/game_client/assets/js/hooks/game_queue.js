@@ -19,7 +19,7 @@ function getQueueSocketUrl(player_id) {
     let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     // TODO Remove hardcoded host
     let host = '//localhost:4000'
-    let path = '/play'
+    let path = '/join'
 
-    return `${protocol}${host}${path}/${player_id}`
+    return `${protocol}${host}${path}/${player_id}/muflus`
 }
