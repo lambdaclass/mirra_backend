@@ -190,14 +190,22 @@ defmodule Arena.GameUpdater do
 
     now = System.monotonic_time(:millisecond)
 
-     players =
+    players =
       Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
         player =
-          case (player.aditional_info.last_natural_healing_update + player.aditional_info.natural_healing_interval < now and
-            player.aditional_info.last_damage_received + player.aditional_info.natural_healing_damage_interval < now) do
+          case player.aditional_info.last_natural_healing_update +
+                 player.aditional_info.natural_healing_interval < now and
+                 player.aditional_info.last_damage_received +
+                   player.aditional_info.natural_healing_damage_interval < now do
             true ->
               player
-              |> put_in([:aditional_info, :health], min(floor(player.aditional_info.health + player.aditional_info.base_health * 0.1), player.aditional_info.base_health))
+              |> put_in(
+                [:aditional_info, :health],
+                min(
+                  floor(player.aditional_info.health + player.aditional_info.base_health * 0.1),
+                  player.aditional_info.base_health
+                )
+              )
               |> put_in([:aditional_info, :last_natural_healing_update], now)
 
             _ ->
