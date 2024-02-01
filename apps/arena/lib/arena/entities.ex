@@ -78,6 +78,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def make_circular_area(id, position, range) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :circle,
+      name: "BashDamageArea",
+      position: position,
+      radius: range,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
      %Arena.Serialization.Player{

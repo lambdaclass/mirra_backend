@@ -70,7 +70,8 @@ defmodule Arena.GameUpdater do
                                                           {projectiles_acc, players_acc} ->
         collision_player_id =
           Enum.find(projectile.collides_with, fn entity_id ->
-            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and Player.is_alive?(players, entity_id)
+            entity_id != projectile.aditional_info.owner_id and Map.has_key?(players, entity_id) and
+              Player.alive?(players, entity_id)
           end)
 
         case Map.get(players, collision_player_id) do
@@ -81,7 +82,7 @@ defmodule Arena.GameUpdater do
             player = Player.change_health(player, projectile.aditional_info.damage)
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
-            unless Player.is_alive?(player) do
+            unless Player.alive?(player) do
               send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
             end
 
@@ -350,16 +351,20 @@ defmodule Arena.GameUpdater do
   # Skills mechaninc
   ##########################
 
-  defp handle_attack(player_id, skill_key, game_state) do
-    case Map.get(game_state.players, player_id) do
-      %{aditional_info: %{skills: %{^skill_key => skill}}} = player
-      when player.aditional_info.available_stamina > 0 ->
+  def handle_attack(player_id, skill_key, game_state) do
+    player = Map.get(game_state.players, player_id)
+
+    case Player.get_skill_if_usable(player, skill_key) do
+      false ->
+        game_state
+
+      skill ->
         player =
           add_skill_action(player, skill, skill_key)
           |> Player.change_stamina(-1)
 
         player =
-          case player.aditional_info.recharging_stamina do
+          case Player.stamina_recharging?(player) do
             false ->
               Process.send_after(
                 self(),
@@ -379,31 +384,14 @@ defmodule Arena.GameUpdater do
         Enum.reduce(skill.mechanics, game_state, fn mechanic, game_state_acc ->
           do_mechanic(mechanic, player, game_state_acc)
         end)
-
-      _ ->
-        game_state
     end
   end
 
   defp do_mechanic({:hit, hit}, player, game_state) do
-    circular_damage_area = %{
-      id: player.id,
-      category: :obstacle,
-      shape: :circle,
-      name: "BashDamageArea",
-      position: player.position,
-      radius: hit.range,
-      vertices: [],
-      speed: 0.0,
-      direction: %{
-        x: 0.0,
-        y: 0.0
-      },
-      is_moving: false
-    }
+    circular_damage_area = Entities.make_circular_area(player.id, player.position, hit.range)
 
     alive_players =
-      Map.filter(game_state.players, fn {_id, player} -> Player.is_alive?(player) end)
+      Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
 
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
@@ -412,7 +400,7 @@ defmodule Arena.GameUpdater do
           Map.get(players_acc, player_id)
           |> Player.change_health(hit.damage)
 
-        unless Player.is_alive?(target_player) do
+        unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
         end
 
@@ -576,7 +564,7 @@ defmodule Arena.GameUpdater do
 
   # Check if game has ended
   defp check_game_ended(players, last_standing_players) do
-    players_alive = Enum.filter(players, &Player.is_alive?/1)
+    players_alive = Enum.filter(players, &Player.alive?/1)
 
     case players_alive do
       ^players ->
