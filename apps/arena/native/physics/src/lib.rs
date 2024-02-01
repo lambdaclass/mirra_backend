@@ -3,9 +3,8 @@
 mod collision_detection;
 mod map;
 
-use std::collections::HashMap;
-
 use crate::map::{Category, Direction, Entity, Position};
+use std::collections::HashMap;
 
 #[rustler::nif()]
 fn add(a: i64, b: i64) -> i64 {
@@ -67,6 +66,36 @@ fn add_angle_to_direction(direction: Direction, angle: f32) -> Direction {
     }
 }
 
+#[rustler::nif()]
+fn calculate_triangle_vertices(
+    starting_point: Position,
+    direction: Direction,
+    range: f32,
+    angle: f32,
+) -> Vec<Position> {
+    let direction_angle = direction.y.atan2(direction.x);
+    let angle_x = (angle.to_radians() + direction_angle).cos();
+    let angle_y = (angle.to_radians() + direction_angle).sin();
+    let result_x = direction.x + angle_x;
+    let result_y = direction.y + angle_y;
+    let len_result = (result_x.powi(2) + result_y.powi(2)).sqrt();
+    let direction = Direction {
+        x: result_x / len_result,
+        y: result_y / len_result,
+    };
+
+    let vertix_1 = Position {
+        x: starting_point.x + direction.x * range,
+        y: starting_point.y + direction.y * range,
+    };
+    let vertix_2 = Position {
+        x: starting_point.x + direction.x * range,
+        y: starting_point.y - direction.y * range,
+    };
+
+    vec![starting_point, vertix_1, vertix_2]
+}
+
 // Function that receives a Position A and a Position B and returns the Direction from Position A to Position B
 #[rustler::nif()]
 fn get_direction_from_positions(position_a: Position, position_b: Position) -> Direction {
@@ -87,6 +116,7 @@ rustler::init!(
         move_entities,
         move_entity,
         add_angle_to_direction,
+        calculate_triangle_vertices,
         get_direction_from_positions
     ]
 );

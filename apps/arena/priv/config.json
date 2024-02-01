@@ -28,10 +28,25 @@
       "is_passive": false,
       "mechanics": [
         {
-          "hit": {
+          "circle_hit": {
             "damage": 15,
             "range": 1000.0,
-            "cone_angle": 360,
+            "on_hit_effects": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "hit",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "cone_hit": {
+            "damage": 15,
+            "range": 1000.0,
+            "angle": 45.0,
             "on_hit_effects": []
           }
         }
@@ -89,7 +104,7 @@
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "skills": {
-        "1": "circle_bash",
+        "1": "hit",
         "2": "dash"
       }
     },

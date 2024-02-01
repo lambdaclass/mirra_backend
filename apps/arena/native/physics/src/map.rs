@@ -89,27 +89,36 @@ impl Entity {
                 continue;
             }
 
-            match entity.shape {
-                Shape::Circle => {
+            let self_shape = self.shape.clone();
+            let entity_shape = entity.shape.clone();
+
+            match (self_shape, entity_shape) {
+                (Shape::Circle, Shape::Circle) => {
                     if circle_circle_collision(self, &entity) {
                         result.push(entity.id);
                     }
                 }
-                Shape::Polygon => {
+                (Shape::Circle, Shape::Polygon) => {
                     if circle_polygon_collision(self, &entity) {
                         result.push(entity.id);
                     }
                 }
-                Shape::Point => {
+                (Shape::Point, Shape::Circle) => {
                     if point_circle_collision(self, &entity) {
                         result.push(entity.id);
                     }
                 }
-                Shape::Line => {
+                (Shape::Line, Shape::Circle) => {
                     if line_circle_collision(self, &entity) {
                         result.push(entity.id);
                     }
                 }
+                (Shape::Polygon, Shape::Circle) => {
+                    if circle_polygon_collision(&entity, self) {
+                        result.push(entity.id);
+                    }
+                }
+                _ => todo!("Collision matching not implemented"),
             }
         }
 
