@@ -13,4 +13,7 @@ defmodule Physics do
   def move_entities(_entities, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
   def move_entity(_entity, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
   def add_angle_to_direction(_direction, _angle), do: :erlang.nif_error(:nif_not_loaded)
+
+  def get_direction_from_positions(_position_a, _position_b),
+    do: :erlang.nif_error(:nif_not_loaded)
 end
