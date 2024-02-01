@@ -5,7 +5,7 @@ mod map;
 
 use std::collections::HashMap;
 
-use crate::map::{Category, Direction, Entity};
+use crate::map::{Category, Direction, Entity, Position};
 
 #[rustler::nif()]
 fn add(a: i64, b: i64) -> i64 {
@@ -67,6 +67,18 @@ fn add_angle_to_direction(direction: Direction, angle: f32) -> Direction {
     }
 }
 
+// Function that receives a Position A and a Position B and returns the Direction from Position A to Position B
+#[rustler::nif()]
+fn get_direction_from_positions(position_a: Position, position_b: Position) -> Direction {
+    let x = position_b.x - position_a.x;
+    let y = position_b.y - position_a.y;
+    let len = (x.powi(2) + y.powi(2)).sqrt();
+    Direction {
+        x: x / len,
+        y: y / len,
+    }
+}
+
 rustler::init!(
     "Elixir.Physics",
     [
@@ -74,6 +86,7 @@ rustler::init!(
         check_collisions,
         move_entities,
         move_entity,
-        add_angle_to_direction
+        add_angle_to_direction,
+        get_direction_from_positions
     ]
 );
