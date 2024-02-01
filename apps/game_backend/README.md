@@ -1,6 +1,16 @@
 # GameBackend
 
-**TODO: Add description**
+Application for the Game Backend. Implements persistance layer for:
+
+- Campaigns
+  - Levels
+- Items
+  - Item Templates
+- Units
+  - Characters
+- Users
+  - Currencies
+
 
 ## Installation
 
