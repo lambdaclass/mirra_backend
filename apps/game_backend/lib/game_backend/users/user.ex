@@ -25,6 +25,7 @@ defmodule GameBackend.Users.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:game_id, :username])
+    |> unique_constraint([:game_id, :username])
     |> validate_required([:game_id, :username])
   end
 end

@@ -45,47 +45,52 @@ defmodule Gateway.ChampionsSocketHandler do
       response =
         case request do
           %GetUser{user_id: user_id} ->
-            {:user, Users.get_user(user_id)}
+            prepare_response(Users.get_user(user_id), :user)
 
           %GetUserByUsername{username: username} ->
-            {:user, Users.get_user_by_username(username)}
+            prepare_response(Users.get_user_by_username(username), :user)
 
           %CreateUser{username: username} ->
-            {:user, Users.register(username)}
+            prepare_response(Users.register(username), :user)
 
           %GetCampaigns{user_id: _user_id} ->
-            {:campaigns, %{campaigns: Campaigns.get_campaigns() |> Enum.map(&%{levels: &1})}}
+            case Campaigns.get_campaigns() do
+              {:error, reason} -> {:error, reason}
+              campaigns -> {:campaigns, %{campaigns: Enum.map(campaigns, &%{levels: &1})}}
+            end
 
           %GetCampaign{user_id: _user_id, campaign_number: campaign_number} ->
-            {:campaign, %{levels: Campaigns.get_campaign(campaign_number)}}
+            prepare_response(Campaigns.get_campaign(campaign_number), :campaign)
 
           %GetLevel{user_id: _user_id, level_id: level_id} ->
-            {:level, Campaigns.get_level(level_id)}
+            prepare_response(Campaigns.get_level(level_id), :level)
 
           %FightLevel{user_id: user_id, level_id: level_id} ->
-            {:battle_result, %{result: Battle.fight_level(user_id, level_id) |> Atom.to_string()}}
+            case Battle.fight_level(user_id, level_id) do
+              {:error, reason} -> {:error, reason}
+              battle_result -> {:battle_result, Atom.to_string(battle_result)}
+            end
 
           %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot} ->
-            {:unit, Units.select_unit(user_id, unit_id, slot)}
+            prepare_response(Units.select_unit(user_id, unit_id, slot), :unit)
 
           %UnselectUnit{user_id: user_id, unit_id: unit_id} ->
-            {:unit, Units.unselect_unit(user_id, unit_id)}
+            prepare_response(Units.unselect_unit(user_id, unit_id), :unit)
 
           %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id} ->
-            {:item, Items.equip_item(user_id, item_id, unit_id)}
+            prepare_response(Items.equip_item(user_id, item_id, unit_id), :item)
 
           %UnequipItem{user_id: user_id, item_id: item_id} ->
-            {:item, Items.unequip_item(user_id, item_id)}
+            prepare_response(Items.unequip_item(user_id, item_id), :item)
 
           %GetItem{user_id: _user_id, item_id: item_id} ->
-            {:item, Items.get_item(item_id)}
+            prepare_response(Items.get_item(item_id), :item)
 
           %LevelUpItem{user_id: user_id, item_id: item_id} ->
-            {:ok, item} = Items.level_up(user_id, item_id)
-            {:item, item}
+            prepare_response(Items.level_up(user_id, item_id), :item)
 
           unknown_request ->
-            Logger.error(
+            Logger.warning(
               "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
             )
         end
@@ -96,7 +101,7 @@ defmodule Gateway.ChampionsSocketHandler do
       {:reply, {:binary, encode}, state}
     else
       unknown_request ->
-        Logger.error(
+        Logger.warning(
           "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
         )
 
@@ -109,6 +114,13 @@ defmodule Gateway.ChampionsSocketHandler do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:text, "error"}, state}
   end
+
+  defp prepare_response({:error, reason}, response_type) when is_atom(reason),
+    do: prepare_response({:error, Atom.to_string(reason)}, response_type)
+
+  defp prepare_response({:error, reason}, _response_type), do: {:error, %{reason: reason}}
+  defp prepare_response({:ok, result}, response_type), do: {response_type, result}
+  defp prepare_response(result, response_type), do: {response_type, result}
 
   @impl true
   def websocket_info(message, state) do

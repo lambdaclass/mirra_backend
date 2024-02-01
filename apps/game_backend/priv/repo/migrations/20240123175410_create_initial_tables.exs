@@ -64,10 +64,10 @@ defmodule GameBackend.Repo.Migrations.CreateInitialTables do
       timestamps()
     end
 
-    create unique_index(:currencies, [:name, :game_id])
-    create unique_index(:item_templates, [:name, :game_id])
-    create unique_index(:characters, [:name, :game_id])
-    create unique_index(:users, [:username, :game_id])
-    create unique_index(:levels, [:level_number, :campaign, :game_id])
+    create unique_index(:currencies, [:game_id, :name])
+    create unique_index(:item_templates, [:game_id, :name])
+    create unique_index(:characters, [:game_id, :name])
+    create unique_index(:users, [:game_id, :username])
+    create unique_index(:levels, [:game_id, :level_number, :campaign])
   end
 end

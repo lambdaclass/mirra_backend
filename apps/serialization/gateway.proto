@@ -92,6 +92,7 @@ syntax = "proto3";
       Campaign campaign = 5;
       Level level = 6;
       BattleResult battle_result = 7;
+      Error error = 8;
     }
   }
   
@@ -162,4 +163,8 @@ syntax = "proto3";
 
   message BattleResult {
     string result = 1;
+  }
+
+  message Error {
+    string reason = 1;
   }

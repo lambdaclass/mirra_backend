@@ -3,6 +3,7 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias Ecto.Changeset
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
   alias GameBackend.Units
@@ -16,14 +17,25 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
-    {:ok, user} = Users.register_user(%{username: username, game_id: @game_id})
+    case Users.register_user(%{username: username, game_id: @game_id}) do
+      {:ok, user} ->
+        # For testing purposes, we assign some things to our user.
+        add_sample_units(user)
+        add_sample_items(user)
+        add_sample_currencies(user)
 
-    # For testing purposes, we assign some things to our user.
-    add_sample_units(user)
-    add_sample_items(user)
-    add_sample_currencies(user)
+        Users.get_user(user.id)
 
-    Users.get_user(user.id)
+      {:error, changeset} ->
+        [[first_error | _other_errors] | _other_fields_errors] =
+          Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end) |> Map.values()
+
+        case first_error do
+          "has already been taken" -> {:error, :username_taken}
+          "can't be blank" -> {:error, :missing_fields}
+          _ -> {:error, :unkown}
+        end
+    end
   end
 
   @doc """
