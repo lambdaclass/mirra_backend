@@ -10,6 +10,7 @@
   packages = [
     # OS-agnostic packages
     pkgs.gnumake
+    pkgs.protobuf
 
   ] ++ lib.optionals pkgs.stdenv.isLinux [ 
     # Packages only for Linux
@@ -23,7 +24,7 @@
   languages = {
     elixir = {
       enable = true;
-      package = pkgs.beam.packages.erlangR26.elixir_1_15;
+      package = pkgs.beam.packages.erlangR26.elixir_1_16;
     };
 
     erlang = {
