@@ -2,8 +2,14 @@ defmodule Arena.Game.Player do
   @moduledoc """
   Module for interacting with Player entity
   """
+  def remove_action(player, action_name) do
+    update_in(player, [:aditional_info, :current_actions], fn actions ->
+      Enum.reject(actions, fn action -> action.name == action_name end)
+    end)
+  end
+
   def change_health(player, health_change) do
-    Map.update(player, :aditional_info, fn info ->
+    Map.update!(player, :aditional_info, fn info ->
       %{info |
         health: max(info.health - health_change, 0),
         last_damage_received: System.monotonic_time(:millisecond)
@@ -13,6 +19,24 @@ defmodule Arena.Game.Player do
 
   def change_health(players, player_id, health_change) do
     Map.update!(players, player_id, fn player -> change_health(player, health_change) end)
+  end
+
+  def maybe_trigger_natural_heal(player) do
+    now = System.monotonic_time(:millisecond)
+    heal_interval? = player.aditional_info.last_natural_healing_update + player.aditional_info.natural_healing_interval < now
+    damage_interval? = player.aditional_info.last_damage_received + player.aditional_info.natural_healing_damage_interval < now
+    case heal_interval? and damage_interval? do
+      true ->
+        heal_amount = floor(player.aditional_info.base_health * 0.1)
+        Map.update!(player, :aditional_info, fn info ->
+          %{info |
+            health: min(info.health + heal_amount, info.base_health),
+            last_natural_healing_update: now
+          }
+        end)
+      false ->
+        player
+    end
   end
 
   def alive?(player) do

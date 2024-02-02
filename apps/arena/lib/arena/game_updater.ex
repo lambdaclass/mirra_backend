@@ -97,16 +97,6 @@ defmodule Arena.GameUpdater do
         end
       end)
 
-    # Resolve collisions between projectiles and the external wall
-    # projectiles = Enum.reduce(projectiles, projectiles, fn {projectile_id, projectile}, projectiles_acc ->
-    #     case Enum.member?(projectile.collide_with, game_state.external_wall.id) do
-    #       false ->
-    #         projectile = projectile |> update_in([:aditional_info, :status], fn _ -> :EXPLODED end)
-    #         Map.put(projectiles_acc, projectile_id, projectile)
-    #       _ -> projectiles_acc
-    #     end
-    #   end)
-
     players = apply_zone_damage(players, game_state.zone)
 
     game_state =
@@ -121,25 +111,18 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:remove_skill_action, player_id, skill_action}, state) do
-    player = Map.get(state.game_state.players, player_id)
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.remove_action(skill_action)
 
-    actions =
-      player.aditional_info.current_actions
-      |> Enum.reject(fn action -> action.action == skill_action end)
-
-    state =
-      put_in(
-        state,
-        [:game_state, :players, player_id, :aditional_info, :current_actions],
-        actions
-      )
-
+    state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
 
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player = Map.get(state.game_state.players, player_id)
 
+    ## FIXME
     player =
       player
       |> Map.put(:is_moving, false)
@@ -156,43 +139,19 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:cone_hit, cone_hit, player}, state) do
-    cone_area = %{
-      id: player.id,
-      category: :obstacle,
-      shape: :polygon,
-      name: "BashDamageArea",
-      position: %{x: 0.0, y: 0.0},
-      radius: 0.0,
-      vertices:
-        Physics.calculate_triangle_vertices(
-          player.position,
-          player.direction,
-          cone_hit.range,
-          cone_hit.angle
-        ),
-      speed: 0.0,
-      direction: %{
-        x: 0.0,
-        y: 0.0
-      },
-      is_moving: false
-    }
+    triangle_points = Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle)
+    cone_area = Entities.make_polygon(player.id, triangle_points)
 
-    alive_players =
-      Map.filter(state.game_state.players, fn {_id, player} ->
-        player.aditional_info.health > 0
-      end)
+    alive_players = Map.filter(state.game_state.players, &Player.alive?/1)
 
     players =
       Physics.check_collisions(cone_area, alive_players)
       |> Enum.reduce(state.game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health ->
-            max(health - cone_hit.damage, 0)
-          end)
+          |> Player.change_health(cone_hit.damage)
 
-        if target_player.aditional_info.health == 0 do
+        unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
         end
 
@@ -232,30 +191,9 @@ defmodule Arena.GameUpdater do
   def handle_info(:natural_healing, state) do
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
 
-    now = System.monotonic_time(:millisecond)
-
     players =
       Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
-        player =
-          case player.aditional_info.last_natural_healing_update +
-                 player.aditional_info.natural_healing_interval < now and
-                 player.aditional_info.last_damage_received +
-                   player.aditional_info.natural_healing_damage_interval < now do
-            true ->
-              player
-              |> put_in(
-                [:aditional_info, :health],
-                min(
-                  floor(player.aditional_info.health + player.aditional_info.base_health * 0.1),
-                  player.aditional_info.base_health
-                )
-              )
-              |> put_in([:aditional_info, :last_natural_healing_update], now)
-
-            _ ->
-              player
-          end
-
+        player = Player.maybe_trigger_natural_heal(player)
         Map.put(players_acc, player_id, player)
       end)
 
