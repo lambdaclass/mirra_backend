@@ -65,6 +65,20 @@
       ]
     },
     {
+      "name": "repeated_shot",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "repeated_shoot": {
+            "interval_ms": 250,
+            "amount": 18
+          }
+        }
+      ]
+    },
+    {
       "name": "multishot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
@@ -124,7 +138,7 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "multishot",
-        "2": "multishot",
+        "2": "repeated_shot",
         "3": "dash"
       }
     }

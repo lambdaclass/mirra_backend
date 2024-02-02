@@ -335,6 +335,36 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:repeated_shoot, _player_id, _interval_ms, 0}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:repeated_shoot, player_id, interval_ms, amount}, state) do
+    Process.send_after(self(), {:repeated_shoot, player_id, interval_ms, amount - 1}, interval_ms)
+
+    player = get_in(state, [:game_state, :players, player_id])
+    last_id = state.game_state.last_id + 1
+
+    projectiles =
+      state.game_state.projectiles
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(
+          last_id,
+          player.position,
+          player.direction,
+          player.id
+        )
+      )
+
+    state =
+      state
+      |> put_in([:game_state, :last_id], last_id)
+      |> put_in([:game_state, :projectiles], projectiles)
+
+    {:noreply, state}
+  end
+
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -545,6 +575,32 @@ defmodule Arena.GameUpdater do
     players = Map.put(game_state.players, player.id, player)
 
     %{game_state | players: players}
+  end
+
+  defp do_mechanic({:repeated_shoot, repeated_shoot}, player, game_state) do
+    Process.send_after(
+      self(),
+      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1},
+      repeated_shoot.interval_ms
+    )
+
+    last_id = game_state.last_id + 1
+
+    projectiles =
+      game_state.projectiles
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(
+          last_id,
+          player.position,
+          player.direction,
+          player.id
+        )
+      )
+
+    game_state
+    |> Map.put(:last_id, last_id)
+    |> Map.put(:projectiles, projectiles)
   end
 
   defp do_mechanic({:multi_shoot, multishot}, player, game_state) do
