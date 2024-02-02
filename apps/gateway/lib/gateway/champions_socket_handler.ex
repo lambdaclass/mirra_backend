@@ -56,8 +56,13 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   @impl true
+  def websocket_handle(:ping, state) do
+    {:reply, :pong, state}
+  end
+
+  @impl true
   def websocket_handle(message, state) do
-    Logger.info("You should not be here: #{inspect(message)}")
+    Logger.info("[Handler.websocket_handle] You should not be here: #{inspect(message)}")
     {:reply, {:text, "error"}, state}
   end
 
@@ -127,7 +132,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   @impl true
   def websocket_info(message, state) do
-    Logger.info("You should not be here: #{inspect(message)}")
+    Logger.info("[Handler.websocket_info] You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 end
