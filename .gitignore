@@ -26,4 +26,3 @@ apps/*/_build/*
 
 # Devenv build folder
 .devenv*
-/devenv.lock

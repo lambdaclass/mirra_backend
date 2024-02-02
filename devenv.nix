@@ -8,19 +8,23 @@
   };
 
   packages = [
+    # OS-agnostic packages
     pkgs.gnumake
-    #pkgs.rustc
-    #pkgs.cargo
-  ] ++ lib.optionals pkgs.stdenv.isLinux [ # Packages only for Linux
+    pkgs.protobuf
+
+  ] ++ lib.optionals pkgs.stdenv.isLinux [ 
+    # Packages only for Linux
     pkgs.inotify-tools
-  ] ++ lib.optionals pkgs.stdenv.isDarwin [ #Packages only for MacOS
+
+  ] ++ lib.optionals pkgs.stdenv.isDarwin [ 
+    #Packages only for MacOS
 
   ];
 
   languages = {
     elixir = {
       enable = true;
-      package = pkgs.beam.packages.erlangR26.elixir_1_15;
+      package = pkgs.beam.packages.erlangR26.elixir_1_16;
     };
 
     erlang = {
@@ -31,7 +35,7 @@
       enable = true;
       components = [ "rustc" "cargo" "clippy" "rustfmt" "rust-analyzer" ];
     };
-   
+    
     javascript = {
       enable = true;
     };

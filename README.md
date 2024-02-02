@@ -4,8 +4,9 @@ Mirra Backend is an umbrella project that contains several apps within it.
 The objective is to split the project into multiple applications (modules) based on their responsibilities. This will allow us to add decoupled modules that can be used together without having a dependency between them
 
 To start all applications, run the following command:
+
 ```
-make start
+devenv up
 ```
 
 Then navigate to the following link to start a game: http://localhost:3000/board/1
