@@ -437,14 +437,14 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp do_mechanic({:hit, hit}, player, game_state) do
+  defp do_mechanic({:circle_hit, circle_hit}, player, game_state) do
     circular_damage_area = %{
       id: player.id,
       category: :obstacle,
       shape: :circle,
       name: "BashDamageArea",
       position: player.position,
-      radius: hit.range,
+      radius: circle_hit.range,
       vertices: [],
       speed: 0.0,
       direction: %{
@@ -464,8 +464,55 @@ defmodule Arena.GameUpdater do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health -> max(health - hit.damage, 0) end)
+          |> update_in([:aditional_info, :health], fn health ->
+            max(health - circle_hit.damage, 0)
+          end)
           |> put_in([:aditional_info, :last_damage_received], now)
+
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    %{game_state | players: players}
+  end
+
+  defp do_mechanic({:cone_hit, cone_hit}, player, game_state) do
+    cone_area = %{
+      id: player.id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices:
+        Physics.calculate_triangle_vertices(
+          player.position,
+          player.direction,
+          cone_hit.range,
+          cone_hit.angle
+        ),
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+
+    alive_players =
+      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
+
+    players =
+      Physics.check_collisions(cone_area, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        target_player =
+          Map.get(players_acc, player_id)
+          |> update_in([:aditional_info, :health], fn health ->
+            max(health - cone_hit.damage, 0)
+          end)
 
         if target_player.aditional_info.health == 0 do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -601,20 +648,39 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
-    Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
-      last_id = new_game.last_id + 1
+    {game, _} =
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
+                                                                         character_name,
+                                                                         _from_pid},
+                                                                        {new_game, positions} ->
+        last_id = new_game.last_id + 1
+        {pos, positions} = get_next_position(positions)
+        direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
-      players =
-        new_game.players
-        |> Map.put(last_id, Entities.new_player(last_id, character_name, config, now))
+        players =
+          new_game.players
+          |> Map.put(
+            last_id,
+            Entities.new_player(last_id, character_name, pos, direction, config, now)
+          )
 
-      new_game
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:players, players)
-      |> Map.put(:killfeed, [])
-      |> put_in([:client_to_player_map, client_id], last_id)
-      |> put_in([:player_timestamps, last_id], 0)
-    end)
+        new_game =
+          new_game
+          |> Map.put(:last_id, last_id)
+          |> Map.put(:players, players)
+          |> Map.put(:killfeed, [])
+          |> put_in([:client_to_player_map, client_id], last_id)
+          |> put_in([:player_timestamps, last_id], 0)
+
+        {new_game, positions}
+      end)
+
+    game
+  end
+
+  defp get_next_position([pos | rest]) do
+    positions = rest ++ [pos]
+    {pos, positions}
   end
 
   # Check entities collisiona
