@@ -4,7 +4,7 @@ defmodule Arena.Entities do
   """
   alias Arena.Configuration
 
-  def new_player(id, character_name, position, direction, config) do
+  def new_player(id, character_name, position, direction, config, now) do
     character = Configuration.get_character_config(character_name, config)
 
     %{
@@ -20,6 +20,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         health: character.base_health,
+        base_health: character.base_health,
         skills: character.skills,
         current_actions: [],
         kill_count: 0,
@@ -27,6 +28,10 @@ defmodule Arena.Entities do
         max_stamina: character.base_stamina,
         stamina_interval: character.stamina_interval,
         recharging_stamina: false,
+        last_natural_healing_update: now,
+        natural_healing_interval: character.natural_healing_interval,
+        last_damage_received: now,
+        natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name
       }
     }

@@ -15,6 +15,8 @@ defmodule Arena.GameUpdater do
   @check_game_ended_interval_ms 1_000
   ## Time to wait between a game ended detected and shutting down this process
   @game_ended_shutdown_wait_ms 10_000
+  ## Time between natural healing intervals
+  @natural_healing_interval_ms 300
 
   ##########################
   # API
@@ -45,6 +47,7 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :update_game, 1_000)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
@@ -52,6 +55,8 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
+
+    now = System.monotonic_time(:millisecond)
 
     entities_to_collide = Map.merge(game_state.players, game_state.projectiles)
 
@@ -79,7 +84,11 @@ defmodule Arena.GameUpdater do
 
           player ->
             health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
-            player = put_in(player, [:aditional_info, :health], health)
+
+            player =
+              put_in(player, [:aditional_info, :health], health)
+              |> put_in([:aditional_info, :last_damage_received], now)
+
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
             if player.aditional_info.health == 0 do
@@ -151,6 +160,55 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:cone_hit, cone_hit, player}, state) do
+    cone_area = %{
+      id: player.id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices:
+        Physics.calculate_triangle_vertices(
+          player.position,
+          player.direction,
+          cone_hit.range,
+          cone_hit.angle
+        ),
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+
+    alive_players =
+      Map.filter(state.game_state.players, fn {_id, player} ->
+        player.aditional_info.health > 0
+      end)
+
+    players =
+      Physics.check_collisions(cone_area, alive_players)
+      |> Enum.reduce(state.game_state.players, fn player_id, players_acc ->
+        target_player =
+          Map.get(players_acc, player_id)
+          |> update_in([:aditional_info, :health], fn health ->
+            max(health - cone_hit.damage, 0)
+          end)
+
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    state = %{state | game_state: %{state.game_state | players: players}}
+
+    {:noreply, state}
+  end
+
   # End game
   def handle_info(:game_ended, state) do
     {:stop, :normal, state}
@@ -171,6 +229,42 @@ defmodule Arena.GameUpdater do
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
     end
+
+    {:noreply, state}
+  end
+
+  # Natural healing
+  def handle_info(:natural_healing, state) do
+    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
+
+    now = System.monotonic_time(:millisecond)
+
+    players =
+      Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
+        player =
+          case player.aditional_info.last_natural_healing_update +
+                 player.aditional_info.natural_healing_interval < now and
+                 player.aditional_info.last_damage_received +
+                   player.aditional_info.natural_healing_damage_interval < now do
+            true ->
+              player
+              |> put_in(
+                [:aditional_info, :health],
+                min(
+                  floor(player.aditional_info.health + player.aditional_info.base_health * 0.1),
+                  player.aditional_info.base_health
+                )
+              )
+              |> put_in([:aditional_info, :last_natural_healing_update], now)
+
+            _ ->
+              player
+          end
+
+        Map.put(players_acc, player_id, player)
+      end)
+
+    state = put_in(state, [:game_state, :players], players)
 
     {:noreply, state}
   end
@@ -202,7 +296,6 @@ defmodule Arena.GameUpdater do
   def handle_info({:to_killfeed, killer_id, victim_id}, state) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-
     {:noreply, state}
   end
 
@@ -440,6 +533,8 @@ defmodule Arena.GameUpdater do
       is_moving: false
     }
 
+    now = System.monotonic_time(:millisecond)
+
     alive_players =
       Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
 
@@ -451,6 +546,7 @@ defmodule Arena.GameUpdater do
           |> update_in([:aditional_info, :health], fn health ->
             max(health - circle_hit.damage, 0)
           end)
+          |> put_in([:aditional_info, :last_damage_received], now)
 
         if target_player.aditional_info.health == 0 do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -463,48 +559,9 @@ defmodule Arena.GameUpdater do
   end
 
   defp do_mechanic({:cone_hit, cone_hit}, player, game_state) do
-    cone_area = %{
-      id: player.id,
-      category: :obstacle,
-      shape: :polygon,
-      name: "BashDamageArea",
-      position: %{x: 0.0, y: 0.0},
-      radius: 0.0,
-      vertices:
-        Physics.calculate_triangle_vertices(
-          player.position,
-          player.direction,
-          cone_hit.range,
-          cone_hit.angle
-        ),
-      speed: 0.0,
-      direction: %{
-        x: 0.0,
-        y: 0.0
-      },
-      is_moving: false
-    }
+    Process.send_after(self(), {:cone_hit, cone_hit, player}, 300)
 
-    alive_players =
-      Map.filter(game_state.players, fn {_id, player} -> player.aditional_info.health > 0 end)
-
-    players =
-      Physics.check_collisions(cone_area, alive_players)
-      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        target_player =
-          Map.get(players_acc, player_id)
-          |> update_in([:aditional_info, :health], fn health ->
-            max(health - cone_hit.damage, 0)
-          end)
-
-        if target_player.aditional_info.health == 0 do
-          send(self(), {:to_killfeed, player.id, target_player.id})
-        end
-
-        Map.put(players_acc, player_id, target_player)
-      end)
-
-    %{game_state | players: players}
+    game_state
   end
 
   defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
@@ -644,6 +701,8 @@ defmodule Arena.GameUpdater do
 
   # Create a new game
   defp new_game(game_id, clients, config) do
+    now = System.monotonic_time(:millisecond)
+
     new_game =
       Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
@@ -668,7 +727,7 @@ defmodule Arena.GameUpdater do
           new_game.players
           |> Map.put(
             last_id,
-            Entities.new_player(last_id, character_name, pos, direction, config)
+            Entities.new_player(last_id, character_name, pos, direction, config, now)
           )
 
         new_game =
@@ -757,11 +816,13 @@ defmodule Arena.GameUpdater do
 
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
+    now = System.monotonic_time(:millisecond)
 
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
       player =
         Map.get(players_acc, player_id)
         |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
+        |> put_in([:aditional_info, :last_damage_received], now)
 
       Map.put(players_acc, player_id, player)
     end)

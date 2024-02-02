@@ -3806,7 +3806,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
     maxStamina: jspb.Message.getFieldWithDefault(msg, 5, 0),
     staminaInterval: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false)
+    rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
+    characterName: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -3871,6 +3872,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setRechargingStamina(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCharacterName(value);
       break;
     default:
       reader.skipField();
@@ -3948,6 +3953,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       7,
+      f
+    );
+  }
+  f = message.getCharacterName();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
       f
     );
   }
@@ -4097,6 +4109,24 @@ proto.Player.prototype.getRechargingStamina = function() {
  */
 proto.Player.prototype.setRechargingStamina = function(value) {
   return jspb.Message.setProto3BooleanField(this, 7, value);
+};
+
+
+/**
+ * optional string character_name = 8;
+ * @return {string}
+ */
+proto.Player.prototype.getCharacterName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setCharacterName = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 
