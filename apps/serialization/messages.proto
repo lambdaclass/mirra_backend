@@ -46,6 +46,7 @@ message GameJoined {
 message Configuration {
   ConfigGame game = 1;
   ConfigMap map = 2;
+  repeated ConfigCharacter characters = 3;
 }
 
 message ConfigGame {
@@ -54,6 +55,22 @@ message ConfigGame {
 
 message ConfigMap {
   float radius = 1;
+}
+
+message ConfigCharacter {
+  string name = 1;
+  bool active = 2;
+  float base_speed = 3;
+  float base_size = 4;
+  uint64 base_health = 5;
+  uint64 max_inventory_size = 6;
+  map<string, ConfigSkill> skills = 7;
+}
+
+message ConfigSkill {
+  string name = 1;
+  uint64 cooldown_ms = 2;
+  uint64 execution_duration_ms = 3;
 }
 
 
@@ -66,6 +83,8 @@ message GameState {
   map<uint64, Entity> projectiles = 3;
   map<uint64, int64> player_timestamps = 4;
   int64 server_timestamp = 5;
+  Zone zone = 6;
+  repeated KillEntry killfeed = 7;
 }
 
 /*
@@ -105,6 +124,10 @@ message Player {
   uint64 health = 1;
   uint64 kill_count = 2;
   repeated PlayerAction current_actions = 3;
+  uint64 available_stamina = 4;
+  uint64 max_stamina = 5;
+  uint64 stamina_interval = 6;
+  bool recharging_stamina = 7;
 }
 
 message Projectile {
@@ -130,7 +153,7 @@ message PlayerAction {
 enum PlayerActionType {
     MOVING = 0;
     STARTING_SKILL_1 = 1;
-    STARTING_SKILL_2 = 2;  
+    STARTING_SKILL_2 = 2;
     EXECUTING_SKILL_1 = 3;
     EXECUTING_SKILL_2 = 4;
 }
@@ -152,4 +175,13 @@ message GameAction {
     Attack attack = 2;
   }
   int64 timestamp = 3;
+}
+
+message Zone {
+  float radius = 1;
+}
+
+message KillEntry {
+  uint64 killer_id = 1;
+  uint64 victim_id = 2;
 }
