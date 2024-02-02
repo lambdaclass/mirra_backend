@@ -103,6 +103,8 @@
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "hit",
         "2": "dash"
@@ -117,6 +119,8 @@
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "multishot",
         "2": "dash"
