@@ -684,11 +684,13 @@ defmodule Arena.GameUpdater do
 
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
+    now = System.monotonic_time(:millisecond)
 
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
       player =
         Map.get(players_acc, player_id)
         |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
+        |> put_in([:aditional_info, :last_damage_received], now)
 
       Map.put(players_acc, player_id, player)
     end)
