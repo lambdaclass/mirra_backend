@@ -17,6 +17,7 @@ defmodule Arena.Serialization.PlayerActionType do
   field(:STARTING_SKILL_2, 2)
   field(:EXECUTING_SKILL_1, 3)
   field(:EXECUTING_SKILL_2, 4)
+  field(:EXECUTING_SKILL_3, 5)
 end
 
 defmodule Arena.Serialization.Direction do

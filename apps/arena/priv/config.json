@@ -107,7 +107,8 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "hit",
-        "2": "dash"
+        "2": "hit",
+        "3": "dash"
       }
     },
     {
@@ -123,7 +124,8 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "multishot",
-        "2": "dash"
+        "2": "multishot",
+        "3": "dash"
       }
     }
   ]
