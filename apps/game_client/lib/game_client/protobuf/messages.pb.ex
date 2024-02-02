@@ -249,6 +249,7 @@ defmodule GameClient.Protobuf.Player do
   field(:max_stamina, 5, type: :uint64, json_name: "maxStamina")
   field(:stamina_interval, 6, type: :uint64, json_name: "staminaInterval")
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
+  field(:character_name, 8, type: :string, json_name: "characterName")
 end
 
 defmodule GameClient.Protobuf.Projectile do
