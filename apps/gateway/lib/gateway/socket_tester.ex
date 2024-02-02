@@ -12,6 +12,7 @@ defmodule SocketTester do
 
   use WebSockex
 
+  require Logger
   alias Gateway.Serialization.WebSocketResponse
 
   alias Gateway.Serialization.{
@@ -169,7 +170,7 @@ defmodule SocketTester do
       )
 
   def handle_frame({:binary, message}, state) do
-    WebSocketResponse.decode(message) |> IO.inspect(label: :response)
+    WebSocketResponse.decode(message) |> inspect(pretty: true) |> Logger.info()
     {:ok, state}
   end
 end

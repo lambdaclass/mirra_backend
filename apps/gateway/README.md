@@ -16,7 +16,7 @@ To create a new user called JohnDoe in Champions of Mirra, you can run the follo
 iex(2)> SocketTester.create_user(pid, "JohnDoe")
 ```
 
-This should print the Gateway's response with the new user.
+This should log the Gateway's response with the new user.
 
 To get all the campaigns available to that user in Champions of Mirra, you can run the following command (replace `user_id` with the user id returned in the previous request):
 
