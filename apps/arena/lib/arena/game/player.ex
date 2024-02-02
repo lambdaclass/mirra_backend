@@ -3,7 +3,12 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
   def change_health(player, health_change) do
-    update_in(player, [:aditional_info, :health], fn health -> max(health - health_change, 0) end)
+    Map.update(player, :aditional_info, fn info ->
+      %{info |
+        health: max(info.health - health_change, 0),
+        last_damage_received: System.monotonic_time(:millisecond)
+      }
+    end)
   end
 
   def change_health(players, player_id, health_change) do

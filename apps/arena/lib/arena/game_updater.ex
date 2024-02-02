@@ -16,6 +16,8 @@ defmodule Arena.GameUpdater do
   @check_game_ended_interval_ms 1_000
   ## Time to wait between a game ended detected and shutting down this process
   @game_ended_shutdown_wait_ms 10_000
+  ## Time between natural healing intervals
+  @natural_healing_interval_ms 300
 
   ##########################
   # API
@@ -46,6 +48,7 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :update_game, 1_000)
     Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
@@ -80,6 +83,7 @@ defmodule Arena.GameUpdater do
 
           player ->
             player = Player.change_health(player, projectile.aditional_info.damage)
+
             projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
             unless Player.alive?(player) do
@@ -151,6 +155,55 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:cone_hit, cone_hit, player}, state) do
+    cone_area = %{
+      id: player.id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices:
+        Physics.calculate_triangle_vertices(
+          player.position,
+          player.direction,
+          cone_hit.range,
+          cone_hit.angle
+        ),
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+
+    alive_players =
+      Map.filter(state.game_state.players, fn {_id, player} ->
+        player.aditional_info.health > 0
+      end)
+
+    players =
+      Physics.check_collisions(cone_area, alive_players)
+      |> Enum.reduce(state.game_state.players, fn player_id, players_acc ->
+        target_player =
+          Map.get(players_acc, player_id)
+          |> update_in([:aditional_info, :health], fn health ->
+            max(health - cone_hit.damage, 0)
+          end)
+
+        if target_player.aditional_info.health == 0 do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    state = %{state | game_state: %{state.game_state | players: players}}
+
+    {:noreply, state}
+  end
+
   # End game
   def handle_info(:game_ended, state) do
     {:stop, :normal, state}
@@ -171,6 +224,42 @@ defmodule Arena.GameUpdater do
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
     end
+
+    {:noreply, state}
+  end
+
+  # Natural healing
+  def handle_info(:natural_healing, state) do
+    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
+
+    now = System.monotonic_time(:millisecond)
+
+    players =
+      Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
+        player =
+          case player.aditional_info.last_natural_healing_update +
+                 player.aditional_info.natural_healing_interval < now and
+                 player.aditional_info.last_damage_received +
+                   player.aditional_info.natural_healing_damage_interval < now do
+            true ->
+              player
+              |> put_in(
+                [:aditional_info, :health],
+                min(
+                  floor(player.aditional_info.health + player.aditional_info.base_health * 0.1),
+                  player.aditional_info.base_health
+                )
+              )
+              |> put_in([:aditional_info, :last_natural_healing_update], now)
+
+            _ ->
+              player
+          end
+
+        Map.put(players_acc, player_id, player)
+      end)
+
+    state = put_in(state, [:game_state, :players], players)
 
     {:noreply, state}
   end
@@ -202,7 +291,6 @@ defmodule Arena.GameUpdater do
   def handle_info({:to_killfeed, killer_id, victim_id}, state) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-
     {:noreply, state}
   end
 
@@ -234,6 +322,36 @@ defmodule Arena.GameUpdater do
         [:game_state, :players, player_id],
         player
       )
+
+    {:noreply, state}
+  end
+
+  def handle_info({:repeated_shoot, _player_id, _interval_ms, 0}, state) do
+    {:noreply, state}
+  end
+
+  def handle_info({:repeated_shoot, player_id, interval_ms, amount}, state) do
+    Process.send_after(self(), {:repeated_shoot, player_id, interval_ms, amount - 1}, interval_ms)
+
+    player = get_in(state, [:game_state, :players, player_id])
+    last_id = state.game_state.last_id + 1
+
+    projectiles =
+      state.game_state.projectiles
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(
+          last_id,
+          player.position,
+          player.direction,
+          player.id
+        )
+      )
+
+    state =
+      state
+      |> put_in([:game_state, :last_id], last_id)
+      |> put_in([:game_state, :projectiles], projectiles)
 
     {:noreply, state}
   end
@@ -387,8 +505,8 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp do_mechanic({:hit, hit}, player, game_state) do
-    circular_damage_area = Entities.make_circular_area(player.id, player.position, hit.range)
+  defp do_mechanic({:circle_hit, circle_hit}, player, game_state) do
+    circular_damage_area = Entities.make_circular_area(player.id, player.position, circle_hit.range)
 
     alive_players =
       Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
@@ -398,7 +516,7 @@ defmodule Arena.GameUpdater do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(hit.damage)
+          |> Player.change_health(circle_hit.damage)
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -408,6 +526,12 @@ defmodule Arena.GameUpdater do
       end)
 
     %{game_state | players: players}
+  end
+
+  defp do_mechanic({:cone_hit, cone_hit}, player, game_state) do
+    Process.send_after(self(), {:cone_hit, cone_hit, player}, 300)
+
+    game_state
   end
 
   defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
@@ -421,6 +545,32 @@ defmodule Arena.GameUpdater do
     players = Map.put(game_state.players, player.id, player)
 
     %{game_state | players: players}
+  end
+
+  defp do_mechanic({:repeated_shoot, repeated_shoot}, player, game_state) do
+    Process.send_after(
+      self(),
+      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1},
+      repeated_shoot.interval_ms
+    )
+
+    last_id = game_state.last_id + 1
+
+    projectiles =
+      game_state.projectiles
+      |> Map.put(
+        last_id,
+        Entities.new_projectile(
+          last_id,
+          player.position,
+          player.direction,
+          player.id
+        )
+      )
+
+    game_state
+    |> Map.put(:last_id, last_id)
+    |> Map.put(:projectiles, projectiles)
   end
 
   defp do_mechanic({:multi_shoot, multishot}, player, game_state) do
@@ -521,6 +671,8 @@ defmodule Arena.GameUpdater do
 
   # Create a new game
   defp new_game(game_id, clients, config) do
+    now = System.monotonic_time(:millisecond)
+
     new_game =
       Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
@@ -532,19 +684,39 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
-    Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
-      last_id = new_game.last_id + 1
+    {game, _} =
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
+                                                                         character_name,
+                                                                         _from_pid},
+                                                                        {new_game, positions} ->
+        last_id = new_game.last_id + 1
+        {pos, positions} = get_next_position(positions)
+        direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
-      players =
-        new_game.players |> Map.put(last_id, Entities.new_player(last_id, character_name, config))
+        players =
+          new_game.players
+          |> Map.put(
+            last_id,
+            Entities.new_player(last_id, character_name, pos, direction, config, now)
+          )
 
-      new_game
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:players, players)
-      |> Map.put(:killfeed, [])
-      |> put_in([:client_to_player_map, client_id], last_id)
-      |> put_in([:player_timestamps, last_id], 0)
-    end)
+        new_game =
+          new_game
+          |> Map.put(:last_id, last_id)
+          |> Map.put(:players, players)
+          |> Map.put(:killfeed, [])
+          |> put_in([:client_to_player_map, client_id], last_id)
+          |> put_in([:player_timestamps, last_id], 0)
+
+        {new_game, positions}
+      end)
+
+    game
+  end
+
+  defp get_next_position([pos | rest]) do
+    positions = rest ++ [pos]
+    {pos, positions}
   end
 
   # Check entities collisiona
