@@ -8,6 +8,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Configuration
   alias Arena.Entities
   alias Arena.Game.Player
+  alias Arena.Game.Skill
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Arena.Utils
   alias Phoenix.PubSub
@@ -138,11 +139,12 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  ## FIXME move to do mechanic
   def handle_info({:cone_hit, cone_hit, player}, state) do
     triangle_points = Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle)
     cone_area = Entities.make_polygon(player.id, triangle_points)
 
-    alive_players = Map.filter(state.game_state.players, &Player.alive?/1)
+    alive_players = Map.filter(state.game_state.players, fn {_id, player} -> Player.alive?(player) end)
 
     players =
       Physics.check_collisions(cone_area, alive_players)
@@ -437,121 +439,8 @@ defmodule Arena.GameUpdater do
         players = Map.put(game_state.players, player_id, player)
         game_state = %{game_state | players: players}
 
-        Enum.reduce(skill.mechanics, game_state, fn mechanic, game_state_acc ->
-          do_mechanic(mechanic, player, game_state_acc)
-        end)
+        Skill.do_mechanic(game_state, player, skill.mechanics)
     end
-  end
-
-  defp do_mechanic({:circle_hit, circle_hit}, player, game_state) do
-    circular_damage_area = Entities.make_circular_area(player.id, player.position, circle_hit.range)
-
-    alive_players =
-      Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
-
-    players =
-      Physics.check_collisions(circular_damage_area, alive_players)
-      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        target_player =
-          Map.get(players_acc, player_id)
-          |> Player.change_health(circle_hit.damage)
-
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, player.id, target_player.id})
-        end
-
-        Map.put(players_acc, player_id, target_player)
-      end)
-
-    %{game_state | players: players}
-  end
-
-  defp do_mechanic({:cone_hit, cone_hit}, player, game_state) do
-    Process.send_after(self(), {:cone_hit, cone_hit, player}, 300)
-
-    game_state
-  end
-
-  defp do_mechanic({:dash, %{speed: speed, duration: duration}}, player, game_state) do
-    Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
-
-    player =
-      player
-      |> Map.put(:is_moving, true)
-      |> Map.put(:speed, speed)
-
-    players = Map.put(game_state.players, player.id, player)
-
-    %{game_state | players: players}
-  end
-
-  defp do_mechanic({:repeated_shoot, repeated_shoot}, player, game_state) do
-    Process.send_after(
-      self(),
-      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1},
-      repeated_shoot.interval_ms
-    )
-
-    last_id = game_state.last_id + 1
-
-    projectiles =
-      game_state.projectiles
-      |> Map.put(
-        last_id,
-        Entities.new_projectile(
-          last_id,
-          player.position,
-          player.direction,
-          player.id
-        )
-      )
-
-    game_state
-    |> Map.put(:last_id, last_id)
-    |> Map.put(:projectiles, projectiles)
-  end
-
-  defp do_mechanic({:multi_shoot, multishot}, player, game_state) do
-    calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
-    |> Enum.reduce(game_state, fn direction, game_state_acc ->
-      last_id = game_state_acc.last_id + 1
-
-      projectiles =
-        game_state_acc.projectiles
-        |> Map.put(
-          last_id,
-          Entities.new_projectile(
-            last_id,
-            player.position,
-            direction,
-            player.id
-          )
-        )
-
-      game_state_acc
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:projectiles, projectiles)
-    end)
-  end
-
-  defp do_mechanic({:simple_shoot, _}, player, game_state) do
-    last_id = game_state.last_id + 1
-
-    projectiles =
-      game_state.projectiles
-      |> Map.put(
-        last_id,
-        Entities.new_projectile(
-          last_id,
-          player.position,
-          player.direction,
-          player.id
-        )
-      )
-
-    game_state
-    |> Map.put(:last_id, last_id)
-    |> Map.put(:projectiles, projectiles)
   end
 
   defp add_or_remove_moving_action(current_actions, direction) do
@@ -582,21 +471,6 @@ defmodule Arena.GameUpdater do
       # "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
       _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
     end
-  end
-
-  defp calculate_angle_directions(amount, angle_between, base_direction) do
-    middle = if rem(amount, 2) == 1, do: [base_direction], else: []
-    side_amount = div(amount, 2)
-    angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
-
-    {add_side, sub_side} =
-      Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
-        add_side_acc = [Physics.add_angle_to_direction(base_direction, angle) | add_side_acc]
-        sub_side_acc = [Physics.add_angle_to_direction(base_direction, -angle) | sub_side_acc]
-        {add_side_acc, sub_side_acc}
-      end)
-
-    Enum.concat([add_side, middle, sub_side])
   end
 
   ##########################

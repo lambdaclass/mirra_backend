@@ -4,7 +4,7 @@ defmodule Arena.Game.Player do
   """
   def remove_action(player, action_name) do
     update_in(player, [:aditional_info, :current_actions], fn actions ->
-      Enum.reject(actions, fn action -> action.name == action_name end)
+      Enum.reject(actions, fn action -> action.action == action_name end)
     end)
   end
 
