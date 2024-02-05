@@ -40,4 +40,14 @@
       enable = true;
     };
   };
+
+  services = {	
+    postgres = {	
+      enable = true;	
+      package = pkgs.postgresql_16;	
+      port = 5432;	
+      listen_addresses = "127.0.0.1";	
+      initialScript = "CREATE USER postgres WITH PASSWORD 'postgres'; ALTER USER postgres WITH SUPERUSER;";
+    };	
+  };
 }

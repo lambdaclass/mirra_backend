@@ -5,7 +5,6 @@ deps:
 	mix deps.get
 
 db: deps
-	docker compose up -d
 	mix ecto.reset
 
 run:
