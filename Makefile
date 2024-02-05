@@ -5,6 +5,11 @@ start:
 	mix deps.get
 	iex -S mix phx.server
 
+purge:
+	rm devenv.lock
+	rm -rf .devenv*
+	rm -rf _build/
+
 format:
 	mix format
 

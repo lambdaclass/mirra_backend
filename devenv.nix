@@ -11,6 +11,8 @@
     # OS-agnostic packages
     pkgs.gnumake
     pkgs.protobuf
+    pkgs.rustc
+    pkgs.cargo
 
   ] ++ lib.optionals pkgs.stdenv.isLinux [ 
     # Packages only for Linux
@@ -31,10 +33,9 @@
       enable = true;
     };
 
-    rust = {
-      enable = true;
-      components = [ "rustc" "cargo" "clippy" "rustfmt" "rust-analyzer" ];
-    };
+    #rust = {
+    #  enable = true;
+    #};
     
     javascript = {
       enable = true;
