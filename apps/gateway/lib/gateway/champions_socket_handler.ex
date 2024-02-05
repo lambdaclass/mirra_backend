@@ -81,8 +81,12 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
-  defp handle(%GetCampaign{user_id: _user_id, campaign_number: campaign_number}),
-    do: Campaigns.get_campaign(campaign_number) |> prepare_response(:campaign)
+  defp handle(%GetCampaign{user_id: _user_id, campaign_number: campaign_number}) do
+    case Campaigns.get_campaign(campaign_number) do
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+      campaign -> prepare_response(%{levels: campaign}, :campaign)
+    end
+  end
 
   defp handle(%GetLevel{user_id: _user_id, level_id: level_id}),
     do: Campaigns.get_level(level_id) |> prepare_response(:level)
