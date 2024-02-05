@@ -6,9 +6,7 @@ start:
 	iex -S mix phx.server
 
 purge:
-	rm devenv.lock
-	rm -rf .devenv*
-	rm -rf _build/
+	rm -rf devenv.lock .devenv .devenv.flake.nix _build/
 
 format:
 	mix format
