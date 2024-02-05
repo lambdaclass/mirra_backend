@@ -38,4 +38,9 @@ defmodule GameBackend.Units.Unit do
   Changeset for when selecting or unselecting a unit.
   """
   def selected_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :slot])
+
+  @doc """
+  Changeset for when leveling up a unit.
+  """
+  def level_up_changeset(unit, attrs), do: cast(unit, attrs, [:unit_level])
 end

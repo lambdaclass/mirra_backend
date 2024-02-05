@@ -51,17 +51,23 @@ defmodule Gateway.Serialization.WebSocketRequest do
     oneof: 0
   )
 
-  field(:equip_item, 10, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
+  field(:level_up_unit, 10,
+    type: Gateway.Serialization.LevelUpUnit,
+    json_name: "levelUpUnit",
+    oneof: 0
+  )
 
-  field(:unequip_item, 11,
+  field(:equip_item, 11, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
+
+  field(:unequip_item, 12,
     type: Gateway.Serialization.UnequipItem,
     json_name: "unequipItem",
     oneof: 0
   )
 
-  field(:get_item, 12, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
+  field(:get_item, 13, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
 
-  field(:level_up_item, 13,
+  field(:level_up_item, 14,
     type: Gateway.Serialization.LevelUpItem,
     json_name: "levelUpItem",
     oneof: 0
@@ -138,6 +144,15 @@ defmodule Gateway.Serialization.SelectUnit do
 end
 
 defmodule Gateway.Serialization.UnselectUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:unit_id, 2, type: :string, json_name: "unitId")
+end
+
+defmodule Gateway.Serialization.LevelUpUnit do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

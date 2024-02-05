@@ -4,6 +4,7 @@ defmodule Champions.Units do
   """
 
   alias GameBackend.Units
+  alias GameBackend.Users.Currencies
 
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
@@ -22,7 +23,29 @@ defmodule Champions.Units do
     end
   end
 
-  def unselect_unit(user_id, unit_id) do
-    Units.unselect_unit(user_id, unit_id)
+  def unselect_unit(user_id, unit_id), do: Units.unselect_unit(user_id, unit_id)
+
+  @doc """
+  Level up a user's unit and substracts the currency cost from the user.
+
+  Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
+  Returns `{:error, :cant_afford}` if user cannot afford the cost.
+  Returns `{:ok, unit: %Unit{}, user_currency: %UserCurrency{}}` if succesful.
+  """
+  def level_up(user_id, unit_id) do
+    with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         {currency, cost} = calculate_level_up_cost(unit),
+         {:can_afford, true} <-
+           {:can_afford, Currencies.can_afford(user_id, currency, cost)} do
+      Units.level_up(unit, currency, cost)
+    else
+      {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:unit_owned, false} -> {:error, :not_owned}
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
   end
+
+  defp calculate_level_up_cost(unit),
+    do: {Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}
 end
