@@ -11,10 +11,11 @@ syntax = "proto3";
       FightLevel fight_level = 7;
       SelectUnit select_unit = 8;
       UnselectUnit unselect_unit = 9;
-      EquipItem equip_item = 10;
-      UnequipItem unequip_item = 11;
-      GetItem get_item = 12;
-      LevelUpItem level_up_item = 13;
+      LevelUpUnit level_up_unit = 10;
+      EquipItem equip_item = 11;
+      UnequipItem unequip_item = 12;
+      GetItem get_item = 13;
+      LevelUpItem level_up_item = 14;
     }
   }
 
@@ -56,6 +57,11 @@ syntax = "proto3";
   }
 
   message UnselectUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+
+  message LevelUpUnit {
    string user_id = 1;
    string unit_id = 2;
   }
