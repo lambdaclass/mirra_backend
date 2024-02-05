@@ -12,7 +12,8 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:circle_hit, circle_hit}) do
-    circular_damage_area = Entities.make_circular_area(player.id, player.position, circle_hit.range)
+    circular_damage_area =
+      Entities.make_circular_area(player.id, player.position, circle_hit.range)
 
     alive_players =
       Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
@@ -40,7 +41,14 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:do_cone_hit, cone_hit}) do
-    triangle_points = Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle)
+    triangle_points =
+      Physics.calculate_triangle_vertices(
+        player.position,
+        player.direction,
+        cone_hit.range,
+        cone_hit.angle
+      )
+
     cone_area = Entities.make_polygon(player.id, triangle_points)
 
     alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
@@ -59,7 +67,7 @@ defmodule Arena.Game.Skill do
         Map.put(players_acc, player_id, target_player)
       end)
 
-   %{game_state | players: players}
+    %{game_state | players: players}
   end
 
   def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}) do

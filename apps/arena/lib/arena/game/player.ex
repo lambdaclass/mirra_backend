@@ -20,9 +20,10 @@ defmodule Arena.Game.Player do
 
   def change_health(player, health_change) do
     Map.update!(player, :aditional_info, fn info ->
-      %{info |
-        health: max(info.health - health_change, 0),
-        last_damage_received: System.monotonic_time(:millisecond)
+      %{
+        info
+        | health: max(info.health - health_change, 0),
+          last_damage_received: System.monotonic_time(:millisecond)
       }
     end)
   end
@@ -64,9 +65,19 @@ defmodule Arena.Game.Player do
     ## TODO: Review this code, there might be a better way to do the recharging
     case stamina_full?(player) do
       true ->
-        Map.put(player, :aditional_info, Map.put(player.aditional_info, :recharging_stamina, false))
+        Map.put(
+          player,
+          :aditional_info,
+          Map.put(player.aditional_info, :recharging_stamina, false)
+        )
+
       _ ->
-        Process.send_after( self(), {:recharge_stamina, player.id}, player.aditional_info.stamina_interval)
+        Process.send_after(
+          self(),
+          {:recharge_stamina, player.id},
+          player.aditional_info.stamina_interval
+        )
+
         change_stamina(player, 1)
     end
   end
@@ -99,8 +110,14 @@ defmodule Arena.Game.Player do
         player =
           case stamina_recharging?(player) do
             false ->
-              Process.send_after(self(), {:recharge_stamina, player.id}, player.aditional_info.stamina_interval)
+              Process.send_after(
+                self(),
+                {:recharge_stamina, player.id},
+                player.aditional_info.stamina_interval
+              )
+
               put_in(player, [:aditional_info, :recharging_stamina], true)
+
             _ ->
               player
           end
@@ -119,17 +136,27 @@ defmodule Arena.Game.Player do
 
   defp maybe_trigger_natural_heal(player) do
     now = System.monotonic_time(:millisecond)
-    heal_interval? = player.aditional_info.last_natural_healing_update + player.aditional_info.natural_healing_interval < now
-    damage_interval? = player.aditional_info.last_damage_received + player.aditional_info.natural_healing_damage_interval < now
+
+    heal_interval? =
+      player.aditional_info.last_natural_healing_update +
+        player.aditional_info.natural_healing_interval < now
+
+    damage_interval? =
+      player.aditional_info.last_damage_received +
+        player.aditional_info.natural_healing_damage_interval < now
+
     case heal_interval? and damage_interval? do
       true ->
         heal_amount = floor(player.aditional_info.base_health * 0.1)
+
         Map.update!(player, :aditional_info, fn info ->
-          %{info |
-            health: min(info.health + heal_amount, info.base_health),
-            last_natural_healing_update: now
+          %{
+            info
+            | health: min(info.health + heal_amount, info.base_health),
+              last_natural_healing_update: now
           }
         end)
+
       false ->
         player
     end
