@@ -16,7 +16,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 10000,
+    "zone_shrink_start_ms": 9999999,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 15000
   },
@@ -25,6 +25,21 @@
       "name": "circle_bash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "circle_hit": {
+            "damage": 15,
+            "range": 1000.0,
+            "on_hit_effects": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "avenge",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 1000,
       "is_passive": false,
       "mechanics": [
         {
@@ -139,6 +154,40 @@
       "skills": {
         "1": "multishot",
         "2": "repeated_shot",
+        "3": "dash"
+      }
+    },
+    {
+      "name": "uma",
+      "active": true,
+      "base_speed": 25.0,
+      "base_size": 50.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "avenge",
+        "2": "hit",
+        "3": "dash"
+      }
+    },
+    {
+      "name": "valtimer",
+      "active": true,
+      "base_speed": 25.0,
+      "base_size": 50.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "avenge",
+        "2": "avenge",
         "3": "dash"
       }
     }
