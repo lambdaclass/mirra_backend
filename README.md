@@ -74,6 +74,8 @@ devenv shell
 make start
 ```
 
+Note you need to have ran `devenv up` earlier.
+
 Each of the applications, as mentioned in the previous paragraph, has a specific responsibility:
 
 ### Arena
