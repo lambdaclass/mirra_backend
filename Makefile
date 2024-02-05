@@ -12,6 +12,10 @@ run:
 
 start: db run
 
+purge:
+	rm -rf devenv.lock .devenv .devenv.flake.nix _build/
+	devenv gc
+
 format:
 	mix format
 
