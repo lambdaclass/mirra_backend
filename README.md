@@ -11,6 +11,20 @@ devenv up
 
 Then navigate to the following link to start a game: http://localhost:3000/board/1
 
+
+If you want to have access to the Elixir console, instead do:
+
+```
+devenv shell postgres
+```
+
+Then in another terminal:
+
+```
+devenv shell
+make start
+```
+
 Each of the applications, as mentioned in the previous paragraph, has a specific responsibility:
 
 ### Arena
