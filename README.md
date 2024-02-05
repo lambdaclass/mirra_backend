@@ -60,6 +60,20 @@ make start
 
 Note you need to have ran `devenv up` earlier.
 
+
+If you want to have access to the Elixir console, instead do:
+
+```
+devenv shell postgres
+```
+
+Then in another terminal:
+
+```
+devenv shell
+make start
+```
+
 Each of the applications, as mentioned in the previous paragraph, has a specific responsibility:
 
 ### Arena
