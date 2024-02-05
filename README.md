@@ -59,6 +59,25 @@ make start
 ```
 For more information, you can read its [documentation](apps/game_client/README.md)
 
+### Gateway
+Receives messages via websocket and routes them to the corresponding game's application.
+
+### ChampionsOfMirra
+Application for Champions Of Mirra game. Has modules for:
+  - Battle - Simulates battles. For now, only allows fights between a user and a level from the campaign.
+  - Campaigns - Creates a campaign with customizable difficulty, in the shape of 5 units per level.
+  - Items - Handles logic for Items. Consumes from the Items app for general items logic.
+  - Units - Handles logic for Units. Consumes from the Units app for general items logic.
+  - Users - Handles logic for Users. Consumes from the Users app for general items logic.
+
+### GameBackend
+Persistance layer and shared logic:
+- Users logic that's general among all games. This module is quite incomplete for now, since users are only made of a unique username.
+- Units logic that's general among all games. Defines the schemas for the characters of every game. These act like templates for Units, which are instances of them tied to a user or a campaign level.
+- Items logic that's general among all games. Defines the schemas for the item templates of every game. These act like templates for Items, which are instances of them that belong to a user and can be equipped to a unit.
+
+What's important to note is that each game's application decides how to use the functionalities these applications have. For example, take a look at how Champions of Mirra implements `Champions.Units.select_unit/3` and `unselect_unit/2`. For the first one, we have some rules on how and when a unit can be selected, so we check they are met before calling the `GameBackend` app. For the second one, we don't care for the context it is called in, so we just call `GameBackend.Units.unselect_unit/2` instantly. Another game might have different requirements for unit selection/unselection, and it would be handled in its own `NewGame.Units` module.
+
 ### Future iterations
 In future iterations, we will add the following apps:
 
