@@ -121,47 +121,17 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
-    player = Map.get(state.game_state.players, player_id)
-
-    ## FIXME
     player =
-      player
-      |> Map.put(:is_moving, false)
-      |> Map.put(:speed, previous_speed)
+      Map.get(state.game_state.players, player_id)
+      |> Player.reset_after_dash(previous_speed)
 
-    state =
-      put_in(
-        state,
-        [:game_state, :players, player_id],
-        player
-      )
-
+    state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
 
-  ## FIXME move to do mechanic
-  def handle_info({:cone_hit, cone_hit, player}, state) do
-    triangle_points = Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle)
-    cone_area = Entities.make_polygon(player.id, triangle_points)
-
-    alive_players = Map.filter(state.game_state.players, fn {_id, player} -> Player.alive?(player) end)
-
-    players =
-      Physics.check_collisions(cone_area, alive_players)
-      |> Enum.reduce(state.game_state.players, fn player_id, players_acc ->
-        target_player =
-          Map.get(players_acc, player_id)
-          |> Player.change_health(cone_hit.damage)
-
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, player.id, target_player.id})
-        end
-
-        Map.put(players_acc, player_id, target_player)
-      end)
-
-    state = %{state | game_state: %{state.game_state | players: players}}
-
+  def handle_info({:do_cone_hit, cone_hit, player}, state) do
+    game_state = Skill.do_mechanic(state.game_state, player, {:do_cone_hit, cone_hit})
+    state = Map.put(state, :game_state, game_state)
     {:noreply, state}
   end
 
@@ -193,14 +163,8 @@ defmodule Arena.GameUpdater do
   def handle_info(:natural_healing, state) do
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
 
-    players =
-      Enum.reduce(state.game_state.players, %{}, fn {player_id, player}, players_acc ->
-        player = Player.maybe_trigger_natural_heal(player)
-        Map.put(players_acc, player_id, player)
-      end)
-
+    players = Player.trigger_natural_healings(state.game_state.players)
     state = put_in(state, [:game_state, :players], players)
-
     {:noreply, state}
   end
 
@@ -235,34 +199,11 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
-    player = Map.get(state.game_state.players, player_id)
-
     player =
-      case Player.stamina_full?(player) do
-        true ->
-          Map.put(
-            player,
-            :aditional_info,
-            Map.put(player.aditional_info, :recharging_stamina, false)
-          )
+      Map.get(state.game_state.players, player_id)
+      |> Player.recharge_stamina()
 
-        _ ->
-          Process.send_after(
-            self(),
-            {:recharge_stamina, player_id},
-            player.aditional_info.stamina_interval
-          )
-
-          Player.change_stamina(player, 1)
-      end
-
-    state =
-      put_in(
-        state,
-        [:game_state, :players, player_id],
-        player
-      )
-
+    state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
 
@@ -278,15 +219,7 @@ defmodule Arena.GameUpdater do
 
     projectiles =
       state.game_state.projectiles
-      |> Map.put(
-        last_id,
-        Entities.new_projectile(
-          last_id,
-          player.position,
-          player.direction,
-          player.id
-        )
-      )
+      |> Map.put( last_id, Entities.new_projectile(last_id, player.position, player.direction, player.id))
 
     state =
       state
@@ -332,8 +265,11 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, skill}, _from, %{game_state: game_state} = state) do
-    game_state = handle_attack(player_id, skill, game_state)
+  def handle_call({:attack, player_id, skill_key}, _from, state) do
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_skill(skill_key, state.game_state)
+
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
@@ -408,41 +344,6 @@ defmodule Arena.GameUpdater do
   ##########################
   # Skills mechaninc
   ##########################
-
-  def handle_attack(player_id, skill_key, game_state) do
-    player = Map.get(game_state.players, player_id)
-
-    case Player.get_skill_if_usable(player, skill_key) do
-      false ->
-        game_state
-
-      skill ->
-        player =
-          add_skill_action(player, skill, skill_key)
-          |> Player.change_stamina(-1)
-
-        player =
-          case Player.stamina_recharging?(player) do
-            false ->
-              Process.send_after(
-                self(),
-                {:recharge_stamina, player_id},
-                player.aditional_info.stamina_interval
-              )
-
-              put_in(player, [:aditional_info, :recharging_stamina], true)
-
-            _ ->
-              player
-          end
-
-        players = Map.put(game_state.players, player_id, player)
-        game_state = %{game_state | players: players}
-
-        Skill.do_mechanic(game_state, player, skill.mechanics)
-    end
-  end
-
   defp add_or_remove_moving_action(current_actions, direction) do
     if direction == {0.0, 0.0} do
       current_actions -- [%{action: :MOVING, duration: 0}]
@@ -450,27 +351,6 @@ defmodule Arena.GameUpdater do
       current_actions ++ [%{action: :MOVING, duration: 0}]
     end
     |> Enum.uniq()
-  end
-
-  defp add_skill_action(player, skill, skill_key) do
-    Process.send_after(
-      self(),
-      {:remove_skill_action, player.id, skill_key_to_atom(skill_key)},
-      skill.execution_duration_ms
-    )
-
-    player
-    |> update_in([:aditional_info, :current_actions], fn current_actions ->
-      current_actions ++
-        [%{action: skill_key_to_atom(skill_key), duration: skill.execution_duration_ms}]
-    end)
-  end
-
-  defp skill_key_to_atom(skill_key) do
-    case skill_key do
-      # "1" -> "STARTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
-      _ -> "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
-    end
   end
 
   ##########################
@@ -577,22 +457,7 @@ defmodule Arena.GameUpdater do
   ##########################
 
   defp apply_zone_damage(players, zone) do
-    safe_zone = %{
-      id: 0,
-      category: :obstacle,
-      shape: :circle,
-      name: "SafeZoneArea",
-      position: %{x: 0.0, y: 0.0},
-      radius: zone.radius,
-      vertices: [],
-      speed: 0.0,
-      direction: %{
-        x: 0.0,
-        y: 0.0
-      },
-      is_moving: false
-    }
-
+    safe_zone = Entities.make_circular_area(0, %{x: 0.0, y: 0.0}, zone.radius)
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
 

@@ -35,9 +35,31 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:cone_hit, cone_hit}) do
-    Process.send_after(self(), {:cone_hit, cone_hit, player}, 300)
-
+    Process.send_after(self(), {:do_cone_hit, cone_hit, player}, 300)
     game_state
+  end
+
+  def do_mechanic(game_state, player, {:do_cone_hit, cone_hit}) do
+    triangle_points = Physics.calculate_triangle_vertices(player.position, player.direction, cone_hit.range, cone_hit.angle)
+    cone_area = Entities.make_polygon(player.id, triangle_points)
+
+    alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
+
+    players =
+      Physics.check_collisions(cone_area, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        target_player =
+          Map.get(players_acc, player_id)
+          |> Player.change_health(cone_hit.damage)
+
+        unless Player.alive?(target_player) do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+   %{game_state | players: players}
   end
 
   def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}) do
