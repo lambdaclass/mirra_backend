@@ -18,6 +18,7 @@ defmodule Gateway.ChampionsSocketHandler do
     FightLevel,
     SelectUnit,
     UnselectUnit,
+    LevelUpUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -103,6 +104,14 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%UnselectUnit{user_id: user_id, unit_id: unit_id}),
     do: Units.unselect_unit(user_id, unit_id) |> prepare_response(:unit)
+
+  defp handle(%LevelUpUnit{user_id: user_id, unit_id: unit_id}) do
+    case Units.level_up(user_id, unit_id) do
+      {:ok, %{unit: unit}} -> prepare_response(unit, :unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+      {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
+    end
+  end
 
   defp handle(%EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}),
     do: Items.equip_item(user_id, item_id, unit_id) |> prepare_response(:item)
