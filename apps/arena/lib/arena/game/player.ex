@@ -95,7 +95,7 @@ defmodule Arena.Game.Player do
     |> Map.put(:speed, reset_speed)
   end
 
-  def use_skill(player, skill_key, game_state) do
+  def use_skill(player, skill_key, skill_params, game_state) do
     case get_skill_if_usable(player, skill_key) do
       false ->
         game_state
@@ -123,7 +123,7 @@ defmodule Arena.Game.Player do
           end
 
         put_in(game_state, [:players, player.id], player)
-        |> Skill.do_mechanic(player, skill.mechanics)
+        |> Skill.do_mechanic(player, skill.mechanics, skill_params)
     end
   end
 

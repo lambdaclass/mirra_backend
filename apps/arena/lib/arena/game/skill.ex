@@ -5,13 +5,13 @@ defmodule Arena.Game.Skill do
   alias Arena.Entities
   alias Arena.Game.Player
 
-  def do_mechanic(game_state, player, mechanics) when is_list(mechanics) do
+  def do_mechanic(game_state, player, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
-      do_mechanic(game_state_acc, player, mechanic)
+      do_mechanic(game_state_acc, player, mechanic, skill_params)
     end)
   end
 
-  def do_mechanic(game_state, player, {:circle_hit, circle_hit}) do
+  def do_mechanic(game_state, player, {:circle_hit, circle_hit}, _skill_params) do
     circular_damage_area =
       Entities.make_circular_area(player.id, player.position, circle_hit.range)
 
@@ -35,12 +35,12 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:cone_hit, cone_hit}) do
+  def do_mechanic(game_state, player, {:cone_hit, cone_hit}, _skill_params) do
     Process.send_after(self(), {:trigger_mechanic, player.id, {:do_cone_hit, cone_hit}}, 300)
     game_state
   end
 
-  def do_mechanic(game_state, player, {:do_cone_hit, cone_hit}) do
+  def do_mechanic(game_state, player, {:do_cone_hit, cone_hit}, _skill_params) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         player.position,
@@ -70,7 +70,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}) do
+  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, _skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
       mechanic = {:do_cone_hit, multi_cone_hit}
 
@@ -81,10 +81,11 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, player, {:do_cone_hit, multi_cone_hit})
+    do_mechanic(game_state, player, {:do_cone_hit, multi_cone_hit}, %{})
   end
 
-  def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}) do
+
+  def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 
     player =
@@ -97,7 +98,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shoot, repeated_shoot}) do
+  def do_mechanic(game_state, player, {:repeated_shoot, repeated_shoot}, _skill_params) do
     Process.send_after(
       self(),
       {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1,
@@ -125,7 +126,7 @@ defmodule Arena.Game.Skill do
     |> Map.put(:projectiles, projectiles)
   end
 
-  def do_mechanic(game_state, player, {:multi_shoot, multishot}) do
+  def do_mechanic(game_state, player, {:multi_shoot, multishot}, _skill_params) do
     calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
@@ -149,7 +150,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, player, {:simple_shoot, _}) do
+  def do_mechanic(game_state, player, {:simple_shoot, _}, _skill_params) do
     last_id = game_state.last_id + 1
 
     projectiles =
@@ -170,10 +171,11 @@ defmodule Arena.Game.Skill do
     |> Map.put(:projectiles, projectiles)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{target_position: target_position}) do
+  def do_mechanic(game_state, player, {:leap, leap}, %{target: target_position}, _skill_params) do
     Process.send_after(self(), {:stop_leap, player.id, player.speed}, leap.duration_ms)
 
     speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms)
+
     player =
       player
       |> Map.put(:is_moving, true)

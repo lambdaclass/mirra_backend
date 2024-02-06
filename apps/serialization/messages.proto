@@ -169,6 +169,11 @@ message Move {
 
 message Attack {
   string skill = 1;
+  AttackParameters parameters = 2;
+}
+
+message AttackParameters {
+  Position target = 1;
 }
 
 message GameAction {

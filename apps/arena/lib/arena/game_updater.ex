@@ -31,8 +31,8 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:move, player_id, direction, timestamp})
   end
 
-  def attack(game_pid, player_id, skill) do
-    GenServer.call(game_pid, {:attack, player_id, skill})
+  def attack(game_pid, player_id, skill, skill_params) do
+    GenServer.call(game_pid, {:attack, player_id, skill, skill_params})
   end
 
   ##########################
@@ -126,7 +126,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info({:trigger_mechanic, player_id, mechanic}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, mechanic)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanic, %{})
     state = Map.put(state, :game_state, game_state)
     {:noreply, state}
   end
@@ -274,10 +274,10 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, skill_key}, _from, state) do
+  def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, state.game_state)
+      |> Player.use_skill(skill_key, skill_params, state.game_state)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
