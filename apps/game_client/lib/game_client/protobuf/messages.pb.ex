@@ -17,6 +17,7 @@ defmodule GameClient.Protobuf.PlayerActionType do
   field(:STARTING_SKILL_2, 2)
   field(:EXECUTING_SKILL_1, 3)
   field(:EXECUTING_SKILL_2, 4)
+  field(:EXECUTING_SKILL_3, 5)
 end
 
 defmodule GameClient.Protobuf.Direction do
@@ -248,6 +249,7 @@ defmodule GameClient.Protobuf.Player do
   field(:max_stamina, 5, type: :uint64, json_name: "maxStamina")
   field(:stamina_interval, 6, type: :uint64, json_name: "staminaInterval")
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
+  field(:character_name, 8, type: :string, json_name: "characterName")
 end
 
 defmodule GameClient.Protobuf.Projectile do
