@@ -1,6 +1,7 @@
-defmodule SocketTester do
+defmodule Gateway.SocketTester do
   @moduledoc """
-  Module for manually testing the CoM websocket. Prints received messages.
+  Module for manually testing the CoM websocket.
+  Logs received messages and keeps the last one received in the state.
 
   Example usage:
       {_ok, pid} = SocketTester.start_link()
@@ -34,7 +35,7 @@ defmodule SocketTester do
   }
 
   def start_link() do
-    WebSockex.start_link(@ws_url, __MODULE__, %{})
+    WebSockex.start_link(@ws_url, __MODULE__, nil)
   end
 
   def get_user(pid, user_id),
@@ -180,8 +181,15 @@ defmodule SocketTester do
          })}
       )
 
-  def handle_frame({:binary, message}, state) do
-    WebSocketResponse.decode(message) |> inspect(pretty: true) |> Logger.info()
+  def handle_frame({:binary, message}, _state) do
+    message = WebSocketResponse.decode(message)
+    message |> inspect(pretty: true) |> Logger.info()
+
+    {:ok, message}
+  end
+
+  def handle_info({:last_message, pid}, state) do
+    send(pid, state)
     {:ok, state}
   end
 end
