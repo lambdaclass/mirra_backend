@@ -170,6 +170,18 @@ defmodule Arena.Game.Skill do
     |> Map.put(:projectiles, projectiles)
   end
 
+  def do_mechanic(game_state, player, {:leap, leap}, %{target_position: target_position}) do
+    Process.send_after(self(), {:stop_leap, player.id, player.speed}, leap.duration_ms)
+
+    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms)
+    player =
+      player
+      |> Map.put(:is_moving, true)
+      |> Map.put(:speed, speed)
+
+    put_in(game_state, [:players, player.id], player)
+  end
+
   defp calculate_angle_directions(amount, angle_between, base_direction) do
     middle = if rem(amount, 2) == 1, do: [base_direction], else: []
     side_amount = div(amount, 2)

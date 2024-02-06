@@ -89,7 +89,7 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def reset_after_dash(player, reset_speed) do
+  def reset_movement(player, reset_speed) do
     player
     |> Map.put(:is_moving, false)
     |> Map.put(:speed, reset_speed)

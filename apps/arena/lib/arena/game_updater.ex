@@ -109,7 +109,16 @@ defmodule Arena.GameUpdater do
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player =
       Map.get(state.game_state.players, player_id)
-      |> Player.reset_after_dash(previous_speed)
+      |> Player.reset_movement(previous_speed)
+
+    state = put_in(state, [:game_state, :players, player_id], player)
+    {:noreply, state}
+  end
+
+  def handle_info({:stop_leap, player_id, previous_speed}, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.reset_movement(previous_speed)
 
     state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}

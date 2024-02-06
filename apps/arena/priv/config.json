@@ -52,6 +52,20 @@
       ]
     },
     {
+      "name": "leap",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "leap": {
+            "range": 1000.0,
+            "duration_ms": 1500
+          }
+        }
+      ]
+    },
+    {
       "name": "shot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
@@ -167,7 +181,7 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "hit",
-        "2": "hit",
+        "2": "leap",
         "3": "dash"
       }
     },
