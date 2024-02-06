@@ -129,8 +129,9 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:do_cone_hit, cone_hit, player}, state) do
-    game_state = Skill.do_mechanic(state.game_state, player, {:do_cone_hit, cone_hit})
+  def handle_info({:trigger_mechanic, player_id, mechanic}, state) do
+    player = Map.get(state.game_state.players, player_id)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanic)
     state = Map.put(state, :game_state, game_state)
     {:noreply, state}
   end

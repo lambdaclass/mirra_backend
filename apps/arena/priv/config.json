@@ -2,7 +2,8 @@
   "map": {
     "radius": 4800.0,
     "initial_positions": [
-      {"x": -750.0, "y": 2000.0},
+      {"x": 1.0, "y": 1.0},
+      {"x": 1.0, "y": 1.0},
       {"x": -1750.0, "y": 1000.0},
       {"x": 0.0, "y": 1000.0},
       {"x": 750.0, "y": 2000.0},
@@ -105,6 +106,23 @@
           }
         }
       ]
+    },
+    {
+      "name": "avenge",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "multi_cone_hit": {
+            "damage": 40,
+            "range": 1000.0,
+            "angle": 45.0,
+            "interval_ms": 1000,
+            "amount": 18
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -138,6 +156,23 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "multishot",
+        "2": "repeated_shot",
+        "3": "dash"
+      }
+    },
+    {
+      "name": "uma",
+      "active": true,
+      "base_speed": 20.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "avenge",
         "2": "repeated_shot",
         "3": "dash"
       }
