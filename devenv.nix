@@ -41,7 +41,7 @@
       enable = true;
     };
   };
-
+  
   services = {	
     postgres = {	
       enable = true;	

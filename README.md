@@ -1,7 +1,40 @@
 # Mirra Backend
 Mirra Backend is an umbrella project that contains several apps within it.
 
-The objective is to split the project into multiple applications (modules) based on their responsibilities. This will allow us to add decoupled modules that can be used together without having a dependency between them
+The objective is to split the project into multiple applications (modules) based on their responsibilities. This will allow us to add decoupled modules that can be used together without having a dependency between them.
+
+Before starting the project, make sure you have installed the following dependencies:
+
+- **Nix:**
+You can install the Nix package manager by running the following command in your terminal:
+
+```bash
+$ curl \
+  --proto '=https' \
+  --tlsv1.2 \
+  -sSf \
+  -L https://install.determinate.systems/nix \
+  | sh -s -- install
+```
+
+The installer will ask you for the sudo password, and then print the details about what steps it will perform to install Nix. You have to accept this to proceed with the installation.
+
+Make sure there weren't any errors during the installation and, if there are none, close the shell and start a new one.
+
+To test if Nix generally works, just run GNU hello or any other package:
+```bash
+$ nix run nixpkgs#hello
+Hello, world!
+```
+
+For a more detailed explanation, visit the [Nixcademy installation guide](https://nixcademy.com/2024/01/15/nix-on-macos/).
+
+- **Devenv:**
+
+After installing Nix, run the following command to install devenv:
+```bash
+$ nix-env -if https://install.devenv.sh/latest
+```
 
 To start all applications, run the following command:
 
