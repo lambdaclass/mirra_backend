@@ -43,6 +43,7 @@ defmodule ArenaLoadTest.SocketHandler do
       )
 
     Process.send(pid, :move, [])
+    Process.send(pid, :attack, [])
 
     {:ok, state}
   end
@@ -56,7 +57,7 @@ defmodule ArenaLoadTest.SocketHandler do
   # Private
   defp ws_url(player_id) do
     host = SocketSupervisor.server_host()
-    character = Enum.random(["h4ck", "muflus"])
+    character = "h4ck" #Enum.random(["h4ck", "muflus"])
 
     case System.get_env("SSL_ENABLED") do
       "true" ->

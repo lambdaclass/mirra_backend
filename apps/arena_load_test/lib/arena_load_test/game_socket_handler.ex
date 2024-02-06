@@ -50,7 +50,28 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :move, 350, [])
+    Process.send_after(self(), :move, 500, [])
+    {:ok, state}
+  end
+
+  def handle_info(:attack, state) do
+    Logger.info("Sending GameAction frame with MOVE payload")
+
+    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    game_action =
+      Serialization.GameAction.encode(%Serialization.GameAction{
+        action_type:
+          {:attack,
+           %Serialization.Attack{
+             skill: "1",
+           }},
+        timestamp: timestamp
+      })
+
+    WebSockex.cast(self(), {:send, {:binary, game_action}})
+
+    Process.send_after(self(), :attack, 300, [])
     {:ok, state}
   end
 
