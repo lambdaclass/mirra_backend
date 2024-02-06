@@ -3,7 +3,7 @@ defmodule SocketTester do
   Module for manually testing the CoM websocket. Prints received messages.
 
   Example usage:
-      {_ok, pid} = SocketTester.start_link "123"
+      {_ok, pid} = SocketTester.start_link()
       SocketTester.create_user(pid, "Username")
       SocketTester.get_user_by_username(pid, "Username")
   """
