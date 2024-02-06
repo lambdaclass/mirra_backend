@@ -31,8 +31,7 @@
         {
           "circle_hit": {
             "damage": 15,
-            "range": 1000.0,
-            "on_hit_effects": []
+            "range": 1000.0
           }
         }
       ]
@@ -47,8 +46,7 @@
           "cone_hit": {
             "damage": 15,
             "range": 1000.0,
-            "angle": 45.0,
-            "on_hit_effects": []
+            "angle": 45.0
           }
         }
       ]
@@ -123,6 +121,34 @@
           }
         }
       ]
+    },
+    {
+      "name": "veil_radiance",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "circle_hit": {
+            "damage": 15,
+            "range": 1000.0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sneak",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -173,8 +199,8 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "avenge",
-        "2": "repeated_shot",
-        "3": "dash"
+        "2": "veil_radiance",
+        "3": "sneak"
       }
     }
   ]
