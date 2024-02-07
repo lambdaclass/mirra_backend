@@ -48,6 +48,6 @@ defmodule Champions.Units do
     end
   end
 
-  defp calculate_level_up_cost(unit),
+  def calculate_level_up_cost(unit),
     do: {Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}
 end

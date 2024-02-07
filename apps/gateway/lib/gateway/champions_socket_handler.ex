@@ -107,7 +107,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%LevelUpUnit{user_id: user_id, unit_id: unit_id}) do
     case Units.level_up(user_id, unit_id) do
-      {:ok, %{unit: unit}} -> prepare_response(unit, :unit)
+      {:ok, result} -> prepare_response(result, :unit_level_up)
       {:error, reason} -> prepare_response({:error, reason}, nil)
       {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
     end

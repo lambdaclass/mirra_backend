@@ -62,6 +62,11 @@ defmodule Champions.Users do
     end
   end
 
+  def get_amount_of_currency_by_name!(user_id, currency_name),
+    do:
+      user_id
+      |> Currencies.get_amount_of_currency(Currencies.get_currency_by_name!(currency_name).id)
+
   defp add_sample_units(user) do
     characters = Units.all_characters()
 

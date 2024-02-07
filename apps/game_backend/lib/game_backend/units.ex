@@ -172,12 +172,22 @@ defmodule GameBackend.Units do
   Executes a level up transaction, which involves updating a unit's level and removing currency from a user.
   """
   def level_up(unit, currency_id, cost) do
-    Multi.new()
-    |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
-    |> Multi.run(:user_currency, fn _, _ ->
-      Currencies.add_currency(unit.user_id, currency_id, -cost)
-    end)
-    |> Repo.transaction()
+    result =
+      Multi.new()
+      |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        Currencies.add_currency(unit.user_id, currency_id, -cost)
+      end)
+      |> Repo.transaction()
+
+    # Preload user_currency's Currency
+    case result do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, %{unit: unit, user_currency: user_currency}} ->
+        {:ok, %{unit: unit, user_currency: Repo.preload(user_currency, :currency)}}
+    end
   end
 
   @doc """
