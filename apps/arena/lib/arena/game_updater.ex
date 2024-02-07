@@ -58,8 +58,6 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
-    now = System.monotonic_time(:millisecond)
-
     # only use alive players
     entities_to_collide_projectiles = Map.merge(game_state.players, game_state.obstacles)
 
@@ -83,8 +81,7 @@ defmodule Arena.GameUpdater do
         projectiles,
         players,
         game_state.obstacles,
-        game_state.external_wall.id,
-        now
+        game_state.external_wall.id
       )
 
     players = apply_zone_damage(players, game_state.zone)
@@ -485,7 +482,7 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp resolve_collisions(projectiles, players, obstacles, external_wall_id, now) do
+  defp resolve_collisions(projectiles, players, obstacles, external_wall_id) do
     Enum.reduce(projectiles, {projectiles, players}, fn {projectile_id, projectile},
                                                         {projectiles_acc, players_acc} ->
       # check if the projectiles is inside the walls
@@ -495,20 +492,7 @@ defmodule Arena.GameUpdater do
           entities -> List.delete(entities, external_wall_id)
         end
 
-      collided_entity =
-        case collides_with do
-          [] ->
-            nil
-
-          [entity_id] when entity_id == external_wall_id ->
-            external_wall_id
-
-          [entity_id | other_entities] when entity_id == projectile.aditional_info.owner_id ->
-            List.first(other_entities, nil)
-
-          [entity_id | _] ->
-            entity_id
-        end
+      collided_entity = decide_collided_entity(projectile, collides_with, external_wall_id)
 
       case {
         collided_entity,
@@ -526,11 +510,7 @@ defmodule Arena.GameUpdater do
 
         # Projectile hit a player
         {_entity_id, player, nil} ->
-          health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
-
-          player =
-            put_in(player, [:aditional_info, :health], health)
-            |> put_in([:aditional_info, :last_damage_received], now)
+          player = Player.change_health(player, projectile.aditional_info.damage)
 
           projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
@@ -558,4 +538,16 @@ defmodule Arena.GameUpdater do
       end
     end)
   end
+
+  defp decide_collided_entity(_projectile, [], _external_wall_id), do: nil
+
+  defp decide_collided_entity(_projectile, [entity_id], external_wall_id)
+       when entity_id == external_wall_id,
+       do: external_wall_id
+
+  defp decide_collided_entity(projectile, [entity_id | other_entities], _external_wall_id)
+       when entity_id == projectile.aditional_info.owner_id,
+       do: List.first(other_entities, nil)
+
+  defp decide_collided_entity(_projectile, [entity_id | _], _external_wall_id), do: entity_id
 end
