@@ -10,10 +10,10 @@
       {"x": 1750.0, "y": 1000.0},
       {"x": 1750.0, "y": -1000.0},
       {"x": 750.0, "y": -2000.0},
-      {"x": 0.0, "y": 0.0},
       {"x": -750.0, "y": -2000.0},
       {"x": -1750.0, "y": -1000.0}
-    ]
+    ],
+    "obstacles": []
   },
   "game": {
     "tick_rate_ms": 30,
@@ -72,7 +72,8 @@
         {
           "repeated_shoot": {
             "interval_ms": 250,
-            "amount": 18
+            "amount": 18,
+            "remove_on_collision": true
           }
         }
       ]
@@ -86,7 +87,8 @@
         {
           "multi_shoot": {
             "angle_between": 10.0,
-            "amount": 3
+            "amount": 3,
+            "remove_on_collision": true
           }
         }
       ]
