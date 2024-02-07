@@ -4,7 +4,8 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
-  alias Gateway.Serialization.{User, Unit, Error, WebSocketResponse}
+  alias Champions.{Units, Users}
+  alias Gateway.Serialization.{Error, Unit, UnitLevelUp, User, WebSocketResponse}
   alias Gateway.SocketTester
 
   # import Plug.Conn
@@ -56,8 +57,12 @@ defmodule Gateway.Test.Champions do
     fetch_last_message(socket_tester)
     %WebSocketResponse{response_type: {:user, user}} = get_last_message()
 
+    gold = Users.get_amount_of_currency_by_name!(user.id, "Gold")
     [unit | _] = user.units
     slot = unit.slot
+    level = unit.unit_level
+
+    # Unit is selected by default (this will change when we remove sample data in user creation)
     assert unit.selected
 
     # Unselect the unit
@@ -81,6 +86,23 @@ defmodule Gateway.Test.Champions do
 
     assert unit.selected
     assert unit.slot == slot
+
+    # Level up the unit
+    {_gold_id, level_up_cost} = Units.calculate_level_up_cost(unit)
+
+    :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
+    fetch_last_message(socket_tester)
+    assert_receive %WebSocketResponse{response_type: {:unit_level_up, %UnitLevelUp{}}}
+
+    fetch_last_message(socket_tester)
+
+    %WebSocketResponse{
+      response_type: {:unit_level_up, %UnitLevelUp{unit: unit, user_currency: user_currency}}
+    } = get_last_message()
+
+    assert unit.unit_level == level + 1
+    assert user_currency.currency.name == "Gold"
+    assert user_currency.amount == gold - level_up_cost
   end
 
   defp get_last_message() do

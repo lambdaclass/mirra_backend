@@ -93,12 +93,13 @@ syntax = "proto3";
     oneof response_type {
       User user = 1;
       Unit unit = 2;
-      Item item = 3;
-      Campaigns campaigns = 4;
-      Campaign campaign = 5;
-      Level level = 6;
-      BattleResult battle_result = 7;
-      Error error = 8;
+      UnitLevelUp unit_level_up = 3;
+      Item item = 4;
+      Campaigns campaigns = 5;
+      Campaign campaign = 6;
+      Level level = 7;
+      BattleResult battle_result = 8;
+      Error error = 9;
     }
   }
   
@@ -129,6 +130,11 @@ syntax = "proto3";
     string user_id = 7;
     Character character = 8;
     repeated Item items = 9;
+  }
+
+  message UnitLevelUp {
+    Unit unit = 1;
+    UserCurrency user_currency = 2;
   }
   
   message Character {
