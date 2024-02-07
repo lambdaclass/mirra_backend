@@ -530,13 +530,17 @@ defmodule Arena.GameUpdater do
         # Projectile hit a player
         {_entity_id, player, nil} ->
           health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
+
           player =
             put_in(player, [:aditional_info, :health], health)
             |> put_in([:aditional_info, :last_damage_received], now)
+
           projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
           if player.aditional_info.health == 0 do
             send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
           end
+
           {
             Map.put(projectiles_acc, projectile_id, projectile),
             Map.put(players_acc, player.id, player)
@@ -545,6 +549,7 @@ defmodule Arena.GameUpdater do
         # Projectile hit an obstacle
         {_entity_id, nil, obstacle} when not is_nil(obstacle) ->
           projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
           {
             Map.put(projectiles_acc, projectile_id, projectile),
             players_acc
