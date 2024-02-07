@@ -36,7 +36,7 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:cone_hit, cone_hit}) do
-    Process.send_after(self(), {:do_cone_hit, cone_hit, player}, 300)
+    Process.send_after(self(), {:trigger_mechanic, player.id, {:do_cone_hit, cone_hit}}, 300)
     game_state
   end
 
@@ -68,6 +68,20 @@ defmodule Arena.Game.Skill do
       end)
 
     %{game_state | players: players}
+  end
+
+  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}) do
+    Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
+      mechanic = {:do_cone_hit, multi_cone_hit}
+
+      Process.send_after(
+        self(),
+        {:trigger_mechanic, player.id, mechanic},
+        i * multi_cone_hit.interval_ms
+      )
+    end)
+
+    do_mechanic(game_state, player, {:do_cone_hit, multi_cone_hit})
   end
 
   def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}) do
