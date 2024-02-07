@@ -98,7 +98,8 @@ defmodule Arena.GameUpdater do
         end
       end)
 
-    players = apply_zone_damage(players, game_state.zone, state.game_config.game.zone_damage_interval_ms)
+    players =
+      apply_zone_damage(players, game_state.zone, state.game_config.game.zone_damage_interval_ms)
 
     game_state =
       game_state
@@ -483,7 +484,7 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval)
        when elapse_time > zone_damage_interval do
-        Player.change_health(player, 1)
+    Player.change_health(player, 1)
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval), do: player
