@@ -88,7 +88,7 @@ defmodule Gateway.Test.Champions do
     assert unit.slot == slot
 
     # Level up the unit
-    {_gold_id, level_up_cost} = Units.calculate_level_up_cost(unit)
+    [{_gold_id, level_up_cost}] = Units.calculate_level_up_cost(unit)
 
     :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
     fetch_last_message(socket_tester)
