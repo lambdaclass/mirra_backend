@@ -504,10 +504,7 @@ defmodule Arena.GameUpdater do
             external_wall_id
 
           [entity_id | other_entities] when entity_id == projectile.aditional_info.owner_id ->
-            case other_entities do
-              [] -> nil
-              [entity_id | _] -> entity_id
-            end
+            List.first(other_entities, nil)
 
           [entity_id | _] ->
             entity_id
