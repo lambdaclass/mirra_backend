@@ -11,7 +11,7 @@ defmodule Champions.Units do
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
 
-  Returns :not_found if unit doesn't exist or if it's now owned by the user.
+  Returns `:not_found` if unit doesn't exist or if it's now owned by the user.
   Returns the unit's new state if succesful.
   """
   def select_unit(_user_id, _unit_id, nil), do: {:error, :no_slot}
@@ -25,6 +25,12 @@ defmodule Champions.Units do
     end
   end
 
+  @doc """
+  Sets a unit as unselected for a user. Clears the `slot` field.
+
+  Returns `:not_found` if unit doesn't exist or if it's now owned by the user.
+  Returns the unit's new state if succesful.
+  """
   def unselect_unit(user_id, unit_id), do: Units.unselect_unit(user_id, unit_id)
 
   @doc """
@@ -37,7 +43,7 @@ defmodule Champions.Units do
   def level_up(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
-         {currency, cost} = calculate_level_up_cost(unit),
+         [{currency, cost}] = calculate_level_up_cost(unit),
          {:can_afford, true} <-
            {:can_afford, Currencies.can_afford(user_id, currency, cost)} do
       Units.level_up(unit, currency, cost)
@@ -48,6 +54,11 @@ defmodule Champions.Units do
     end
   end
 
+  @doc """
+  Calculate how much it costs for a unit to be leveled up.
+
+  Returns a `{currency_id, amount}` tuple list.
+  """
   def calculate_level_up_cost(unit),
-    do: {Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}
+    do: [{Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}]
 end
