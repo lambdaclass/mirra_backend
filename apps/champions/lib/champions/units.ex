@@ -2,7 +2,9 @@ defmodule Champions.Units do
   @moduledoc """
   Units logic for Champions Of Mirra.
 
-  Slots can range from 1 to 5 for selected units.
+  - Slots can range from 1 to 5 for selected units.
+  - Level ups cost an amount of gold that depends on the unit level.
+  - Tier ups cost an amount of gold that depends on the unit level, plus a set number of gems.
   """
 
   alias GameBackend.Units
@@ -34,25 +36,73 @@ defmodule Champions.Units do
   def unselect_unit(user_id, unit_id), do: Units.unselect_unit(user_id, unit_id)
 
   @doc """
-  Level up a user's unit and substracts the currency cost from the user.
+  Levels up a user's unit and substracts the currency cost from the user.
 
   Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
   Returns `{:error, :cant_afford}` if user cannot afford the cost.
+  Returns `{:error, :cant_level_up}`if unit cant level up due to tier restrictions.
   Returns `{:ok, unit: %Unit{}, user_currency: %UserCurrency{}}` if succesful.
   """
   def level_up(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
-         [{currency, cost}] = calculate_level_up_cost(unit),
+         {:can_level_up, true} <- {:can_level_up, can_level_up(unit)},
+         level_up_cost = calculate_level_up_cost(unit),
          {:can_afford, true} <-
-           {:can_afford, Currencies.can_afford(user_id, currency, cost)} do
-      Units.level_up(unit, currency, cost)
+           {:can_afford, Currencies.can_afford(user_id, level_up_cost)} do
+      Units.level_up(unit, level_up_cost)
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
-      {:unit_owned, false} -> {:error, :not_owned}
+      {:unit_owned, false} -> {:error, :not_found}
+      {:can_level_up, false} -> {:error, :cant_level_up}
       {:can_afford, false} -> {:error, :cant_afford}
     end
   end
+
+  @doc """
+  Returns whether a unit can level up. Level is blocked by tier.
+  """
+  def can_level_up(unit), do: can_level_up(unit.tier, unit.unit_level)
+  defp can_level_up(0, level) when level < 10, do: true
+  defp can_level_up(1, level) when level < 20, do: true
+  defp can_level_up(2, level) when level < 40, do: true
+  defp can_level_up(3, level) when level < 60, do: true
+  defp can_level_up(4, level) when level < 80, do: true
+  defp can_level_up(5, level) when level < 100, do: true
+  defp can_level_up(6, level) when level < 120, do: true
+  defp can_level_up(7, level) when level < 140, do: true
+  defp can_level_up(8, level) when level < 160, do: true
+  defp can_level_up(9, level) when level < 180, do: true
+  defp can_level_up(10, level) when level < 200, do: true
+  defp can_level_up(11, level) when level < 220, do: true
+  defp can_level_up(12, level) when level < 250, do: true
+  defp can_level_up(_, _), do: false
+
+  @doc """
+  Tiers up a user's unit and substracts the currency cost from the user.
+
+  Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
+  Returns `{:error, :cant_afford}` if user cannot afford the cost.
+  Returns `{:ok, unit: %Unit{}, user_currency: %UserCurrency{}}` if succesful.
+  """
+  def tier_up(user_id, unit_id) do
+    with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         {:can_tier_up, true} <- {:can_tier_up, can_tier_up(unit)},
+         tier_up_costs = calculate_tier_up_cost(unit),
+         {:can_afford, true} <-
+           {:can_afford, Currencies.can_afford(user_id, tier_up_costs)} do
+      Units.tier_up(unit, tier_up_costs)
+    else
+      {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:unit_owned, false} -> {:error, :not_owned}
+      {:can_tier_up, false} -> {:error, :cant_tier_up}
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  def can_tier_up(_), do: true
+  def calculate_tier_up_cost(_), do: true
 
   @doc """
   Calculate how much it costs for a unit to be leveled up.

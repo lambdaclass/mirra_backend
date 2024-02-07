@@ -70,6 +70,14 @@ defmodule Champions.Users do
       user_id
       |> Currencies.get_amount_of_currency(Currencies.get_currency_by_name!(currency_name).id)
 
+  @doc """
+  Add amount of currency to user by its name.
+  """
+  def add_currency_by_name!(user_id, currency_name, amount),
+    do:
+      user_id
+      |> Currencies.add_currency(Currencies.get_currency_by_name!(currency_name).id, amount)
+
   defp add_sample_units(user) do
     characters = Units.all_characters()
 
