@@ -513,48 +513,46 @@ defmodule Arena.GameUpdater do
             entity_id
         end
 
-      case collided_entity do
-        nil ->
-          {Map.put(projectiles_acc, projectile_id, projectile), players_acc}
+      case {
+        collided_entity,
+        Map.get(players, collided_entity),
+        Map.get(obstacles, collided_entity)
+      } do
+        # Projectile hit nothing
+        {nil, nil, nil} ->
+          {projectiles_acc, players_acc}
 
-        entity_id when entity_id == external_wall_id ->
+        # Projectile hit the external wall
+        {entity_id, _, _} when entity_id == external_wall_id ->
           projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
           {Map.put(projectiles_acc, projectile_id, projectile), players_acc}
 
-        entity_id ->
-          case Map.get(obstacles, entity_id) do
-            nil ->
-              case Map.get(players, entity_id) do
-                nil ->
-                  {projectiles_acc, players_acc}
-
-                player ->
-                  health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
-
-                  player =
-                    put_in(player, [:aditional_info, :health], health)
-                    |> put_in([:aditional_info, :last_damage_received], now)
-
-                  projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
-
-                  if player.aditional_info.health == 0 do
-                    send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
-                  end
-
-                  {
-                    Map.put(projectiles_acc, projectile_id, projectile),
-                    Map.put(players_acc, player.id, player)
-                  }
-              end
-
-            _ ->
-              projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
-
-              {
-                Map.put(projectiles_acc, projectile_id, projectile),
-                players_acc
-              }
+        # Projectile hit a player
+        {_entity_id, player, nil} ->
+          health = max(player.aditional_info.health - projectile.aditional_info.damage, 0)
+          player =
+            put_in(player, [:aditional_info, :health], health)
+            |> put_in([:aditional_info, :last_damage_received], now)
+          projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+          if player.aditional_info.health == 0 do
+            send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
           end
+          {
+            Map.put(projectiles_acc, projectile_id, projectile),
+            Map.put(players_acc, player.id, player)
+          }
+
+        # Projectile hit an obstacle
+        {_entity_id, nil, obstacle} when not is_nil(obstacle) ->
+          projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+          {
+            Map.put(projectiles_acc, projectile_id, projectile),
+            players_acc
+          }
+
+        # Projectile hit something else
+        _ ->
+          {projectiles_acc, players_acc}
       end
     end)
   end
