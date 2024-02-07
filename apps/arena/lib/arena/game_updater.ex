@@ -58,7 +58,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
-    # only use alive players
+    # #246 Only use alive players
     entities_to_collide_projectiles = Map.merge(game_state.players, game_state.obstacles)
 
     players =
@@ -494,6 +494,7 @@ defmodule Arena.GameUpdater do
 
       collided_entity = decide_collided_entity(projectile, collides_with, external_wall_id)
 
+      # #247 Refactor projectile collision resolution
       case {
         collided_entity,
         Map.get(players, collided_entity),
