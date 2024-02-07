@@ -279,7 +279,12 @@ defmodule Gateway.Serialization.UnitLevelUp do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:unit, 1, type: Gateway.Serialization.Unit)
-  field(:user_currency, 2, type: Gateway.Serialization.UserCurrency, json_name: "userCurrency")
+
+  field(:user_currency, 2,
+    repeated: true,
+    type: Gateway.Serialization.UserCurrency,
+    json_name: "userCurrency"
+  )
 end
 
 defmodule Gateway.Serialization.Character do

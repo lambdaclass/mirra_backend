@@ -15,6 +15,7 @@ defmodule GameBackend.Units.Unit do
   schema "units" do
     field(:unit_level, :integer)
     field(:tier, :integer)
+    # field(:rank, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
 

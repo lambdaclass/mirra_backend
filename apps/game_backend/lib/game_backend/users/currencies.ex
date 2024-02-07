@@ -45,6 +45,10 @@ defmodule GameBackend.Users.Currencies do
   """
   def get_currency_by_name!(name), do: Repo.get_by!(Currency, name: name)
 
+  @doc """
+  Adds (or substracts) the given amount of currency to a user.
+  Creates the relational table if it didn't exist previously.
+  """
   def add_currency(user_id, currency_id, amount) do
     with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id) do
       user_currency
@@ -86,6 +90,15 @@ defmodule GameBackend.Users.Currencies do
     %UserCurrency{}
     |> UserCurrency.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Returns whether the user can afford the required amounts of the specified currencies.
+  """
+  def can_afford(user_id, currencies_list) do
+    Enum.all?(currencies_list, fn {currency_id, amount} ->
+      can_afford(user_id, currency_id, amount)
+    end)
   end
 
   @doc """
