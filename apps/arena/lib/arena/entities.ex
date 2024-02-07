@@ -37,7 +37,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_projectile(id, position, direction, owner_id) do
+  def new_projectile(id, position, direction, owner_id, remove_on_collision) do
     %{
       id: id,
       category: :projectile,
@@ -52,7 +52,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         damage: 10,
         owner_id: owner_id,
-        status: :ACTIVE
+        status: :ACTIVE,
+        remove_on_collision: remove_on_collision
       }
     }
   end
@@ -101,7 +102,7 @@ defmodule Arena.Entities do
       id: id,
       category: :obstacle,
       shape: :polygon,
-      name: "BashDamageArea",
+      name: "Polygon" <> Integer.to_string(id),
       position: %{x: 0.0, y: 0.0},
       radius: 0.0,
       vertices: vertices,
