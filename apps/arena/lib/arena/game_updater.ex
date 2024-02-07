@@ -112,7 +112,8 @@ defmodule Arena.GameUpdater do
     #     end
     #   end)
 
-    players = apply_zone_damage(players, game_state.zone, state.game_config.game.zone_damage_interval_ms)
+    players =
+      apply_zone_damage(players, game_state.zone, state.game_config.game.zone_damage_interval_ms)
 
     game_state =
       game_state
@@ -819,22 +820,25 @@ defmodule Arena.GameUpdater do
     now = System.monotonic_time(:millisecond)
 
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
-      last_damage = Map.get(players_acc, player_id) |> get_in([:aditional_info, :last_damage_received])
+      last_damage =
+        Map.get(players_acc, player_id) |> get_in([:aditional_info, :last_damage_received])
+
       elapse_time = now - last_damage
 
-      player = Map.get(players_acc, player_id)
-      |> maybe_receive_zone_damage(elapse_time, now, zone_damage_interval)
+      player =
+        Map.get(players_acc, player_id)
+        |> maybe_receive_zone_damage(elapse_time, now, zone_damage_interval)
 
       Map.put(players_acc, player_id, player)
     end)
   end
 
-  defp maybe_receive_zone_damage(player, elapse_time, now, zone_damage_interval) when elapse_time > zone_damage_interval do
+  defp maybe_receive_zone_damage(player, elapse_time, now, zone_damage_interval)
+       when elapse_time > zone_damage_interval do
     player
-      |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
-      |> put_in([:aditional_info, :last_damage_received], now)
+    |> update_in([:aditional_info, :health], fn health -> max(health - 1, 0) end)
+    |> put_in([:aditional_info, :last_damage_received], now)
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _now, _zone_damage_interval), do: player
-
 end
