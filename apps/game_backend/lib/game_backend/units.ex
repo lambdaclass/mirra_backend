@@ -163,7 +163,7 @@ defmodule GameBackend.Units do
   end
 
   @doc """
-  Returns wether a unit belongs to a user.
+  Returns whether a unit belongs to a user.
   """
   def unit_belongs_to_user(unit_id, user_id),
     do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
@@ -171,12 +171,12 @@ defmodule GameBackend.Units do
   @doc """
   Executes a level up transaction, which involves updating a unit's level and removing currency from a user.
   """
-  def level_up(unit, currency_id, cost) do
+  def level_up(unit, costs) do
     result =
       Multi.new()
       |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
       |> Multi.run(:user_currency, fn _, _ ->
-        Currencies.add_currency(unit.user_id, currency_id, -cost)
+        add_user_currencies(unit, costs)
       end)
       |> Repo.transaction()
 
@@ -186,7 +186,24 @@ defmodule GameBackend.Units do
         {:error, reason}
 
       {:ok, %{unit: unit, user_currency: user_currency}} ->
-        {:ok, %{unit: unit, user_currency: Repo.preload(user_currency, :currency)}}
+        {:ok, %{unit: unit, user_currency: Enum.map(user_currency, &Repo.preload(&1, :currency))}}
+    end
+  end
+
+  defp add_user_currencies(unit, costs) do
+    result =
+      Enum.map(costs, fn {currency_id, cost} ->
+        Currencies.add_currency(unit.user_id, currency_id, -cost)
+      end)
+
+    if Enum.all?(result, fn
+         {:ok, _} -> true
+         _ -> false
+       end) do
+      {:ok,
+       Enum.map(result, fn {_ok, user_currency} -> Repo.preload(user_currency, :currency) end)}
+    else
+      {:error, "failed"}
     end
   end
 

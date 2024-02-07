@@ -134,7 +134,7 @@ syntax = "proto3";
 
   message UnitLevelUp {
     Unit unit = 1;
-    UserCurrency user_currency = 2;
+    repeated UserCurrency user_currency = 2;
   }
   
   message Character {
