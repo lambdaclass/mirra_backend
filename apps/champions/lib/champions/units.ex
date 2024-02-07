@@ -1,6 +1,8 @@
 defmodule Champions.Units do
   @moduledoc """
   Units logic for Champions Of Mirra.
+
+  Slots can range from 1 to 5 for selected units.
   """
 
   alias GameBackend.Units
@@ -13,7 +15,7 @@ defmodule Champions.Units do
   Returns the unit's new state if succesful.
   """
   def select_unit(_user_id, _unit_id, nil), do: {:error, :no_slot}
-  def select_unit(_user_id, _unit_id, slot) when slot > 4, do: {:error, :out_of_bounds}
+  def select_unit(_user_id, _unit_id, slot) when slot not in 1..5, do: {:error, :out_of_bounds}
 
   def select_unit(user_id, unit_id, slot) do
     if Units.get_selected_units(user_id) |> Enum.any?(&(&1.slot == slot)) do
