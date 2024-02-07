@@ -18,7 +18,8 @@
     "tick_rate_ms": 30,
     "zone_shrink_start_ms": 10000,
     "zone_stop_interval_ms": 30000,
-    "zone_start_interval_ms": 15000
+    "zone_start_interval_ms": 15000,
+    "zone_damage_interval_ms": 1000
   },
   "skills": [
     {
