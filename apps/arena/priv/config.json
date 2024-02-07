@@ -117,7 +117,7 @@
             "range": 1000.0,
             "angle": 45.0,
             "interval_ms": 1000,
-            "amount": 18
+            "amount": 3
           }
         }
       ]
