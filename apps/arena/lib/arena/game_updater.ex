@@ -465,18 +465,14 @@ defmodule Arena.GameUpdater do
     safe_zone = Entities.make_circular_area(0, %{x: 0.0, y: 0.0}, zone.radius)
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
+    now = System.monotonic_time(:millisecond)
 
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
-      now = System.monotonic_time(:millisecond)
-
-      last_damage =
-        Map.get(players_acc, player_id) |> get_in([:aditional_info, :last_damage_received])
-
+      player = Map.get(players_acc, player_id)
+      last_damage = player |> get_in([:aditional_info, :last_damage_received])
       elapse_time = now - last_damage
 
-      player =
-        Map.get(players_acc, player_id)
-        |> maybe_receive_zone_damage(elapse_time, zone_damage_interval)
+      player = player |> maybe_receive_zone_damage(elapse_time, zone_damage_interval)
 
       Map.put(players_acc, player_id, player)
     end)
