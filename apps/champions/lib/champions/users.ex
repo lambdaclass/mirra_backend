@@ -65,7 +65,7 @@ defmodule Champions.Users do
   defp add_sample_units(user) do
     characters = Units.all_characters()
 
-    Enum.each(0..4, fn index ->
+    Enum.each(1..5, fn index ->
       Units.insert_unit(%{
         character_id: Enum.random(characters).id,
         user_id: user.id,

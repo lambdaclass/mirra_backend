@@ -4,7 +4,7 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
-  alias Gateway.Serialization.{User, Error, WebSocketResponse}
+  alias Gateway.Serialization.{User, Unit, Error, WebSocketResponse}
   alias Gateway.SocketTester
 
   # import Plug.Conn
@@ -44,6 +44,43 @@ defmodule Gateway.Test.Champions do
     :ok = SocketTester.get_user_by_username(socket_tester, "Username")
     fetch_last_message(socket_tester)
     assert_receive %WebSocketResponse{response_type: {:user, ^user}}
+  end
+
+  test "units", %{socket_tester: socket_tester} do
+    # Create our user
+    :ok = SocketTester.create_user(socket_tester, "UnitsUser")
+    fetch_last_message(socket_tester)
+    assert_receive %WebSocketResponse{response_type: {:user, %User{}}}
+
+    # Get the user and a unit
+    fetch_last_message(socket_tester)
+    %WebSocketResponse{response_type: {:user, user}} = get_last_message()
+
+    [unit | _] = user.units
+    slot = unit.slot
+    assert unit.selected
+
+    # Unselect the unit
+    :ok = SocketTester.unselect_unit(socket_tester, user.id, unit.id)
+    fetch_last_message(socket_tester)
+    assert_receive %WebSocketResponse{response_type: {:unit, %Unit{}}}
+
+    fetch_last_message(socket_tester)
+    %WebSocketResponse{response_type: {:unit, unit}} = get_last_message()
+
+    assert not unit.selected
+    # Protobuf doesn't support nil values, returns zero instead
+    assert unit.slot == 0
+
+    :ok = SocketTester.select_unit(socket_tester, user.id, unit.id, slot)
+    fetch_last_message(socket_tester)
+    assert_receive %WebSocketResponse{response_type: {:unit, %Unit{}}}
+
+    fetch_last_message(socket_tester)
+    %WebSocketResponse{response_type: {:unit, unit}} = get_last_message()
+
+    assert unit.selected
+    assert unit.slot == slot
   end
 
   defp get_last_message() do
