@@ -100,7 +100,8 @@ defmodule Arena.Game.Skill do
   def do_mechanic(game_state, player, {:repeated_shoot, repeated_shoot}) do
     Process.send_after(
       self(),
-      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1},
+      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1,
+       repeated_shoot.remove_on_collision},
       repeated_shoot.interval_ms
     )
 
@@ -114,7 +115,8 @@ defmodule Arena.Game.Skill do
           last_id,
           player.position,
           player.direction,
-          player.id
+          player.id,
+          repeated_shoot.remove_on_collision
         )
       )
 
@@ -136,7 +138,8 @@ defmodule Arena.Game.Skill do
             last_id,
             player.position,
             direction,
-            player.id
+            player.id,
+            multishot.remove_on_collision
           )
         )
 
@@ -157,7 +160,8 @@ defmodule Arena.Game.Skill do
           last_id,
           player.position,
           player.direction,
-          player.id
+          player.id,
+          true
         )
       )
 
