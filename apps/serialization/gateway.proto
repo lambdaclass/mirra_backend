@@ -12,10 +12,11 @@ syntax = "proto3";
       SelectUnit select_unit = 8;
       UnselectUnit unselect_unit = 9;
       LevelUpUnit level_up_unit = 10;
-      EquipItem equip_item = 11;
-      UnequipItem unequip_item = 12;
-      GetItem get_item = 13;
-      LevelUpItem level_up_item = 14;
+      TierUpUnit tier_up_unit = 11;
+      EquipItem equip_item = 12;
+      UnequipItem unequip_item = 13;
+      GetItem get_item = 14;
+      LevelUpItem level_up_item = 15;
     }
   }
 
@@ -66,6 +67,11 @@ syntax = "proto3";
    string unit_id = 2;
   }
   
+  message TierUpUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+  
   message EquipItem {
     string user_id = 1;
     string item_id = 2;
@@ -93,7 +99,7 @@ syntax = "proto3";
     oneof response_type {
       User user = 1;
       Unit unit = 2;
-      UnitLevelUp unit_level_up = 3;
+      UnitAndCurrencies unit_and_currencies = 3;
       Item item = 4;
       Campaigns campaigns = 5;
       Campaign campaign = 6;
@@ -124,15 +130,16 @@ syntax = "proto3";
     string id = 1;
     uint32 unit_level = 2;
     uint32 tier = 3;
-    bool selected = 4;
-    uint32 slot = 5;
-    string level_id = 6;
-    string user_id = 7;
-    Character character = 8;
-    repeated Item items = 9;
+    uint32 rank = 4;
+    bool selected = 5;
+    uint32 slot = 6;
+    string level_id = 7;
+    string user_id = 8;
+    Character character = 9;
+    repeated Item items = 10;
   }
 
-  message UnitLevelUp {
+  message UnitAndCurrencies {
     Unit unit = 1;
     repeated UserCurrency user_currency = 2;
   }

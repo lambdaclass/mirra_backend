@@ -15,7 +15,7 @@ defmodule GameBackend.Units.Unit do
   schema "units" do
     field(:unit_level, :integer)
     field(:tier, :integer)
-    # field(:rank, :integer)
+    field(:rank, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
 
@@ -31,17 +31,22 @@ defmodule GameBackend.Units.Unit do
   @doc false
   def changeset(unit, attrs) do
     unit
-    |> cast(attrs, [:unit_level, :tier, :selected, :slot, :character_id, :user_id, :level_id])
-    |> validate_required([:unit_level, :tier, :selected, :character_id])
+    |> cast(attrs, [
+      :unit_level,
+      :tier,
+      :rank,
+      :selected,
+      :slot,
+      :character_id,
+      :user_id,
+      :level_id
+    ])
+    |> validate_required([:unit_level, :tier, :rank, :selected, :character_id])
   end
 
   @doc """
-  Changeset for when selecting or unselecting a unit.
+  Changeset for when updating a unit.
   """
-  def selected_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :slot])
-
-  @doc """
-  Changeset for when leveling up a unit.
-  """
-  def level_up_changeset(unit, attrs), do: cast(unit, attrs, [:unit_level])
+  def update_changeset(unit, attrs),
+    do: cast(unit, attrs, [:selected, :slot, :unit_level, :tier, :rank])
 end

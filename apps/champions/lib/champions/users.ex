@@ -87,6 +87,7 @@ defmodule Champions.Users do
         user_id: user.id,
         unit_level: Enum.random(1..5),
         tier: 1,
+        rank: 1,
         selected: true,
         slot: index
       })
