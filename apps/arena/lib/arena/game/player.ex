@@ -117,6 +117,7 @@ defmodule Arena.Game.Player do
               )
 
               put_in(player, [:aditional_info, :recharging_stamina], true)
+
             _ ->
               player
           end
