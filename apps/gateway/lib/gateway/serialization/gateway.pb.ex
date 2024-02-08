@@ -57,17 +57,23 @@ defmodule Gateway.Serialization.WebSocketRequest do
     oneof: 0
   )
 
-  field(:equip_item, 11, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
+  field(:tier_up_unit, 11,
+    type: Gateway.Serialization.TierUpUnit,
+    json_name: "tierUpUnit",
+    oneof: 0
+  )
 
-  field(:unequip_item, 12,
+  field(:equip_item, 12, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
+
+  field(:unequip_item, 13,
     type: Gateway.Serialization.UnequipItem,
     json_name: "unequipItem",
     oneof: 0
   )
 
-  field(:get_item, 13, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
+  field(:get_item, 14, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
 
-  field(:level_up_item, 14,
+  field(:level_up_item, 15,
     type: Gateway.Serialization.LevelUpItem,
     json_name: "levelUpItem",
     oneof: 0
@@ -161,6 +167,15 @@ defmodule Gateway.Serialization.LevelUpUnit do
   field(:unit_id, 2, type: :string, json_name: "unitId")
 end
 
+defmodule Gateway.Serialization.TierUpUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:unit_id, 2, type: :string, json_name: "unitId")
+end
+
 defmodule Gateway.Serialization.EquipItem do
   @moduledoc false
 
@@ -208,9 +223,9 @@ defmodule Gateway.Serialization.WebSocketResponse do
   field(:user, 1, type: Gateway.Serialization.User, oneof: 0)
   field(:unit, 2, type: Gateway.Serialization.Unit, oneof: 0)
 
-  field(:unit_level_up, 3,
-    type: Gateway.Serialization.UnitLevelUp,
-    json_name: "unitLevelUp",
+  field(:unit_and_currencies, 3,
+    type: Gateway.Serialization.UnitAndCurrencies,
+    json_name: "unitAndCurrencies",
     oneof: 0
   )
 
@@ -265,15 +280,16 @@ defmodule Gateway.Serialization.Unit do
   field(:id, 1, type: :string)
   field(:unit_level, 2, type: :uint32, json_name: "unitLevel")
   field(:tier, 3, type: :uint32)
-  field(:selected, 4, type: :bool)
-  field(:slot, 5, type: :uint32)
-  field(:level_id, 6, type: :string, json_name: "levelId")
-  field(:user_id, 7, type: :string, json_name: "userId")
-  field(:character, 8, type: Gateway.Serialization.Character)
-  field(:items, 9, repeated: true, type: Gateway.Serialization.Item)
+  field(:rank, 4, type: :uint32)
+  field(:selected, 5, type: :bool)
+  field(:slot, 6, type: :uint32)
+  field(:level_id, 7, type: :string, json_name: "levelId")
+  field(:user_id, 8, type: :string, json_name: "userId")
+  field(:character, 9, type: Gateway.Serialization.Character)
+  field(:items, 10, repeated: true, type: Gateway.Serialization.Item)
 end
 
-defmodule Gateway.Serialization.UnitLevelUp do
+defmodule Gateway.Serialization.UnitAndCurrencies do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
