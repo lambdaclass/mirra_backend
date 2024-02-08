@@ -102,7 +102,6 @@ defmodule Arena.Game.Player do
 
       skill ->
         action_name = skill_key_execution_action(skill_key)
-        # duration_ms = get_in(skill,[:execution_duration_ms])
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
