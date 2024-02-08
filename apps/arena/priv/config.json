@@ -2,23 +2,24 @@
   "map": {
     "radius": 4800.0,
     "initial_positions": [
-      {"x": -750.0, "y": 2000.0},
+      {"x": 1.0, "y": 1.0},
+      {"x": 1.0, "y": 1.0},
       {"x": -1750.0, "y": 1000.0},
       {"x": 0.0, "y": 1000.0},
       {"x": 750.0, "y": 2000.0},
       {"x": 1750.0, "y": 1000.0},
       {"x": 1750.0, "y": -1000.0},
       {"x": 750.0, "y": -2000.0},
-      {"x": 0.0, "y": 0.0},
       {"x": -750.0, "y": -2000.0},
       {"x": -1750.0, "y": -1000.0}
-    ]
+    ],
+    "obstacles": []
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 10000,
+    "zone_shrink_start_ms": 20000,
     "zone_stop_interval_ms": 30000,
-    "zone_start_interval_ms": 15000
+    "zone_start_interval_ms": 20000
   },
   "skills": [
     {
@@ -30,8 +31,7 @@
         {
           "circle_hit": {
             "damage": 15,
-            "range": 1000.0,
-            "on_hit_effects": []
+            "range": 1000.0
           }
         }
       ]
@@ -46,8 +46,7 @@
           "cone_hit": {
             "damage": 15,
             "range": 1000.0,
-            "angle": 45.0,
-            "on_hit_effects": []
+            "angle": 45.0
           }
         }
       ]
@@ -73,7 +72,8 @@
         {
           "repeated_shoot": {
             "interval_ms": 250,
-            "amount": 18
+            "amount": 18,
+            "remove_on_collision": true
           }
         }
       ]
@@ -87,13 +87,59 @@
         {
           "multi_shoot": {
             "angle_between": 10.0,
-            "amount": 3
+            "amount": 3,
+            "remove_on_collision": true
           }
         }
       ]
     },
     {
       "name": "dash",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ]
+    },
+    {
+      "name": "avenge",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 1000,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "multi_cone_hit": {
+            "damage": 10,
+            "range": 1000.0,
+            "angle": 45.0,
+            "interval_ms": 1000,
+            "amount": 3
+          }
+        }
+      ]
+    },
+    {
+      "name": "veil_radiance",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "circle_hit": {
+            "damage": 15,
+            "range": 1000.0
+          }
+        }
+      ]
+    },
+    {
+      "name": "sneak",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "is_passive": false,
@@ -112,8 +158,8 @@
       "name": "muflus",
       "active": true,
       "base_speed": 25.0,
-      "base_size": 50.0,
-      "base_health": 100,
+      "base_size": 100.0,
+      "base_health": 110,
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
@@ -140,6 +186,23 @@
         "1": "multishot",
         "2": "repeated_shot",
         "3": "dash"
+      }
+    },
+    {
+      "name": "uma",
+      "active": true,
+      "base_speed": 20.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "avenge",
+        "2": "veil_radiance",
+        "3": "sneak"
       }
     }
   ]
