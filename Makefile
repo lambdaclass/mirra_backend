@@ -26,6 +26,7 @@ check: credo format
 
 generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos format
 
+
 generate-gateway-protos:
 	protoc \
 		--elixir_out=apps/gateway/lib/gateway/serialization \

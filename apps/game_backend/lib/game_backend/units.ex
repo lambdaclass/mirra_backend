@@ -16,7 +16,6 @@ defmodule GameBackend.Units do
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.Currencies
-
   @doc """
   Inserts a unit.
   """

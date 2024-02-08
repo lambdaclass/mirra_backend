@@ -23,7 +23,7 @@ defmodule Champions.Units do
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
 
-  Returns `:not_found` if unit doesn't exist or if it's now owned by the user.
+  Returns `:not_found` if unit doesn't exist or if it's not owned by the user.
   Returns the unit's new state if succesful.
   """
   def select_unit(_user_id, _unit_id, nil), do: {:error, :no_slot}
