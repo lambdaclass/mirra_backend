@@ -57,7 +57,7 @@ defmodule Arena.Game.Player do
 
   def change_stamina(player, stamina_change) do
     update_in(player, [:aditional_info, :available_stamina], fn stamina ->
-      max(stamina - stamina_change, 0) |> min(player.aditional_info.max_stamina)
+      max(stamina + stamina_change, 0) |> min(player.aditional_info.max_stamina)
     end)
   end
 
@@ -97,7 +97,7 @@ defmodule Arena.Game.Player do
 
   def use_skill(player, skill_key, game_state) do
     case get_skill_if_usable(player, skill_key) do
-      false ->
+      nil ->
         game_state
 
       skill ->
