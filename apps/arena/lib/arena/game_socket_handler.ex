@@ -29,6 +29,7 @@ defmodule Arena.GameSocketHandler do
       GameUpdater.join(state.game_pid, state.client_id)
 
     state = Map.put(state, :player_id, player_id)
+      |> Map.put(:enable, true)
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
@@ -38,6 +39,11 @@ defmodule Arena.GameSocketHandler do
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 
     {:reply, {:binary, encoded_msg}, state}
+  end
+
+  @impl true
+  def websocket_handle(_, %{enable: false} = state) do
+    {:ok, state}
   end
 
   @impl true
@@ -97,6 +103,15 @@ defmodule Arena.GameSocketHandler do
   def websocket_info({:game_finished, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME FINISHED")
     {:reply, {:binary, game_state}, state}
+  end
+
+  @impl true
+  def websocket_info({:player_dead, player_id}, state) do
+    if state.player_id == player_id do
+      {:ok, Map.put(state, :enable, false)}
+    else
+      {:ok, state}
+    end
   end
 
   @impl true

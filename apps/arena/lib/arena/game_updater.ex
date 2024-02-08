@@ -181,6 +181,8 @@ defmodule Arena.GameUpdater do
   def handle_info({:to_killfeed, killer_id, victim_id}, state) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+    broadcast_player_dead(state.game_state.game_id, victim_id)
+
     {:noreply, state}
   end
 
@@ -287,6 +289,10 @@ defmodule Arena.GameUpdater do
   ##########################
 
   # Broadcast game update to all players
+  defp broadcast_player_dead(game_id, player_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:player_dead, player_id})
+  end
+
   defp broadcast_game_update(state) do
     encoded_state =
       GameEvent.encode(%GameEvent{
