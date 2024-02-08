@@ -58,7 +58,8 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
-    entities_to_collide_projectiles = Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
+    entities_to_collide_projectiles =
+      Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
     players =
       game_state.players
@@ -497,7 +498,8 @@ defmodule Arena.GameUpdater do
           entities -> List.delete(entities, external_wall_id)
         end
 
-      collided_entity = decide_collided_entity(projectile, collides_with, external_wall_id, players_acc)
+      collided_entity =
+        decide_collided_entity(projectile, collides_with, external_wall_id, players_acc)
 
       # #247 Refactor projectile collision resolution
       case {
@@ -551,12 +553,18 @@ defmodule Arena.GameUpdater do
        when entity_id == external_wall_id,
        do: external_wall_id
 
-  defp decide_collided_entity(projectile, [entity_id | other_entities], _external_wall_id, _players)
+  defp decide_collided_entity(
+         projectile,
+         [entity_id | other_entities],
+         _external_wall_id,
+         _players
+       )
        when entity_id == projectile.aditional_info.owner_id,
        do: List.first(other_entities, nil)
 
   defp decide_collided_entity(projectile, [entity_id | other_entities], external_wall_id, players) do
     player = Map.get(players, entity_id)
+
     case player && Player.alive?(player) do
       false -> decide_collided_entity(projectile, other_entities, external_wall_id, players)
       _ -> entity_id

@@ -28,7 +28,8 @@ defmodule Arena.GameSocketHandler do
     {:ok, %{player_id: player_id, game_config: config}} =
       GameUpdater.join(state.game_pid, state.client_id)
 
-    state = Map.put(state, :player_id, player_id)
+    state =
+      Map.put(state, :player_id, player_id)
       |> Map.put(:enable, true)
 
     encoded_msg =
