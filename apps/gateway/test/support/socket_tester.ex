@@ -140,6 +140,16 @@ defmodule Gateway.SocketTester do
          })}
       )
 
+  def tier_up_unit(pid, user_id, unit_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:tier_up_unit, %LevelUpUnit{user_id: user_id, unit_id: unit_id}}
+         })}
+      )
+
   def equip_item(pid, user_id, item_id, unit_id),
     do:
       WebSockex.send_frame(

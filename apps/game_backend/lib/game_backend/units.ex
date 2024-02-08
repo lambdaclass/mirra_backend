@@ -3,6 +3,8 @@ defmodule GameBackend.Units do
   The Units module defines utilites for interacting with Units, that are common across all games. Also defines the data structures themselves. Operations that can be done to a Unit are:
   - Create
   - Select to a slot/Unselect
+  - Level up
+  - Tier up
 
   Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character. Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
   """
@@ -29,7 +31,7 @@ defmodule GameBackend.Units do
   """
   def update_selected(unit, params) do
     unit
-    |> Unit.selected_changeset(params)
+    |> Unit.update_changeset(params)
     |> Repo.update()
   end
 
@@ -190,6 +192,28 @@ defmodule GameBackend.Units do
     end
   end
 
+  @doc """
+  Executes a tier up transaction, which involves updating a unit's tier and removing currency from a user.
+  """
+  def tier_up(unit, costs) do
+    result =
+      Multi.new()
+      |> Multi.run(:unit, fn _, _ -> add_tier(unit) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        add_user_currencies(unit, costs)
+      end)
+      |> Repo.transaction()
+
+    # Preload user_currency's Currency
+    case result do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, %{unit: unit, user_currency: user_currency}} ->
+        {:ok, %{unit: unit, user_currency: Enum.map(user_currency, &Repo.preload(&1, :currency))}}
+    end
+  end
+
   defp add_user_currencies(unit, costs) do
     result =
       Enum.map(costs, fn {currency_id, cost} ->
@@ -217,7 +241,21 @@ defmodule GameBackend.Units do
   """
   def add_level(unit, level \\ 1) do
     unit
-    |> Unit.level_up_changeset(%{unit_level: unit.unit_level + level})
+    |> Unit.update_changeset(%{unit_level: unit.unit_level + level})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment an unit's tier.
+
+  ## Examples
+
+      iex> tier_up(%Unit{tier: 41}, 1)
+      {:ok, %Unit{tier: 42}}
+  """
+  def add_tier(unit, tier \\ 1) do
+    unit
+    |> Unit.update_changeset(%{tier: unit.tier + tier})
     |> Repo.update()
   end
 end

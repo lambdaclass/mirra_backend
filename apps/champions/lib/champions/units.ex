@@ -10,6 +10,16 @@ defmodule Champions.Units do
   alias GameBackend.Units
   alias GameBackend.Users.Currencies
 
+  @star1 1
+  @star2 2
+  @star3 3
+  @star4 4
+  @star5 5
+  @illumination1 6
+  @illumination2 7
+  @illumination3 8
+  # @awakened 9
+
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
 
@@ -63,7 +73,6 @@ defmodule Champions.Units do
   Returns whether a unit can level up. Level is blocked by tier.
   """
   def can_level_up(unit), do: can_level_up(unit.tier, unit.unit_level)
-  defp can_level_up(0, level) when level < 10, do: true
   defp can_level_up(1, level) when level < 20, do: true
   defp can_level_up(2, level) when level < 40, do: true
   defp can_level_up(3, level) when level < 60, do: true
@@ -77,6 +86,14 @@ defmodule Champions.Units do
   defp can_level_up(11, level) when level < 220, do: true
   defp can_level_up(12, level) when level < 250, do: true
   defp can_level_up(_, _), do: false
+
+  @doc """
+  Calculate how much it costs for a unit to be leveled up.
+
+  Returns a `{currency_id, amount}` tuple list.
+  """
+  def calculate_level_up_cost(unit),
+    do: [{Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}]
 
   @doc """
   Tiers up a user's unit and substracts the currency cost from the user.
@@ -101,14 +118,28 @@ defmodule Champions.Units do
     end
   end
 
-  def can_tier_up(_), do: true
-  def calculate_tier_up_cost(_), do: true
+  @doc """
+  Returns whether a unit can tier up. tier is blocked by tier.
+  """
+  def can_tier_up(unit), do: can_tier_up(unit.rank, unit.tier)
+  defp can_tier_up(@star1, tier) when tier < 1, do: true
+  defp can_tier_up(@star2, tier) when tier < 2, do: true
+  defp can_tier_up(@star3, tier) when tier < 3, do: true
+  defp can_tier_up(@star4, tier) when tier < 4, do: true
+  defp can_tier_up(@star5, tier) when tier < 5, do: true
+  defp can_tier_up(@illumination1, tier) when tier < 7, do: true
+  defp can_tier_up(@illumination2, tier) when tier < 9, do: true
+  defp can_tier_up(@illumination3, tier) when tier < 11, do: true
+  defp can_tier_up(_, _), do: false
 
   @doc """
-  Calculate how much it costs for a unit to be leveled up.
+  Calculate how much it costs for a unit to be tiered up.
 
   Returns a `{currency_id, amount}` tuple list.
   """
-  def calculate_level_up_cost(unit),
-    do: [{Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}]
+  def calculate_tier_up_cost(unit),
+    do: [
+      {Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()},
+      {Currencies.get_currency_by_name!("Gems").id, 50}
+    ]
 end

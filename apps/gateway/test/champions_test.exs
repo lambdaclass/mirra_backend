@@ -5,7 +5,17 @@ defmodule Gateway.Test.Champions do
   use ExUnit.Case
 
   alias Champions.{Units, Users}
-  alias Gateway.Serialization.{Error, Unit, UnitLevelUp, User, WebSocketResponse}
+
+  alias Gateway.Serialization.{
+    Currency,
+    Error,
+    Unit,
+    UnitAndCurrencies,
+    User,
+    UserCurrency,
+    WebSocketResponse
+  }
+
   alias Gateway.SocketTester
 
   # import Plug.Conn
@@ -93,8 +103,9 @@ defmodule Gateway.Test.Champions do
       {:ok, unit} =
         GameBackend.Units.insert_unit(%{
           user_id: user.id,
-          unit_level: 9,
-          tier: 0,
+          unit_level: 19,
+          tier: 1,
+          rank: 2,
           selected: false,
           character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id
         })
@@ -107,24 +118,63 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:unit_level_up, %UnitLevelUp{}}}
+
+      assert_receive %WebSocketResponse{
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{}}
+      }
 
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type: {:unit_level_up, %UnitLevelUp{unit: unit, user_currency: [user_currency]}}
+        response_type:
+          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
       } = get_last_message()
 
       assert unit.unit_level == level + 1
       assert user_currency.currency.name == "Gold"
       assert user_currency.amount == gold - level_up_cost
 
-      # Cannot level up because unit is level 10 with tier 0
-      assert unit.unit_level == 10
-      assert unit.tier == 0
+      # Cannot level up because unit is level 20 with tier 1
+      assert unit.unit_level == 20
+      assert unit.tier == 1
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_level_up"}}}
+
+      # Tier up
+
+      user_gold = Users.get_amount_of_currency_by_name!(user.id, "Gold")
+      user_gems = Users.get_amount_of_currency_by_name!(user.id, "Gems")
+      [{_gold_id, gold_cost}, {_gems_id, gems_cost}] = Units.calculate_tier_up_cost(unit)
+
+      :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type:
+          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
+      } = get_last_message()
+
+      user_currencies =
+        Enum.into(user_currencies, %{}, fn %UserCurrency{
+                                             currency: %Currency{name: name},
+                                             amount: amount
+                                           } ->
+          {name, amount}
+        end)
+
+      assert unit.unit_level == 20
+      assert unit.tier == 2
+      assert user_currencies["Gold"] == user_gold - gold_cost
+      assert user_currencies["Gems"] == user_gems - gems_cost
+
+      # TODO: Check that we can now level up
     end
   end
 
