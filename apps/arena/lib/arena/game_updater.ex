@@ -120,8 +120,11 @@ defmodule Arena.GameUpdater do
       Map.get(state.game_state.players, player_id)
       |> Player.reset_movement(previous_speed)
 
-    state = put_in(state, [:game_state, :players, player_id], player)
-    {:noreply, state}
+    game_state =
+      put_in(state.game_state, [:players, player_id], player)
+      |> Skill.do_mechanic(player, {:circle_hit, %{damage: 15, range: 1000.0}}, %{})
+
+    {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_info({:trigger_mechanic, player_id, mechanic}, state) do
@@ -275,6 +278,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
+    IO.inspect({player_id, skill_key, skill_params}, label: "attack")
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_skill(skill_key, skill_params, state.game_state)

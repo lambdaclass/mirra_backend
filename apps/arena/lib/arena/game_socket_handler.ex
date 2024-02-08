@@ -72,6 +72,9 @@ defmodule Arena.GameSocketHandler do
           timestamp
         )
 
+      %{action_type: {:attack, %{skill: skill}}} ->
+        GameUpdater.attack(state.game_pid, state.player_id, skill, %{target: %{x: 0.0, y: 0.0}})
+
       _ ->
         {}
     end

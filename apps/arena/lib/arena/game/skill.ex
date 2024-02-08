@@ -171,7 +171,7 @@ defmodule Arena.Game.Skill do
     |> Map.put(:projectiles, projectiles)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{target: target_position}, _skill_params) do
+  def do_mechanic(game_state, player, {:leap, leap}, %{target: target_position}) do
     Process.send_after(self(), {:stop_leap, player.id, player.speed}, leap.duration_ms)
 
     speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms)
