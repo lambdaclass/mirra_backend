@@ -7,8 +7,10 @@ defmodule Champions.Units do
   - Tier ups cost an amount of gold that depends on the unit level, plus a set number of gems.
   """
 
+  alias Ecto.Multi
   alias GameBackend.Units
   alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.UserCurrency
 
   @star1 1
   @star2 2
@@ -57,15 +59,47 @@ defmodule Champions.Units do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
          {:can_level_up, true} <- {:can_level_up, can_level_up(unit)},
-         level_up_cost = calculate_level_up_cost(unit),
+         costs = calculate_level_up_cost(unit),
          {:can_afford, true} <-
-           {:can_afford, Currencies.can_afford(user_id, level_up_cost)} do
-      Units.level_up(unit, level_up_cost)
+           {:can_afford, Currencies.can_afford(user_id, costs)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> Units.add_level(unit) end)
+        |> Multi.run(:user_currency, fn _, _ ->
+          add_user_currencies(unit, costs)
+        end)
+        |> GameBackend.Transaction.run()
+
+      case result do
+        {:error, reason} ->
+          {:error, reason}
+
+        {:ok, %{unit: unit, user_currency: user_currency}} ->
+          {:ok,
+           %{unit: unit, user_currency: Enum.map(user_currency, &UserCurrency.preload_currency/1)}}
+      end
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
       {:unit_owned, false} -> {:error, :not_found}
       {:can_level_up, false} -> {:error, :cant_level_up}
       {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  defp add_user_currencies(unit, costs) do
+    result =
+      Enum.map(costs, fn {currency_id, cost} ->
+        Currencies.add_currency(unit.user_id, currency_id, -cost)
+      end)
+
+    if Enum.all?(result, fn
+         {:ok, _} -> true
+         _ -> false
+       end) do
+      {:ok,
+       Enum.map(result, fn {_ok, user_currency} -> UserCurrency.preload_currency(user_currency) end)}
+    else
+      {:error, "failed"}
     end
   end
 
@@ -106,10 +140,25 @@ defmodule Champions.Units do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
          {:can_tier_up, true} <- {:can_tier_up, can_tier_up(unit)},
-         tier_up_costs = calculate_tier_up_cost(unit),
+         costs = calculate_tier_up_cost(unit),
          {:can_afford, true} <-
-           {:can_afford, Currencies.can_afford(user_id, tier_up_costs)} do
-      Units.tier_up(unit, tier_up_costs)
+           {:can_afford, Currencies.can_afford(user_id, costs)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> Units.add_tier(unit) end)
+        |> Multi.run(:user_currency, fn _, _ ->
+          add_user_currencies(unit, costs)
+        end)
+        |> GameBackend.Transaction.run()
+
+      case result do
+        {:error, reason} ->
+          {:error, reason}
+
+        {:ok, %{unit: unit, user_currency: user_currency}} ->
+          {:ok,
+           %{unit: unit, user_currency: Enum.map(user_currency, &UserCurrency.preload_currency/1)}}
+      end
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
       {:unit_owned, false} -> {:error, :not_owned}
@@ -142,4 +191,17 @@ defmodule Champions.Units do
       {Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()},
       {Currencies.get_currency_by_name!("Gems").id, 50}
     ]
+
+  # def fuse(user_id, unit_id, consumed_units) do
+  #   with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
+  #   {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+  #   {:can_level_up, true} <- {:can_level_up, can_level_up(unit)},
+  #   level_up_cost = calculate_level_up_cost(unit),
+  #   {:can_afford, true} <-
+  #     {:can_afford, Currencies.can_afford(user_id, level_up_cost)} do
+  #       Units.rank_up()
+  #     else
+  #       _ -> :err
+  #     end
+  # end
 end
