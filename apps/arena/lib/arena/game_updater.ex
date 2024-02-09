@@ -10,7 +10,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Player
   alias Arena.Game.Skill
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
-  alias Arena.Utils
   alias Phoenix.PubSub
 
   ## Time between checking that a game has ended
@@ -57,6 +56,18 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
+
+    players_moved =
+      Enum.reduce(game_state.players, %{}, fn ({player_id, player}, players_acc) ->
+        if Player.forced_moving?(player) do
+          moved = Physics.move_entity(player, game_state.external_wall)
+          Map.put(players_acc, player_id, Map.merge(player, moved))
+        else
+          Map.put(players_acc, player_id, player)
+        end
+    end)
+
+    game_state = Map.put(game_state, :players, players_moved)
 
     # #246 Only use alive players
     entities_to_collide_projectiles = Map.merge(game_state.players, game_state.obstacles)
@@ -109,7 +120,7 @@ defmodule Arena.GameUpdater do
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player =
       Map.get(state.game_state.players, player_id)
-      |> Player.reset_movement(previous_speed)
+      |> Player.reset_forced_movement(previous_speed)
 
     state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
@@ -118,11 +129,11 @@ defmodule Arena.GameUpdater do
   def handle_info({:stop_leap, player_id, previous_speed}, state) do
     player =
       Map.get(state.game_state.players, player_id)
-      |> Player.reset_movement(previous_speed)
+      |> Player.reset_forced_movement(previous_speed)
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, {:circle_hit, %{damage: 15, range: 1000.0}}, %{})
+      |> Skill.do_mechanic(player, {:circle_hit, %{damage: 15, range: 100.0}}, %{})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -241,44 +252,21 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
+  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
     player =
       state.game_state.players
       |> Map.get(player_id)
-
-    current_actions =
-      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
-
-    is_moving = x != 0.0 || y != 0.0
-
-    direction =
-      case is_moving do
-        true -> Utils.normalize(x, y)
-        _ -> player.direction
-      end
-
-    player =
-      player
-      |> Map.put(:direction, direction)
-      |> Map.put(:is_moving, is_moving)
-      |> Physics.move_entity(state.game_state.external_wall)
-      |> Map.put(
-        :aditional_info,
-        Map.merge(player.aditional_info, %{current_actions: current_actions})
-      )
-
-    players = state.game_state.players |> Map.put(player_id, player)
+      |> Player.move(direction, state.game_state.external_wall)
 
     game_state =
       state.game_state
-      |> Map.put(:players, players)
+      |> put_in([:players, player_id], player)
       |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
   def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
-    IO.inspect({player_id, skill_key, skill_params}, label: "attack")
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_skill(skill_key, skill_params, state.game_state)
@@ -352,22 +340,6 @@ defmodule Arena.GameUpdater do
 
   ##########################
   # End broadcast
-  ##########################
-
-  ##########################
-  # Skills mechaninc
-  ##########################
-  defp add_or_remove_moving_action(current_actions, direction) do
-    if direction == {0.0, 0.0} do
-      current_actions -- [%{action: :MOVING, duration: 0}]
-    else
-      current_actions ++ [%{action: :MOVING, duration: 0}]
-    end
-    |> Enum.uniq()
-  end
-
-  ##########################
-  # End skills mechaninc
   ##########################
 
   ##########################

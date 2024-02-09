@@ -3,6 +3,7 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
   alias Arena.Game.Skill
+  alias Arena.Utils
 
   def add_action(player, action_name, duration_ms) do
     Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
@@ -89,10 +90,39 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def reset_movement(player, reset_speed) do
+  def move(%{aditional_info: %{forced_movement: true}} = player, _, _) do
+    player
+  end
+
+  def move(player, direction, external_wall) do
+    current_actions =
+      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
+
+    {x, y} = direction
+    is_moving = x != 0.0 || y != 0.0
+
+    direction =
+      case is_moving do
+        true -> Utils.normalize(x, y)
+        _ -> player.direction
+      end
+
+    player
+    |> Map.put(:direction, direction)
+    |> Map.put(:is_moving, is_moving)
+    |> Physics.move_entity(external_wall)
+    |> Map.put(:aditional_info, Map.merge(player.aditional_info, %{current_actions: current_actions}))
+  end
+
+  def reset_forced_movement(player, reset_speed) do
     player
     |> Map.put(:is_moving, false)
     |> Map.put(:speed, reset_speed)
+    |> put_in([:aditional_info, :forced_movement], false)
+  end
+
+  def forced_moving?(player) do
+    player.aditional_info.forced_movement
   end
 
   def use_skill(player, skill_key, skill_params, game_state) do
@@ -160,5 +190,14 @@ defmodule Arena.Game.Player do
       false ->
         player
     end
+  end
+
+  defp add_or_remove_moving_action(current_actions, direction) do
+    if direction == {0.0, 0.0} do
+      current_actions -- [%{action: :MOVING, duration: 0}]
+    else
+      current_actions ++ [%{action: :MOVING, duration: 0}]
+    end
+    |> Enum.uniq()
   end
 end

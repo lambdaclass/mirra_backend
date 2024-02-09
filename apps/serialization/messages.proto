@@ -173,7 +173,7 @@ message Attack {
 }
 
 message AttackParameters {
-  Position target = 1;
+  Direction target = 1;
 }
 
 message GameAction {

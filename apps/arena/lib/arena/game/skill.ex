@@ -92,6 +92,7 @@ defmodule Arena.Game.Skill do
       player
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
+      |> put_in([:aditional_info, :forced_movement], true)
 
     players = Map.put(game_state.players, player.id, player)
 
@@ -171,15 +172,21 @@ defmodule Arena.Game.Skill do
     |> Map.put(:projectiles, projectiles)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{target: target_position}) do
+  def do_mechanic(game_state, player, {:leap, leap}, %{target: target}) do
     Process.send_after(self(), {:stop_leap, player.id, player.speed}, leap.duration_ms)
 
-    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms)
+    ## TODO: Cap target_position to leap.range
+    target_position = %{x: target.x * leap.range, y: target.y * leap.range}
+
+    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
+    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms) * 29
 
     player =
       player
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
+      |> Map.put(:direction, target)
+      |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)
   end
