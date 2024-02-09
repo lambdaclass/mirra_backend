@@ -85,7 +85,7 @@ defmodule Arena.GameUpdater do
       )
 
     players =
-      apply_zone_damage(players, game_state.zone, state.game_config.game.zone_damage_interval_ms)
+      apply_zone_damage(players, game_state.zone, state.game_config.game)
 
     game_state =
       game_state
@@ -473,7 +473,10 @@ defmodule Arena.GameUpdater do
   # End game flow
   ##########################
 
-  defp apply_zone_damage(players, zone, zone_damage_interval) do
+  defp apply_zone_damage(players, zone, %{
+         zone_damage_interval_ms: zone_interval,
+         zone_damage: zone_damage
+       }) do
     safe_zone = Entities.make_circular_area(0, %{x: 0.0, y: 0.0}, zone.radius)
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
@@ -484,18 +487,19 @@ defmodule Arena.GameUpdater do
       last_damage = player |> get_in([:aditional_info, :last_damage_received])
       elapse_time = now - last_damage
 
-      player = player |> maybe_receive_zone_damage(elapse_time, zone_damage_interval)
+      player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
 
       Map.put(players_acc, player_id, player)
     end)
   end
 
-  defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval)
+  defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    Player.change_health(player, 1)
+    Player.change_health(player, zone_damage)
   end
 
-  defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval), do: player
+  defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
+    do: player
 
   defp resolve_collisions(projectiles, players, obstacles, external_wall_id) do
     Enum.reduce(projectiles, {projectiles, players}, fn {projectile_id, projectile},
