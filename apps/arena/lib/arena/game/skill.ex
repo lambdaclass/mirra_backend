@@ -84,7 +84,6 @@ defmodule Arena.Game.Skill do
     do_mechanic(game_state, player, {:do_cone_hit, multi_cone_hit}, %{})
   end
 
-
   def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 

@@ -111,7 +111,10 @@ defmodule Arena.Game.Player do
     |> Map.put(:direction, direction)
     |> Map.put(:is_moving, is_moving)
     |> Physics.move_entity(external_wall)
-    |> Map.put(:aditional_info, Map.merge(player.aditional_info, %{current_actions: current_actions}))
+    |> Map.put(
+      :aditional_info,
+      Map.merge(player.aditional_info, %{current_actions: current_actions})
+    )
   end
 
   def reset_forced_movement(player, reset_speed) do
