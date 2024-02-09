@@ -58,8 +58,8 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
-    # #246 Only use alive players
-    entities_to_collide_projectiles = Map.merge(game_state.players, game_state.obstacles)
+    entities_to_collide_projectiles =
+      Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
     players =
       game_state.players
@@ -182,6 +182,8 @@ defmodule Arena.GameUpdater do
   def handle_info({:to_killfeed, killer_id, victim_id}, state) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+    broadcast_player_dead(state.game_state.game_id, victim_id)
+
     {:noreply, state}
   end
 
@@ -288,6 +290,10 @@ defmodule Arena.GameUpdater do
   ##########################
 
   # Broadcast game update to all players
+  defp broadcast_player_dead(game_id, player_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:player_dead, player_id})
+  end
+
   defp broadcast_game_update(state) do
     encoded_state =
       GameEvent.encode(%GameEvent{
@@ -492,7 +498,8 @@ defmodule Arena.GameUpdater do
           entities -> List.delete(entities, external_wall_id)
         end
 
-      collided_entity = decide_collided_entity(projectile, collides_with, external_wall_id)
+      collided_entity =
+        decide_collided_entity(projectile, collides_with, external_wall_id, players_acc)
 
       # #247 Refactor projectile collision resolution
       case {
@@ -540,15 +547,27 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp decide_collided_entity(_projectile, [], _external_wall_id), do: nil
+  defp decide_collided_entity(_projectile, [], _external_wall_id, _players), do: nil
 
-  defp decide_collided_entity(_projectile, [entity_id], external_wall_id)
+  defp decide_collided_entity(_projectile, [entity_id], external_wall_id, _players)
        when entity_id == external_wall_id,
        do: external_wall_id
 
-  defp decide_collided_entity(projectile, [entity_id | other_entities], _external_wall_id)
+  defp decide_collided_entity(
+         projectile,
+         [entity_id | other_entities],
+         _external_wall_id,
+         _players
+       )
        when entity_id == projectile.aditional_info.owner_id,
        do: List.first(other_entities, nil)
 
-  defp decide_collided_entity(_projectile, [entity_id | _], _external_wall_id), do: entity_id
+  defp decide_collided_entity(projectile, [entity_id | other_entities], external_wall_id, players) do
+    player = Map.get(players, entity_id)
+
+    case player && Player.alive?(player) do
+      false -> decide_collided_entity(projectile, other_entities, external_wall_id, players)
+      _ -> entity_id
+    end
+  end
 end
