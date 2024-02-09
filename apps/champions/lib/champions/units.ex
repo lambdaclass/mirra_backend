@@ -8,7 +8,10 @@ defmodule Champions.Units do
   """
 
   alias Ecto.Multi
+  alias GameBackend.Transaction
   alias GameBackend.Units
+  alias GameBackend.Units.Unit
+  alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.Currencies
   alias GameBackend.Users.Currencies.UserCurrency
 
@@ -20,7 +23,11 @@ defmodule Champions.Units do
   @illumination1 6
   @illumination2 7
   @illumination3 8
-  # @awakened 9
+  @awakened 9
+
+  @epic 3
+  @rare 2
+  @common 1
 
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
@@ -32,11 +39,9 @@ defmodule Champions.Units do
   def select_unit(_user_id, _unit_id, slot) when slot not in 1..5, do: {:error, :out_of_bounds}
 
   def select_unit(user_id, unit_id, slot) do
-    if Units.get_selected_units(user_id) |> Enum.any?(&(&1.slot == slot)) do
-      {:error, :slot_occupied}
-    else
-      Units.select_unit(user_id, unit_id, slot)
-    end
+    if Units.get_selected_units(user_id) |> Enum.any?(&(&1.slot == slot)),
+      do: {:error, :slot_occupied},
+      else: Units.select_unit(user_id, unit_id, slot)
   end
 
   @doc """
@@ -68,11 +73,14 @@ defmodule Champions.Units do
         |> Multi.run(:user_currency, fn _, _ ->
           add_user_currencies(unit, costs)
         end)
-        |> GameBackend.Transaction.run()
+        |> Transaction.run()
 
       case result do
         {:error, reason} ->
           {:error, reason}
+
+        {:error, _, _, _} ->
+          {:error, :transaction}
 
         {:ok, %{unit: unit, user_currency: user_currency}} ->
           {:ok,
@@ -97,7 +105,9 @@ defmodule Champions.Units do
          _ -> false
        end) do
       {:ok,
-       Enum.map(result, fn {_ok, user_currency} -> UserCurrency.preload_currency(user_currency) end)}
+       Enum.map(result, fn {_ok, user_currency} ->
+         UserCurrency.preload_currency(user_currency)
+       end)}
     else
       {:error, "failed"}
     end
@@ -155,6 +165,9 @@ defmodule Champions.Units do
         {:error, reason} ->
           {:error, reason}
 
+        {:error, _, _, _} ->
+          {:error, :transaction}
+
         {:ok, %{unit: unit, user_currency: user_currency}} ->
           {:ok,
            %{unit: unit, user_currency: Enum.map(user_currency, &UserCurrency.preload_currency/1)}}
@@ -168,9 +181,11 @@ defmodule Champions.Units do
   end
 
   @doc """
-  Returns whether a unit can tier up. tier is blocked by tier.
+  Returns whether a unit can tier up. tier is blocked by rank.
   """
   def can_tier_up(unit), do: can_tier_up(unit.rank, unit.tier)
+
+  # What if a unit with level 1 and tier 3 tries to tier up? Should we block that?
   defp can_tier_up(@star1, tier) when tier < 1, do: true
   defp can_tier_up(@star2, tier) when tier < 2, do: true
   defp can_tier_up(@star3, tier) when tier < 3, do: true
@@ -192,16 +207,146 @@ defmodule Champions.Units do
       {Currencies.get_currency_by_name!("Gems").id, 50}
     ]
 
-  # def fuse(user_id, unit_id, consumed_units) do
-  #   with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
-  #   {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
-  #   {:can_level_up, true} <- {:can_level_up, can_level_up(unit)},
-  #   level_up_cost = calculate_level_up_cost(unit),
-  #   {:can_afford, true} <-
-  #     {:can_afford, Currencies.can_afford(user_id, level_up_cost)} do
-  #       Units.rank_up()
-  #     else
-  #       _ -> :err
-  #     end
-  # end
+  def fuse(user_id, unit_id, consumed_units_ids) do
+    with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         {:can_rank_up, true} <- {:can_rank_up, can_rank_up(unit)},
+         consumed_units <- Units.get_units(consumed_units_ids),
+         {:consumed_units_count, true} <-
+           {:consumed_units_count, Enum.count(consumed_units) == Enum.count(consumed_units_ids)},
+         {:consumed_units_valid, true} <-
+           {:consumed_units_valid, validate_consumed_units(unit, consumed_units)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> Units.add_rank(unit) end)
+        |> Multi.run(:deleted_units, fn _, _ -> delete_consumed_units(consumed_units_ids) end)
+        |> Transaction.run()
+
+      case result do
+        {:error, reason} ->
+          {:error, reason}
+
+        {:error, _, _, _} ->
+          {:error, :transaction}
+
+        {:ok, %{unit: unit}} ->
+          {:ok, unit}
+      end
+    else
+      {:unit, {:error, :not_found}} ->
+        {:error, :not_found}
+
+      {:unit_owned, false} ->
+        {:error, :not_owned}
+
+      {:can_rank_up, false} ->
+        {:error, :cant_rank_up}
+
+      {:consumed_units_count, false} ->
+        {:error, :consumed_units_not_found}
+
+      {:consumed_units_valid, false} ->
+        {:error, :consumed_units_invalid}
+    end
+  end
+
+  defp delete_consumed_units(unit_ids) do
+    {amount_deleted, _return} = Units.delete_units(unit_ids)
+
+    if Enum.count(unit_ids) == amount_deleted, do: :ok, else: {:error, "failed"}
+  end
+
+  defp validate_consumed_units(unit, unit_list) do
+    {same_character_amount, same_character_rank} = same_character_requirements(unit)
+    {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
+
+    try do
+      validate_units(
+        unit,
+        unit_list,
+        same_character_amount,
+        same_character_rank,
+        same_faction_amount,
+        same_faction_rank
+      )
+    rescue
+      _e in RuntimeError ->
+        false
+    end
+  end
+
+  defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
+  defp same_character_requirements(%Unit{rank: @star5}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination1}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination2}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination3}), do: {3, @star5}
+
+  defp same_faction_requirements(%Unit{rank: @star4}), do: {4, @star4}
+  defp same_faction_requirements(%Unit{rank: @star5}), do: {4, @star5}
+  defp same_faction_requirements(%Unit{rank: @illumination1}), do: {1, @illumination1}
+  defp same_faction_requirements(%Unit{rank: @illumination2}), do: {2, @illumination2}
+  defp same_faction_requirements(%Unit{rank: @illumination3}), do: {2, @illumination2}
+
+  defp validate_units(
+         unit,
+         unit_list,
+         same_character_amount,
+         same_character_rank,
+         same_faction_amount,
+         same_faction_rank
+       ) do
+    # Remove necessary units with the same character
+    removed_same_character =
+      Enum.reduce(1..same_character_amount, unit_list, fn _, list ->
+        same_character =
+          Enum.find(
+            unit_list,
+            &(&1.character_id == unit.character_id and &1.rank == same_character_rank)
+          )
+
+        if is_nil(same_character), do: raise("not enough of same character")
+
+        List.delete(list, same_character)
+      end)
+
+    # Remove necessary units with the same faction
+    removed_same_faction =
+      Enum.reduce(1..same_faction_amount, removed_same_character, fn _, list ->
+        same_faction =
+          Enum.find(
+            unit_list,
+            &(&1.character.faction == unit.character.faction and &1.rank == same_faction_rank)
+          )
+
+        if is_nil(same_faction), do: raise("not enough of same faction")
+
+        List.delete(list, same_faction)
+      end)
+
+
+
+    # If we got here with no raises and an empty list, then the units are valid
+    if Enum.empty?(removed_same_faction), do: true, else: raise("too many units given")
+  end
+
+  def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @epic}}), do: rank < @awakened
+
+  def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @rare}}),
+    do: rank < @illumination2
+
+  def can_rank_up(_unit), do: false
+
+  def get_rank(:star1), do: @star1
+  def get_rank(:star2), do: @star2
+  def get_rank(:star3), do: @star3
+  def get_rank(:star4), do: @star4
+  def get_rank(:star5), do: @star5
+  def get_rank(:illumination1), do: @illumination1
+  def get_rank(:illumination2), do: @illumination2
+  def get_rank(:illumination3), do: @illumination3
+  def get_rank(:awakened), do: @awakened
+
+  def get_rarity(:epic), do: @epic
+  def get_rarity(:rare), do: @rare
+  def get_rarity(:common), do: @common
 end

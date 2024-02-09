@@ -96,7 +96,8 @@ defmodule Gateway.Test.Champions do
       assert selected_unit.slot == slot
     end
 
-    test "unit level up", %{socket_tester: socket_tester} do
+    test "unit progression", %{socket_tester: socket_tester} do
+      muflus = GameBackend.Units.Characters.get_character_by_name("Muflus")
       user = Users.register("LevelUpUser")
       Users.add_currency_by_name!(user.id, "Gold", 9999)
 
@@ -107,13 +108,13 @@ defmodule Gateway.Test.Champions do
           tier: 1,
           rank: 2,
           selected: false,
-          character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id
+          character_id: muflus.id
         })
 
       gold = Users.get_amount_of_currency_by_name!(user.id, "Gold")
       level = unit.unit_level
 
-      # Level up the unit
+      #### Level up
       [{_gold_id, level_up_cost}] = Units.calculate_level_up_cost(unit)
 
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
@@ -141,7 +142,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_level_up"}}}
 
-      # Tier up
+      #### Tier up
 
       user_gold = Users.get_amount_of_currency_by_name!(user.id, "Gold")
       user_gems = Users.get_amount_of_currency_by_name!(user.id, "Gems")
@@ -175,6 +176,57 @@ defmodule Gateway.Test.Champions do
       assert user_currencies["Gems"] == user_gems - gems_cost
 
       # TODO: Check that we can now level up
+
+      #### Rank up (fuse)
+
+      {:ok, unit} =
+        GameBackend.Units.insert_unit(%{
+          user_id: user.id,
+          unit_level: 220,
+          tier: 8,
+          rank: Units.get_rank(:star5),
+          selected: false,
+          character_id: muflus.id
+        })
+
+      rank = unit.rank
+      user_units_count = user.id |> Users.get_units() |> Enum.count()
+
+      # Add to-be-consumed units
+
+      {:ok, same_faction_character} =
+        GameBackend.Units.Characters.insert_character(%{
+          game_id: 2,
+          active: true,
+          name: "SameFactionUnit",
+          faction: muflus.id,
+          rarity: Champions.Units.get_rarity(:rare)
+        })
+
+      # We will need three 5* Muflus and two i2 of the same faction
+      # For the same faction, we will do one of each unit.
+      units_to_consume = create_units_to_consume(user, muflus, same_faction_character)
+
+      # Characters need a certain rarity to rank up
+      # assert unit.character.rarity = Units.get_rarity()
+
+      # TODO: Check that we cant tier up again without ranking up
+
+      :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:unit, %Unit{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:unit, %Unit{} = unit}
+      } = get_last_message()
+
+      assert unit.rank == rank + 1
+      assert user_units_count == user.id |> Users.get_units() |> Enum.count()
     end
   end
 
@@ -192,4 +244,41 @@ defmodule Gateway.Test.Champions do
     :timer.sleep(50)
     send(socket_tester, {:last_message, self()})
   end
+
+  defp create_units_to_consume(user, same_character, same_faction),
+    do:
+      (Enum.map(1..3, fn _ ->
+         {:ok, unit} =
+           GameBackend.Units.insert_unit(%{
+             user_id: user.id,
+             unit_level: 100,
+             tier: 5,
+             rank: Units.get_rank(:star5),
+             selected: false,
+             character_id: same_character.id
+           })
+
+         unit
+       end) ++
+         [
+           GameBackend.Units.insert_unit(%{
+             user_id: user.id,
+             unit_level: 100,
+             tier: 5,
+             rank: Units.get_rank(:illumination1),
+             selected: false,
+             character_id: same_faction.id
+           })
+           |> elem(1),
+           GameBackend.Units.insert_unit(%{
+             user_id: user.id,
+             unit_level: 100,
+             tier: 5,
+             rank: Units.get_rank(:illumination1),
+             selected: false,
+             character_id: same_faction.id
+           })
+           |> elem(1)
+         ])
+      |> Enum.map(& &1.id)
 end

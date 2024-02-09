@@ -4,6 +4,7 @@ defmodule Gateway.ChampionsSocketHandler do
   """
 
   require Logger
+  alias Gateway.Serialization.FuseUnit
   alias Gateway.Serialization.WebSocketResponse
   alias Champions.{Battle, Campaigns, Items, Users, Units}
 
@@ -110,7 +111,6 @@ defmodule Gateway.ChampionsSocketHandler do
     case Units.level_up(user_id, unit_id) do
       {:ok, result} -> prepare_response(result, :unit_and_currencies)
       {:error, reason} -> prepare_response({:error, reason}, nil)
-      {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
     end
   end
 
@@ -118,7 +118,17 @@ defmodule Gateway.ChampionsSocketHandler do
     case Units.tier_up(user_id, unit_id) do
       {:ok, result} -> prepare_response(result, :unit_and_currencies)
       {:error, reason} -> prepare_response({:error, reason}, nil)
-      {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
+    end
+  end
+
+  defp handle(%FuseUnit{
+         user_id: user_id,
+         unit_id: unit_id,
+         consumed_units_ids: consumed_units_ids
+       }) do
+    case Units.fuse(user_id, unit_id, consumed_units_ids) do
+      {:ok, result} -> prepare_response(result, :unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
     end
   end
 

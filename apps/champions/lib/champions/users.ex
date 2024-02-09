@@ -105,4 +105,8 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
   end
+
+  def get_units(user_id) do
+    Users.get_units(user_id)
+  end
 end

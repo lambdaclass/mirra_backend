@@ -27,7 +27,7 @@ defmodule GameBackend.Repo.Migrations.CreateInitialTables do
       add :active, :boolean, null: false
       add :name, :string, null: false
       add :faction, :string, null: false
-      add :rarity, :string
+      add :rarity, :integer
       timestamps()
     end
 
@@ -41,6 +41,7 @@ defmodule GameBackend.Repo.Migrations.CreateInitialTables do
     create table(:units) do
       add :unit_level, :integer
       add :tier, :integer
+      add :rank, :integer
       add :selected, :boolean, null: false
       add :slot, :integer
       add :user_id, references(:users, on_delete: :delete_all)

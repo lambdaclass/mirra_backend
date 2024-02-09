@@ -12,7 +12,7 @@ defmodule GameBackend.Units.Characters.Character do
     field(:active, :boolean, default: true)
     field(:name, :string)
     field(:faction, :string)
-    field(:rarity, :string)
+    field(:rarity, :integer)
 
     timestamps()
   end
