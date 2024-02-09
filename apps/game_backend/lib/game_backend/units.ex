@@ -11,11 +11,9 @@ defmodule GameBackend.Units do
 
   import Ecto.Query
 
-  alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
-  alias GameBackend.Users.Currencies
 
   @doc """
   Inserts a unit.
@@ -169,67 +167,6 @@ defmodule GameBackend.Units do
   """
   def unit_belongs_to_user(unit_id, user_id),
     do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
-
-  @doc """
-  Executes a level up transaction, which involves updating a unit's level and removing currency from a user.
-  """
-  def level_up(unit, costs) do
-    result =
-      Multi.new()
-      |> Multi.run(:unit, fn _, _ -> add_level(unit) end)
-      |> Multi.run(:user_currency, fn _, _ ->
-        add_user_currencies(unit, costs)
-      end)
-      |> Repo.transaction()
-
-    # Preload user_currency's Currency
-    case result do
-      {:error, reason} ->
-        {:error, reason}
-
-      {:ok, %{unit: unit, user_currency: user_currency}} ->
-        {:ok, %{unit: unit, user_currency: Enum.map(user_currency, &Repo.preload(&1, :currency))}}
-    end
-  end
-
-  @doc """
-  Executes a tier up transaction, which involves updating a unit's tier and removing currency from a user.
-  """
-  def tier_up(unit, costs) do
-    result =
-      Multi.new()
-      |> Multi.run(:unit, fn _, _ -> add_tier(unit) end)
-      |> Multi.run(:user_currency, fn _, _ ->
-        add_user_currencies(unit, costs)
-      end)
-      |> Repo.transaction()
-
-    # Preload user_currency's Currency
-    case result do
-      {:error, reason} ->
-        {:error, reason}
-
-      {:ok, %{unit: unit, user_currency: user_currency}} ->
-        {:ok, %{unit: unit, user_currency: Enum.map(user_currency, &Repo.preload(&1, :currency))}}
-    end
-  end
-
-  defp add_user_currencies(unit, costs) do
-    result =
-      Enum.map(costs, fn {currency_id, cost} ->
-        Currencies.add_currency(unit.user_id, currency_id, -cost)
-      end)
-
-    if Enum.all?(result, fn
-         {:ok, _} -> true
-         _ -> false
-       end) do
-      {:ok,
-       Enum.map(result, fn {_ok, user_currency} -> Repo.preload(user_currency, :currency) end)}
-    else
-      {:error, "failed"}
-    end
-  end
 
   @doc """
   Increment an unit's unit_level (not to be confused with units' `level` association).

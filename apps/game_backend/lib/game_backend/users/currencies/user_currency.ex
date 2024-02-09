@@ -8,6 +8,7 @@ defmodule GameBackend.Users.Currencies.UserCurrency do
 
   alias GameBackend.Users.Currencies.Currency
   alias GameBackend.Users.User
+  alias GameBackend.Repo
 
   @derive {Jason.Encoder, only: [:currency, :amount]}
   schema "user_currencies" do
@@ -32,4 +33,6 @@ defmodule GameBackend.Users.Currencies.UserCurrency do
     |> cast(attrs, [:amount])
     |> validate_required([:amount])
   end
+
+  def preload_currency(user_currency), do: Repo.preload(user_currency, [:currency])
 end
