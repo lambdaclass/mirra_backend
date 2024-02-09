@@ -63,17 +63,18 @@ defmodule Gateway.Serialization.WebSocketRequest do
     oneof: 0
   )
 
-  field(:equip_item, 12, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
+  field(:fuse_unit, 12, type: Gateway.Serialization.FuseUnit, json_name: "fuseUnit", oneof: 0)
+  field(:equip_item, 13, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
 
-  field(:unequip_item, 13,
+  field(:unequip_item, 14,
     type: Gateway.Serialization.UnequipItem,
     json_name: "unequipItem",
     oneof: 0
   )
 
-  field(:get_item, 14, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
+  field(:get_item, 15, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
 
-  field(:level_up_item, 15,
+  field(:level_up_item, 16,
     type: Gateway.Serialization.LevelUpItem,
     json_name: "levelUpItem",
     oneof: 0
@@ -174,6 +175,16 @@ defmodule Gateway.Serialization.TierUpUnit do
 
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:unit_id, 2, type: :string, json_name: "unitId")
+end
+
+defmodule Gateway.Serialization.FuseUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:unit_id, 2, type: :string, json_name: "unitId")
+  field(:consumed_units_ids, 3, repeated: true, type: :string, json_name: "consumedUnitsIds")
 end
 
 defmodule Gateway.Serialization.EquipItem do
@@ -311,7 +322,7 @@ defmodule Gateway.Serialization.Character do
   field(:active, 1, type: :bool)
   field(:name, 2, type: :string)
   field(:faction, 3, type: :string)
-  field(:rarity, 4, type: :string)
+  field(:rarity, 4, type: :uint32)
 end
 
 defmodule Gateway.Serialization.Item do

@@ -1,6 +1,8 @@
 defmodule GameBackend.Units.Unit do
   @moduledoc """
   Units are instances of characters tied to a user.
+
+  Slots must not be assigned the value `0`, since this is the way Protobuf sends nil values.
   """
 
   use GameBackend.Schema

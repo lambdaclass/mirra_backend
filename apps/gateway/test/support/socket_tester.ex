@@ -14,6 +14,7 @@ defmodule Gateway.SocketTester do
   use WebSockex
 
   require Logger
+  alias Gateway.Serialization.FuseUnit
   alias Gateway.Serialization.WebSocketResponse
 
   alias Gateway.Serialization.{
@@ -147,6 +148,22 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:tier_up_unit, %LevelUpUnit{user_id: user_id, unit_id: unit_id}}
+         })}
+      )
+
+  def fuse_unit(pid, user_id, unit_id, consumed_units_ids),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type:
+             {:fuse_unit,
+              %FuseUnit{
+                user_id: user_id,
+                unit_id: unit_id,
+                consumed_units_ids: consumed_units_ids
+              }}
          })}
       )
 

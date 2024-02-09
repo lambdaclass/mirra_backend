@@ -9,6 +9,7 @@ defmodule GameBackend.Users do
   import Ecto.Query, warn: false
 
   alias GameBackend.Repo
+  alias GameBackend.Units.Unit
   alias GameBackend.Users.User
 
   @doc """
@@ -59,6 +60,14 @@ defmodule GameBackend.Users do
   """
   def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
 
+  @doc """
+  Gets all units for a user.
+  """
+  def get_units(user_id),
+    do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character, :user, :items])
+
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
+
+  defp user_units_query(user_id), do: from(unit in Unit, where: unit.user_id == ^user_id)
 end

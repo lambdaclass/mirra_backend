@@ -14,7 +14,7 @@ Characters.insert_character(%{
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: "Epic"
+  rarity: Champions.Units.get_rarity(:epic)
 })
 
 Characters.insert_character(%{
@@ -22,7 +22,7 @@ Characters.insert_character(%{
   active: true,
   name: "Uma",
   faction: "Kaline",
-  rarity: "Epic"
+  rarity: Champions.Units.get_rarity(:epic)
 })
 
 Characters.insert_character(%{
@@ -30,7 +30,7 @@ Characters.insert_character(%{
   active: true,
   name: "Dagna",
   faction: "Merliot",
-  rarity: "Epic"
+  rarity: Champions.Units.get_rarity(:epic)
 })
 
 Characters.insert_character(%{
@@ -38,7 +38,7 @@ Characters.insert_character(%{
   active: true,
   name: "H4ck",
   faction: "Otobi",
-  rarity: "Epic"
+  rarity: Champions.Units.get_rarity(:epic)
 })
 
 Items.insert_item_template(%{
