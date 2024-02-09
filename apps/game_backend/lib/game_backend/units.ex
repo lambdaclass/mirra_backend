@@ -75,10 +75,12 @@ defmodule GameBackend.Units do
   def get_units(), do: Repo.all(Unit) |> Repo.preload([:character, :user, :items])
 
   @doc """
-  Gets all units for a user.
+  Gets all units from ids in a list.
   """
-  def get_units(user_id),
-    do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character, :user, :items])
+  def get_units(unit_ids) when is_list(unit_ids),
+    do:
+      Repo.all(from(u in Unit, where: u.id in ^unit_ids))
+      |> Repo.preload([:character, :user, :items])
 
   @doc """
   Gets the user's selected unit. Takes the highest leveled one if there's many. Returns nil if there are none.
@@ -132,6 +134,11 @@ defmodule GameBackend.Units do
   def delete_unit(id), do: Repo.get(Unit, id) |> delete_unit()
 
   @doc """
+  Deletes all units in a given list.
+  """
+  def delete_units(unit_ids), do: Repo.delete_all(from(u in Unit, where: u.id in ^unit_ids))
+
+  @doc """
   Sets all of the user's units' selected value to false.
   """
   def remove_all_selected_units(user_id),
@@ -173,7 +180,7 @@ defmodule GameBackend.Units do
 
   ## Examples
 
-      iex> level_up(%Unit{unit_level: 41}, 1)
+      iex> add_level(%Unit{unit_level: 41}, 1)
       {:ok, %Unit{unit_level: 42}}
   """
   def add_level(unit, level \\ 1) do
@@ -187,12 +194,26 @@ defmodule GameBackend.Units do
 
   ## Examples
 
-      iex> tier_up(%Unit{tier: 41}, 1)
+      iex> add_tier(%Unit{tier: 41}, 1)
       {:ok, %Unit{tier: 42}}
   """
   def add_tier(unit, tier \\ 1) do
     unit
     |> Unit.update_changeset(%{tier: unit.tier + tier})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment an unit's rank.
+
+  ## Examples
+
+      iex> add_rank(%Unit{rank: 41}, 1)
+      {:ok, %Unit{rank: 42}}
+  """
+  def add_rank(unit, rank \\ 1) do
+    unit
+    |> Unit.update_changeset(%{rank: unit.rank + rank})
     |> Repo.update()
   end
 end

@@ -13,10 +13,11 @@ syntax = "proto3";
       UnselectUnit unselect_unit = 9;
       LevelUpUnit level_up_unit = 10;
       TierUpUnit tier_up_unit = 11;
-      EquipItem equip_item = 12;
-      UnequipItem unequip_item = 13;
-      GetItem get_item = 14;
-      LevelUpItem level_up_item = 15;
+      FuseUnit fuse_unit = 12;
+      EquipItem equip_item = 13;
+      UnequipItem unequip_item = 14;
+      GetItem get_item = 15;
+      LevelUpItem level_up_item = 16;
     }
   }
 
@@ -70,6 +71,12 @@ syntax = "proto3";
   message TierUpUnit {
    string user_id = 1;
    string unit_id = 2;
+  }
+  
+  message FuseUnit {
+    string user_id = 1;
+    string unit_id = 2;
+    repeated string consumed_units_ids = 3;
   }
   
   message EquipItem {
@@ -148,7 +155,7 @@ syntax = "proto3";
     bool active = 1;
     string name = 2;
     string faction = 3;
-    string rarity = 4;
+    uint32 rarity = 4;
   }
   
   message Item {
