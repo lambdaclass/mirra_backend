@@ -14,8 +14,8 @@ defmodule GameClientWeb.BoardLive.Show do
     {:ok, game_socket_handler_pid} =
       GameClient.ClientSocketHandler.start_link(self() |> :erlang.pid_to_list(), player_id, game_id)
 
-    mocked_board_width = 1000
-    mocked_board_height = 1000
+    mocked_board_width = 2000
+    mocked_board_height = 2000
 
     game_data = %{0 => %{0 => player_name(player_id)}}
 
@@ -69,10 +69,10 @@ defmodule GameClientWeb.BoardLive.Show do
           category: entity.category,
           shape: entity.shape,
           name: entity.name,
-          x: entity.position.x / 10 + 500,
-          y: entity.position.y / 10 + 500,
-          radius: entity.radius / 10,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 10 + 500, vertex.y / 10 + 500] end),
+          x: entity.position.x / 5 + 1000,
+          y: entity.position.y / 5 + 1000,
+          radius: entity.radius / 5,
+          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
           is_colliding: entity.collides_with |> Enum.any?()
         }
       end)
@@ -85,10 +85,10 @@ defmodule GameClientWeb.BoardLive.Show do
           category: entity.category,
           shape: entity.shape,
           name: entity.name,
-          x: entity.position.x / 10 + 500,
-          y: entity.position.y / 10 + 500,
-          radius: entity.radius / 10,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 10 + 500, vertex.y / 10 + 500] end),
+          x: entity.position.x / 5 + 1000,
+          y: entity.position.y / 5 + 1000,
+          radius: entity.radius / 5,
+          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
           is_colliding: entity.collides_with |> Enum.any?()
         }
       end)
