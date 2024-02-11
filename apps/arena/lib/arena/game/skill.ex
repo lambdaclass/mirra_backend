@@ -175,10 +175,13 @@ defmodule Arena.Game.Skill do
     Process.send_after(self(), {:stop_leap, player.id, player.speed}, leap.duration_ms)
 
     ## TODO: Cap target_position to leap.range
-    target_position = %{x: target.x * leap.range, y: target.y * leap.range}
+    target_position = %{
+      x: player.position.x + target.x * leap.range,
+      y: player.position.y + target.y * leap.range
+    }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms) * 29
+    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms) * 30
 
     player =
       player
