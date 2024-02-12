@@ -63,6 +63,7 @@ defmodule Arena.GameUpdater do
 
     players =
       game_state.players
+      |> Physics.move_entities(state.game_state.external_wall)
       |> update_collisions(game_state.players, %{})
 
     projectiles =
@@ -252,7 +253,6 @@ defmodule Arena.GameUpdater do
       player
       |> Map.put(:direction, direction)
       |> Map.put(:is_moving, is_moving)
-      |> Physics.move_entity(state.game_state.external_wall)
       |> Map.put(
         :aditional_info,
         Map.merge(player.aditional_info, %{current_actions: current_actions})
