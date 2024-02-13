@@ -14,12 +14,27 @@ export const GameQueue = function () {
         });
     };
 }
-        
-function getQueueSocketUrl(player_id) {
-    let protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    // TODO Remove hardcoded host
-    let host = '//localhost:4000'
-    let path = '/join'
 
-    return `${protocol}${host}${path}/${player_id}/muflus`
+function getQueueSocketUrl(player_id) {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    const host = getHost()
+    const path = '/join'
+
+    return `${protocol}//${host}${path}/${player_id}/muflus`
+}
+
+// TODO: This will work for while the Arena is using the default wss port and
+//      both Arena and GameClient are running on the same host. Once this is
+//      no longer the case, we will need to fetch the host from a config or
+//      hardcode the host for Arena. To read from config we can use the same
+//      trick as for the csrf_token, we put the host in a meta tag in root.html.heex
+//      and read it from there
+function getHost() {
+    const host = window.location.hostname
+
+    if (host.includes('localhost')) {
+        return 'localhost:4000'
+    } else {
+        return host
+    }
 }
