@@ -96,6 +96,11 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
   end
 
+  defp handle_game_event({:finished, finished_event}, socket) do
+    send(socket.assigns.game_socket_handler_pid, :close)
+    {:noreply, assign(socket, game_status: :finished, winner_id: finished_event.winner.id)}
+  end
+
   defp handle_game_event({:ping, ping_event}, socket) do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
   end
