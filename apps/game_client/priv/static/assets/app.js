@@ -42449,7 +42449,8 @@ void main(void)\r
   var GameQueue = function() {
     this.mounted = function() {
       let player_id = document.getElementById("board_game").dataset.playerId;
-      let player = new Player(getQueueSocketUrl(player_id));
+      let character = document.getElementById("board_game").dataset.character;
+      let player = new Player(getQueueSocketUrl(player_id, character));
       player.socket.addEventListener("message", (event) => {
         game_state = messages2.GameState.deserializeBinary(event.data);
         if (game_state.getGameId()) {
@@ -42458,11 +42459,11 @@ void main(void)\r
       });
     };
   };
-  function getQueueSocketUrl(player_id) {
+  function getQueueSocketUrl(player_id, character) {
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const host = getHost();
     const path2 = "/join";
-    return `${protocol}//${host}${path2}/${player_id}/muflus`;
+    return `${protocol}//${host}${path2}/${player_id}/${character}`;
   }
   function getHost() {
     const host = window.location.hostname;

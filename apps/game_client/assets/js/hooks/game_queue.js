@@ -4,7 +4,8 @@ var messages = require('../protobuf/messages_pb');
 export const GameQueue = function () {
     this.mounted = function () {
         let player_id = document.getElementById("board_game").dataset.playerId
-        let player = new Player(getQueueSocketUrl(player_id))
+        let character = document.getElementById("board_game").dataset.character
+        let player = new Player(getQueueSocketUrl(player_id, character))
 
         player.socket.addEventListener("message", (event) => {
             game_state = messages.GameState.deserializeBinary(event.data);
@@ -15,12 +16,12 @@ export const GameQueue = function () {
     };
 }
 
-function getQueueSocketUrl(player_id) {
+function getQueueSocketUrl(player_id, character) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const host = getHost()
     const path = '/join'
 
-    return `${protocol}//${host}${path}/${player_id}/muflus`
+    return `${protocol}//${host}${path}/${player_id}/${character}`
 }
 
 // TODO: This will work for while the Arena is using the default wss port and
