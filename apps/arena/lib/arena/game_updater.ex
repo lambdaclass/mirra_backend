@@ -48,7 +48,13 @@ defmodule Arena.GameUpdater do
     game_state = new_game(game_id, clients, game_config)
 
     Process.send_after(self(), :update_game, 1_000)
-    Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+
+    Process.send_after(
+      self(),
+      {:check_game_ended, Map.keys(game_state.players)},
+      @check_game_ended_interval_ms * 10
+    )
+
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
 
@@ -127,12 +133,14 @@ defmodule Arena.GameUpdater do
     {:stop, :normal, state}
   end
 
-  def handle_info(:check_game_ended, state) do
-    Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms)
-
-    case check_game_ended(Map.values(state.game_state.players), state.game_state.players) do
-      :ongoing ->
-        :skip
+  def handle_info({:check_game_ended, last_players_ids}, state) do
+    case check_game_ended(state.game_state.players, last_players_ids) do
+      {:ongoing, players_ids} ->
+        Process.send_after(
+          self(),
+          {:check_game_ended, players_ids},
+          @check_game_ended_interval_ms
+        )
 
       {:ended, winner} ->
         broadcast_game_ended(winner, state.game_state)
@@ -319,11 +327,7 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
-    encoded_state =
-      GameEvent.encode(%GameEvent{
-        event: {:finished, game_state}
-      })
-
+    encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
@@ -449,22 +453,23 @@ defmodule Arena.GameUpdater do
   end
 
   # Check if game has ended
-  defp check_game_ended(players, last_standing_players) do
-    players_alive = Enum.filter(players, &Player.alive?/1)
+  defp check_game_ended(players, last_players_ids) do
+    players_alive =
+      Map.values(players)
+      |> Enum.filter(&Player.alive?/1)
 
     case players_alive do
-      ^players ->
-        :ongoing
-
-      [_, _ | _] ->
-        :ongoing
-
-      [player] ->
+      [player] when map_size(players) > 1 ->
         {:ended, player}
 
       [] ->
-        # TODO we should use a tiebreaker instead of picking the 1st one in the list
-        {:ended, hd(last_standing_players)}
+        ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
+        ##    but for now a random between the ones that were alive last is enough
+        player = Map.get(players, Enum.random(last_players_ids))
+        {:ended, player}
+
+      _ ->
+        {:ongoing, Enum.map(players_alive, & &1.id)}
     end
   end
 
