@@ -99,7 +99,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
 
     broadcast_game_update(game_state)
-    game_state = %{game_state | killfeed: []}
+    game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -236,6 +236,26 @@ defmodule Arena.GameUpdater do
       state
       |> put_in([:game_state, :last_id], last_id)
       |> put_in([:game_state, :projectiles], projectiles)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:damage_done, player_id, damage}, state) do
+    state =
+      update_in(state, [:game_state, :damage_done, player_id], fn
+        nil -> damage
+        current -> current + damage
+      end)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:damage_taken, player_id, damage}, state) do
+    state =
+      update_in(state, [:game_state, :damage_taken, player_id], fn
+        nil -> damage
+        current -> current + damage
+      end)
 
     {:noreply, state}
   end
@@ -408,6 +428,8 @@ defmodule Arena.GameUpdater do
           |> Map.put(:last_id, last_id)
           |> Map.put(:players, players)
           |> Map.put(:killfeed, [])
+          |> Map.put(:damage_taken, %{})
+          |> Map.put(:damage_done, %{})
           |> put_in([:client_to_player_map, client_id], last_id)
           |> put_in([:player_timestamps, last_id], 0)
 
@@ -506,7 +528,7 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    Player.change_health(player, zone_damage)
+    Player.take_damage(player, zone_damage)
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
@@ -542,7 +564,12 @@ defmodule Arena.GameUpdater do
 
         # Projectile hit a player
         {_entity_id, player, nil} ->
-          player = Player.change_health(player, projectile.aditional_info.damage)
+          player = Player.take_damage(player, projectile.aditional_info.damage)
+
+          send(
+            self(),
+            {:damage_done, projectile.aditional_info.owner_id, projectile.aditional_info.damage}
+          )
 
           projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
