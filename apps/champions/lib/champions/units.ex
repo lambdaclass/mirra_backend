@@ -221,6 +221,10 @@ defmodule Champions.Units do
       {Currencies.get_currency_by_name!("Gems").id, 50}
     ]
 
+  @doc """
+  Consume a list of units that meet specific rank and character requirements based on the target
+  unit's rank in order to increase it.
+  """
   def fuse(user_id, unit_id, consumed_units_ids) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
@@ -318,6 +322,7 @@ defmodule Champions.Units do
           )
 
         if is_nil(same_character), do: raise("not enough of same character")
+        if same_character.user_id != unit.user_id, do: raise("consumed unit not owned")
 
         List.delete(list, same_character)
       end)
@@ -332,6 +337,7 @@ defmodule Champions.Units do
           )
 
         if is_nil(same_faction), do: raise("not enough of same faction")
+        if same_faction.user_id != unit.user_id, do: raise("consumed unit not owned")
 
         List.delete(list, same_faction)
       end)
@@ -340,6 +346,9 @@ defmodule Champions.Units do
     if Enum.empty?(removed_same_faction), do: true, else: raise("too many units given")
   end
 
+  @doc """
+  Returns whether a unit can rank up, based on its current rank and its character's rarity.
+  """
   def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @epic}}), do: rank < @awakened
 
   def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @rare}}),
