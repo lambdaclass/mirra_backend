@@ -29,7 +29,7 @@ fn move_entities(entities: HashMap<u64, Entity>, delta_time: f32, external_wall:
 }
 
 #[rustler::nif()]
-fn move_entity(entity: Entity, delta_time: f32,external_wall: Entity) -> Entity {
+fn move_entity(entity: Entity, delta_time: f32, external_wall: Entity) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
         entity.move_entity(delta_time);
