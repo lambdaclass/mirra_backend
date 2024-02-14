@@ -32,3 +32,5 @@ defmodule GameBackend.Users.User do
     |> validate_required([:game_id, :username])
   end
 end
+
+# user_id, campaign_id, level_id

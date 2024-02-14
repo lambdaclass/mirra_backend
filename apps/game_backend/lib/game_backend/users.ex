@@ -8,6 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Campaigns.Level
   alias GameBackend.Repo
   alias GameBackend.Users.User
 
@@ -58,6 +59,25 @@ defmodule GameBackend.Users do
       nil
   """
   def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
+
+  def advance_level(user_id, campaign_id) do
+    # Increment user's level. If it was the last level in the campaign, increment the campaign number and set level number to 1.
+    user = Repo.get(User, user_id)
+
+    campaign_levels_amount =
+      Repo.all(from(l in Level, where: l.campaign == ^user.current_level)) |> length()
+
+    attrs =
+      if user.current_level < campaign_levels_amount do
+        %{current_level: user.current_level + 1}
+      else
+        %{current_level: 1, current_campaign: user.current_campaign + 1}
+      end
+
+    user
+    |> User.changeset(attrs)
+    |> Repo.update!()
+  end
 
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)

@@ -47,4 +47,11 @@ defmodule GameBackend.Campaigns do
   def get_level(level_id) do
     Repo.get(Level, level_id) |> Repo.preload(units: :items, units: :character)
   end
+
+  def get_campaign_progression(user_id, campaign_id) do
+    Repo.get_by(GameBackend.Campaigns.Campaigns_Progression,
+      user_id: user_id,
+      campaign_id: campaign_id
+    )
+  end
 end

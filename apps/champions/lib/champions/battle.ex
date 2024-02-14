@@ -38,19 +38,21 @@ defmodule Champions.Battle do
 
   No tracking for level progress is done yet.
   """
-  def fight_level(user_id, level_id) do
+  def fight_level(user_id, campaign_id, level_id) do
     user = Users.get_user(user_id)
-    level = Campaigns.get_level(level_id)
+    campaign_progression = get_campaign_progression(user_id, campaign_id)
 
     cond do
       is_nil(user) ->
         {:error, :user_not_found}
 
-      is_nil(level) ->
-        {:error, :level_not_found}
+      is_nil(campaign_progression) ->
+        {:error, :campaign_level_not_found}
 
       true ->
         if battle(user.units, level.units) == :team_1 do
+          # Advance user progress. Increment level number and, if it's the last level, the campaign number.
+          {:ok, _} = Users.advance_level(user_id)
           :win
         else
           :loss
