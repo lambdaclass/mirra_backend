@@ -69,7 +69,8 @@ defmodule Arena.GameUpdater do
 
     game_state = Map.put(game_state, :players, players_moved)
 
-    entities_to_collide_projectiles = Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
+    entities_to_collide_projectiles =
+      Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
     players =
       game_state.players
