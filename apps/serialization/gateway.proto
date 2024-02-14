@@ -99,9 +99,11 @@ syntax = "proto3";
   message User {
     string id = 1;
     string username = 2;
-    repeated UserCurrency currencies = 3;
-    repeated Unit units = 4;
-    repeated Item items = 5;    
+    uint32 current_campaign = 3;
+    uint32 current_level = 4;
+    repeated UserCurrency currencies = 5;
+    repeated Unit units = 6;
+    repeated Item items = 7;    
   }
 
   message UserCurrency {
