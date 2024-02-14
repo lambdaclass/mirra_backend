@@ -14,14 +14,14 @@ fn add(a: i64, b: i64) -> i64 {
 #[rustler::nif()]
 fn move_entities(
     entities: HashMap<u64, Entity>,
-    delta_time: f32,
+    ticks_to_move: f32,
     external_wall: Entity,
 ) -> HashMap<u64, Entity> {
     let mut entities: HashMap<u64, Entity> = entities;
 
     for entity in entities.values_mut() {
         if entity.is_moving {
-            entity.move_entity(delta_time);
+            entity.move_entity(ticks_to_move);
 
             if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
                 entity.move_to_next_valid_position(&external_wall);
@@ -33,10 +33,10 @@ fn move_entities(
 }
 
 #[rustler::nif()]
-fn move_entity(entity: Entity, delta_time: f32, external_wall: Entity) -> Entity {
+fn move_entity(entity: Entity, ticks_to_move: f32, external_wall: Entity) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
-        entity.move_entity(delta_time);
+        entity.move_entity(ticks_to_move);
 
         if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
             entity.move_to_next_valid_position(&external_wall);
