@@ -125,14 +125,14 @@ impl Entity {
         result
     }
 
-    pub fn move_entity(&mut self) {
-        self.position = self.next_position();
+    pub fn move_entity(&mut self, delta_time: f32) {
+        self.position = self.next_position(delta_time);
     }
 
-    pub fn next_position(&mut self) -> Position {
+    pub fn next_position(&mut self, delta_time: f32) -> Position {
         Position {
-            x: self.position.x + self.direction.x * self.speed,
-            y: self.position.y + self.direction.y * self.speed,
+            x: self.position.x + self.direction.x * self.speed * delta_time,
+            y: self.position.y + self.direction.y * self.speed * delta_time,
         }
     }
 

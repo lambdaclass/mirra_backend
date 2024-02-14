@@ -58,17 +58,20 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    delta_time = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
+
     entities_to_collide_projectiles =
       Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
     players =
       game_state.players
-      |> Physics.move_entities(state.game_state.external_wall)
+      |> Physics.move_entities(delta_time, state.game_state.external_wall)
       |> update_collisions(game_state.players, %{})
 
     projectiles =
       remove_exploded_projectiles(game_state.projectiles)
-      |> Physics.move_entities(game_state.external_wall)
+      |> Physics.move_entities(delta_time, game_state.external_wall)
       |> update_collisions(
         game_state.projectiles,
         Map.merge(entities_to_collide_projectiles, %{
@@ -92,6 +95,7 @@ defmodule Arena.GameUpdater do
       game_state
       |> Map.put(:players, players)
       |> Map.put(:projectiles, projectiles)
+      |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: []}
@@ -304,7 +308,7 @@ defmodule Arena.GameUpdater do
              game_id: state.game_id,
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
-             server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+             server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
              zone: state.zone,
              killfeed: state.killfeed
