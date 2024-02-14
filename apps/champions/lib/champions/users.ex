@@ -23,13 +23,13 @@ defmodule Champions.Users do
         add_sample_items(user)
         add_sample_currencies(user)
 
-        Users.get_user(user.id)
+        {:ok, Users.get_user(user.id)}
 
       {:error, changeset} ->
         [[first_error | _other_errors] | _other_fields_errors] =
           Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end) |> Map.values()
 
-        case first_error do
+        case first_error |> IO.inspect() do
           "has already been taken" -> {:error, :username_taken}
           "can't be blank" -> {:error, :missing_fields}
           _ -> {:error, :unkown}

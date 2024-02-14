@@ -6,7 +6,7 @@ defmodule GameBackend.Users do
   For now, users consist of only a username. No authentication of any sort has been implemented.
   """
 
-  import Ecto.Query, warn: false
+  import Ecto.Query
 
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
@@ -65,6 +65,13 @@ defmodule GameBackend.Users do
   """
   def get_units(user_id),
     do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character, :user, :items])
+
+  @doc """
+  Checks whether a user exists with the given id.
+
+  Useful if you want to validate an id while not needing to operate with the user itself.
+  """
+  def exists?(user_id), do: Repo.exists?(from(u in User, where: u.id == ^user_id))
 
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
