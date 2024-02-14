@@ -96,8 +96,11 @@ defmodule GameBackend.Users.Currencies do
   Returns whether the user can afford the required amounts of the specified currencies.
   """
   def can_afford(user_id, currencies_list) do
-    Enum.all?(currencies_list, fn {currency_id, amount} ->
-      can_afford(user_id, currency_id, amount)
+    Enum.all?(currencies_list, fn
+      {currency_id, amount} ->
+        can_afford(user_id, currency_id, amount)
+      %GameBackend.Users.Currencies.CurrencyCost{currency_id: currency_id, amount: amount} ->
+        can_afford(user_id, currency_id, amount)
     end)
   end
 
