@@ -42,7 +42,7 @@ To start all applications, run the following command:
 devenv up
 ```
 
-Then navigate to the following link to start a game: http://localhost:3000/board/1
+Then navigate to the following link to start a game: http://localhost:3000/board/1/muflus
 
 
 If you want to have access to the Elixir console, instead do:

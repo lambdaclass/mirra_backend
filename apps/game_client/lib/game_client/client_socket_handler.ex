@@ -52,6 +52,11 @@ defmodule GameClient.ClientSocketHandler do
     {:reply, {:binary, game_action}, state}
   end
 
+  def handle_info(:close, state) do
+    Logger.info("ClientSocket closed")
+    {:close, state}
+  end
+
   defp ws_url(player_id, game_id) do
     # FIX ME Remove hardcoded host
     host = "localhost:4000"
