@@ -34,8 +34,8 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:cone_hit, cone_hit}, _skill_params) do
-    Process.send_after(self(), {:trigger_mechanic, player.id, {:do_cone_hit, cone_hit}}, 300)
+  def do_mechanic(game_state, player, {:cone_hit, cone_hit}, skill_params) do
+    Process.send_after(self(), {:trigger_mechanic, player.id, {:do_cone_hit, cone_hit}, skill_params}, 300)
     game_state
   end
 
@@ -69,13 +69,13 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, _skill_params) do
+  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
       mechanic = {:do_cone_hit, multi_cone_hit}
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, mechanic},
+        {:trigger_mechanic, player.id, mechanic, skill_params},
         i * multi_cone_hit.interval_ms
       )
     end)
@@ -205,5 +205,13 @@ defmodule Arena.Game.Skill do
       end)
 
     Enum.concat([add_side, middle, sub_side])
+  end
+
+  def maybe_auto_aim(%{x: 0.0, y: 0.0}, player_direction) do
+    player_direction
+  end
+
+  def maybe_auto_aim(skill_direction, _player_direction) do
+    skill_direction
   end
 end
