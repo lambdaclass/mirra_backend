@@ -29,6 +29,20 @@ defmodule Champions.Units do
   @rare 2
   @common 1
 
+  def get_rank(:star1), do: @star1
+  def get_rank(:star2), do: @star2
+  def get_rank(:star3), do: @star3
+  def get_rank(:star4), do: @star4
+  def get_rank(:star5), do: @star5
+  def get_rank(:illumination1), do: @illumination1
+  def get_rank(:illumination2), do: @illumination2
+  def get_rank(:illumination3), do: @illumination3
+  def get_rank(:awakened), do: @awakened
+
+  def get_rarity(:epic), do: @epic
+  def get_rarity(:rare), do: @rare
+  def get_rarity(:common), do: @common
+
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
 
@@ -332,18 +346,4 @@ defmodule Champions.Units do
     do: rank < @illumination2
 
   def can_rank_up(_unit), do: false
-
-  def get_rank(:star1), do: @star1
-  def get_rank(:star2), do: @star2
-  def get_rank(:star3), do: @star3
-  def get_rank(:star4), do: @star4
-  def get_rank(:star5), do: @star5
-  def get_rank(:illumination1), do: @illumination1
-  def get_rank(:illumination2), do: @illumination2
-  def get_rank(:illumination3), do: @illumination3
-  def get_rank(:awakened), do: @awakened
-
-  def get_rarity(:epic), do: @epic
-  def get_rarity(:rare), do: @rare
-  def get_rarity(:common), do: @common
 end
