@@ -18,6 +18,9 @@ syntax = "proto3";
       UnequipItem unequip_item = 14;
       GetItem get_item = 15;
       LevelUpItem level_up_item = 16;
+      GetBoxes get_boxes = 17;
+      GetBox get_box = 18;
+      PullBox pull_box = 19;
     }
   }
 
@@ -99,7 +102,19 @@ syntax = "proto3";
     string user_id = 1;
     string item_id = 2;
   }
+  
+  message GetBoxes {
+    string user_id = 1;
+  }
+  
+  message GetBox {
+    string box_id = 1;
+  }
 
+  message PullBox {
+    string user_id = 1;
+    string box_id = 2;
+  }
   ////////////////////////////////////////
 
   message WebSocketResponse {
@@ -113,6 +128,9 @@ syntax = "proto3";
       Level level = 7;
       BattleResult battle_result = 8;
       Error error = 9;
+      Boxes boxes = 10;
+      Box box = 11;
+      UserAndUnit user_and_new_unit = 12;
     }
   }
   
@@ -193,4 +211,31 @@ syntax = "proto3";
 
   message Error {
     string reason = 1;
+  }
+
+  message Boxes {
+    repeated Box boxes = 1;
+  }
+
+  message Box {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    repeated CharacterDropRate character_drop_rates = 4;
+    repeated CurrencyCost cost = 5;
+  }
+
+  message CharacterDropRate {
+    string characer_id = 1;
+    int32 weight = 2;
+  }
+
+  message CurrencyCost {
+    Currency currency = 1;
+    int32 cost = 2;
+  }
+
+  message UserAndUnit {
+    User user = 1;
+    Unit unit = 2;
   }

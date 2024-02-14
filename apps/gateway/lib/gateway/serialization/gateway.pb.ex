@@ -79,6 +79,10 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "levelUpItem",
     oneof: 0
   )
+
+  field(:get_boxes, 17, type: Gateway.Serialization.GetBoxes, json_name: "getBoxes", oneof: 0)
+  field(:get_box, 18, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
+  field(:pull_box, 19, type: Gateway.Serialization.PullBox, json_name: "pullBox", oneof: 0)
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -224,6 +228,31 @@ defmodule Gateway.Serialization.LevelUpItem do
   field(:item_id, 2, type: :string, json_name: "itemId")
 end
 
+defmodule Gateway.Serialization.GetBoxes do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
+defmodule Gateway.Serialization.GetBox do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:box_id, 1, type: :string, json_name: "boxId")
+end
+
+defmodule Gateway.Serialization.PullBox do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:box_id, 2, type: :string, json_name: "boxId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -252,6 +281,14 @@ defmodule Gateway.Serialization.WebSocketResponse do
   )
 
   field(:error, 9, type: Gateway.Serialization.Error, oneof: 0)
+  field(:boxes, 10, type: Gateway.Serialization.Boxes, oneof: 0)
+  field(:box, 11, type: Gateway.Serialization.Box, oneof: 0)
+
+  field(:user_and_new_unit, 12,
+    type: Gateway.Serialization.UserAndUnit,
+    json_name: "userAndNewUnit",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.User do
@@ -388,4 +425,57 @@ defmodule Gateway.Serialization.Error do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:reason, 1, type: :string)
+end
+
+defmodule Gateway.Serialization.Boxes do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:boxes, 1, repeated: true, type: Gateway.Serialization.Box)
+end
+
+defmodule Gateway.Serialization.Box do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:name, 2, type: :string)
+  field(:description, 3, type: :string)
+
+  field(:character_drop_rates, 4,
+    repeated: true,
+    type: Gateway.Serialization.CharacterDropRate,
+    json_name: "characterDropRates"
+  )
+
+  field(:cost, 5, repeated: true, type: Gateway.Serialization.CurrencyCost)
+end
+
+defmodule Gateway.Serialization.CharacterDropRate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:characer_id, 1, type: :string, json_name: "characerId")
+  field(:weight, 2, type: :int32)
+end
+
+defmodule Gateway.Serialization.CurrencyCost do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: Gateway.Serialization.Currency)
+  field(:cost, 2, type: :int32)
+end
+
+defmodule Gateway.Serialization.UserAndUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user, 1, type: Gateway.Serialization.User)
+  field(:unit, 2, type: Gateway.Serialization.Unit)
 end
