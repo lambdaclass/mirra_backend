@@ -127,14 +127,14 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:stop_leap, player_id, previous_speed}, state) do
+  def handle_info({:stop_leap, player_id, previous_speed, on_arrival_mechanic}, state) do
     player =
       Map.get(state.game_state.players, player_id)
       |> Player.reset_forced_movement(previous_speed)
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, {:circle_hit, %{damage: 15, range: 100.0}}, %{})
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
 
     {:noreply, %{state | game_state: game_state}}
   end
