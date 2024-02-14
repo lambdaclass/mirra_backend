@@ -12,7 +12,11 @@ fn add(a: i64, b: i64) -> i64 {
 }
 
 #[rustler::nif()]
-fn move_entities(entities: HashMap<u64, Entity>, delta_time: f32, external_wall: Entity) -> HashMap<u64, Entity> {
+fn move_entities(
+    entities: HashMap<u64, Entity>,
+    delta_time: f32,
+    external_wall: Entity,
+) -> HashMap<u64, Entity> {
     let mut entities: HashMap<u64, Entity> = entities;
 
     for entity in entities.values_mut() {
