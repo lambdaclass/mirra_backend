@@ -69,8 +69,7 @@ defmodule Arena.GameUpdater do
 
     game_state = Map.put(game_state, :players, players_moved)
 
-    # #246 Only use alive players
-    entities_to_collide_projectiles = Map.merge(game_state.players, game_state.obstacles)
+    entities_to_collide_projectiles = Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
     players =
       game_state.players
@@ -95,7 +94,8 @@ defmodule Arena.GameUpdater do
         game_state.external_wall.id
       )
 
-    players = apply_zone_damage(players, game_state.zone)
+    players =
+      apply_zone_damage(players, game_state.zone, state.game_config.game)
 
     game_state =
       game_state
@@ -205,6 +205,8 @@ defmodule Arena.GameUpdater do
   def handle_info({:to_killfeed, killer_id, victim_id}, state) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+    broadcast_player_dead(state.game_state.game_id, victim_id)
+
     {:noreply, state}
   end
 
@@ -289,6 +291,10 @@ defmodule Arena.GameUpdater do
   ##########################
 
   # Broadcast game update to all players
+  defp broadcast_player_dead(game_id, player_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:player_dead, player_id})
+  end
+
   defp broadcast_game_update(state) do
     encoded_state =
       GameEvent.encode(%GameEvent{
@@ -457,15 +463,33 @@ defmodule Arena.GameUpdater do
   # End game flow
   ##########################
 
-  defp apply_zone_damage(players, zone) do
+  defp apply_zone_damage(players, zone, %{
+         zone_damage_interval_ms: zone_interval,
+         zone_damage: zone_damage
+       }) do
     safe_zone = Entities.make_circular_area(0, %{x: 0.0, y: 0.0}, zone.radius)
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
+    now = System.monotonic_time(:millisecond)
 
     Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
-      Player.change_health(players_acc, player_id, 1)
+      player = Map.get(players_acc, player_id)
+      last_damage = player |> get_in([:aditional_info, :last_damage_received])
+      elapse_time = now - last_damage
+
+      player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
+
+      Map.put(players_acc, player_id, player)
     end)
   end
+
+  defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
+       when elapse_time > zone_damage_interval do
+    Player.change_health(player, zone_damage)
+  end
+
+  defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
+    do: player
 
   defp resolve_collisions(projectiles, players, obstacles, external_wall_id) do
     Enum.reduce(projectiles, {projectiles, players}, fn {projectile_id, projectile},
@@ -477,7 +501,8 @@ defmodule Arena.GameUpdater do
           entities -> List.delete(entities, external_wall_id)
         end
 
-      collided_entity = decide_collided_entity(projectile, collides_with, external_wall_id)
+      collided_entity =
+        decide_collided_entity(projectile, collides_with, external_wall_id, players_acc)
 
       # #247 Refactor projectile collision resolution
       case {
@@ -525,15 +550,27 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp decide_collided_entity(_projectile, [], _external_wall_id), do: nil
+  defp decide_collided_entity(_projectile, [], _external_wall_id, _players), do: nil
 
-  defp decide_collided_entity(_projectile, [entity_id], external_wall_id)
+  defp decide_collided_entity(_projectile, [entity_id], external_wall_id, _players)
        when entity_id == external_wall_id,
        do: external_wall_id
 
-  defp decide_collided_entity(projectile, [entity_id | other_entities], _external_wall_id)
+  defp decide_collided_entity(
+         projectile,
+         [entity_id | other_entities],
+         _external_wall_id,
+         _players
+       )
        when entity_id == projectile.aditional_info.owner_id,
        do: List.first(other_entities, nil)
 
-  defp decide_collided_entity(_projectile, [entity_id | _], _external_wall_id), do: entity_id
+  defp decide_collided_entity(projectile, [entity_id | other_entities], external_wall_id, players) do
+    player = Map.get(players, entity_id)
+
+    case player && Player.alive?(player) do
+      false -> decide_collided_entity(projectile, other_entities, external_wall_id, players)
+      _ -> entity_id
+    end
+  end
 end

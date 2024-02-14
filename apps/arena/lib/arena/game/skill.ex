@@ -15,8 +15,7 @@ defmodule Arena.Game.Skill do
     circular_damage_area =
       Entities.make_circular_area(player.id, player.position, circle_hit.range)
 
-    alive_players =
-      Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
+    alive_players = Player.alive_players(game_state.players)
 
     players =
       Physics.check_collisions(circular_damage_area, alive_players)

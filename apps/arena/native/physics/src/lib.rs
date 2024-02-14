@@ -74,23 +74,21 @@ fn calculate_triangle_vertices(
     angle: f32,
 ) -> Vec<Position> {
     let direction_angle = direction.y.atan2(direction.x);
-    let angle_x = (angle.to_radians() + direction_angle).cos();
-    let angle_y = (angle.to_radians() + direction_angle).sin();
-    let result_x = direction.x + angle_x;
-    let result_y = direction.y + angle_y;
-    let len_result = (result_x.powi(2) + result_y.powi(2)).sqrt();
-    let direction = Direction {
-        x: result_x / len_result,
-        y: result_y / len_result,
-    };
+    let v1_angle_x = (direction_angle + angle.to_radians()).cos();
+    let v1_angle_y = (direction_angle + angle.to_radians()).sin();
+
+    let v2_angle_x = (direction_angle - angle.to_radians()).cos();
+    let v2_angle_y = (direction_angle - angle.to_radians()).sin();
+
+    let len_result = (v2_angle_x.powi(2) + v2_angle_y.powi(2)).sqrt();
 
     let vertix_1 = Position {
-        x: starting_point.x + direction.x * range,
-        y: starting_point.y + direction.y * range,
+        x: starting_point.x + v1_angle_x / len_result * range,
+        y: starting_point.y + v1_angle_y / len_result * range,
     };
     let vertix_2 = Position {
-        x: starting_point.x + direction.x * range,
-        y: starting_point.y - direction.y * range,
+        x: starting_point.x + v2_angle_x / len_result * range,
+        y: starting_point.y + v2_angle_y / len_result * range,
     };
 
     vec![starting_point, vertix_1, vertix_2]
