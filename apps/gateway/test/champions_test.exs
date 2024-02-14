@@ -199,7 +199,7 @@ defmodule Gateway.Test.Champions do
           game_id: 2,
           active: true,
           name: "SameFactionUnit",
-          faction: muflus.id,
+          faction: muflus.faction,
           rarity: Champions.Units.get_rarity(:rare)
         })
 
@@ -265,7 +265,7 @@ defmodule Gateway.Test.Champions do
              user_id: user.id,
              unit_level: 100,
              tier: 5,
-             rank: Units.get_rank(:illumination1),
+             rank: Units.get_rank(:star5),
              selected: false,
              character_id: same_faction.id
            })
@@ -274,7 +274,7 @@ defmodule Gateway.Test.Champions do
              user_id: user.id,
              unit_level: 100,
              tier: 5,
-             rank: Units.get_rank(:illumination1),
+             rank: Units.get_rank(:star5),
              selected: false,
              character_id: same_faction.id
            })

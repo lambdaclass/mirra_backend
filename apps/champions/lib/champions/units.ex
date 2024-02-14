@@ -253,7 +253,7 @@ defmodule Champions.Units do
   defp delete_consumed_units(unit_ids) do
     {amount_deleted, _return} = Units.delete_units(unit_ids)
 
-    if Enum.count(unit_ids) == amount_deleted, do: :ok, else: {:error, "failed"}
+    if Enum.count(unit_ids) == amount_deleted, do: {:ok, amount_deleted}, else: {:error, "failed"}
   end
 
   defp validate_consumed_units(unit, unit_list) do
@@ -270,8 +270,7 @@ defmodule Champions.Units do
         same_faction_rank
       )
     rescue
-      _e in RuntimeError ->
-        false
+      _e in RuntimeError -> false
     end
   end
 
@@ -300,7 +299,7 @@ defmodule Champions.Units do
       Enum.reduce(1..same_character_amount, unit_list, fn _, list ->
         same_character =
           Enum.find(
-            unit_list,
+            list,
             &(&1.character_id == unit.character_id and &1.rank == same_character_rank)
           )
 
@@ -314,7 +313,7 @@ defmodule Champions.Units do
       Enum.reduce(1..same_faction_amount, removed_same_character, fn _, list ->
         same_faction =
           Enum.find(
-            unit_list,
+            list,
             &(&1.character.faction == unit.character.faction and &1.rank == same_faction_rank)
           )
 
@@ -322,8 +321,6 @@ defmodule Champions.Units do
 
         List.delete(list, same_faction)
       end)
-
-
 
     # If we got here with no raises and an empty list, then the units are valid
     if Enum.empty?(removed_same_faction), do: true, else: raise("too many units given")
