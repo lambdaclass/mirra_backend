@@ -118,6 +118,11 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:block_actions, player_id}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+    {:noreply, state}
+  end
+
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player =
       Map.get(state.game_state.players, player_id)
@@ -270,6 +275,9 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
+
+    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
+
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_skill(skill_key, skill_params, state.game_state)
@@ -294,6 +302,10 @@ defmodule Arena.GameUpdater do
   # Broadcast game update to all players
   defp broadcast_player_dead(game_id, player_id) do
     PubSub.broadcast(Arena.PubSub, game_id, {:player_dead, player_id})
+  end
+
+  defp broadcast_player_block_actions(game_id, player_id, value) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
   end
 
   defp broadcast_game_update(state) do

@@ -135,9 +135,15 @@ defmodule Arena.Game.Player do
   def use_skill(player, skill_key, skill_params, game_state) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
+        Process.send(self(), {:block_actions, player.id}, [])
         game_state
 
       skill ->
+        Process.send_after(
+                self(),
+                {:block_actions, player.id},
+                skill.execution_duration_ms
+              )
         action_name = skill_key_execution_action(skill_key)
 
         player =
