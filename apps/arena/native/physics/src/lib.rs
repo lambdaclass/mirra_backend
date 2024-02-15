@@ -12,12 +12,16 @@ fn add(a: i64, b: i64) -> i64 {
 }
 
 #[rustler::nif()]
-fn move_entities(entities: HashMap<u64, Entity>, external_wall: Entity) -> HashMap<u64, Entity> {
+fn move_entities(
+    entities: HashMap<u64, Entity>,
+    ticks_to_move: f32,
+    external_wall: Entity,
+) -> HashMap<u64, Entity> {
     let mut entities: HashMap<u64, Entity> = entities;
 
     for entity in entities.values_mut() {
         if entity.is_moving {
-            entity.move_entity();
+            entity.move_entity(ticks_to_move);
 
             if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
                 entity.move_to_next_valid_position(&external_wall);
@@ -29,10 +33,10 @@ fn move_entities(entities: HashMap<u64, Entity>, external_wall: Entity) -> HashM
 }
 
 #[rustler::nif()]
-fn move_entity(entity: Entity, external_wall: Entity) -> Entity {
+fn move_entity(entity: Entity, ticks_to_move: f32, external_wall: Entity) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
-        entity.move_entity();
+        entity.move_entity(ticks_to_move);
 
         if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
             entity.move_to_next_valid_position(&external_wall);
@@ -74,23 +78,21 @@ fn calculate_triangle_vertices(
     angle: f32,
 ) -> Vec<Position> {
     let direction_angle = direction.y.atan2(direction.x);
-    let angle_x = (angle.to_radians() + direction_angle).cos();
-    let angle_y = (angle.to_radians() + direction_angle).sin();
-    let result_x = direction.x + angle_x;
-    let result_y = direction.y + angle_y;
-    let len_result = (result_x.powi(2) + result_y.powi(2)).sqrt();
-    let direction = Direction {
-        x: result_x / len_result,
-        y: result_y / len_result,
-    };
+    let v1_angle_x = (direction_angle + angle.to_radians()).cos();
+    let v1_angle_y = (direction_angle + angle.to_radians()).sin();
+
+    let v2_angle_x = (direction_angle - angle.to_radians()).cos();
+    let v2_angle_y = (direction_angle - angle.to_radians()).sin();
+
+    let len_result = (v2_angle_x.powi(2) + v2_angle_y.powi(2)).sqrt();
 
     let vertix_1 = Position {
-        x: starting_point.x + direction.x * range,
-        y: starting_point.y + direction.y * range,
+        x: starting_point.x + v1_angle_x / len_result * range,
+        y: starting_point.y + v1_angle_y / len_result * range,
     };
     let vertix_2 = Position {
-        x: starting_point.x + direction.x * range,
-        y: starting_point.y - direction.y * range,
+        x: starting_point.x + v2_angle_x / len_result * range,
+        y: starting_point.y + v2_angle_y / len_result * range,
     };
 
     vec![starting_point, vertix_1, vertix_2]

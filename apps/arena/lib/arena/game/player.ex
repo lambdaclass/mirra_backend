@@ -34,7 +34,7 @@ defmodule Arena.Game.Player do
 
   def trigger_natural_healings(players) do
     Enum.reduce(players, %{}, fn {player_id, player}, players_acc ->
-      player = maybe_trigger_natural_heal(player)
+      player = maybe_trigger_natural_heal(player, alive?(player))
       Map.put(players_acc, player_id, player)
     end)
   end
@@ -45,6 +45,10 @@ defmodule Arena.Game.Player do
 
   def alive?(players, player_id) do
     get_in(players, [player_id, :aditional_info, :health]) > 0
+  end
+
+  def alive_players(players) do
+    Map.filter(players, fn {_, player} -> alive?(player) end)
   end
 
   def stamina_full?(player) do
@@ -106,6 +110,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action_name, skill.execution_duration_ms)
           |> change_stamina(-1)
+          |> put_in([:is_moving], false)
 
         player =
           case stamina_recharging?(player) do
@@ -134,7 +139,7 @@ defmodule Arena.Game.Player do
     "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
   end
 
-  defp maybe_trigger_natural_heal(player) do
+  defp maybe_trigger_natural_heal(player, true) do
     now = System.monotonic_time(:millisecond)
 
     heal_interval? =
@@ -161,4 +166,6 @@ defmodule Arena.Game.Player do
         player
     end
   end
+
+  defp maybe_trigger_natural_heal(player, _), do: player
 end
