@@ -6,7 +6,7 @@ defmodule GameBackend.Gacha do
   import Ecto.Query
   alias GameBackend.Gacha.Box
   alias GameBackend.Repo
-  alias GameBackend.Units
+  alias GameBackend.Units.Characters
 
   @doc """
   Inserts a Box.
@@ -21,7 +21,7 @@ defmodule GameBackend.Gacha do
   Gets a Box by id.
   """
   def get_box(id) do
-    case Repo.get(Box, id) |> Repo.preload(:character_drop_rates) do
+    case Repo.get(Box, id) do
       nil -> {:error, :not_found}
       box -> {:ok, box}
     end
@@ -31,8 +31,7 @@ defmodule GameBackend.Gacha do
   Gets a Box by name.
   """
   def get_box_by_name(name) do
-    case Repo.one(from(b in Box, where: b.name == ^name))
-         |> Repo.preload(:character_drop_rates) do
+    case Repo.one(from(b in Box, where: b.name == ^name)) do
       nil -> {:error, :not_found}
       box -> {:ok, box}
     end
@@ -41,30 +40,29 @@ defmodule GameBackend.Gacha do
   @doc """
   Gets all Boxes.
   """
-  def get_boxes(), do: Repo.all(Box) |> Repo.preload(:character_drop_rates)
+  def get_boxes(), do: Repo.all(Box)
 
   @doc """
-  Get a character from the given box and add it as a new unit for the user.
-  Returns the new unit that was created.
+  Get a character from the given box. Does not add as unit (that logic is left to game apps)
   """
-  def pull(user_id, box, unit_params \\ %{unit_level: 1, tier: 1, rank: 1, selected: false}) do
-    character_drop_rates = box.character_drop_rates |> Enum.sort(&(&1.weight >= &2.weight))
-
+  def pull(box) do
     total_weight =
-      Enum.reduce(character_drop_rates, 0, fn drop_rate, acc -> drop_rate.weight + acc end)
+      Enum.reduce(box.rank_weights, 0, fn rank_weight, acc -> rank_weight.weight + acc end)
 
-    character_id =
-      Enum.reduce_while(character_drop_rates, Enum.random(1..total_weight), fn drop_rate,
-                                                                               acc_weight ->
-        acc_weight = acc_weight - drop_rate.weight
-        if acc_weight <= 0, do: {:halt, drop_rate.character_id}, else: {:cont, acc_weight}
+    rank =
+      Enum.reduce_while(box.rank_weights, Enum.random(1..total_weight), fn rank_weight,
+                                                                           acc_weight ->
+        acc_weight = acc_weight - rank_weight.weight
+        if acc_weight <= 0, do: {:halt, rank_weight.rank}, else: {:cont, acc_weight}
       end)
 
-    params = Map.merge(unit_params, %{character_id: character_id, user_id: user_id})
+    characters =
+      if is_nil(box.factions),
+        do: Characters.get_characters_by_rank(rank),
+        else: Characters.get_characters_by_rank_and_faction(rank, box.factions)
 
-    case Units.insert_unit(params) do
-      {:error, reason} -> {:error, reason}
-      {:ok, unit} -> {:ok, unit |> Repo.preload([:items, :character])}
-    end
+    if Enum.empty?(characters),
+      do: {:error, :no_character_found},
+      else: {:ok, {rank, Enum.random(characters)}}
   end
 end

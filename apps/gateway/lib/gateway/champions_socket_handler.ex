@@ -46,13 +46,14 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    with %WebSocketRequest{request_type: {_type, request}} <- WebSocketRequest.decode(message) do
-      response = handle(request)
+    case WebSocketRequest.decode(message) do
+      %WebSocketRequest{request_type: {_type, request}} ->
+        response = handle(request)
 
-      encode = WebSocketResponse.encode(%WebSocketResponse{response_type: response})
+        encode = WebSocketResponse.encode(%WebSocketResponse{response_type: response})
 
-      {:reply, {:binary, encode}, state}
-    else
+        {:reply, {:binary, encode}, state}
+
       unknown_request ->
         Logger.warning(
           "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"

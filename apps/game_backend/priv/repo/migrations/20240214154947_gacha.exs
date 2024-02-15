@@ -5,14 +5,14 @@ defmodule GameBackend.Repo.Migrations.Gacha do
     create table(:boxes) do
       add :name, :string, null: false
       add :description, :string
+      add :factions, {:array, :string}
       add :cost, :map
+      add :rank_weights, :map
       timestamps()
     end
 
-    create table(:character_drop_rates) do
-      add :box_id, references(:boxes, on_delete: :delete_all)
-      add :character_id, references(:characters, on_delete: :delete_all)
-      add :weight, :integer, null: false
+    alter table(:characters) do
+      add :ranks_dropped_in, {:array, :integer}
     end
   end
 end

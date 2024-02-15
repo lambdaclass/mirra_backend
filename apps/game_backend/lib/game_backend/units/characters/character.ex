@@ -11,8 +11,10 @@ defmodule GameBackend.Units.Characters.Character do
     field(:game_id, :integer)
     field(:active, :boolean, default: true)
     field(:name, :string)
+    field(:class, :string)
     field(:faction, :string)
     field(:rarity, :integer)
+    field(:ranks_dropped_in, {:array, :integer})
 
     timestamps()
   end
@@ -20,7 +22,7 @@ defmodule GameBackend.Units.Characters.Character do
   @doc false
   def changeset(character, attrs) do
     character
-    |> cast(attrs, [:game_id, :name, :active, :faction, :rarity])
-    |> validate_required([:game_id, :name, :active, :faction])
+    |> cast(attrs, [:game_id, :name, :active, :class, :faction, :rarity, :ranks_dropped_in])
+    |> validate_required([:game_id, :name, :active, :class, :faction])
   end
 end
