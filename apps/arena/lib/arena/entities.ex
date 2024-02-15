@@ -156,6 +156,7 @@ defmodule Arena.Entities do
        status: entity.aditional_info.status
      }}
   end
+
   def maybe_add_custom_info(entity) when entity.category == :power_up do
     {:power_up,
      %Arena.Serialization.PowerUp{

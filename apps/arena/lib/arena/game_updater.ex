@@ -95,8 +95,7 @@ defmodule Arena.GameUpdater do
         game_state.external_wall.id
       )
 
-    players =
-      apply_zone_damage(players, game_state.zone, state.game_config.game)
+    players = apply_zone_damage(players, game_state.zone, state.game_config.game)
 
     game_state =
       game_state
