@@ -94,11 +94,11 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def move(%{aditional_info: %{forced_movement: true}} = player, _, _) do
+  def move(%{aditional_info: %{forced_movement: true}} = player, _) do
     player
   end
 
-  def move(player, direction, external_wall) do
+  def move(player, direction) do
     current_actions =
       add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
@@ -114,7 +114,6 @@ defmodule Arena.Game.Player do
     player
     |> Map.put(:direction, direction)
     |> Map.put(:is_moving, is_moving)
-    |> Physics.move_entity(external_wall)
     |> Map.put(
       :aditional_info,
       Map.merge(player.aditional_info, %{current_actions: current_actions})

@@ -272,7 +272,7 @@ defmodule Arena.GameUpdater do
     player =
       state.game_state.players
       |> Map.get(player_id)
-      |> Player.move(direction, state.game_state.external_wall)
+      |> Player.move(direction)
 
     game_state =
       state.game_state
