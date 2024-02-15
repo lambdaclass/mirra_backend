@@ -143,6 +143,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action_name, skill.execution_duration_ms)
           |> change_stamina(-1)
+          |> put_in([:is_moving], false)
 
         player =
           case stamina_recharging?(player) do
