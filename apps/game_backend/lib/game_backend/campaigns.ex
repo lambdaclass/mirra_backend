@@ -5,7 +5,10 @@ defmodule GameBackend.Campaigns do
 
   import Ecto.Query
   alias GameBackend.Repo
+  alias GameBackend.Campaigns.Campaign
+  alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns.Level
+  alias GameBackend.Campaigns.Quest
 
   @doc """
   Gets all levels, grouped by campaign and sorted ascendingly.
@@ -42,6 +45,33 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
+  Inserts a campaign.
+  """
+  def insert_campaign(attrs, opts \\ []) do
+    %Campaign{}
+    |> Campaign.changeset(attrs)
+    |> Repo.insert(opts)
+  end
+
+  @doc """
+  Inserts a campaign progression.
+  """
+  def insert_campaign_progression(attrs, opts \\ []) do
+    %CampaignProgression{}
+    |> CampaignProgression.changeset(attrs)
+    |> Repo.insert(opts)
+  end
+
+  @doc """
+  Inserts a quest.
+  """
+  def insert_quest(attrs, opts \\ []) do
+    %Quest{}
+    |> Quest.changeset(attrs)
+    |> Repo.insert(opts)
+  end
+
+  @doc """
   Get a level by id.
   """
   def get_level(level_id) do
@@ -49,9 +79,31 @@ defmodule GameBackend.Campaigns do
   end
 
   def get_campaign_progression(user_id, campaign_id) do
-    Repo.get_by(GameBackend.Campaigns.Campaigns_Progression,
+    Repo.get_by(GameBackend.Campaigns.CampaignsProgression,
       user_id: user_id,
       campaign_id: campaign_id
     )
+  end
+
+  def get_next_level(campaign, level) do
+    next_level =
+      Repo.get_by(Level, campaign_id: campaign.id, level_number: level.level_number + 1)
+
+    if next_level do
+      {campaign.id, next_level.id}
+    else
+      next_campaign =
+        Repo.get(Campaign,
+          quest_id: campaign.quest_id,
+          campaign_number: campaign.campaign_number + 1
+        )
+
+      if next_campaign do
+        first_level = Repo.get_by(Level, campaign_id: next_campaign.id, level_number: 1)
+        {next_campaign.id, first_level.id}
+      else
+        {campaign.id, level.id}
+      end
+    end
   end
 end

@@ -2,15 +2,16 @@ defmodule GameBackend.Campaigns.Campaign do
   @moduledoc """
   Campaigns
   """
-
+  alias GameBackend.Campaigns.Level
+  alias GameBackend.Campaigns.Quest
   use GameBackend.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:id]}
   schema "campaigns" do
     field(:game_id, :integer)
-    field(:campaign_id, :integer)
+    field(:campaign_number, :integer)
 
+    belongs_to(:quest, Quest)
     has_many(:levels, Level)
 
     timestamps()
@@ -19,7 +20,8 @@ defmodule GameBackend.Campaigns.Campaign do
   @doc false
   def changeset(campaign, attrs \\ %{}) do
     campaign
-    |> cast(attrs, [:game_id, :campaign_id, :levels])
-    |> validate_required([:game_id, :campaign_id, :levels])
+    |> cast(attrs, [:game_id, :campaign_number, :quest_id])
+    |> cast_assoc(:levels)
+    |> validate_required([:game_id, :quest_id])
   end
 end

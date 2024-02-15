@@ -8,7 +8,10 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Campaigns.CampaignsProgression
+  alias GameBackend.Campaigns.Campaign
   alias GameBackend.Campaigns.Level
+  alias GameBackend.Campaigns
   alias GameBackend.Repo
   alias GameBackend.Users.User
 
@@ -62,21 +65,16 @@ defmodule GameBackend.Users do
 
   def advance_level(user_id, campaign_id) do
     # Increment user's level. If it was the last level in the campaign, increment the campaign number and set level number to 1.
-    user = Repo.get(User, user_id)
+    campaign = Repo.get(Campaign, campaign_id)
 
-    campaign_levels_amount =
-      Repo.all(from(l in Level, where: l.campaign == ^user.current_level)) |> length()
+    campaign_progression =
+      Repo.get_by(CampaignsProgression, user_id: user_id, campaign_id: campaign_id)
 
-    attrs =
-      if user.current_level < campaign_levels_amount do
-        %{current_level: user.current_level + 1}
-      else
-        %{current_level: 1, current_campaign: user.current_campaign + 1}
-      end
+    level = Repo.get(Level, campaign_progression.level_id)
 
-    user
-    |> User.changeset(attrs)
-    |> Repo.update!()
+    # Update CampaignsProgression
+    {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
+    Repo.update(campaign_progression, %{level_id: next_level_id, campaign_id: next_campaign_id})
   end
 
   defp preload(user),

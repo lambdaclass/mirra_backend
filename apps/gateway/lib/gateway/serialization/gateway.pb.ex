@@ -105,6 +105,7 @@ defmodule Gateway.Serialization.FightLevel do
 
   field :user_id, 1, type: :string, json_name: "userId"
   field :level_id, 2, type: :string, json_name: "levelId"
+  field :campaign_id, 3, type: :string, json_name: "campaignId"
 end
 
 defmodule Gateway.Serialization.SelectUnit do
@@ -192,11 +193,25 @@ defmodule Gateway.Serialization.User do
 
   field :id, 1, type: :string
   field :username, 2, type: :string
-  field :current_campaign, 3, type: :uint32, json_name: "currentCampaign"
-  field :current_level, 4, type: :uint32, json_name: "currentLevel"
-  field :currencies, 5, repeated: true, type: Gateway.Serialization.UserCurrency
-  field :units, 6, repeated: true, type: Gateway.Serialization.Unit
-  field :items, 7, repeated: true, type: Gateway.Serialization.Item
+
+  field :campaigns_progression, 3,
+    repeated: true,
+    type: Gateway.Serialization.CampaignProgression,
+    json_name: "campaignsProgression"
+
+  field :currencies, 4, repeated: true, type: Gateway.Serialization.UserCurrency
+  field :units, 5, repeated: true, type: Gateway.Serialization.Unit
+  field :items, 6, repeated: true, type: Gateway.Serialization.Item
+end
+
+defmodule Gateway.Serialization.CampaignProgression do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :user_id, 1, type: :string, json_name: "userId"
+  field :campaign_id, 2, type: :string, json_name: "campaignId"
+  field :level_id, 3, type: :string, json_name: "levelId"
 end
 
 defmodule Gateway.Serialization.UserCurrency do
@@ -278,7 +293,10 @@ defmodule Gateway.Serialization.Campaign do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :levels, 1, repeated: true, type: Gateway.Serialization.Level
+  field :id, 1, type: :string
+  field :quest_id, 2, type: :string, json_name: "questId"
+  field :campaign_number, 3, type: :uint32, json_name: "campaignNumber"
+  field :levels, 4, repeated: true, type: Gateway.Serialization.Level
 end
 
 defmodule Gateway.Serialization.Level do
@@ -287,8 +305,8 @@ defmodule Gateway.Serialization.Level do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :id, 1, type: :string
-  field :level_number, 2, type: :uint32, json_name: "levelNumber"
-  field :campaign, 3, type: :uint32
+  field :campaign_id, 2, type: :string, json_name: "campaignId"
+  field :level_number, 3, type: :uint32, json_name: "levelNumber"
   field :units, 4, repeated: true, type: Gateway.Serialization.Unit
 end
 

@@ -8,7 +8,7 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
-  alias GameBackend.Campaigns.Campaigns_Progression
+  alias GameBackend.Campaigns.CampaignProgression
 
   schema "users" do
     field(:game_id, :integer)
@@ -17,7 +17,7 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)
-    has_many(:campaigns_progression, Campaigns_Progression)
+    has_many(:campaign_progressions, CampaignProgression)
 
     timestamps()
   end
@@ -25,7 +25,7 @@ defmodule GameBackend.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:game_id, :username, :current_campaign, :current_level])
+    |> cast(attrs, [:game_id, :username])
     |> unique_constraint([:game_id, :username])
     |> validate_required([:game_id, :username])
   end

@@ -23,6 +23,7 @@ defmodule Champions.Users do
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
+        add_campaigns_progression(user)
 
         Users.get_user(user.id)
 
@@ -87,5 +88,19 @@ defmodule Champions.Users do
   defp add_sample_currencies(user) do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
+  end
+
+  defp add_campaigns_progression(user) do
+    campaigns = GameBackend.Campaigns.get_campaigns()
+
+    Enum.each(campaigns, fn campaign ->
+      IO.inspect(campaign.levels, label: "campaign.levels")
+
+      GameBackend.Campaigns.insert_campaign_progression(%{
+        user_id: user.id,
+        campaign_id: campaign.id,
+        level_id: campaign.levels |> hd() |> Map.get(:id)
+      })
+    end)
   end
 end

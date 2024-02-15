@@ -5,7 +5,6 @@ defmodule Champions.Battle do
   Fight outcomes are decided randomly, favoring the team with the higher aggregate level.
   """
 
-  alias GameBackend.Campaigns.Level
   alias GameBackend.Campaigns
   alias GameBackend.Users
 
@@ -35,7 +34,7 @@ defmodule Champions.Battle do
 
   @doc """
   Plays a level for a user, which means fighting its units with their selected ones.
-  Returns :win or :loss accordingly.
+  Returns :win or :loss accordingly, and updates the user's progress if they win.
 
   No tracking for level progress is done yet.
   """
