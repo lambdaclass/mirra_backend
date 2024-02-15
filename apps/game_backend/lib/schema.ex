@@ -1,4 +1,8 @@
 defmodule GameBackend.Schema do
+  @moduledoc """
+  Common schema for the GameBackend. Configures primary and foreign key types.
+  """
+
   defmacro __using__(_) do
     quote do
       use Ecto.Schema

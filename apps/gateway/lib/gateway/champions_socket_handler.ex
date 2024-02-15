@@ -17,6 +17,7 @@ defmodule Gateway.ChampionsSocketHandler do
     GetCampaign,
     GetLevel,
     FightLevel,
+    GetUnits,
     SelectUnit,
     UnselectUnit,
     LevelUpUnit,
@@ -103,6 +104,9 @@ defmodule Gateway.ChampionsSocketHandler do
       battle_result -> prepare_response(%{result: Atom.to_string(battle_result)}, :battle_result)
     end
   end
+
+  defp handle(%GetUnits{user_id: user_id}),
+    do: %{units: Users.get_units(user_id)} |> prepare_response(:units)
 
   defp handle(%SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}),
     do: Units.select_unit(user_id, unit_id, slot) |> prepare_response(:unit)
