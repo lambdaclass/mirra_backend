@@ -85,6 +85,7 @@ message GameState {
   int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
+  map<uint64, Entity> power_ups = 8;
 }
 
 /*
@@ -117,6 +118,7 @@ message Entity {
     Player player = 12;
     Projectile projectile = 13;
     Obstacle obstacle = 14;
+    PowerUp power_up = 15;
   }
 }
 
@@ -145,6 +147,16 @@ enum ProjectileStatus {
 
 message Obstacle {
   string color = 1;
+}
+
+message PowerUp {
+  uint64 owner_id = 1;
+  PowerUpstatus status = 2;
+}
+
+enum  PowerUpstatus {
+  AVAILABLE = 0;
+  TAKEN = 1;
 }
 
 message PlayerAction {
