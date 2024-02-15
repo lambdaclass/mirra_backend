@@ -64,7 +64,7 @@ defmodule GameBackend.Gacha do
 
     case Units.insert_unit(params) do
       {:error, reason} -> {:error, reason}
-      {:ok, unit} -> {:ok, unit}
+      {:ok, unit} -> {:ok, unit |> Repo.preload([:items, :character])}
     end
   end
 end

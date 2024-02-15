@@ -29,7 +29,7 @@ defmodule Champions.Users do
         [[first_error | _other_errors] | _other_fields_errors] =
           Changeset.traverse_errors(changeset, fn {msg, _opts} -> msg end) |> Map.values()
 
-        case first_error |> IO.inspect() do
+        case first_error do
           "has already been taken" -> {:error, :username_taken}
           "can't be blank" -> {:error, :missing_fields}
           _ -> {:error, :unkown}
@@ -105,6 +105,9 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
   end
 
+  @doc """
+  Gets all units for a user.
+  """
   def get_units(user_id) do
     Users.get_units(user_id)
   end

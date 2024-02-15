@@ -5,6 +5,7 @@ defmodule GameBackend.Users.Currencies do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Users.Currencies.Currency
   alias GameBackend.Repo
@@ -96,11 +97,11 @@ defmodule GameBackend.Users.Currencies do
   Returns whether the user can afford the required amounts of the specified currencies.
   """
   def can_afford(user_id, currencies_list) do
-    Enum.all?(currencies_list, fn
-      {currency_id, amount} ->
-        can_afford(user_id, currency_id, amount)
-      %GameBackend.Users.Currencies.CurrencyCost{currency_id: currency_id, amount: amount} ->
-        can_afford(user_id, currency_id, amount)
+    Enum.all?(currencies_list, fn %GameBackend.Users.Currencies.CurrencyCost{
+                                    currency_id: currency_id,
+                                    amount: amount
+                                  } ->
+      can_afford(user_id, currency_id, amount)
     end)
   end
 
@@ -110,5 +111,29 @@ defmodule GameBackend.Users.Currencies do
   def can_afford(user_id, currency_id, required_amount) do
     user_balance = get_amount_of_currency(user_id, currency_id)
     user_balance >= required_amount
+  end
+
+  @doc """
+  Substracts all CurrencyCosts from the user.
+
+  Returns {:ok, results} or {:error, "failed"} tuples so it can be used on transactions.
+  """
+  def substract_currencies(user_id, costs) do
+    result =
+      Enum.map(costs, fn %CurrencyCost{currency_id: currency_id, amount: cost} ->
+        add_currency(user_id, currency_id, -cost)
+      end)
+
+    if Enum.all?(result, fn
+         {:ok, _} -> true
+         _ -> false
+       end) do
+      {:ok,
+       Enum.map(result, fn {_ok, user_currency} ->
+         UserCurrency.preload_currency(user_currency)
+       end)}
+    else
+      {:error, "failed"}
+    end
   end
 end

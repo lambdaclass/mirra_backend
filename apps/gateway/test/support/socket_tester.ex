@@ -14,12 +14,10 @@ defmodule Gateway.SocketTester do
   use WebSockex
 
   require Logger
-  alias Gateway.Serialization.PullBox
-  alias Gateway.Serialization.FuseUnit
-  alias Gateway.Serialization.WebSocketResponse
 
   alias Gateway.Serialization.{
     WebSocketRequest,
+    WebSocketResponse,
     GetUser,
     GetUserByUsername,
     CreateUser,
@@ -27,9 +25,11 @@ defmodule Gateway.SocketTester do
     GetCampaign,
     GetLevel,
     FightLevel,
+    GetUnits,
     SelectUnit,
     UnselectUnit,
     LevelUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -101,6 +101,16 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:get_level, %GetLevel{user_id: user_id, level_id: level_id}}
+         })}
+      )
+
+  def get_units(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_units, %GetUnits{user_id: user_id}}
          })}
       )
 
