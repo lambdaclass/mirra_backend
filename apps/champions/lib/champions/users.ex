@@ -91,10 +91,11 @@ defmodule Champions.Users do
   end
 
   defp add_campaigns_progression(user) do
+    IO.inspect("Adding campaigns progression (inside function)")
     campaigns = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
-      IO.inspect(campaign.levels, label: "campaign.levels")
+      IO.inspect(campaign, label: "Campaign")
 
       GameBackend.Campaigns.insert_campaign_progression(%{
         user_id: user.id,

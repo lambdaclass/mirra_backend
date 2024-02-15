@@ -14,25 +14,35 @@ defmodule GameBackend.Campaigns do
   Gets all levels, grouped by campaign and sorted ascendingly.
   """
   def get_campaigns() do
+    # campaigns =
+    #   Repo.all(from(l in Level))
+    #   |> Repo.preload(units: [:character, :items])
+    #   |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
+    #   |> Enum.group_by(fn l -> l.campaign end)
+    #   |> Map.values()
+
+    # if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
     campaigns =
-      Repo.all(from(l in Level))
-      |> Repo.preload(units: [:character, :items])
-      |> Enum.sort(fn l1, l2 -> l1.level_number < l2.level_number end)
-      |> Enum.group_by(fn l -> l.campaign end)
-      |> Map.values()
+      Repo.all(from(c in Campaign))
+      |> Repo.preload(levels: [:units])
 
     if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
   end
 
-  def get_campaign(campaign_number) do
-    campaign =
-      Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
-      |> Repo.preload(units: [:character, :items])
+  def get_campaign(campaign_id) do
+    # campaign =
+    #   Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
+    #   |> Repo.preload(units: [:character, :items])
 
-    case campaign do
-      [] -> {:error, :not_found}
-      campaign -> campaign
-    end
+    # case campaign do
+    #   [] -> {:error, :not_found}
+    #   campaign -> campaign
+    # end
+    campaign =
+      Repo.get(Campaign, campaign_id)
+      |> Repo.preload(levels: [:units])
+
+    if campaign, do: campaign, else: {:error, :not_found}
   end
 
   @doc """
