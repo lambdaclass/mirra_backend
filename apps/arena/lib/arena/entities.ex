@@ -66,15 +66,14 @@ defmodule Arena.Entities do
       shape: :circle,
       name: "Power Up" <> Integer.to_string(id),
       position: position,
-      radius: 4.0,
+      radius: 10.0,
       vertices: [],
       speed: 0.0,
       direction: direction,
       is_moving: false,
       aditional_info: %{
-        damage: 4,
         owner_id: owner_id,
-        status: :ACTIVE,
+        status: :AVAILABLE,
         remove_on_collision: true
       }
     }
@@ -144,7 +143,8 @@ defmodule Arena.Entities do
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina,
-       character_name: entity.aditional_info.character_name
+       character_name: entity.aditional_info.character_name,
+       power_ups: entity.aditional_info.power_ups
      }}
   end
 
@@ -152,6 +152,13 @@ defmodule Arena.Entities do
     {:projectile,
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status
+     }}
+  end
+  def maybe_add_custom_info(entity) when entity.category == :power_up do
+    {:power_up,
+     %Arena.Serialization.PowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
      }}
