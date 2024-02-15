@@ -5,6 +5,7 @@ defmodule Champions.Items do
 
   alias GameBackend.Items
   alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
 
   @doc """
   Get an item by id.
@@ -26,7 +27,8 @@ defmodule Champions.Items do
   def level_up(user_id, item_id) do
     with {:item, {:ok, item}} <- {:item, Items.get_item(item_id)},
          {:item_owned, true} <- {:item_owned, item.user_id == user_id},
-         [{level_up_currency_id, level_up_cost}] = calculate_level_up_cost(item),
+         [%CurrencyCost{currency_id: level_up_currency_id, amount: level_up_cost}] =
+           calculate_level_up_cost(item),
          {:can_afford, true} <-
            {:can_afford, Currencies.can_afford(user_id, level_up_currency_id, level_up_cost)} do
       Items.level_up(item, level_up_currency_id, level_up_cost)
@@ -48,5 +50,10 @@ defmodule Champions.Items do
   end
 
   defp calculate_level_up_cost(item),
-    do: [{Currencies.get_currency_by_name!("Gold").id, item.level |> Math.pow(2) |> round()}]
+    do: [
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        amount: item.level |> Math.pow(2) |> round()
+      }
+    ]
 end

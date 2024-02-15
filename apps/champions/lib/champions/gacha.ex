@@ -3,9 +3,11 @@ defmodule Champions.Gacha do
   Gacha logic for Champions of Mirra.
   """
 
-  alias GameBackend.Users.Currencies
   alias GameBackend.Gacha
+  alias GameBackend.Transaction
   alias GameBackend.Users
+  alias GameBackend.Users.Currencies
+  alias Ecto.Multi
 
   @doc """
   Gets a Box by id.
@@ -26,18 +28,29 @@ defmodule Champions.Gacha do
     with {:user_exists, true} <- {:user_exists, Users.exists?(user_id)},
          {:get_box, {:ok, box}} <- {:get_box, Gacha.get_box(box_id)},
          {:can_afford, true} <-
-           {:can_afford, Currencies.can_afford(user_id, box.cost |> IO.inspect(label: :cost))} do
-      case Gacha.pull(user_id, box) do
-        {:ok, unit} ->
-          {:ok, %{unit: unit, user: Users.get_user(user_id)}}
+           {:can_afford, Currencies.can_afford(user_id, box.cost)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> Gacha.pull(user_id, box) end)
+        |> Multi.run(:substract_currencies, fn _, _ ->
+          Currencies.substract_currencies(user_id, box.cost)
+        end)
+        |> Transaction.run()
 
+      case result do
         {:error, reason} ->
           {:error, reason}
+
+        {:error, _, _, _} ->
+          {:error, :transaction}
+
+        {:ok, %{unit: unit}} ->
+          {:ok, %{unit: unit, user: Users.get_user(user_id)}}
       end
     else
       {:user_exists, false} -> {:error, :user_not_found}
       {:get_box, {:error, :not_found}} -> {:error, :box_not_found}
-      {:can_afford, true} -> {:error, :cant_afford}
+      {:can_afford, false} -> {:error, :cant_afford}
     end
   end
 end

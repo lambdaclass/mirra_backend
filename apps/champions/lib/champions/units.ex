@@ -11,8 +11,9 @@ defmodule Champions.Units do
   alias GameBackend.Transaction
   alias GameBackend.Units
   alias GameBackend.Units.Unit
-  alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.Currencies
+  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies.UserCurrency
 
   @star1 1
@@ -85,7 +86,7 @@ defmodule Champions.Units do
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_level(unit) end)
         |> Multi.run(:user_currency, fn _, _ ->
-          add_user_currencies(unit, costs)
+          Currencies.substract_currencies(user_id, costs)
         end)
         |> Transaction.run()
 
@@ -105,25 +106,6 @@ defmodule Champions.Units do
       {:unit_owned, false} -> {:error, :not_found}
       {:can_level_up, false} -> {:error, :cant_level_up}
       {:can_afford, false} -> {:error, :cant_afford}
-    end
-  end
-
-  defp add_user_currencies(unit, costs) do
-    result =
-      Enum.map(costs, fn {currency_id, cost} ->
-        Currencies.add_currency(unit.user_id, currency_id, -cost)
-      end)
-
-    if Enum.all?(result, fn
-         {:ok, _} -> true
-         _ -> false
-       end) do
-      {:ok,
-       Enum.map(result, fn {_ok, user_currency} ->
-         UserCurrency.preload_currency(user_currency)
-       end)}
-    else
-      {:error, "failed"}
     end
   end
 
@@ -151,7 +133,12 @@ defmodule Champions.Units do
   Returns a `{currency_id, amount}` tuple list.
   """
   def calculate_level_up_cost(unit),
-    do: [{Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()}]
+    do: [
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        amount: unit.unit_level |> Math.pow(2) |> round()
+      }
+    ]
 
   @doc """
   Tiers up a user's unit and substracts the currency cost from the user.
@@ -171,7 +158,7 @@ defmodule Champions.Units do
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_tier(unit) end)
         |> Multi.run(:user_currency, fn _, _ ->
-          add_user_currencies(unit, costs)
+          Currencies.substract_currencies(user_id, costs)
         end)
         |> GameBackend.Transaction.run()
 
@@ -217,8 +204,11 @@ defmodule Champions.Units do
   """
   def calculate_tier_up_cost(unit),
     do: [
-      {Currencies.get_currency_by_name!("Gold").id, unit.unit_level |> Math.pow(2) |> round()},
-      {Currencies.get_currency_by_name!("Gems").id, 50}
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        amount: unit.unit_level |> Math.pow(2) |> round()
+      },
+      %CurrencyCost{currency_id: Currencies.get_currency_by_name!("Gems").id, amount: 50}
     ]
 
   @doc """

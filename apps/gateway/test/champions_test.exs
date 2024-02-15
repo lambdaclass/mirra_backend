@@ -4,6 +4,7 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Units.Characters
   alias GameBackend.Repo
   alias GameBackend.Users.Currencies
@@ -121,7 +122,8 @@ defmodule Gateway.Test.Champions do
       level = unit.unit_level
 
       #### Level up
-      [{_gold_id, level_up_cost}] = Units.calculate_level_up_cost(unit)
+      [%CurrencyCost{currency_id: _gold_id, amount: level_up_cost}] =
+        Units.calculate_level_up_cost(unit)
 
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
@@ -152,7 +154,11 @@ defmodule Gateway.Test.Champions do
 
       user_gold = Users.get_amount_of_currency_by_name!(user.id, "Gold")
       user_gems = Users.get_amount_of_currency_by_name!(user.id, "Gems")
-      [{_gold_id, gold_cost}, {_gems_id, gems_cost}] = Units.calculate_tier_up_cost(unit)
+
+      [
+        %CurrencyCost{currency_id: _gold_id, amount: gold_cost},
+        %CurrencyCost{currency_id: _gems_id, amount: gems_cost}
+      ] = Units.calculate_tier_up_cost(unit)
 
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
@@ -213,9 +219,6 @@ defmodule Gateway.Test.Champions do
       # For the same faction, we will do one of each unit.
       units_to_consume = create_units_to_consume(user, muflus, same_faction_character)
 
-      # Characters need a certain rarity to rank up
-      # assert unit.character.rarity = Units.get_rarity()
-
       # TODO: Check that we cant tier up again without ranking up
 
       :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
@@ -237,8 +240,9 @@ defmodule Gateway.Test.Champions do
 
     test "summon", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("Summon user")
+      units = Enum.count(user.units)
 
-      previous_scrolls = Users.add_currency_by_name!(user.id, "Scrolls", 50)
+      {:ok, previous_scrolls} = Users.add_currency_by_name!(user.id, "Scrolls", 50)
       scrolls = Currencies.get_currency_by_name!("Scrolls")
 
       [character1, character_2 | _rest] = Characters.get_characters()
@@ -253,39 +257,28 @@ defmodule Gateway.Test.Champions do
           cost: [%{currency_id: scrolls.id, amount: 50}]
         })
 
-      box = Repo.preload(box, :character_drop_rates)
+      box = Repo.preload(box, character_drop_rates: :character)
 
       ### Get boxes
       SocketTester.get_boxes(socket_tester, user.id)
-      IO.inspect("0")
       fetch_last_message(socket_tester)
-
-      IO.inspect("A")
 
       assert_receive %WebSocketResponse{
         response_type: {:boxes, %Boxes{}}
       }
 
-      IO.inspect("B")
-
       fetch_last_message(socket_tester)
-      IO.inspect("C")
 
       %WebSocketResponse{
         response_type: {:boxes, %Boxes{boxes: boxes}}
       } = get_last_message()
 
-      IO.inspect("D")
-
       assert box.id in Enum.map(boxes, & &1.id)
 
-      IO.inspect("E")
       ### Get box
 
       SocketTester.get_box(socket_tester, box.id)
-      IO.inspect("F")
       fetch_last_message(socket_tester)
-      IO.inspect("G")
 
       assert_receive %WebSocketResponse{
         response_type: {:box, %Box{}}
@@ -315,10 +308,12 @@ defmodule Gateway.Test.Champions do
         response_type: {:user_and_unit, %UserAndUnit{user: new_user, unit: new_unit}}
       } = get_last_message()
 
-      assert new_unit.character.id in Enum.map(box.character_drop_rates, & &1.character_id)
+      assert new_unit.character.name in Enum.map(box.character_drop_rates, & &1.character.name)
 
-      new_scrolls = Enum.find(new_user.currencies, &(&1.currency_id == scrolls.id))
-      assert new_scrolls == previous_scrolls
+      new_scrolls = Enum.find(new_user.currencies, &(&1.currency.name == "Scrolls"))
+      assert new_scrolls.amount == previous_scrolls.amount - List.first(box.cost).amount
+
+      assert Champions.Users.get_units(user.id) |> Enum.count() == units + 1
     end
   end
 
