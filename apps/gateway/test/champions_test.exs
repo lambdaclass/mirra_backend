@@ -5,9 +5,6 @@ defmodule Gateway.Test.Champions do
   use ExUnit.Case
 
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Units.Characters
-  alias GameBackend.Repo
-  alias GameBackend.Users.Currencies
   alias Champions.{Units, Users}
 
   alias Gateway.Serialization.{
@@ -211,6 +208,7 @@ defmodule Gateway.Test.Champions do
           game_id: 2,
           active: true,
           name: "SameFactionUnit",
+          class: "SomeClass",
           faction: muflus.faction,
           rarity: Champions.Units.get_rarity(:rare)
         })
@@ -242,22 +240,9 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("Summon user")
       units = Enum.count(user.units)
 
-      {:ok, previous_scrolls} = Users.add_currency_by_name!(user.id, "Scrolls", 50)
-      scrolls = Currencies.get_currency_by_name!("Scrolls")
+      {:ok, previous_scrolls} = Users.add_currency_by_name!(user.id, "Scrolls", 1)
 
-      [character1, character_2 | _rest] = Characters.get_characters()
-
-      {:ok, box} =
-        GameBackend.Gacha.insert_box(%{
-          name: "Test Box",
-          character_drop_rates: [
-            %{character_id: character1.id, weight: 1},
-            %{character_id: character_2.id, weight: 1}
-          ],
-          cost: [%{currency_id: scrolls.id, amount: 50}]
-        })
-
-      box = Repo.preload(box, character_drop_rates: :character)
+      {:ok, box} = GameBackend.Gacha.get_box_by_name("Basic Summon")
 
       ### Get boxes
       SocketTester.get_boxes(socket_tester, user.id)
@@ -287,15 +272,15 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type: {:box, %Box{id: id, name: name}}
+        response_type: {:box, %Box{id: box_id, name: box_name}}
       } = get_last_message()
 
-      assert id == box.id
-      assert name == box.name
+      assert box_id == box.id
+      assert box_name == box.name
 
       ### Pull champion
 
-      SocketTester.pull_box(socket_tester, user.id, box.id)
+      SocketTester.pull_box(socket_tester, user.id, box_id)
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
@@ -308,7 +293,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:user_and_unit, %UserAndUnit{user: new_user, unit: new_unit}}
       } = get_last_message()
 
-      assert new_unit.character.name in Enum.map(box.character_drop_rates, & &1.character.name)
+      assert new_unit.rank in Enum.map(box.rank_weights, & &1.rank)
 
       new_scrolls = Enum.find(new_user.currencies, &(&1.currency.name == "Scrolls"))
       assert new_scrolls.amount == previous_scrolls.amount - List.first(box.cost).amount
