@@ -70,10 +70,11 @@ defmodule Arena.GameUpdater do
     entities_to_collide_projectiles =
       Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
-    players =
+    {players, power_ups} =
       game_state.players
       |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
-      |> update_collisions(game_state.players, %{})
+      |> update_collisions(game_state.players, game_state.power_ups)
+      |> handle_power_ups(game_state.power_ups)
 
     projectiles =
       remove_exploded_projectiles(game_state.projectiles)
@@ -101,6 +102,7 @@ defmodule Arena.GameUpdater do
       game_state
       |> Map.put(:players, players)
       |> Map.put(:projectiles, projectiles)
+      |> Map.put(:power_ups, power_ups)
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -193,9 +195,23 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+  def handle_info({:to_killfeed, killer_id, victim_id}, %{game_state: game_state} = state) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
-    state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+    victim = Map.get(game_state.players, victim_id)
+    last_id = game_state.last_id + 1
+
+    state =
+      update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+      |> put_in(
+        [:game_state, :power_ups, last_id],
+        Entities.new_power_up(
+          last_id,
+          victim.position,
+          victim.direction,
+          victim_id
+        )
+      )
+
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
     {:noreply, state}
@@ -384,6 +400,7 @@ defmodule Arena.GameUpdater do
       Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
+      |> Map.put(:power_ups, %{})
       |> Map.put(:projectiles, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
@@ -597,5 +614,34 @@ defmodule Arena.GameUpdater do
       false -> decide_collided_entity(projectile, other_entities, external_wall_id, players)
       _ -> entity_id
     end
+  end
+
+  defp handle_power_ups(players, power_ups) do
+    power_ups =
+      Map.reject(power_ups, fn {_power_up_id, power_up} ->
+        power_up.aditional_info.status == :TAKEN
+      end)
+
+    Enum.reduce(players, {players, power_ups}, fn {_player_id, player},
+                                                  {players_acc, power_ups_acc} = accs ->
+      power_up_collided_id =
+        Enum.find(player.collides_with, nil, fn collided_entity_id ->
+          Map.has_key?(power_ups_acc, collided_entity_id)
+        end)
+
+      if power_up_collided_id && Player.alive?(player) do
+        power_up =
+          Map.get(power_ups, power_up_collided_id)
+          |> put_in([:aditional_info, :status], :TAKEN)
+
+        player =
+          player
+          |> update_in([:aditional_info, :power_ups], fn amount -> amount + 1 end)
+
+        {Map.put(players_acc, player.id, player), Map.put(power_ups_acc, power_up.id, power_up)}
+      else
+        accs
+      end
+    end)
   end
 end
