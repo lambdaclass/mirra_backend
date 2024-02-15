@@ -129,6 +129,7 @@ message Player {
   uint64 stamina_interval = 6;
   bool recharging_stamina = 7;
   string character_name = 8;
+  uint64 power_ups = 9;
 }
 
 message Projectile {
