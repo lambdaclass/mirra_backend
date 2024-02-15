@@ -5,6 +5,7 @@ defmodule Champions.Battle do
   Fight outcomes are decided randomly, favoring the team with the higher aggregate level.
   """
 
+  alias GameBackend.Campaigns.Level
   alias GameBackend.Campaigns
   alias GameBackend.Users
 
@@ -40,19 +41,22 @@ defmodule Champions.Battle do
   """
   def fight_level(user_id, campaign_id, level_id) do
     user = Users.get_user(user_id)
-    campaign_progression = get_campaign_progression(user_id, campaign_id)
+    level = Campaigns.get_level(level_id)
+    campaign_progression = Campaigns.get_campaign_progression(user_id, campaign_id)
 
     cond do
       is_nil(user) ->
         {:error, :user_not_found}
 
+      is_nil(level) ->
+        {:error, :level_not_found}
+
       is_nil(campaign_progression) ->
-        {:error, :campaign_level_not_found}
+        {:error, :campaign_progression_not_found}
 
       true ->
         if battle(user.units, level.units) == :team_1 do
-          # Advance user progress. Increment level number and, if it's the last level, the campaign number.
-          {:ok, _} = Users.advance_level(user_id)
+          {:ok, _} = Users.advance_level(user_id, campaign_id)
           :win
         else
           :loss

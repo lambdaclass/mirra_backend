@@ -8,18 +8,16 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
+  alias GameBackend.Campaigns.Campaigns_Progression
 
-  @derive {Jason.Encoder,
-           only: [:id, :username, :current_campaign, :current_level, :currencies, :units, :items]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
-    field(:current_campaign, :integer, default: 1)
-    field(:current_level, :integer, default: 1)
 
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)
+    has_many(:campaigns_progression, Campaigns_Progression)
 
     timestamps()
   end
@@ -32,5 +30,3 @@ defmodule GameBackend.Users.User do
     |> validate_required([:game_id, :username])
   end
 end
-
-# user_id, campaign_id, level_id

@@ -11,7 +11,9 @@ defmodule GameBackend.Campaigns.Campaigns_Progression do
     field(:game_id, :integer)
     field(:user_id, :integer)
     field(:campaign_id, :integer)
+    field(:campaign_number, :integer)
     field(:level_id, :integer)
+    field(:level_number, :integer)
 
     timestamps()
   end
