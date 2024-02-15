@@ -50,7 +50,7 @@ pub enum Category {
     Player,
     Projectile,
     Obstacle,
-    PowerUp
+    PowerUp,
 }
 
 impl Entity {
