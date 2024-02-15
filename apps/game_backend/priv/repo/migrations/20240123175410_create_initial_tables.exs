@@ -26,6 +26,7 @@ defmodule GameBackend.Repo.Migrations.CreateInitialTables do
       add :game_id, :integer, null: false
       add :active, :boolean, null: false
       add :name, :string, null: false
+      add :class, :string, null: false
       add :faction, :string, null: false
       add :rarity, :integer
       timestamps()

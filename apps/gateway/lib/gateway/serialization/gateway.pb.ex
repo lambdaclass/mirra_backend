@@ -462,22 +462,23 @@ defmodule Gateway.Serialization.Box do
   field(:id, 1, type: :string)
   field(:name, 2, type: :string)
   field(:description, 3, type: :string)
+  field(:factions, 4, repeated: true, type: :string)
 
-  field(:character_drop_rates, 4,
+  field(:rank_weights, 5,
     repeated: true,
-    type: Gateway.Serialization.CharacterDropRate,
-    json_name: "characterDropRates"
+    type: Gateway.Serialization.RankWeights,
+    json_name: "rankWeights"
   )
 
-  field(:cost, 5, repeated: true, type: Gateway.Serialization.CurrencyCost)
+  field(:cost, 6, repeated: true, type: Gateway.Serialization.CurrencyCost)
 end
 
-defmodule Gateway.Serialization.CharacterDropRate do
+defmodule Gateway.Serialization.RankWeights do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:characer_id, 1, type: :string, json_name: "characerId")
+  field(:rank, 1, type: :int32)
   field(:weight, 2, type: :int32)
 end
 

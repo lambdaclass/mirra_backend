@@ -5,13 +5,59 @@ alias GameBackend.Units.{Characters, Unit}
 champions_of_mirra_id = 2
 units_per_level = 5
 
+{:ok, _rank1} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Super Weak Mage",
+    class: "Mage",
+    faction: "Kaline",
+    rarity: Champions.Units.get_rarity(:common),
+    ranks_dropped_in: [Champions.Units.get_rank(:star1)]
+  })
+
+{:ok, _rank2} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Weak Hunter",
+    class: "Hunter",
+    faction: "Araban",
+    rarity: Champions.Units.get_rarity(:common),
+    ranks_dropped_in: [Champions.Units.get_rank(:star2)]
+  })
+
+{:ok, _rank3} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Mediocre Assasin",
+    class: "Assasin",
+    faction: "Merliot",
+    rarity: Champions.Units.get_rarity(:common),
+    ranks_dropped_in: [Champions.Units.get_rank(:star3)]
+  })
+
+{:ok, _rank4} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Ok Cleric",
+    class: "Cleric",
+    faction: "Otobi",
+    rarity: Champions.Units.get_rarity(:rare),
+    ranks_dropped_in: [Champions.Units.get_rank(:star4), Champions.Units.get_rank(:star5)]
+  })
+
 {:ok, muflus} =
   Characters.insert_character(%{
     game_id: champions_of_mirra_id,
     active: true,
     name: "Muflus",
+    class: "Warrior",
     faction: "Araban",
-    rarity: Champions.Units.get_rarity(:epic)
+    rarity: Champions.Units.get_rarity(:elite),
+    ranks_dropped_in: [Champions.Units.get_rank(:star5)]
   })
 
 {:ok, uma} =
@@ -19,8 +65,10 @@ units_per_level = 5
     game_id: champions_of_mirra_id,
     active: true,
     name: "Uma",
+    class: "Assasin",
     faction: "Kaline",
-    rarity: Champions.Units.get_rarity(:epic)
+    rarity: Champions.Units.get_rarity(:elite),
+    ranks_dropped_in: [Champions.Units.get_rank(:star5)]
   })
 
 {:ok, dagna} =
@@ -28,8 +76,10 @@ units_per_level = 5
     game_id: champions_of_mirra_id,
     active: true,
     name: "Dagna",
+    class: "Cleric",
     faction: "Merliot",
-    rarity: Champions.Units.get_rarity(:epic)
+    rarity: Champions.Units.get_rarity(:elite),
+    ranks_dropped_in: [Champions.Units.get_rank(:star5)]
   })
 
 {:ok, h4ck} =
@@ -37,60 +87,69 @@ units_per_level = 5
     game_id: champions_of_mirra_id,
     active: true,
     name: "H4ck",
+    class: "Hunter",
     faction: "Otobi",
-    rarity: Champions.Units.get_rarity(:epic)
+    rarity: Champions.Units.get_rarity(:elite),
+    ranks_dropped_in: [Champions.Units.get_rank(:star5)]
   })
 
-{:ok, _} = Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Epic Sword of Epicness",
-  type: "weapon"
-})
+{:ok, _} =
+  Items.insert_item_template(%{
+    game_id: champions_of_mirra_id,
+    name: "Epic Sword of Epicness",
+    type: "weapon"
+  })
 
-{:ok, _} = Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Mythical Helmet of Mythicness",
-  type: "helmet"
-})
+{:ok, _} =
+  Items.insert_item_template(%{
+    game_id: champions_of_mirra_id,
+    name: "Mythical Helmet of Mythicness",
+    type: "helmet"
+  })
 
-{:ok, _} = Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Legendary Chestplate of Legendaryness",
-  type: "chest"
-})
+{:ok, _} =
+  Items.insert_item_template(%{
+    game_id: champions_of_mirra_id,
+    name: "Legendary Chestplate of Legendaryness",
+    type: "chest"
+  })
 
-{:ok, _} = Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Magical Boots of Magicness",
-  type: "boots"
-})
+{:ok, _} =
+  Items.insert_item_template(%{
+    game_id: champions_of_mirra_id,
+    name: "Magical Boots of Magicness",
+    type: "boots"
+  })
 
 {:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 {:ok, gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-{:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
 
-{:ok, _} = Gacha.insert_box(%{
-  name: "Araban & Kaline",
-  description: "Costs gold and gems.",
-  character_drop_rates: [
-    %{character_id: muflus.id, weight: 1},
-    %{character_id: uma.id, weight: 1}
-  ],
-  cost: [
-    %{currency_id: gold.id, amount: 50},
-    %{currency_id: gems.id, amount: 50}
-  ]
-})
+{:ok, scrolls} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
 
-{:ok, _} = Gacha.insert_box(%{
-  name: "Merliot & Otobi",
-  description: "Costs scrolls.",
-  character_drop_rates: [
-    %{character_id: dagna.id, weight: 1},
-    %{character_id: h4ck.id, weight: 1}
-  ],
-  cost: [%{currency_id: scrolls.id, amount: 50}]
-})
+{:ok, _} =
+  Gacha.insert_box(%{
+    name: "Basic Summon",
+    rank_weights: [
+      %{rank: Champions.Units.get_rank(:star1), weight: 90},
+      %{rank: Champions.Units.get_rank(:star2), weight: 70},
+      %{rank: Champions.Units.get_rank(:star3), weight: 30},
+      %{rank: Champions.Units.get_rank(:star4), weight: 7},
+      %{rank: Champions.Units.get_rank(:star5), weight: 3}
+    ],
+    cost: [%{currency_id: scrolls.id, amount: 1}]
+  })
+
+{:ok, box2} =
+  GameBackend.Gacha.insert_box(%{
+    name: "Mystic Summon",
+    rank_weights: [
+      %{rank: Champions.Units.get_rank(:star3), weight: 75},
+      %{rank: Champions.Units.get_rank(:star4), weight: 20},
+      %{rank: Champions.Units.get_rank(:star5), weight: 5}
+    ],
+    cost: [%{currency_id: scrolls.id, amount: 10}]
+  })
 
 ######################
 # Campaigns creation #

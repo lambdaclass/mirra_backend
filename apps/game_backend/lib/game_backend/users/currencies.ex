@@ -51,13 +51,14 @@ defmodule GameBackend.Users.Currencies do
   Creates the relational table if it didn't exist previously.
   """
   def add_currency(user_id, currency_id, amount) do
-    with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id) do
-      user_currency
-      |> UserCurrency.update_changeset(%{
-        amount: max(user_currency.amount + amount, 0)
-      })
-      |> Repo.update()
-    else
+    case get_user_currency(user_id, currency_id) do
+      %UserCurrency{} = user_currency ->
+        user_currency
+        |> UserCurrency.update_changeset(%{
+          amount: max(user_currency.amount + amount, 0)
+        })
+        |> Repo.update()
+
       nil ->
         # User has none of this currency, create it with given amount
         insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
@@ -118,6 +119,8 @@ defmodule GameBackend.Users.Currencies do
 
   Returns {:ok, results} or {:error, "failed"} tuples so it can be used on transactions.
   """
+  def substract_currencies(_user_id, []), do: {:ok, []}
+
   def substract_currencies(user_id, costs) do
     result =
       Enum.map(costs, fn %CurrencyCost{currency_id: currency_id, amount: cost} ->

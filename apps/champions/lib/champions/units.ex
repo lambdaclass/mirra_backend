@@ -26,7 +26,7 @@ defmodule Champions.Units do
   @illumination3 8
   @awakened 9
 
-  @epic 3
+  @elite 3
   @rare 2
   @common 1
 
@@ -40,7 +40,7 @@ defmodule Champions.Units do
   def get_rank(:illumination3), do: @illumination3
   def get_rank(:awakened), do: @awakened
 
-  def get_rarity(:epic), do: @epic
+  def get_rarity(:elite), do: @elite
   def get_rarity(:rare), do: @rare
   def get_rarity(:common), do: @common
 
@@ -339,7 +339,7 @@ defmodule Champions.Units do
   @doc """
   Returns whether a unit can rank up, based on its current rank and its character's rarity.
   """
-  def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @epic}}), do: rank < @awakened
+  def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @elite}}), do: rank < @awakened
 
   def can_rank_up(%Unit{rank: rank, character: %Character{rarity: @rare}}),
     do: rank < @illumination2

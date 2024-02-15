@@ -231,12 +231,13 @@ syntax = "proto3";
     string id = 1;
     string name = 2;
     string description = 3;
-    repeated CharacterDropRate character_drop_rates = 4;
-    repeated CurrencyCost cost = 5;
+    repeated string factions = 4;
+    repeated RankWeights rank_weights = 5; 
+    repeated CurrencyCost cost = 6;
   }
-
-  message CharacterDropRate {
-    string characer_id = 1;
+  
+  message RankWeights {
+    int32 rank = 1;
     int32 weight = 2;
   }
 
