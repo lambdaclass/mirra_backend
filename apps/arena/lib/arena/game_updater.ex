@@ -194,22 +194,17 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:to_killfeed, killer_id, victim_id}, %{game_state: game_state} = state) do
+  def handle_info(
+        {:to_killfeed, killer_id, victim_id},
+        %{game_state: game_state, game_config: game_config} = state
+      ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    last_id = game_state.last_id + 1
+    of_power_ups = get_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     state =
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-      |> put_in(
-        [:game_state, :power_ups, last_id],
-        Entities.new_power_up(
-          last_id,
-          victim.position,
-          victim.direction,
-          victim_id
-        )
-      )
+      |> spawn_power_ups(victim, of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -613,6 +608,45 @@ defmodule Arena.GameUpdater do
     case player && Player.alive?(player) do
       false -> decide_collided_entity(projectile, other_entities, external_wall_id, players)
       _ -> entity_id
+    end
+  end
+
+  defp spawn_power_ups(
+         %{game_state: game_state, game_config: game_config} = state,
+         victim,
+         amount
+       )
+       when amount > 0 do
+    last_id = game_state.last_id + 1
+
+    random_x = victim.position.x + Enum.random(-game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up)
+    random_y = victim.position.y + Enum.random(-game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up)
+
+    random_position = %{x: random_x, y: random_y}
+
+    power_up =
+      Entities.new_power_up(
+        last_id,
+        random_position,
+        victim.direction,
+        victim.id
+      )
+
+    put_in(state, [:game_state, :power_ups, last_id], power_up)
+    |> put_in([:game_state, :last_id], last_id)
+    |> spawn_power_ups(victim, amount - 1)
+  end
+
+  defp spawn_power_ups(state, _victim, _amount), do: state
+
+  defp get_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
+    Enum.sort_by(power_ups_per_kill, fn %{amount: minimun} -> minimun end, :desc)
+    |> Enum.find(fn %{amount: minimun} ->
+      minimun <= power_ups
+    end)
+    |> case do
+      %{amount_of_drops: amount} -> amount
+      _ -> 0
     end
   end
 
