@@ -211,11 +211,11 @@ defmodule Arena.Game.Skill do
     Enum.concat([add_side, middle, sub_side])
   end
 
-  def maybe_auto_aim(%{x: 0.0, y: 0.0}, player_direction) do
-    player_direction
+  def maybe_auto_aim(%{x: 0.0, y: 0.0} = _skill_direction, player, entities) do
+    Physics.nearest_entity_direction(player, entities)
   end
 
-  def maybe_auto_aim(skill_direction, _player_direction) do
+  def maybe_auto_aim(skill_direction, _player, _entities) do
     skill_direction
   end
 end
