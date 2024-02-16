@@ -200,11 +200,11 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    of_power_ups = get_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     state =
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-      |> spawn_power_ups(victim, of_power_ups)
+      |> spawn_power_ups(victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -653,7 +653,7 @@ defmodule Arena.GameUpdater do
 
   defp spawn_power_ups(state, _victim, _amount), do: state
 
-  defp get_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
+  defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
     Enum.sort_by(power_ups_per_kill, fn %{amount: minimun} -> minimun end, :desc)
     |> Enum.find(fn %{amount: minimun} ->
       minimun <= power_ups
@@ -677,10 +677,11 @@ defmodule Arena.GameUpdater do
           Map.has_key?(power_ups_acc, collided_entity_id)
         end)
 
-      if power_up_collided_id && Player.alive?(player) do
-        power_up =
-          Map.get(power_ups, power_up_collided_id)
-          |> put_in([:aditional_info, :status], :TAKEN)
+      power_up =
+        Map.get(power_ups, power_up_collided_id)
+
+      if power_up && power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
+        power_up =  put_in(power_up, [:aditional_info, :status], :TAKEN)
 
         player =
           player
