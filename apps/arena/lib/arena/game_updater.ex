@@ -87,7 +87,7 @@ defmodule Arena.GameUpdater do
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
-      resolve_collisions(
+      resolve_projectile_collisions(
         projectiles,
         players,
         game_state.obstacles,
@@ -520,9 +520,9 @@ defmodule Arena.GameUpdater do
   # - If collided with external wall or obstacle explode projectile
   # - If collided with another player do the projectile's damage
   # - Do nothing on unexpected cases
-  defp resolve_collisions(projectiles, players, obstacles, external_wall_id)
+  defp resolve_projectile_collisions(projectiles, players, obstacles, external_wall_id)
 
-  defp resolve_collisions(projectiles, players, obstacles, external_wall_id) do
+  defp resolve_projectile_collisions(projectiles, players, obstacles, external_wall_id) do
     Enum.reduce(projectiles, {projectiles, players}, fn {_projectile_id, projectile},
                                                         {_projectiles_acc, players_acc} = accs ->
       # check if the projectiles is inside the walls
