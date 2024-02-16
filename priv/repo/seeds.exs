@@ -1,8 +1,9 @@
+alias Champions.Utils
 alias GameBackend.Campaigns.Level
 alias GameBackend.{Gacha, Items, Repo, Units, Users}
 alias GameBackend.Units.{Characters, Unit}
 
-champions_of_mirra_id = 2
+champions_of_mirra_id = Utils.game_id()
 units_per_level = 5
 
 {:ok, _rank1} =

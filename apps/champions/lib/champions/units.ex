@@ -14,7 +14,6 @@ defmodule Champions.Units do
   alias GameBackend.Users.Currencies
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Users.Currencies.UserCurrency
 
   @star1 1
   @star2 2
@@ -98,8 +97,7 @@ defmodule Champions.Units do
           {:error, :transaction}
 
         {:ok, %{unit: unit, user_currency: user_currency}} ->
-          {:ok,
-           %{unit: unit, user_currency: Enum.map(user_currency, &UserCurrency.preload_currency/1)}}
+          {:ok, %{unit: unit, user_currency: user_currency}}
       end
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
@@ -170,8 +168,7 @@ defmodule Champions.Units do
           {:error, :transaction}
 
         {:ok, %{unit: unit, user_currency: user_currency}} ->
-          {:ok,
-           %{unit: unit, user_currency: Enum.map(user_currency, &UserCurrency.preload_currency/1)}}
+          {:ok, %{unit: unit, user_currency: user_currency}}
       end
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
