@@ -1,4 +1,4 @@
-defmodule :"Elixir.GameBackend.Repo.Migrations.UserLevel" do
+defmodule Elixir.GameBackend.Repo.Migrations.UserLevel do
   use Ecto.Migration
 
   def change do
