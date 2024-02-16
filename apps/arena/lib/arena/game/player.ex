@@ -19,7 +19,7 @@ defmodule Arena.Game.Player do
   end
 
   def take_damage(player, damage) do
-    send(self(), {:damage_received, player.id, damage})
+    send(self(), {:damage_taken, player.id, damage})
 
     Map.update!(player, :aditional_info, fn info ->
       %{

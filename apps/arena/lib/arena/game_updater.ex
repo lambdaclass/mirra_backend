@@ -335,7 +335,9 @@ defmodule Arena.GameUpdater do
              server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
              player_timestamps: state.player_timestamps,
              zone: state.zone,
-             killfeed: state.killfeed
+             killfeed: state.killfeed,
+             damage_taken: state.damage_taken,
+             damage_done: state.damage_done
            }}
       })
 
