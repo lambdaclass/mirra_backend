@@ -33,7 +33,8 @@ defmodule Arena.Entities do
         last_damage_received: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
-        power_ups: 0
+        power_ups: 0,
+        power_up_damage_modifier: config.power_ups.power_up_damage_modifier
       }
     }
   end

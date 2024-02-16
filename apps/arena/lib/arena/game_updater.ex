@@ -558,7 +558,12 @@ defmodule Arena.GameUpdater do
 
         # Projectile hit a player
         {_entity_id, player, nil} ->
-          player = Player.change_health(player, projectile.aditional_info.damage)
+          owner_player = Map.get(players, projectile.aditional_info.owner_id)
+
+          real_damage =
+            Player.calculate_real_damage(owner_player, projectile.aditional_info.damage)
+
+          player = Player.change_health(player, real_damage)
 
           projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
@@ -619,8 +624,17 @@ defmodule Arena.GameUpdater do
        when amount > 0 do
     last_id = game_state.last_id + 1
 
-    random_x = victim.position.x + Enum.random(-game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up)
-    random_y = victim.position.y + Enum.random(-game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up)
+    random_x =
+      victim.position.x +
+        Enum.random(
+          -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+        )
+
+    random_y =
+      victim.position.y +
+        Enum.random(
+          -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+        )
 
     random_position = %{x: random_x, y: random_y}
 

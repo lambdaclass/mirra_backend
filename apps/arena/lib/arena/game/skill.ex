@@ -20,9 +20,12 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage =
+          Player.calculate_real_damage(player, circle_hit.damage)
+
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(circle_hit.damage)
+          |> Player.change_health(real_damage)
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -55,9 +58,12 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(cone_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage =
+          Player.calculate_real_damage(player, cone_hit.damage)
+
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(cone_hit.damage)
+          |> Player.change_health(real_damage)
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
