@@ -24,7 +24,7 @@ defmodule GameBackend.Campaigns do
     # if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
     campaigns =
       Repo.all(from(c in Campaign))
-      |> Repo.preload(levels: [:units])
+      |> Repo.preload(levels: [units: :items])
 
     if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
   end
@@ -69,6 +69,7 @@ defmodule GameBackend.Campaigns do
   def insert_campaign_progression(attrs, opts \\ []) do
     %CampaignProgression{}
     |> CampaignProgression.changeset(attrs)
+    |> IO.inspect()
     |> Repo.insert(opts)
   end
 
@@ -89,7 +90,7 @@ defmodule GameBackend.Campaigns do
   end
 
   def get_campaign_progression(user_id, campaign_id) do
-    Repo.get_by(GameBackend.Campaigns.CampaignsProgression,
+    Repo.get_by(GameBackend.Campaigns.CampaignProgression,
       user_id: user_id,
       campaign_id: campaign_id
     )

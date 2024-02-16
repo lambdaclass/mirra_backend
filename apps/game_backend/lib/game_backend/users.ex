@@ -8,7 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Campaigns.CampaignsProgression
+  alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns.Campaign
   alias GameBackend.Campaigns.Level
   alias GameBackend.Campaigns
@@ -68,13 +68,18 @@ defmodule GameBackend.Users do
     campaign = Repo.get(Campaign, campaign_id)
 
     campaign_progression =
-      Repo.get_by(CampaignsProgression, user_id: user_id, campaign_id: campaign_id)
+      Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
 
     level = Repo.get(Level, campaign_progression.level_id)
 
-    # Update CampaignsProgression
+    # Update CampaignProgression
     {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
-    Repo.update(campaign_progression, %{level_id: next_level_id, campaign_id: next_campaign_id})
+
+    CampaignProgression.advance_level_changeset(campaign_progression, %{
+      campaign_id: next_campaign_id,
+      level_id: next_level_id
+    })
+    |> Repo.update()
   end
 
   defp preload(user),

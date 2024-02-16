@@ -21,4 +21,10 @@ defmodule GameBackend.Campaigns.CampaignProgression do
     |> cast(attrs, [:game_id, :user_id, :campaign_id, :level_id])
     |> validate_required([:game_id, :user_id, :campaign_id, :level_id])
   end
+
+  def advance_level_changeset(campaign_progression, attrs) do
+    campaign_progression
+    |> cast(attrs, [:level_id, :campaign_id])
+    |> validate_required([:level_id, :campaign_id])
+  end
 end
