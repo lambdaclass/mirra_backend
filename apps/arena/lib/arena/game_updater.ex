@@ -288,9 +288,14 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:join, client_id}, _from, state) do
-    player_id = get_in(state.game_state, [:client_to_player_map, client_id])
-    response = %{player_id: player_id, game_config: state.game_config}
-    {:reply, {:ok, response}, state}
+    case get_in(state.game_state, [:client_to_player_map, client_id]) do
+      nil ->
+        {:reply, :not_a_client, state}
+
+      player_id ->
+        response = %{player_id: player_id, game_config: state.game_config}
+        {:reply, {:ok, response}, state}
+    end
   end
 
   ##########################
