@@ -63,8 +63,11 @@ defmodule GameBackend.Users do
   """
   def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
 
+  @doc """
+  Increments a user's level and apply the level's rewards.
+  If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
+  """
   def advance_level(user_id, campaign_id) do
-    # Increment user's level. If it was the last level in the campaign, increment the campaign number and set level number to 1.
     campaign = Repo.get(Campaign, campaign_id)
 
     campaign_progression =
@@ -78,6 +81,15 @@ defmodule GameBackend.Users do
     CampaignProgression.advance_level_changeset(campaign_progression, %{
       campaign_id: next_campaign_id,
       level_id: next_level_id
+    })
+    |> Repo.update()
+
+    # Apply level rewards to the user
+    get_user(user_id)
+    |> User.reward_changeset(%{
+      currency: level.currency_rewards,
+      items: level.item_rewards,
+      units: level.unit_rewards
     })
     |> Repo.update()
   end

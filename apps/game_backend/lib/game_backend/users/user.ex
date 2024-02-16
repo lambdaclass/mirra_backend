@@ -29,4 +29,9 @@ defmodule GameBackend.Users.User do
     |> unique_constraint([:game_id, :username])
     |> validate_required([:game_id, :username])
   end
+
+  def reward_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:currencies, :items, :units])
+  end
 end
