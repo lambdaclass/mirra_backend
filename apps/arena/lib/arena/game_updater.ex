@@ -200,7 +200,9 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+
+    amount_of_power_ups =
+      get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     state =
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
@@ -677,11 +679,10 @@ defmodule Arena.GameUpdater do
           Map.has_key?(power_ups_acc, collided_entity_id)
         end)
 
-      power_up =
-        Map.get(power_ups, power_up_collided_id)
+      power_up = Map.get(power_ups, power_up_collided_id)
 
       if power_up && power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
-        power_up =  put_in(power_up, [:aditional_info, :status], :TAKEN)
+        power_up = put_in(power_up, [:aditional_info, :status], :TAKEN)
 
         player =
           player

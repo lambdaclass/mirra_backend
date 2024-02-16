@@ -149,19 +149,19 @@ defmodule Arena.Game.Player do
 
   """
   def calculate_real_damage(
-    %{
-      aditional_info: %{
-        power_ups: power_up_amount,
-        power_up_damage_modifier: power_up_damage_modifier
-      }
-    } = _player_damage_owner,
-    damage
-  ) do
-aditional_damage = damage * power_up_damage_modifier * power_up_amount
+        %{
+          aditional_info: %{
+            power_ups: power_up_amount,
+            power_up_damage_modifier: power_up_damage_modifier
+          }
+        } = _player_damage_owner,
+        damage
+      ) do
+    aditional_damage = damage * power_up_damage_modifier * power_up_amount
 
-(damage + aditional_damage)
-|> round()
-end
+    (damage + aditional_damage)
+    |> round()
+  end
 
   ####################
   # Internal helpers #
