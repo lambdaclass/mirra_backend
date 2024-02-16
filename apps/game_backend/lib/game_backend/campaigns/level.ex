@@ -6,10 +6,12 @@ defmodule GameBackend.Campaigns.Level do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Items.Item
-  alias GameBackend.Users.Currencies.UserCurrency
+  alias GameBackend.Items.ItemReward
+  alias GameBackend.Campaigns.Rewards.CurrencyReward
+  alias GameBackend.Campaigns.Rewards.UnitReward
+  alias GameBackend.Campaigns.Rewards.ItemReward
   alias GameBackend.Campaigns.Campaign
-  alias GameBackend.Units.Unit
+  alias GameBackend.Units.UnitReward
 
   schema "levels" do
     field(:game_id, :integer)
@@ -17,9 +19,9 @@ defmodule GameBackend.Campaigns.Level do
 
     belongs_to(:campaign, Campaign)
     has_many(:units, Unit)
-    has_many(:currency_rewards, UserCurrency)
-    has_many(:item_rewards, Item)
-    has_many(:unit_rewards, Unit)
+    has_many(:currency_rewards, CurrencyReward)
+    has_many(:item_rewards, ItemReward)
+    has_many(:unit_rewards, UnitReward)
 
     timestamps()
   end

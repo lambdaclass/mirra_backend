@@ -2,15 +2,18 @@ defmodule GameBackend.Campaigns.CampaignProgression do
   @moduledoc """
   Campaign Progression
   """
+  alias GameBackend.Campaigns.Level
+  alias GameBackend.Campaigns.Campaign
+  alias GameBackend.Users.User
 
   use GameBackend.Schema
   import Ecto.Changeset
 
   schema "campaign_progressions" do
     field(:game_id, :integer)
-    field(:user_id, :binary_id)
-    field(:campaign_id, :binary_id)
-    field(:level_id, :binary_id)
+    belongs_to(:user, User)
+    belongs_to(:campaign, Campaign)
+    belongs_to(:level, Level)
 
     timestamps()
   end
