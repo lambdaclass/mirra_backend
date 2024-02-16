@@ -4,7 +4,7 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
-  alias Champions.{Units, Users}
+  alias Champions.{Units, Users, Utils}
 
   alias Gateway.Serialization.{
     Currency,
@@ -196,7 +196,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, same_faction_character} =
         GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
+          game_id: Utils.game_id(),
           active: true,
           name: "SameFactionUnit",
           faction: muflus.faction,

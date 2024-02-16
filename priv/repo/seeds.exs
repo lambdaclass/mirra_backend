@@ -1,3 +1,4 @@
+alias Champions.Utils
 alias GameBackend.Campaigns.Level
 alias GameBackend.Items
 alias GameBackend.Repo
@@ -6,7 +7,7 @@ alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 
-champions_of_mirra_id = 2
+champions_of_mirra_id = Utils.game_id()
 units_per_level = 5
 
 Characters.insert_character(%{

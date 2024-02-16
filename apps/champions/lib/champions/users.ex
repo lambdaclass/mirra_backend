@@ -3,13 +3,12 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias Champions.Utils
   alias Ecto.Changeset
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
   alias GameBackend.Units
   alias GameBackend.Items
-
-  @game_id 2
 
   @doc """
   Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
@@ -17,7 +16,7 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
-    case Users.register_user(%{username: username, game_id: @game_id}) do
+    case Users.register_user(%{username: username, game_id: Utils.game_id()}) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
         add_sample_units(user)
