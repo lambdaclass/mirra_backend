@@ -100,18 +100,12 @@ fn calculate_triangle_vertices(
 
 #[rustler::nif()]
 fn get_direction_from_positions(position_a: Position, position_b: Position) -> Direction {
-    let x = position_b.x - position_a.x;
-    let y = position_b.y - position_a.y;
-    let len = (x.powi(2) + y.powi(2)).sqrt();
-    Direction {
-        x: x / len,
-        y: y / len,
-    }
+    direction_from_positions(position_a, position_b)
 }
 
 #[rustler::nif()]
 fn calculate_speed(position_a: Position, position_b: Position, duration: u64) -> f32 {
-    let len = distance_between_entities(position_a, position_b);
+    let len = distance_between_positions(position_a, position_b);
     len / duration as f32
 }
 
@@ -120,12 +114,12 @@ fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> D
     let mut max_distance = 2000.0;
     let mut direction = Direction { x: entity.direction.x, y: entity.direction.y };
 
-    for other_entity in entities.values_mut() {
+    for other_entity in entities.values() {
         if entity.id != other_entity.id {
-            let distance = distance_between_entities(entity.position, other_entity.position);
+            let distance = distance_between_positions(entity.position, other_entity.position);
             if distance < max_distance {
                 max_distance = distance;
-                direction = get_direction_from_positions(entity.position, other_entity.position);
+                direction = direction_from_positions(entity.position, other_entity.position);
             }
         }
     }
@@ -139,6 +133,17 @@ fn distance_between_positions(entity_a_postion: Position, entity_b_postion: Posi
     (x.powi(2) + y.powi(2)).sqrt()
 }
 
+// This is a wrapper function to be able to call it from the rustler nif
+fn direction_from_positions(position_a: Position, position_b: Position) -> Direction {
+    let x = position_b.x - position_a.x;
+    let y = position_b.y - position_a.y;
+    let len = (x.powi(2) + y.powi(2)).sqrt();
+    Direction {
+        x: x / len,
+        y: y / len,
+    }
+}
+
 rustler::init!(
     "Elixir.Physics",
     [
@@ -149,6 +154,7 @@ rustler::init!(
         add_angle_to_direction,
         calculate_triangle_vertices,
         get_direction_from_positions,
-        calculate_speed
+        calculate_speed,
+        nearest_entity_direction
     ]
 );
