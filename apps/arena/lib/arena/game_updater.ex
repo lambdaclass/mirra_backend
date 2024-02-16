@@ -571,7 +571,7 @@ defmodule Arena.GameUpdater do
 
     projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
-    if player.aditional_info.health == 0 do
+    unless Player.alive?(player) do
       send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
     end
 
