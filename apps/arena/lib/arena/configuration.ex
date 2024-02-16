@@ -39,6 +39,7 @@ defmodule Arena.Configuration do
 
   defp parse_mechanic_config(mechanic) do
     Map.to_list(mechanic)
+    |> Enum.map(&parse_mechanic_fields/1)
     |> hd()
   end
 
@@ -64,5 +65,13 @@ defmodule Arena.Configuration do
     else
       skill
     end
+  end
+
+  defp parse_mechanic_fields({:leap, attrs}) do
+    {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
+  end
+
+  defp parse_mechanic_fields(mechanic) do
+    mechanic
   end
 end

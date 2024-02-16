@@ -171,7 +171,11 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:leap, leap}, %{target: target}) do
-    Process.send_after(self(), {:stop_leap, player.id, player.speed}, leap.duration_ms)
+    Process.send_after(
+      self(),
+      {:stop_leap, player.id, player.speed, leap.on_arrival_mechanic},
+      leap.duration_ms
+    )
 
     ## TODO: Cap target_position to leap.range
     target_position = %{

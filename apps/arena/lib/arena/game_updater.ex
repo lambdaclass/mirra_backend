@@ -47,7 +47,13 @@ defmodule Arena.GameUpdater do
     game_state = new_game(game_id, clients, game_config)
 
     Process.send_after(self(), :update_game, 1_000)
-    Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms * 10)
+
+    Process.send_after(
+      self(),
+      {:check_game_ended, Map.keys(game_state.players)},
+      @check_game_ended_interval_ms * 10
+    )
+
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
 
@@ -57,28 +63,32 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
-    players_moved =
-      Enum.reduce(game_state.players, %{}, fn {player_id, player}, players_acc ->
-        if Player.forced_moving?(player) do
-          moved = Physics.move_entity(player, game_state.external_wall)
-          Map.put(players_acc, player_id, Map.merge(player, moved))
-        else
-          Map.put(players_acc, player_id, player)
-        end
-      end)
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    ticks_to_move = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
 
-    game_state = Map.put(game_state, :players, players_moved)
+    # players_moved =
+    #   Enum.reduce(game_state.players, %{}, fn {player_id, player}, players_acc ->
+    #     if Player.forced_moving?(player) do
+    #       moved = Physics.move_entity(ticks_to_move, player, game_state.external_wall)
+    #       Map.put(players_acc, player_id, Map.merge(player, moved))
+    #     else
+    #       Map.put(players_acc, player_id, player)
+    #     end
+    #   end)
+
+    # game_state = Map.put(game_state, :players, players_moved)
 
     entities_to_collide_projectiles =
       Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
     players =
       game_state.players
+      |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
       |> update_collisions(game_state.players, %{})
 
     projectiles =
       remove_exploded_projectiles(game_state.projectiles)
-      |> Physics.move_entities(game_state.external_wall)
+      |> Physics.move_entities(ticks_to_move, game_state.external_wall)
       |> update_collisions(
         game_state.projectiles,
         Map.merge(entities_to_collide_projectiles, %{
@@ -102,6 +112,7 @@ defmodule Arena.GameUpdater do
       game_state
       |> Map.put(:players, players)
       |> Map.put(:projectiles, projectiles)
+      |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: []}
@@ -127,14 +138,14 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:stop_leap, player_id, previous_speed}, state) do
+  def handle_info({:stop_leap, player_id, previous_speed, on_arrival_mechanic}, state) do
     player =
       Map.get(state.game_state.players, player_id)
       |> Player.reset_forced_movement(previous_speed)
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, {:circle_hit, %{damage: 15, range: 100.0}}, %{})
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -151,12 +162,14 @@ defmodule Arena.GameUpdater do
     {:stop, :normal, state}
   end
 
-  def handle_info(:check_game_ended, state) do
-    Process.send_after(self(), :check_game_ended, @check_game_ended_interval_ms)
-
-    case check_game_ended(Map.values(state.game_state.players), state.game_state.players) do
-      :ongoing ->
-        :skip
+  def handle_info({:check_game_ended, last_players_ids}, state) do
+    case check_game_ended(state.game_state.players, last_players_ids) do
+      {:ongoing, players_ids} ->
+        Process.send_after(
+          self(),
+          {:check_game_ended, players_ids},
+          @check_game_ended_interval_ms
+        )
 
       {:ended, winner} ->
         broadcast_game_ended(winner, state.game_state)
@@ -259,7 +272,7 @@ defmodule Arena.GameUpdater do
     player =
       state.game_state.players
       |> Map.get(player_id)
-      |> Player.move(direction, state.game_state.external_wall)
+      |> Player.move(direction)
 
     game_state =
       state.game_state
@@ -305,7 +318,7 @@ defmodule Arena.GameUpdater do
              game_id: state.game_id,
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
-             server_timestamp: DateTime.utc_now() |> DateTime.to_unix(:millisecond),
+             server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
              zone: state.zone,
              killfeed: state.killfeed
@@ -321,11 +334,7 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
-    encoded_state =
-      GameEvent.encode(%GameEvent{
-        event: {:finished, game_state}
-      })
-
+    encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
@@ -435,22 +444,23 @@ defmodule Arena.GameUpdater do
   end
 
   # Check if game has ended
-  defp check_game_ended(players, last_standing_players) do
-    players_alive = Enum.filter(players, &Player.alive?/1)
+  defp check_game_ended(players, last_players_ids) do
+    players_alive =
+      Map.values(players)
+      |> Enum.filter(&Player.alive?/1)
 
     case players_alive do
-      ^players ->
-        :ongoing
-
-      [_, _ | _] ->
-        :ongoing
-
-      [player] ->
+      [player] when map_size(players) > 1 ->
         {:ended, player}
 
       [] ->
-        # TODO we should use a tiebreaker instead of picking the 1st one in the list
-        {:ended, hd(last_standing_players)}
+        ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
+        ##    but for now a random between the ones that were alive last is enough
+        player = Map.get(players, Enum.random(last_players_ids))
+        {:ended, player}
+
+      _ ->
+        {:ongoing, Enum.map(players_alive, & &1.id)}
     end
   end
 

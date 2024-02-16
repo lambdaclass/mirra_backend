@@ -94,11 +94,11 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def move(%{aditional_info: %{forced_movement: true}} = player, _, _) do
+  def move(%{aditional_info: %{forced_movement: true}} = player, _) do
     player
   end
 
-  def move(player, direction, external_wall) do
+  def move(player, direction) do
     current_actions =
       add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
@@ -114,7 +114,6 @@ defmodule Arena.Game.Player do
     player
     |> Map.put(:direction, direction)
     |> Map.put(:is_moving, is_moving)
-    |> Physics.move_entity(external_wall)
     |> Map.put(
       :aditional_info,
       Map.merge(player.aditional_info, %{current_actions: current_actions})
@@ -141,12 +140,13 @@ defmodule Arena.Game.Player do
         action_name = skill_key_execution_action(skill_key)
 
         skill_direction = skill_params.target
-        |> Skill.maybe_auto_aim(player.direction)
+        |> Skill.maybe_auto_aim(player, game_state.players)
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
           |> change_stamina(-1)
           |> put_in([:direction], skill_direction)
+          |> put_in([:is_moving], false)
 
         player =
           case stamina_recharging?(player) do
