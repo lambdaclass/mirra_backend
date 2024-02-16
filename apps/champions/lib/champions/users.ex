@@ -103,6 +103,7 @@ defmodule Champions.Users do
   defp add_sample_currencies(user) do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Scrolls").id, 50)
   end
 
   @doc """
