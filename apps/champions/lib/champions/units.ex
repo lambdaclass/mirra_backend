@@ -14,7 +14,6 @@ defmodule Champions.Units do
   alias GameBackend.Users.Currencies
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Users.Currencies.UserCurrency
 
   @star1 1
   @star2 2
