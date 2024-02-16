@@ -619,41 +619,37 @@ defmodule Arena.GameUpdater do
   end
 
   defp spawn_power_ups(
-         %{game_state: game_state, game_config: game_config} = state,
+         %{game_config: game_config} = state,
          victim,
          amount
-       )
-       when amount > 0 do
-    last_id = game_state.last_id + 1
+  ) do
+    Enum.reduce(1..amount//1, state, fn _, state ->
+      random_x =
+        victim.position.x +
+          Enum.random(
+            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+          )
 
-    random_x =
-      victim.position.x +
-        Enum.random(
-          -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+      random_y =
+        victim.position.y +
+          Enum.random(
+            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+          )
+
+      random_position = %{x: random_x, y: random_y}
+      last_id = state.game_state.last_id + 1
+      power_up =
+        Entities.new_power_up(
+          last_id,
+          random_position,
+          victim.direction,
+          victim.id
         )
 
-    random_y =
-      victim.position.y +
-        Enum.random(
-          -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
-        )
-
-    random_position = %{x: random_x, y: random_y}
-
-    power_up =
-      Entities.new_power_up(
-        last_id,
-        random_position,
-        victim.direction,
-        victim.id
-      )
-
-    put_in(state, [:game_state, :power_ups, last_id], power_up)
-    |> put_in([:game_state, :last_id], last_id)
-    |> spawn_power_ups(victim, amount - 1)
+      put_in(state, [:game_state, :power_ups, last_id], power_up)
+      |> put_in([:game_state, :last_id], last_id)
+    end)
   end
-
-  defp spawn_power_ups(state, _victim, _amount), do: state
 
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
     Enum.sort_by(power_ups_per_kill, fn %{amount: minimun} -> minimun end, :desc)
