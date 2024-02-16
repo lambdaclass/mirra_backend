@@ -622,7 +622,7 @@ defmodule Arena.GameUpdater do
          %{game_config: game_config} = state,
          victim,
          amount
-  ) do
+       ) do
     Enum.reduce(1..amount//1, state, fn _, state ->
       random_x =
         victim.position.x +
@@ -638,6 +638,7 @@ defmodule Arena.GameUpdater do
 
       random_position = %{x: random_x, y: random_y}
       last_id = state.game_state.last_id + 1
+
       power_up =
         Entities.new_power_up(
           last_id,
