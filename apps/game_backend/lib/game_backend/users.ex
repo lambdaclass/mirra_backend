@@ -68,32 +68,52 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    campaign = Repo.get(Campaign, campaign_id)
+    {campaign_progression, level, campaign} = retrieve_campaign_data(user_id, campaign_id)
 
-    campaign_progression =
-      Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
-
-    level = Repo.get(Level, campaign_progression.level_id)
-
-    # Update CampaignProgression
     {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
 
-    CampaignProgression.advance_level_changeset(campaign_progression, %{
-      campaign_id: next_campaign_id,
-      level_id: next_level_id
-    })
-    |> Repo.update()
+    updated_campaign_progression =
+      update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
 
-    # Apply level rewards to the user
-    get_user(user_id)
-    |> User.reward_changeset(%{
-      currency: level.currency_rewards,
-      items: level.item_rewards,
-      units: level.unit_rewards
-    })
-    |> Repo.update()
+    updated_user = update_user(user_id, level)
+
+    {updated_campaign_progression, updated_user}
   end
 
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
+
+  defp retrieve_campaign_data(user_id, campaign_id) do
+    Repo.transaction(fn ->
+      campaign_progression =
+        Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
+
+      level = Repo.get(Level, campaign_progression.level_id)
+      campaign = Repo.get(Campaign, campaign_id)
+      {campaign_progression, level, campaign}
+    end)
+  end
+
+  defp update_campaign_progression(campaign_progression, next_campaign_id, next_level_id) do
+    campaign_progression
+    |> CampaignProgression.advance_level_changeset(%{
+      campaign_id: next_campaign_id,
+      level_id: next_level_id
+    })
+    |> Repo.update()
+  end
+
+  defp update_user(user_id, level) do
+    Repo.transaction(fn ->
+      user = Repo.get!(User, user_id)
+
+      user
+      |> User.reward_changeset(%{
+        currency: level.currency_rewards,
+        items: level.item_rewards,
+        units: level.unit_rewards
+      })
+      |> Repo.update()
+    end)
+  end
 end
