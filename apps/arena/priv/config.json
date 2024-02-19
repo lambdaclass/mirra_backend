@@ -158,6 +158,18 @@
       ]
     }
   ],
+  "items": [
+    {
+      "name": "health_potion",
+      "effects": [
+        {
+          "instant_heal": {
+            "amount": 30
+          }
+        }
+      ]
+    }
+  ],
   "characters": [
     {
       "name": "muflus",
