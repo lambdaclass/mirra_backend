@@ -85,7 +85,9 @@ message GameState {
   int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
-  map<uint64, Entity> power_ups = 8;
+  map<uint64, uint64> damage_taken = 8;
+  map<uint64, uint64> damage_done = 9;
+  map<uint64, Entity> power_ups = 10;
 }
 
 /*

@@ -24,7 +24,9 @@ defmodule Arena.Game.Skill do
 
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(real_damage)
+          |> Player.take_damage(real_damage)
+
+        send(self(), {:damage_done, player.id, circle_hit.damage})
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -61,7 +63,9 @@ defmodule Arena.Game.Skill do
 
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(real_damage)
+          |> Player.take_damage(real_damage)
+
+        send(self(), {:damage_done, player.id, cone_hit.damage})
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})

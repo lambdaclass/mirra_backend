@@ -88,7 +88,7 @@ defmodule Arena.GameUpdater do
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
-      resolve_collisions(
+      resolve_projectile_collisions(
         projectiles,
         players,
         game_state.obstacles,
@@ -105,7 +105,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
-    game_state = %{game_state | killfeed: []}
+    game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -257,6 +257,26 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:damage_done, player_id, damage}, state) do
+    state =
+      update_in(state, [:game_state, :damage_done, player_id], fn
+        nil -> damage
+        current -> current + damage
+      end)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:damage_taken, player_id, damage}, state) do
+    state =
+      update_in(state, [:game_state, :damage_taken, player_id], fn
+        nil -> damage
+        current -> current + damage
+      end)
+
+    {:noreply, state}
+  end
+
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -301,9 +321,14 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:join, client_id}, _from, state) do
-    player_id = get_in(state.game_state, [:client_to_player_map, client_id])
-    response = %{player_id: player_id, game_config: state.game_config}
-    {:reply, {:ok, response}, state}
+    case get_in(state.game_state, [:client_to_player_map, client_id]) do
+      nil ->
+        {:reply, :not_a_client, state}
+
+      player_id ->
+        response = %{player_id: player_id, game_config: state.game_config}
+        {:reply, {:ok, response}, state}
+    end
   end
 
   ##########################
@@ -332,7 +357,9 @@ defmodule Arena.GameUpdater do
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
              zone: state.zone,
-             killfeed: state.killfeed
+             killfeed: state.killfeed,
+             damage_taken: state.damage_taken,
+             damage_done: state.damage_done
            }}
       })
 
@@ -426,6 +453,8 @@ defmodule Arena.GameUpdater do
           |> Map.put(:last_id, last_id)
           |> Map.put(:players, players)
           |> Map.put(:killfeed, [])
+          |> Map.put(:damage_taken, %{})
+          |> Map.put(:damage_done, %{})
           |> put_in([:client_to_player_map, client_id], last_id)
           |> put_in([:player_timestamps, last_id], 0)
 
@@ -524,15 +553,22 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    Player.change_health(player, zone_damage)
+    Player.take_damage(player, zone_damage)
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
     do: player
 
-  defp resolve_collisions(projectiles, players, obstacles, external_wall_id) do
-    Enum.reduce(projectiles, {projectiles, players}, fn {projectile_id, projectile},
-                                                        {projectiles_acc, players_acc} ->
+  # This method will decide what to do when a projectile has collided with something in the map
+  # - If collided with something with the same owner skip that collision
+  # - If collided with external wall or obstacle explode projectile
+  # - If collided with another player do the projectile's damage
+  # - Do nothing on unexpected cases
+  defp resolve_projectile_collisions(projectiles, players, obstacles, external_wall_id)
+
+  defp resolve_projectile_collisions(projectiles, players, obstacles, external_wall_id) do
+    Enum.reduce(projectiles, {projectiles, players}, fn {_projectile_id, projectile},
+                                                        {_projectiles_acc, players_acc} = accs ->
       # check if the projectiles is inside the walls
       collides_with =
         case projectile.collides_with do
@@ -543,56 +579,59 @@ defmodule Arena.GameUpdater do
       collided_entity =
         decide_collided_entity(projectile, collides_with, external_wall_id, players_acc)
 
-      # #247 Refactor projectile collision resolution
-      case {
-        collided_entity,
+      apply_collision_updates(
+        projectile,
         Map.get(players, collided_entity),
-        Map.get(obstacles, collided_entity)
-      } do
-        # Projectile hit nothing
-        {nil, nil, nil} ->
-          {projectiles_acc, players_acc}
-
-        # Projectile hit the external wall
-        {entity_id, _, _} when entity_id == external_wall_id ->
-          projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
-          {Map.put(projectiles_acc, projectile_id, projectile), players_acc}
-
-        # Projectile hit a player
-        {_entity_id, player, nil} ->
-          owner_player = Map.get(players, projectile.aditional_info.owner_id)
-
-          real_damage =
-            Player.calculate_real_damage(owner_player, projectile.aditional_info.damage)
-
-          player = Player.change_health(player, real_damage)
-
-          projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
-
-          if player.aditional_info.health == 0 do
-            send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
-          end
-
-          {
-            Map.put(projectiles_acc, projectile_id, projectile),
-            Map.put(players_acc, player.id, player)
-          }
-
-        # Projectile hit an obstacle
-        {_entity_id, nil, obstacle} when not is_nil(obstacle) ->
-          projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
-
-          {
-            Map.put(projectiles_acc, projectile_id, projectile),
-            players_acc
-          }
-
-        # Projectile hit something else
-        _ ->
-          {projectiles_acc, players_acc}
-      end
+        Map.get(obstacles, collided_entity),
+        collided_entity == external_wall_id,
+        accs
+      )
     end)
   end
+
+  defp apply_collision_updates(projectile, player, obstacle, collided_with_external_wall?, accs)
+
+  # Projectile collided an obstacle or went outside of the arena
+  defp apply_collision_updates(
+         projectile,
+         nil,
+         obstacle,
+         collided_with_external_wall?,
+         {projectiles_acc, players_acc}
+       )
+       when not is_nil(obstacle) or collided_with_external_wall? do
+    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
+    {
+      Map.put(projectiles_acc, projectile.id, projectile),
+      players_acc
+    }
+  end
+
+  # Projectile collided a player
+  defp apply_collision_updates(projectile, player, _, _, {projectiles_acc, players_acc})
+       when not is_nil(player) do
+    player = Player.take_damage(player, projectile.aditional_info.damage)
+
+    send(
+      self(),
+      {:damage_done, projectile.aditional_info.owner_id, projectile.aditional_info.damage}
+    )
+
+    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+
+    unless Player.alive?(player) do
+      send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
+    end
+
+    {
+      Map.put(projectiles_acc, projectile.id, projectile),
+      Map.put(players_acc, player.id, player)
+    }
+  end
+
+  # Projectile didn't collide
+  defp apply_collision_updates(_, _, _, _, accs), do: accs
 
   defp decide_collided_entity(_projectile, [], _external_wall_id, _players), do: nil
 
