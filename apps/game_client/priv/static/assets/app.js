@@ -42266,7 +42266,8 @@ void main(void)\r
       players: 0,
       obstacle: 43639,
       colliding: 16711680,
-      projectile: 255
+      projectile: 255,
+      items: 2328118
     };
     let player_id;
     let movementKeys = {
@@ -42372,6 +42373,9 @@ void main(void)\r
         case "projectile":
           newEntity.boardObject.zIndex = 15;
           break;
+        case "item":
+          newEntity.boardObject.zIndex = 5;
+          break;
       }
       newEntity.boardObject.endFill();
       newEntity.boardObject.position.x = newEntity.x;
@@ -42402,6 +42406,9 @@ void main(void)\r
             break;
           case "projectile":
             color = colors.projectile;
+            break;
+          case "item":
+            color = colors.item;
             break;
         }
       }

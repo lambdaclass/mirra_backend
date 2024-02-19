@@ -79,6 +79,22 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_item(id, position) do
+    %{
+      id: id,
+      category: :item,
+      shape: :circle,
+      name: "Item" <> Integer.to_string(id),
+      position: position,
+      radius: 30,
+      vertices: [],
+      speed: 0.0,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      aditional_info: %{}
+    }
+  end
+
   def make_circular_area(id, position, range) do
     %{
       id: id,
@@ -136,6 +152,6 @@ defmodule Arena.Entities do
   end
 
   def maybe_add_custom_info(_entity) do
-    {}
+    nil
   end
 end

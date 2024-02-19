@@ -57,6 +57,7 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
+    Process.send_after(self(), :spawn_item, game_config.game.item_spawn_interval_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -246,6 +247,21 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info(:spawn_item, state) do
+    Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+
+    last_id = state.game_state.last_id + 1
+    ## TODO: make random position
+    position = %{x: 0.0, y: 0.0}
+    item = Entities.new_item(last_id, position)
+
+    state =
+      put_in(state, [:game_state, :last_id], last_id)
+      |> put_in([:game_state, :items, item.id], item)
+
+    {:noreply, state}
+  end
+
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -322,6 +338,7 @@ defmodule Arena.GameUpdater do
              game_id: state.game_id,
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
+             items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
              zone: state.zone,
@@ -393,6 +410,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
       |> Map.put(:projectiles, %{})
+      |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})

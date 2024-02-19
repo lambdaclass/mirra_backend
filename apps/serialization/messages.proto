@@ -87,12 +87,13 @@ message GameState {
   repeated KillEntry killfeed = 7;
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
+  map<uint64, Entity> items = 10;
 }
 
 /*
  * Info about an entity
  * id: unique identifier
- * category: player, projectile, obstacle.
+ * category: player, projectile, obstacle, item.
  * shape: circle, point, line, polygon, point.
  * name: unique name of the entity
  * position: position of the entity (polyogns and lines don't have a position)

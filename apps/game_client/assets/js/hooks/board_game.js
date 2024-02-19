@@ -21,6 +21,7 @@ export const BoardGame = function () {
     obstacle: 0x00aa77,
     colliding: 0xff0000,
     projectile: 0x0000ff,
+    items: 0x238636,
   };
   let player_id;
 
@@ -154,6 +155,9 @@ export const BoardGame = function () {
         case "projectile":
           newEntity.boardObject.zIndex = 15;
           break;
+        case "item":
+          newEntity.boardObject.zIndex = 20;
+          break;
       }
 
       newEntity.boardObject.endFill();
@@ -197,6 +201,9 @@ export const BoardGame = function () {
             break;
           case "projectile":
             color = colors.projectile;
+            break;
+          case "item":
+            color = colors.item;
             break;
         }
       }
