@@ -210,9 +210,9 @@
   ],
   "power_ups": {
     "power_ups_per_kill": [
-      {"amount": 0, "amount_of_drops": 1},
-      {"amount": 2, "amount_of_drops": 2},
-      {"amount": 6, "amount_of_drops": 3}
+      {"minimun_amount": 0, "amount_of_drops": 1},
+      {"minimun_amount": 2, "amount_of_drops": 2},
+      {"minimun_amount": 6, "amount_of_drops": 3}
     ],
     "distance_to_power_up": 500,
     "power_up_damage_modifier": 0.10

@@ -692,8 +692,8 @@ defmodule Arena.GameUpdater do
   end
 
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
-    Enum.sort_by(power_ups_per_kill, fn %{amount: minimun} -> minimun end, :desc)
-    |> Enum.find(fn %{amount: minimun} ->
+    Enum.sort_by(power_ups_per_kill, fn %{minimun_amount: minimun} -> minimun end, :desc)
+    |> Enum.find(fn %{minimun_amount: minimun} ->
       minimun <= power_ups
     end)
     |> case do
