@@ -58,6 +58,7 @@
       "name": "circle_bash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -72,6 +73,7 @@
       "name": "hit",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 300,
       "is_passive": false,
       "mechanics": [
         {
@@ -107,6 +109,7 @@
       "name": "shot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -120,6 +123,7 @@
       "name": "repeated_shot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -137,6 +141,7 @@
       "name": "multishot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -154,6 +159,7 @@
       "name": "dash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -168,6 +174,7 @@
       "name": "avenge",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -185,6 +192,7 @@
       "name": "veil_radiance",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -199,6 +207,7 @@
       "name": "sneak",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {

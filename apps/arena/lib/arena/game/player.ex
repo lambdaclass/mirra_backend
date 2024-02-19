@@ -2,7 +2,7 @@ defmodule Arena.Game.Player do
   @moduledoc """
   Module for interacting with Player entity
   """
-  alias Arena.Game.Skill
+
   alias Arena.Utils
 
   def add_action(player, action_name, duration_ms) do
@@ -135,6 +135,12 @@ defmodule Arena.Game.Player do
         game_state
 
       skill ->
+        Process.send_after(
+          self(),
+          {:delayed_skill_mechanics, player.id, skill.mechanics, skill_params},
+          skill.activation_delay_ms
+        )
+
         action_name = skill_key_execution_action(skill_key)
 
         player =
@@ -158,7 +164,6 @@ defmodule Arena.Game.Player do
           end
 
         put_in(game_state, [:players, player.id], player)
-        |> Skill.do_mechanic(player, skill.mechanics, skill_params)
     end
   end
 

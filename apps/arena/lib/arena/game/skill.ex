@@ -37,11 +37,6 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:cone_hit, cone_hit}, _skill_params) do
-    Process.send_after(self(), {:trigger_mechanic, player.id, {:do_cone_hit, cone_hit}}, 300)
-    game_state
-  end
-
-  def do_mechanic(game_state, player, {:do_cone_hit, cone_hit}, _skill_params) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         player.position,
@@ -73,9 +68,9 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, _skill_params) do
+  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
-      mechanic = {:do_cone_hit, multi_cone_hit}
+      mechanic = {:cone_hit, multi_cone_hit}
 
       Process.send_after(
         self(),
@@ -84,7 +79,7 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, player, {:do_cone_hit, multi_cone_hit}, %{})
+    do_mechanic(game_state, player, {:cone_hit, multi_cone_hit}, skill_params)
   end
 
   def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
