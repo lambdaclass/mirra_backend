@@ -36,12 +36,5 @@ defmodule GameBackend.Users.User do
     |> validate_required([:game_id, :username])
   end
 
-  def reward_changeset(user, attrs) do
-    user
-    |> cast_assoc(:currencies)
-    |> cast_assoc(:units)
-    |> cast_assoc(:items)
-  end
-
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
 end
