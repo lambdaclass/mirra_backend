@@ -32,7 +32,8 @@ defmodule Arena.Entities do
         natural_healing_interval: character.natural_healing_interval,
         last_damage_received: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
-        character_name: character.name
+        character_name: character.name,
+        effects: %{}
       }
     }
   end
@@ -122,7 +123,8 @@ defmodule Arena.Entities do
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina,
-       character_name: entity.aditional_info.character_name
+       character_name: entity.aditional_info.character_name,
+       effects: entity.aditional_info.effects
      }}
   end
 
