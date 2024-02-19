@@ -3,6 +3,8 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.Game.Skill
+
   def add_action(player, action_name, duration_ms) do
     Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
 
@@ -131,7 +133,6 @@ defmodule Arena.Game.Player do
           end
 
         put_in(game_state, [:players, player.id], player)
-        |> Skill.do_mechanic(player, skill.mechanics)
         |> Skill.apply_skill_effects(player, skill.effects_to_apply, game_config)
     end
   end
