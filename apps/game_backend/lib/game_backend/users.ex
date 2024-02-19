@@ -8,6 +8,8 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns.Campaign
   alias GameBackend.Campaigns.Level
@@ -68,15 +70,16 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    IO.inspect("Advancing level. User: #{user_id}, Campaign: #{campaign_id}")
-    {campaign_progression, level, campaign} = retrieve_campaign_data(user_id, campaign_id)
+    {:ok, {campaign_progression, level, campaign}} =
+      retrieve_campaign_data(user_id, campaign_id)
 
     {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
 
-    updated_campaign_progression =
+    {:ok, updated_campaign_progression} =
       update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
 
-    updated_user = update_user(user_id, level)
+    {:ok, updated_user} = update_user(user_id, level)
+    IO.inspect(updated_user, label: "updated_user")
 
     {updated_campaign_progression, updated_user}
   end
@@ -89,12 +92,9 @@ defmodule GameBackend.Users do
       campaign_progression =
         Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
 
-      IO.inspect(campaign_progression, label: "campaign_progression")
-
-      level = Repo.get(Level, campaign_progression.level_id)
-      IO.inspect(level, label: "level")
+      level = Repo.get(Level, campaign_progression.level_id) |> Repo.preload(:currency_rewards)
       campaign = Repo.get(Campaign, campaign_id)
-      IO.inspect(campaign, label: "campaign")
+
       {campaign_progression, level, campaign}
     end)
   end
@@ -110,15 +110,31 @@ defmodule GameBackend.Users do
 
   defp update_user(user_id, level) do
     Repo.transaction(fn ->
-      user = Repo.get!(User, user_id)
+      # user = Repo.get!(User, user_id) |> preload()
 
-      user
-      |> User.reward_changeset(%{
-        currency: level.currency_rewards,
-        items: level.item_rewards,
-        units: level.unit_rewards
-      })
-      |> Repo.update()
+      # user
+      # |> User.reward_changeset(%{
+      #   # currencies: convert_currency_rewards(level.currency_rewards),
+      #   items: level.item_rewards,
+      #   units: level.unit_rewards
+      # })
+      # |> Repo.update()
+      level.currency_rewards
+      |> Enum.each(fn currency_reward ->
+        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+
+      Repo.get!(User, user_id) |> preload()
+    end)
+  end
+
+  defp convert_currency_rewards(currency_rewards) do
+    currency_rewards
+    |> Enum.map(fn currency_reward ->
+      %UserCurrency{
+        currency_id: currency_reward.currency_id,
+        amount: currency_reward.amount
+      }
     end)
   end
 end

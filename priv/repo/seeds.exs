@@ -173,22 +173,3 @@ currency_rewards =
 
   end)
   Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
-
-# IO.inspect(currency_rewards, label: "currency_rewards")
-# # levels_with_currency_rewards =
-# #   currency_rewards
-# #   |> Enum.map(fn {level, currency_reward} ->
-# #     level
-# #     |> Level.changeset(%{currency_rewards: [currency_reward]})
-# #     |> Repo.update()
-# #   end)
-
-# # Add the currency rewards to the levels
-# currency_rewards
-# |> Enum.map(fn {level_id, currency_reward} ->
-#   IO.inspect(level_id, label: "level_id")
-#   IO.inspect(currency_reward, label: "currency_reward")
-#   Repo.get!(Level, level_id)
-#   |> Level.changeset(%{currency_rewards: [currency_reward]})
-#   |> Repo.update()
-# end)

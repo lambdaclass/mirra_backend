@@ -82,7 +82,6 @@ defmodule Gateway.ChampionsSocketHandler do
       # campaigns -> prepare_response(%{campaigns: Enum.map(campaigns, &%{levels: &1})}, :campaigns)
       campaigns ->
         prepare_response(%{campaigns: campaigns}, :campaigns)
-        |> IO.inspect()
     end
   end
 

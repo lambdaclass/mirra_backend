@@ -61,7 +61,6 @@ defmodule GameBackend.Campaigns do
   def insert_campaign_progression(attrs, opts \\ []) do
     %CampaignProgression{}
     |> CampaignProgression.changeset(attrs)
-    |> IO.inspect()
     |> Repo.insert(opts)
   end
 
@@ -96,7 +95,7 @@ defmodule GameBackend.Campaigns do
       {campaign.id, next_level.id}
     else
       next_campaign =
-        Repo.get(Campaign,
+        Repo.get_by(Campaign,
           quest_id: campaign.quest_id,
           campaign_number: campaign.campaign_number + 1
         )

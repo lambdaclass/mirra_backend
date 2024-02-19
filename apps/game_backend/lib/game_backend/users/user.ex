@@ -32,6 +32,8 @@ defmodule GameBackend.Users.User do
 
   def reward_changeset(user, attrs) do
     user
-    |> cast(attrs, [:currencies, :items, :units])
+    |> cast_assoc(:currencies)
+    |> cast_assoc(:units)
+    |> cast_assoc(:items)
   end
 end
