@@ -4,6 +4,7 @@ defmodule Arena.Game.Player do
   """
 
   alias Arena.Utils
+  alias Arena.Game.Skill
 
   def add_action(player, action_name, duration_ms) do
     Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
@@ -135,9 +136,14 @@ defmodule Arena.Game.Player do
         game_state
 
       skill ->
+        skill_direction =
+          skill_params.target
+          |> Skill.maybe_auto_aim(player, game_state.players)
+
         Process.send_after(
           self(),
-          {:delayed_skill_mechanics, player.id, skill.mechanics, skill_params},
+          {:delayed_skill_mechanics, player.id, skill.mechanics,
+           Map.merge(skill_params, %{skill_direction: skill_direction})},
           skill.activation_delay_ms
         )
 
@@ -146,6 +152,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action_name, skill.execution_duration_ms)
           |> change_stamina(-1)
+          |> put_in([:direction], skill_direction)
           |> put_in([:is_moving], false)
 
         player =

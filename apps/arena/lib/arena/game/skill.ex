@@ -171,7 +171,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{target: target}) do
+  def do_mechanic(game_state, player, {:leap, leap}, %{skill_direction: skill_direction}) do
     Process.send_after(
       self(),
       {:stop_leap, player.id, player.speed, leap.on_arrival_mechanic},
@@ -180,8 +180,8 @@ defmodule Arena.Game.Skill do
 
     ## TODO: Cap target_position to leap.range
     target_position = %{
-      x: player.position.x + target.x * leap.range,
-      y: player.position.y + target.y * leap.range
+      x: player.position.x + skill_direction.x * leap.range,
+      y: player.position.y + skill_direction.y * leap.range
     }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
@@ -191,7 +191,6 @@ defmodule Arena.Game.Skill do
       player
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
-      |> Map.put(:direction, target)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)
@@ -217,5 +216,13 @@ defmodule Arena.Game.Skill do
     real_position_y = spawner.position.y + specs.projectile_offset * spawner.direction.y
 
     %{x: real_position_x, y: real_position_y}
+  end
+
+  def maybe_auto_aim(%{x: 0.0, y: 0.0} = _skill_direction, player, entities) do
+    Physics.nearest_entity_direction(player, entities)
+  end
+
+  def maybe_auto_aim(skill_direction, _player, _entities) do
+    skill_direction
   end
 end
