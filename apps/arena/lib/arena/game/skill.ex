@@ -22,7 +22,9 @@ defmodule Arena.Game.Skill do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(circle_hit.damage)
+          |> Player.take_damage(circle_hit.damage)
+
+        send(self(), {:damage_done, player.id, circle_hit.damage})
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})
@@ -57,7 +59,9 @@ defmodule Arena.Game.Skill do
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.change_health(cone_hit.damage)
+          |> Player.take_damage(cone_hit.damage)
+
+        send(self(), {:damage_done, player.id, cone_hit.damage})
 
         unless Player.alive?(target_player) do
           send(self(), {:to_killfeed, player.id, target_player.id})

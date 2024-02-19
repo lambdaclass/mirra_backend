@@ -182,6 +182,24 @@ defmodule Arena.Serialization.GameState.PlayerTimestampsEntry do
   field(:value, 2, type: :int64)
 end
 
+defmodule Arena.Serialization.GameState.DamageTakenEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: :uint64)
+end
+
+defmodule Arena.Serialization.GameState.DamageDoneEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: :uint64)
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -206,6 +224,20 @@ defmodule Arena.Serialization.GameState do
   field(:server_timestamp, 5, type: :int64, json_name: "serverTimestamp")
   field(:zone, 6, type: Arena.Serialization.Zone)
   field(:killfeed, 7, repeated: true, type: Arena.Serialization.KillEntry)
+
+  field(:damage_taken, 8,
+    repeated: true,
+    type: Arena.Serialization.GameState.DamageTakenEntry,
+    json_name: "damageTaken",
+    map: true
+  )
+
+  field(:damage_done, 9,
+    repeated: true,
+    type: Arena.Serialization.GameState.DamageDoneEntry,
+    json_name: "damageDone",
+    map: true
+  )
 end
 
 defmodule Arena.Serialization.Entity do
