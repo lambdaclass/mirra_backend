@@ -37,11 +37,6 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:cone_hit, cone_hit}) do
-    Process.send_after(self(), {:trigger_mechanic, player.id, {:do_cone_hit, cone_hit}}, 300)
-    game_state
-  end
-
-  def do_mechanic(game_state, player, {:do_cone_hit, cone_hit}) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         player.position,
@@ -75,7 +70,7 @@ defmodule Arena.Game.Skill do
 
   def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
-      mechanic = {:do_cone_hit, multi_cone_hit}
+      mechanic = {:cone_hit, multi_cone_hit}
 
       Process.send_after(
         self(),
@@ -84,7 +79,7 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, player, {:do_cone_hit, multi_cone_hit})
+    do_mechanic(game_state, player, {:cone_hit, multi_cone_hit})
   end
 
   def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}) do
@@ -118,7 +113,7 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        player.position,
+        get_real_projectile_spawn_position(player, repeated_shoot),
         player.direction,
         player.id,
         repeated_shoot.remove_on_collision,
@@ -140,7 +135,7 @@ defmodule Arena.Game.Skill do
       projectile =
         Entities.new_projectile(
           last_id,
-          player.position,
+          get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
           multishot.remove_on_collision,
@@ -159,7 +154,14 @@ defmodule Arena.Game.Skill do
     last_id = game_state.last_id + 1
 
     projectile =
-      Entities.new_projectile(last_id, player.position, player.direction, player.id, true, 10.0)
+      Entities.new_projectile(
+        last_id,
+        get_real_projectile_spawn_position(player, simple_shoot),
+        player.direction,
+        player.id,
+        true,
+        10.0
+      )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
 
@@ -199,5 +201,12 @@ defmodule Arena.Game.Skill do
       end)
 
     Enum.concat([add_side, middle, sub_side])
+  end
+
+  defp get_real_projectile_spawn_position(spawner, specs) do
+    real_position_x = spawner.position.x + specs.projectile_offset * spawner.direction.x
+    real_position_y = spawner.position.y + specs.projectile_offset * spawner.direction.y
+
+    %{x: real_position_x, y: real_position_y}
   end
 end
