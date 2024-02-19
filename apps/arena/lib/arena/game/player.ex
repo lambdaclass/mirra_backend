@@ -19,18 +19,16 @@ defmodule Arena.Game.Player do
     end)
   end
 
-  def change_health(player, health_change) do
+  def take_damage(player, damage) do
+    send(self(), {:damage_taken, player.id, damage})
+
     Map.update!(player, :aditional_info, fn info ->
       %{
         info
-        | health: max(info.health - health_change, 0),
+        | health: max(info.health - damage, 0),
           last_damage_received: System.monotonic_time(:millisecond)
       }
     end)
-  end
-
-  def change_health(players, player_id, health_change) do
-    Map.update!(players, player_id, fn player -> change_health(player, health_change) end)
   end
 
   def trigger_natural_healings(players) do
