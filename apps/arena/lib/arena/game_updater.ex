@@ -156,9 +156,9 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:delayed_skill_mechanics, player_id, mechanics}, state) do
+  def handle_info({:delayed_skill_mechanics, player_id, mechanics, skill_params}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, mechanics)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanics, skill_params)
     {:noreply, %{state | game_state: game_state}}
   end
 
