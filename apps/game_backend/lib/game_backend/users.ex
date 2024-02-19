@@ -8,6 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Items
   alias GameBackend.Users.Currencies
   alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Campaigns.CampaignProgression
@@ -125,16 +126,6 @@ defmodule GameBackend.Users do
       end)
 
       Repo.get!(User, user_id) |> preload()
-    end)
-  end
-
-  defp convert_currency_rewards(currency_rewards) do
-    currency_rewards
-    |> Enum.map(fn currency_reward ->
-      %UserCurrency{
-        currency_id: currency_reward.currency_id,
-        amount: currency_reward.amount
-      }
     end)
   end
 end
