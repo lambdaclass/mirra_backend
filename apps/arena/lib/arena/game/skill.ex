@@ -113,7 +113,7 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        player.position,
+        get_real_projectile_spawn_position(player, repeated_shoot),
         player.direction,
         player.id,
         repeated_shoot.remove_on_collision,
@@ -135,7 +135,7 @@ defmodule Arena.Game.Skill do
       projectile =
         Entities.new_projectile(
           last_id,
-          player.position,
+          get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
           multishot.remove_on_collision,
@@ -154,7 +154,14 @@ defmodule Arena.Game.Skill do
     last_id = game_state.last_id + 1
 
     projectile =
-      Entities.new_projectile(last_id, player.position, player.direction, player.id, true, 10.0)
+      Entities.new_projectile(
+        last_id,
+        get_real_projectile_spawn_position(player, simple_shoot),
+        player.direction,
+        player.id,
+        true,
+        10.0
+      )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
 
@@ -176,5 +183,12 @@ defmodule Arena.Game.Skill do
       end)
 
     Enum.concat([add_side, middle, sub_side])
+  end
+
+  defp get_real_projectile_spawn_position(spawner, specs) do
+    real_position_x = spawner.position.x + specs.projectile_offset * spawner.direction.x
+    real_position_y = spawner.position.y + specs.projectile_offset * spawner.direction.y
+
+    %{x: real_position_x, y: real_position_y}
   end
 end
