@@ -111,7 +111,7 @@ defmodule Champions.Users do
       Rewards.insert_afk_reward_rate(%{
         user_id: user.id,
         currency_id: Currencies.get_currency_by_name!(currency_name).id,
-        rate: 1
+        rate: 0
       })
     end)
   end

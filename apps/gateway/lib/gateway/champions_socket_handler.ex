@@ -85,25 +85,6 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
-  # defp handle(%GetCampaigns{user_id: _user_id}) do
-  #   case Campaigns.get_campaigns() do
-  #     {:error, reason} ->
-  #       prepare_response({:error, reason}, nil)
-
-  #     campaigns ->
-  #       prepared_campaigns = Enum.map(campaigns, &prepare_campaign/1)
-  #       prepare_response(%{campaigns: prepared_campaigns}, :campaigns)
-  #   end
-  # end
-
-  # defp prepare_campaign(campaign) do
-  #   if Map.has_key?(campaign, :levels) do
-  #     %{"levels" => campaign.levels}
-  #   else
-  #     campaign
-  #   end
-  # end
-
   defp handle(%GetCampaign{user_id: _user_id, campaign_number: campaign_number}) do
     case Campaigns.get_campaign(campaign_number) do
       {:error, reason} -> prepare_response({:error, reason}, nil)

@@ -8,6 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns.Campaign
@@ -84,7 +85,6 @@ defmodule GameBackend.Users do
       update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
 
     {:ok, updated_user} = update_user(user_id, level)
-    IO.inspect(updated_user, label: "updated_user")
 
     {updated_campaign_progression, updated_user}
   end
@@ -97,7 +97,10 @@ defmodule GameBackend.Users do
       campaign_progression =
         Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
 
-      level = Repo.get(Level, campaign_progression.level_id) |> Repo.preload(:currency_rewards)
+      level =
+        Repo.get(Level, campaign_progression.level_id)
+        |> Repo.preload([:currency_rewards, :afk_rewards_incrementers])
+
       campaign = Repo.get(Campaign, campaign_id)
 
       {campaign_progression, level, campaign}
@@ -127,6 +130,11 @@ defmodule GameBackend.Users do
       level.currency_rewards
       |> Enum.each(fn currency_reward ->
         Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+
+      level.afk_rewards_incrementers
+      |> Enum.each(fn incrementer ->
+        Rewards.increment_afk_reward_rate(user_id, incrementer.currency_id, incrementer.amount)
       end)
 
       Repo.get!(User, user_id) |> preload()
