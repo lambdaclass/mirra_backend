@@ -121,7 +121,8 @@ defmodule Arena.Game.Skill do
         player.position,
         player.direction,
         player.id,
-        repeated_shoot.remove_on_collision
+        repeated_shoot.remove_on_collision,
+        repeated_shoot.speed
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shoot.duration_ms)
@@ -142,7 +143,8 @@ defmodule Arena.Game.Skill do
           player.position,
           direction,
           player.id,
-          multishot.remove_on_collision
+          multishot.remove_on_collision,
+          multishot.speed
         )
 
       Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
@@ -157,7 +159,7 @@ defmodule Arena.Game.Skill do
     last_id = game_state.last_id + 1
 
     projectile =
-      Entities.new_projectile(last_id, player.position, player.direction, player.id, true)
+      Entities.new_projectile(last_id, player.position, player.direction, player.id, true, 10.0)
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
 
