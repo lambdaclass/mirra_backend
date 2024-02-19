@@ -66,18 +66,6 @@ defmodule Arena.GameUpdater do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     ticks_to_move = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
 
-    # players_moved =
-    #   Enum.reduce(game_state.players, %{}, fn {player_id, player}, players_acc ->
-    #     if Player.forced_moving?(player) do
-    #       moved = Physics.move_entity(ticks_to_move, player, game_state.external_wall)
-    #       Map.put(players_acc, player_id, Map.merge(player, moved))
-    #     else
-    #       Map.put(players_acc, player_id, player)
-    #     end
-    #   end)
-
-    # game_state = Map.put(game_state, :players, players_moved)
-
     entities_to_collide_projectiles =
       Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 

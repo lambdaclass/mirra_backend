@@ -47,7 +47,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 999999,
+    "zone_shrink_start_ms": 20000,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
