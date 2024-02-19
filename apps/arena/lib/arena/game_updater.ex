@@ -246,6 +246,23 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info({:remove_effect, player_id, effect_id}, state) do
+    case Map.get(state.game_state.players, player_id) do
+      %{aditional_info: %{effects: %{^effect_id => _effect} = effects}} ->
+        state =
+          put_in(
+            state,
+            [:game_state, :players, player_id, :aditional_info, :effects],
+            Map.delete(effects, effect_id)
+          )
+
+        {:noreply, state}
+
+      _ ->
+        {:noreply, state}
+    end
+  end
+
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -284,7 +301,7 @@ defmodule Arena.GameUpdater do
   def handle_call({:attack, player_id, skill_key}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, state.game_state)
+      |> Player.use_skill(skill_key, state)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end

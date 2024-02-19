@@ -168,6 +168,24 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
+  def apply_skill_effects(game_state, player, effects, game_config) do
+    Enum.reduce(effects, game_state, fn effect_name, game_state ->
+      effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+      last_id = game_state.last_id + 1
+
+      player =
+        Map.get(game_state.players, player.id)
+        |> update_in([:aditional_info, :effects], fn player_effects ->
+          Map.put(player_effects, last_id, effect)
+        end)
+
+      Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
+
+      put_in(game_state, [:players, player.id], player)
+      |> Map.put(:last_id, last_id)
+    end)
+  end
+
   defp calculate_angle_directions(amount, angle_between, base_direction) do
     middle = if rem(amount, 2) == 1, do: [base_direction], else: []
     side_amount = div(amount, 2)
