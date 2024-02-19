@@ -13,6 +13,8 @@ defmodule GameBackend.Users.User do
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
+    field(:level, :integer)
+    field(:experience, :integer)
 
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
@@ -26,6 +28,8 @@ defmodule GameBackend.Users.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:game_id, :username])
+    |> put_change(:level, 1)
+    |> put_change(:experience, 0)
     |> unique_constraint([:game_id, :username])
     |> validate_required([:game_id, :username])
   end
@@ -36,4 +40,6 @@ defmodule GameBackend.Users.User do
     |> cast_assoc(:units)
     |> cast_assoc(:items)
   end
+
+  def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
 end

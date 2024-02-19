@@ -66,6 +66,12 @@ defmodule GameBackend.Users do
   """
   def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
 
+  def update_experience(user, params),
+    do:
+      user
+      |> User.experience_changeset(params)
+      |> Repo.update()
+
   @doc """
   Increments a user's level and apply the level's rewards.
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
@@ -84,6 +90,31 @@ defmodule GameBackend.Users do
 
     {updated_campaign_progression, updated_user}
   end
+
+  @doc """
+  Increments a user's level and apply the level's rewards.
+  If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
+  """
+  def advance_level(user_id, campaign_id) do
+    {:ok, {campaign_progression, level, campaign}} =
+      retrieve_campaign_data(user_id, campaign_id)
+
+    {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
+
+    {:ok, updated_campaign_progression} =
+      update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
+
+    {:ok, updated_user} = update_user(user_id, level)
+    IO.inspect(updated_user, label: "updated_user")
+
+    {updated_campaign_progression, updated_user}
+  end
+
+  def update_experience(user, params),
+    do:
+      user
+      |> User.experience_changeset(params)
+      |> Repo.update()
 
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
