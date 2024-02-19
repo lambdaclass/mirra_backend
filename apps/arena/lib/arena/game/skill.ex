@@ -101,31 +101,34 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:repeated_shoot, repeated_shoot}) do
-    Process.send_after(
-      self(),
-      {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1,
-       repeated_shoot.remove_on_collision},
-      repeated_shoot.interval_ms
-    )
+    remaining_amount = repeated_shoot.amount - 1
+
+    if remaining_amount > 0 do
+      repeated_shoot = Map.put(repeated_shoot, :amount, remaining_amount)
+
+      Process.send_after(
+        self(),
+        {:trigger_mechanic, player.id, {:repeated_shoot, repeated_shoot}},
+        repeated_shoot.interval_ms
+      )
+    end
 
     last_id = game_state.last_id + 1
 
-    projectiles =
-      game_state.projectiles
-      |> Map.put(
+    projectile =
+      Entities.new_projectile(
         last_id,
-        Entities.new_projectile(
-          last_id,
-          player.position,
-          player.direction,
-          player.id,
-          repeated_shoot.remove_on_collision
-        )
+        player.position,
+        player.direction,
+        player.id,
+        repeated_shoot.remove_on_collision
       )
+
+    Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shoot.duration_ms)
 
     game_state
     |> Map.put(:last_id, last_id)
-    |> Map.put(:projectiles, projectiles)
+    |> put_in([:projectiles, projectile.id], projectile)
   end
 
   def do_mechanic(game_state, player, {:multi_shoot, multishot}) do
@@ -133,44 +136,34 @@ defmodule Arena.Game.Skill do
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
 
-      projectiles =
-        game_state_acc.projectiles
-        |> Map.put(
-          last_id,
-          Entities.new_projectile(
-            last_id,
-            player.position,
-            direction,
-            player.id,
-            multishot.remove_on_collision
-          )
-        )
-
-      game_state_acc
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:projectiles, projectiles)
-    end)
-  end
-
-  def do_mechanic(game_state, player, {:simple_shoot, _}) do
-    last_id = game_state.last_id + 1
-
-    projectiles =
-      game_state.projectiles
-      |> Map.put(
-        last_id,
+      projectile =
         Entities.new_projectile(
           last_id,
           player.position,
-          player.direction,
+          direction,
           player.id,
-          true
+          multishot.remove_on_collision
         )
-      )
+
+      Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
+
+      game_state_acc
+      |> Map.put(:last_id, last_id)
+      |> put_in([:projectiles, projectile.id], projectile)
+    end)
+  end
+
+  def do_mechanic(game_state, player, {:simple_shoot, simple_shoot}) do
+    last_id = game_state.last_id + 1
+
+    projectile =
+      Entities.new_projectile(last_id, player.position, player.direction, player.id, true)
+
+    Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
 
     game_state
     |> Map.put(:last_id, last_id)
-    |> Map.put(:projectiles, projectiles)
+    |> put_in([:projectiles, projectile.id], projectile)
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do

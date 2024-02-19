@@ -209,41 +209,6 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:repeated_shoot, _player_id, _interval_ms, 0}, state) do
-    {:noreply, state}
-  end
-
-  def handle_info({:repeated_shoot, player_id, interval_ms, amount, remove_on_collision}, state) do
-    Process.send_after(
-      self(),
-      {:repeated_shoot, player_id, interval_ms, amount - 1, remove_on_collision},
-      interval_ms
-    )
-
-    player = get_in(state, [:game_state, :players, player_id])
-    last_id = state.game_state.last_id + 1
-
-    projectiles =
-      state.game_state.projectiles
-      |> Map.put(
-        last_id,
-        Entities.new_projectile(
-          last_id,
-          player.position,
-          player.direction,
-          player.id,
-          remove_on_collision
-        )
-      )
-
-    state =
-      state
-      |> put_in([:game_state, :last_id], last_id)
-      |> put_in([:game_state, :projectiles], projectiles)
-
-    {:noreply, state}
-  end
-
   def handle_info({:damage_done, player_id, damage}, state) do
     state =
       update_in(state, [:game_state, :damage_done, player_id], fn
@@ -262,6 +227,23 @@ defmodule Arena.GameUpdater do
       end)
 
     {:noreply, state}
+  end
+
+  def handle_info({:remove_projectile, projectile_id}, state) do
+    case Map.get(state.game_state.projectiles, projectile_id) do
+      %{aditional_info: %{status: :ACTIVE}} ->
+        state =
+          put_in(
+            state,
+            [:game_state, :projectiles, projectile_id, :aditional_info, :status],
+            :EXPLODED
+          )
+
+        {:noreply, state}
+
+      _ ->
+        {:noreply, state}
+    end
   end
 
   def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
