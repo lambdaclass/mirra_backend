@@ -37,7 +37,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_projectile(id, position, direction, owner_id, remove_on_collision) do
+  def new_projectile(id, position, direction, owner_id, remove_on_collision, speed) do
     %{
       id: id,
       category: :projectile,
@@ -46,14 +46,14 @@ defmodule Arena.Entities do
       position: position,
       radius: 10.0,
       vertices: [],
-      speed: 40.0,
+      speed: speed,
       direction: direction,
       is_moving: true,
       aditional_info: %{
         damage: 10,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: remove_on_collision
+        remove_on_collision: remove_on_collision,
       }
     }
   end

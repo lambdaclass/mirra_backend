@@ -104,7 +104,7 @@ defmodule Arena.Game.Skill do
     Process.send_after(
       self(),
       {:repeated_shoot, player.id, repeated_shoot.interval_ms, repeated_shoot.amount - 1,
-       repeated_shoot.remove_on_collision},
+       repeated_shoot.remove_on_collision, repeated_shoot.speed},
       repeated_shoot.interval_ms
     )
 
@@ -119,7 +119,8 @@ defmodule Arena.Game.Skill do
           player.position,
           player.direction,
           player.id,
-          repeated_shoot.remove_on_collision
+          repeated_shoot.remove_on_collision,
+          repeated_shoot.speed
         )
       )
 
@@ -142,7 +143,8 @@ defmodule Arena.Game.Skill do
             player.position,
             direction,
             player.id,
-            multishot.remove_on_collision
+            multishot.remove_on_collision,
+            multishot.speed
           )
         )
 
@@ -164,7 +166,8 @@ defmodule Arena.Game.Skill do
           player.position,
           player.direction,
           player.id,
-          true
+          true,
+          10.0
         )
       )
 
