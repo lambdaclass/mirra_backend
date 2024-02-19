@@ -8,30 +8,6 @@ defmodule Champions.Battle do
   alias GameBackend.Campaigns
   alias GameBackend.Users
 
-  # @doc """
-  # Run an automatic battle between two users. Only validation done is for empty teams.
-
-  # Returns the id of the winner.
-  # """
-  # def pvp_battle(user_1, user_2) do
-  #   user_1_units = Units.get_selected_units(user_1)
-  #   user_2_units = Units.get_selected_units(user_2)
-
-  #   cond do
-  #     user_1_units == [] ->
-  #       {:error, {:user_1, :no_selected_units}}
-
-  #     user_2_units == [] ->
-  #       {:error, {:user_2, :no_selected_units}}
-
-  #     true ->
-  #       case battle(user_1_units, user_2_units) do
-  #         :team_1 -> user_1
-  #         :team_2 -> user_2
-  #       end
-  #   end
-  # end
-
   @doc """
   Plays a level for a user, which means fighting its units with their selected ones.
   Returns :win or :loss accordingly.
