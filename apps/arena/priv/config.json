@@ -61,7 +61,8 @@
       "mechanics": [
         {
           "simple_shoot": {
-            "duration_ms": 1000
+            "duration_ms": 1000,
+            "projectile_offset": 100
           }
         }
       ]
@@ -77,7 +78,8 @@
             "interval_ms": 250,
             "amount": 18,
             "duration_ms": 1000,
-            "remove_on_collision": true
+            "remove_on_collision": true,
+            "projectile_offset": 100
           }
         }
       ]
@@ -93,7 +95,8 @@
             "angle_between": 10.0,
             "amount": 3,
             "duration_ms": 1000,
-            "remove_on_collision": true
+            "remove_on_collision": true,
+            "projectile_offset": 100
           }
         }
       ]
