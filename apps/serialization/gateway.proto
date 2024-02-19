@@ -170,6 +170,13 @@ syntax = "proto3";
     string campaign_id = 2;
     uint32 level_number = 3;
     repeated Unit units = 4;
+    repeated CurrencyReward currency_rewards = 5;
+  }
+
+  message CurrencyReward {
+    string currency_id = 1; 
+    string level_id = 2;
+    uint64 amount = 3;
   }
 
   message BattleResult {

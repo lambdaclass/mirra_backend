@@ -162,34 +162,33 @@ units =
 Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 currency_rewards =
-  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    IO.inspect("Iterating")
-    currency_reward =
-      %CurrencyReward{
+  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+      %{
+        level_id: level.id,
         amount: 10 * level_index,
         currency_id: gold_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
 
-    %{level_id: level.id, currency_reward: currency_reward}
   end)
+  Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
-IO.inspect(currency_rewards, label: "currency_rewards")
-# levels_with_currency_rewards =
-#   currency_rewards
-#   |> Enum.map(fn {level, currency_reward} ->
-#     level
-#     |> Level.changeset(%{currency_rewards: [currency_reward]})
-#     |> Repo.update()
-#   end)
+# IO.inspect(currency_rewards, label: "currency_rewards")
+# # levels_with_currency_rewards =
+# #   currency_rewards
+# #   |> Enum.map(fn {level, currency_reward} ->
+# #     level
+# #     |> Level.changeset(%{currency_rewards: [currency_reward]})
+# #     |> Repo.update()
+# #   end)
 
-# Add the currency rewards to the levels
-currency_rewards
-|> Enum.map(fn {level_id, currency_reward} ->
-  IO.inspect(level_id, label: "level_id")
-  IO.inspect(currency_reward, label: "currency_reward")
-  Repo.get!(Level, level_id)
-  |> Level.changeset(%{currency_rewards: [currency_reward]})
-  |> Repo.update()
-end)
+# # Add the currency rewards to the levels
+# currency_rewards
+# |> Enum.map(fn {level_id, currency_reward} ->
+#   IO.inspect(level_id, label: "level_id")
+#   IO.inspect(currency_reward, label: "currency_reward")
+#   Repo.get!(Level, level_id)
+#   |> Level.changeset(%{currency_rewards: [currency_reward]})
+#   |> Repo.update()
+# end)

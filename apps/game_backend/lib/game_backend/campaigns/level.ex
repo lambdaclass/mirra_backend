@@ -11,7 +11,7 @@ defmodule GameBackend.Campaigns.Level do
   alias GameBackend.Campaigns.Rewards.UnitReward
   alias GameBackend.Campaigns.Rewards.ItemReward
   alias GameBackend.Campaigns.Campaign
-  alias GameBackend.Units.UnitReward
+  alias GameBackend.Units.Unit
 
   schema "levels" do
     field(:game_id, :integer)

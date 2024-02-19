@@ -68,6 +68,7 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
+    IO.inspect("Advancing level. User: #{user_id}, Campaign: #{campaign_id}")
     {campaign_progression, level, campaign} = retrieve_campaign_data(user_id, campaign_id)
 
     {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
@@ -88,8 +89,12 @@ defmodule GameBackend.Users do
       campaign_progression =
         Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
 
+      IO.inspect(campaign_progression, label: "campaign_progression")
+
       level = Repo.get(Level, campaign_progression.level_id)
+      IO.inspect(level, label: "level")
       campaign = Repo.get(Campaign, campaign_id)
+      IO.inspect(campaign, label: "campaign")
       {campaign_progression, level, campaign}
     end)
   end
