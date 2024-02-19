@@ -8,9 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Items
   alias GameBackend.Users.Currencies
-  alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns.Campaign
   alias GameBackend.Campaigns.Level
