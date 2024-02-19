@@ -14,7 +14,35 @@ Characters.insert_character(%{
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: "Epic"
+  rarity: "Epic",
+  base_health: 621,
+  base_attack: 63,
+  base_speed: 115,
+  base_armor: 78,
+  basic_skill: %{
+    effects: [%{
+      type: "instant",
+      stat: "health",
+      amount: 80,
+      based_on_stat: "attack",
+      amount_type: "additive"
+    }],
+    targeting_strategy: "nearest",
+    amount_of_targets: 2
+  },
+  ultimate_skill: %{
+    effects: [
+      %{
+        type: "instant",
+        stat: "health",
+        amount: 205,
+        based_on_stat: "attack",
+        amount_type: "additive"
+      }
+    ],
+    targeting_strategy: "nearest",
+    amount_of_targets: 2
+  }
 })
 
 Characters.insert_character(%{
