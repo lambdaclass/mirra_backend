@@ -8,6 +8,8 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Units
+  alias GameBackend.Items
   alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgression
@@ -81,12 +83,12 @@ defmodule GameBackend.Users do
 
     {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
 
-    {:ok, updated_campaign_progression} =
+    {:ok, _} =
       update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
 
-    {:ok, updated_user} = update_user(user_id, level)
+    update_user(user_id, level)
 
-    {updated_campaign_progression, updated_user}
+    :ok
   end
 
   defp preload(user),
@@ -99,7 +101,12 @@ defmodule GameBackend.Users do
 
       level =
         Repo.get(Level, campaign_progression.level_id)
-        |> Repo.preload([:currency_rewards, :afk_rewards_incrementers])
+        |> Repo.preload([
+          :currency_rewards,
+          :afk_rewards_incrementers,
+          :item_rewards,
+          :unit_rewards
+        ])
 
       campaign = Repo.get(Campaign, campaign_id)
 
@@ -118,26 +125,57 @@ defmodule GameBackend.Users do
 
   defp update_user(user_id, level) do
     Repo.transaction(fn ->
-      # user = Repo.get!(User, user_id) |> preload()
+      apply_currency_rewards(user_id, level.currency_rewards)
+      apply_afk_rewards_incrementers(user_id, level.afk_rewards_incrementers)
+      apply_item_rewards(user_id, level.item_rewards)
+      apply_unit_rewards(user_id, level.unit_rewards)
+      :ok
+    end)
+  end
 
-      # user
-      # |> User.reward_changeset(%{
-      #   # currencies: convert_currency_rewards(level.currency_rewards),
-      #   items: level.item_rewards,
-      #   units: level.unit_rewards
-      # })
-      # |> Repo.update()
-      level.currency_rewards
-      |> Enum.each(fn currency_reward ->
-        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+  defp apply_currency_rewards(user_id, currency_rewards) do
+    currency_rewards
+    |> Enum.each(fn currency_reward ->
+      Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+    end)
+  end
+
+  defp apply_afk_rewards_incrementers(user_id, afk_rewards_incrementers) do
+    afk_rewards_incrementers
+    |> Enum.each(fn incrementer ->
+      Rewards.increment_afk_reward_rate(user_id, incrementer.currency_id, incrementer.amount)
+    end)
+  end
+
+  defp apply_item_rewards(user_id, item_rewards) do
+    item_rewards
+    |> Enum.each(fn item_reward ->
+      {:ok, item} = Items.get_item(item_reward.item_id)
+
+      Enum.each(1..item_reward.amount, fn _ ->
+        Items.insert_item(%{
+          user_id: user_id,
+          template_id: item.template_id,
+          level: item.level
+        })
       end)
+    end)
+  end
 
-      level.afk_rewards_incrementers
-      |> Enum.each(fn incrementer ->
-        Rewards.increment_afk_reward_rate(user_id, incrementer.currency_id, incrementer.amount)
+  defp apply_unit_rewards(user_id, unit_rewards) do
+    unit_rewards
+    |> Enum.each(fn unit_reward ->
+      unit = Units.get_unit(unit_reward.unit_id)
+
+      Enum.each(1..unit_reward.amount, fn _ ->
+        Units.insert_unit(%{
+          user_id: user_id,
+          character_id: unit.character_id,
+          unit_level: unit.level,
+          tier: unit.tier,
+          selected: false
+        })
       end)
-
-      Repo.get!(User, user_id) |> preload()
     end)
   end
 end

@@ -10,8 +10,6 @@ defmodule GameBackend.Units.Unit do
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.User
 
-  @derive {Jason.Encoder,
-           only: [:id, :unit_level, :tier, :selected, :slot, :level_id, :user_id, :character]}
   schema "units" do
     field(:unit_level, :integer)
     field(:tier, :integer)
