@@ -53,7 +53,7 @@ defmodule Arena.Entities do
         damage: 10,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: remove_on_collision,
+        remove_on_collision: remove_on_collision
       }
     }
   end

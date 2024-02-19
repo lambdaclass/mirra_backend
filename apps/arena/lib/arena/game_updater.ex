@@ -213,7 +213,10 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:repeated_shoot, player_id, interval_ms, amount, remove_on_collision, speed}, state) do
+  def handle_info(
+        {:repeated_shoot, player_id, interval_ms, amount, remove_on_collision, speed},
+        state
+      ) do
     Process.send_after(
       self(),
       {:repeated_shoot, player_id, interval_ms, amount - 1, remove_on_collision, speed},
