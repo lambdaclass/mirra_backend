@@ -163,7 +163,6 @@ defmodule Champions.Users do
 
   defp calculate_afk_rewards(user, afk_reward_rate) do
     last_claim = user.last_afk_reward_claim
-    IO.inspect(last_claim, label: "last_claim")
     now = DateTime.utc_now()
 
     minutes_since_last_claim = DateTime.diff(now, last_claim, :minute)
@@ -178,14 +177,12 @@ defmodule Champions.Users do
   Claim a user's AFK rewards.
   """
   def claim_afk_rewards(user_id) do
-    user = Users.get_user(user_id)
-
     afk_rewards = get_afk_rewards(user_id)
 
-    Enum.each(afk_rewards, fn {currency, amount} ->
-      Currencies.add_currency(user.id, currency.id, amount)
+    Enum.each(afk_rewards, fn afk_reward ->
+      Currencies.add_currency(user_id, afk_reward.currency.id, afk_reward.amount)
     end)
 
-    Users.reset_afk_rewards_claim(user.id)
+    Users.reset_afk_rewards_claim(user_id)
   end
 end
