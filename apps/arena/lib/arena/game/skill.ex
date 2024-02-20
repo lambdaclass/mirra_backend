@@ -96,7 +96,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shoot, repeated_shot}, _skill_params) do
+  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, _skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
