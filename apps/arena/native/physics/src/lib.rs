@@ -112,7 +112,10 @@ fn calculate_speed(position_a: Position, position_b: Position, duration: u64) ->
 #[rustler::nif()]
 fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> Direction {
     let mut max_distance = 2000.0;
-    let mut direction = Direction { x: entity.direction.x, y: entity.direction.y };
+    let mut direction = Direction {
+        x: entity.direction.x,
+        y: entity.direction.y,
+    };
 
     for other_entity in entities.values() {
         if entity.id != other_entity.id {
