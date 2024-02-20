@@ -133,7 +133,7 @@ defmodule Gateway.ChampionsSocketHandler do
     {:ok, afk_rewards} =
       Users.claim_afk_rewards(user_id)
 
-    prepare_response(afk_rewards, :user) |> IO.inspect()
+    prepare_response(afk_rewards, :user)
   end
 
   defp handle(unknown_request),
