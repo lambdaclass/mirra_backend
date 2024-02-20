@@ -108,13 +108,14 @@
       "is_passive": false,
       "mechanics": [
         {
-          "repeated_shoot": {
-            "interval_ms": 250,
-            "amount": 18,
+          "repeated_shot": {
+            "interval_ms": 100,
+            "amount": 10,
             "speed": 60.0,
             "duration_ms": 1000,
             "remove_on_collision": true,
-            "projectile_offset": 100
+            "projectile_offset": 100,
+            "angle": 80.0
           }
         }
       ]
