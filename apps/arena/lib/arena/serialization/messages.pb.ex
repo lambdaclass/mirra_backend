@@ -361,6 +361,15 @@ defmodule Arena.Serialization.Attack do
   use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:skill, 1, type: :string)
+  field(:parameters, 2, type: Arena.Serialization.AttackParameters)
+end
+
+defmodule Arena.Serialization.AttackParameters do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:target, 1, type: Arena.Serialization.Direction)
 end
 
 defmodule Arena.Serialization.GameAction do

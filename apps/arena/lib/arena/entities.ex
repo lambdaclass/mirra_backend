@@ -33,13 +33,14 @@ defmodule Arena.Entities do
         last_damage_received: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
+        forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.power_ups.power_up_damage_modifier
       }
     }
   end
 
-  def new_projectile(id, position, direction, owner_id, remove_on_collision) do
+  def new_projectile(id, position, direction, owner_id, remove_on_collision, speed) do
     %{
       id: id,
       category: :projectile,
@@ -48,7 +49,7 @@ defmodule Arena.Entities do
       position: position,
       radius: 10.0,
       vertices: [],
-      speed: 40.0,
+      speed: speed,
       direction: direction,
       is_moving: true,
       aditional_info: %{
