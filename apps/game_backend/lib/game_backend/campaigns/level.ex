@@ -28,13 +28,6 @@ defmodule GameBackend.Campaigns.Level do
     timestamps()
   end
 
-  @spec changeset(
-          {map(), map()}
-          | %{
-              :__struct__ => atom() | %{:__changeset__ => map(), optional(any()) => any()},
-              optional(atom()) => any()
-            }
-        ) :: Ecto.Changeset.t()
   @doc false
   def changeset(level, attrs \\ %{}) do
     level
