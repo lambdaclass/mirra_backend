@@ -172,6 +172,13 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(
+        {:delayed_effect_application, _player_id, nil},
+        state
+      ) do
+    {:noreply, state}
+  end
+
+  def handle_info(
         {:delayed_effect_application, player_id, effects_to_apply},
         %{
           game_state: game_state,
