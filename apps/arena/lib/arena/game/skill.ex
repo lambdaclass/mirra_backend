@@ -20,9 +20,11 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage = Player.calculate_real_damage(player, circle_hit.damage)
+
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.take_damage(circle_hit.damage)
+          |> Player.take_damage(real_damage)
 
         send(self(), {:damage_done, player.id, circle_hit.damage})
 
@@ -52,9 +54,11 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(cone_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage = Player.calculate_real_damage(player, cone_hit.damage)
+
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.take_damage(cone_hit.damage)
+          |> Player.take_damage(real_damage)
 
         send(self(), {:damage_done, player.id, cone_hit.damage})
 

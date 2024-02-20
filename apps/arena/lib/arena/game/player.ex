@@ -163,6 +163,37 @@ defmodule Arena.Game.Player do
     end
   end
 
+  @doc """
+
+  Receives a player that owns the damage and the damage number
+
+  to calculate the real damage we'll use the config "power_up_damage_modifier" multipling that with base damage of the
+  ability and multiply that with the amount of power ups that a player has then adding that to the base damage resulting
+  in the real damage
+
+  e.g.: if you want a 10% increase in damage you can add a 0.10 modifier
+
+  ## Examples
+
+      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10}}, 40)
+      44
+
+  """
+  def calculate_real_damage(
+        %{
+          aditional_info: %{
+            power_ups: power_up_amount,
+            power_up_damage_modifier: power_up_damage_modifier
+          }
+        } = _player_damage_owner,
+        damage
+      ) do
+    aditional_damage = damage * power_up_damage_modifier * power_up_amount
+
+    (damage + aditional_damage)
+    |> round()
+  end
+
   ####################
   # Internal helpers #
   ####################
