@@ -21,7 +21,7 @@ export const BoardGame = function () {
     obstacle: 0x00aa77,
     colliding: 0xff0000,
     projectile: 0x0000ff,
-    items: 0x238636,
+    item: 0x238636,
   };
   let player_id;
 

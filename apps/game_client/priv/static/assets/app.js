@@ -10645,6 +10645,7 @@
         return this;
       }.call(null) || Function("return this")();
       goog2.exportSymbol("proto.Attack", null, global3);
+      goog2.exportSymbol("proto.AttackParameters", null, global3);
       goog2.exportSymbol("proto.ConfigCharacter", null, global3);
       goog2.exportSymbol("proto.ConfigGame", null, global3);
       goog2.exportSymbol("proto.ConfigMap", null, global3);
@@ -10668,6 +10669,8 @@
       goog2.exportSymbol("proto.PlayerAction", null, global3);
       goog2.exportSymbol("proto.PlayerActionType", null, global3);
       goog2.exportSymbol("proto.Position", null, global3);
+      goog2.exportSymbol("proto.PowerUp", null, global3);
+      goog2.exportSymbol("proto.PowerUpstatus", null, global3);
       goog2.exportSymbol("proto.Projectile", null, global3);
       goog2.exportSymbol("proto.ProjectileStatus", null, global3);
       goog2.exportSymbol("proto.Zone", null, global3);
@@ -10783,6 +10786,13 @@
       if (goog2.DEBUG && !COMPILED) {
         proto.Obstacle.displayName = "proto.Obstacle";
       }
+      proto.PowerUp = function(opt_data) {
+        jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
+      };
+      goog2.inherits(proto.PowerUp, jspb2.Message);
+      if (goog2.DEBUG && !COMPILED) {
+        proto.PowerUp.displayName = "proto.PowerUp";
+      }
       proto.PlayerAction = function(opt_data) {
         jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
       };
@@ -10803,6 +10813,13 @@
       goog2.inherits(proto.Attack, jspb2.Message);
       if (goog2.DEBUG && !COMPILED) {
         proto.Attack.displayName = "proto.Attack";
+      }
+      proto.AttackParameters = function(opt_data) {
+        jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
+      };
+      goog2.inherits(proto.AttackParameters, jspb2.Message);
+      if (goog2.DEBUG && !COMPILED) {
+        proto.AttackParameters.displayName = "proto.AttackParameters";
       }
       proto.GameAction = function(opt_data) {
         jspb2.Message.initialize(this, opt_data, 0, -1, null, proto.GameAction.oneofGroups_);
@@ -12022,7 +12039,11 @@
               msg.getKillfeedList(),
               proto.KillEntry.toObject,
               includeInstance
-            )
+            ),
+            damageTakenMap: (f3 = msg.getDamageTakenMap()) ? f3.toObject(includeInstance, void 0) : [],
+            damageDoneMap: (f3 = msg.getDamageDoneMap()) ? f3.toObject(includeInstance, void 0) : [],
+            powerUpsMap: (f3 = msg.getPowerUpsMap()) ? f3.toObject(includeInstance, proto.Entity.toObject) : [],
+            itemsMap: (f3 = msg.getItemsMap()) ? f3.toObject(includeInstance, proto.Entity.toObject) : []
           };
           if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -12084,6 +12105,30 @@
               reader.readMessage(value, proto.KillEntry.deserializeBinaryFromReader);
               msg.addKillfeed(value);
               break;
+            case 8:
+              var value = msg.getDamageTakenMap();
+              reader.readMessage(value, function(message, reader2) {
+                jspb2.Map.deserializeBinary(message, reader2, jspb2.BinaryReader.prototype.readUint64, jspb2.BinaryReader.prototype.readUint64, null, 0, 0);
+              });
+              break;
+            case 9:
+              var value = msg.getDamageDoneMap();
+              reader.readMessage(value, function(message, reader2) {
+                jspb2.Map.deserializeBinary(message, reader2, jspb2.BinaryReader.prototype.readUint64, jspb2.BinaryReader.prototype.readUint64, null, 0, 0);
+              });
+              break;
+            case 10:
+              var value = msg.getPowerUpsMap();
+              reader.readMessage(value, function(message, reader2) {
+                jspb2.Map.deserializeBinary(message, reader2, jspb2.BinaryReader.prototype.readUint64, jspb2.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+              });
+              break;
+            case 11:
+              var value = msg.getItemsMap();
+              reader.readMessage(value, function(message, reader2) {
+                jspb2.Map.deserializeBinary(message, reader2, jspb2.BinaryReader.prototype.readUint64, jspb2.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+              });
+              break;
             default:
               reader.skipField();
               break;
@@ -12139,6 +12184,22 @@
             f3,
             proto.KillEntry.serializeBinaryToWriter
           );
+        }
+        f3 = message.getDamageTakenMap(true);
+        if (f3 && f3.getLength() > 0) {
+          f3.serializeBinary(8, writer, jspb2.BinaryWriter.prototype.writeUint64, jspb2.BinaryWriter.prototype.writeUint64);
+        }
+        f3 = message.getDamageDoneMap(true);
+        if (f3 && f3.getLength() > 0) {
+          f3.serializeBinary(9, writer, jspb2.BinaryWriter.prototype.writeUint64, jspb2.BinaryWriter.prototype.writeUint64);
+        }
+        f3 = message.getPowerUpsMap(true);
+        if (f3 && f3.getLength() > 0) {
+          f3.serializeBinary(10, writer, jspb2.BinaryWriter.prototype.writeUint64, jspb2.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+        }
+        f3 = message.getItemsMap(true);
+        if (f3 && f3.getLength() > 0) {
+          f3.serializeBinary(11, writer, jspb2.BinaryWriter.prototype.writeUint64, jspb2.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
         }
       };
       proto.GameState.prototype.getGameId = function() {
@@ -12234,13 +12295,74 @@
       proto.GameState.prototype.clearKillfeedList = function() {
         return this.setKillfeedList([]);
       };
+      proto.GameState.prototype.getDamageTakenMap = function(opt_noLazyCreate) {
+        return (
+          /** @type {!jspb.Map<number,number>} */
+          jspb2.Message.getMapField(
+            this,
+            8,
+            opt_noLazyCreate,
+            null
+          )
+        );
+      };
+      proto.GameState.prototype.clearDamageTakenMap = function() {
+        this.getDamageTakenMap().clear();
+        return this;
+      };
+      proto.GameState.prototype.getDamageDoneMap = function(opt_noLazyCreate) {
+        return (
+          /** @type {!jspb.Map<number,number>} */
+          jspb2.Message.getMapField(
+            this,
+            9,
+            opt_noLazyCreate,
+            null
+          )
+        );
+      };
+      proto.GameState.prototype.clearDamageDoneMap = function() {
+        this.getDamageDoneMap().clear();
+        return this;
+      };
+      proto.GameState.prototype.getPowerUpsMap = function(opt_noLazyCreate) {
+        return (
+          /** @type {!jspb.Map<number,!proto.Entity>} */
+          jspb2.Message.getMapField(
+            this,
+            10,
+            opt_noLazyCreate,
+            proto.Entity
+          )
+        );
+      };
+      proto.GameState.prototype.clearPowerUpsMap = function() {
+        this.getPowerUpsMap().clear();
+        return this;
+      };
+      proto.GameState.prototype.getItemsMap = function(opt_noLazyCreate) {
+        return (
+          /** @type {!jspb.Map<number,!proto.Entity>} */
+          jspb2.Message.getMapField(
+            this,
+            11,
+            opt_noLazyCreate,
+            proto.Entity
+          )
+        );
+      };
+      proto.GameState.prototype.clearItemsMap = function() {
+        this.getItemsMap().clear();
+        return this;
+      };
       proto.Entity.repeatedFields_ = [7, 8];
-      proto.Entity.oneofGroups_ = [[12, 13, 14]];
+      proto.Entity.oneofGroups_ = [[12, 13, 14, 15]];
       proto.Entity.AditionalInfoCase = {
         ADITIONAL_INFO_NOT_SET: 0,
         PLAYER: 12,
         PROJECTILE: 13,
-        OBSTACLE: 14
+        OBSTACLE: 14,
+        POWER_UP: 15
       };
       proto.Entity.prototype.getAditionalInfoCase = function() {
         return (
@@ -12271,7 +12393,8 @@
             isMoving: jspb2.Message.getBooleanFieldWithDefault(msg, 11, false),
             player: (f3 = msg.getPlayer()) && proto.Player.toObject(includeInstance, f3),
             projectile: (f3 = msg.getProjectile()) && proto.Projectile.toObject(includeInstance, f3),
-            obstacle: (f3 = msg.getObstacle()) && proto.Obstacle.toObject(includeInstance, f3)
+            obstacle: (f3 = msg.getObstacle()) && proto.Obstacle.toObject(includeInstance, f3),
+            powerUp: (f3 = msg.getPowerUp()) && proto.PowerUp.toObject(includeInstance, f3)
           };
           if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -12378,6 +12501,11 @@
               var value = new proto.Obstacle();
               reader.readMessage(value, proto.Obstacle.deserializeBinaryFromReader);
               msg.setObstacle(value);
+              break;
+            case 15:
+              var value = new proto.PowerUp();
+              reader.readMessage(value, proto.PowerUp.deserializeBinaryFromReader);
+              msg.setPowerUp(value);
               break;
             default:
               reader.skipField();
@@ -12495,6 +12623,14 @@
             14,
             f3,
             proto.Obstacle.serializeBinaryToWriter
+          );
+        }
+        f3 = message.getPowerUp();
+        if (f3 != null) {
+          writer.writeMessage(
+            15,
+            f3,
+            proto.PowerUp.serializeBinaryToWriter
           );
         }
       };
@@ -12666,6 +12802,21 @@
       proto.Entity.prototype.hasObstacle = function() {
         return jspb2.Message.getField(this, 14) != null;
       };
+      proto.Entity.prototype.getPowerUp = function() {
+        return (
+          /** @type{?proto.PowerUp} */
+          jspb2.Message.getWrapperField(this, proto.PowerUp, 15)
+        );
+      };
+      proto.Entity.prototype.setPowerUp = function(value) {
+        return jspb2.Message.setOneofWrapperField(this, 15, proto.Entity.oneofGroups_[0], value);
+      };
+      proto.Entity.prototype.clearPowerUp = function() {
+        return this.setPowerUp(void 0);
+      };
+      proto.Entity.prototype.hasPowerUp = function() {
+        return jspb2.Message.getField(this, 15) != null;
+      };
       proto.Player.repeatedFields_ = [3];
       if (jspb2.Message.GENERATE_TO_OBJECT) {
         proto.Player.prototype.toObject = function(opt_includeInstance) {
@@ -12684,7 +12835,8 @@
             maxStamina: jspb2.Message.getFieldWithDefault(msg, 5, 0),
             staminaInterval: jspb2.Message.getFieldWithDefault(msg, 6, 0),
             rechargingStamina: jspb2.Message.getBooleanFieldWithDefault(msg, 7, false),
-            characterName: jspb2.Message.getFieldWithDefault(msg, 8, "")
+            characterName: jspb2.Message.getFieldWithDefault(msg, 8, ""),
+            powerUps: jspb2.Message.getFieldWithDefault(msg, 9, 0)
           };
           if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -12758,6 +12910,13 @@
               );
               msg.setCharacterName(value);
               break;
+            case 9:
+              var value = (
+                /** @type {number} */
+                reader.readUint64()
+              );
+              msg.setPowerUps(value);
+              break;
             default:
               reader.skipField();
               break;
@@ -12826,6 +12985,13 @@
         if (f3.length > 0) {
           writer.writeString(
             8,
+            f3
+          );
+        }
+        f3 = message.getPowerUps();
+        if (f3 !== 0) {
+          writer.writeUint64(
+            9,
             f3
           );
         }
@@ -12907,6 +13073,15 @@
       };
       proto.Player.prototype.setCharacterName = function(value) {
         return jspb2.Message.setProto3StringField(this, 8, value);
+      };
+      proto.Player.prototype.getPowerUps = function() {
+        return (
+          /** @type {number} */
+          jspb2.Message.getFieldWithDefault(this, 9, 0)
+        );
+      };
+      proto.Player.prototype.setPowerUps = function(value) {
+        return jspb2.Message.setProto3IntField(this, 9, value);
       };
       if (jspb2.Message.GENERATE_TO_OBJECT) {
         proto.Projectile.prototype.toObject = function(opt_includeInstance) {
@@ -13085,6 +13260,94 @@
         return jspb2.Message.setProto3StringField(this, 1, value);
       };
       if (jspb2.Message.GENERATE_TO_OBJECT) {
+        proto.PowerUp.prototype.toObject = function(opt_includeInstance) {
+          return proto.PowerUp.toObject(opt_includeInstance, this);
+        };
+        proto.PowerUp.toObject = function(includeInstance, msg) {
+          var f3, obj = {
+            ownerId: jspb2.Message.getFieldWithDefault(msg, 1, 0),
+            status: jspb2.Message.getFieldWithDefault(msg, 2, 0)
+          };
+          if (includeInstance) {
+            obj.$jspbMessageInstance = msg;
+          }
+          return obj;
+        };
+      }
+      proto.PowerUp.deserializeBinary = function(bytes) {
+        var reader = new jspb2.BinaryReader(bytes);
+        var msg = new proto.PowerUp();
+        return proto.PowerUp.deserializeBinaryFromReader(msg, reader);
+      };
+      proto.PowerUp.deserializeBinaryFromReader = function(msg, reader) {
+        while (reader.nextField()) {
+          if (reader.isEndGroup()) {
+            break;
+          }
+          var field = reader.getFieldNumber();
+          switch (field) {
+            case 1:
+              var value = (
+                /** @type {number} */
+                reader.readUint64()
+              );
+              msg.setOwnerId(value);
+              break;
+            case 2:
+              var value = (
+                /** @type {!proto.PowerUpstatus} */
+                reader.readEnum()
+              );
+              msg.setStatus(value);
+              break;
+            default:
+              reader.skipField();
+              break;
+          }
+        }
+        return msg;
+      };
+      proto.PowerUp.prototype.serializeBinary = function() {
+        var writer = new jspb2.BinaryWriter();
+        proto.PowerUp.serializeBinaryToWriter(this, writer);
+        return writer.getResultBuffer();
+      };
+      proto.PowerUp.serializeBinaryToWriter = function(message, writer) {
+        var f3 = void 0;
+        f3 = message.getOwnerId();
+        if (f3 !== 0) {
+          writer.writeUint64(
+            1,
+            f3
+          );
+        }
+        f3 = message.getStatus();
+        if (f3 !== 0) {
+          writer.writeEnum(
+            2,
+            f3
+          );
+        }
+      };
+      proto.PowerUp.prototype.getOwnerId = function() {
+        return (
+          /** @type {number} */
+          jspb2.Message.getFieldWithDefault(this, 1, 0)
+        );
+      };
+      proto.PowerUp.prototype.setOwnerId = function(value) {
+        return jspb2.Message.setProto3IntField(this, 1, value);
+      };
+      proto.PowerUp.prototype.getStatus = function() {
+        return (
+          /** @type {!proto.PowerUpstatus} */
+          jspb2.Message.getFieldWithDefault(this, 2, 0)
+        );
+      };
+      proto.PowerUp.prototype.setStatus = function(value) {
+        return jspb2.Message.setProto3EnumField(this, 2, value);
+      };
+      if (jspb2.Message.GENERATE_TO_OBJECT) {
         proto.PlayerAction.prototype.toObject = function(opt_includeInstance) {
           return proto.PlayerAction.toObject(opt_includeInstance, this);
         };
@@ -13247,7 +13510,8 @@
         };
         proto.Attack.toObject = function(includeInstance, msg) {
           var f3, obj = {
-            skill: jspb2.Message.getFieldWithDefault(msg, 1, "")
+            skill: jspb2.Message.getFieldWithDefault(msg, 1, ""),
+            parameters: (f3 = msg.getParameters()) && proto.AttackParameters.toObject(includeInstance, f3)
           };
           if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -13274,6 +13538,11 @@
               );
               msg.setSkill(value);
               break;
+            case 2:
+              var value = new proto.AttackParameters();
+              reader.readMessage(value, proto.AttackParameters.deserializeBinaryFromReader);
+              msg.setParameters(value);
+              break;
             default:
               reader.skipField();
               break;
@@ -13295,6 +13564,14 @@
             f3
           );
         }
+        f3 = message.getParameters();
+        if (f3 != null) {
+          writer.writeMessage(
+            2,
+            f3,
+            proto.AttackParameters.serializeBinaryToWriter
+          );
+        }
       };
       proto.Attack.prototype.getSkill = function() {
         return (
@@ -13304,6 +13581,90 @@
       };
       proto.Attack.prototype.setSkill = function(value) {
         return jspb2.Message.setProto3StringField(this, 1, value);
+      };
+      proto.Attack.prototype.getParameters = function() {
+        return (
+          /** @type{?proto.AttackParameters} */
+          jspb2.Message.getWrapperField(this, proto.AttackParameters, 2)
+        );
+      };
+      proto.Attack.prototype.setParameters = function(value) {
+        return jspb2.Message.setWrapperField(this, 2, value);
+      };
+      proto.Attack.prototype.clearParameters = function() {
+        return this.setParameters(void 0);
+      };
+      proto.Attack.prototype.hasParameters = function() {
+        return jspb2.Message.getField(this, 2) != null;
+      };
+      if (jspb2.Message.GENERATE_TO_OBJECT) {
+        proto.AttackParameters.prototype.toObject = function(opt_includeInstance) {
+          return proto.AttackParameters.toObject(opt_includeInstance, this);
+        };
+        proto.AttackParameters.toObject = function(includeInstance, msg) {
+          var f3, obj = {
+            target: (f3 = msg.getTarget()) && proto.Direction.toObject(includeInstance, f3)
+          };
+          if (includeInstance) {
+            obj.$jspbMessageInstance = msg;
+          }
+          return obj;
+        };
+      }
+      proto.AttackParameters.deserializeBinary = function(bytes) {
+        var reader = new jspb2.BinaryReader(bytes);
+        var msg = new proto.AttackParameters();
+        return proto.AttackParameters.deserializeBinaryFromReader(msg, reader);
+      };
+      proto.AttackParameters.deserializeBinaryFromReader = function(msg, reader) {
+        while (reader.nextField()) {
+          if (reader.isEndGroup()) {
+            break;
+          }
+          var field = reader.getFieldNumber();
+          switch (field) {
+            case 1:
+              var value = new proto.Direction();
+              reader.readMessage(value, proto.Direction.deserializeBinaryFromReader);
+              msg.setTarget(value);
+              break;
+            default:
+              reader.skipField();
+              break;
+          }
+        }
+        return msg;
+      };
+      proto.AttackParameters.prototype.serializeBinary = function() {
+        var writer = new jspb2.BinaryWriter();
+        proto.AttackParameters.serializeBinaryToWriter(this, writer);
+        return writer.getResultBuffer();
+      };
+      proto.AttackParameters.serializeBinaryToWriter = function(message, writer) {
+        var f3 = void 0;
+        f3 = message.getTarget();
+        if (f3 != null) {
+          writer.writeMessage(
+            1,
+            f3,
+            proto.Direction.serializeBinaryToWriter
+          );
+        }
+      };
+      proto.AttackParameters.prototype.getTarget = function() {
+        return (
+          /** @type{?proto.Direction} */
+          jspb2.Message.getWrapperField(this, proto.Direction, 1)
+        );
+      };
+      proto.AttackParameters.prototype.setTarget = function(value) {
+        return jspb2.Message.setWrapperField(this, 1, value);
+      };
+      proto.AttackParameters.prototype.clearTarget = function() {
+        return this.setTarget(void 0);
+      };
+      proto.AttackParameters.prototype.hasTarget = function() {
+        return jspb2.Message.getField(this, 1) != null;
       };
       proto.GameAction.oneofGroups_ = [[1, 2]];
       proto.GameAction.ActionTypeCase = {
@@ -13594,6 +13955,10 @@
       proto.ProjectileStatus = {
         ACTIVE: 0,
         EXPLODED: 1
+      };
+      proto.PowerUpstatus = {
+        AVAILABLE: 0,
+        TAKEN: 1
       };
       proto.PlayerActionType = {
         MOVING: 0,
@@ -42267,7 +42632,7 @@ void main(void)\r
       obstacle: 43639,
       colliding: 16711680,
       projectile: 255,
-      items: 2328118
+      item: 2328118
     };
     let player_id;
     let movementKeys = {
@@ -42353,6 +42718,7 @@ void main(void)\r
       entity.y = y2;
     }, this.createEntity = function(backEntity) {
       newEntity = new Entity(backEntity);
+      console.log(newEntity);
       newEntity.boardObject = new Graphics();
       newEntity.boardObject.beginFill(16777215);
       switch (newEntity.shape) {
@@ -42374,7 +42740,7 @@ void main(void)\r
           newEntity.boardObject.zIndex = 15;
           break;
         case "item":
-          newEntity.boardObject.zIndex = 5;
+          newEntity.boardObject.zIndex = 20;
           break;
       }
       newEntity.boardObject.endFill();
