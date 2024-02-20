@@ -4,6 +4,7 @@ defmodule Arena.Game.Player do
   """
 
   alias Arena.Game.Skill
+  alias Arena.Utils
 
   def add_action(player, action_name, duration_ms) do
     Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
@@ -92,13 +93,43 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def reset_after_dash(player, reset_speed) do
+  def move(%{aditional_info: %{forced_movement: true}} = player, _) do
+    player
+  end
+
+  def move(player, direction) do
+    current_actions =
+      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
+
+    {x, y} = direction
+    is_moving = x != 0.0 || y != 0.0
+
+    direction =
+      case is_moving do
+        true -> Utils.normalize(x, y)
+        _ -> player.direction
+      end
+
+    player
+    |> Map.put(:direction, direction)
+    |> Map.put(:is_moving, is_moving)
+    |> Map.put(
+      :aditional_info,
+      Map.merge(player.aditional_info, %{current_actions: current_actions})
+    )
+  end
+
+  def reset_forced_movement(player, reset_speed) do
     player
     |> Map.put(:is_moving, false)
     |> Map.put(:speed, reset_speed)
+    |> put_in([:aditional_info, :forced_movement], false)
   end
 
-  def use_skill(player, skill_key, %{game_state: game_state, game_config: game_config}) do
+  def use_skill(player, skill_key, skill_params, %{
+        game_state: game_state,
+        game_config: game_config
+      }) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         game_state
@@ -106,7 +137,7 @@ defmodule Arena.Game.Player do
       skill ->
         Process.send_after(
           self(),
-          {:delayed_skill_mechanics, player.id, skill.mechanics},
+          {:delayed_skill_mechanics, player.id, skill.mechanics, skill_params},
           skill.activation_delay_ms
         )
 
@@ -135,6 +166,37 @@ defmodule Arena.Game.Player do
         put_in(game_state, [:players, player.id], player)
         |> Skill.apply_skill_effects(player, skill.effects_to_apply, game_config)
     end
+  end
+
+  @doc """
+
+  Receives a player that owns the damage and the damage number
+
+  to calculate the real damage we'll use the config "power_up_damage_modifier" multipling that with base damage of the
+  ability and multiply that with the amount of power ups that a player has then adding that to the base damage resulting
+  in the real damage
+
+  e.g.: if you want a 10% increase in damage you can add a 0.10 modifier
+
+  ## Examples
+
+      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10}}, 40)
+      44
+
+  """
+  def calculate_real_damage(
+        %{
+          aditional_info: %{
+            power_ups: power_up_amount,
+            power_up_damage_modifier: power_up_damage_modifier
+          }
+        } = _player_damage_owner,
+        damage
+      ) do
+    aditional_damage = damage * power_up_damage_modifier * power_up_amount
+
+    (damage + aditional_damage)
+    |> round()
   end
 
   ####################
@@ -173,4 +235,13 @@ defmodule Arena.Game.Player do
   end
 
   defp maybe_trigger_natural_heal(player, _), do: player
+
+  defp add_or_remove_moving_action(current_actions, direction) do
+    if direction == {0.0, 0.0} do
+      current_actions -- [%{action: :MOVING, duration: 0}]
+    else
+      current_actions ++ [%{action: :MOVING, duration: 0}]
+    end
+    |> Enum.uniq()
+  end
 end

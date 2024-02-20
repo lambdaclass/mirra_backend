@@ -33,6 +33,9 @@ defmodule Arena.Entities do
         last_damage_received: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
+        forced_movement: false,
+        power_ups: 0,
+        power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
         effects: %{}
       }
     }
@@ -55,6 +58,26 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :ACTIVE,
         remove_on_collision: remove_on_collision
+      }
+    }
+  end
+
+  def new_power_up(id, position, direction, owner_id) do
+    %{
+      id: id,
+      category: :power_up,
+      shape: :circle,
+      name: "Power Up" <> Integer.to_string(id),
+      position: position,
+      radius: 10.0,
+      vertices: [],
+      speed: 0.0,
+      direction: direction,
+      is_moving: false,
+      aditional_info: %{
+        owner_id: owner_id,
+        status: :AVAILABLE,
+        remove_on_collision: true
       }
     }
   end
@@ -124,7 +147,8 @@ defmodule Arena.Entities do
        stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina,
        character_name: entity.aditional_info.character_name,
-       effects: entity.aditional_info.effects
+       effects: entity.aditional_info.effects,
+       power_ups: entity.aditional_info.power_ups
      }}
   end
 
@@ -132,6 +156,14 @@ defmodule Arena.Entities do
     {:projectile,
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :power_up do
+    {:power_up,
+     %Arena.Serialization.PowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
      }}

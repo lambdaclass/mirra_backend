@@ -88,6 +88,27 @@
       "effects_to_apply": []
     },
     {
+      "name": "leap",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 1000,
+      "activation_delay_ms": 200,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "leap": {
+            "range": 1000.0,
+            "duration_ms": 800,
+            "on_arrival_mechanic": {
+              "circle_hit": {
+                "damage": 15,
+                "range": 500.0
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "shot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
@@ -113,13 +134,14 @@
       "is_passive": false,
       "mechanics": [
         {
-          "repeated_shoot": {
-            "interval_ms": 250,
-            "amount": 18,
+          "repeated_shot": {
+            "interval_ms": 100,
+            "amount": 10,
             "speed": 60.0,
             "duration_ms": 1000,
             "remove_on_collision": true,
-            "projectile_offset": 100
+            "projectile_offset": 100,
+            "angle": 80.0
           }
         }
       ],
@@ -228,7 +250,7 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "hit",
-        "2": "hit",
+        "2": "leap",
         "3": "dash"
       }
     },
@@ -267,10 +289,28 @@
       }
     }
   ],
+  "power_ups": {
+    "power_ups_per_kill": [
+      {
+        "minimun_amount": 0,
+        "amount_of_drops": 1
+      },
+      {
+        "minimun_amount": 2,
+        "amount_of_drops": 2
+      },
+      {
+        "minimun_amount": 6,
+        "amount_of_drops": 3
+      }
+    ],
+    "distance_to_power_up": 500,
+    "power_up_damage_modifier": 0.10
+  },
   "effects": [
     {
-        "name": "invisible",
-        "duration_ms": 1000
+      "name": "invisible",
+      "duration_ms": 1000
     }
   ]
 }

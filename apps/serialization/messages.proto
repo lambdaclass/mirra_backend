@@ -87,6 +87,7 @@ message GameState {
   repeated KillEntry killfeed = 7;
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
+  map<uint64, Entity> power_ups = 10;
 }
 
 /*
@@ -119,6 +120,7 @@ message Entity {
     Player player = 12;
     Projectile projectile = 13;
     Obstacle obstacle = 14;
+    PowerUp power_up = 15;
   }
 }
 
@@ -131,7 +133,8 @@ message Player {
   uint64 stamina_interval = 6;
   bool recharging_stamina = 7;
   string character_name = 8;
-  map<uint64, Effect> effects = 9;
+  uint64 power_ups = 9;
+  map<uint64, Effect> effects = 10;
 }
 
 message Effect {
@@ -152,6 +155,16 @@ enum ProjectileStatus {
 
 message Obstacle {
   string color = 1;
+}
+
+message PowerUp {
+  uint64 owner_id = 1;
+  PowerUpstatus status = 2;
+}
+
+enum  PowerUpstatus {
+  AVAILABLE = 0;
+  TAKEN = 1;
 }
 
 message PlayerAction {
@@ -177,6 +190,11 @@ message Move {
 
 message Attack {
   string skill = 1;
+  AttackParameters parameters = 2;
+}
+
+message AttackParameters {
+  Direction target = 1;
 }
 
 message GameAction {

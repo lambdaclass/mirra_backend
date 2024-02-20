@@ -98,7 +98,6 @@ fn calculate_triangle_vertices(
     vec![starting_point, vertix_1, vertix_2]
 }
 
-// Function that receives a Position A and a Position B and returns the Direction from Position A to Position B
 #[rustler::nif()]
 fn get_direction_from_positions(position_a: Position, position_b: Position) -> Direction {
     let x = position_b.x - position_a.x;
@@ -110,6 +109,14 @@ fn get_direction_from_positions(position_a: Position, position_b: Position) -> D
     }
 }
 
+#[rustler::nif()]
+fn calculate_speed(position_a: Position, position_b: Position, duration: u64) -> f32 {
+    let x = position_b.x - position_a.x;
+    let y = position_b.y - position_a.y;
+    let len = (x.powi(2) + y.powi(2)).sqrt();
+    len / duration as f32
+}
+
 rustler::init!(
     "Elixir.Physics",
     [
@@ -119,6 +126,7 @@ rustler::init!(
         move_entity,
         add_angle_to_direction,
         calculate_triangle_vertices,
-        get_direction_from_positions
+        get_direction_from_positions,
+        calculate_speed
     ]
 );
