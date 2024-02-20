@@ -151,6 +151,12 @@ defmodule Arena.Game.Player do
           skill.activation_delay_ms
         )
 
+        Process.send_after(
+          self(),
+          {:delayed_effect_application, player.id, skill.effects_to_apply},
+          skill.activation_delay_ms
+        )
+
         action_name = skill_key_execution_action(skill_key)
 
         player =
@@ -175,7 +181,6 @@ defmodule Arena.Game.Player do
           end
 
         put_in(game_state, [:players, player.id], player)
-        |> Skill.apply_skill_effects(player, skill.effects_to_apply, game_config)
     end
   end
 
