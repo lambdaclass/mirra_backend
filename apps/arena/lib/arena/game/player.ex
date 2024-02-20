@@ -205,6 +205,14 @@ defmodule Arena.Game.Player do
     |> round()
   end
 
+  def store_item(player, item) do
+    put_in(player, [:aditional_info, :inventory], item)
+  end
+
+  def inventory_full?(player) do
+    player.aditional_info.inventory != nil
+  end
+
   ####################
   # Internal helpers #
   ####################

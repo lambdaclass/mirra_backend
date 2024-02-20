@@ -35,7 +35,8 @@ defmodule Arena.Entities do
         character_name: character.name,
         forced_movement: false,
         power_ups: 0,
-        power_up_damage_modifier: config.power_ups.power_up_damage_modifier
+        power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
+        inventory: nil
       }
     }
   end
@@ -109,7 +110,7 @@ defmodule Arena.Entities do
       shape: :circle,
       name: "Item" <> Integer.to_string(id),
       position: position,
-      radius: 30,
+      radius: 30.0,
       vertices: [],
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},

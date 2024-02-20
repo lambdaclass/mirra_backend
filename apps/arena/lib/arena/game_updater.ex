@@ -70,11 +70,12 @@ defmodule Arena.GameUpdater do
     entities_to_collide_projectiles =
       Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
-    {players, power_ups} =
+    {players, power_ups, items} =
       game_state.players
       |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
-      |> update_collisions(game_state.players, game_state.power_ups)
+      |> update_collisions(game_state.players, Map.merge(game_state.power_ups, game_state.items))
       |> handle_power_ups(game_state.power_ups)
+      |> handle_items(game_state.items)
 
     # We need to send the exploded projectiles to the client at least once
     updated_expired_projectiles =
@@ -121,6 +122,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:players, players)
       |> Map.put(:projectiles, projectiles)
       |> Map.put(:power_ups, power_ups)
+      |> Map.put(:items, items)
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -730,5 +732,23 @@ defmodule Arena.GameUpdater do
         accs
       end
     end)
+  end
+
+  defp handle_items({players, power_ups}, items) do
+    {players, items} =
+      Enum.reduce(players, {players, items}, fn {_player_id, player}, {players_acc, items_acc} ->
+        item_id = Enum.find(player.collides_with, fn collided_entity_id -> Map.has_key?(items_acc, collided_entity_id) end)
+        item = Map.get(items_acc, item_id)
+
+        case is_nil(item) or Player.inventory_full?(player) do
+          true ->
+            {players_acc, items_acc}
+          false ->
+            player = Player.store_item(player, item)
+            {Map.put(players_acc, player.id, player), Map.delete(items_acc, item_id)}
+        end
+      end)
+
+    {players, power_ups, items}
   end
 end
