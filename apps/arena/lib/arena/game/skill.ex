@@ -96,16 +96,16 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shoot, repeated_shoot}, _skill_params) do
-    remaining_amount = repeated_shoot.amount - 1
+  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, _skill_params) do
+    remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
-      repeated_shoot = Map.put(repeated_shoot, :amount, remaining_amount)
+      repeated_shot = Map.put(repeated_shot, :amount, remaining_amount)
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, {:repeated_shoot, repeated_shoot}},
-        repeated_shoot.interval_ms
+        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}},
+        repeated_shot.interval_ms
       )
     end
 
@@ -114,14 +114,14 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(player, repeated_shoot),
-        player.direction,
+        get_real_projectile_spawn_position(player, repeated_shot),
+        randomize_direction_in_angle(player.direction, repeated_shot.angle),
         player.id,
-        repeated_shoot.remove_on_collision,
-        repeated_shoot.speed
+        repeated_shot.remove_on_collision,
+        repeated_shot.speed
       )
 
-    Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shoot.duration_ms)
+    Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
 
     game_state
     |> Map.put(:last_id, last_id)
@@ -218,7 +218,12 @@ defmodule Arena.Game.Skill do
     %{x: real_position_x, y: real_position_y}
   end
 
-  def maybe_auto_aim(%{x: 0.0, y: 0.0} = _skill_direction, player, entities) do
+  defp randomize_direction_in_angle(direction, angle) do
+    angle = :rand.uniform() * angle - angle / 2
+    Physics.add_angle_to_direction(direction, angle)
+  end
+
+  def maybe_auto_aim(%{x: x, y: y} = _skill_direction, player, entities) when x == 0.0 and y == 0.0 do
     Physics.nearest_entity_direction(player, entities)
   end
 
