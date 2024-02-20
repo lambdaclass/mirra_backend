@@ -7,6 +7,15 @@ defmodule GameClient.Protobuf.ProjectileStatus do
   field(:EXPLODED, 1)
 end
 
+defmodule GameClient.Protobuf.PowerUpstatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:AVAILABLE, 0)
+  field(:TAKEN, 1)
+end
+
 defmodule GameClient.Protobuf.PlayerActionType do
   @moduledoc false
 
@@ -200,6 +209,15 @@ defmodule GameClient.Protobuf.GameState.DamageDoneEntry do
   field(:value, 2, type: :uint64)
 end
 
+defmodule GameClient.Protobuf.GameState.PowerUpsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -238,6 +256,13 @@ defmodule GameClient.Protobuf.GameState do
     json_name: "damageDone",
     map: true
   )
+
+  field(:power_ups, 10,
+    repeated: true,
+    type: GameClient.Protobuf.GameState.PowerUpsEntry,
+    json_name: "powerUps",
+    map: true
+  )
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -261,6 +286,7 @@ defmodule GameClient.Protobuf.Entity do
   field(:player, 12, type: GameClient.Protobuf.Player, oneof: 0)
   field(:projectile, 13, type: GameClient.Protobuf.Projectile, oneof: 0)
   field(:obstacle, 14, type: GameClient.Protobuf.Obstacle, oneof: 0)
+  field(:power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0)
 end
 
 defmodule GameClient.Protobuf.Player do
@@ -282,6 +308,7 @@ defmodule GameClient.Protobuf.Player do
   field(:stamina_interval, 6, type: :uint64, json_name: "staminaInterval")
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
+  field(:power_ups, 9, type: :uint64, json_name: "powerUps")
 end
 
 defmodule GameClient.Protobuf.Projectile do
@@ -300,6 +327,15 @@ defmodule GameClient.Protobuf.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:color, 1, type: :string)
+end
+
+defmodule GameClient.Protobuf.PowerUp do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:status, 2, type: GameClient.Protobuf.PowerUpstatus, enum: true)
 end
 
 defmodule GameClient.Protobuf.PlayerAction do

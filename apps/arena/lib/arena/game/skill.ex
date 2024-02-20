@@ -20,9 +20,11 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage = Player.calculate_real_damage(player, circle_hit.damage)
+
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.take_damage(circle_hit.damage)
+          |> Player.take_damage(real_damage)
 
         send(self(), {:damage_done, player.id, circle_hit.damage})
 
@@ -52,9 +54,11 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(cone_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage = Player.calculate_real_damage(player, cone_hit.damage)
+
         target_player =
           Map.get(players_acc, player_id)
-          |> Player.take_damage(cone_hit.damage)
+          |> Player.take_damage(real_damage)
 
         send(self(), {:damage_done, player.id, cone_hit.damage})
 
@@ -171,7 +175,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{target: target}) do
+  def do_mechanic(game_state, player, {:leap, leap}, %{skill_direction: skill_direction}) do
     Process.send_after(
       self(),
       {:stop_leap, player.id, player.speed, leap.on_arrival_mechanic},
@@ -180,8 +184,8 @@ defmodule Arena.Game.Skill do
 
     ## TODO: Cap target_position to leap.range
     target_position = %{
-      x: player.position.x + target.x * leap.range,
-      y: player.position.y + target.y * leap.range
+      x: player.position.x + skill_direction.x * leap.range,
+      y: player.position.y + skill_direction.y * leap.range
     }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
@@ -191,7 +195,6 @@ defmodule Arena.Game.Skill do
       player
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
-      |> Map.put(:direction, target)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)
@@ -222,5 +225,14 @@ defmodule Arena.Game.Skill do
   defp randomize_direction_in_angle(direction, angle) do
     angle = :rand.uniform() * angle - angle / 2
     Physics.add_angle_to_direction(direction, angle)
+  end
+
+  def maybe_auto_aim(%{x: x, y: y} = _skill_direction, player, entities)
+      when x == 0.0 and y == 0.0 do
+    Physics.nearest_entity_direction(player, entities)
+  end
+
+  def maybe_auto_aim(skill_direction, _player, _entities) do
+    skill_direction
   end
 end
