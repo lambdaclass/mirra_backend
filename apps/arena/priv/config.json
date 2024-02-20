@@ -209,7 +209,7 @@
         {
           "circle_hit": {
             "damage": 15,
-            "range": 1000.0
+            "range": 500.0
           }
         }
       ],
@@ -308,7 +308,8 @@
   "effects": [
     {
       "name": "invisible",
-      "duration_ms": 1000
+      "duration_ms": 4000,
+      "remove_on_action": true
     }
   ]
 }

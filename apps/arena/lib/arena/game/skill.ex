@@ -200,21 +200,28 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
-  def apply_skill_effects(game_state, player, effects, game_config) do
-    Enum.reduce(effects, game_state, fn effect_name, game_state ->
-      effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-      last_id = game_state.last_id + 1
+  def handle_skill_effects(game_state, player, effects, game_config) do
+    effects_to_apply =
+      Enum.map(effects, fn effect_name ->
+        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+      end)
 
-      player =
-        Map.get(game_state.players, player.id)
-        |> update_in([:aditional_info, :effects], fn player_effects ->
-          Map.put(player_effects, last_id, effect)
-        end)
+    effects =
+      get_in(game_state, [:players, player.id, :aditional_info, :effects])
+      |> Map.reject(fn {_, effect} -> effect.remove_on_action end)
+
+    game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+
+    Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
+      last_id = game_state.last_id + 1
 
       Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
 
-      put_in(game_state, [:players, player.id], player)
-      |> Map.put(:last_id, last_id)
+      effects =
+        get_in(game_state, [:players, player.id, :aditional_info, :effects])
+        |> Map.put(last_id, effect)
+
+      put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
     end)
   end
 
