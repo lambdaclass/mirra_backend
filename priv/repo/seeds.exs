@@ -25,7 +25,7 @@ Characters.insert_character(%{
       stat: "health",
       amount: 80,
       based_on_stat: "attack",
-      amount_type: "additive"
+      application_type: "additive"
     }],
     targeting_strategy: "nearest",
     amount_of_targets: 2
@@ -37,7 +37,7 @@ Characters.insert_character(%{
         stat: "health",
         amount: 205,
         based_on_stat: "attack",
-        amount_type: "additive"
+        application_type: "additive"
       }
     ],
     targeting_strategy: "nearest",

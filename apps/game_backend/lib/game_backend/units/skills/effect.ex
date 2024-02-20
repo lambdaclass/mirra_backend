@@ -4,7 +4,6 @@ defmodule GameBackend.Units.Skills.Effect do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Characters.Character
   alias GameBackend.Units.Skills.Type
 
   @primary_key false
@@ -13,16 +12,16 @@ defmodule GameBackend.Units.Skills.Effect do
     field(:stat, :string)
     field(:based_on_stat, :string) # amount will be treated as the % of this stat if its set
     field(:amount, :integer)
-    field(:amount_type, :string)
+    field(:application_type, :string)
   end
 
   @doc false
   def changeset(effect, attrs \\ %{}) do
     effect
-    |> cast(attrs, [:type, :stat, :based_on_stat, :amount, :amount_type])
+    |> cast(attrs, [:type, :stat, :based_on_stat, :amount, :application_type])
     |> validate_inclusion(:stat, ["health", "max_health", "attack", "speed", "energy", "armor"])
-    |> validate_inclusion(:amount_type, ["additive", "multiplicative"])
-    |> validate_required([:type, :stat, :amount, :amount_type])
+    |> validate_inclusion(:application_type, ["additive", "multiplicative"])
+    |> validate_required([:type, :stat, :amount, :application_type])
   end
 
   @doc """
