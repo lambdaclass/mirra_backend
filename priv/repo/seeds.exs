@@ -70,7 +70,10 @@ Items.insert_item_template(%{
 
 {:ok, gold_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 {:ok, gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, arcane_crystals_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
+{:ok, hero_souls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Hero Souls"})
 {:ok, scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+{:ok, mystic_scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Mystic Summon Scrolls"})
 
 ######################
 # Campaigns creation #
@@ -166,14 +169,24 @@ currency_rewards =
   Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
       %{
         level_id: level.id,
-        amount: 10 * level_index,
+        amount: 10 * (20 + level.level_number - 1),
         currency_id: gold_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-
   end)
-  Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
+
+currency_rewards = currency_rewards ++
+  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+    %{
+      level_id: level.id,
+      amount: 10 * (15 + level.level_number - 1) * 1.025 |> round(),
+      currency_id: hero_souls_currency.id,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
 afk_reward_incrementers =
   Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
@@ -186,4 +199,4 @@ afk_reward_incrementers =
       }
 
   end)
-  Repo.insert_all(CurrencyReward, afk_reward_incrementers, on_conflict: :nothing)
+Repo.insert_all(CurrencyReward, afk_reward_incrementers, on_conflict: :nothing)
