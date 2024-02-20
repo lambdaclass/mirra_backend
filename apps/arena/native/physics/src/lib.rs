@@ -98,9 +98,46 @@ fn calculate_triangle_vertices(
     vec![starting_point, vertix_1, vertix_2]
 }
 
-// Function that receives a Position A and a Position B and returns the Direction from Position A to Position B
 #[rustler::nif()]
 fn get_direction_from_positions(position_a: Position, position_b: Position) -> Direction {
+    direction_from_positions(position_a, position_b)
+}
+
+#[rustler::nif()]
+fn calculate_speed(position_a: Position, position_b: Position, duration: u64) -> f32 {
+    let len = distance_between_positions(position_a, position_b);
+    len / duration as f32
+}
+
+#[rustler::nif()]
+fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> Direction {
+    let mut max_distance = 2000.0;
+    let mut direction = Direction {
+        x: entity.direction.x,
+        y: entity.direction.y,
+    };
+
+    for other_entity in entities.values() {
+        if entity.id != other_entity.id {
+            let distance = distance_between_positions(entity.position, other_entity.position);
+            if distance < max_distance {
+                max_distance = distance;
+                direction = direction_from_positions(entity.position, other_entity.position);
+            }
+        }
+    }
+
+    direction
+}
+
+fn distance_between_positions(entity_a_postion: Position, entity_b_postion: Position) -> f32 {
+    let x = entity_b_postion.x - entity_a_postion.x;
+    let y = entity_b_postion.y - entity_a_postion.y;
+    (x.powi(2) + y.powi(2)).sqrt()
+}
+
+// This is a wrapper function to be able to call it from the rustler nif
+fn direction_from_positions(position_a: Position, position_b: Position) -> Direction {
     let x = position_b.x - position_a.x;
     let y = position_b.y - position_a.y;
     let len = (x.powi(2) + y.powi(2)).sqrt();
@@ -119,6 +156,8 @@ rustler::init!(
         move_entity,
         add_angle_to_direction,
         calculate_triangle_vertices,
-        get_direction_from_positions
+        get_direction_from_positions,
+        calculate_speed,
+        nearest_entity_direction
     ]
 );

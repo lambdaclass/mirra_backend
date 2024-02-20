@@ -2,16 +2,46 @@
   "map": {
     "radius": 4800.0,
     "initial_positions": [
-      {"x": 1.0, "y": 1.0},
-      {"x": 1.0, "y": 1.0},
-      {"x": -1750.0, "y": 1000.0},
-      {"x": 0.0, "y": 1000.0},
-      {"x": 750.0, "y": 2000.0},
-      {"x": 1750.0, "y": 1000.0},
-      {"x": 1750.0, "y": -1000.0},
-      {"x": 750.0, "y": -2000.0},
-      {"x": -750.0, "y": -2000.0},
-      {"x": -1750.0, "y": -1000.0}
+      {
+        "x": 4000.0,
+        "y": 0.0
+      },
+      {
+        "x": -4000.0,
+        "y": 0.0
+      },
+      {
+        "x": -1500.0,
+        "y": 3500.0
+      },
+      {
+        "x": 1500.0,
+        "y": -3500.0
+      },
+      {
+        "x": 1500.0,
+        "y": 3500.0
+      },
+      {
+        "x": -1500.0,
+        "y": -3500.0
+      },
+      {
+        "x": 3000.0,
+        "y": 2000.0
+      },
+      {
+        "x": -3000.0,
+        "y": -2000.0
+      },
+      {
+        "x": -3000.0,
+        "y": 2000.0
+      },
+      {
+        "x": 3000.0,
+        "y": -2000.0
+      }
     ],
     "obstacles": []
   },
@@ -29,6 +59,7 @@
       "name": "circle_bash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -43,6 +74,7 @@
       "name": "hit",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 300,
       "is_passive": false,
       "mechanics": [
         {
@@ -55,14 +87,37 @@
       ]
     },
     {
+      "name": "leap",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 1000,
+      "activation_delay_ms": 200,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "leap": {
+            "range": 1000.0,
+            "duration_ms": 800,
+            "on_arrival_mechanic": {
+              "circle_hit": {
+                "damage": 15,
+                "range": 500.0
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "shot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
           "simple_shoot": {
-            "duration_ms": 1000
+            "duration_ms": 1000,
+            "projectile_offset": 100
           }
         }
       ]
@@ -71,14 +126,18 @@
       "name": "repeated_shot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
-          "repeated_shoot": {
-            "interval_ms": 250,
-            "amount": 18,
+          "repeated_shot": {
+            "interval_ms": 100,
+            "amount": 10,
+            "speed": 60.0,
             "duration_ms": 1000,
-            "remove_on_collision": true
+            "remove_on_collision": true,
+            "projectile_offset": 100,
+            "angle": 80.0
           }
         }
       ]
@@ -87,14 +146,17 @@
       "name": "multishot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
           "multi_shoot": {
             "angle_between": 10.0,
             "amount": 3,
+            "speed": 60.0,
             "duration_ms": 1000,
-            "remove_on_collision": true
+            "remove_on_collision": true,
+            "projectile_offset": 100
           }
         }
       ]
@@ -103,6 +165,7 @@
       "name": "dash",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -117,6 +180,7 @@
       "name": "avenge",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -134,6 +198,7 @@
       "name": "veil_radiance",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -148,6 +213,7 @@
       "name": "sneak",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
       "is_passive": false,
       "mechanics": [
         {
@@ -175,7 +241,7 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 25.0,
+      "base_speed": 30.0,
       "base_size": 100.0,
       "base_health": 110,
       "base_stamina": 3,
@@ -185,14 +251,14 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "hit",
-        "2": "hit",
+        "2": "leap",
         "3": "dash"
       }
     },
     {
       "name": "h4ck",
       "active": true,
-      "base_speed": 20.0,
+      "base_speed": 30.0,
       "base_size": 80.0,
       "base_health": 100,
       "base_stamina": 3,
@@ -209,7 +275,7 @@
     {
       "name": "uma",
       "active": true,
-      "base_speed": 20.0,
+      "base_speed": 30.0,
       "base_size": 80.0,
       "base_health": 100,
       "base_stamina": 3,
@@ -223,5 +289,23 @@
         "3": "sneak"
       }
     }
-  ]
+  ],
+  "power_ups": {
+    "power_ups_per_kill": [
+      {
+        "minimun_amount": 0,
+        "amount_of_drops": 1
+      },
+      {
+        "minimun_amount": 2,
+        "amount_of_drops": 2
+      },
+      {
+        "minimun_amount": 6,
+        "amount_of_drops": 3
+      }
+    ],
+    "distance_to_power_up": 500,
+    "power_up_damage_modifier": 0.10
+  }
 }

@@ -7,6 +7,15 @@ defmodule Arena.Serialization.ProjectileStatus do
   field :EXPLODED, 1
 end
 
+defmodule Arena.Serialization.PowerUpstatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :AVAILABLE, 0
+  field :TAKEN, 1
+end
+
 defmodule Arena.Serialization.PlayerActionType do
   @moduledoc false
 
@@ -198,6 +207,15 @@ defmodule Arena.Serialization.GameState.DamageDoneEntry do
   field :value, 2, type: :uint64
 end
 
+defmodule Arena.Serialization.GameState.PowerUpsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: Arena.Serialization.Entity
+end
+
 defmodule Arena.Serialization.GameState.ItemsEntry do
   @moduledoc false
 
@@ -242,7 +260,13 @@ defmodule Arena.Serialization.GameState do
     json_name: "damageDone",
     map: true
 
-  field :items, 10, repeated: true, type: Arena.Serialization.GameState.ItemsEntry, map: true
+  field :power_ups, 10,
+    repeated: true,
+    type: Arena.Serialization.GameState.PowerUpsEntry,
+    json_name: "powerUps",
+    map: true
+
+  field :items, 11, repeated: true, type: Arena.Serialization.GameState.ItemsEntry, map: true
 end
 
 defmodule Arena.Serialization.Entity do
@@ -266,6 +290,7 @@ defmodule Arena.Serialization.Entity do
   field :player, 12, type: Arena.Serialization.Player, oneof: 0
   field :projectile, 13, type: Arena.Serialization.Projectile, oneof: 0
   field :obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0
+  field :power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0
 end
 
 defmodule Arena.Serialization.Player do
@@ -286,6 +311,7 @@ defmodule Arena.Serialization.Player do
   field :stamina_interval, 6, type: :uint64, json_name: "staminaInterval"
   field :recharging_stamina, 7, type: :bool, json_name: "rechargingStamina"
   field :character_name, 8, type: :string, json_name: "characterName"
+  field :power_ups, 9, type: :uint64, json_name: "powerUps"
 end
 
 defmodule Arena.Serialization.Projectile do
@@ -304,6 +330,15 @@ defmodule Arena.Serialization.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :color, 1, type: :string
+end
+
+defmodule Arena.Serialization.PowerUp do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :owner_id, 1, type: :uint64, json_name: "ownerId"
+  field :status, 2, type: Arena.Serialization.PowerUpstatus, enum: true
 end
 
 defmodule Arena.Serialization.PlayerAction do
@@ -329,6 +364,15 @@ defmodule Arena.Serialization.Attack do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :skill, 1, type: :string
+  field :parameters, 2, type: Arena.Serialization.AttackParameters
+end
+
+defmodule Arena.Serialization.AttackParameters do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :target, 1, type: Arena.Serialization.Direction
 end
 
 defmodule Arena.Serialization.GameAction do

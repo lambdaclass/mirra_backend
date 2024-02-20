@@ -10,7 +10,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Player
   alias Arena.Game.Skill
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
-  alias Arena.Utils
   alias Phoenix.PubSub
 
   ## Time between checking that a game has ended
@@ -31,8 +30,8 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:move, player_id, direction, timestamp})
   end
 
-  def attack(game_pid, player_id, skill) do
-    GenServer.call(game_pid, {:attack, player_id, skill})
+  def attack(game_pid, player_id, skill, skill_params) do
+    GenServer.call(game_pid, {:attack, player_id, skill, skill_params})
   end
 
   ##########################
@@ -71,13 +70,32 @@ defmodule Arena.GameUpdater do
     entities_to_collide_projectiles =
       Map.merge(Player.alive_players(game_state.players), game_state.obstacles)
 
-    players =
+    {players, power_ups} =
       game_state.players
       |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
-      |> update_collisions(game_state.players, %{})
+      |> update_collisions(game_state.players, game_state.power_ups)
+      |> handle_power_ups(game_state.power_ups)
+
+    # We need to send the exploded projectiles to the client at least once
+    updated_expired_projectiles =
+      game_state.projectiles
+      |> Enum.filter(fn {_projectile_id, projectile} ->
+        projectile.aditional_info.status == :EXPIRED
+      end)
+      |> Enum.reduce(%{}, fn {_projectile_id, projectile}, acc ->
+        projectile =
+          put_in(
+            projectile,
+            [:aditional_info, :status],
+            :EXPLODED
+          )
+
+        Map.put(acc, projectile.id, projectile)
+      end)
 
     projectiles =
-      remove_exploded_projectiles(game_state.projectiles)
+      game_state.projectiles
+      |> remove_exploded_and_expired_projectiles()
       |> Physics.move_entities(ticks_to_move, game_state.external_wall)
       |> update_collisions(
         game_state.projectiles,
@@ -85,6 +103,7 @@ defmodule Arena.GameUpdater do
           game_state.external_wall.id => game_state.external_wall
         })
       )
+      |> Map.merge(updated_expired_projectiles)
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
@@ -101,6 +120,7 @@ defmodule Arena.GameUpdater do
       game_state
       |> Map.put(:players, players)
       |> Map.put(:projectiles, projectiles)
+      |> Map.put(:power_ups, power_ups)
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -121,17 +141,35 @@ defmodule Arena.GameUpdater do
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player =
       Map.get(state.game_state.players, player_id)
-      |> Player.reset_after_dash(previous_speed)
+      |> Player.reset_forced_movement(previous_speed)
 
     state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
 
+  def handle_info({:stop_leap, player_id, previous_speed, on_arrival_mechanic}, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.reset_forced_movement(previous_speed)
+
+    game_state =
+      put_in(state.game_state, [:players, player_id], player)
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
   def handle_info({:trigger_mechanic, player_id, mechanic}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, mechanic)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanic, %{})
     state = Map.put(state, :game_state, game_state)
     {:noreply, state}
+  end
+
+  def handle_info({:delayed_skill_mechanics, player_id, mechanics, skill_params}, state) do
+    player = Map.get(state.game_state.players, player_id)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanics, skill_params)
+    {:noreply, %{state | game_state: game_state}}
   end
 
   # End game
@@ -193,9 +231,20 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+  def handle_info(
+        {:to_killfeed, killer_id, victim_id},
+        %{game_state: game_state, game_config: game_config} = state
+      ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
-    state = update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+    victim = Map.get(game_state.players, victim_id)
+
+    amount_of_power_ups =
+      get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+
+    state =
+      update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
+      |> spawn_power_ups(victim, amount_of_power_ups)
+
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
     {:noreply, state}
@@ -237,7 +286,7 @@ defmodule Arena.GameUpdater do
           put_in(
             state,
             [:game_state, :projectiles, projectile_id, :aditional_info, :status],
-            :EXPLODED
+            :EXPIRED
           )
 
         {:noreply, state}
@@ -262,45 +311,24 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
+  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
     player =
       state.game_state.players
       |> Map.get(player_id)
-
-    current_actions =
-      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
-
-    is_moving = x != 0.0 || y != 0.0
-
-    direction =
-      case is_moving do
-        true -> Utils.normalize(x, y)
-        _ -> player.direction
-      end
-
-    player =
-      player
-      |> Map.put(:direction, direction)
-      |> Map.put(:is_moving, is_moving)
-      |> Map.put(
-        :aditional_info,
-        Map.merge(player.aditional_info, %{current_actions: current_actions})
-      )
-
-    players = state.game_state.players |> Map.put(player_id, player)
+      |> Player.move(direction)
 
     game_state =
       state.game_state
-      |> Map.put(:players, players)
+      |> put_in([:players, player_id], player)
       |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, skill_key}, _from, state) do
+  def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, state.game_state)
+      |> Player.use_skill(skill_key, skill_params, state.game_state)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -338,6 +366,7 @@ defmodule Arena.GameUpdater do
              game_id: state.game_id,
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
+             power_ups: complete_entities(state.power_ups),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -382,22 +411,6 @@ defmodule Arena.GameUpdater do
   ##########################
 
   ##########################
-  # Skills mechaninc
-  ##########################
-  defp add_or_remove_moving_action(current_actions, direction) do
-    if direction == {0.0, 0.0} do
-      current_actions -- [%{action: :MOVING, duration: 0}]
-    else
-      current_actions ++ [%{action: :MOVING, duration: 0}]
-    end
-    |> Enum.uniq()
-  end
-
-  ##########################
-  # End skills mechaninc
-  ##########################
-
-  ##########################
   # Game flow
   ##########################
 
@@ -409,6 +422,7 @@ defmodule Arena.GameUpdater do
       Map.new(game_id: game_id)
       |> Map.put(:last_id, 0)
       |> Map.put(:players, %{})
+      |> Map.put(:power_ups, %{})
       |> Map.put(:projectiles, %{})
       |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
@@ -506,9 +520,9 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def remove_exploded_projectiles(projectiles) do
-    Map.filter(projectiles, fn {_key, projectile} ->
-      projectile.aditional_info.status != :EXPLODED
+  def remove_exploded_and_expired_projectiles(projectiles) do
+    Map.reject(projectiles, fn {_key, projectile} ->
+      projectile.aditional_info.status in [:EXPLODED, :EXPIRED]
     end)
   end
 
@@ -596,11 +610,13 @@ defmodule Arena.GameUpdater do
   # Projectile collided a player
   defp apply_collision_updates(projectile, player, _, _, {projectiles_acc, players_acc})
        when not is_nil(player) do
-    player = Player.take_damage(player, projectile.aditional_info.damage)
+    attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
+    real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
+    player = Player.take_damage(player, real_damage)
 
     send(
       self(),
-      {:damage_done, projectile.aditional_info.owner_id, projectile.aditional_info.damage}
+      {:damage_done, projectile.aditional_info.owner_id, real_damage}
     )
 
     projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
@@ -640,5 +656,79 @@ defmodule Arena.GameUpdater do
       false -> decide_collided_entity(projectile, other_entities, external_wall_id, players)
       _ -> entity_id
     end
+  end
+
+  defp spawn_power_ups(
+         %{game_config: game_config} = state,
+         victim,
+         amount
+       ) do
+    Enum.reduce(1..amount//1, state, fn _, state ->
+      random_x =
+        victim.position.x +
+          Enum.random(
+            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+          )
+
+      random_y =
+        victim.position.y +
+          Enum.random(
+            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
+          )
+
+      random_position = %{x: random_x, y: random_y}
+      last_id = state.game_state.last_id + 1
+
+      power_up =
+        Entities.new_power_up(
+          last_id,
+          random_position,
+          victim.direction,
+          victim.id
+        )
+
+      put_in(state, [:game_state, :power_ups, last_id], power_up)
+      |> put_in([:game_state, :last_id], last_id)
+    end)
+  end
+
+  defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
+    Enum.sort_by(power_ups_per_kill, fn %{minimun_amount: minimun} -> minimun end, :desc)
+    |> Enum.find(fn %{minimun_amount: minimun} ->
+      minimun <= power_ups
+    end)
+    |> case do
+      %{amount_of_drops: amount} -> amount
+      _ -> 0
+    end
+  end
+
+  defp handle_power_ups(players, power_ups) do
+    power_ups =
+      Map.reject(power_ups, fn {_power_up_id, power_up} ->
+        power_up.aditional_info.status == :TAKEN
+      end)
+
+    Enum.reduce(players, {players, power_ups}, fn {_player_id, player},
+                                                  {players_acc, power_ups_acc} = accs ->
+      power_up_collided_id =
+        Enum.find(player.collides_with, nil, fn collided_entity_id ->
+          Map.has_key?(power_ups_acc, collided_entity_id)
+        end)
+
+      power_up = Map.get(power_ups, power_up_collided_id)
+
+      if power_up && power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
+        power_up = put_in(power_up, [:aditional_info, :status], :TAKEN)
+
+        player =
+          player
+          |> update_in([:aditional_info, :power_ups], fn amount -> amount + 1 end)
+
+        {Map.put(players_acc, player.id, player), Map.put(power_ups_acc, power_up.id, power_up)}
+      else
+        accs
+      end
+    end)
   end
 end
