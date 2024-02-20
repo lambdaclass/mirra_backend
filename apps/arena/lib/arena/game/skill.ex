@@ -121,8 +121,7 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, repeated_shot),
         randomize_direction_in_angle(player.direction, repeated_shot.angle),
         player.id,
-        repeated_shot.remove_on_collision,
-        repeated_shot.speed
+        repeated_shot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
@@ -143,8 +142,7 @@ defmodule Arena.Game.Skill do
           get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
-          multishot.remove_on_collision,
-          multishot.speed
+          multishot
         )
 
       Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
@@ -164,8 +162,7 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, simple_shoot),
         player.direction,
         player.id,
-        true,
-        10.0
+        simple_shoot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
