@@ -129,7 +129,7 @@ syntax = "proto3";
     bool active = 1;
     string name = 2;
     string faction = 3;
-    string rarity = 4;
+    string quality = 4;
   }
   
   message Item {

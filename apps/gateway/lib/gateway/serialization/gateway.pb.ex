@@ -259,7 +259,7 @@ defmodule Gateway.Serialization.Character do
   field(:active, 1, type: :bool)
   field(:name, 2, type: :string)
   field(:faction, 3, type: :string)
-  field(:rarity, 4, type: :string)
+  field(:quality, 4, type: :string)
 end
 
 defmodule Gateway.Serialization.Item do
