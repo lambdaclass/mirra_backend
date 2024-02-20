@@ -1,7 +1,7 @@
 defmodule GameClient.Protobuf.ProjectileStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
@@ -10,7 +10,7 @@ end
 defmodule GameClient.Protobuf.PowerUpstatus do
   @moduledoc false
 
-  use Protobuf, enum: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
@@ -19,7 +19,7 @@ end
 defmodule GameClient.Protobuf.PlayerActionType do
   @moduledoc false
 
-  use Protobuf, enum: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:MOVING, 0)
   field(:STARTING_SKILL_1, 1)
@@ -32,7 +32,7 @@ end
 defmodule GameClient.Protobuf.Direction do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:x, 1, type: :float)
   field(:y, 2, type: :float)
@@ -41,7 +41,7 @@ end
 defmodule GameClient.Protobuf.Position do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:x, 1, type: :float)
   field(:y, 2, type: :float)
@@ -50,7 +50,7 @@ end
 defmodule GameClient.Protobuf.GameEvent do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   oneof(:event, 0)
 
@@ -63,7 +63,7 @@ end
 defmodule GameClient.Protobuf.GameFinished.PlayersEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: GameClient.Protobuf.Entity)
@@ -72,7 +72,7 @@ end
 defmodule GameClient.Protobuf.GameFinished do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:winner, 1, type: GameClient.Protobuf.Entity)
 
@@ -86,7 +86,7 @@ end
 defmodule GameClient.Protobuf.PingUpdate do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
 end
@@ -94,7 +94,7 @@ end
 defmodule GameClient.Protobuf.GameJoined do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: GameClient.Protobuf.Configuration)
@@ -103,7 +103,7 @@ end
 defmodule GameClient.Protobuf.Configuration do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:game, 1, type: GameClient.Protobuf.ConfigGame)
   field(:map, 2, type: GameClient.Protobuf.ConfigMap)
@@ -113,7 +113,7 @@ end
 defmodule GameClient.Protobuf.ConfigGame do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
 end
@@ -121,7 +121,7 @@ end
 defmodule GameClient.Protobuf.ConfigMap do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
 end
@@ -129,7 +129,7 @@ end
 defmodule GameClient.Protobuf.ConfigCharacter.SkillsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :string)
   field(:value, 2, type: GameClient.Protobuf.ConfigSkill)
@@ -138,7 +138,7 @@ end
 defmodule GameClient.Protobuf.ConfigCharacter do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:name, 1, type: :string)
   field(:active, 2, type: :bool)
@@ -157,7 +157,7 @@ end
 defmodule GameClient.Protobuf.ConfigSkill do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
@@ -167,7 +167,7 @@ end
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: GameClient.Protobuf.Entity)
@@ -176,7 +176,7 @@ end
 defmodule GameClient.Protobuf.GameState.ProjectilesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: GameClient.Protobuf.Entity)
@@ -185,7 +185,7 @@ end
 defmodule GameClient.Protobuf.GameState.PlayerTimestampsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: :int64)
@@ -194,7 +194,7 @@ end
 defmodule GameClient.Protobuf.GameState.DamageTakenEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: :uint64)
@@ -203,7 +203,7 @@ end
 defmodule GameClient.Protobuf.GameState.DamageDoneEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: :uint64)
@@ -212,7 +212,7 @@ end
 defmodule GameClient.Protobuf.GameState.PowerUpsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: GameClient.Protobuf.Entity)
@@ -221,7 +221,7 @@ end
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:game_id, 1, type: :string, json_name: "gameId")
   field(:players, 2, repeated: true, type: GameClient.Protobuf.GameState.PlayersEntry, map: true)
@@ -268,7 +268,7 @@ end
 defmodule GameClient.Protobuf.Entity do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   oneof(:aditional_info, 0)
 
@@ -292,7 +292,7 @@ end
 defmodule GameClient.Protobuf.Player do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:health, 1, type: :uint64)
   field(:kill_count, 2, type: :uint64, json_name: "killCount")
@@ -314,7 +314,7 @@ end
 defmodule GameClient.Protobuf.Projectile do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
@@ -324,7 +324,7 @@ end
 defmodule GameClient.Protobuf.Obstacle do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:color, 1, type: :string)
 end
@@ -332,7 +332,7 @@ end
 defmodule GameClient.Protobuf.PowerUp do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: GameClient.Protobuf.PowerUpstatus, enum: true)
@@ -341,7 +341,7 @@ end
 defmodule GameClient.Protobuf.PlayerAction do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:action, 1, type: GameClient.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
@@ -350,7 +350,7 @@ end
 defmodule GameClient.Protobuf.Move do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:direction, 1, type: GameClient.Protobuf.Direction)
 end
@@ -358,15 +358,24 @@ end
 defmodule GameClient.Protobuf.Attack do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:skill, 1, type: :string)
+  field(:parameters, 2, type: GameClient.Protobuf.AttackParameters)
+end
+
+defmodule GameClient.Protobuf.AttackParameters do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:target, 1, type: GameClient.Protobuf.Direction)
 end
 
 defmodule GameClient.Protobuf.GameAction do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   oneof(:action_type, 0)
 
@@ -378,15 +387,16 @@ end
 defmodule GameClient.Protobuf.Zone do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
+  field(:enabled, 2, type: :bool)
 end
 
 defmodule GameClient.Protobuf.KillEntry do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
