@@ -10,7 +10,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Player
   alias Arena.Game.Skill
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
-  alias Arena.Utils
   alias Phoenix.PubSub
 
   ## Time between checking that a game has ended
@@ -31,8 +30,8 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:move, player_id, direction, timestamp})
   end
 
-  def attack(game_pid, player_id, skill) do
-    GenServer.call(game_pid, {:attack, player_id, skill})
+  def attack(game_pid, player_id, skill, skill_params) do
+    GenServer.call(game_pid, {:attack, player_id, skill, skill_params})
   end
 
   ##########################
@@ -120,22 +119,34 @@ defmodule Arena.GameUpdater do
   def handle_info({:stop_dash, player_id, previous_speed}, state) do
     player =
       Map.get(state.game_state.players, player_id)
-      |> Player.reset_after_dash(previous_speed)
+      |> Player.reset_forced_movement(previous_speed)
 
     state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
 
+  def handle_info({:stop_leap, player_id, previous_speed, on_arrival_mechanic}, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.reset_forced_movement(previous_speed)
+
+    game_state =
+      put_in(state.game_state, [:players, player_id], player)
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
   def handle_info({:trigger_mechanic, player_id, mechanic}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, mechanic)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanic, %{})
     state = Map.put(state, :game_state, game_state)
     {:noreply, state}
   end
 
-  def handle_info({:delayed_skill_mechanics, player_id, mechanics}, state) do
+  def handle_info({:delayed_skill_mechanics, player_id, mechanics, skill_params}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, mechanics)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanics, skill_params)
     {:noreply, %{state | game_state: game_state}}
   end
 
@@ -252,45 +263,24 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_call({:move, player_id, direction = {x, y}, timestamp}, _from, state) do
+  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
     player =
       state.game_state.players
       |> Map.get(player_id)
-
-    current_actions =
-      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
-
-    is_moving = x != 0.0 || y != 0.0
-
-    direction =
-      case is_moving do
-        true -> Utils.normalize(x, y)
-        _ -> player.direction
-      end
-
-    player =
-      player
-      |> Map.put(:direction, direction)
-      |> Map.put(:is_moving, is_moving)
-      |> Map.put(
-        :aditional_info,
-        Map.merge(player.aditional_info, %{current_actions: current_actions})
-      )
-
-    players = state.game_state.players |> Map.put(player_id, player)
+      |> Player.move(direction)
 
     game_state =
       state.game_state
-      |> Map.put(:players, players)
+      |> put_in([:players, player_id], player)
       |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, skill_key}, _from, state) do
+  def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, state.game_state)
+      |> Player.use_skill(skill_key, skill_params, state.game_state)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -368,22 +358,6 @@ defmodule Arena.GameUpdater do
 
   ##########################
   # End broadcast
-  ##########################
-
-  ##########################
-  # Skills mechaninc
-  ##########################
-  defp add_or_remove_moving_action(current_actions, direction) do
-    if direction == {0.0, 0.0} do
-      current_actions -- [%{action: :MOVING, duration: 0}]
-    else
-      current_actions ++ [%{action: :MOVING, duration: 0}]
-    end
-    |> Enum.uniq()
-  end
-
-  ##########################
-  # End skills mechaninc
   ##########################
 
   ##########################

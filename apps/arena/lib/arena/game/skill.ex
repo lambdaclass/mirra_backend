@@ -5,13 +5,13 @@ defmodule Arena.Game.Skill do
   alias Arena.Entities
   alias Arena.Game.Player
 
-  def do_mechanic(game_state, player, mechanics) when is_list(mechanics) do
+  def do_mechanic(game_state, player, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
-      do_mechanic(game_state_acc, player, mechanic)
+      do_mechanic(game_state_acc, player, mechanic, skill_params)
     end)
   end
 
-  def do_mechanic(game_state, player, {:circle_hit, circle_hit}) do
+  def do_mechanic(game_state, player, {:circle_hit, circle_hit}, _skill_params) do
     circular_damage_area =
       Entities.make_circular_area(player.id, player.position, circle_hit.range)
 
@@ -36,7 +36,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:cone_hit, cone_hit}) do
+  def do_mechanic(game_state, player, {:cone_hit, cone_hit}, _skill_params) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         player.position,
@@ -68,7 +68,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}) do
+  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
       mechanic = {:cone_hit, multi_cone_hit}
 
@@ -79,23 +79,24 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, player, {:cone_hit, multi_cone_hit})
+    do_mechanic(game_state, player, {:cone_hit, multi_cone_hit}, skill_params)
   end
 
-  def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}) do
+  def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 
     player =
       player
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
+      |> put_in([:aditional_info, :forced_movement], true)
 
     players = Map.put(game_state.players, player.id, player)
 
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}) do
+  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, _skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
@@ -127,7 +128,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:multi_shoot, multishot}) do
+  def do_mechanic(game_state, player, {:multi_shoot, multishot}, _skill_params) do
     calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
@@ -150,7 +151,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, player, {:simple_shoot, simple_shoot}) do
+  def do_mechanic(game_state, player, {:simple_shoot, simple_shoot}, _skill_params) do
     last_id = game_state.last_id + 1
 
     projectile =
@@ -168,6 +169,32 @@ defmodule Arena.Game.Skill do
     game_state
     |> Map.put(:last_id, last_id)
     |> put_in([:projectiles, projectile.id], projectile)
+  end
+
+  def do_mechanic(game_state, player, {:leap, leap}, %{target: target}) do
+    Process.send_after(
+      self(),
+      {:stop_leap, player.id, player.speed, leap.on_arrival_mechanic},
+      leap.duration_ms
+    )
+
+    ## TODO: Cap target_position to leap.range
+    target_position = %{
+      x: player.position.x + target.x * leap.range,
+      y: player.position.y + target.y * leap.range
+    }
+
+    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
+    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms) * 30
+
+    player =
+      player
+      |> Map.put(:is_moving, true)
+      |> Map.put(:speed, speed)
+      |> Map.put(:direction, target)
+      |> put_in([:aditional_info, :forced_movement], true)
+
+    put_in(game_state, [:players, player.id], player)
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
