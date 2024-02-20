@@ -74,8 +74,26 @@ defmodule Arena.GameUpdater do
       |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
       |> update_collisions(game_state.players, %{})
 
+    # We need to send the exploded projectiles to the client at least once
+    updated_expired_projectiles =
+      game_state.projectiles
+      |> Enum.filter(fn {_projectile_id, projectile} ->
+        projectile.aditional_info.status == :EXPIRED
+      end)
+      |> Enum.reduce(%{}, fn {_projectile_id, projectile}, acc ->
+        projectile =
+          put_in(
+            projectile,
+            [:aditional_info, :status],
+            :EXPLODED
+          )
+
+        Map.put(acc, projectile.id, projectile)
+      end)
+
     projectiles =
-      remove_exploded_projectiles(game_state.projectiles)
+      game_state.projectiles
+      |> remove_exploded_and_expired_projectiles()
       |> Physics.move_entities(ticks_to_move, game_state.external_wall)
       |> update_collisions(
         game_state.projectiles,
@@ -83,6 +101,7 @@ defmodule Arena.GameUpdater do
           game_state.external_wall.id => game_state.external_wall
         })
       )
+      |> Map.merge(updated_expired_projectiles)
 
     # Resolve collisions between players and projectiles
     {projectiles, players} =
@@ -253,7 +272,7 @@ defmodule Arena.GameUpdater do
           put_in(
             state,
             [:game_state, :projectiles, projectile_id, :aditional_info, :status],
-            :EXPLODED
+            :EXPIRED
           )
 
         {:noreply, state}
@@ -468,9 +487,9 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def remove_exploded_projectiles(projectiles) do
-    Map.filter(projectiles, fn {_key, projectile} ->
-      projectile.aditional_info.status != :EXPLODED
+  def remove_exploded_and_expired_projectiles(projectiles) do
+    Map.reject(projectiles, fn {_key, projectile} ->
+      projectile.aditional_info.status in [:EXPLODED, :EXPIRED]
     end)
   end
 
