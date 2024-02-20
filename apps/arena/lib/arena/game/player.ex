@@ -132,8 +132,7 @@ defmodule Arena.Game.Player do
   end
 
   def use_skill(player, skill_key, skill_params, %{
-        game_state: game_state,
-        game_config: game_config
+        game_state: game_state
       }) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
