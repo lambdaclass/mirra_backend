@@ -122,9 +122,7 @@
           }
         }
       ],
-      "effects_to_apply": [
-        "invisible"
-      ]
+      "effects_to_apply": []
     },
     {
       "name": "repeated_shot",
