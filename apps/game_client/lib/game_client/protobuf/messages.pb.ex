@@ -291,6 +291,7 @@ defmodule GameClient.Protobuf.Entity do
   field :projectile, 13, type: GameClient.Protobuf.Projectile, oneof: 0
   field :obstacle, 14, type: GameClient.Protobuf.Obstacle, oneof: 0
   field :power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0
+  field :item, 16, type: GameClient.Protobuf.Item, oneof: 0
 end
 
 defmodule GameClient.Protobuf.Player do
@@ -312,6 +313,15 @@ defmodule GameClient.Protobuf.Player do
   field :recharging_stamina, 7, type: :bool, json_name: "rechargingStamina"
   field :character_name, 8, type: :string, json_name: "characterName"
   field :power_ups, 9, type: :uint64, json_name: "powerUps"
+  field :inventory, 10, type: GameClient.Protobuf.Item
+end
+
+defmodule GameClient.Protobuf.Item do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :name, 2, type: :string
 end
 
 defmodule GameClient.Protobuf.Projectile do

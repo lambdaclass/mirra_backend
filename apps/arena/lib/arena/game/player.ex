@@ -20,6 +20,10 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def take_damage(%{aditional_info: %{damage_immunity: true}} = player, _) do
+    player
+  end
+
   def take_damage(player, damage) do
     send(self(), {:damage_taken, player.id, damage})
 
@@ -126,6 +130,10 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :forced_movement], false)
   end
 
+  def change_speed(player, change_amount) do
+    %{player | speed: player.speed + change_amount}
+  end
+
   def forced_moving?(player) do
     player.aditional_info.forced_movement
   end
@@ -211,6 +219,37 @@ defmodule Arena.Game.Player do
 
   def inventory_full?(player) do
     player.aditional_info.inventory != nil
+  end
+
+  def use_item(player, game_state) do
+    case player.aditional_info.inventory do
+      nil ->
+        game_state
+      item ->
+        player =
+          Enum.reduce(item.effects, player, &apply_effect/2)
+          put_in(player, [:aditional_info, :inventory], nil)
+
+        put_in(game_state, [:players, player.id], player)
+    end
+  end
+
+  def apply_effect({:recover_stamina, recover_stamina}, player) do
+    change_stamina(player, recover_stamina)
+  end
+
+  def apply_effect({:speed_boost, speed_boost}, player) do
+    Process.send_after(self(), {:remove_speed_boost, player.id, speed_boost.amount}, speed_boost.duration_ms)
+    %{player | speed: player.speed + speed_boost.amount}
+  end
+
+  def apply_effect({:damage_immunity, damage_immunity}, player) do
+    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
+    put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  def remove_damage_immunity(player) do
+    put_in(player, [:aditional_info, :damage_immunity], false)
   end
 
   ####################

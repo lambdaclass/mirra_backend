@@ -291,6 +291,7 @@ defmodule Arena.Serialization.Entity do
   field :projectile, 13, type: Arena.Serialization.Projectile, oneof: 0
   field :obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0
   field :power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0
+  field :item, 16, type: Arena.Serialization.Item, oneof: 0
 end
 
 defmodule Arena.Serialization.Player do
@@ -312,6 +313,15 @@ defmodule Arena.Serialization.Player do
   field :recharging_stamina, 7, type: :bool, json_name: "rechargingStamina"
   field :character_name, 8, type: :string, json_name: "characterName"
   field :power_ups, 9, type: :uint64, json_name: "powerUps"
+  field :inventory, 10, type: Arena.Serialization.Item
+end
+
+defmodule Arena.Serialization.Item do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :name, 2, type: :string
 end
 
 defmodule Arena.Serialization.Projectile do

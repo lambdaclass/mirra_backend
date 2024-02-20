@@ -122,6 +122,7 @@ message Entity {
     Projectile projectile = 13;
     Obstacle obstacle = 14;
     PowerUp power_up = 15;
+    Item item = 16;
   }
 }
 
@@ -135,6 +136,11 @@ message Player {
   bool recharging_stamina = 7;
   string character_name = 8;
   uint64 power_ups = 9;
+  Item inventory = 10;
+}
+
+message Item {
+  string name = 2;
 }
 
 message Projectile {
@@ -192,10 +198,15 @@ message AttackParameters {
   Direction target = 1;
 }
 
+message UseItem {
+  uint64 item = 1;
+}
+
 message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
+    UseItem use_item = 2;
   }
   int64 timestamp = 3;
 }

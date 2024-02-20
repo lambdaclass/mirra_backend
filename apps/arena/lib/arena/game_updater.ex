@@ -34,6 +34,10 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:attack, player_id, skill, skill_params})
   end
 
+  def use_item(game_pid, player_id) do
+    GenServer.call(game_pid, {:use_item, player_id})
+  end
+
   ##########################
   # END API
   ##########################
@@ -304,13 +308,40 @@ defmodule Arena.GameUpdater do
     last_id = state.game_state.last_id + 1
     ## TODO: make random position
     position = %{x: 0.0, y: 0.0}
-    item = Entities.new_item(last_id, position)
+    item_config = Enum.random(state.game_config.items)
+    item = Entities.new_item(last_id, position, item_config)
 
     state =
       put_in(state, [:game_state, :last_id], last_id)
       |> put_in([:game_state, :items, item.id], item)
 
     {:noreply, state}
+  end
+
+  def handle_call({:use_item, player_id}, _from, state) do
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_item(state.game_state)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  def handle_call({:remove_speed_boost, player_id, amount}, _from, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.change_speed(-amount)
+
+    state = put_in(state, [:game_state, :players, player_id], player)
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:remove_damage_immunity, player_id}, _from, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.remove_damage_immunity()
+
+    state = put_in(state, [:game_state, :players, player_id], player)
+    {:reply, :ok, state}
   end
 
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do

@@ -36,7 +36,8 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
-        inventory: nil
+        inventory: nil,
+        damage_immunity: false
       }
     }
   end
@@ -103,7 +104,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_item(id, position) do
+  def new_item(id, position, config) do
     %{
       id: id,
       category: :item,
@@ -115,7 +116,10 @@ defmodule Arena.Entities do
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},
       is_moving: false,
-      aditional_info: %{}
+      aditional_info: %{
+        name: config.name,
+        effects: config.effects
+      }
     }
   end
 
@@ -181,6 +185,13 @@ defmodule Arena.Entities do
      %Arena.Serialization.PowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :item do
+    {:item,
+     %Arena.Serialization.Item{
+       name: entity.aditional_info.name,
      }}
   end
 
