@@ -592,11 +592,13 @@ defmodule Arena.GameUpdater do
   # Projectile collided a player
   defp apply_collision_updates(projectile, player, _, _, {projectiles_acc, players_acc})
        when not is_nil(player) do
-    player = Player.take_damage(player, projectile.aditional_info.damage)
+    attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
+    real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
+    player = Player.take_damage(player, real_damage)
 
     send(
       self(),
-      {:damage_done, projectile.aditional_info.owner_id, projectile.aditional_info.damage}
+      {:damage_done, projectile.aditional_info.owner_id, real_damage}
     )
 
     projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
