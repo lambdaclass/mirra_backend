@@ -14,5 +14,8 @@ defmodule GameBackend.Repo.Migrations.AddExperienceAndAfkRewards do
       add(:afk_rewards_incrementer_id, references(:currency_rewards, on_delete: :delete_all))
     end
 
+    alter(table(:users)) do
+      add(:last_afk_reward_claim, :utc_datetime, default: fragment("now()"))
+    end
   end
 end

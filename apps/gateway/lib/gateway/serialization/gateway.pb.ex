@@ -46,6 +46,16 @@ defmodule Gateway.Serialization.WebSocketRequest do
     type: Gateway.Serialization.LevelUpItem,
     json_name: "levelUpItem",
     oneof: 0
+
+  field :get_afk_rewards, 14,
+    type: Gateway.Serialization.GetAfkRewards,
+    json_name: "getAfkRewards",
+    oneof: 0
+
+  field :claim_afk_rewards, 15,
+    type: Gateway.Serialization.ClaimAfkRewards,
+    json_name: "claimAfkRewards",
+    oneof: 0
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -164,6 +174,22 @@ defmodule Gateway.Serialization.LevelUpItem do
   field :item_id, 2, type: :string, json_name: "itemId"
 end
 
+defmodule Gateway.Serialization.GetAfkRewards do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :user_id, 1, type: :string, json_name: "userId"
+end
+
+defmodule Gateway.Serialization.ClaimAfkRewards do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :user_id, 1, type: :string, json_name: "userId"
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -183,7 +209,8 @@ defmodule Gateway.Serialization.WebSocketResponse do
     json_name: "battleResult",
     oneof: 0
 
-  field :error, 8, type: Gateway.Serialization.Error, oneof: 0
+  field :afk_rewards, 8, type: Gateway.Serialization.AfkRewards, json_name: "afkRewards", oneof: 0
+  field :error, 9, type: Gateway.Serialization.Error, oneof: 0
 end
 
 defmodule Gateway.Serialization.User do
@@ -193,15 +220,22 @@ defmodule Gateway.Serialization.User do
 
   field :id, 1, type: :string
   field :username, 2, type: :string
+  field :level, 3, type: :uint64
+  field :experience, 4, type: :uint64
 
-  field :campaigns_progression, 3,
+  field :campaigns_progression, 6,
     repeated: true,
     type: Gateway.Serialization.CampaignProgression,
     json_name: "campaignsProgression"
 
-  field :currencies, 4, repeated: true, type: Gateway.Serialization.UserCurrency
-  field :units, 5, repeated: true, type: Gateway.Serialization.Unit
-  field :items, 6, repeated: true, type: Gateway.Serialization.Item
+  field :currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency
+  field :units, 8, repeated: true, type: Gateway.Serialization.Unit
+  field :items, 9, repeated: true, type: Gateway.Serialization.Item
+
+  field :afk_reward_rates, 10,
+    repeated: true,
+    type: Gateway.Serialization.AfkRewardRate,
+    json_name: "afkRewardRates"
 end
 
 defmodule Gateway.Serialization.CampaignProgression do
@@ -212,6 +246,16 @@ defmodule Gateway.Serialization.CampaignProgression do
   field :user_id, 1, type: :string, json_name: "userId"
   field :campaign_id, 2, type: :string, json_name: "campaignId"
   field :level_id, 3, type: :string, json_name: "levelId"
+end
+
+defmodule Gateway.Serialization.AfkRewardRate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :user_id, 1, type: :string, json_name: "userId"
+  field :currency_id, 2, type: :string, json_name: "currencyId"
+  field :rate, 3, type: :uint64
 end
 
 defmodule Gateway.Serialization.UserCurrency do
@@ -331,6 +375,26 @@ defmodule Gateway.Serialization.BattleResult do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :result, 1, type: :string
+end
+
+defmodule Gateway.Serialization.AfkRewards do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :afk_rewards, 1,
+    repeated: true,
+    type: Gateway.Serialization.AfkReward,
+    json_name: "afkRewards"
+end
+
+defmodule Gateway.Serialization.AfkReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :currency, 1, type: Gateway.Serialization.Currency
+  field :amount, 2, type: :uint64
 end
 
 defmodule Gateway.Serialization.Error do

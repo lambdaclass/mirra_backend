@@ -91,8 +91,22 @@ defmodule GameBackend.Users do
     :ok
   end
 
+  def reset_afk_rewards_claim(user_id) do
+    user = get_user(user_id)
+
+    user
+    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
+    |> Repo.update()
+  end
+
   defp preload(user),
-    do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
+    do:
+      Repo.preload(user, [
+        :afk_reward_rates,
+        items: :template,
+        units: [:character, :items],
+        currencies: :currency
+      ])
 
   defp retrieve_campaign_data(user_id, campaign_id) do
     Repo.transaction(fn ->

@@ -27,7 +27,6 @@ defmodule GameBackend.Rewards do
 
   def increment_afk_reward_rate(user_id, currency_id, rate_increment) do
     afk_reward_rate = get_afk_reward_rate(user_id, currency_id)
-    IO.inspect(afk_reward_rate)
 
     case afk_reward_rate do
       nil ->

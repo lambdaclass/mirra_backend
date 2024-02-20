@@ -21,7 +21,9 @@ defmodule Gateway.ChampionsSocketHandler do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem
+    LevelUpItem,
+    GetAfkRewards,
+    ClaimAfkRewards
   }
 
   @behaviour :cowboy_websocket
@@ -79,9 +81,8 @@ defmodule Gateway.ChampionsSocketHandler do
       {:error, reason} ->
         prepare_response({:error, reason}, nil)
 
-      # campaigns -> prepare_response(%{campaigns: Enum.map(campaigns, &%{levels: &1})}, :campaigns)
       campaigns ->
-        prepare_response(%{campaigns: campaigns}, :campaigns)
+        prepare_response(%{campaigns: campaigns}, :campaigns) |> IO.inspect()
     end
   end
 
@@ -124,6 +125,15 @@ defmodule Gateway.ChampionsSocketHandler do
       {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
     end
   end
+
+  defp handle(%GetAfkRewards{user_id: user_id}),
+    # do: Users.get_afk_rewards(user_id) |> prepare_response(:afk_rewards) |> IO.inspect()
+    do:
+      prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id)}, :afk_rewards)
+      |> IO.inspect()
+
+  defp handle(%ClaimAfkRewards{user_id: user_id}),
+    do: Users.claim_afk_rewards(user_id) |> prepare_response(:afk_rewards)
 
   defp handle(unknown_request),
     do:

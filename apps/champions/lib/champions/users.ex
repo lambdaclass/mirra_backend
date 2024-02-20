@@ -145,4 +145,47 @@ defmodule Champions.Users do
   def calculate_experience_to_next_level(level) do
     Math.pow(100, 1 + level / 10) |> ceil()
   end
+
+  @doc """
+  Get a user's available AFK rewards, according to their AFK reward rates and the time since their last claim.
+  If more than 12 hours have passed since the last claim, the user will have accumulated the maximum amount of rewards.
+  """
+  def get_afk_rewards(user_id) do
+    user = Users.get_user(user_id)
+
+    user.afk_reward_rates
+    |> Enum.map(fn reward_rate ->
+      currency = Currencies.get_currency(reward_rate.currency_id)
+      amount = calculate_afk_rewards(user, reward_rate)
+      %{currency: currency, amount: amount}
+    end)
+  end
+
+  defp calculate_afk_rewards(user, afk_reward_rate) do
+    last_claim = user.last_afk_reward_claim
+    IO.inspect(last_claim, label: "last_claim")
+    now = DateTime.utc_now()
+
+    minutes_since_last_claim = DateTime.diff(now, last_claim, :minute)
+    hours_since_last_claim = div(minutes_since_last_claim, 60)
+
+    if hours_since_last_claim > 12,
+      do: afk_reward_rate.rate * 720,
+      else: afk_reward_rate.rate * minutes_since_last_claim
+  end
+
+  @doc """
+  Claim a user's AFK rewards.
+  """
+  def claim_afk_rewards(user_id) do
+    user = Users.get_user(user_id)
+
+    afk_rewards = get_afk_rewards(user_id)
+
+    Enum.each(afk_rewards, fn {currency, amount} ->
+      Currencies.add_currency(user.id, currency.id, amount)
+    end)
+
+    Users.reset_afk_rewards_claim(user.id)
+  end
 end
