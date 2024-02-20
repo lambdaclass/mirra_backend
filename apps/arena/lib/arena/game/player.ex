@@ -2,7 +2,8 @@ defmodule Arena.Game.Player do
   @moduledoc """
   Module for interacting with Player entity
   """
-  alias Arena.Game.Skill
+
+  alias Arena.Utils
 
   def add_action(player, action_name, duration_ms) do
     Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
@@ -18,18 +19,16 @@ defmodule Arena.Game.Player do
     end)
   end
 
-  def change_health(player, health_change) do
+  def take_damage(player, damage) do
+    send(self(), {:damage_taken, player.id, damage})
+
     Map.update!(player, :aditional_info, fn info ->
       %{
         info
-        | health: max(info.health - health_change, 0),
+        | health: max(info.health - damage, 0),
           last_damage_received: System.monotonic_time(:millisecond)
       }
     end)
-  end
-
-  def change_health(players, player_id, health_change) do
-    Map.update!(players, player_id, fn player -> change_health(player, health_change) end)
   end
 
   def trigger_natural_healings(players) do
@@ -93,18 +92,51 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def reset_after_dash(player, reset_speed) do
+  def move(%{aditional_info: %{forced_movement: true}} = player, _) do
+    player
+  end
+
+  def move(player, direction) do
+    current_actions =
+      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
+
+    {x, y} = direction
+    is_moving = x != 0.0 || y != 0.0
+
+    direction =
+      case is_moving do
+        true -> Utils.normalize(x, y)
+        _ -> player.direction
+      end
+
+    player
+    |> Map.put(:direction, direction)
+    |> Map.put(:is_moving, is_moving)
+    |> Map.put(
+      :aditional_info,
+      Map.merge(player.aditional_info, %{current_actions: current_actions})
+    )
+  end
+
+  def reset_forced_movement(player, reset_speed) do
     player
     |> Map.put(:is_moving, false)
     |> Map.put(:speed, reset_speed)
+    |> put_in([:aditional_info, :forced_movement], false)
   end
 
-  def use_skill(player, skill_key, game_state) do
+  def use_skill(player, skill_key, skill_params, game_state) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         game_state
 
       skill ->
+        Process.send_after(
+          self(),
+          {:delayed_skill_mechanics, player.id, skill.mechanics, skill_params},
+          skill.activation_delay_ms
+        )
+
         action_name = skill_key_execution_action(skill_key)
 
         player =
@@ -128,7 +160,6 @@ defmodule Arena.Game.Player do
           end
 
         put_in(game_state, [:players, player.id], player)
-        |> Skill.do_mechanic(player, skill.mechanics)
     end
   end
 
@@ -168,4 +199,13 @@ defmodule Arena.Game.Player do
   end
 
   defp maybe_trigger_natural_heal(player, _), do: player
+
+  defp add_or_remove_moving_action(current_actions, direction) do
+    if direction == {0.0, 0.0} do
+      current_actions -- [%{action: :MOVING, duration: 0}]
+    else
+      current_actions ++ [%{action: :MOVING, duration: 0}]
+    end
+    |> Enum.uniq()
+  end
 end

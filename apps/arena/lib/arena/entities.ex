@@ -32,12 +32,13 @@ defmodule Arena.Entities do
         natural_healing_interval: character.natural_healing_interval,
         last_damage_received: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
-        character_name: character.name
+        character_name: character.name,
+        forced_movement: false
       }
     }
   end
 
-  def new_projectile(id, position, direction, owner_id, remove_on_collision) do
+  def new_projectile(id, position, direction, owner_id, remove_on_collision, speed) do
     %{
       id: id,
       category: :projectile,
@@ -46,7 +47,7 @@ defmodule Arena.Entities do
       position: position,
       radius: 10.0,
       vertices: [],
-      speed: 40.0,
+      speed: speed,
       direction: direction,
       is_moving: true,
       aditional_info: %{

@@ -85,6 +85,8 @@ message GameState {
   int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
+  map<uint64, uint64> damage_taken = 8;
+  map<uint64, uint64> damage_done = 9;
 }
 
 /*
@@ -169,6 +171,11 @@ message Move {
 
 message Attack {
   string skill = 1;
+  AttackParameters parameters = 2;
+}
+
+message AttackParameters {
+  Direction target = 1;
 }
 
 message GameAction {
