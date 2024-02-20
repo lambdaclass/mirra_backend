@@ -4,6 +4,7 @@ defmodule GameBackend.Units.Characters do
   """
 
   import Ecto.Query
+  alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Units.Characters.Character
 
@@ -15,6 +16,24 @@ defmodule GameBackend.Units.Characters do
     %Character{}
     |> Character.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Inserts all characters into the database. If another one already exists with
+  the same name and game_id, it updates it instead.
+  """
+  def upsert_characters(attrs_list) do
+    Enum.reduce(attrs_list, Multi.new(), fn attrs, multi ->
+      changeset = Character.changeset(%Character{}, attrs)
+
+      Multi.insert(multi, attrs.name, changeset,
+        on_conflict: [
+          set: Enum.into(attrs, [])
+        ],
+        conflict_target: [:name, :game_id]
+      )
+    end)
+    |> Repo.transaction()
   end
 
   def get_character(id), do: Repo.get(Character, id) |> Repo.preload(:skills)

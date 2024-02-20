@@ -2,44 +2,13 @@ alias GameBackend.Campaigns.Level
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 
 champions_of_mirra_id = 2
 units_per_level = 5
 
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Muflus",
-  faction: "Araban",
-  rarity: "Epic"
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Uma",
-  faction: "Kaline",
-  rarity: "Epic"
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Dagna",
-  faction: "Merliot",
-  rarity: "Epic"
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "H4ck",
-  faction: "Otobi",
-  rarity: "Epic"
-})
+Champions.Config.import_character_config()
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
