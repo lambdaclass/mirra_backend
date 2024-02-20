@@ -47,7 +47,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 20000,
+    "zone_shrink_start_ms": 9999999,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
@@ -279,11 +279,20 @@
   ],
   "power_ups": {
     "power_ups_per_kill": [
-      {"minimun_amount": 0, "amount_of_drops": 1},
-      {"minimun_amount": 2, "amount_of_drops": 2},
-      {"minimun_amount": 6, "amount_of_drops": 3}
+      {
+        "minimun_amount": 0,
+        "amount_of_drops": 1
+      },
+      {
+        "minimun_amount": 2,
+        "amount_of_drops": 2
+      },
+      {
+        "minimun_amount": 6,
+        "amount_of_drops": 3
+      }
     ],
     "distance_to_power_up": 500,
-    "power_up_damage_modifier": 0.10
+    "power_up_damage_modifier": 100
   }
 }
