@@ -125,10 +125,6 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :forced_movement], false)
   end
 
-  def forced_moving?(player) do
-    player.aditional_info.forced_movement
-  end
-
   def use_skill(player, skill_key, skill_params, game_state) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
