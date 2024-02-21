@@ -17,19 +17,9 @@ defmodule Champions.Campaigns do
   end
 
   @doc """
-  Inserts a level.
-  """
-  def insert_level(attrs) do
-    Campaigns.insert_level(attrs)
-  end
-
-  @doc """
   Get a level by id.
   """
   def get_level(level_id) do
-    case Campaigns.get_level(level_id) do
-      nil -> {:error, :not_found}
-      level -> level
-    end
+    Campaigns.get_level(level_id)
   end
 end

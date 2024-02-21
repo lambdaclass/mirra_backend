@@ -30,15 +30,6 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
-  Inserts a level.
-  """
-  def insert_level(attrs) do
-    %Level{}
-    |> Level.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
   Inserts a campaign.
   """
   def insert_campaign(attrs, opts \\ []) do
@@ -67,16 +58,25 @@ defmodule GameBackend.Campaigns do
 
   @doc """
   Get a level by id.
+  Returns `{:error, :not_found}` if no level is found.
   """
   def get_level(level_id) do
-    Repo.get(Level, level_id) |> Repo.preload(units: :items, units: :character)
+    level = Repo.get(Level, level_id) |> Repo.preload(units: :items, units: :character)
+    if level, do: {:ok, level}, else: {:error, :not_found}
   end
 
+  @doc """
+  Get a campaign progression by user id and campaign id.
+  Returns `{:error, :not_found}` if no progression is found.
+  """
   def get_campaign_progression(user_id, campaign_id) do
-    Repo.get_by(GameBackend.Campaigns.CampaignProgression,
-      user_id: user_id,
-      campaign_id: campaign_id
-    )
+    campaign_progression =
+      Repo.get_by(GameBackend.Campaigns.CampaignProgression,
+        user_id: user_id,
+        campaign_id: campaign_id
+      )
+
+    if campaign_progression, do: {:ok, campaign_progression}, else: {:error, :not_found}
   end
 
   def get_next_level(campaign, level) do

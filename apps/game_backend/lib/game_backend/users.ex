@@ -40,32 +40,30 @@ defmodule GameBackend.Users do
   @doc """
   Gets a single user.
 
-  Returns nil if no user is found.
-
-  ## Examples
-
-      iex> get_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
-      %User{}
-
-      iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
-      nil
+  Returns {:error, :not_found} if no user is found.
   """
-  def get_user(id), do: Repo.get(User, id) |> preload()
+  def get_user(id) do
+    user = Repo.get(User, id) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
 
   @doc """
   Gets a user by their username.
 
-  Returns nil if no user is found.
+  Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
       iex> get_user_by_username("some_user")
-      %User{}
+      {:ok, %User{}}
 
       iex> get_user_by_username("non_existing_user")
-      nil
+      {:error, :not_found}
   """
-  def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
+  def get_user_by_username(username) do
+    user = Repo.get_by(User, username: username) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
 
   def update_experience(user, params),
     do:
@@ -92,7 +90,7 @@ defmodule GameBackend.Users do
   end
 
   def reset_afk_rewards_claim(user_id) do
-    user = get_user(user_id)
+    {:ok, user} = get_user(user_id)
 
     user
     |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})

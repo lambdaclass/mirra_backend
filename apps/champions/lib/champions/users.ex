@@ -47,10 +47,7 @@ defmodule Champions.Users do
   Returns `{:error, :not_found}` if no user is found.
   """
   def get_user(user_id) do
-    case Users.get_user(user_id) do
-      nil -> {:error, :not_found}
-      user -> user
-    end
+    Users.get_user(user_id)
   end
 
   @doc """
@@ -59,10 +56,7 @@ defmodule Champions.Users do
   Returns `{:error, :not_found}` if no user is found.
   """
   def get_user_by_username(username) do
-    case Users.get_user_by_username(username) do
-      nil -> {:error, :not_found}
-      user -> user
-    end
+    Users.get_user_by_username(username)
   end
 
   defp add_sample_units(user) do
@@ -151,14 +145,18 @@ defmodule Champions.Users do
   If more than 12 hours have passed since the last claim, the user will have accumulated the maximum amount of rewards.
   """
   def get_afk_rewards(user_id) do
-    user = Users.get_user(user_id)
+    case Users.get_user(user_id) do
+      {:ok, user} ->
+        user.afk_reward_rates
+        |> Enum.map(fn reward_rate ->
+          currency = Currencies.get_currency(reward_rate.currency_id)
+          amount = calculate_afk_rewards(user, reward_rate)
+          %{currency: currency, amount: amount}
+        end)
 
-    user.afk_reward_rates
-    |> Enum.map(fn reward_rate ->
-      currency = Currencies.get_currency(reward_rate.currency_id)
-      amount = calculate_afk_rewards(user, reward_rate)
-      %{currency: currency, amount: amount}
-    end)
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
   end
 
   defp calculate_afk_rewards(user, afk_reward_rate) do
