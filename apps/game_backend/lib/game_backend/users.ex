@@ -8,6 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Units.Unit
   alias GameBackend.Items.Item
   alias Ecto.Multi
   alias GameBackend.Units
@@ -148,8 +149,8 @@ defmodule GameBackend.Users do
     |> Multi.insert_all(:item_rewards, Item, fn _ ->
       build_item_rewards_params(user_id, level.item_rewards)
     end)
-    |> Multi.run(:unit_rewards, fn _, _ ->
-      apply_unit_rewards(user_id, level.unit_rewards)
+    |> Multi.insert_all(:unit_rewards, Unit, fn _ ->
+      build_unit_rewards_params(user_id, level.unit_rewards)
     end)
     |> Repo.transaction()
   end
@@ -185,29 +186,48 @@ defmodule GameBackend.Users do
     |> List.flatten()
   end
 
-  defp apply_unit_rewards(user_id, unit_rewards) do
+  defp build_unit_rewards_params(user_id, unit_rewards) do
     Enum.map(unit_rewards, fn unit_reward ->
       Units.get_unit(unit_reward.unit_id)
       |> case do
         {:ok, unit} ->
-          Enum.each(1..unit_reward.amount, fn _ ->
-            Units.insert_unit(%{
+          Enum.map(1..unit_reward.amount, fn _ ->
+            %{
               user_id: user_id,
               character_id: unit.character_id,
               unit_level: unit.level,
               tier: unit.tier,
               selected: false
-            })
+            }
           end)
-
-          {:ok, unit}
-
-        {:error, _} ->
-          {:error, "Failed to apply unit rewards"}
       end
     end)
-    |> check_result(:unit_rewards)
+    |> List.flatten()
   end
+
+  # defp apply_unit_rewards(user_id, unit_rewards) do
+  #   Enum.map(unit_rewards, fn unit_reward ->
+  #     Units.get_unit(unit_reward.unit_id)
+  #     |> case do
+  #       {:ok, unit} ->
+  #         Enum.each(1..unit_reward.amount, fn _ ->
+  #           Units.insert_unit(%{
+  #             user_id: user_id,
+  #             character_id: unit.character_id,
+  #             unit_level: unit.level,
+  #             tier: unit.tier,
+  #             selected: false
+  #           })
+  #         end)
+
+  #         {:ok, unit}
+
+  #       {:error, _} ->
+  #         {:error, "Failed to apply unit rewards"}
+  #     end
+  #   end)
+  #   |> check_result(:unit_rewards)
+  # end
 
   defp check_result(result, element_name) do
     if Enum.all?(result, fn
