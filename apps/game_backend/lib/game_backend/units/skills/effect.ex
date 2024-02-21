@@ -4,24 +4,46 @@ defmodule GameBackend.Units.Skills.Effect do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Units.Skills.TargetingStrategy
   alias GameBackend.Units.Skills.Type
 
   @primary_key false
   embedded_schema do
     field(:type, Type)
-    field(:stat, :string)
-    field(:based_on_stat, :string) # amount will be treated as the % of this stat if its set
+
+    field(:stat_affected, :string)
+    # amount will be treated as the % of this stat if its set
+    field(:stat_based_on, :string)
     field(:amount, :integer)
-    field(:application_type, :string)
+    field(:amount_format, :string)
+    field(:amount_of_targets, :integer)
+    field(:targeting_strategy, TargetingStrategy)
+    field(:targets_allies, :boolean)
   end
 
   @doc false
   def changeset(effect, attrs \\ %{}) do
     effect
-    |> cast(attrs, [:type, :stat, :based_on_stat, :amount, :application_type])
-    |> validate_inclusion(:stat, ["health", "max_health", "attack", "energy", "armor"])
-    |> validate_inclusion(:application_type, ["additive", "multiplicative"])
-    |> validate_required([:type, :stat, :amount, :application_type])
+    |> cast(attrs, [
+      :type,
+      :stat_affected,
+      :stat_based_on,
+      :amount,
+      :amount_format,
+      :amount_of_targets,
+      :targeting_strategy,
+      :targets_allies
+    ])
+    |> validate_inclusion(:stat_affected, ["health", "max_health", "attack", "energy", "armor"])
+    |> validate_inclusion(:amount_format, ["additive", "multiplicative"])
+    |> validate_required([
+      :type,
+      :stat_affected,
+      :amount,
+      :amount_format,
+      :targeting_strategy,
+      :targets_allies
+    ])
   end
 
   @doc """

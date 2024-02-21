@@ -21,26 +21,30 @@ Characters.insert_character(%{
   basic_skill: %{
     effects: [%{
       type: "instant",
-      stat: "health",
-      amount: 80,
+      stat_affected: "health",
+      amount: -80,
       based_on_stat: "attack",
-      application_type: "additive"
+      amount_format: "additive",
+      targeting_strategy: "random", # TODO: Change back to nearest
+      amount_of_targets: 2,
+      targets_allies: false
     }],
-    targeting_strategy: "nearest",
-    amount_of_targets: 2
+    cooldown: 5
   },
   ultimate_skill: %{
     effects: [
       %{
         type: "instant",
-        stat: "health",
-        amount: 205,
+        stat_affected: "health",
+        amount: -205,
         based_on_stat: "attack",
-        application_type: "additive"
+        amount_format: "additive",
+        targeting_strategy: "random", # TODO: Change back to nearest
+        amount_of_targets: 2,
+        targets_allies: false
       }
-    ],
-    targeting_strategy: "nearest",
-    amount_of_targets: 2
+      # TODO: Add stun effect
+      ],
   }
 })
 

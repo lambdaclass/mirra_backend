@@ -8,7 +8,6 @@ defmodule GameBackend.Units.Skills.Type do
   def type(), do: :string
 
   def cast("instant"), do: {:ok, "instant"}
-  def cast("permanent"), do: {:ok, "permanent"}
   def cast(%{"duration" => duration}), do: {:ok, %{"duration" => duration}}
 
   def cast(%{
@@ -33,9 +32,6 @@ defmodule GameBackend.Units.Skills.Type do
       "instant" ->
         "instant"
 
-      "permanent" ->
-        "permanent"
-
       %{"duration" => duration} ->
         "duration,#{duration}"
 
@@ -51,7 +47,6 @@ defmodule GameBackend.Units.Skills.Type do
   end
 
   defp time_type_from_string("instant"), do: "instant"
-  defp time_type_from_string("permanent"), do: "permanent"
 
   defp time_type_from_string(string) when is_binary(string) do
     case String.split(string, ",") do
