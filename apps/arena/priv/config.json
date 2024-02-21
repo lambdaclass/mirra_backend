@@ -47,11 +47,11 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 20000,
-    "zone_stop_interval_ms": 30000,
-    "zone_start_interval_ms": 20000,
+    "zone_shrink_start_ms": 200000,
+    "zone_stop_interval_ms": 300000,
+    "zone_start_interval_ms": 200000,
     "zone_damage_interval_ms": 1000,
-    "zone_damage": 10
+    "zone_damage": 0
   },
   "skills": [
     {
@@ -281,15 +281,15 @@
     "power_ups_per_kill": [
       {
         "minimun_amount": 0,
-        "amount_of_drops": 1
+        "amount_of_drops": 5
       },
       {
-        "minimun_amount": 2,
-        "amount_of_drops": 2
+        "minimun_amount": 5,
+        "amount_of_drops": 10
       },
       {
-        "minimun_amount": 6,
-        "amount_of_drops": 3
+        "minimun_amount": 15,
+        "amount_of_drops": 20
       }
     ],
     "distance_to_power_up": 500,
