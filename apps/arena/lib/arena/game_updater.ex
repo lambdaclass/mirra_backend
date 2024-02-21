@@ -209,7 +209,11 @@ defmodule Arena.GameUpdater do
   def handle_info(:start_zone_shrink, state) do
     Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
     send(self(), :zone_shrink)
-    state = put_in(state, [:game_state, :zone, :shrinking], :enabled)
+
+    state =
+      put_in(state, [:game_state, :zone, :shrinking], :enabled)
+      |> put_in([:game_state, :zone, :enabled], true)
+
     {:noreply, state}
   end
 
@@ -423,7 +427,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
+      |> Map.put(:zone, %{radius: config.map.radius, enabled: false, shrinking: :disabled})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
