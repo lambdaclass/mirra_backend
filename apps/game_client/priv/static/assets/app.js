@@ -10661,6 +10661,7 @@
       goog2.exportSymbol("proto.GameFinished", null, global3);
       goog2.exportSymbol("proto.GameJoined", null, global3);
       goog2.exportSymbol("proto.GameState", null, global3);
+      goog2.exportSymbol("proto.Item", null, global3);
       goog2.exportSymbol("proto.KillEntry", null, global3);
       goog2.exportSymbol("proto.Move", null, global3);
       goog2.exportSymbol("proto.Obstacle", null, global3);
@@ -10673,6 +10674,7 @@
       goog2.exportSymbol("proto.PowerUpstatus", null, global3);
       goog2.exportSymbol("proto.Projectile", null, global3);
       goog2.exportSymbol("proto.ProjectileStatus", null, global3);
+      goog2.exportSymbol("proto.UseItem", null, global3);
       goog2.exportSymbol("proto.Zone", null, global3);
       proto.Direction = function(opt_data) {
         jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
@@ -10772,6 +10774,13 @@
       if (goog2.DEBUG && !COMPILED) {
         proto.Player.displayName = "proto.Player";
       }
+      proto.Item = function(opt_data) {
+        jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
+      };
+      goog2.inherits(proto.Item, jspb2.Message);
+      if (goog2.DEBUG && !COMPILED) {
+        proto.Item.displayName = "proto.Item";
+      }
       proto.Projectile = function(opt_data) {
         jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
       };
@@ -10820,6 +10829,13 @@
       goog2.inherits(proto.AttackParameters, jspb2.Message);
       if (goog2.DEBUG && !COMPILED) {
         proto.AttackParameters.displayName = "proto.AttackParameters";
+      }
+      proto.UseItem = function(opt_data) {
+        jspb2.Message.initialize(this, opt_data, 0, -1, null, null);
+      };
+      goog2.inherits(proto.UseItem, jspb2.Message);
+      if (goog2.DEBUG && !COMPILED) {
+        proto.UseItem.displayName = "proto.UseItem";
       }
       proto.GameAction = function(opt_data) {
         jspb2.Message.initialize(this, opt_data, 0, -1, null, proto.GameAction.oneofGroups_);
@@ -12356,13 +12372,14 @@
         return this;
       };
       proto.Entity.repeatedFields_ = [7, 8];
-      proto.Entity.oneofGroups_ = [[12, 13, 14, 15]];
+      proto.Entity.oneofGroups_ = [[12, 13, 14, 15, 16]];
       proto.Entity.AditionalInfoCase = {
         ADITIONAL_INFO_NOT_SET: 0,
         PLAYER: 12,
         PROJECTILE: 13,
         OBSTACLE: 14,
-        POWER_UP: 15
+        POWER_UP: 15,
+        ITEM: 16
       };
       proto.Entity.prototype.getAditionalInfoCase = function() {
         return (
@@ -12394,7 +12411,8 @@
             player: (f3 = msg.getPlayer()) && proto.Player.toObject(includeInstance, f3),
             projectile: (f3 = msg.getProjectile()) && proto.Projectile.toObject(includeInstance, f3),
             obstacle: (f3 = msg.getObstacle()) && proto.Obstacle.toObject(includeInstance, f3),
-            powerUp: (f3 = msg.getPowerUp()) && proto.PowerUp.toObject(includeInstance, f3)
+            powerUp: (f3 = msg.getPowerUp()) && proto.PowerUp.toObject(includeInstance, f3),
+            item: (f3 = msg.getItem()) && proto.Item.toObject(includeInstance, f3)
           };
           if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -12506,6 +12524,11 @@
               var value = new proto.PowerUp();
               reader.readMessage(value, proto.PowerUp.deserializeBinaryFromReader);
               msg.setPowerUp(value);
+              break;
+            case 16:
+              var value = new proto.Item();
+              reader.readMessage(value, proto.Item.deserializeBinaryFromReader);
+              msg.setItem(value);
               break;
             default:
               reader.skipField();
@@ -12631,6 +12654,14 @@
             15,
             f3,
             proto.PowerUp.serializeBinaryToWriter
+          );
+        }
+        f3 = message.getItem();
+        if (f3 != null) {
+          writer.writeMessage(
+            16,
+            f3,
+            proto.Item.serializeBinaryToWriter
           );
         }
       };
@@ -12817,6 +12848,21 @@
       proto.Entity.prototype.hasPowerUp = function() {
         return jspb2.Message.getField(this, 15) != null;
       };
+      proto.Entity.prototype.getItem = function() {
+        return (
+          /** @type{?proto.Item} */
+          jspb2.Message.getWrapperField(this, proto.Item, 16)
+        );
+      };
+      proto.Entity.prototype.setItem = function(value) {
+        return jspb2.Message.setOneofWrapperField(this, 16, proto.Entity.oneofGroups_[0], value);
+      };
+      proto.Entity.prototype.clearItem = function() {
+        return this.setItem(void 0);
+      };
+      proto.Entity.prototype.hasItem = function() {
+        return jspb2.Message.getField(this, 16) != null;
+      };
       proto.Player.repeatedFields_ = [3];
       if (jspb2.Message.GENERATE_TO_OBJECT) {
         proto.Player.prototype.toObject = function(opt_includeInstance) {
@@ -12836,7 +12882,8 @@
             staminaInterval: jspb2.Message.getFieldWithDefault(msg, 6, 0),
             rechargingStamina: jspb2.Message.getBooleanFieldWithDefault(msg, 7, false),
             characterName: jspb2.Message.getFieldWithDefault(msg, 8, ""),
-            powerUps: jspb2.Message.getFieldWithDefault(msg, 9, 0)
+            powerUps: jspb2.Message.getFieldWithDefault(msg, 9, 0),
+            inventory: (f3 = msg.getInventory()) && proto.Item.toObject(includeInstance, f3)
           };
           if (includeInstance) {
             obj.$jspbMessageInstance = msg;
@@ -12917,6 +12964,11 @@
               );
               msg.setPowerUps(value);
               break;
+            case 10:
+              var value = new proto.Item();
+              reader.readMessage(value, proto.Item.deserializeBinaryFromReader);
+              msg.setInventory(value);
+              break;
             default:
               reader.skipField();
               break;
@@ -12993,6 +13045,14 @@
           writer.writeUint64(
             9,
             f3
+          );
+        }
+        f3 = message.getInventory();
+        if (f3 != null) {
+          writer.writeMessage(
+            10,
+            f3,
+            proto.Item.serializeBinaryToWriter
           );
         }
       };
@@ -13082,6 +13142,85 @@
       };
       proto.Player.prototype.setPowerUps = function(value) {
         return jspb2.Message.setProto3IntField(this, 9, value);
+      };
+      proto.Player.prototype.getInventory = function() {
+        return (
+          /** @type{?proto.Item} */
+          jspb2.Message.getWrapperField(this, proto.Item, 10)
+        );
+      };
+      proto.Player.prototype.setInventory = function(value) {
+        return jspb2.Message.setWrapperField(this, 10, value);
+      };
+      proto.Player.prototype.clearInventory = function() {
+        return this.setInventory(void 0);
+      };
+      proto.Player.prototype.hasInventory = function() {
+        return jspb2.Message.getField(this, 10) != null;
+      };
+      if (jspb2.Message.GENERATE_TO_OBJECT) {
+        proto.Item.prototype.toObject = function(opt_includeInstance) {
+          return proto.Item.toObject(opt_includeInstance, this);
+        };
+        proto.Item.toObject = function(includeInstance, msg) {
+          var f3, obj = {
+            name: jspb2.Message.getFieldWithDefault(msg, 2, "")
+          };
+          if (includeInstance) {
+            obj.$jspbMessageInstance = msg;
+          }
+          return obj;
+        };
+      }
+      proto.Item.deserializeBinary = function(bytes) {
+        var reader = new jspb2.BinaryReader(bytes);
+        var msg = new proto.Item();
+        return proto.Item.deserializeBinaryFromReader(msg, reader);
+      };
+      proto.Item.deserializeBinaryFromReader = function(msg, reader) {
+        while (reader.nextField()) {
+          if (reader.isEndGroup()) {
+            break;
+          }
+          var field = reader.getFieldNumber();
+          switch (field) {
+            case 2:
+              var value = (
+                /** @type {string} */
+                reader.readString()
+              );
+              msg.setName(value);
+              break;
+            default:
+              reader.skipField();
+              break;
+          }
+        }
+        return msg;
+      };
+      proto.Item.prototype.serializeBinary = function() {
+        var writer = new jspb2.BinaryWriter();
+        proto.Item.serializeBinaryToWriter(this, writer);
+        return writer.getResultBuffer();
+      };
+      proto.Item.serializeBinaryToWriter = function(message, writer) {
+        var f3 = void 0;
+        f3 = message.getName();
+        if (f3.length > 0) {
+          writer.writeString(
+            2,
+            f3
+          );
+        }
+      };
+      proto.Item.prototype.getName = function() {
+        return (
+          /** @type {string} */
+          jspb2.Message.getFieldWithDefault(this, 2, "")
+        );
+      };
+      proto.Item.prototype.setName = function(value) {
+        return jspb2.Message.setProto3StringField(this, 2, value);
       };
       if (jspb2.Message.GENERATE_TO_OBJECT) {
         proto.Projectile.prototype.toObject = function(opt_includeInstance) {
@@ -13666,11 +13805,76 @@
       proto.AttackParameters.prototype.hasTarget = function() {
         return jspb2.Message.getField(this, 1) != null;
       };
-      proto.GameAction.oneofGroups_ = [[1, 2]];
+      if (jspb2.Message.GENERATE_TO_OBJECT) {
+        proto.UseItem.prototype.toObject = function(opt_includeInstance) {
+          return proto.UseItem.toObject(opt_includeInstance, this);
+        };
+        proto.UseItem.toObject = function(includeInstance, msg) {
+          var f3, obj = {
+            item: jspb2.Message.getFieldWithDefault(msg, 1, 0)
+          };
+          if (includeInstance) {
+            obj.$jspbMessageInstance = msg;
+          }
+          return obj;
+        };
+      }
+      proto.UseItem.deserializeBinary = function(bytes) {
+        var reader = new jspb2.BinaryReader(bytes);
+        var msg = new proto.UseItem();
+        return proto.UseItem.deserializeBinaryFromReader(msg, reader);
+      };
+      proto.UseItem.deserializeBinaryFromReader = function(msg, reader) {
+        while (reader.nextField()) {
+          if (reader.isEndGroup()) {
+            break;
+          }
+          var field = reader.getFieldNumber();
+          switch (field) {
+            case 1:
+              var value = (
+                /** @type {number} */
+                reader.readUint64()
+              );
+              msg.setItem(value);
+              break;
+            default:
+              reader.skipField();
+              break;
+          }
+        }
+        return msg;
+      };
+      proto.UseItem.prototype.serializeBinary = function() {
+        var writer = new jspb2.BinaryWriter();
+        proto.UseItem.serializeBinaryToWriter(this, writer);
+        return writer.getResultBuffer();
+      };
+      proto.UseItem.serializeBinaryToWriter = function(message, writer) {
+        var f3 = void 0;
+        f3 = message.getItem();
+        if (f3 !== 0) {
+          writer.writeUint64(
+            1,
+            f3
+          );
+        }
+      };
+      proto.UseItem.prototype.getItem = function() {
+        return (
+          /** @type {number} */
+          jspb2.Message.getFieldWithDefault(this, 1, 0)
+        );
+      };
+      proto.UseItem.prototype.setItem = function(value) {
+        return jspb2.Message.setProto3IntField(this, 1, value);
+      };
+      proto.GameAction.oneofGroups_ = [[1, 2, 4]];
       proto.GameAction.ActionTypeCase = {
         ACTION_TYPE_NOT_SET: 0,
         MOVE: 1,
-        ATTACK: 2
+        ATTACK: 2,
+        USE_ITEM: 4
       };
       proto.GameAction.prototype.getActionTypeCase = function() {
         return (
@@ -13686,6 +13890,7 @@
           var f3, obj = {
             move: (f3 = msg.getMove()) && proto.Move.toObject(includeInstance, f3),
             attack: (f3 = msg.getAttack()) && proto.Attack.toObject(includeInstance, f3),
+            useItem: (f3 = msg.getUseItem()) && proto.UseItem.toObject(includeInstance, f3),
             timestamp: jspb2.Message.getFieldWithDefault(msg, 3, 0)
           };
           if (includeInstance) {
@@ -13715,6 +13920,11 @@
               var value = new proto.Attack();
               reader.readMessage(value, proto.Attack.deserializeBinaryFromReader);
               msg.setAttack(value);
+              break;
+            case 4:
+              var value = new proto.UseItem();
+              reader.readMessage(value, proto.UseItem.deserializeBinaryFromReader);
+              msg.setUseItem(value);
               break;
             case 3:
               var value = (
@@ -13751,6 +13961,14 @@
             2,
             f3,
             proto.Attack.serializeBinaryToWriter
+          );
+        }
+        f3 = message.getUseItem();
+        if (f3 != null) {
+          writer.writeMessage(
+            4,
+            f3,
+            proto.UseItem.serializeBinaryToWriter
           );
         }
         f3 = message.getTimestamp();
@@ -13790,6 +14008,21 @@
       };
       proto.GameAction.prototype.hasAttack = function() {
         return jspb2.Message.getField(this, 2) != null;
+      };
+      proto.GameAction.prototype.getUseItem = function() {
+        return (
+          /** @type{?proto.UseItem} */
+          jspb2.Message.getWrapperField(this, proto.UseItem, 4)
+        );
+      };
+      proto.GameAction.prototype.setUseItem = function(value) {
+        return jspb2.Message.setOneofWrapperField(this, 4, proto.GameAction.oneofGroups_[0], value);
+      };
+      proto.GameAction.prototype.clearUseItem = function() {
+        return this.setUseItem(void 0);
+      };
+      proto.GameAction.prototype.hasUseItem = function() {
+        return jspb2.Message.getField(this, 4) != null;
       };
       proto.GameAction.prototype.getTimestamp = function() {
         return (
@@ -42695,6 +42928,10 @@ void main(void)\r
           _this.pushEvent("attack", "3");
           _this.updateDebug("key: " + key);
         }
+        if (event.key === "l") {
+          _this.pushEvent("use_item", "1");
+          _this.updateDebug("key: " + key);
+        }
       });
       document.addEventListener("keyup", function onPress(event) {
         const key = event.key.toUpperCase();
@@ -42718,7 +42955,6 @@ void main(void)\r
       entity.y = y2;
     }, this.createEntity = function(backEntity) {
       newEntity = new Entity(backEntity);
-      console.log(newEntity);
       newEntity.boardObject = new Graphics();
       newEntity.boardObject.beginFill(16777215);
       switch (newEntity.shape) {

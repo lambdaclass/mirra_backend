@@ -54,6 +54,11 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("use_item", item, socket) do
+    send(socket.assigns.game_socket_handler_pid, {:use_item, item})
+    {:noreply, socket}
+  end
+
   defp player_name(player_id), do: "P#{player_id}"
 
   defp handle_game_event({:joined, _joined_info}, socket) do

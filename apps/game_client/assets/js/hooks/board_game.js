@@ -103,6 +103,11 @@ export const BoardGame = function () {
         _this.pushEvent("attack", "3");
         _this.updateDebug("key: " + key);
       }
+
+      if (event.key === "l") {
+        _this.pushEvent("use_item", "1");
+        _this.updateDebug("key: " + key);
+      }
     });
 
     document.addEventListener("keyup", function onPress(event) {

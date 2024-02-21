@@ -206,7 +206,7 @@ message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
-    UseItem use_item = 2;
+    UseItem use_item = 4;
   }
   int64 timestamp = 3;
 }
