@@ -5,9 +5,13 @@ defmodule GameBackend.Units.Skill do
   import Ecto.Changeset
 
   alias GameBackend.Units.Skills.Effect
+  alias GameBackend.Units.Skills.TargetingStrategy
 
   schema "skills" do
     embeds_many(:effects, Effect)
+    field(:targeting_strategy, TargetingStrategy)
+    field(:targets_allies, :boolean)
+    field(:amount_of_targets, :integer)
     field(:cooldown, :integer)
     timestamps()
   end
@@ -15,7 +19,7 @@ defmodule GameBackend.Units.Skill do
   @doc false
   def changeset(skill, attrs \\ %{}) do
     skill
-    |> cast(attrs, [:cooldown])
+    |> cast(attrs, [:targeting_strategy, :amount_of_targets])
     |> cast_embed(:effects)
   end
 end
