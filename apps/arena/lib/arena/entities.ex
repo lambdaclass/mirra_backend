@@ -103,6 +103,27 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_pool(id, position, effects_to_apply, radius) do
+    %{
+      id: id,
+      category: :pool,
+      shape: :circle,
+      name: "Pool " <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false,
+      aditional_info: %{
+        effects_to_apply: effects_to_apply
+      }
+    }
+  end
+
   def make_circular_area(id, position, range) do
     %{
       id: id,
