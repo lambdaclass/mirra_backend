@@ -117,7 +117,7 @@ defmodule GameBackend.Users do
         Repo.get(Level, campaign_progression.level_id)
         |> Repo.preload([
           :currency_rewards,
-          :afk_rewards_incrementers,
+          :afk_rewards_increments,
           :item_rewards,
           :unit_rewards
         ])
@@ -140,7 +140,7 @@ defmodule GameBackend.Users do
   defp update_user(user_id, level) do
     Repo.transaction(fn ->
       apply_currency_rewards(user_id, level.currency_rewards)
-      apply_afk_rewards_incrementers(user_id, level.afk_rewards_incrementers)
+      apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       apply_item_rewards(user_id, level.item_rewards)
       apply_unit_rewards(user_id, level.unit_rewards)
       :ok
@@ -154,10 +154,10 @@ defmodule GameBackend.Users do
     end)
   end
 
-  defp apply_afk_rewards_incrementers(user_id, afk_rewards_incrementers) do
-    afk_rewards_incrementers
-    |> Enum.each(fn incrementer ->
-      Rewards.increment_afk_reward_rate(user_id, incrementer.currency_id, incrementer.amount)
+  defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
+    afk_rewards_increments
+    |> Enum.each(fn increment ->
+      Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
     end)
   end
 

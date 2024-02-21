@@ -175,7 +175,7 @@ currency_rewards =
   end)
   Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
-afk_reward_incrementers =
+afk_reward_increments =
   Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
       %{
         level_id: level.id,
@@ -186,4 +186,4 @@ afk_reward_incrementers =
       }
 
   end)
-  Repo.insert_all(CurrencyReward, afk_reward_incrementers, on_conflict: :nothing)
+  Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)
