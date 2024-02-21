@@ -319,6 +319,7 @@ defmodule Arena.Serialization.Projectile do
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
   field(:status, 3, type: Arena.Serialization.ProjectileStatus, enum: true)
+  field(:name, 4, type: :string)
 end
 
 defmodule Arena.Serialization.Obstacle do
@@ -367,7 +368,7 @@ end
 defmodule Arena.Serialization.AttackParameters do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:target, 1, type: Arena.Serialization.Direction)
 end

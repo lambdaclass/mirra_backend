@@ -124,7 +124,7 @@
       ]
     },
     {
-      "name": "repeated_shot",
+      "name": "DENIAL OF SERVICE",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
@@ -146,7 +146,7 @@
       ]
     },
     {
-      "name": "multishot",
+      "name": "SLINGSHOT",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
@@ -260,8 +260,8 @@
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
       "skills": {
-        "1": "multishot",
-        "2": "repeated_shot",
+        "1": "SLINGSHOT",
+        "2": "DENIAL OF SERVICE",
         "3": "dash"
       }
     },
