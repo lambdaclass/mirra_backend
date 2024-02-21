@@ -45,6 +45,7 @@ defmodule Arena.Entities do
         position,
         direction,
         owner_id,
+        skill_name,
         config_params
       ) do
     %{
@@ -59,6 +60,7 @@ defmodule Arena.Entities do
       direction: direction,
       is_moving: true,
       aditional_info: %{
+        name: skill_name,
         damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
@@ -161,7 +163,8 @@ defmodule Arena.Entities do
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
        owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status
+       status: entity.aditional_info.status,
+       name: entity.aditional_info.name
      }}
   end
 
