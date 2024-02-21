@@ -133,10 +133,10 @@ defmodule Gateway.ChampionsSocketHandler do
     do: prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id)}, :afk_rewards)
 
   defp handle(%ClaimAfkRewards{user_id: user_id}) do
-    {:ok, afk_rewards} =
-      Users.claim_afk_rewards(user_id)
-
-    prepare_response(afk_rewards, :user)
+    case Users.claim_afk_rewards(user_id) do
+      {:ok, afk_rewards} -> prepare_response(afk_rewards, :user)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
   end
 
   defp handle(unknown_request),
