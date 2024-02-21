@@ -200,6 +200,30 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
+  def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
+        skill_direction: skill_direction
+      }) do
+    last_id = game_state.last_id + 1
+
+    target_position = %{
+      x: player.position.x + skill_direction.x * pool_params.range,
+      y: player.position.y + skill_direction.y * pool_params.range
+    }
+
+    pool =
+      Entities.new_pool(
+        last_id,
+        target_position,
+        pool_params.effects_to_apply,
+        pool_params.radius
+      )
+
+    Process.send_after(self(), {:remove_pool, last_id}, pool_params.duration_ms)
+
+    put_in(game_state, [:pools, last_id], pool)
+    |> put_in([:last_id], last_id)
+  end
+
   def handle_skill_effects(game_state, player, effects, game_config) do
     effects_to_apply =
       Enum.map(effects, fn effect_name ->
@@ -223,6 +247,44 @@ defmodule Arena.Game.Skill do
 
       put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
     end)
+  end
+
+  def apply_effect_mechanic(players, game_state) do
+    Enum.map(players, fn {_player_id, player} ->
+      player =
+        Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
+          apply_effect_mechanic(player, effect, game_state)
+        end)
+
+      {player.id, player}
+    end)
+    |> Map.new()
+  end
+
+  def apply_effect_mechanic(player, effect, game_state) do
+    Enum.reduce(effect.effect_mechanics, player, fn mechanic, player ->
+      do_effect_mechanics(game_state, player, effect, mechanic)
+    end)
+  end
+
+  defp do_effect_mechanics(game_state, player, effect, {:pull, pull_params}) do
+    Map.get(game_state.pools, effect.owner_id)
+    |> case do
+      nil ->
+        player
+
+      pool ->
+        if pool.position != player.position do
+          direction = Physics.get_direction_from_positions(player.position, pool.position)
+
+          rust_player = Physics.move_entity_to_direction(player, direction, pull_params.force)
+
+          Map.put(rust_player, :aditional_info, player.aditional_info)
+          |> Map.put(:collides_with, player.collides_with)
+        else
+          player
+        end
+    end
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
