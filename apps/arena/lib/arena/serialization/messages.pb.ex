@@ -218,6 +218,15 @@ defmodule Arena.Serialization.GameState.PowerUpsEntry do
   field(:value, 2, type: Arena.Serialization.Entity)
 end
 
+defmodule Arena.Serialization.GameState.PoolsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: Arena.Serialization.Entity)
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -263,6 +272,8 @@ defmodule Arena.Serialization.GameState do
     json_name: "powerUps",
     map: true
   )
+
+  field(:pools, 11, repeated: true, type: Arena.Serialization.GameState.PoolsEntry, map: true)
 end
 
 defmodule Arena.Serialization.Entity do
@@ -287,6 +298,7 @@ defmodule Arena.Serialization.Entity do
   field(:projectile, 13, type: Arena.Serialization.Projectile, oneof: 0)
   field(:obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0)
   field(:power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0)
+  field(:pool, 16, type: Arena.Serialization.Pool, oneof: 0)
 end
 
 defmodule Arena.Serialization.Player.EffectsEntry do
@@ -355,6 +367,14 @@ defmodule Arena.Serialization.PowerUp do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: Arena.Serialization.PowerUpstatus, enum: true)
+end
+
+defmodule Arena.Serialization.Pool do
+  @moduledoc false
+
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
 end
 
 defmodule Arena.Serialization.PlayerAction do

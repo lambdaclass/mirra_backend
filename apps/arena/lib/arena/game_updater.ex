@@ -344,7 +344,7 @@ defmodule Arena.GameUpdater do
       state.game_state.players
       |> Enum.map(fn {player_id, player} ->
         effects =
-          Enum.filter(player.aditional_info.effects, fn {_effect_id, effect} ->
+          Map.filter(player.aditional_info.effects, fn {_effect_id, effect} ->
             effect.owner_id != pool_id
           end)
 
@@ -478,6 +478,7 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
+             pools: complete_entities(state.pools),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
              zone: state.zone,

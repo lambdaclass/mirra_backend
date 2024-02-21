@@ -88,7 +88,7 @@
           "spawn_pool": {
             "name": "singularity",
             "duration_ms": 5000,
-            "radius": 500.0,
+            "radius": 1000.0,
             "range": 500.0,
             "effects_to_apply": [
               "singularity"
@@ -327,7 +327,7 @@
       "remove_on_action": false,
       "effect_mechanics": {
         "pull": {
-          "force": 5.0
+          "force": 15.0
         }
       }
     }

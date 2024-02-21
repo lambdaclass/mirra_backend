@@ -103,7 +103,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius) do
+  def new_pool(id, position, effects_to_apply, radius, owner_id) do
     %{
       id: id,
       category: :pool,
@@ -119,7 +119,8 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effects_to_apply: effects_to_apply
+        effects_to_apply: effects_to_apply,
+        owner_id: owner_id
       }
     }
   end
@@ -187,6 +188,13 @@ defmodule Arena.Entities do
      %Arena.Serialization.PowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :pool do
+    {:pool,
+     %Arena.Serialization.Pool{
+       owner_id: entity.aditional_info.owner_id
      }}
   end
 

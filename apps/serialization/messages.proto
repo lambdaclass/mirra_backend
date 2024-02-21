@@ -88,6 +88,7 @@ message GameState {
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
+  map<uint64, Entity> pools = 11;
 }
 
 /*
@@ -121,6 +122,7 @@ message Entity {
     Projectile projectile = 13;
     Obstacle obstacle = 14;
     PowerUp power_up = 15;
+    Pool pool = 16;
   }
 }
 
@@ -165,6 +167,10 @@ message PowerUp {
 enum  PowerUpstatus {
   AVAILABLE = 0;
   TAKEN = 1;
+}
+
+message Pool {
+  uint64 owner_id = 1;
 }
 
 message PlayerAction {

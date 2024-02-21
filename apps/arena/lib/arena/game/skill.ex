@@ -215,7 +215,8 @@ defmodule Arena.Game.Skill do
         last_id,
         target_position,
         pool_params.effects_to_apply,
-        pool_params.radius
+        pool_params.radius,
+        player.id
       )
 
     Process.send_after(self(), {:remove_pool, last_id}, pool_params.duration_ms)
