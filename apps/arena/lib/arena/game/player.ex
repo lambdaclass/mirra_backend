@@ -158,7 +158,7 @@ defmodule Arena.Game.Player do
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
-          |> change_stamina(-1)
+          |> change_stamina(0)
           |> put_in([:direction], skill_direction)
           |> put_in([:is_moving], false)
 
