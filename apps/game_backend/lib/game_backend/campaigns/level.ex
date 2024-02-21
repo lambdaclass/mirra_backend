@@ -39,9 +39,4 @@ defmodule GameBackend.Campaigns.Level do
     |> cast_assoc(:unit_rewards)
     |> validate_required([:game_id, :level_number, :campaign_id])
   end
-
-  @doc """
-  Changeset for editing a level's basic attributes.
-  """
-  def edit_changeset(level, attrs), do: cast(level, attrs, [:level_number, :campaign_id])
 end
