@@ -47,7 +47,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 20000,
+    "zone_shrink_start_ms": 99999999,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
@@ -82,6 +82,17 @@
             "damage": 15,
             "range": 1000.0,
             "angle": 45.0
+          }
+        },
+        {
+          "spawn_pool": {
+            "name": "singularity",
+            "duration_ms": 5000,
+            "radius": 500.0,
+            "range": 500.0,
+            "effects_to_apply": [
+              "singularity"
+            ]
           }
         }
       ],
@@ -310,6 +321,15 @@
       "name": "invisible",
       "duration_ms": 4000,
       "remove_on_action": true
+    },
+    {
+      "name": "singularity",
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "pull": {
+          "force": 5.0
+        }
+      }
     }
   ]
 }
