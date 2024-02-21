@@ -180,7 +180,7 @@ syntax = "proto3";
 
   message Campaign {
     string id = 1;
-    string quest_id = 2;
+    string super_campaign_id = 2;
     uint32 campaign_number = 3;
     repeated Level levels = 4;
   }

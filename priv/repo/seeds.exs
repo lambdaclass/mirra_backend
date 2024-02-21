@@ -89,19 +89,19 @@ rules = [
   %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
-quest = %{
+super_campaign = %{
   game_id: champions_of_mirra_id,
-  name: "Main Quest",
+  name: "Main Campaign",
 }
 
-{_, quest} = Campaigns.insert_quest(quest, returning: true)
+{_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
 
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
   Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
     {_, campaign} = Campaigns.insert_campaign(%{
       game_id: champions_of_mirra_id,
-      quest_id: quest.id,
+      super_campaign_id: super_campaign.id,
       campaign_number: campaign_index
     }, returning: true)
 

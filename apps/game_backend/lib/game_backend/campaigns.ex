@@ -8,7 +8,7 @@ defmodule GameBackend.Campaigns do
   alias GameBackend.Campaigns.Campaign
   alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns.Level
-  alias GameBackend.Campaigns.Quest
+  alias GameBackend.Campaigns.SuperCampaign
 
   @doc """
   Gets all levels, grouped by campaign and sorted ascendingly.
@@ -65,11 +65,11 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
-  Inserts a quest.
+  Inserts a super campaign.
   """
-  def insert_quest(attrs, opts \\ []) do
-    %Quest{}
-    |> Quest.changeset(attrs)
+  def insert_super_campaign(attrs, opts \\ []) do
+    %SuperCampaign{}
+    |> SuperCampaign.changeset(attrs)
     |> Repo.insert(opts)
   end
 
@@ -96,7 +96,7 @@ defmodule GameBackend.Campaigns do
     else
       next_campaign =
         Repo.get_by(Campaign,
-          quest_id: campaign.quest_id,
+          super_campaign_id: campaign.super_campaign_id,
           campaign_number: campaign.campaign_number + 1
         )
 

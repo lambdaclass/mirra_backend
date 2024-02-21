@@ -2,7 +2,7 @@ defmodule GameBackend.Repo.Migrations.AddCurrentCampaignAndLevelToUser do
   use Ecto.Migration
 
   def change do
-    create table(:quests) do
+    create table(:super_campaigns) do
       add :game_id, :integer, null: false
       add :name, :string, null: false
       timestamps()
@@ -11,7 +11,7 @@ defmodule GameBackend.Repo.Migrations.AddCurrentCampaignAndLevelToUser do
     create table(:campaigns) do
       add :game_id, :integer, null: false
       add :campaign_number, :integer
-      add :quest_id, references(:quests, on_delete: :delete_all)
+      add :super_campaign_id, references(:super_campaigns, on_delete: :delete_all)
       timestamps()
     end
 
