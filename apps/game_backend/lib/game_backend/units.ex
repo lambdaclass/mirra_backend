@@ -33,35 +33,46 @@ defmodule GameBackend.Units do
   end
 
   def select_unit(user_id, unit_id, slot \\ nil) do
-    unit = Units.get_unit(unit_id) || %{}
+    case Units.get_unit(unit_id) do
+      {:ok, unit} ->
+        if Map.get(unit, :user_id, nil) == user_id do
+          case update_selected(unit, %{selected: true, slot: slot}) do
+            {:ok, unit} -> unit
+            {:error, reason} -> {:error, reason}
+          end
+        else
+          {:error, :not_found}
+        end
 
-    if Map.get(unit, :user_id, nil) == user_id do
-      case update_selected(unit, %{selected: true, slot: slot}) do
-        {:ok, unit} -> unit
-        {:error, reason} -> {:error, reason}
-      end
-    else
-      {:error, :not_found}
+      {:error, :not_found} ->
+        {:error, :not_found}
     end
   end
 
   def unselect_unit(user_id, unit_id) do
-    unit = Units.get_unit(unit_id) || %{}
+    case Units.get_unit(unit_id) do
+      {:ok, unit} ->
+        if Map.get(unit, :user_id, nil) == user_id do
+          case update_selected(unit, %{selected: false, slot: nil}) do
+            {:ok, unit} -> unit
+            {:error, reason} -> {:error, reason}
+          end
+        else
+          {:error, :not_found}
+        end
 
-    if Map.get(unit, :user_id, nil) == user_id do
-      case update_selected(unit, %{selected: false, slot: nil}) do
-        {:ok, unit} -> unit
-        {:error, reason} -> {:error, reason}
-      end
-    else
-      {:error, :not_found}
+      {:error, :not_found} ->
+        {:error, :not_found}
     end
   end
 
   @doc """
   Gets a unit given its id.
   """
-  def get_unit(id), do: Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+  def get_unit(id) do
+    unit = Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+    if unit, do: {:ok, unit}, else: {:error, :not_found}
+  end
 
   @doc """
   Gets all units from all users.
@@ -156,6 +167,10 @@ defmodule GameBackend.Units do
     %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id, slot: slot}
   end
 
-  def unit_belongs_to_user(unit_id, user_id),
-    do: Map.get(get_unit(unit_id) || %{}, :user_id) == user_id
+  def unit_belongs_to_user(unit_id, user_id) do
+    case get_unit(unit_id) do
+      {:ok, unit} -> Map.get(unit, :user_id) == user_id
+      {:error, _} -> false
+    end
+  end
 end

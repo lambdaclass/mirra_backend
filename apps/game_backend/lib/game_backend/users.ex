@@ -8,6 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias Ecto.Multi
   alias GameBackend.Units
   alias GameBackend.Items
   alias GameBackend.Rewards
@@ -136,58 +137,94 @@ defmodule GameBackend.Users do
   end
 
   defp update_user(user_id, level) do
-    Repo.transaction(fn ->
+    Multi.new()
+    |> Multi.run(:currency_rewards, fn _, _ ->
       apply_currency_rewards(user_id, level.currency_rewards)
-      apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
-      apply_item_rewards(user_id, level.item_rewards)
-      apply_unit_rewards(user_id, level.unit_rewards)
-      :ok
     end)
+    |> Multi.run(:afk_rewards_increments, fn _, _ ->
+      apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
+    end)
+    |> Multi.run(:item_rewards, fn _, _ ->
+      apply_item_rewards(user_id, level.item_rewards)
+    end)
+    |> Multi.run(:unit_rewards, fn _, _ ->
+      apply_unit_rewards(user_id, level.unit_rewards)
+    end)
+    |> Repo.transaction()
   end
 
   defp apply_currency_rewards(user_id, currency_rewards) do
     currency_rewards
-    |> Enum.each(fn currency_reward ->
+    |> Enum.map(fn currency_reward ->
       Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
     end)
+    |> check_result(:currency_rewards)
   end
 
   defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
     afk_rewards_increments
-    |> Enum.each(fn increment ->
+    |> Enum.map(fn increment ->
       Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
     end)
+    |> check_result(:afk_rewards_increments)
   end
 
   defp apply_item_rewards(user_id, item_rewards) do
     item_rewards
-    |> Enum.each(fn item_reward ->
-      {:ok, item} = Items.get_item(item_reward.item_id)
+    |> Enum.map(fn item_reward ->
+      Items.get_item(item_reward.item_id)
+      |> case do
+        {:ok, item} ->
+          Enum.each(1..item_reward.amount, fn _ ->
+            Items.insert_item(%{
+              user_id: user_id,
+              template_id: item.template_id,
+              level: item.level
+            })
+          end)
 
-      Enum.each(1..item_reward.amount, fn _ ->
-        Items.insert_item(%{
-          user_id: user_id,
-          template_id: item.template_id,
-          level: item.level
-        })
-      end)
+          {:ok, item}
+
+        {:error, _} ->
+          {:error, "Failed to apply item rewards"}
+      end
     end)
+    |> check_result(:item_rewards)
   end
 
   defp apply_unit_rewards(user_id, unit_rewards) do
     unit_rewards
-    |> Enum.each(fn unit_reward ->
-      unit = Units.get_unit(unit_reward.unit_id)
+    |> Enum.map(fn unit_reward ->
+      Units.get_unit(unit_reward.unit_id)
+      |> case do
+        {:ok, unit} ->
+          Enum.each(1..unit_reward.amount, fn _ ->
+            Units.insert_unit(%{
+              user_id: user_id,
+              character_id: unit.character_id,
+              unit_level: unit.level,
+              tier: unit.tier,
+              selected: false
+            })
+          end)
 
-      Enum.each(1..unit_reward.amount, fn _ ->
-        Units.insert_unit(%{
-          user_id: user_id,
-          character_id: unit.character_id,
-          unit_level: unit.level,
-          tier: unit.tier,
-          selected: false
-        })
-      end)
+          {:ok, unit}
+
+        {:error, _} ->
+          {:error, "Failed to apply unit rewards"}
+      end
     end)
+    |> check_result(:unit_rewards)
+  end
+
+  defp check_result(result, result_name) do
+    if Enum.all?(result, fn
+         {:ok, _} -> true
+         _ -> false
+       end) do
+      {:ok, result}
+    else
+      {:error, "Failed to apply " <> Atom.to_string(result_name)}
+    end
   end
 end

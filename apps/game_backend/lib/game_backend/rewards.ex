@@ -16,27 +16,32 @@ defmodule GameBackend.Rewards do
     |> Repo.insert()
   end
 
+  @doc """
+  Gets the AfkRewardRate for a user and a currency.
+  Returns {:error, :not_found} if no AfkRewardRate is found.
+  """
   def get_afk_reward_rate(user_id, currency_id) do
-    Repo.one(
-      from(afk in AfkRewardRate,
-        where: afk.user_id == ^user_id and afk.currency_id == ^currency_id,
-        select: afk
+    afk_reward_rate =
+      Repo.one(
+        from(afk in AfkRewardRate,
+          where: afk.user_id == ^user_id and afk.currency_id == ^currency_id,
+          select: afk
+        )
       )
-    )
+
+    if afk_reward_rate, do: {:ok, afk_reward_rate}, else: {:error, :not_found}
   end
 
   def increment_afk_reward_rate(user_id, currency_id, rate_increment) do
-    afk_reward_rate = get_afk_reward_rate(user_id, currency_id)
-
-    case afk_reward_rate do
-      nil ->
-        {:error, :not_found}
-
-      _ ->
+    case get_afk_reward_rate(user_id, currency_id) do
+      {:ok, afk_reward_rate} ->
         AfkRewardRate.changeset(afk_reward_rate, %{
           rate: afk_reward_rate.rate + rate_increment
         })
         |> Repo.update()
+
+      {:error, :not_found} ->
+        {:error, :not_found}
     end
   end
 end
