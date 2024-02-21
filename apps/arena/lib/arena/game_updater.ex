@@ -375,7 +375,7 @@ defmodule Arena.GameUpdater do
   def handle_info({:add_pool_effect, player_id, pool_id, effect}, state) do
     case Map.get(state.game_state.players, player_id) do
       %{aditional_info: %{effects: effects}} ->
-        if(Enum.any?(effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end)) do
+        if Enum.any?(effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end) do
           {:noreply, state}
         else
           last_id = state.game_state.last_id + 1
