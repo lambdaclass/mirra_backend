@@ -83,7 +83,17 @@
             "range": 1000.0,
             "angle": 45.0
           }
-        },
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "singularity",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "activation_delay_ms": 300,
+      "is_passive": false,
+      "mechanics": [
         {
           "spawn_pool": {
             "name": "singularity",
@@ -310,7 +320,7 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "avenge",
-        "2": "veil_radiance",
+        "2": "singularity",
         "3": "sneak"
       }
     }
