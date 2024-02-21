@@ -294,6 +294,15 @@ defmodule Arena.Serialization.Entity do
   field :item, 16, type: Arena.Serialization.Item, oneof: 0
 end
 
+defmodule Arena.Serialization.Player.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: Arena.Serialization.Effect
+end
+
 defmodule Arena.Serialization.Player do
   @moduledoc false
 
@@ -313,7 +322,17 @@ defmodule Arena.Serialization.Player do
   field :recharging_stamina, 7, type: :bool, json_name: "rechargingStamina"
   field :character_name, 8, type: :string, json_name: "characterName"
   field :power_ups, 9, type: :uint64, json_name: "powerUps"
-  field :inventory, 10, type: Arena.Serialization.Item
+  field :effects, 10, repeated: true, type: Arena.Serialization.Player.EffectsEntry, map: true
+  field :inventory, 11, type: Arena.Serialization.Item
+end
+
+defmodule Arena.Serialization.Effect do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :name, 1, type: :string
+  field :duration_ms, 2, type: :uint32, json_name: "durationMs"
 end
 
 defmodule Arena.Serialization.Item do
@@ -412,6 +431,7 @@ defmodule Arena.Serialization.Zone do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :radius, 1, type: :float
+  field :enabled, 2, type: :bool
 end
 
 defmodule Arena.Serialization.KillEntry do

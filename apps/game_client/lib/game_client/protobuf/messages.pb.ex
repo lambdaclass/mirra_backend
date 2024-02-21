@@ -294,6 +294,15 @@ defmodule GameClient.Protobuf.Entity do
   field :item, 16, type: GameClient.Protobuf.Item, oneof: 0
 end
 
+defmodule GameClient.Protobuf.Player.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :key, 1, type: :uint64
+  field :value, 2, type: GameClient.Protobuf.Effect
+end
+
 defmodule GameClient.Protobuf.Player do
   @moduledoc false
 
@@ -313,7 +322,17 @@ defmodule GameClient.Protobuf.Player do
   field :recharging_stamina, 7, type: :bool, json_name: "rechargingStamina"
   field :character_name, 8, type: :string, json_name: "characterName"
   field :power_ups, 9, type: :uint64, json_name: "powerUps"
-  field :inventory, 10, type: GameClient.Protobuf.Item
+  field :effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true
+  field :inventory, 11, type: GameClient.Protobuf.Item
+end
+
+defmodule GameClient.Protobuf.Effect do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :name, 1, type: :string
+  field :duration_ms, 2, type: :uint32, json_name: "durationMs"
 end
 
 defmodule GameClient.Protobuf.Item do
@@ -412,6 +431,7 @@ defmodule GameClient.Protobuf.Zone do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :radius, 1, type: :float
+  field :enabled, 2, type: :bool
 end
 
 defmodule GameClient.Protobuf.KillEntry do

@@ -37,7 +37,8 @@ defmodule Arena.Entities do
         power_ups: 0,
         power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
         inventory: nil,
-        damage_immunity: false
+        damage_immunity: false,
+        effects: %{}
       }
     }
   end
@@ -167,6 +168,7 @@ defmodule Arena.Entities do
        stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina,
        character_name: entity.aditional_info.character_name,
+       effects: entity.aditional_info.effects,
        power_ups: entity.aditional_info.power_ups
      }}
   end
