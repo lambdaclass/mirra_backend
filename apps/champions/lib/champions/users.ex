@@ -171,7 +171,7 @@ defmodule Champions.Users do
   end
 
   @doc """
-  Claim a user's AFK rewards.
+  Claim a user's AFK rewards, and reset their last AFK reward claim time.
   """
   def claim_afk_rewards(user_id) do
     afk_rewards = get_afk_rewards(user_id)
