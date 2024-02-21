@@ -6,7 +6,7 @@ defmodule Champions.Battle.Simulator do
   has no cooldown and it's cast whenever a unit reaches 500 energy. Energy is gained whenever the target attacks.
   The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
-  Skills possess effects that affect other units' or oneself's stats (the on defined in the effect's `stat_affected` field).
+  Skills possess effects that affect other units' or oneself's stats (the one defined in the effect's `stat_affected` field).
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
@@ -26,6 +26,12 @@ defmodule Champions.Battle.Simulator do
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
   [ ] Classes
+
+  And different ways in which their amount is interpreted:
+  [x] Additive
+  [x] Multiplicative
+  [x] Additive & based on stat - The amount is a % of one of the caster's stats
+  [ ] Multiplicative & based on stat?
 
   Two units can attack the same unit at the same time and over-kill them. This is expected behavior that results
   from having the battle be simultaneous.
