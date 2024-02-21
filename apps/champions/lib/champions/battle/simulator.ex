@@ -14,35 +14,36 @@ defmodule Champions.Battle.Simulator do
   @doc """
   user_1 = Champions.Users.register("User1")
   user_2 = Champions.Users.register("User2")
-  team1 = Enum.map([1], fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, unit_level: 1, tier: 1, rank: 1, selected: true, user_id: user_1.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill]) end)
-  team2 = Enum.map([1], fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, unit_level: 1, tier: 1, rank: 1, selected: true, user_id: user_2.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill]) end)
+  team1 = Enum.map(1..6, fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, unit_level: 1, tier: 1, rank: 1, selected: true, user_id: user_1.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill]) end)
+  team2 = Enum.map(1..6, fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, unit_level: 1, tier: 1, rank: 1, selected: true, user_id: user_2.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill]) end)
   Champions.Battle.Simulator.run_battle team1, team2
   """
-  def run_battle(team_1, team_2) do
-    unit_ids = Enum.map(team_1 ++ team_2, fn unit -> unit.id end)
-
+  def run_battle(team_1, team_2, seed \\ 1234) do
+    :rand.seed(:default, seed)
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
     units = Map.merge(team_1, team_2)
 
     Enum.reduce_while(1..@maximum_steps, units, fn step, initial_step_state ->
       new_state =
-        units
+        initial_step_state
         |> Enum.map(fn {id, _unit} -> id end)
-        |> Enum.take_random(Enum.count(unit_ids))
+        |> Enum.take_random(Enum.count(units))
         |> Enum.reduce(initial_step_state, fn unit_id, current_state ->
-          IO.inspect("Process step #{step} for unit #{unit_id}")
+          # IO.inspect("Process step #{step} for unit #{unit_id}")
           process_step(initial_step_state[unit_id], initial_step_state, current_state)
         end)
 
-      IO.inspect(
-        new_state
-        |> Enum.map(fn {_id, unit} ->
-          Map.take(unit, [:id, :health, :energy])
-          |> Map.put(:skill_cooldown, unit.basic_skill.remaining_cooldown)
-        end),
-        label: :new_state
-      )
+      # IO.inspect(
+      #   new_state
+      #   |> Enum.map(fn {_id, unit} ->
+      #     Map.take(unit, [:id, :health, :energy, :team])
+      #     |> Map.put(:skill_cooldown, unit.basic_skill.remaining_cooldown)
+      #   end)
+      #   |> Enum.sort(fn a, b -> if a.team == b.team, do: a.id < b.id, else: a.team < b.team end)
+      #   |> Enum.group_by(fn a -> a.team end),
+      #   label: :new_state
+      # )
 
       remove_dead_units(new_state)
       |> check_winner(step)
@@ -58,13 +59,14 @@ defmodule Champions.Battle.Simulator do
           current_state
 
         can_cast_ultimate(unit) ->
-          IO.inspect("#{unit.id} casting ULTIMATE skill")
+          # IO.inspect("#{unit.id} casting ULTIMATE skill")
+
           unit
           |> cast_skill(unit.ultimate_skill, initial_step_state, current_state)
           |> put_in([unit.id, :energy], 0)
 
         can_cast_basic(unit) ->
-          IO.inspect("#{unit.id} casting basic skill")
+          # IO.inspect("#{unit.id} casting basic skill")
           new_state = cast_skill(unit, unit.basic_skill, initial_step_state, current_state)
 
           new_state
@@ -93,22 +95,20 @@ defmodule Champions.Battle.Simulator do
   defp check_winner(units, step) do
     winner =
       cond do
-        Enum.all?(units, fn {_id, unit} -> unit.team == 1 end) -> :team_1
+        Enum.empty?(units) -> :tie
         Enum.all?(units, fn {_id, unit} -> unit.team == 2 end) -> :team_2
+        Enum.all?(units, fn {_id, unit} -> unit.team == 1 end) -> :team_1
         true -> :none
       end
 
     case winner do
-      :team_1 ->
-        {:halt, :team_1}
-
-      :team_2 ->
-        {:halt, :team_2}
-
       :none ->
         if step == @maximum_steps,
           do: {:halt, :timeout},
           else: {:cont, units}
+
+      result ->
+        {:halt, result}
     end
   end
 
@@ -176,7 +176,7 @@ defmodule Champions.Battle.Simulator do
        ),
        do:
          target[String.to_atom(effect.stat_affected)] +
-           effect.amount * caster[String.to_atom(stat_based_on)] / 100
+           floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100)
 
   defp create_unit_map(%Unit{character: character} = unit, team),
     do:
