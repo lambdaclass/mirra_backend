@@ -24,11 +24,4 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
     |> validate_number(:amount, greater_than_or_equal_to: 0)
     |> validate_required([:unit_id, :amount])
   end
-
-  @doc false
-  def update_changeset(unit_reward, attrs) do
-    unit_reward
-    |> cast(attrs, [:amount])
-    |> validate_required([:amount])
-  end
 end

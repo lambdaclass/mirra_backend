@@ -24,11 +24,4 @@ defmodule GameBackend.Campaigns.Rewards.CurrencyReward do
     |> validate_number(:amount, greater_than_or_equal_to: 0)
     |> validate_required([:currency_id, :amount])
   end
-
-  @doc false
-  def update_changeset(currency_reward, attrs) do
-    currency_reward
-    |> cast(attrs, [:amount])
-    |> validate_required([:amount])
-  end
 end

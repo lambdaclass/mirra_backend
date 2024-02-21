@@ -25,11 +25,4 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
     |> validate_number(:rate, greater_than_or_equal_to: 0)
     |> validate_required([:user_id, :currency_id, :rate])
   end
-
-  @doc false
-  def update_changeset(afk_reward_rate, attrs) do
-    afk_reward_rate
-    |> cast(attrs, [:rate])
-    |> validate_required([:rate])
-  end
 end
