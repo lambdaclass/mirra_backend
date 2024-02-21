@@ -60,7 +60,7 @@ defmodule Arena.GameUpdater do
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
 
-  def handle_info(:update_game, %{game_state: game_state, game_config: game_config} = state) do
+  def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
@@ -75,7 +75,7 @@ defmodule Arena.GameUpdater do
       |> update_collisions(game_state.players, Map.merge(game_state.power_ups, game_state.pools))
       |> handle_power_ups(game_state.power_ups)
 
-    handle_pools(game_state, game_config)
+    handle_pools(game_state)
 
     # We need to send the exploded projectiles to the client at least once
     updated_expired_projectiles =
@@ -372,28 +372,45 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:add_pool_effect, player_id, pool_id, effect}, state) do
-    case Map.get(state.game_state.players, player_id) do
-      %{aditional_info: %{effects: effects}} ->
-        if Enum.any?(effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end) do
+  def handle_info(
+        {:add_pool_effects, player_id, %{aditional_info: %{owner_id: player_id}},
+         _effects_to_apply},
+        state
+      ) do
+    {:noreply, state}
+  end
+
+  def handle_info(
+        {:add_pool_effects, player_id, pool, effects_to_apply},
+        %{
+          game_state: game_state,
+          game_config: game_config
+        } = state
+      ) do
+    case Map.get(game_state.players, player_id) do
+      %{aditional_info: %{effects: player_effects}} ->
+        if Enum.any?(player_effects, fn {_effect_id, effect} -> effect.owner_id == pool.id end) do
           {:noreply, state}
         else
-          last_id = state.game_state.last_id + 1
+          game_state =
+            Enum.reduce(effects_to_apply, game_state, fn effect_name, game_state ->
+              last_id = game_state.last_id + 1
+              effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
 
-          state =
-            put_in(
-              state,
-              [:game_state, :players, player_id, :aditional_info, :effects, last_id],
-              Map.put(effect, :owner_id, pool_id)
-              |> Map.put(:last_application_time, 0)
-              |> Map.put(:id, last_id)
-            )
-            |> put_in(
-              [:game_state, :last_id],
-              last_id
-            )
+              put_in(
+                game_state,
+                [:players, player_id, :aditional_info, :effects, last_id],
+                Map.put(effect, :owner_id, pool.id)
+                |> Map.put(:last_application_time, 0)
+                |> Map.put(:id, last_id)
+              )
+              |> put_in(
+                [:last_id],
+                last_id
+              )
+            end)
 
-          {:noreply, state}
+          {:noreply, %{state | game_state: game_state}}
         end
 
       _ ->
@@ -401,7 +418,7 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_info({:remove_pool_effect, player_id, pool_id}, state) do
+  def handle_info({:remove_pool_effects, player_id, pool_id}, state) do
     case Map.get(state.game_state.players, player_id) do
       %{aditional_info: %{effects: effects}} ->
         effects_to_remove =
@@ -849,7 +866,7 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp handle_pools(game_state, game_config) do
+  defp handle_pools(game_state) do
     Enum.each(game_state.players, fn {player_id, player} ->
       colliding_pools =
         game_state.pools
@@ -857,12 +874,12 @@ defmodule Arena.GameUpdater do
 
       Enum.each(game_state.pools, fn {pool_id, pool} ->
         if Map.has_key?(colliding_pools, pool_id) do
-          Enum.each(pool.aditional_info.effects_to_apply, fn effect_name ->
-            effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-            send(self(), {:add_pool_effect, player_id, pool_id, effect})
-          end)
+          send(
+            self(),
+            {:add_pool_effects, player_id, pool, pool.aditional_info.effects_to_apply}
+          )
         else
-          send(self(), {:remove_pool_effect, player_id, pool_id})
+          send(self(), {:remove_pool_effects, player_id, pool_id})
         end
       end)
     end)
