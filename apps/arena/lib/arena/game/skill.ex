@@ -242,11 +242,11 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
 
-      effects =
-        get_in(game_state, [:players, player.id, :aditional_info, :effects])
-        |> Map.put(last_id, effect)
-
-      put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+      put_in(
+        game_state,
+        [:players, player.id, :aditional_info, :effects, last_id],
+        Map.put(effect, :id, last_id)
+      )
     end)
   end
 
