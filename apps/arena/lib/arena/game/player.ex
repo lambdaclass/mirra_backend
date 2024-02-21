@@ -233,10 +233,12 @@ defmodule Arena.Game.Player do
     case player.aditional_info.inventory do
       nil ->
         game_state
+
       item ->
         player =
           Enum.reduce(item.effects, player, &apply_effect/2)
-          put_in(player, [:aditional_info, :inventory], nil)
+
+        put_in(player, [:aditional_info, :inventory], nil)
 
         put_in(game_state, [:players, player.id], player)
     end
@@ -247,7 +249,12 @@ defmodule Arena.Game.Player do
   end
 
   def apply_effect({:speed_boost, speed_boost}, player) do
-    Process.send_after(self(), {:remove_speed_boost, player.id, speed_boost.amount}, speed_boost.duration_ms)
+    Process.send_after(
+      self(),
+      {:remove_speed_boost, player.id, speed_boost.amount},
+      speed_boost.duration_ms
+    )
+
     %{player | speed: player.speed + speed_boost.amount}
   end
 

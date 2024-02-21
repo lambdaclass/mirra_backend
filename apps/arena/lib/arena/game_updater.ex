@@ -330,9 +330,16 @@ defmodule Arena.GameUpdater do
 
     last_id = state.game_state.last_id + 1
     ## TODO: make random position
-    position = random_position_in_map(state.game_state.external_wall.radius, state.game_state.external_wall)
+    position =
+      random_position_in_map(
+        state.game_state.external_wall.radius,
+        state.game_state.external_wall
+      )
+
     # item_config = Enum.random(state.game_config.items)
-    item_config = Enum.find(state.game_config.items, fn config -> config.name == "magic_boots" end)
+    item_config =
+      Enum.find(state.game_config.items, fn config -> config.name == "magic_boots" end)
+
     item = Entities.new_item(last_id, position, item_config)
 
     state =
@@ -809,12 +816,17 @@ defmodule Arena.GameUpdater do
   defp handle_items({players, power_ups}, items) do
     {players, items} =
       Enum.reduce(players, {players, items}, fn {_player_id, player}, {players_acc, items_acc} ->
-        item_id = Enum.find(player.collides_with, fn collided_entity_id -> Map.has_key?(items_acc, collided_entity_id) end)
+        item_id =
+          Enum.find(player.collides_with, fn collided_entity_id ->
+            Map.has_key?(items_acc, collided_entity_id)
+          end)
+
         item = Map.get(items_acc, item_id)
 
         case is_nil(item) or Player.inventory_full?(player) do
           true ->
             {players_acc, items_acc}
+
           false ->
             player = Player.store_item(player, item)
             {Map.put(players_acc, player.id, player), Map.delete(items_acc, item_id)}
@@ -838,7 +850,7 @@ defmodule Arena.GameUpdater do
       speed: 0.0,
       category: :obstacle,
       direction: %{x: 0.0, y: 0.0},
-      is_moving: false,
+      is_moving: false
     }
 
     case Physics.check_collisions(point, %{0 => external_wall}) do

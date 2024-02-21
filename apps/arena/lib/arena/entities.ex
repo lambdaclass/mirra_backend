@@ -193,7 +193,7 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
      %Arena.Serialization.Item{
-       name: entity.aditional_info.name,
+       name: entity.aditional_info.name
      }}
   end
 
