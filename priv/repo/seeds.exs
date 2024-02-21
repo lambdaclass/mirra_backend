@@ -17,7 +17,6 @@ Characters.insert_character(%{
   rarity: "Epic",
   base_health: 621,
   base_attack: 63,
-  base_speed: 115,
   base_armor: 78,
   basic_skill: %{
     effects: [%{

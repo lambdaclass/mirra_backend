@@ -19,7 +19,7 @@ defmodule GameBackend.Units.Skills.Effect do
   def changeset(effect, attrs \\ %{}) do
     effect
     |> cast(attrs, [:type, :stat, :based_on_stat, :amount, :application_type])
-    |> validate_inclusion(:stat, ["health", "max_health", "attack", "speed", "energy", "armor"])
+    |> validate_inclusion(:stat, ["health", "max_health", "attack", "energy", "armor"])
     |> validate_inclusion(:application_type, ["additive", "multiplicative"])
     |> validate_required([:type, :stat, :amount, :application_type])
   end

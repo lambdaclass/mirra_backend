@@ -18,7 +18,6 @@ defmodule GameBackend.Units.Characters.Character do
 
     field(:base_health, :integer)
     field(:base_attack, :integer)
-    field(:base_speed, :integer)
     field(:base_armor, :integer)
 
     belongs_to(:basic_skill, Skill)
@@ -40,7 +39,6 @@ defmodule GameBackend.Units.Characters.Character do
       :ultimate_skill_id,
       :base_health,
       :base_attack,
-      :base_speed,
       :base_armor
     ])
     |> cast_assoc(:basic_skill)

@@ -10,7 +10,7 @@ defmodule Champions.Battle do
 
   @doc """
   Plays a level for a user, which means fighting its units with their selected ones.
-  Returns :win or :loss accordingly.
+  Returns `:win` or `:loss` accordingly.
 
   No tracking for level progress is done yet.
   """
