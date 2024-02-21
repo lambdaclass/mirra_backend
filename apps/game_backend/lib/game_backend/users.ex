@@ -8,6 +8,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Items.Item
   alias Ecto.Multi
   alias GameBackend.Units
   alias GameBackend.Items
@@ -144,8 +145,8 @@ defmodule GameBackend.Users do
     |> Multi.run(:afk_rewards_increments, fn _, _ ->
       apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
     end)
-    |> Multi.run(:item_rewards, fn _, _ ->
-      apply_item_rewards(user_id, level.item_rewards)
+    |> Multi.insert_all(:item_rewards, Item, fn _ ->
+      build_item_rewards_params(user_id, level.item_rewards)
     end)
     |> Multi.run(:unit_rewards, fn _, _ ->
       apply_unit_rewards(user_id, level.unit_rewards)
@@ -167,26 +168,21 @@ defmodule GameBackend.Users do
     |> check_result(:afk_rewards_increments)
   end
 
-  defp apply_item_rewards(user_id, item_rewards) do
+  defp build_item_rewards_params(user_id, item_rewards) do
     Enum.map(item_rewards, fn item_reward ->
       Items.get_item(item_reward.item_id)
       |> case do
         {:ok, item} ->
-          Enum.each(1..item_reward.amount, fn _ ->
-            Items.insert_item(%{
+          Enum.map(1..item_reward.amount, fn _ ->
+            %{
               user_id: user_id,
               template_id: item.template_id,
               level: item.level
-            })
+            }
           end)
-
-          {:ok, item}
-
-        {:error, _} ->
-          {:error, "Failed to apply item rewards"}
       end
     end)
-    |> check_result(:item_rewards)
+    |> List.flatten()
   end
 
   defp apply_unit_rewards(user_id, unit_rewards) do
