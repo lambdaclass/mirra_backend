@@ -251,20 +251,39 @@ defmodule Arena.Game.Skill do
   end
 
   def apply_effect_mechanic(players, game_state) do
-    Enum.map(players, fn {_player_id, player} ->
-      player =
-        Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
-          apply_effect_mechanic(player, effect, game_state)
-        end)
+    updated_players =
+      Map.filter(players, fn {_, player} -> Player.alive?(player) end)
+      |> Enum.map(fn {_player_id, player} ->
+        player =
+          Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
+            apply_effect_mechanic(player, effect, game_state)
+          end)
 
-      {player.id, player}
-    end)
-    |> Map.new()
+        {player.id, player}
+      end)
+      |> Map.new()
+
+    Map.merge(players, updated_players)
   end
 
   def apply_effect_mechanic(player, effect, game_state) do
-    Enum.reduce(effect.effect_mechanics, player, fn mechanic, player ->
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    mechanics_to_apply =
+      effect.effect_mechanics
+      |> Map.filter(fn {_name, mechanic} ->
+        now - Map.get(mechanic, :last_application_time, 0) >= mechanic.effect_delay_ms
+      end)
+      |> Enum.map(fn {name, mechanic} ->
+        {name, Map.put(mechanic, :last_application_time, now)}
+      end)
+      |> Map.new()
+
+    Enum.reduce(mechanics_to_apply, player, fn mechanic, player ->
       do_effect_mechanics(game_state, player, effect, mechanic)
+    end)
+    |> update_in([:aditional_info, :effects, effect.id, :effect_mechanics], fn mechanics ->
+      Map.merge(mechanics, mechanics_to_apply)
     end)
   end
 
@@ -285,6 +304,28 @@ defmodule Arena.Game.Skill do
         else
           player
         end
+    end
+  end
+
+  defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
+    Map.get(game_state.pools, effect.owner_id)
+    |> case do
+      nil ->
+        player
+
+      pool ->
+        pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
+        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
+
+        send(self(), {:damage_done, pool_owner.id, real_damage})
+
+        player = Player.take_damage(player, real_damage)
+
+        unless Player.alive?(player) do
+          send(self(), {:to_killfeed, pool_owner.id, player.id})
+        end
+
+        player
     end
   end
 

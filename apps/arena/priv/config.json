@@ -344,7 +344,12 @@
       "remove_on_action": false,
       "effect_mechanics": {
         "pull": {
-          "force": 15.0
+          "force": 15.0,
+          "effect_delay_ms": 0
+        },
+        "damage": {
+          "damage": 4,
+          "effect_delay_ms": 400
         }
       }
     }
