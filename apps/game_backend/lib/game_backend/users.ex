@@ -154,24 +154,21 @@ defmodule GameBackend.Users do
   end
 
   defp apply_currency_rewards(user_id, currency_rewards) do
-    currency_rewards
-    |> Enum.map(fn currency_reward ->
+    Enum.map(currency_rewards, fn currency_reward ->
       Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
     end)
     |> check_result(:currency_rewards)
   end
 
   defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
-    afk_rewards_increments
-    |> Enum.map(fn increment ->
+    Enum.map(afk_rewards_increments, fn increment ->
       Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
     end)
     |> check_result(:afk_rewards_increments)
   end
 
   defp apply_item_rewards(user_id, item_rewards) do
-    item_rewards
-    |> Enum.map(fn item_reward ->
+    Enum.map(item_rewards, fn item_reward ->
       Items.get_item(item_reward.item_id)
       |> case do
         {:ok, item} ->
@@ -193,8 +190,7 @@ defmodule GameBackend.Users do
   end
 
   defp apply_unit_rewards(user_id, unit_rewards) do
-    unit_rewards
-    |> Enum.map(fn unit_reward ->
+    Enum.map(unit_rewards, fn unit_reward ->
       Units.get_unit(unit_reward.unit_id)
       |> case do
         {:ok, unit} ->
@@ -217,14 +213,14 @@ defmodule GameBackend.Users do
     |> check_result(:unit_rewards)
   end
 
-  defp check_result(result, result_name) do
+  defp check_result(result, element_name) do
     if Enum.all?(result, fn
          {:ok, _} -> true
          _ -> false
        end) do
       {:ok, result}
     else
-      {:error, "Failed to apply " <> Atom.to_string(result_name)}
+      {:error, "Failed to apply " <> Atom.to_string(element_name)}
     end
   end
 end
