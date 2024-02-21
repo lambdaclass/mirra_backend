@@ -11,6 +11,7 @@ defmodule GameBackend.Units.Skill do
     embeds_many(:effects, Effect)
     field(:targeting_strategy, TargetingStrategy)
     field(:amount_of_targets, :integer)
+    field(:cooldown, :integer)
     timestamps()
   end
 

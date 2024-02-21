@@ -45,15 +45,6 @@ defmodule Champions.Units do
   end
 
   @doc """
-  Get a unit's speed stat for battle. Buffs from items and similar belong here.
-
-  For now, we just return the base character's stat.
-  """
-  def get_speed(unit) do
-    unit.character.base_speed
-  end
-
-  @doc """
   Get a unit's armor stat for battle. Buffs from items and similar belong here.
 
   For now, we just return the base character's stat.
