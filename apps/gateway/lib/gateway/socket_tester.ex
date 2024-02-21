@@ -98,15 +98,13 @@ defmodule SocketTester do
          })}
       )
 
-  def fight_level(pid, user_id, campaign_id, level_id),
+  def fight_level(pid, user_id, level_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:fight_level,
-              %FightLevel{user_id: user_id, campaign_id: campaign_id, level_id: level_id}}
+           request_type: {:fight_level, %FightLevel{user_id: user_id, level_id: level_id}}
          })}
       )
 

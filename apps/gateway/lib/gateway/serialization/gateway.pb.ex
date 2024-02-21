@@ -115,7 +115,6 @@ defmodule Gateway.Serialization.FightLevel do
 
   field :user_id, 1, type: :string, json_name: "userId"
   field :level_id, 2, type: :string, json_name: "levelId"
-  field :campaign_id, 3, type: :string, json_name: "campaignId"
 end
 
 defmodule Gateway.Serialization.SelectUnit do
