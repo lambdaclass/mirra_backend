@@ -315,7 +315,6 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
-
     broadcast_player_block_actions(state.game_state.game_id, player_id, true)
 
     game_state =

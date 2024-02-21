@@ -138,10 +138,11 @@ defmodule Arena.Game.Player do
 
       skill ->
         Process.send_after(
-                self(),
-                {:block_actions, player.id},
-                skill.execution_duration_ms
-              )
+          self(),
+          {:block_actions, player.id},
+          skill.execution_duration_ms
+        )
+
         skill_direction =
           skill_params.target
           |> Skill.maybe_auto_aim(player, alive_players(game_state.players))
