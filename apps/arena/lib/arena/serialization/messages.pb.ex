@@ -289,6 +289,15 @@ defmodule Arena.Serialization.Entity do
   field(:power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0)
 end
 
+defmodule Arena.Serialization.Player.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: Arena.Serialization.Effect)
+end
+
 defmodule Arena.Serialization.Player do
   @moduledoc false
 
@@ -309,6 +318,16 @@ defmodule Arena.Serialization.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
+  field(:effects, 10, repeated: true, type: Arena.Serialization.Player.EffectsEntry, map: true)
+end
+
+defmodule Arena.Serialization.Effect do
+  @moduledoc false
+
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:name, 1, type: :string)
+  field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
 end
 
 defmodule Arena.Serialization.Projectile do
@@ -367,7 +386,7 @@ end
 defmodule Arena.Serialization.AttackParameters do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:target, 1, type: Arena.Serialization.Direction)
 end
