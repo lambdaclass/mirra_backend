@@ -285,6 +285,23 @@
         "2": "veil_radiance",
         "3": "sneak"
       }
+    },
+    {
+      "name": "valtimer",
+      "active": true,
+      "base_speed": 30.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "avenge",
+        "2": "veil_radiance",
+        "3": "sneak"
+      }
     }
   ],
   "power_ups": {
