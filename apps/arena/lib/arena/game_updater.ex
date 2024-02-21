@@ -385,6 +385,8 @@ defmodule Arena.GameUpdater do
               state,
               [:game_state, :players, player_id, :aditional_info, :effects, last_id],
               Map.put(effect, :owner_id, pool_id)
+              |> Map.put(:last_application_time, 0)
+              |> Map.put(:id, last_id)
             )
             |> put_in(
               [:game_state, :last_id],
@@ -553,7 +555,6 @@ defmodule Arena.GameUpdater do
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
-        IO.inspect(pos, label: "aber pos")
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
         players =
