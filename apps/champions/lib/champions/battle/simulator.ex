@@ -23,12 +23,11 @@ defmodule Champions.Battle.Simulator do
 
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
-    units = Map.merge(team_1, team_2) |> IO.inspect(label: :units)
+    units = Map.merge(team_1, team_2)
 
     Enum.reduce_while(1..@maximum_steps, units, fn step, units ->
       new_state =
         Enum.reduce(unit_ids, units, fn unit, units ->
-          Logger.log(:info, "Process step #{step} for unit #{unit.id}")
           IO.inspect("Process step #{step} for unit #{unit.id}")
           process_step(unit, units)
         end)
