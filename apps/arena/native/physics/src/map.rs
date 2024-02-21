@@ -51,6 +51,7 @@ pub enum Category {
     Projectile,
     Obstacle,
     PowerUp,
+    Pool,
 }
 
 impl Entity {
@@ -135,6 +136,15 @@ impl Entity {
             x: self.position.x + self.direction.x * self.speed * ticks_to_move,
             y: self.position.y + self.direction.y * self.speed * ticks_to_move,
         }
+    }
+
+    pub fn move_entity_to_direction(&mut self, direction: Position, amount: f32) {
+        let position = Position {
+            x: self.position.x + direction.x * amount,
+            y: self.position.y + direction.y * amount,
+        };
+
+        self.position = position;
     }
 
     pub fn move_to_next_valid_position(&mut self, external_wall: &Entity) {
