@@ -387,34 +387,32 @@ defmodule Arena.GameUpdater do
           game_config: game_config
         } = state
       ) do
-    case Map.get(game_state.players, player_id) do
-      %{aditional_info: %{effects: player_effects}} ->
-        if Enum.any?(player_effects, fn {_effect_id, effect} -> effect.owner_id == pool.id end) do
-          {:noreply, state}
-        else
-          game_state =
-            Enum.reduce(effects_to_apply, game_state, fn effect_name, game_state ->
-              last_id = game_state.last_id + 1
-              effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+    player = Map.get(game_state.players, player_id)
 
-              put_in(
-                game_state,
-                [:players, player_id, :aditional_info, :effects, last_id],
-                Map.put(effect, :owner_id, pool.id)
-                |> Map.put(:last_application_time, 0)
-                |> Map.put(:id, last_id)
-              )
-              |> put_in(
-                [:last_id],
-                last_id
-              )
-            end)
+    if Enum.any?(player.aditional_info.effects, fn {_effect_id, effect} ->
+         effect.owner_id == pool.id
+       end) do
+      {:noreply, state}
+    else
+      game_state =
+        Enum.reduce(effects_to_apply, game_state, fn effect_name, game_state ->
+          last_id = game_state.last_id + 1
+          effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
 
-          {:noreply, %{state | game_state: game_state}}
-        end
+          put_in(
+            game_state,
+            [:players, player_id, :aditional_info, :effects, last_id],
+            Map.put(effect, :owner_id, pool.id)
+            |> Map.put(:last_application_time, 0)
+            |> Map.put(:id, last_id)
+          )
+          |> put_in(
+            [:last_id],
+            last_id
+          )
+        end)
 
-      _ ->
-        {:noreply, state}
+      {:noreply, %{state | game_state: game_state}}
     end
   end
 
