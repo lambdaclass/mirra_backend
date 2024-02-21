@@ -179,7 +179,7 @@ afk_reward_increments =
   Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
       %{
         level_id: level.id,
-        amount: 1*level_index,
+        amount: 1 * level_index,
         currency_id: scrolls_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
