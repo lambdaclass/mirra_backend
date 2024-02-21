@@ -307,7 +307,7 @@ defmodule Arena.GameUpdater do
 
     last_id = state.game_state.last_id + 1
     ## TODO: make random position
-    position = %{x: 0.0, y: 0.0}
+    position = random_position_in_map(state.game_state.external_wall.radius, state.game_state.external_wall)
     # item_config = Enum.random(state.game_config.items)
     item_config = Enum.find(state.game_config.items, fn config -> config.name == "magic_boots" end)
     item = Entities.new_item(last_id, position, item_config)
@@ -782,5 +782,28 @@ defmodule Arena.GameUpdater do
       end)
 
     {players, power_ups, items}
+  end
+
+  defp random_position_in_map(radius, external_wall) do
+    integer_radius = trunc(radius)
+    x = Enum.random(-integer_radius..integer_radius) / 1.0
+    y = Enum.random(-integer_radius..integer_radius) / 1.0
+
+    point = %{
+      id: 1,
+      shape: :point,
+      position: %{x: x, y: y},
+      radius: 0.0,
+      vertices: [],
+      speed: 0.0,
+      category: :obstacle,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+    }
+
+    case Physics.check_collisions(point, %{0 => external_wall}) do
+      [] -> random_position_in_map(integer_radius * 0.95, external_wall)
+      _ -> point.position
+    end
   end
 end
