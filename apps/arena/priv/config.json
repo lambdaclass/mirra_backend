@@ -337,7 +337,8 @@
     {
       "name": "invisible",
       "duration_ms": 4000,
-      "remove_on_action": true
+      "remove_on_action": true,
+      "effect_mechanics": {}
     },
     {
       "name": "singularity",
