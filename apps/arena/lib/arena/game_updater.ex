@@ -60,7 +60,7 @@ defmodule Arena.GameUpdater do
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
 
-  def handle_info(:update_game, %{game_state: game_state} = state) do
+  def handle_info(:update_game, %{game_state: game_state, game_config: game_config} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
 
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
@@ -72,8 +72,10 @@ defmodule Arena.GameUpdater do
     {players, power_ups} =
       game_state.players
       |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
-      |> update_collisions(game_state.players, game_state.power_ups)
+      |> update_collisions(game_state.players, Map.merge(game_state.power_ups, game_state.pools))
       |> handle_power_ups(game_state.power_ups)
+
+    handle_pools(game_state, game_config)
 
     # We need to send the exploded projectiles to the client at least once
     updated_expired_projectiles =
@@ -113,7 +115,9 @@ defmodule Arena.GameUpdater do
         game_state.external_wall.id
       )
 
-    players = apply_zone_damage(players, game_state.zone, state.game_config.game)
+    players =
+      apply_zone_damage(players, game_state.zone, state.game_config.game)
+      |> Skill.apply_effect_mechanic(game_state)
 
     game_state =
       game_state
@@ -331,6 +335,89 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info({:remove_pool, pool_id}, state) do
+    pools =
+      state.game_state.pools
+      |> Map.delete(pool_id)
+
+    players =
+      state.game_state.players
+      |> Enum.map(fn {player_id, player} ->
+        effects =
+          Enum.filter(player.aditional_info.effects, fn {_effect_id, effect} ->
+            effect.owner_id != pool_id
+          end)
+
+        {player_id,
+         put_in(
+           player,
+           [:aditional_info, :effects],
+           effects
+         )}
+      end)
+      |> Map.new()
+
+    state =
+      put_in(
+        state,
+        [:game_state, :pools],
+        pools
+      )
+      |> put_in([:game_state, :players], players)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:add_pool_effect, player_id, pool_id, effect}, state) do
+    case Map.get(state.game_state.players, player_id) do
+      %{aditional_info: %{effects: effects}} ->
+        if(Enum.any?(effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end)) do
+          {:noreply, state}
+        else
+          last_id = state.game_state.last_id + 1
+
+          state =
+            put_in(
+              state,
+              [:game_state, :players, player_id, :aditional_info, :effects, last_id],
+              Map.put(effect, :owner_id, pool_id)
+            )
+            |> put_in(
+              [:game_state, :last_id],
+              last_id
+            )
+
+          {:noreply, state}
+        end
+
+      _ ->
+        {:noreply, state}
+    end
+  end
+
+  def handle_info({:remove_pool_effect, player_id, pool_id}, state) do
+    case Map.get(state.game_state.players, player_id) do
+      %{aditional_info: %{effects: effects}} ->
+        effects_to_remove =
+          Enum.filter(effects, fn {_effect_id, effect} ->
+            effect.owner_id == pool_id
+          end)
+          |> Enum.map(fn {effect_id, _} -> effect_id end)
+
+        state =
+          put_in(
+            state,
+            [:game_state, :players, player_id, :aditional_info, :effects],
+            Map.drop(effects, effects_to_remove)
+          )
+
+        {:noreply, state}
+
+      _ ->
+        {:noreply, state}
+    end
+  end
+
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -345,7 +432,11 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
+  def handle_call(
+        {:attack, player_id, skill_key, skill_params},
+        _from,
+        state
+      ) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_skill(skill_key, skill_params, state)
@@ -446,6 +537,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
+      |> Map.put(:pools, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
 
@@ -456,6 +548,7 @@ defmodule Arena.GameUpdater do
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
+        IO.inspect(pos, label: "aber pos")
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
         players =
@@ -747,6 +840,25 @@ defmodule Arena.GameUpdater do
       else
         accs
       end
+    end)
+  end
+
+  defp handle_pools(game_state, game_config) do
+    Enum.each(game_state.players, fn {player_id, player} ->
+      colliding_pools =
+        game_state.pools
+        |> Map.filter(fn {pool_id, _pool} -> pool_id in player.collides_with end)
+
+      Enum.each(game_state.pools, fn {pool_id, pool} ->
+        if Map.has_key?(colliding_pools, pool_id) do
+          Enum.each(pool.aditional_info.effects_to_apply, fn effect_name ->
+            effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+            send(self(), {:add_pool_effect, player_id, pool_id, effect})
+          end)
+        else
+          send(self(), {:remove_pool_effect, player_id, pool_id})
+        end
+      end)
     end)
   end
 end
