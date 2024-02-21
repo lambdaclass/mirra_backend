@@ -22,14 +22,6 @@ defmodule GameBackend.Campaigns do
   end
 
   def get_campaign(campaign_id) do
-    # campaign =
-    #   Repo.all(from(l in Level, where: l.campaign == ^campaign_number))
-    #   |> Repo.preload(units: [:character, :items])
-
-    # case campaign do
-    #   [] -> {:error, :not_found}
-    #   campaign -> campaign
-    # end
     campaign =
       Repo.get(Campaign, campaign_id)
       |> Repo.preload(levels: [:units])
