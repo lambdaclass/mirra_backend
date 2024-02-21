@@ -96,7 +96,7 @@ defmodule Gateway.Serialization.GetCampaign do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field :user_id, 1, type: :string, json_name: "userId"
-  field :campaign_number, 2, type: :uint32, json_name: "campaignNumber"
+  field :campaign_id, 2, type: :string, json_name: "campaignId"
 end
 
 defmodule Gateway.Serialization.GetLevel do

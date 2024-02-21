@@ -38,7 +38,7 @@ syntax = "proto3";
   
   message GetCampaign {
     string user_id = 1;
-    uint32 campaign_number = 2;
+    string campaign_id = 2;
   }
   
   message GetLevel {

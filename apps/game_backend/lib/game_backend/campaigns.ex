@@ -26,7 +26,7 @@ defmodule GameBackend.Campaigns do
       Repo.get(Campaign, campaign_id)
       |> Repo.preload(levels: [:units])
 
-    if campaign, do: campaign, else: {:error, :not_found}
+    if campaign, do: {:ok, campaign}, else: {:error, :not_found}
   end
 
   @doc """
