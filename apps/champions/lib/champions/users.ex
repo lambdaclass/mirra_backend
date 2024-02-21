@@ -12,7 +12,6 @@ defmodule Champions.Users do
 
   @game_id 2
   @max_afk_reward_hours 12
-  @minutes_in_hour 60
 
   @doc """
   Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
@@ -166,8 +165,8 @@ defmodule Champions.Users do
     now = DateTime.utc_now()
 
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
-    minutes_since_last_claim = DateTime.diff(now, last_claim, :minute)
-    afk_reward_rate.rate * min(minutes_since_last_claim, @max_afk_reward_hours * @minutes_in_hour)
+    hours_since_last_claim = DateTime.diff(now, last_claim, :hour)
+    afk_reward_rate.rate * min(hours_since_last_claim, @max_afk_reward_hours)
   end
 
   @doc """

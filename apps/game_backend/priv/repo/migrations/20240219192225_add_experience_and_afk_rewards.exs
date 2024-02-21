@@ -5,7 +5,7 @@ defmodule GameBackend.Repo.Migrations.AddExperienceAndAfkRewards do
     create(table(:afk_reward_rates)) do
       add(:user_id, references(:users, on_delete: :delete_all))
       add(:currency_id, references(:currencies, on_delete: :delete_all))
-      add(:rate, :integer, null: false)
+      add(:rate, :float, null: false)
       timestamps()
     end
 
