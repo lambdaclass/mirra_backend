@@ -23,7 +23,7 @@ Characters.insert_character(%{
       type: "instant",
       stat_affected: "health",
       amount: -80,
-      based_on_stat: "attack",
+      stat_based_on: "attack",
       amount_format: "additive",
       targeting_strategy: "random", # TODO: Change back to nearest
       amount_of_targets: 2,
@@ -37,7 +37,7 @@ Characters.insert_character(%{
         type: "instant",
         stat_affected: "health",
         amount: -205,
-        based_on_stat: "attack",
+        stat_based_on: "attack",
         amount_format: "additive",
         targeting_strategy: "random", # TODO: Change back to nearest
         amount_of_targets: 2,
