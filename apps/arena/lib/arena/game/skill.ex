@@ -2,7 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
-  alias Arena.Entities
+  alias Arena.{Entities, Utils}
   alias Arena.Game.Player
 
   def do_mechanic(game_state, player, mechanics, skill_params) when is_list(mechanics) do
@@ -233,6 +233,6 @@ defmodule Arena.Game.Skill do
   end
 
   def maybe_auto_aim(skill_direction, _player, _entities) do
-    skill_direction
+    skill_direction |> Utils.normalize()
   end
 end
