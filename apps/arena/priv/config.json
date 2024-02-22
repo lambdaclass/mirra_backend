@@ -47,11 +47,11 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 60000,
-    "zone_stop_interval_ms": 30000,
+    "zone_shrink_start_ms": 35000,
+    "zone_stop_interval_ms": 13000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
-    "zone_damage": 10,
+    "zone_damage": 9,
     "item_spawn_interval_ms": 15000
   },
   "skills": [
@@ -61,6 +61,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "circle_hit": {
@@ -77,6 +78,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 300,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "cone_hit": {
@@ -94,6 +96,7 @@
       "execution_duration_ms": 1000,
       "activation_delay_ms": 200,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "leap": {
@@ -115,6 +118,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "simple_shoot": {
@@ -133,6 +137,7 @@
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "repeated_shot": {
@@ -156,6 +161,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "multi_shoot": {
@@ -178,6 +184,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": false,
       "mechanics": [
         {
           "dash": {
@@ -193,6 +200,7 @@
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "multi_cone_hit": {
@@ -212,6 +220,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 700,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "circle_hit": {
@@ -230,6 +239,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
+      "autoaim": false,
       "mechanics": [
         {
           "dash": {
@@ -313,7 +323,7 @@
       "name": "uma",
       "active": true,
       "base_speed": 30.0,
-      "base_size": 80.0,
+      "base_size": 85.0,
       "base_health": 100,
       "base_stamina": 3,
       "stamina_interval": 2000,
@@ -330,7 +340,7 @@
       "name": "valtimer",
       "active": true,
       "base_speed": 30.0,
-      "base_size": 80.0,
+      "base_size": 90.0,
       "base_health": 100,
       "base_stamina": 3,
       "stamina_interval": 2000,
@@ -359,8 +369,11 @@
         "amount_of_drops": 3
       }
     ],
-    "distance_to_power_up": 500,
-    "power_up_damage_modifier": 0.10
+    "power_up": {
+      "distance_to_power_up": 500,
+      "power_up_damage_modifier": 0.10,
+      "radius": 200.0
+    }
   },
   "effects": [
     {

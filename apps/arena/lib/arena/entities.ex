@@ -35,7 +35,7 @@ defmodule Arena.Entities do
         character_name: character.name,
         forced_movement: false,
         power_ups: 0,
-        power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
+        power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
         effects: %{}
@@ -72,14 +72,14 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_power_up(id, position, direction, owner_id) do
+  def new_power_up(id, position, direction, owner_id, power_up) do
     %{
       id: id,
       category: :power_up,
       shape: :circle,
       name: "Power Up" <> Integer.to_string(id),
       position: position,
-      radius: 10.0,
+      radius: power_up.radius,
       vertices: [],
       speed: 0.0,
       direction: direction,

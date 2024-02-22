@@ -55,6 +55,10 @@ defmodule Arena.Game.Player do
     Map.filter(players, fn {_, player} -> alive?(player) end)
   end
 
+  def targetable_players(players) do
+    Map.filter(players, fn {_, player} -> alive?(player) and not invisible?(player) end)
+  end
+
   def stamina_full?(player) do
     player.aditional_info.available_stamina == player.aditional_info.max_stamina
   end
@@ -155,7 +159,7 @@ defmodule Arena.Game.Player do
 
         skill_direction =
           skill_params.target
-          |> Skill.maybe_auto_aim(player, alive_players(game_state.players))
+          |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
         Process.send_after(
           self(),
@@ -243,8 +247,7 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        player =
-          Enum.reduce(item.effects, player, &apply_effect/2)
+        player = Enum.reduce(item.effects, player, &apply_effect/2)
 
         put_in(player, [:aditional_info, :inventory], nil)
 
@@ -254,6 +257,11 @@ defmodule Arena.Game.Player do
 
   def remove_damage_immunity(player) do
     put_in(player, [:aditional_info, :damage_immunity], false)
+  end
+
+  def invisible?(player) do
+    get_in(player, [:aditional_info, :effects])
+    |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
   end
 
   ####################
