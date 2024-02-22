@@ -15,6 +15,10 @@ defmodule Physics do
     do: :erlang.nif_error(:nif_not_loaded)
 
   def move_entity(_entity, _ticks_to_move, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
+
+  def move_entity_to_position(_entity, _new_position, _external_wall),
+    do: :erlang.nif_error(:nif_not_loaded)
+
   def add_angle_to_direction(_direction, _angle), do: :erlang.nif_error(:nif_not_loaded)
 
   def calculate_triangle_vertices(_starting_point, _direction, _range, _angle),

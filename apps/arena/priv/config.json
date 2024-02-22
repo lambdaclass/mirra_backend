@@ -47,7 +47,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 20000,
+    "zone_shrink_start_ms": 999999999,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
@@ -98,6 +98,7 @@
           "leap": {
             "range": 1000.0,
             "duration_ms": 800,
+            "inmune_while_executing": true,
             "on_arrival_mechanic": {
               "circle_hit": {
                 "damage": 15,
@@ -175,7 +176,8 @@
         {
           "dash": {
             "speed": 60.0,
-            "duration": 500
+            "duration": 500,
+            "inmune_while_executing": true
           }
         }
       ]
@@ -227,7 +229,25 @@
         {
           "dash": {
             "speed": 60.0,
-            "duration": 500
+            "duration": 500,
+            "inmune_while_executing": true
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "warp",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 300,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "teleport": {
+            "range": 1000,
+            "inmune_while_executing": true,
+            "duration_ms": 300
           }
         }
       ],
@@ -300,7 +320,7 @@
       "skills": {
         "1": "avenge",
         "2": "veil_radiance",
-        "3": "sneak"
+        "3": "warp"
       }
     }
   ],
