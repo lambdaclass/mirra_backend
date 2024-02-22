@@ -268,12 +268,14 @@ defmodule Arena.Game.Skill do
     Physics.add_angle_to_direction(direction, angle)
   end
 
-  def maybe_auto_aim(%{x: x, y: y} = _skill_direction, player, entities)
-      when x == 0.0 and y == 0.0 do
-    Physics.nearest_entity_direction(player, entities)
+  def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
+    case skill.autoaim do
+      true -> Physics.nearest_entity_direction(player, entities)
+      false -> player.direction |> Utils.normalize()
+    end
   end
 
-  def maybe_auto_aim(skill_direction, _player, _entities) do
+  def maybe_auto_aim(skill_direction, _skill, _player, _entities) do
     skill_direction |> Utils.normalize()
   end
 end
