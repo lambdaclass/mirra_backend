@@ -319,7 +319,7 @@ defmodule Arena.Serialization.Projectile do
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
   field(:status, 3, type: Arena.Serialization.ProjectileStatus, enum: true)
-  field(:name, 4, type: :string)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule Arena.Serialization.Obstacle do

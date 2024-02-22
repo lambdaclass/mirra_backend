@@ -121,7 +121,7 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, repeated_shot),
         randomize_direction_in_angle(player.direction, repeated_shot.angle),
         player.id,
-        skill_params.name,
+        skill_params.skill_key,
         repeated_shot
       )
 
@@ -143,7 +143,7 @@ defmodule Arena.Game.Skill do
           get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
-          skill_params.name,
+          skill_params.skill_key,
           multishot
         )
 

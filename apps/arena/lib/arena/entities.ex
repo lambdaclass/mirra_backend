@@ -45,7 +45,7 @@ defmodule Arena.Entities do
         position,
         direction,
         owner_id,
-        skill_name,
+        skill_key,
         config_params
       ) do
     %{
@@ -60,7 +60,7 @@ defmodule Arena.Entities do
       direction: direction,
       is_moving: true,
       aditional_info: %{
-        name: skill_name,
+        skill_key: skill_key,
         damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
@@ -164,7 +164,7 @@ defmodule Arena.Entities do
        damage: entity.aditional_info.damage,
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status,
-       name: entity.aditional_info.name
+       skill_key: entity.aditional_info.skill_key
      }}
   end
 
