@@ -45,6 +45,7 @@ defmodule Champions.Battle.Simulator do
   require Logger
 
   @maximum_steps 500
+  @ultimate_energy_cost 500
 
   @doc """
   Runs a battle between two teams.
@@ -143,7 +144,7 @@ defmodule Champions.Battle.Simulator do
   defp can_attack(_unit), do: true
 
   # Has enough energy?
-  defp can_cast_ultimate_skill(unit), do: unit.energy >= 500
+  defp can_cast_ultimate_skill(unit), do: unit.energy >= @ultimate_energy_cost
 
   # Is cooldown ready?
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
