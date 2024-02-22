@@ -146,6 +146,7 @@ message Projectile {
   uint64 damage = 1;
   uint64 owner_id = 2;
   ProjectileStatus status = 3;
+  string skill_key = 4;
 }
 
 enum ProjectileStatus {

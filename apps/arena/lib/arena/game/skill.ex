@@ -78,7 +78,7 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, mechanic},
+        {:trigger_mechanic, player.id, mechanic, skill_params},
         i * multi_cone_hit.interval_ms
       )
     end)
@@ -100,7 +100,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, _skill_params) do
+  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
@@ -108,7 +108,7 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}},
+        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}, skill_params},
         repeated_shot.interval_ms
       )
     end
@@ -121,8 +121,8 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, repeated_shot),
         randomize_direction_in_angle(player.direction, repeated_shot.angle),
         player.id,
-        repeated_shot.remove_on_collision,
-        repeated_shot.speed
+        skill_params.skill_key,
+        repeated_shot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
@@ -132,7 +132,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:multi_shoot, multishot}, _skill_params) do
+  def do_mechanic(game_state, player, {:multi_shoot, multishot}, skill_params) do
     calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
@@ -143,8 +143,8 @@ defmodule Arena.Game.Skill do
           get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
-          multishot.remove_on_collision,
-          multishot.speed
+          skill_params.skill_key,
+          multishot
         )
 
       Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
@@ -164,8 +164,8 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, simple_shoot),
         player.direction,
         player.id,
-        true,
-        10.0
+        "SLINGSHOT",
+        simple_shoot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
@@ -265,6 +265,6 @@ defmodule Arena.Game.Skill do
   end
 
   def maybe_auto_aim(skill_direction, _player, _entities) do
-    skill_direction
+    skill_direction |> Utils.normalize()
   end
 end
