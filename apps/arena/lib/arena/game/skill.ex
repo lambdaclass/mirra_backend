@@ -222,6 +222,7 @@ defmodule Arena.Game.Skill do
         |> Map.put(last_id, effect)
 
       put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+      |> put_in([:last_id], last_id)
     end)
   end
 

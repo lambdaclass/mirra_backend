@@ -335,8 +335,11 @@
         "amount_of_drops": 3
       }
     ],
-    "distance_to_power_up": 500,
-    "power_up_damage_modifier": 0.10
+    "power_up": {
+      "distance_to_power_up": 500,
+      "power_up_damage_modifier": 0.10,
+      "radius": 200.0
+    }
   },
   "effects": [
     {
