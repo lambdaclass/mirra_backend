@@ -88,12 +88,12 @@ defmodule Champions.Battle.Simulator do
         not can_attack(unit) ->
           current_state
 
-        can_cast_ultimate(unit) ->
+        can_cast_ultimate_skill(unit) ->
           unit
           |> cast_skill(unit.ultimate_skill, initial_step_state, current_state)
           |> put_in([unit.id, :energy], 0)
 
-        can_cast_basic(unit) ->
+        can_cast_basic_skill(unit) ->
           new_state = cast_skill(unit, unit.basic_skill, initial_step_state, current_state)
 
           new_state
@@ -143,10 +143,10 @@ defmodule Champions.Battle.Simulator do
   defp can_attack(_unit), do: true
 
   # Has enough energy?
-  defp can_cast_ultimate(unit), do: unit.energy >= 500
+  defp can_cast_ultimate_skill(unit), do: unit.energy >= 500
 
   # Is cooldown ready?
-  defp can_cast_basic(unit), do: unit.basic_skill.remaining_cooldown <= 0
+  defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
   defp cast_skill(unit, skill, initial_step_state, current_state) do
     target_ids = choose_targets(unit, skill, initial_step_state)
