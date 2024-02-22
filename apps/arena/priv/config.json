@@ -124,7 +124,7 @@
       ]
     },
     {
-      "name": "DENIAL OF SERVICE",
+      "name": "denial_of_service",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
@@ -146,7 +146,7 @@
       ]
     },
     {
-      "name": "SLINGSHOT",
+      "name": "slingshot",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
@@ -287,8 +287,8 @@
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
       "skills": {
-        "1": "SLINGSHOT",
-        "2": "DENIAL OF SERVICE",
+        "1": "slingshot",
+        "2": "denial_of_service",
         "3": "dash"
       }
     },

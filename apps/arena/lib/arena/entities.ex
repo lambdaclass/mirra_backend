@@ -45,9 +45,8 @@ defmodule Arena.Entities do
         position,
         direction,
         owner_id,
-        remove_on_collision,
-        speed,
-        on_explode_mechanics
+        skill_key,
+        config_params
       ) do
     %{
       id: id,
@@ -61,12 +60,12 @@ defmodule Arena.Entities do
       direction: direction,
       is_moving: true,
       aditional_info: %{
-        name: skill_name,
+        skill_key: skill_key,
         damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: remove_on_collision,
-        on_explode_mechanics: on_explode_mechanics
+        remove_on_collision: config_params.remove_on_collision,
+        on_explode_mechanics: config_params.on_explode_mechanics
       }
     }
   end
@@ -166,7 +165,7 @@ defmodule Arena.Entities do
        damage: entity.aditional_info.damage,
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status,
-       name: entity.aditional_info.name
+       skill_key: entity.aditional_info.skill_key
      }}
   end
 
