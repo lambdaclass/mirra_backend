@@ -2,7 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
-  alias Arena.Entities
+  alias Arena.{Entities, Utils}
   alias Arena.Game.Player
 
   def do_mechanic(game_state, entity, player, mechanics, skill_params) when is_list(mechanics) do
@@ -208,15 +208,48 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
+  def handle_skill_effects(game_state, player, effects, game_config) do
+    effects_to_apply =
+      Enum.map(effects, fn effect_name ->
+        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+      end)
+
+    effects =
+      get_in(game_state, [:players, player.id, :aditional_info, :effects])
+      |> Map.reject(fn {_, effect} -> effect.remove_on_action end)
+
+    game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+
+    Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
+      last_id = game_state.last_id + 1
+
+      Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
+
+      effects =
+        get_in(game_state, [:players, player.id, :aditional_info, :effects])
+        |> Map.put(last_id, effect)
+
+      put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+      |> put_in([:last_id], last_id)
+    end)
+  end
+
   defp calculate_angle_directions(amount, angle_between, base_direction) do
-    middle = if rem(amount, 2) == 1, do: [base_direction], else: []
+    base_direction_normalized = Utils.normalize(base_direction)
+    middle = if rem(amount, 2) == 1, do: [base_direction_normalized], else: []
     side_amount = div(amount, 2)
     angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
 
     {add_side, sub_side} =
       Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
-        add_side_acc = [Physics.add_angle_to_direction(base_direction, angle) | add_side_acc]
-        sub_side_acc = [Physics.add_angle_to_direction(base_direction, -angle) | sub_side_acc]
+        add_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, angle) | add_side_acc
+        ]
+
+        sub_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, -angle) | sub_side_acc
+        ]
+
         {add_side_acc, sub_side_acc}
       end)
 
@@ -241,6 +274,6 @@ defmodule Arena.Game.Skill do
   end
 
   def maybe_auto_aim(skill_direction, _player, _entities) do
-    skill_direction
+    skill_direction |> Utils.normalize()
   end
 end

@@ -47,7 +47,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 99999999,
+    "zone_shrink_start_ms": 60000,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
@@ -67,7 +67,8 @@
             "range": 1000.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "hit",
@@ -83,7 +84,8 @@
             "angle": 45.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "leap",
@@ -121,7 +123,8 @@
             "radius": 10.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "denial_of_service",
@@ -143,7 +146,8 @@
             "radius": 10.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "slingshot",
@@ -164,7 +168,8 @@
             "radius": 10.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "dash",
@@ -197,21 +202,25 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "veil_radiance",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
-      "activation_delay_ms": 0,
+      "activation_delay_ms": 700,
       "is_passive": false,
       "mechanics": [
         {
           "circle_hit": {
             "damage": 15,
-            "range": 1000.0
+            "range": 500.0
           }
         }
+      ],
+      "effects_to_apply": [
+        "invisible"
       ]
     },
     {
@@ -342,7 +351,17 @@
         "amount_of_drops": 3
       }
     ],
-    "distance_to_power_up": 500,
-    "power_up_damage_modifier": 0.10
-  }
+    "power_up": {
+      "distance_to_power_up": 500,
+      "power_up_damage_modifier": 0.10,
+      "radius": 200.0
+    }
+  },
+  "effects": [
+    {
+      "name": "invisible",
+      "duration_ms": 4000,
+      "remove_on_action": true
+    }
+  ]
 }

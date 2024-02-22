@@ -134,6 +134,12 @@ message Player {
   bool recharging_stamina = 7;
   string character_name = 8;
   uint64 power_ups = 9;
+  map<uint64, Effect> effects = 10;
+}
+
+message Effect {
+  string name = 1;
+  uint32 duration_ms = 2;
 }
 
 message Projectile {
@@ -202,6 +208,7 @@ message GameAction {
 
 message Zone {
   float radius = 1;
+  bool enabled = 2;
 }
 
 message KillEntry {
