@@ -45,8 +45,9 @@ defmodule Arena.Entities do
         position,
         direction,
         owner_id,
-        skill_name,
-        config_params
+        remove_on_collision,
+        speed,
+        on_explode_mechanics
       ) do
     %{
       id: id,
@@ -64,7 +65,8 @@ defmodule Arena.Entities do
         damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: config_params.remove_on_collision
+        remove_on_collision: remove_on_collision,
+        on_explode_mechanics: on_explode_mechanics
       }
     }
   end

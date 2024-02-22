@@ -5,21 +5,24 @@ defmodule Arena.Game.Skill do
   alias Arena.Entities
   alias Arena.Game.Player
 
-  def do_mechanic(game_state, player, mechanics, skill_params) when is_list(mechanics) do
+  def do_mechanic(game_state, entity, player, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
-      do_mechanic(game_state_acc, player, mechanic, skill_params)
+      do_mechanic(game_state_acc, entity, player, mechanic, skill_params)
     end)
   end
 
-  def do_mechanic(game_state, player, {:circle_hit, circle_hit}, _skill_params) do
+  def do_mechanic(game_state, entity, player, {:circle_hit, circle_hit}, _skill_params) do
     circular_damage_area =
-      Entities.make_circular_area(player.id, player.position, circle_hit.range)
+      Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
 
-    alive_players = Player.alive_players(game_state.players)
+    alive_players =
+      Player.alive_players(game_state.players)
+      |> Map.filter(fn {_, alive_player} -> alive_player.id != player.id end)
 
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        IO.inspect("damage to #{player_id}")
         real_damage = Player.calculate_real_damage(player, circle_hit.damage)
 
         target_player =
@@ -38,16 +41,16 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:cone_hit, cone_hit}, _skill_params) do
+  def do_mechanic(game_state, entity, player, {:cone_hit, cone_hit}, _skill_params) do
     triangle_points =
       Physics.calculate_triangle_vertices(
-        player.position,
-        player.direction,
+        entity.position,
+        entity.direction,
         cone_hit.range,
         cone_hit.angle
       )
 
-    cone_area = Entities.make_polygon(player.id, triangle_points)
+    cone_area = Entities.make_polygon(entity.id, triangle_points)
 
     alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
 
@@ -72,7 +75,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, skill_params) do
+  def do_mechanic(game_state, entity, player, {:multi_cone_hit, multi_cone_hit}, skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
       mechanic = {:cone_hit, multi_cone_hit}
 
@@ -83,10 +86,16 @@ defmodule Arena.Game.Skill do
       )
     end)
 
-    do_mechanic(game_state, player, {:cone_hit, multi_cone_hit}, skill_params)
+    do_mechanic(game_state, entity, player, {:cone_hit, multi_cone_hit}, skill_params)
   end
 
-  def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
+  def do_mechanic(
+        game_state,
+        _entity,
+        player,
+        {:dash, %{speed: speed, duration: duration}},
+        _skill_params
+      ) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 
     player =
@@ -100,7 +109,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, skill_params) do
+  def do_mechanic(game_state, _entity, player, {:repeated_shot, repeated_shot}, skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
@@ -121,8 +130,9 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, repeated_shot),
         randomize_direction_in_angle(player.direction, repeated_shot.angle),
         player.id,
-        skill_params.name,
-        repeated_shot
+        repeated_shot.remove_on_collision,
+        repeated_shot.speed,
+        repeated_shot.on_explode_mechanics
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
@@ -132,7 +142,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:multi_shoot, multishot}, skill_params) do
+  def do_mechanic(game_state, _entity, player, {:multi_shoot, multishot}, skill_params) do
     calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
@@ -143,8 +153,9 @@ defmodule Arena.Game.Skill do
           get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
-          skill_params.name,
-          multishot
+          multishot.remove_on_collision,
+          multishot.speed,
+          multishot.on_explode_mechanics
         )
 
       Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
@@ -155,7 +166,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, player, {:simple_shoot, simple_shoot}, _skill_params) do
+  def do_mechanic(game_state, _entity, player, {:simple_shoot, simple_shoot}, _skill_params) do
     last_id = game_state.last_id + 1
 
     projectile =
@@ -164,8 +175,9 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, simple_shoot),
         player.direction,
         player.id,
-        "SLINGSHOT",
-        simple_shoot
+        true,
+        10.0,
+        %{}
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
@@ -175,7 +187,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{skill_direction: skill_direction}) do
+  def do_mechanic(game_state, _entity, player, {:leap, leap}, %{skill_direction: skill_direction}) do
     Process.send_after(
       self(),
       {:stop_leap, player.id, player.speed, leap.on_arrival_mechanic},

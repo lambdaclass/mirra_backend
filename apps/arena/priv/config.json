@@ -47,7 +47,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 20000,
+    "zone_shrink_start_ms": 99999999,
     "zone_stop_interval_ms": 30000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
@@ -227,7 +227,34 @@
             "duration": 500
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "antimatter",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 300,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "mechanics": [
+        {
+          "multi_shoot": {
+            "angle_between": 10.0,
+            "amount": 1,
+            "speed": 60.0,
+            "duration_ms": 1000,
+            "remove_on_collision": true,
+            "projectile_offset": 100,
+            "on_explode_mechanics": {
+              "circle_hit": {
+                "damage": 15,
+                "range": 500.0
+              }
+            }
+          }
+        }
+      ],
+      "effects_to_apply": []
     }
   ],
   "characters": [
@@ -278,6 +305,23 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "avenge",
+        "2": "veil_radiance",
+        "3": "sneak"
+      }
+    },
+    {
+      "name": "valtimer",
+      "active": true,
+      "base_speed": 30.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "antimatter",
         "2": "veil_radiance",
         "3": "sneak"
       }
