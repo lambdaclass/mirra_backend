@@ -47,6 +47,22 @@ fn move_entity(entity: Entity, ticks_to_move: f32, external_wall: Entity) -> Ent
 }
 
 #[rustler::nif()]
+fn move_entity_to_position(
+    entity: Entity,
+    new_position: Position,
+    external_wall: Entity,
+) -> Entity {
+    let mut entity: Entity = entity;
+    entity.position = new_position;
+
+    if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
+        entity.move_to_next_valid_position(&external_wall);
+    }
+
+    entity
+}
+
+#[rustler::nif()]
 /// Check players inside the player_id radius
 /// Return a list of the players id inside the radius Vec<player_id>
 fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
@@ -158,6 +174,7 @@ rustler::init!(
         calculate_triangle_vertices,
         get_direction_from_positions,
         calculate_speed,
-        nearest_entity_direction
+        nearest_entity_direction,
+        move_entity_to_position
     ]
 );
