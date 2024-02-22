@@ -1,6 +1,7 @@
 defmodule GameBackend.Campaigns.SuperCampaign do
   @moduledoc """
-  SuperCampaign
+  SuperCampaigns are sequential collections of Campaigns.
+  A user may only be on one Campaign of a SuperCampaign at the same time.
   """
   alias GameBackend.Campaigns.Campaign
 
