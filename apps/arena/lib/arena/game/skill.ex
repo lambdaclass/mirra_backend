@@ -226,14 +226,21 @@ defmodule Arena.Game.Skill do
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
-    middle = if rem(amount, 2) == 1, do: [base_direction], else: []
+    base_direction_normalized = Utils.normalize(base_direction)
+    middle = if rem(amount, 2) == 1, do: [base_direction_normalized], else: []
     side_amount = div(amount, 2)
     angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
 
     {add_side, sub_side} =
       Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
-        add_side_acc = [Physics.add_angle_to_direction(base_direction, angle) | add_side_acc]
-        sub_side_acc = [Physics.add_angle_to_direction(base_direction, -angle) | sub_side_acc]
+        add_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, angle) | add_side_acc
+        ]
+
+        sub_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, -angle) | sub_side_acc
+        ]
+
         {add_side_acc, sub_side_acc}
       end)
 
