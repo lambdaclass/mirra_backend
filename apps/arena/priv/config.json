@@ -67,7 +67,8 @@
             "range": 1000.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "hit",
@@ -83,7 +84,8 @@
             "angle": 45.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "leap",
@@ -121,7 +123,8 @@
             "radius": 10.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "denial_of_service",
@@ -143,7 +146,8 @@
             "radius": 10.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "slingshot",
@@ -164,7 +168,8 @@
             "radius": 10.0
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "dash",
@@ -197,21 +202,25 @@
             "amount": 3
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     },
     {
       "name": "veil_radiance",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
-      "activation_delay_ms": 0,
+      "activation_delay_ms": 700,
       "is_passive": false,
       "mechanics": [
         {
           "circle_hit": {
             "damage": 15,
-            "range": 1000.0
+            "range": 500.0
           }
         }
+      ],
+      "effects_to_apply": [
+        "invisible"
       ]
     },
     {
@@ -227,7 +236,8 @@
             "duration": 500
           }
         }
-      ]
+      ],
+      "effects_to_apply": []
     }
   ],
   "characters": [
@@ -281,6 +291,23 @@
         "2": "veil_radiance",
         "3": "sneak"
       }
+    },
+    {
+      "name": "valtimer",
+      "active": true,
+      "base_speed": 30.0,
+      "base_size": 80.0,
+      "base_health": 100,
+      "base_stamina": 3,
+      "stamina_interval": 2000,
+      "max_inventory_size": 1,
+      "natural_healing_interval": 1000,
+      "natural_healing_damage_interval": 5000,
+      "skills": {
+        "1": "avenge",
+        "2": "veil_radiance",
+        "3": "sneak"
+      }
     }
   ],
   "power_ups": {
@@ -300,5 +327,12 @@
     ],
     "distance_to_power_up": 500,
     "power_up_damage_modifier": 0.10
-  }
+  },
+  "effects": [
+    {
+      "name": "invisible",
+      "duration_ms": 4000,
+      "remove_on_action": true
+    }
+  ]
 }

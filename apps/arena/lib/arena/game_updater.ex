@@ -171,6 +171,25 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
+  def handle_info(
+        {:delayed_effect_application, _player_id, nil},
+        state
+      ) do
+    {:noreply, state}
+  end
+
+  def handle_info(
+        {:delayed_effect_application, player_id, effects_to_apply},
+        %{
+          game_state: game_state,
+          game_config: game_config
+        } = state
+      ) do
+    player = Map.get(game_state.players, player_id)
+    game_state = Skill.handle_skill_effects(game_state, player, effects_to_apply, game_config)
+    {:noreply, %{state | game_state: game_state}}
+  end
+
   # End game
   def handle_info(:game_ended, state) do
     {:stop, :normal, state}
@@ -209,7 +228,11 @@ defmodule Arena.GameUpdater do
   def handle_info(:start_zone_shrink, state) do
     Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
     send(self(), :zone_shrink)
-    state = put_in(state, [:game_state, :zone, :shrinking], :enabled)
+
+    state =
+      put_in(state, [:game_state, :zone, :shrinking], :enabled)
+      |> put_in([:game_state, :zone, :enabled], true)
+
     {:noreply, state}
   end
 
@@ -295,6 +318,23 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info({:remove_effect, player_id, effect_id}, state) do
+    case Map.get(state.game_state.players, player_id) do
+      %{aditional_info: %{effects: %{^effect_id => _effect} = effects}} ->
+        state =
+          put_in(
+            state,
+            [:game_state, :players, player_id, :aditional_info, :effects],
+            Map.delete(effects, effect_id)
+          )
+
+        {:noreply, state}
+
+      _ ->
+        {:noreply, state}
+    end
+  end
+
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do
     player =
       state.game_state.players
@@ -312,7 +352,7 @@ defmodule Arena.GameUpdater do
   def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, skill_params, state.game_state)
+      |> Player.use_skill(skill_key, skill_params, state)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -411,7 +451,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:zone, %{radius: config.map.radius, shrinking: :disabled})
+      |> Map.put(:zone, %{radius: config.map.radius, enabled: false, shrinking: :disabled})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
