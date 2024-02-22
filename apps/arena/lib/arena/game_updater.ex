@@ -390,6 +390,7 @@ defmodule Arena.GameUpdater do
              game_id: state.game_id,
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
+             obstacles: complete_entities(state.obstacles),
              power_ups: complete_entities(state.power_ups),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -447,6 +448,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:players, %{})
       |> Map.put(:power_ups, %{})
       |> Map.put(:projectiles, %{})
+      |> Map.put(:obstacles, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})

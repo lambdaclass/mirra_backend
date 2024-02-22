@@ -12,8 +12,14 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:circle_hit, circle_hit}, _skill_params) do
+    last_id = game_state.last_id + 1
+
     circular_damage_area =
-      Entities.make_circular_area(player.id, player.position, circle_hit.range)
+      Entities.make_circular_area(last_id, player.position, circle_hit.range)
+
+    game_state = game_state
+    |> Map.put(:last_id, last_id)
+    |> put_in([:obstacles, circular_damage_area.id], circular_damage_area)
 
     alive_players = Player.alive_players(game_state.players)
 

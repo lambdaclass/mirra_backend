@@ -161,6 +161,13 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :obstacle do
+    {:obstacle,
+     %Arena.Serialization.Obstacle{
+       color: "red"
+     }}
+  end
+
   def maybe_add_custom_info(entity) when entity.category == :power_up do
     {:power_up,
      %Arena.Serialization.PowerUp{

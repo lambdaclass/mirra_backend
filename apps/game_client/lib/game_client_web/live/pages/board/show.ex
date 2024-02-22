@@ -93,7 +93,23 @@ defmodule GameClientWeb.BoardLive.Show do
         }
       end)
 
-    {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles})}
+    obstacles =
+      game_state.obstacles
+      |> Enum.map(fn {_entity_id, entity} ->
+        %{
+          id: entity.id,
+          category: entity.category,
+          shape: entity.shape,
+          name: entity.name,
+          x: entity.position.x / 5 + 1000,
+          y: entity.position.y / 5 + 1000,
+          radius: entity.radius / 5,
+          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
+          is_colliding: entity.collides_with |> Enum.any?()
+        }
+      end)
+
+    {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles ++ obstacles})}
   end
 
   defp handle_game_event({:finished, finished_event}, socket) do
