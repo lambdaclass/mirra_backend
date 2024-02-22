@@ -22,7 +22,6 @@ defmodule Arena.Game.Skill do
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        IO.inspect("damage to #{player_id}")
         real_damage = Player.calculate_real_damage(player, circle_hit.damage)
 
         target_player =
@@ -164,7 +163,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, _entity, player, {:simple_shoot, simple_shoot}, _skill_params) do
+  def do_mechanic(game_state, _entity, player, {:simple_shoot, simple_shoot}, skill_params) do
     last_id = game_state.last_id + 1
 
     projectile =
@@ -173,9 +172,8 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, simple_shoot),
         player.direction,
         player.id,
-        true,
-        10.0,
-        %{}
+        skill_params.skill_key,
+        simple_shoot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
