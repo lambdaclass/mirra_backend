@@ -46,8 +46,8 @@ defmodule Champions.Battle do
         :loss
       end
     else
-      {:user, {:error, reason}} -> {:error, {:user, reason}}
-      {:level, {:error, reason}} -> {:error, {:level, reason}}
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+      {:level, {:error, :not_found}} -> {:error, :level_not_found}
     end
   end
 
