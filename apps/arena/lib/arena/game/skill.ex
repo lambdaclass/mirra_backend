@@ -78,7 +78,7 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, mechanic},
+        {:trigger_mechanic, player.id, mechanic, skill_params},
         i * multi_cone_hit.interval_ms
       )
     end)
@@ -108,7 +108,7 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}},
+        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}, skill_params},
         repeated_shot.interval_ms
       )
     end
