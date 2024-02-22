@@ -18,7 +18,7 @@ defmodule GameBackend.Rewards do
 
   @doc """
   Gets the AfkRewardRate for a user and a currency.
-  Returns {:error, :not_found} if no AfkRewardRate is found.
+  Returns `{:error, :not_found}` if no AfkRewardRate is found.
   """
   def get_afk_reward_rate(user_id, currency_id) do
     afk_reward_rate =
