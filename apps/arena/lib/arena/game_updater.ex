@@ -154,21 +154,21 @@ defmodule Arena.GameUpdater do
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, player, on_arrival_mechanic, %{})
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
 
     {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_info({:trigger_mechanic, player_id, mechanic, skill_params}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, player, mechanic, skill_params)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanic, skill_params)
     state = Map.put(state, :game_state, game_state)
     {:noreply, state}
   end
 
   def handle_info({:delayed_skill_mechanics, player_id, mechanics, skill_params}, state) do
     player = Map.get(state.game_state.players, player_id)
-    game_state = Skill.do_mechanic(state.game_state, player, player, mechanics, skill_params)
+    game_state = Skill.do_mechanic(state.game_state, player, mechanics, skill_params)
     {:noreply, %{state | game_state: game_state}}
   end
 
@@ -770,12 +770,9 @@ defmodule Arena.GameUpdater do
     Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
       if projectile.aditional_info.status == :EXPLODED &&
            Map.get(projectile.aditional_info, :on_explode_mechanics) do
-        player = get_in(game_state, [:players, projectile.aditional_info.owner_id])
-
         Skill.do_mechanic(
           game_state,
           projectile,
-          player,
           projectile.aditional_info.on_explode_mechanics,
           %{}
         )
