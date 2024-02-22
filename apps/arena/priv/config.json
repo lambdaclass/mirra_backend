@@ -47,11 +47,11 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 60000,
-    "zone_stop_interval_ms": 30000,
+    "zone_shrink_start_ms": 35000,
+    "zone_stop_interval_ms": 13000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
-    "zone_damage": 10
+    "zone_damage": 9
   },
   "skills": [
     {
@@ -289,7 +289,7 @@
       "name": "uma",
       "active": true,
       "base_speed": 30.0,
-      "base_size": 80.0,
+      "base_size": 85.0,
       "base_health": 100,
       "base_stamina": 3,
       "stamina_interval": 2000,
@@ -306,7 +306,7 @@
       "name": "valtimer",
       "active": true,
       "base_speed": 30.0,
-      "base_size": 80.0,
+      "base_size": 90.0,
       "base_health": 100,
       "base_stamina": 3,
       "stamina_interval": 2000,
