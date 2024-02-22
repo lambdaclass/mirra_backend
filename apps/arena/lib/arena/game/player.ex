@@ -106,7 +106,7 @@ defmodule Arena.Game.Player do
 
     direction =
       case is_moving do
-        true -> Utils.normalize(x, y)
+        true -> Utils.normalize(%{x: x, y: y})
         _ -> player.direction
       end
 
@@ -135,9 +135,16 @@ defmodule Arena.Game.Player do
       }) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
+        Process.send(self(), {:block_actions, player.id}, [])
         game_state
 
       skill ->
+        Process.send_after(
+          self(),
+          {:block_actions, player.id},
+          skill.execution_duration_ms
+        )
+
         skill_direction =
           skill_params.target
           |> Skill.maybe_auto_aim(player, alive_players(game_state.players))

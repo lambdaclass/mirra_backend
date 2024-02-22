@@ -30,8 +30,8 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:move, player_id, direction, timestamp})
   end
 
-  def attack(game_pid, player_id, skill, skill_params) do
-    GenServer.call(game_pid, {:attack, player_id, skill, skill_params})
+  def attack(game_pid, player_id, skill, skill_params, timestamp) do
+    GenServer.call(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
   ##########################
@@ -318,6 +318,11 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info({:block_actions, player_id}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+    {:noreply, state}
+  end
+
   def handle_info({:remove_effect, player_id, effect_id}, state) do
     case Map.get(state.game_state.players, player_id) do
       %{aditional_info: %{effects: %{^effect_id => _effect} = effects}} ->
@@ -349,10 +354,13 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:attack, player_id, skill_key, skill_params}, _from, state) do
+  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
+
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_skill(skill_key, skill_params, state)
+      |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -375,6 +383,10 @@ defmodule Arena.GameUpdater do
   ##########################
   # Broadcast
   ##########################
+
+  defp broadcast_player_block_actions(game_id, player_id, value) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
+  end
 
   # Broadcast game update to all players
   defp broadcast_player_dead(game_id, player_id) do
