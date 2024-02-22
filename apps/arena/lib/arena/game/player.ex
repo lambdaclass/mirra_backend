@@ -130,7 +130,9 @@ defmodule Arena.Game.Player do
     player.aditional_info.forced_movement
   end
 
-  def use_skill(player, skill_key, skill_params, game_state) do
+  def use_skill(player, skill_key, skill_params, %{
+        game_state: game_state
+      }) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         Process.send(self(), {:block_actions, player.id}, [])
@@ -151,6 +153,12 @@ defmodule Arena.Game.Player do
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
            Map.merge(skill_params, %{skill_direction: skill_direction})},
+          skill.activation_delay_ms
+        )
+
+        Process.send_after(
+          self(),
+          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply)},
           skill.activation_delay_ms
         )
 
