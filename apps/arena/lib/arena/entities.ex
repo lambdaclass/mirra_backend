@@ -19,6 +19,7 @@ defmodule Arena.Entities do
       direction: direction,
       is_moving: false,
       aditional_info: %{
+        damage_immunity: false,
         health: character.base_health,
         base_health: character.base_health,
         skills: character.skills,

@@ -145,7 +145,10 @@ defmodule Arena.Game.Player do
         Process.send_after(
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
-           Map.merge(skill_params, %{skill_direction: skill_direction})},
+           Map.merge(skill_params, %{
+             skill_direction: skill_direction,
+             skill_target: skill_params.target
+           })},
           skill.activation_delay_ms
         )
 
@@ -257,5 +260,14 @@ defmodule Arena.Game.Player do
       current_actions ++ [%{action: :MOVING, duration: 0}]
     end
     |> Enum.uniq()
+  end
+
+  def apply_effect({:damage_immunity, damage_immunity}, player) do
+    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
+    put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  def remove_damage_immunity(player) do
+    put_in(player, [:aditional_info, :damage_immunity], false)
   end
 end
