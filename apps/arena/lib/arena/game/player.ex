@@ -152,7 +152,8 @@ defmodule Arena.Game.Player do
         Process.send_after(
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
-           Map.merge(skill_params, %{skill_direction: skill_direction})},
+           Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
+           |> Map.merge(skill)},
           skill.activation_delay_ms
         )
 
