@@ -160,7 +160,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
-      "autoaim": false,
+      "autoaim": true,
       "mechanics": [
         {
           "multi_shoot": {
