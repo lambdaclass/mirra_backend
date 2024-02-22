@@ -336,10 +336,7 @@ defmodule Arena.GameUpdater do
         state.game_state.external_wall
       )
 
-    # item_config = Enum.random(state.game_config.items)
-    item_config =
-      Enum.find(state.game_config.items, fn config -> config.name == "magic_boots" end)
-
+    item_config = Enum.random(state.game_config.items)
     item = Entities.new_item(last_id, position, item_config)
 
     state =

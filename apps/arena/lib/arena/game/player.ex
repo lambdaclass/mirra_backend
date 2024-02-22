@@ -252,25 +252,6 @@ defmodule Arena.Game.Player do
     end
   end
 
-  def apply_effect({:recover_stamina, recover_stamina}, player) do
-    change_stamina(player, recover_stamina)
-  end
-
-  def apply_effect({:speed_boost, speed_boost}, player) do
-    Process.send_after(
-      self(),
-      {:remove_speed_boost, player.id, speed_boost.amount},
-      speed_boost.duration_ms
-    )
-
-    %{player | speed: player.speed + speed_boost.amount}
-  end
-
-  def apply_effect({:damage_immunity, damage_immunity}, player) do
-    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
-    put_in(player, [:aditional_info, :damage_immunity], true)
-  end
-
   def remove_damage_immunity(player) do
     put_in(player, [:aditional_info, :damage_immunity], false)
   end
@@ -319,5 +300,24 @@ defmodule Arena.Game.Player do
       current_actions ++ [%{action: :MOVING, duration: 0}]
     end
     |> Enum.uniq()
+  end
+
+  defp apply_effect({:recover_stamina, recover_stamina}, player) do
+    change_stamina(player, recover_stamina)
+  end
+
+  defp apply_effect({:speed_boost, speed_boost}, player) do
+    Process.send_after(
+      self(),
+      {:remove_speed_boost, player.id, speed_boost.amount},
+      speed_boost.duration_ms
+    )
+
+    %{player | speed: player.speed + speed_boost.amount}
+  end
+
+  defp apply_effect({:damage_immunity, damage_immunity}, player) do
+    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
+    put_in(player, [:aditional_info, :damage_immunity], true)
   end
 end
