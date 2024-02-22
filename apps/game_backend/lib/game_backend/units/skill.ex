@@ -19,7 +19,7 @@ defmodule GameBackend.Units.Skill do
   @doc false
   def changeset(skill, attrs \\ %{}) do
     skill
-    |> cast(attrs, [:targeting_strategy, :amount_of_targets])
+    |> cast(attrs, [:targeting_strategy, :amount_of_targets, :cooldown, :targets_allies])
     |> cast_embed(:effects)
   end
 end
