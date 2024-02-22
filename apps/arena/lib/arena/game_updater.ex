@@ -697,18 +697,16 @@ defmodule Arena.GameUpdater do
          victim,
          amount
        ) do
+    distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
+
     Enum.reduce(1..amount//1, state, fn _, state ->
       random_x =
         victim.position.x +
-          Enum.random(
-            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
-          )
+          Enum.random(-distance_to_power_up..distance_to_power_up)
 
       random_y =
         victim.position.y +
-          Enum.random(
-            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
-          )
+          Enum.random(-distance_to_power_up..distance_to_power_up)
 
       random_position = %{x: random_x, y: random_y}
       last_id = state.game_state.last_id + 1
@@ -718,7 +716,8 @@ defmodule Arena.GameUpdater do
           last_id,
           random_position,
           victim.direction,
-          victim.id
+          victim.id,
+          game_config.power_ups.power_up
         )
 
       put_in(state, [:game_state, :power_ups, last_id], power_up)
