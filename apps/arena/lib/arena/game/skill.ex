@@ -226,7 +226,7 @@ defmodule Arena.Game.Skill do
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
-    base_direction_normalized = Utils.normalize(base_direction.x, base_direction.y)
+    base_direction_normalized = Utils.normalize(base_direction)
     middle = if rem(amount, 2) == 1, do: [base_direction_normalized], else: []
     side_amount = div(amount, 2)
     angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
