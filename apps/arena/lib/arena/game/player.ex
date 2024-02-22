@@ -147,7 +147,7 @@ defmodule Arena.Game.Player do
 
         skill_direction =
           skill_params.target
-          |> Skill.maybe_auto_aim(player, alive_players(game_state.players))
+          |> Skill.maybe_auto_aim(skill, player, alive_players(game_state.players))
 
         Process.send_after(
           self(),
