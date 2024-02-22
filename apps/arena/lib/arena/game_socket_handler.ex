@@ -10,7 +10,6 @@ defmodule Arena.GameSocketHandler do
   @behaviour :cowboy_websocket
 
   @ping_interval_ms 500
-  @enable_incomming_messages_ms 12_000
 
   @impl true
   def init(req, _opts) do
@@ -39,7 +38,6 @@ defmodule Arena.GameSocketHandler do
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
-    Process.send_after(self(), :enable_incomming_messages, @enable_incomming_messages_ms)
 
     {:reply, {:binary, encoded_msg}, state}
   end

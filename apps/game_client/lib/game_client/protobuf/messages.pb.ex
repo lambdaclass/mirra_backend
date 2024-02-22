@@ -1,3 +1,13 @@
+defmodule GameClient.Protobuf.GameStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PREPARING, 0)
+  field(:RUNNING, 1)
+  field(:ENDED, 2)
+end
+
 defmodule GameClient.Protobuf.ProjectileStatus do
   @moduledoc false
 
@@ -263,6 +273,9 @@ defmodule GameClient.Protobuf.GameState do
     json_name: "powerUps",
     map: true
   )
+
+  field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
+  field(:countdown, 12, type: :int64)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -289,6 +302,15 @@ defmodule GameClient.Protobuf.Entity do
   field(:power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0)
 end
 
+defmodule GameClient.Protobuf.Player.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Effect)
+end
+
 defmodule GameClient.Protobuf.Player do
   @moduledoc false
 
@@ -309,6 +331,16 @@ defmodule GameClient.Protobuf.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
+  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
+end
+
+defmodule GameClient.Protobuf.Effect do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
 end
 
 defmodule GameClient.Protobuf.Projectile do
