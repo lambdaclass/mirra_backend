@@ -292,5 +292,5 @@ defmodule Arena.Game.Skill do
          category: :projectile,
          aditional_info: %{owner_id: owner_id}
        }),
-       do: Map.get(game_state, :players, owner_id)
+       do: get_in(game_state, [:players, owner_id])
 end
