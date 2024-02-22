@@ -73,7 +73,6 @@ defmodule Champions.Battle.Simulator do
       new_state =
         initial_step_state
         |> Enum.map(fn {id, _unit} -> id end)
-        |> Enum.take_random(Enum.count(units))
         |> Enum.reduce(initial_step_state, fn unit_id, current_state ->
           process_step(initial_step_state[unit_id], initial_step_state, current_state)
         end)
