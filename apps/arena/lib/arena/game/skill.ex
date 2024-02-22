@@ -233,8 +233,14 @@ defmodule Arena.Game.Skill do
 
     {add_side, sub_side} =
       Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
-        add_side_acc = [Physics.add_angle_to_direction(base_direction_normalized, angle) | add_side_acc]
-        sub_side_acc = [Physics.add_angle_to_direction(base_direction_normalized, -angle) | sub_side_acc]
+        add_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, angle) | add_side_acc
+        ]
+
+        sub_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, -angle) | sub_side_acc
+        ]
+
         {add_side_acc, sub_side_acc}
       end)
 
