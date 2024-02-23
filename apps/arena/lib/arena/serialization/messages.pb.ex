@@ -162,6 +162,8 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
+  field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
+  field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -292,7 +294,7 @@ end
 defmodule Arena.Serialization.Player.EffectsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: Arena.Serialization.Effect)
@@ -324,7 +326,7 @@ end
 defmodule Arena.Serialization.Effect do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
@@ -387,7 +389,7 @@ end
 defmodule Arena.Serialization.AttackParameters do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:target, 1, type: Arena.Serialization.Direction)
 end
