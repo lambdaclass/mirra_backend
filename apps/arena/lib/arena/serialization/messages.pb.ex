@@ -162,6 +162,8 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
+  field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
+  field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do

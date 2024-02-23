@@ -36,7 +36,7 @@ defmodule Arena.GameSocketHandler do
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: config}}
+        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config)}}
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -145,5 +145,21 @@ defmodule Arena.GameSocketHandler do
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
+  end
+
+  defp to_broadcast_config(config) do
+    %{config | characters: Enum.map(config.characters, &to_broadcast_character/1)}
+  end
+
+  defp to_broadcast_character(character) do
+    %{character | skills: Map.new(character.skills, &to_broadcast_skill/1)}
+  end
+
+  defp to_broadcast_skill({key, skill}) do
+    ## TODO: This will break once a skill has more than 1 mechanic, until then
+    ##   we can use this "shortcut" and deal with it when the time comes
+    [{_mechanic, params}] = skill.mechanics
+    extra_params = %{targetting_radius: params[:range], targetting_angle: params[:angle]}
+    {key, Map.merge(skill, extra_params)}
   end
 end
