@@ -20,6 +20,11 @@ defmodule Champions.Units do
       else: Units.select_unit(user_id, unit_id, slot)
   end
 
+  @doc """
+  Sets a unit as unselected for a user. Clears the `slot` field.
+  Returns `:not_found` if unit doesn't exist or if it's now owned by the user.
+  Returns the unit's new state if succesful.
+  """
   def unselect_unit(user_id, unit_id) do
     Units.unselect_unit(user_id, unit_id)
   end
