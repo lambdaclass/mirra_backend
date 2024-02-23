@@ -79,6 +79,14 @@ defmodule GameBackend.Campaigns do
     if campaign_progression, do: {:ok, campaign_progression}, else: {:error, :not_found}
   end
 
+  @doc """
+  Returns what the next level is for a user with its campaign in a tuple.
+
+  Usually it is the level in the same campaign with the next `level_number`.
+  If it doesn't exist it means the campaign is over and we go find the next one by
+  `campaign_number`. If it doesn't exist, we have cleared the SuperCampaign and we return
+  the same given campaign and level instead.
+  """
   def get_next_level(campaign, level) do
     next_level =
       Repo.get_by(Level, campaign_id: campaign.id, level_number: level.level_number + 1)

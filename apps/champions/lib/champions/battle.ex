@@ -40,8 +40,11 @@ defmodule Champions.Battle do
     with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)} do
       if battle(user.units, level.units) == :team_1 do
-        Users.advance_level(user_id, level.campaign_id)
-        :win
+        case Users.advance_level(user_id, level.campaign_id) do
+          # TODO: add rewards to response [CHoM-191]
+          {:ok, _changes} -> :win
+          _error -> {:error, :failed_to_advance}
+        end
       else
         :loss
       end

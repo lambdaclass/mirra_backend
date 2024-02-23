@@ -1,7 +1,8 @@
 defmodule GameBackend.Campaigns.CampaignProgression do
   @moduledoc """
-  Campaign Progression
+  Table to track the user's progress in a campaign.
   """
+  # TODO: [CHoM-193] Refactor to SuperCampaignProgression
   alias GameBackend.Campaigns.Level
   alias GameBackend.Campaigns.Campaign
   alias GameBackend.Users.User

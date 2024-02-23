@@ -79,17 +79,33 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    {:ok, {campaign_progression, level, campaign}} =
-      retrieve_campaign_data(user_id, campaign_id)
-
-    {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
-
-    {:ok, _} =
-      update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
-
-    update_user(user_id, level)
-
-    :ok
+    with {:campaign_data, {:ok, {campaign_progression, level, campaign}}} <-
+           {:campaign_data, retrieve_campaign_data(user_id, campaign_id)},
+         {:next_level, {next_campaign_id, next_level_id}} =
+           {:next_level, Campaigns.get_next_level(campaign, level)} do
+      Multi.new()
+      |> Multi.run(:currency_rewards, fn _, _ ->
+        apply_currency_rewards(user_id, level.currency_rewards)
+      end)
+      |> Multi.run(:afk_rewards_increments, fn _, _ ->
+        apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
+      end)
+      |> Multi.insert_all(:item_rewards, Item, fn _ ->
+        build_item_rewards_params(user_id, level.item_rewards)
+      end)
+      |> Multi.insert_all(:unit_rewards, Unit, fn _ ->
+        build_unit_rewards_params(user_id, level.unit_rewards)
+      end)
+      |> Multi.run(:update_campaign_progression, fn _, _ ->
+        if next_level_id == level.id,
+          do: {:ok, nil},
+          else: update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
+      end)
+      |> Repo.transaction()
+    else
+      {:campaign_data, _transaction_error} -> {:error, :campaign_data_error}
+      {:next_level, _transaction_error} -> {:campaign_progression_error}
+    end
   end
 
   def reset_afk_rewards_claim(user_id) do
@@ -138,21 +154,7 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-  defp update_user(user_id, level) do
-    Multi.new()
-    |> Multi.run(:currency_rewards, fn _, _ ->
-      apply_currency_rewards(user_id, level.currency_rewards)
-    end)
-    |> Multi.run(:afk_rewards_increments, fn _, _ ->
-      apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
-    end)
-    |> Multi.insert_all(:item_rewards, Item, fn _ ->
-      build_item_rewards_params(user_id, level.item_rewards)
-    end)
-    |> Multi.insert_all(:unit_rewards, Unit, fn _ ->
-      build_unit_rewards_params(user_id, level.unit_rewards)
-    end)
-    |> Repo.transaction()
+  defp process_level_beaten(user_id, level) do
   end
 
   defp apply_currency_rewards(user_id, currency_rewards) do
