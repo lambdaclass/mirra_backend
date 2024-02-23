@@ -149,7 +149,7 @@ defmodule Arena.Entities do
      %Arena.Serialization.Player{
        health: entity.aditional_info.health,
        current_actions: entity.aditional_info.current_actions,
-       kill_count: 0,
+       kill_count: entity.aditional_info.kill_count,
        available_stamina: entity.aditional_info.available_stamina,
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
