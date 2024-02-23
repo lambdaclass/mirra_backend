@@ -55,29 +55,13 @@
   },
   "skills": [
     {
-      "name": "circle_bash",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 0,
-      "is_passive": false,
-      "autoaim": true,
-      "mechanics": [
-        {
-          "circle_hit": {
-            "damage": 15,
-            "range": 1000.0
-          }
-        }
-      ],
-      "effects_to_apply": []
-    },
-    {
       "name": "hit",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "mechanics": [
         {
           "cone_hit": {
@@ -96,6 +80,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 2,
       "mechanics": [
         {
           "leap": {
@@ -118,6 +103,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "mechanics": [
         {
           "simple_shoot": {
@@ -137,6 +123,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 2,
       "mechanics": [
         {
           "repeated_shot": {
@@ -161,6 +148,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "mechanics": [
         {
           "multi_shoot": {
@@ -184,6 +172,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "stamina_cost": 1,
       "mechanics": [
         {
           "dash": {
@@ -200,6 +189,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "mechanics": [
         {
           "multi_cone_hit": {
@@ -220,6 +210,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 2,
       "mechanics": [
         {
           "circle_hit": {
@@ -239,6 +230,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "stamina_cost": 1,
       "mechanics": [
         {
           "dash": {

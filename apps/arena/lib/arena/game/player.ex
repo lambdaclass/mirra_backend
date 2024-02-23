@@ -91,9 +91,11 @@ defmodule Arena.Game.Player do
   end
 
   def get_skill_if_usable(player, skill_key) do
-    case player.aditional_info.available_stamina > 0 do
-      false -> nil
-      true -> get_in(player, [:aditional_info, :skills, skill_key])
+    available_stamina = player.aditional_info.available_stamina
+
+    case get_in(player, [:aditional_info, :skills, skill_key]) do
+      %{stamina_cost: cost} = skill when cost <= available_stamina -> skill
+      _ -> nil
     end
   end
 
@@ -171,7 +173,7 @@ defmodule Arena.Game.Player do
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
-          |> change_stamina(-1)
+          |> change_stamina(-skill.stamina_cost)
           |> put_in([:direction], skill_direction)
           |> put_in([:is_moving], false)
 
