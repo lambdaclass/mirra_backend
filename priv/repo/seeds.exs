@@ -58,7 +58,42 @@ units_per_level = 5
     class: "Warrior",
     faction: "Araban",
     rarity: Champions.Units.get_rarity(:elite),
-    ranks_dropped_in: [Champions.Units.get_rank(:star5)]
+    ranks_dropped_in: [Champions.Units.get_rank(:star5)],
+    base_health: 621,
+    base_attack: 63,
+    base_armor: 78,
+    basic_skill: %{
+      effects: [
+        %{
+          type: "instant",
+          stat_affected: "health",
+          amount: -80,
+          stat_based_on: "attack",
+          amount_format: "additive",
+          # TODO: Change back to nearest
+          targeting_strategy: "random",
+          amount_of_targets: 2,
+          targets_allies: false
+        }
+      ],
+      cooldown: 5
+    },
+    ultimate_skill: %{
+      effects: [
+        %{
+          type: "instant",
+          stat_affected: "health",
+          amount: -205,
+          stat_based_on: "attack",
+          amount_format: "additive",
+          # TODO: Change back to nearest
+          targeting_strategy: "random",
+          amount_of_targets: 2,
+          targets_allies: false
+        }
+        # TODO: Add stun effect
+      ]
+    }
   })
 
 {:ok, uma} =

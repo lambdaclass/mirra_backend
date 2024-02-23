@@ -112,4 +112,34 @@ defmodule Champions.Users do
   def get_units(user_id) do
     Users.get_units(user_id)
   end
+
+  @doc """
+  Adds the given experience to a user. If the user were to have enough resulting experience to level up,
+  it is performed automatically.
+  """
+  def add_experience(user_id, experience) do
+    user = get_user(user_id)
+    new_experience = user.experience + experience
+
+    # Level up
+
+    {new_level, new_experience} = process_level_ups(user.level, new_experience)
+
+    Users.update_experience(user, %{level: new_level, experience: new_experience})
+  end
+
+  defp process_level_ups(level, experience) do
+    experience_to_next_level = calculate_experience_to_next_level(level)
+
+    if experience_to_next_level <= experience,
+      do: process_level_ups(level + 1, experience - experience_to_next_level),
+      else: {level, experience}
+  end
+
+  @doc """
+  Calculate how much experience a user with the given level will need to level up.
+  """
+  def calculate_experience_to_next_level(level) do
+    Math.pow(100, 1 + level / 10) |> ceil()
+  end
 end

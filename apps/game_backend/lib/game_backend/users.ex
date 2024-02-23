@@ -73,6 +73,12 @@ defmodule GameBackend.Users do
   """
   def exists?(user_id), do: Repo.exists?(from(u in User, where: u.id == ^user_id))
 
+  def update_experience(user, params),
+    do:
+      user
+      |> User.experience_changeset(params)
+      |> Repo.update()
+
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
 
