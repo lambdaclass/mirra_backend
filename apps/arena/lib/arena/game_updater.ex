@@ -34,8 +34,8 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
-  def use_item(game_pid, player_id) do
-    GenServer.call(game_pid, {:use_item, player_id})
+  def use_item(game_pid, player_id, timestamp) do
+    GenServer.call(game_pid, {:use_item, player_id, timestamp})
   end
 
   ##########################
@@ -355,21 +355,13 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:use_item, player_id}, state) do
-    game_state =
-      get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
   def handle_info({:remove_speed_boost, player_id, amount}, state) do
     player =
       Map.get(state.game_state.players, player_id)
       |> Player.change_speed(-amount)
 
     state = put_in(state, [:game_state, :players, player_id], player)
-    {:reply, :ok, state}
+    {:noreply, state}
   end
 
   def handle_info({:remove_damage_immunity, player_id}, state) do
@@ -378,7 +370,7 @@ defmodule Arena.GameUpdater do
       |> Player.remove_damage_immunity()
 
     state = put_in(state, [:game_state, :players, player_id], player)
-    {:reply, :ok, state}
+    {:noreply, state}
   end
 
   def handle_info({:block_actions, player_id}, state) do
@@ -401,6 +393,15 @@ defmodule Arena.GameUpdater do
       _ ->
         {:noreply, state}
     end
+  end
+
+  def handle_call({:use_item, player_id, timestamp}, _from, state) do
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_item(state.game_state)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:reply, :ok, %{state | game_state: game_state}}
   end
 
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do
