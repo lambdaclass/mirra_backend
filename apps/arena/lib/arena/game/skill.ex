@@ -2,7 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
-  alias Arena.Entities
+  alias Arena.{Entities, Utils}
   alias Arena.Game.Player
 
   def do_mechanic(game_state, player, mechanics, skill_params) when is_list(mechanics) do
@@ -78,7 +78,7 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, mechanic},
+        {:trigger_mechanic, player.id, mechanic, skill_params},
         i * multi_cone_hit.interval_ms
       )
     end)
@@ -100,7 +100,7 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, _skill_params) do
+  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
@@ -108,7 +108,7 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}},
+        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}, skill_params},
         repeated_shot.interval_ms
       )
     end
@@ -121,8 +121,8 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, repeated_shot),
         randomize_direction_in_angle(player.direction, repeated_shot.angle),
         player.id,
-        repeated_shot.remove_on_collision,
-        repeated_shot.speed
+        skill_params.skill_key,
+        repeated_shot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
@@ -132,7 +132,7 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:multi_shoot, multishot}, _skill_params) do
+  def do_mechanic(game_state, player, {:multi_shoot, multishot}, skill_params) do
     calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
@@ -143,8 +143,8 @@ defmodule Arena.Game.Skill do
           get_real_projectile_spawn_position(player, multishot),
           direction,
           player.id,
-          multishot.remove_on_collision,
-          multishot.speed
+          skill_params.skill_key,
+          multishot
         )
 
       Process.send_after(self(), {:remove_projectile, projectile.id}, multishot.duration_ms)
@@ -164,8 +164,8 @@ defmodule Arena.Game.Skill do
         get_real_projectile_spawn_position(player, simple_shoot),
         player.direction,
         player.id,
-        true,
-        10.0
+        "SLINGSHOT",
+        simple_shoot
       )
 
     Process.send_after(self(), {:remove_projectile, projectile.id}, simple_shoot.duration_ms)
@@ -200,15 +200,48 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
+  def handle_skill_effects(game_state, player, effects, game_config) do
+    effects_to_apply =
+      Enum.map(effects, fn effect_name ->
+        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+      end)
+
+    effects =
+      get_in(game_state, [:players, player.id, :aditional_info, :effects])
+      |> Map.reject(fn {_, effect} -> effect.remove_on_action end)
+
+    game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+
+    Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
+      last_id = game_state.last_id + 1
+
+      Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
+
+      effects =
+        get_in(game_state, [:players, player.id, :aditional_info, :effects])
+        |> Map.put(last_id, effect)
+
+      put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+      |> put_in([:last_id], last_id)
+    end)
+  end
+
   defp calculate_angle_directions(amount, angle_between, base_direction) do
-    middle = if rem(amount, 2) == 1, do: [base_direction], else: []
+    base_direction_normalized = Utils.normalize(base_direction)
+    middle = if rem(amount, 2) == 1, do: [base_direction_normalized], else: []
     side_amount = div(amount, 2)
     angles = Enum.map(1..side_amount, fn i -> angle_between * i end)
 
     {add_side, sub_side} =
       Enum.reduce(angles, {[], []}, fn angle, {add_side_acc, sub_side_acc} ->
-        add_side_acc = [Physics.add_angle_to_direction(base_direction, angle) | add_side_acc]
-        sub_side_acc = [Physics.add_angle_to_direction(base_direction, -angle) | sub_side_acc]
+        add_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, angle) | add_side_acc
+        ]
+
+        sub_side_acc = [
+          Physics.add_angle_to_direction(base_direction_normalized, -angle) | sub_side_acc
+        ]
+
         {add_side_acc, sub_side_acc}
       end)
 
@@ -227,12 +260,14 @@ defmodule Arena.Game.Skill do
     Physics.add_angle_to_direction(direction, angle)
   end
 
-  def maybe_auto_aim(%{x: x, y: y} = _skill_direction, player, entities)
-      when x == 0.0 and y == 0.0 do
-    Physics.nearest_entity_direction(player, entities)
+  def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
+    case skill.autoaim do
+      true -> Physics.nearest_entity_direction(player, entities)
+      false -> player.direction |> Utils.normalize()
+    end
   end
 
-  def maybe_auto_aim(skill_direction, _player, _entities) do
-    skill_direction
+  def maybe_auto_aim(skill_direction, _skill, _player, _entities) do
+    skill_direction |> Utils.normalize()
   end
 end

@@ -4,11 +4,11 @@ defmodule Arena.Utils do
   It contains utility functions like math functions.
   """
 
-  def normalize(x, y) when x == 0 and y == 0 do
-    %{x: x, y: y}
+  def normalize(%{x: 0, y: 0}) do
+    %{x: 0, y: 0}
   end
 
-  def normalize(x, y) do
+  def normalize(%{x: x, y: y}) do
     length = :math.sqrt(x * x + y * y)
     %{x: x / length, y: y / length}
   end

@@ -116,6 +116,12 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
+  def update_experience(user, params),
+    do:
+      user
+      |> User.experience_changeset(params)
+      |> Repo.update()
+
   defp preload(user),
     do:
       Repo.preload(user, [
