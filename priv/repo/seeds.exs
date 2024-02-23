@@ -1,4 +1,5 @@
 alias GameBackend.Campaigns.Level
+alias GameBackend.Characters
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
