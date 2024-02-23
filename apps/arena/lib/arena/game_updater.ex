@@ -71,7 +71,7 @@ defmodule Arena.GameUpdater do
 
     {players, power_ups} =
       game_state.players
-      |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
+      |> Physics.move_entities(ticks_to_move, state.game_state.external_wall, state.game_state.obstacles)
       |> update_collisions(game_state.players, game_state.power_ups)
       |> handle_power_ups(game_state.power_ups)
 
@@ -95,7 +95,7 @@ defmodule Arena.GameUpdater do
     projectiles =
       game_state.projectiles
       |> remove_exploded_and_expired_projectiles()
-      |> Physics.move_entities(ticks_to_move, game_state.external_wall)
+      |> Physics.move_entities(ticks_to_move, game_state.external_wall, %{})
       |> update_collisions(
         game_state.projectiles,
         Map.merge(entities_to_collide_projectiles, %{
@@ -512,7 +512,7 @@ defmodule Arena.GameUpdater do
       last_id = last_id + 1
 
       obstacles_acc =
-        Map.put(obstacles_acc, last_id, Entities.make_polygon(last_id, obstacle.vertices))
+        Map.put(obstacles_acc, last_id, Entities.new_circular_obstacle(last_id, obstacle.position, obstacle.radius))
 
       {obstacles_acc, last_id}
     end)

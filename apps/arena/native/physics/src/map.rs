@@ -137,11 +137,15 @@ impl Entity {
         }
     }
 
-    pub fn move_to_next_valid_position(&mut self, external_wall: &Entity) {
-        self.position = self.find_edge_position(external_wall);
+    pub fn move_to_next_valid_position_inside(&mut self, external_wall: &Entity) {
+        self.position = self.find_edge_position_inside(external_wall);
     }
 
-    pub fn find_edge_position(&mut self, external_wall: &Entity) -> Position {
+    pub fn move_to_next_valid_position_outside(&mut self, external_wall: &Entity) {
+        self.position = self.find_edge_position_outside(external_wall);
+    }
+
+    pub fn find_edge_position_inside(&mut self, external_wall: &Entity) -> Position {
         let x = self.position.x;
         let y = self.position.y;
         let length = (x.powf(2.) + y.powf(2.)).sqrt();
@@ -150,8 +154,22 @@ impl Entity {
             y: self.position.y / length,
         };
         Position {
-            x: normalized_position.x * (external_wall.radius - self.radius),
-            y: normalized_position.y * (external_wall.radius - self.radius),
+            x: external_wall.position.x + normalized_position.x * (external_wall.radius - self.radius),
+            y: external_wall.position.y + normalized_position.y * (external_wall.radius - self.radius),
+        }
+    }
+
+    pub fn find_edge_position_outside(&mut self, entity: &Entity) -> Position {
+        let x = self.position.x - entity.position.x;
+        let y = self.position.y - entity.position.y;
+        let length = (x.powf(2.) + y.powf(2.)).sqrt();
+        let normalized_direction = Position {
+            x: x / length,
+            y: y / length,
+        };
+        Position {
+            x: entity.position.x + normalized_direction.x * entity.radius + normalized_direction.x * self.radius,
+            y: entity.position.y + normalized_direction.y * entity.radius + normalized_direction.y * self.radius,
         }
     }
 
