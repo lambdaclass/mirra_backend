@@ -160,9 +160,6 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-  defp process_level_beaten(user_id, level) do
-  end
-
   defp apply_currency_rewards(user_id, currency_rewards) do
     Enum.map(currency_rewards, fn currency_reward ->
       Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
