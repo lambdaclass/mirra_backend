@@ -162,6 +162,8 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
+  field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
+  field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -289,6 +291,15 @@ defmodule GameClient.Protobuf.Entity do
   field(:power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0)
 end
 
+defmodule GameClient.Protobuf.Player.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Effect)
+end
+
 defmodule GameClient.Protobuf.Player do
   @moduledoc false
 
@@ -309,6 +320,16 @@ defmodule GameClient.Protobuf.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
+  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
+end
+
+defmodule GameClient.Protobuf.Effect do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
 end
 
 defmodule GameClient.Protobuf.Projectile do
@@ -319,6 +340,7 @@ defmodule GameClient.Protobuf.Projectile do
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
   field(:status, 3, type: GameClient.Protobuf.ProjectileStatus, enum: true)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule GameClient.Protobuf.Obstacle do

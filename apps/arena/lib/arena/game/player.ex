@@ -52,6 +52,10 @@ defmodule Arena.Game.Player do
     Map.filter(players, fn {_, player} -> alive?(player) end)
   end
 
+  def targetable_players(players) do
+    Map.filter(players, fn {_, player} -> alive?(player) and not invisible?(player) end)
+  end
+
   def stamina_full?(player) do
     player.aditional_info.available_stamina == player.aditional_info.max_stamina
   end
@@ -107,7 +111,7 @@ defmodule Arena.Game.Player do
 
     direction =
       case is_moving do
-        true -> Utils.normalize(x, y)
+        true -> Utils.normalize(%{x: x, y: y})
         _ -> player.direction
       end
 
@@ -136,17 +140,25 @@ defmodule Arena.Game.Player do
       }) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
+        Process.send(self(), {:block_actions, player.id}, [])
         game_state
 
       skill ->
+        Process.send_after(
+          self(),
+          {:block_actions, player.id},
+          skill.execution_duration_ms
+        )
+
         skill_direction =
           skill_params.target
-          |> Skill.maybe_auto_aim(player, alive_players(game_state.players))
+          |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
         Process.send_after(
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
-           Map.merge(skill_params, %{skill_direction: skill_direction})},
+           Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
+           |> Map.merge(skill)},
           skill.activation_delay_ms
         )
 
@@ -212,6 +224,11 @@ defmodule Arena.Game.Player do
 
     (damage + aditional_damage)
     |> round()
+  end
+
+  def invisible?(player) do
+    get_in(player, [:aditional_info, :effects])
+    |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
   end
 
   ####################
