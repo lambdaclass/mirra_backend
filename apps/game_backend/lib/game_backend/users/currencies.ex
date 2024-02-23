@@ -7,6 +7,7 @@ defmodule GameBackend.Users.Currencies do
 
   alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Users.Currencies.Currency
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Repo
 
   @doc """
@@ -58,16 +59,22 @@ defmodule GameBackend.Users.Currencies do
       )
 
   def add_currency(user_id, currency_id, amount) do
-    with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id),
-         changeset <-
-           UserCurrency.update_changeset(user_currency, %{
-             amount: max(user_currency.amount + amount, 0)
-           }) do
-      Repo.update(changeset)
-    else
-      nil ->
-        # User has none of this currency, create it with given amount
-        insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
+    result =
+      with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id),
+           changeset <-
+             UserCurrency.update_changeset(user_currency, %{
+               amount: max(user_currency.amount + amount, 0)
+             }) do
+        Repo.update(changeset)
+      else
+        nil ->
+          # User has none of this currency, create it with given amount
+          insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
+      end
+
+    case result do
+      {:error, reason} -> {:error, reason}
+      {:ok, currency} -> {:ok, currency |> Repo.preload([:currency])}
     end
   end
 
@@ -86,10 +93,41 @@ defmodule GameBackend.Users.Currencies do
   end
 
   @doc """
-  Returns a boolean indicating whether the user can afford the required amount of the specified currency.
+  Returns whether the user can afford the required amounts of the specified currencies.
+  """
+  def can_afford(user_id, currencies_list) do
+    Enum.all?(currencies_list, fn {currency_id, amount} ->
+      can_afford(user_id, currency_id, amount)
+    end)
+  end
+
+  @doc """
+  Returns whether the user can afford the required amount of the specified currency.
   """
   def can_afford(user_id, currency_id, required_amount) do
     user_balance = get_amount_of_currency(user_id, currency_id)
     user_balance >= required_amount
+  end
+
+  @doc """
+  Substracts all CurrencyCosts from the user.
+  Returns {:ok, results} or {:error, "failed"} tuples so it can be used on transactions.
+  """
+  def substract_currencies(_user_id, []), do: {:ok, []}
+
+  def substract_currencies(user_id, costs) do
+    result =
+      Enum.map(costs, fn %CurrencyCost{currency_id: currency_id, amount: cost} ->
+        add_currency(user_id, currency_id, -cost)
+      end)
+
+    if Enum.all?(result, fn
+         {:ok, _} -> true
+         _ -> false
+       end) do
+      {:ok, Enum.map(result, &elem(&1, 1))}
+    else
+      {:error, "failed"}
+    end
   end
 end
