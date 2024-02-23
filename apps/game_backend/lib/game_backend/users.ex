@@ -16,8 +16,6 @@ defmodule GameBackend.Users do
   alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgression
-  alias GameBackend.Campaigns.Campaign
-  alias GameBackend.Campaigns.Level
   alias GameBackend.Campaigns
   alias GameBackend.Repo
   alias GameBackend.Users.User
@@ -79,10 +77,12 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    with {:campaign_data, {:ok, {campaign_progression, level, campaign}}} <-
-           {:campaign_data, retrieve_campaign_data(user_id, campaign_id)},
+    with {:campaign_data, {:ok, campaign_progression}} <-
+           {:campaign_data, retrieve_campaign_progression_data(user_id, campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} =
-           {:next_level, Campaigns.get_next_level(campaign, level)} do
+           {:next_level, Campaigns.get_next_level(campaign_progression.level)} do
+      level = campaign_progression.level
+
       Multi.new()
       |> Multi.run(:currency_rewards, fn _, _ ->
         apply_currency_rewards(user_id, level.currency_rewards)
@@ -125,24 +125,15 @@ defmodule GameBackend.Users do
         currencies: :currency
       ])
 
-  defp retrieve_campaign_data(user_id, campaign_id) do
-    Repo.transaction(fn ->
-      campaign_progression =
-        Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
+  defp retrieve_campaign_progression_data(user_id, campaign_id) do
+    progression =
+      Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
+      |> Repo.preload(level: :campaign)
 
-      level =
-        Repo.get(Level, campaign_progression.level_id)
-        |> Repo.preload([
-          :currency_rewards,
-          :afk_rewards_increments,
-          :item_rewards,
-          :unit_rewards
-        ])
-
-      campaign = Repo.get(Campaign, campaign_id)
-
-      {campaign_progression, level, campaign}
-    end)
+    case progression do
+      nil -> {:error, :not_found}
+      campaign_progression -> {:ok, campaign_progression}
+    end
   end
 
   defp update_campaign_progression(campaign_progression, next_campaign_id, next_level_id) do

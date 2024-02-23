@@ -89,7 +89,9 @@ defmodule GameBackend.Campaigns do
   `campaign_number`. If it doesn't exist, we have cleared the SuperCampaign and we return
   the same given campaign and level instead.
   """
-  def get_next_level(campaign, level) do
+  def get_next_level(level) do
+    campaign = level.campaign
+
     next_level =
       Repo.get_by(Level, campaign_id: campaign.id, level_number: level.level_number + 1)
 
