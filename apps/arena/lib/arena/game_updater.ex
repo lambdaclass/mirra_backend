@@ -57,7 +57,6 @@ defmodule Arena.GameUpdater do
     )
 
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
-    Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :update_finish_preparing_game, 1_000)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
@@ -228,6 +227,14 @@ defmodule Arena.GameUpdater do
       :PREPARING ->
         broadcast_enable_incomming_messages(state.game_state.game_id)
 
+        Process.send_after(
+          self(),
+          :start_zone_shrink,
+          state.game_config.game.zone_shrink_start_ms
+        )
+
+        send(self(), :update_zone_shrink_time)
+
         {:noreply,
          state
          |> put_in([:game_state, :status], :RUNNING)
@@ -261,6 +268,27 @@ defmodule Arena.GameUpdater do
   def handle_info(:stop_zone_shrink, state) do
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
     state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
+    {:noreply, state}
+  end
+
+  def handle_info(:update_zone_shrink_time, state) do
+    state =
+      state
+      |> update_in([:game_state, :zone, :zone_shrink_time], fn
+        current_time when current_time > 0 ->
+          Process.send_after(self(), :update_zone_shrink_time, 1000)
+          current_time - 1000
+
+        _ ->
+          Process.send_after(
+            self(),
+            :update_zone_shrink_time,
+            state.game_config.game.zone_stop_interval_ms
+          )
+
+          state.game_config.game.zone_start_interval_ms
+      end)
+
     {:noreply, state}
   end
 
@@ -491,7 +519,12 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:zone, %{radius: config.map.radius, enabled: false, shrinking: :disabled})
+      |> Map.put(:zone, %{
+        radius: config.map.radius,
+        enabled: false,
+        shrinking: :disabled,
+        zone_shrink_time: config.game.zone_shrink_start_ms
+      })
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,

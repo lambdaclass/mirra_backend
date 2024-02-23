@@ -217,6 +217,7 @@ message GameAction {
 message Zone {
   float radius = 1;
   bool enabled = 2;
+  int32 zone_shrink_time = 3;
 }
 
 message KillEntry {
