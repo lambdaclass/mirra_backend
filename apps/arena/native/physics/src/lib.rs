@@ -31,7 +31,8 @@ fn move_entities(
             let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
 
             if entity.category == Category::Player && !collides_with.is_empty() {
-                entity.move_to_next_valid_position_outside(obstacles.get(&collides_with[0]).unwrap());
+                entity
+                    .move_to_next_valid_position_outside(obstacles.get(&collides_with[0]).unwrap());
             }
         }
     }
@@ -40,7 +41,12 @@ fn move_entities(
 }
 
 #[rustler::nif()]
-fn move_entity(entity: Entity, ticks_to_move: f32, external_wall: Entity, obstacles: HashMap<u64, Entity>) -> Entity {
+fn move_entity(
+    entity: Entity,
+    ticks_to_move: f32,
+    external_wall: Entity,
+    obstacles: HashMap<u64, Entity>,
+) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
         entity.move_entity(ticks_to_move);
@@ -48,7 +54,7 @@ fn move_entity(entity: Entity, ticks_to_move: f32, external_wall: Entity, obstac
         if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
             entity.move_to_next_valid_position_inside(&external_wall);
         }
-        
+
         let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
 
         if entity.category == Category::Player && !collides_with.is_empty() {

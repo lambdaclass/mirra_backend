@@ -154,8 +154,10 @@ impl Entity {
             y: self.position.y / length,
         };
         Position {
-            x: external_wall.position.x + normalized_position.x * (external_wall.radius - self.radius),
-            y: external_wall.position.y + normalized_position.y * (external_wall.radius - self.radius),
+            x: external_wall.position.x
+                + normalized_position.x * (external_wall.radius - self.radius),
+            y: external_wall.position.y
+                + normalized_position.y * (external_wall.radius - self.radius),
         }
     }
 
@@ -168,8 +170,12 @@ impl Entity {
             y: y / length,
         };
         Position {
-            x: entity.position.x + normalized_direction.x * entity.radius + normalized_direction.x * self.radius,
-            y: entity.position.y + normalized_direction.y * entity.radius + normalized_direction.y * self.radius,
+            x: entity.position.x
+                + normalized_direction.x * entity.radius
+                + normalized_direction.x * self.radius,
+            y: entity.position.y
+                + normalized_direction.y * entity.radius
+                + normalized_direction.y * self.radius,
         }
     }
 
