@@ -94,6 +94,10 @@ defmodule Arena.Game.Player do
     end
   end
 
+  def set_stamina_interval(player, interval) do
+    put_in(player, [:aditional_info, :stamina_interval], interval)
+  end
+
   def get_skill_if_usable(player, skill_key) do
     case player.aditional_info.available_stamina > 0 do
       false -> nil
@@ -310,8 +314,19 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
-  defp apply_effect({:recover_stamina, recover_stamina}, player) do
-    change_stamina(player, recover_stamina)
+  defp apply_effect({:stamina_faster, stamina_faster}, player) do
+    change_stamina(player, 3)
+    Process.send_after(
+      self(),
+      {:stop_stamina_faster, player.id, player.aditional_info.stamina_interval},
+      stamina_faster.duration_ms
+    )
+
+    stamina_interval =
+      player.aditional_info.stamina_interval * (1 - stamina_faster.interval_decrease_by)
+      |> round()
+
+    put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
   defp apply_effect({:speed_boost, speed_boost}, player) do

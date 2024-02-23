@@ -256,8 +256,9 @@
       "name": "golden_clock",
       "effects": [
         {
-          "recover_staming": {
-            "amount": 1
+          "stamina_faster": {
+            "interval_decrease_by": 0.3,
+            "duration_ms": 7000
           }
         }
       ]
