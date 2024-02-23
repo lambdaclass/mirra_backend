@@ -3,7 +3,6 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
-  alias Arena.Game.Skill
   alias Arena.Utils
   alias Arena.Game.Skill
 
