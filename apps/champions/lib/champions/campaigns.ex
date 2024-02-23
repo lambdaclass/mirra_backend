@@ -12,6 +12,9 @@ defmodule Champions.Campaigns do
     Campaigns.get_campaigns()
   end
 
+  @doc """
+  Get a campaign by id.
+  """
   def get_campaign(campaign_id) do
     Campaigns.get_campaign(campaign_id)
   end

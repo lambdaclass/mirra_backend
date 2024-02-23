@@ -21,12 +21,14 @@ defmodule GameBackend.Campaigns do
     if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
   end
 
+  @doc """
+  Get a campaign by id.
+  """
   def get_campaign(campaign_id) do
-    campaign =
-      Repo.get(Campaign, campaign_id)
-      |> Repo.preload(levels: [:units])
-
-    if campaign, do: {:ok, campaign}, else: {:error, :not_found}
+    case Repo.get(Campaign, campaign_id) |> Repo.preload(levels: [:units]) do
+      nil -> {:error, :not_found}
+      campaign -> {:ok, campaign}
+    end
   end
 
   @doc """
