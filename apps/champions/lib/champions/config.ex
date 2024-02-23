@@ -16,7 +16,7 @@ defmodule Champions.Config do
       |> Enum.to_list()
 
     characters
-    |> Enum.map(fn [name, class, faction, quality, attack, health, defense, speed] ->
+    |> Enum.map(fn [name, class, faction, quality, attack, health, defense] ->
       %{
         name: name,
         class: class,
@@ -24,8 +24,7 @@ defmodule Champions.Config do
         quality: quality,
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
-        base_speed: Integer.parse(speed) |> elem(0),
-        base_defense: Integer.parse(defense) |> elem(0),
+        base_armor: Integer.parse(defense) |> elem(0),
         game_id: 2,
         active: true
       }
