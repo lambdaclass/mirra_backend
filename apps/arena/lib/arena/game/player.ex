@@ -174,6 +174,7 @@ defmodule Arena.Game.Player do
           |> change_stamina(-1)
           |> put_in([:direction], skill_direction)
           |> put_in([:is_moving], false)
+          |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
 
         player =
           case stamina_recharging?(player) do
@@ -248,7 +249,11 @@ defmodule Arena.Game.Player do
       player.aditional_info.last_damage_received +
         player.aditional_info.natural_healing_damage_interval < now
 
-    case heal_interval? and damage_interval? do
+    use_skill_interval? =
+      player.aditional_info.last_skill_triggered +
+        player.aditional_info.natural_healing_damage_interval < now
+
+    case heal_interval? and damage_interval? and use_skill_interval? do
       true ->
         heal_amount = floor(player.aditional_info.base_health * 0.1)
 
