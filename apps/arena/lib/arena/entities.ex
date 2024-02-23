@@ -177,7 +177,8 @@ defmodule Arena.Entities do
        recharging_stamina: entity.aditional_info.recharging_stamina,
        character_name: entity.aditional_info.character_name,
        effects: entity.aditional_info.effects,
-       power_ups: entity.aditional_info.power_ups
+       power_ups: entity.aditional_info.power_ups,
+       inventory: entity.aditional_info.inventory
      }}
   end
 
