@@ -4,6 +4,7 @@ defmodule Arena.Game.Player do
   """
 
   alias Arena.Utils
+  alias Arena.Game.Skill
 
   def add_action(player, action_name, duration_ms) do
     Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
@@ -48,6 +49,10 @@ defmodule Arena.Game.Player do
 
   def alive_players(players) do
     Map.filter(players, fn {_, player} -> alive?(player) end)
+  end
+
+  def targetable_players(players) do
+    Map.filter(players, fn {_, player} -> alive?(player) and not invisible?(player) end)
   end
 
   def stamina_full?(player) do
@@ -105,7 +110,7 @@ defmodule Arena.Game.Player do
 
     direction =
       case is_moving do
-        true -> Utils.normalize(x, y)
+        true -> Utils.normalize(%{x: x, y: y})
         _ -> player.direction
       end
 
@@ -125,15 +130,40 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :forced_movement], false)
   end
 
-  def use_skill(player, skill_key, skill_params, game_state) do
+  def forced_moving?(player) do
+    player.aditional_info.forced_movement
+  end
+
+  def use_skill(player, skill_key, skill_params, %{
+        game_state: game_state
+      }) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
+        Process.send(self(), {:block_actions, player.id}, [])
         game_state
 
       skill ->
         Process.send_after(
           self(),
-          {:delayed_skill_mechanics, player.id, skill.mechanics, skill_params},
+          {:block_actions, player.id},
+          skill.execution_duration_ms
+        )
+
+        skill_direction =
+          skill_params.target
+          |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
+
+        Process.send_after(
+          self(),
+          {:delayed_skill_mechanics, player.id, skill.mechanics,
+           Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
+           |> Map.merge(skill)},
+          skill.activation_delay_ms
+        )
+
+        Process.send_after(
+          self(),
+          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply)},
           skill.activation_delay_ms
         )
 
@@ -142,6 +172,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action_name, skill.execution_duration_ms)
           |> change_stamina(-1)
+          |> put_in([:direction], skill_direction)
           |> put_in([:is_moving], false)
 
         player =
@@ -161,6 +192,42 @@ defmodule Arena.Game.Player do
 
         put_in(game_state, [:players, player.id], player)
     end
+  end
+
+  @doc """
+
+  Receives a player that owns the damage and the damage number
+
+  to calculate the real damage we'll use the config "power_up_damage_modifier" multipling that with base damage of the
+  ability and multiply that with the amount of power ups that a player has then adding that to the base damage resulting
+  in the real damage
+
+  e.g.: if you want a 10% increase in damage you can add a 0.10 modifier
+
+  ## Examples
+
+      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10}}, 40)
+      44
+
+  """
+  def calculate_real_damage(
+        %{
+          aditional_info: %{
+            power_ups: power_up_amount,
+            power_up_damage_modifier: power_up_damage_modifier
+          }
+        } = _player_damage_owner,
+        damage
+      ) do
+    aditional_damage = damage * power_up_damage_modifier * power_up_amount
+
+    (damage + aditional_damage)
+    |> round()
+  end
+
+  def invisible?(player) do
+    get_in(player, [:aditional_info, :effects])
+    |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
   end
 
   ####################

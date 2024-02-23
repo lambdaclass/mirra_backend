@@ -33,28 +33,59 @@ defmodule Arena.Entities do
         last_damage_received: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
-        forced_movement: false
+        forced_movement: false,
+        power_ups: 0,
+        power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
+        effects: %{}
       }
     }
   end
 
-  def new_projectile(id, position, direction, owner_id, remove_on_collision, speed) do
+  def new_projectile(
+        id,
+        position,
+        direction,
+        owner_id,
+        skill_key,
+        config_params
+      ) do
     %{
       id: id,
       category: :projectile,
       shape: :circle,
       name: "Projectile" <> Integer.to_string(id),
       position: position,
-      radius: 10.0,
+      radius: config_params.radius,
       vertices: [],
-      speed: speed,
+      speed: config_params.speed,
       direction: direction,
       is_moving: true,
       aditional_info: %{
-        damage: 10,
+        skill_key: skill_key,
+        damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: remove_on_collision
+        remove_on_collision: config_params.remove_on_collision
+      }
+    }
+  end
+
+  def new_power_up(id, position, direction, owner_id, power_up) do
+    %{
+      id: id,
+      category: :power_up,
+      shape: :circle,
+      name: "Power Up" <> Integer.to_string(id),
+      position: position,
+      radius: power_up.radius,
+      vertices: [],
+      speed: 0.0,
+      direction: direction,
+      is_moving: false,
+      aditional_info: %{
+        owner_id: owner_id,
+        status: :AVAILABLE,
+        remove_on_collision: true
       }
     }
   end
@@ -123,7 +154,9 @@ defmodule Arena.Entities do
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina,
-       character_name: entity.aditional_info.character_name
+       character_name: entity.aditional_info.character_name,
+       effects: entity.aditional_info.effects,
+       power_ups: entity.aditional_info.power_ups
      }}
   end
 
@@ -131,6 +164,15 @@ defmodule Arena.Entities do
     {:projectile,
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status,
+       skill_key: entity.aditional_info.skill_key
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :power_up do
+    {:power_up,
+     %Arena.Serialization.PowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
      }}
