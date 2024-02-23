@@ -95,6 +95,7 @@
       "execution_duration_ms": 500,
       "activation_delay_ms": 300,
       "is_passive": false,
+      "autoaim": true,
       "mechanics": [
         {
           "spawn_pool": {
