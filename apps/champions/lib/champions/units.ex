@@ -353,8 +353,8 @@ defmodule Champions.Units do
     do: rank < @illumination2
 
   def can_rank_up(_unit), do: false
-  
-  @doc
+
+  @doc """
   Get a unit's max health stat for battle. Buffs from items and similar belong here.
 
   For now, we just return the base character's stat.

@@ -15,7 +15,7 @@ Characters.insert_character(%{
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: Champions.Units.get_rarity(:epic)
+  rarity: Champions.Units.get_rarity(:epic),
   base_health: 621,
   base_attack: 63,
   base_armor: 78,
