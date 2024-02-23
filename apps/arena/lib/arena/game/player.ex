@@ -316,6 +316,7 @@ defmodule Arena.Game.Player do
 
   defp apply_effect({:stamina_faster, stamina_faster}, player) do
     change_stamina(player, 3)
+
     Process.send_after(
       self(),
       {:stop_stamina_faster, player.id, player.aditional_info.stamina_interval},
@@ -323,7 +324,7 @@ defmodule Arena.Game.Player do
     )
 
     stamina_interval =
-      player.aditional_info.stamina_interval * (1 - stamina_faster.interval_decrease_by)
+      (player.aditional_info.stamina_interval * (1 - stamina_faster.interval_decrease_by))
       |> round()
 
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
