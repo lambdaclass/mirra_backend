@@ -67,7 +67,7 @@ defmodule GameClient.ClientSocketHandler do
 
     game_action =
       GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
-        action_type: {:use_item, %GameClient.Protobuf.UseItem{item: Integer.parse(item)}}
+        action_type: {:use_item, %GameClient.Protobuf.UseItem{item: String.to_integer(item)}}
       })
 
     {:reply, {:binary, game_action}, state}
