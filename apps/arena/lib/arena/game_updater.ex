@@ -19,7 +19,7 @@ defmodule Arena.GameUpdater do
   ## Time between natural healing intervals
   @natural_healing_interval_ms 300
   ## Time to prepare the game before starting
-  @enable_incomming_messages_ms 6_000
+  @enable_incomming_messages_ms 9_000
 
   ##########################
   # API
