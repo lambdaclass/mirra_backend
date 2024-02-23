@@ -1,9 +1,6 @@
 name: Deploy to Denver
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - nix-deploy-script
 
 jobs:
   build-deploy:
