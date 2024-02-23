@@ -845,7 +845,7 @@ defmodule Arena.GameUpdater do
             {players_acc, items_acc}
 
           false ->
-            player = Player.store_item(player, item)
+            player = Player.store_item(player, item.aditional_info)
             {Map.put(players_acc, player.id, player), Map.delete(items_acc, item_id)}
         end
       end)
