@@ -9,18 +9,14 @@ alias GameBackend.Users
 champions_of_mirra_id = 2
 units_per_level = 5
 
-# Until Skill JSON config is ready we won't be creating characters this way, since we won't be able to test battles
-# Champions.Config.import_character_config()
+Champions.Config.import_character_config()
 
-Characters.insert_character(%{
+muflus = Characters.get_character_by_name("Muflus")
+
+{:ok, _muflus} = Characters.update_character(muflus, %{
   game_id: champions_of_mirra_id,
   active: true,
-  name: "Muflus",
-  faction: "Araban",
   rarity: "Epic",
-  base_health: 621,
-  base_attack: 63,
-  base_armor: 78,
   basic_skill: %{
     effects: [%{
       type: "instant",
@@ -49,30 +45,6 @@ Characters.insert_character(%{
       # TODO: Add stun effect
       ],
   }
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Uma",
-  faction: "Kaline",
-  rarity: "Epic"
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Dagna",
-  faction: "Merliot",
-  rarity: "Epic"
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "H4ck",
-  faction: "Otobi",
-  rarity: "Epic"
 })
 
 Items.insert_item_template(%{
