@@ -20,12 +20,7 @@ defmodule GameBackend.Units.Characters.Character do
 
     field(:base_health, :integer)
     field(:base_attack, :integer)
-    field(:base_speed, :integer)
     field(:base_defense, :integer)
-
-    field(:base_health, :integer)
-    field(:base_attack, :integer)
-    field(:base_armor, :integer)
 
     belongs_to(:basic_skill, Skill)
     belongs_to(:ultimate_skill, Skill)
