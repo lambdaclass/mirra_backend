@@ -254,7 +254,7 @@ defmodule Arena.Game.Skill do
   def apply_effect_mechanic(players, game_state) do
     updated_players =
       Map.filter(players, fn {_, player} -> Player.alive?(player) end)
-      |> Enum.map(fn {_player_id, player} ->
+      |> Map.new(fn {_player_id, player} ->
         player =
           Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
             apply_effect_mechanic(player, effect, game_state)
@@ -262,7 +262,6 @@ defmodule Arena.Game.Skill do
 
         {player.id, player}
       end)
-      |> Map.new()
 
     Map.merge(players, updated_players)
   end
@@ -270,21 +269,28 @@ defmodule Arena.Game.Skill do
   def apply_effect_mechanic(player, effect, game_state) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    mechanics_to_apply =
-      effect.effect_mechanics
-      |> Map.filter(fn {_name, mechanic} ->
-        now - Map.get(mechanic, :last_application_time, 0) >= mechanic.effect_delay_ms
-      end)
-      |> Enum.map(fn {name, mechanic} ->
-        {name, Map.put(mechanic, :last_application_time, now)}
-      end)
-      |> Map.new()
+    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic,
+                                                    player ->
+      should_re_apply? =
+        now - Map.get(mechanic_params, :last_application_time, 0) >=
+          mechanic_params.effect_delay_ms
 
-    Enum.reduce(mechanics_to_apply, player, fn mechanic, player ->
-      do_effect_mechanics(game_state, player, effect, mechanic)
-    end)
-    |> update_in([:aditional_info, :effects, effect.id, :effect_mechanics], fn mechanics ->
-      Map.merge(mechanics, mechanics_to_apply)
+      if should_re_apply? do
+        do_effect_mechanics(game_state, player, effect, mechanic)
+        |> put_in(
+          [
+            :aditional_info,
+            :effects,
+            effect.id,
+            :effect_mechanics,
+            mechanic_name,
+            :last_application_time
+          ],
+          now
+        )
+      else
+        player
+      end
     end)
   end
 
