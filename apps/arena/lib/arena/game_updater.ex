@@ -18,6 +18,8 @@ defmodule Arena.GameUpdater do
   @game_ended_shutdown_wait_ms 10_000
   ## Time between natural healing intervals
   @natural_healing_interval_ms 300
+  ## Time to prepare the game before starting
+  @enable_incomming_messages_ms 9_000
 
   ##########################
   # API
@@ -56,6 +58,7 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
+    Process.send_after(self(), :update_finish_preparing_game, 1_000)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -215,6 +218,25 @@ defmodule Arena.GameUpdater do
     end
 
     {:noreply, state}
+  end
+
+  def handle_info(:update_finish_preparing_game, state) do
+    case state.game_state.status do
+      :PREPARING when state.game_state.countdown >= 1_000 ->
+        Process.send_after(self(), :update_finish_preparing_game, 1_000)
+        {:noreply, state |> put_in([:game_state, :countdown], state.game_state.countdown - 1_000)}
+
+      :PREPARING ->
+        broadcast_enable_incomming_messages(state.game_state.game_id)
+
+        {:noreply,
+         state
+         |> put_in([:game_state, :status], :RUNNING)
+         |> put_in([:game_state, :countdown], 0)}
+
+      _ ->
+        {:noreply, state}
+    end
   end
 
   # Natural healing
@@ -399,6 +421,10 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, {:player_dead, player_id})
   end
 
+  defp broadcast_enable_incomming_messages(game_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
+  end
+
   defp broadcast_game_update(state) do
     encoded_state =
       GameEvent.encode(%GameEvent{
@@ -414,7 +440,9 @@ defmodule Arena.GameUpdater do
              zone: state.zone,
              killfeed: state.killfeed,
              damage_taken: state.damage_taken,
-             damage_done: state.damage_done
+             damage_done: state.damage_done,
+             status: state.status,
+             countdown: state.countdown
            }}
       })
 
@@ -505,6 +533,8 @@ defmodule Arena.GameUpdater do
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
+    |> Map.put(:status, :PREPARING)
+    |> Map.put(:countdown, @enable_incomming_messages_ms)
   end
 
   # Initialize obstacles

@@ -90,6 +90,14 @@ message GameState {
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
+  GameStatus status = 11;
+  int64 countdown = 12;
+}
+
+enum GameStatus {
+  PREPARING = 0;
+  RUNNING = 1;
+  ENDED = 2;
 }
 
 /*
