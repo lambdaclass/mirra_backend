@@ -321,6 +321,7 @@ defmodule Arena.Game.Skill do
         player
 
       pool ->
+        # TODO not all effects may come from pools, maybe we should upgrade this
         pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
         real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
 
