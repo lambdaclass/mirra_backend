@@ -251,9 +251,9 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        player = Enum.reduce(item.effects, player, &apply_effect/2)
-
-        put_in(player, [:aditional_info, :inventory], nil)
+        player =
+          Enum.reduce(item.effects, player, &apply_effect/2)
+          |> put_in([:aditional_info, :inventory], nil)
 
         put_in(game_state, [:players, player.id], player)
     end
