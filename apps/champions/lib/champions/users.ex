@@ -115,11 +115,8 @@ defmodule Champions.Users do
   Adds the given experience to a user. If the user were to have enough resulting experience to level up,
   it is performed automatically.
   """
-  def add_experience(user_id, experience) do
-    user = get_user(user_id)
+  def add_experience(user, experience) do
     new_experience = user.experience + experience
-
-    # Level up
 
     {new_level, new_experience} = process_level_ups(user.level, new_experience)
 
