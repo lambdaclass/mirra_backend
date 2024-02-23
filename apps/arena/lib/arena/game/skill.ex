@@ -263,11 +263,19 @@ defmodule Arena.Game.Skill do
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
       true -> Physics.nearest_entity_direction(player, entities)
-      false -> player.direction |> Utils.normalize()
+      false -> player.direction |> maybe_normalize(not skill.can_pick_destination)
     end
   end
 
-  def maybe_auto_aim(skill_direction, _skill, _player, _entities) do
-    skill_direction |> Utils.normalize()
+  def maybe_auto_aim(skill_direction, skill, _player, _entities) do
+    skill_direction |> maybe_normalize(not skill.can_pick_destination)
+  end
+
+  defp maybe_normalize(direction, true) do
+    Utils.normalize(direction)
+  end
+
+  defp maybe_normalize(direction, _false) do
+    direction
   end
 end

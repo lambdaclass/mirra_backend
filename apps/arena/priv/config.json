@@ -62,6 +62,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "cone_hit": {
@@ -81,6 +82,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 2,
+      "can_pick_destination": true,
       "mechanics": [
         {
           "leap": {
@@ -104,6 +106,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "simple_shoot": {
@@ -124,6 +127,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 2,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "repeated_shot": {
@@ -149,6 +153,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "multi_shoot": {
@@ -173,6 +178,7 @@
       "is_passive": false,
       "autoaim": false,
       "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "dash": {
@@ -190,6 +196,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "multi_cone_hit": {
@@ -211,6 +218,7 @@
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 2,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "circle_hit": {
@@ -231,6 +239,7 @@
       "is_passive": false,
       "autoaim": false,
       "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "dash": {
