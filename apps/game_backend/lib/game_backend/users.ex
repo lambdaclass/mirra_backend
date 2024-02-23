@@ -66,6 +66,12 @@ defmodule GameBackend.Users do
   def get_units(user_id),
     do: Repo.all(user_units_query(user_id)) |> Repo.preload([:character, :user, :items])
 
+  def update_experience(user, params),
+    do:
+      user
+      |> User.experience_changeset(params)
+      |> Repo.update()
+
   defp preload(user),
     do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
 

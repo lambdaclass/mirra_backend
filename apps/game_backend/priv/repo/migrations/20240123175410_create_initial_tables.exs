@@ -18,7 +18,7 @@ defmodule GameBackend.Repo.Migrations.CreateInitialTables do
     create table(:user_currencies) do
       add :user_id, references(:users, on_delete: :delete_all)
       add :currency_id, references(:currencies, on_delete: :delete_all)
-      add :amount, :integer
+      add :amount, :bigint
       timestamps()
     end
 
