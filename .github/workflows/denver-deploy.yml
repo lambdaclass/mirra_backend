@@ -52,8 +52,7 @@ jobs:
           PORT: ${{ vars.ARENA_PORT }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_LOADTEST }}
-          NEWREL:wq
-          IC_KEY: ${{ secrets.NEWRELIC_KEY }}
+          NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
