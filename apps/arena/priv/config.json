@@ -61,6 +61,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "circle_hit": {
@@ -78,6 +79,7 @@
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "cone_hit": {
@@ -96,6 +98,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": true,
       "mechanics": [
         {
           "leap": {
@@ -118,6 +121,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "simple_shoot": {
@@ -137,6 +141,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "repeated_shot": {
@@ -161,6 +166,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "multi_shoot": {
@@ -184,6 +190,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "dash": {
@@ -200,6 +207,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "multi_cone_hit": {
@@ -220,6 +228,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "circle_hit": {
@@ -239,6 +248,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "dash": {
