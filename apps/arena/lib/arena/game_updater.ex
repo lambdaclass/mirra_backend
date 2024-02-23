@@ -121,6 +121,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
       |> Map.put(:power_ups, power_ups)
       |> Map.put(:server_timestamp, now)
+      |> execute_on_explode_mechanics(projectiles)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -766,6 +767,22 @@ defmodule Arena.GameUpdater do
         {Map.put(players_acc, player.id, player), Map.put(power_ups_acc, power_up.id, power_up)}
       else
         accs
+      end
+    end)
+  end
+
+  defp execute_on_explode_mechanics(game_state, projectiles) do
+    Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
+      if projectile.aditional_info.status == :EXPLODED &&
+           Map.get(projectile.aditional_info, :on_explode_mechanics) do
+        Skill.do_mechanic(
+          game_state,
+          projectile,
+          projectile.aditional_info.on_explode_mechanics,
+          %{}
+        )
+      else
+        game_state
       end
     end)
   end
