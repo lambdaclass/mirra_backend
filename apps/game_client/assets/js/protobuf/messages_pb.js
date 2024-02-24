@@ -39,6 +39,7 @@ goog.exportSymbol('proto.GameEvent.EventCase', null, global);
 goog.exportSymbol('proto.GameFinished', null, global);
 goog.exportSymbol('proto.GameJoined', null, global);
 goog.exportSymbol('proto.GameState', null, global);
+goog.exportSymbol('proto.GameStatus', null, global);
 goog.exportSymbol('proto.KillEntry', null, global);
 goog.exportSymbol('proto.Move', null, global);
 goog.exportSymbol('proto.Obstacle', null, global);
@@ -2860,7 +2861,9 @@ proto.GameState.toObject = function(includeInstance, msg) {
     proto.KillEntry.toObject, includeInstance),
     damageTakenMap: (f = msg.getDamageTakenMap()) ? f.toObject(includeInstance, undefined) : [],
     damageDoneMap: (f = msg.getDamageDoneMap()) ? f.toObject(includeInstance, undefined) : [],
-    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    status: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    countdown: jspb.Message.getFieldWithDefault(msg, 12, 0)
   };
 
   if (includeInstance) {
@@ -2951,6 +2954,14 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 11:
+      var value = /** @type {!proto.GameStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 12:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCountdown(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3033,6 +3044,20 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getPowerUpsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      11,
+      f
+    );
+  }
+  f = message.getCountdown();
+  if (f !== 0) {
+    writer.writeInt64(
+      12,
+      f
+    );
   }
 };
 
@@ -3283,6 +3308,42 @@ proto.GameState.prototype.getPowerUpsMap = function(opt_noLazyCreate) {
 proto.GameState.prototype.clearPowerUpsMap = function() {
   this.getPowerUpsMap().clear();
   return this;
+};
+
+
+/**
+ * optional GameStatus status = 11;
+ * @return {!proto.GameStatus}
+ */
+proto.GameState.prototype.getStatus = function() {
+  return /** @type {!proto.GameStatus} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+};
+
+
+/**
+ * @param {!proto.GameStatus} value
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 11, value);
+};
+
+
+/**
+ * optional int64 countdown = 12;
+ * @return {number}
+ */
+proto.GameState.prototype.getCountdown = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.setCountdown = function(value) {
+  return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
@@ -6365,6 +6426,15 @@ proto.KillEntry.prototype.setVictimId = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
+
+/**
+ * @enum {number}
+ */
+proto.GameStatus = {
+  PREPARING: 0,
+  RUNNING: 1,
+  ENDED: 2
+};
 
 /**
  * @enum {number}
