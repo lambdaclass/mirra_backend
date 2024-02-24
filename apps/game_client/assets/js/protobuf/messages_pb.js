@@ -2598,7 +2598,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     cooldownMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
     executionDurationMs: jspb.Message.getFieldWithDefault(msg, 3, 0),
     targettingRadius: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0)
+    targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+    staminaCost: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -2654,6 +2655,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setTargettingAngle(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setStaminaCost(value);
       break;
     default:
       reader.skipField();
@@ -2716,6 +2721,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeFloat(
       5,
+      f
+    );
+  }
+  f = message.getStaminaCost();
+  if (f !== 0) {
+    writer.writeUint64(
+      6,
       f
     );
   }
@@ -2809,6 +2821,24 @@ proto.ConfigSkill.prototype.getTargettingAngle = function() {
  */
 proto.ConfigSkill.prototype.setTargettingAngle = function(value) {
   return jspb.Message.setProto3FloatField(this, 5, value);
+};
+
+
+/**
+ * optional uint64 stamina_cost = 6;
+ * @return {number}
+ */
+proto.ConfigSkill.prototype.getStaminaCost = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setStaminaCost = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -6140,7 +6170,8 @@ proto.Zone.prototype.toObject = function(opt_includeInstance) {
 proto.Zone.toObject = function(includeInstance, msg) {
   var f, obj = {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
+    enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    zoneShrinkTime: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -6185,6 +6216,10 @@ proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setEnabled(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setZoneShrinkTime(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6228,6 +6263,13 @@ proto.Zone.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getZoneShrinkTime();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -6264,6 +6306,24 @@ proto.Zone.prototype.getEnabled = function() {
  */
 proto.Zone.prototype.setEnabled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional int32 zone_shrink_time = 3;
+ * @return {number}
+ */
+proto.Zone.prototype.getZoneShrinkTime = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Zone} returns this
+ */
+proto.Zone.prototype.setZoneShrinkTime = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
