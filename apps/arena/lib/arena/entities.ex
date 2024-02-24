@@ -67,7 +67,7 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
-        on_explode_mechanics: config_params.on_explode_mechanics
+        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics)
       }
     }
   end
