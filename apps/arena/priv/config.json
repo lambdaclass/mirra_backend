@@ -280,6 +280,8 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
+      "can_pick_destination": false,
       "mechanics": [
         {
           "simple_shoot": {
