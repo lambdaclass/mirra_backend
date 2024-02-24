@@ -172,6 +172,8 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
+  field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
+  field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -351,6 +353,7 @@ defmodule GameClient.Protobuf.Projectile do
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
   field(:status, 3, type: GameClient.Protobuf.ProjectileStatus, enum: true)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule GameClient.Protobuf.Obstacle do

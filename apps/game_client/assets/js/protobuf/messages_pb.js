@@ -2596,7 +2596,9 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     cooldownMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    executionDurationMs: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    executionDurationMs: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    targettingRadius: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
+    targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0)
   };
 
   if (includeInstance) {
@@ -2645,6 +2647,14 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint64());
       msg.setExecutionDurationMs(value);
       break;
+    case 4:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setTargettingRadius(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setTargettingAngle(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -2692,6 +2702,20 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint64(
       3,
+      f
+    );
+  }
+  f = message.getTargettingRadius();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      4,
+      f
+    );
+  }
+  f = message.getTargettingAngle();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      5,
       f
     );
   }
@@ -2749,6 +2773,42 @@ proto.ConfigSkill.prototype.getExecutionDurationMs = function() {
  */
 proto.ConfigSkill.prototype.setExecutionDurationMs = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional float targetting_radius = 4;
+ * @return {number}
+ */
+proto.ConfigSkill.prototype.getTargettingRadius = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setTargettingRadius = function(value) {
+  return jspb.Message.setProto3FloatField(this, 4, value);
+};
+
+
+/**
+ * optional float targetting_angle = 5;
+ * @return {number}
+ */
+proto.ConfigSkill.prototype.getTargettingAngle = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setTargettingAngle = function(value) {
+  return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
 
@@ -4670,7 +4730,8 @@ proto.Projectile.toObject = function(includeInstance, msg) {
   var f, obj = {
     damage: jspb.Message.getFieldWithDefault(msg, 1, 0),
     ownerId: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    status: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    skillKey: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -4719,6 +4780,10 @@ proto.Projectile.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!proto.ProjectileStatus} */ (reader.readEnum());
       msg.setStatus(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSkillKey(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -4766,6 +4831,13 @@ proto.Projectile.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeEnum(
       3,
+      f
+    );
+  }
+  f = message.getSkillKey();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -4823,6 +4895,24 @@ proto.Projectile.prototype.getStatus = function() {
  */
 proto.Projectile.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 3, value);
+};
+
+
+/**
+ * optional string skill_key = 4;
+ * @return {string}
+ */
+proto.Projectile.prototype.getSkillKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Projectile} returns this
+ */
+proto.Projectile.prototype.setSkillKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

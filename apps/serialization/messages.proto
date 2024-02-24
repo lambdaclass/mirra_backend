@@ -71,6 +71,9 @@ message ConfigSkill {
   string name = 1;
   uint64 cooldown_ms = 2;
   uint64 execution_duration_ms = 3;
+  float targetting_radius = 4;
+  float targetting_angle = 5;
+  uint64 stamina_cost = 6;
 }
 
 

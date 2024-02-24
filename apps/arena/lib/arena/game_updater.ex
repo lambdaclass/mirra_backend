@@ -19,7 +19,7 @@ defmodule Arena.GameUpdater do
   ## Time between natural healing intervals
   @natural_healing_interval_ms 300
   ## Time to prepare the game before starting
-  @enable_incomming_messages_ms 6_000
+  @enable_incomming_messages_ms 9_000
 
   ##########################
   # API
@@ -123,6 +123,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
       |> Map.put(:power_ups, power_ups)
       |> Map.put(:server_timestamp, now)
+      |> execute_on_explode_mechanics(projectiles)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -317,9 +318,14 @@ defmodule Arena.GameUpdater do
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
       |> spawn_power_ups(victim, amount_of_power_ups)
 
+    game_state =
+      update_in(game_state, [:players, killer_id, :aditional_info, :kill_count], fn count ->
+        count + 1
+      end)
+
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
-    {:noreply, state}
+    {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
@@ -760,18 +766,16 @@ defmodule Arena.GameUpdater do
          victim,
          amount
        ) do
+    distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
+
     Enum.reduce(1..amount//1, state, fn _, state ->
       random_x =
         victim.position.x +
-          Enum.random(
-            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
-          )
+          Enum.random(-distance_to_power_up..distance_to_power_up)
 
       random_y =
         victim.position.y +
-          Enum.random(
-            -game_config.power_ups.distance_to_power_up..game_config.power_ups.distance_to_power_up
-          )
+          Enum.random(-distance_to_power_up..distance_to_power_up)
 
       random_position = %{x: random_x, y: random_y}
       last_id = state.game_state.last_id + 1
@@ -781,7 +785,8 @@ defmodule Arena.GameUpdater do
           last_id,
           random_position,
           victim.direction,
-          victim.id
+          victim.id,
+          game_config.power_ups.power_up
         )
 
       put_in(state, [:game_state, :power_ups, last_id], power_up)
@@ -825,6 +830,22 @@ defmodule Arena.GameUpdater do
         {Map.put(players_acc, player.id, player), Map.put(power_ups_acc, power_up.id, power_up)}
       else
         accs
+      end
+    end)
+  end
+
+  defp execute_on_explode_mechanics(game_state, projectiles) do
+    Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
+      if projectile.aditional_info.status == :EXPLODED &&
+           Map.get(projectile.aditional_info, :on_explode_mechanics) do
+        Skill.do_mechanic(
+          game_state,
+          projectile,
+          projectile.aditional_info.on_explode_mechanics,
+          %{}
+        )
+      else
+        game_state
       end
     end)
   end

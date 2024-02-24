@@ -31,11 +31,12 @@ defmodule Arena.Entities do
         last_natural_healing_update: now,
         natural_healing_interval: character.natural_healing_interval,
         last_damage_received: now,
+        last_skill_triggered: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
         forced_movement: false,
         power_ups: 0,
-        power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
+        power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         effects: %{}
       }
     }
@@ -65,19 +66,20 @@ defmodule Arena.Entities do
         damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: config_params.remove_on_collision
+        remove_on_collision: config_params.remove_on_collision,
+        on_explode_mechanics: config_params.on_explode_mechanics
       }
     }
   end
 
-  def new_power_up(id, position, direction, owner_id) do
+  def new_power_up(id, position, direction, owner_id, power_up) do
     %{
       id: id,
       category: :power_up,
       shape: :circle,
       name: "Power Up" <> Integer.to_string(id),
       position: position,
-      radius: 10.0,
+      radius: power_up.radius,
       vertices: [],
       speed: 0.0,
       direction: direction,
@@ -149,7 +151,7 @@ defmodule Arena.Entities do
      %Arena.Serialization.Player{
        health: entity.aditional_info.health,
        current_actions: entity.aditional_info.current_actions,
-       kill_count: 0,
+       kill_count: entity.aditional_info.kill_count,
        available_stamina: entity.aditional_info.available_stamina,
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
