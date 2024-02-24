@@ -55,30 +55,13 @@
   },
   "skills": [
     {
-      "name": "circle_bash",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 0,
-      "is_passive": false,
-      "autoaim": true,
-      "can_pick_destination": false,
-      "mechanics": [
-        {
-          "circle_hit": {
-            "damage": 15,
-            "range": 1000.0
-          }
-        }
-      ],
-      "effects_to_apply": []
-    },
-    {
       "name": "hit",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -98,6 +81,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 2,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -121,6 +105,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -141,6 +126,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 2,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -166,6 +152,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -190,6 +177,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -207,6 +195,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -228,6 +217,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "stamina_cost": 2,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -248,6 +238,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
