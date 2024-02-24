@@ -113,6 +113,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_circular_obstacle(id, position, radius) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :circle,
+      name: "Obstacle" <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def make_circular_area(id, position, range) do
     %{
       id: id,
