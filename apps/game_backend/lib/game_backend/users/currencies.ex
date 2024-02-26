@@ -125,6 +125,16 @@ defmodule GameBackend.Users.Currencies do
   Note that on failure, the succesful calls still take effect. Because of this, it's heavily
   advised that you use this function inside a Multi transaction, specially if you are combining
   it with other DB acesses.
+
+  ## Examples
+
+      Ecto.Multi.new()
+      |> Ecto.Multi.run(:user_currency, fn _, _ ->
+        Currencies.substract_currencies(user_id, [
+          %CurrencyCost{currency_id: currency_id, amount: amount}
+        ])
+      end)
+      |> GameBackend.Repo.transaction()
   """
   def substract_currencies(_user_id, []), do: {:ok, []}
 
