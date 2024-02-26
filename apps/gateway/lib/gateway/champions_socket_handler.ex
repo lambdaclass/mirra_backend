@@ -121,6 +121,17 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
+  defp handle(%FuseUnit{
+         user_id: user_id,
+         unit_id: unit_id,
+         consumed_units_ids: consumed_units_ids
+       }) do
+    case Units.fuse(user_id, unit_id, consumed_units_ids) do
+      {:ok, result} -> prepare_response(result, :unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
   defp handle(%EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}),
     do: Items.equip_item(user_id, item_id, unit_id) |> prepare_response(:item)
 

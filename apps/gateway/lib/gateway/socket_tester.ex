@@ -29,6 +29,7 @@ defmodule SocketTester do
     UnselectUnit,
     LevelUpUnit,
     TierUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -148,6 +149,22 @@ defmodule SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:tier_up_unit, %TierUpUnit{user_id: user_id, unit_id: unit_id}}
+         })}
+      )
+
+  def fuse_unit(pid, user_id, unit_id, consumed_units_ids),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type:
+             {:fuse_unit,
+              %FuseUnit{
+                user_id: user_id,
+                unit_id: unit_id,
+                consumed_units_ids: consumed_units_ids
+              }}
          })}
       )
 
