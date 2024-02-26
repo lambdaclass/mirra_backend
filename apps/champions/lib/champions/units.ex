@@ -31,12 +31,15 @@ defmodule Champions.Units do
 
   @doc """
   Sets a unit as unselected for a user. Clears the `slot` field.
+
   Returns `:not_found` if unit doesn't exist or if it's now owned by the user.
   Returns the unit's new state if succesful.
   """
   def unselect_unit(user_id, unit_id), do: Units.unselect_unit(user_id, unit_id)
 
+  ############
   # Level Up #
+  ############
 
   @doc """
   Levels up a user's unit and substracts the currency cost from the user.
