@@ -24,9 +24,9 @@ defmodule GameBackend.Units do
   end
 
   @doc """
-  Sets the selected value of a unit.
+  Updates a unit.
   """
-  def update_selected(unit, params) do
+  def update_unit(unit, params) do
     unit
     |> Unit.update_changeset(params)
     |> Repo.update()
