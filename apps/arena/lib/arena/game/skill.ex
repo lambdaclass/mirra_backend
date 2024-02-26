@@ -315,28 +315,28 @@ defmodule Arena.Game.Skill do
       nil ->
         player
 
+      %{position: pool_position} when pool_position == player.position ->
+        player
+
       pool ->
-        if pool.position != player.position do
-          direction = Physics.get_direction_from_positions(player.position, pool.position)
+        direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-          rust_player = Physics.move_entity_to_direction(player, direction, pull_params.force)
+        rust_player = Physics.move_entity_to_direction(player, direction, pull_params.force)
 
-          Map.put(rust_player, :aditional_info, player.aditional_info)
-          |> Map.put(:collides_with, player.collides_with)
-        else
-          player
-        end
+        Map.put(rust_player, :aditional_info, player.aditional_info)
+        |> Map.put(:collides_with, player.collides_with)
     end
   end
 
   defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
+    # TODO not all effects may come from pools entities, maybe we should upgrade this when we implement other skills that
+    # applies this effect
     Map.get(game_state.pools, effect.owner_id)
     |> case do
       nil ->
         player
 
       pool ->
-        # TODO not all effects may come from pools, maybe we should upgrade this
         pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
         real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
 
