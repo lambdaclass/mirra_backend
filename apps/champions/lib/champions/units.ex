@@ -21,7 +21,7 @@ defmodule Champions.Units do
   Returns the unit's new state if succesful.
   """
   def select_unit(_user_id, _unit_id, nil), do: {:error, :no_slot}
-  def select_unit(_user_id, _unit_id, slot) when slot not in 1..5, do: {:error, :out_of_bounds}
+  def select_unit(_user_id, _unit_id, slot) when slot not in 1..6, do: {:error, :out_of_bounds}
 
   def select_unit(user_id, unit_id, slot) do
     if Units.get_selected_units(user_id) |> Enum.any?(&(&1.slot == slot)),
@@ -47,7 +47,7 @@ defmodule Champions.Units do
   Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
   Returns `{:error, :cant_afford}` if user cannot afford the cost.
   Returns `{:error, :cant_level_up}`if unit cant level up due to tier restrictions.
-  Returns `{:ok, unit: %Unit{}, user_currency: %UserCurrency{}}` if succesful.
+  Returns `{:ok, %{unit: %Unit{}, user_currency: %UserCurrency{}}}` if succesful.
   """
   def level_up(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
@@ -90,7 +90,7 @@ defmodule Champions.Units do
     do: [
       %CurrencyCost{
         currency_id: Currencies.get_currency_by_name!("Gold").id,
-        amount: unit.unit_level |> Math.pow(2) |> round()
+        amount: unit.level |> Math.pow(2) |> round()
       }
     ]
 
@@ -99,7 +99,7 @@ defmodule Champions.Units do
 
   This will eventually be provided by configuration files.
   """
-  def can_level_up(unit), do: can_level_up(unit.tier, unit.unit_level)
+  def can_level_up(unit), do: can_level_up(unit.tier, unit.level)
   defp can_level_up(1, level) when level < 20, do: true
   defp can_level_up(2, level) when level < 40, do: true
   defp can_level_up(3, level) when level < 60, do: true
