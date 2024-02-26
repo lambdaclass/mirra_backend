@@ -202,7 +202,7 @@ defmodule Champions.Units do
     do: [
       %CurrencyCost{
         currency_id: Currencies.get_currency_by_name!("Gold").id,
-        amount: unit.unit_level |> Math.pow(2) |> round()
+        amount: unit.level |> Math.pow(2) |> round()
       },
       %CurrencyCost{currency_id: Currencies.get_currency_by_name!("Gems").id, amount: 50}
     ]
