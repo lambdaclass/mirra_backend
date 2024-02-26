@@ -56,7 +56,7 @@ defmodule GameBackend.Users.Currencies do
           where: uc.user_id == ^user_id and uc.currency_id == ^currency_id,
           select: uc.amount
         )
-      )
+      ) || 0
 
   @doc """
   Adds (or substracts) the given amount of currency to a user.
