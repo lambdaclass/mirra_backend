@@ -58,6 +58,10 @@ defmodule GameBackend.Users.Currencies do
         )
       )
 
+  @doc """
+  Adds (or substracts) the given amount of currency to a user.
+  Creates the relational table if it didn't exist previously.
+  """
   def add_currency(user_id, currency_id, amount) do
     result =
       with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id),
@@ -78,6 +82,9 @@ defmodule GameBackend.Users.Currencies do
     end
   end
 
+  @doc """
+  Get a UserCurrency.
+  """
   def get_user_currency(user_id, currency_id),
     do:
       Repo.one(
