@@ -71,6 +71,10 @@ defmodule Arena.Configuration do
     {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
   end
 
+  defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
+    {name, %{attrs | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)}}
+  end
+
   defp parse_mechanic_fields(mechanic) do
     mechanic
   end
