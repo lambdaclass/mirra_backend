@@ -11,7 +11,6 @@ defmodule GameBackend.Units do
   import Ecto.Query
 
   alias GameBackend.Repo
-  alias GameBackend.Units
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
 
@@ -29,10 +28,9 @@ defmodule GameBackend.Units do
   """
   def update_selected(unit, params) do
     unit
-    |> Unit.selected_changeset(params)
+    |> Unit.update_changeset(params)
     |> Repo.update()
   end
-
 
   @doc """
   Sets a unit as selected in the given slot.
@@ -46,7 +44,6 @@ defmodule GameBackend.Units do
       {:unit_owned, false} -> {:error, :not_owned}
     end
   end
-
 
   @doc """
   Sets a unit as unselected and clears its slot.
@@ -164,6 +161,23 @@ defmodule GameBackend.Units do
     %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id, slot: slot}
   end
 
+  @doc """
+  Returns whether a unit belongs to a user.
+  """
   def unit_belongs_to_user(unit_id, user_id),
-    do: Map.get(get_unit(unit_id) || %{}, :user_id) == user_id
+    do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
+
+  @doc """
+  Increment an unit's unit_level (not to be confused with units' `level` association).
+
+  ## Examples
+
+      iex> add_level(%Unit{unit_level: 41}, 1)
+      {:ok, %Unit{unit_level: 42}}
+  """
+  def add_level(unit, level \\ 1) do
+    unit
+    |> Unit.update_changeset(%{unit_level: unit.unit_level + level})
+    |> Repo.update()
+  end
 end
