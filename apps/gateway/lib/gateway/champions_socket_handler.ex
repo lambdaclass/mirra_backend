@@ -20,6 +20,7 @@ defmodule Gateway.ChampionsSocketHandler do
     UnselectUnit,
     LevelUpUnit,
     TierUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
