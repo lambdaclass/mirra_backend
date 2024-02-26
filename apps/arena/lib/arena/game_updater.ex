@@ -82,8 +82,6 @@ defmodule Arena.GameUpdater do
       |> update_collisions(game_state.players, Map.merge(game_state.power_ups, game_state.pools))
       |> handle_power_ups(game_state.power_ups)
 
-    handle_pools(game_state)
-
     # We need to send the exploded projectiles to the client at least once
     updated_expired_projectiles =
       game_state.projectiles
@@ -133,6 +131,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:power_ups, power_ups)
       |> Map.put(:server_timestamp, now)
       |> execute_on_explode_mechanics(projectiles)
+      |> handle_pools(state.game_config, players)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -376,104 +375,19 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_info({:remove_pool, pool_id}, state) do
-    pools =
-      state.game_state.pools
-      |> Map.delete(pool_id)
-
-    players =
-      state.game_state.players
-      |> Enum.map(fn {player_id, player} ->
-        effects =
-          Map.filter(player.aditional_info.effects, fn {_effect_id, effect} ->
-            effect.owner_id != pool_id
-          end)
-
-        {player_id,
-         put_in(
-           player,
-           [:aditional_info, :effects],
-           effects
-         )}
+  def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
+    game_state =
+      Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
+        remove_pool_effects(game_state, player, pool_id)
       end)
-      |> Map.new()
-
-    state =
-      put_in(
-        state,
-        [:game_state, :pools],
-        pools
+      |> update_in(
+        [:pools],
+        fn current_pools ->
+          Map.delete(current_pools, pool_id)
+        end
       )
-      |> put_in([:game_state, :players], players)
 
-    {:noreply, state}
-  end
-
-  def handle_info(
-        {:add_pool_effects, player_id, %{aditional_info: %{owner_id: player_id}},
-         _effects_to_apply},
-        state
-      ) do
-    {:noreply, state}
-  end
-
-  def handle_info(
-        {:add_pool_effects, player_id, pool, effects_to_apply},
-        %{
-          game_state: game_state,
-          game_config: game_config
-        } = state
-      ) do
-    player = Map.get(game_state.players, player_id)
-
-    if Enum.any?(player.aditional_info.effects, fn {_effect_id, effect} ->
-         effect.owner_id == pool.id
-       end) do
-      {:noreply, state}
-    else
-      game_state =
-        Enum.reduce(effects_to_apply, game_state, fn effect_name, game_state ->
-          last_id = game_state.last_id + 1
-          effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-
-          put_in(
-            game_state,
-            [:players, player_id, :aditional_info, :effects, last_id],
-            Map.put(effect, :owner_id, pool.id)
-            |> Map.put(:last_application_time, 0)
-            |> Map.put(:id, last_id)
-          )
-          |> put_in(
-            [:last_id],
-            last_id
-          )
-        end)
-
-      {:noreply, %{state | game_state: game_state}}
-    end
-  end
-
-  def handle_info({:remove_pool_effects, player_id, pool_id}, state) do
-    case Map.get(state.game_state.players, player_id) do
-      %{aditional_info: %{effects: effects}} ->
-        effects_to_remove =
-          Enum.filter(effects, fn {_effect_id, effect} ->
-            effect.owner_id == pool_id
-          end)
-          |> Enum.map(fn {effect_id, _} -> effect_id end)
-
-        state =
-          put_in(
-            state,
-            [:game_state, :players, player_id, :aditional_info, :effects],
-            Map.drop(effects, effects_to_remove)
-          )
-
-        {:noreply, state}
-
-      _ ->
-        {:noreply, state}
-    end
+    {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do
@@ -935,22 +849,47 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp handle_pools(game_state) do
-    Enum.each(game_state.players, fn {player_id, player} ->
-      colliding_pools =
-        game_state.pools
-        |> Map.filter(fn {pool_id, _pool} -> pool_id in player.collides_with end)
-
-      Enum.each(game_state.pools, fn {pool_id, pool} ->
-        if Map.has_key?(colliding_pools, pool_id) do
-          send(
-            self(),
-            {:add_pool_effects, player_id, pool, pool.aditional_info.effects_to_apply}
-          )
+  defp handle_pools(game_state, game_config, players) do
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
+      Enum.reduce(game_state.pools, game_state, fn {pool_id, pool}, acc ->
+        if pool_id in player.collides_with do
+          add_pool_effects(acc, game_config, player, pool)
         else
-          send(self(), {:remove_pool_effects, player_id, pool_id})
+          remove_pool_effects(acc, player, pool_id)
         end
       end)
+    end)
+  end
+
+  defp add_pool_effects(game_state, game_config, player, pool) do
+    player_contain_pool_effects? =
+      Enum.any?(player.aditional_info.effects, fn {_effect_id, effect} ->
+        effect.owner_id == pool.id
+      end)
+
+    if player_contain_pool_effects? or player.id == pool.aditional_info.owner_id do
+      game_state
+    else
+      Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
+        last_id = game_state.last_id + 1
+
+        effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+
+        game_state
+        |> put_in(
+          [:players, player.id, :aditional_info, :effects, last_id],
+          Map.put(effect, :owner_id, pool.id)
+          |> Map.put(:last_application_time, 0)
+          |> Map.put(:id, last_id)
+        )
+        |> put_in([:last_id], last_id)
+      end)
+    end
+  end
+
+  defp remove_pool_effects(game_state, player, pool_id) do
+    update_in(game_state, [:players, player.id, :aditional_info, :effects], fn current_effects ->
+      Map.reject(current_effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end)
     end)
   end
 end
