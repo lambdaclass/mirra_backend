@@ -137,7 +137,6 @@ defmodule GameBackend.Users.Currencies do
       end)
       |> GameBackend.Repo.transaction()
       {:ok, %{user_currency: [%UserCurrency{}]}
-
   """
   def substract_currencies(_user_id, []), do: {:ok, []}
 
