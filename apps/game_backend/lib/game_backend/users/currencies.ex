@@ -119,7 +119,7 @@ defmodule GameBackend.Users.Currencies do
   @doc """
   Substracts all CurrencyCosts from the user.
 
-  If all calls succeed, `{:ok, results}`is returned.
+  If all calls succeed, `{:ok, results}` is returned, where `results` is a %UserCurrency{} list.
   If any of the calls fail, `{:error, "failed"}` is returned instead.
 
   Note that on failure, the succesful calls still take effect. Because of this, it's heavily
@@ -128,13 +128,16 @@ defmodule GameBackend.Users.Currencies do
 
   ## Examples
 
-      Ecto.Multi.new()
+      iex> Ecto.Multi.new()
+      |> Ecto.Multi.run(:some_other_operation, fn _, _ -> other_operation() end)
       |> Ecto.Multi.run(:user_currency, fn _, _ ->
         Currencies.substract_currencies(user_id, [
           %CurrencyCost{currency_id: currency_id, amount: amount}
         ])
       end)
       |> GameBackend.Repo.transaction()
+      {:ok, %{user_currency: [%UserCurrency{}]}
+
   """
   def substract_currencies(_user_id, []), do: {:ok, []}
 
