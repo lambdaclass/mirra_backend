@@ -118,7 +118,13 @@ defmodule GameBackend.Users.Currencies do
 
   @doc """
   Substracts all CurrencyCosts from the user.
-  Returns {:ok, results} or {:error, "failed"} tuples so it can be used on transactions.
+
+  If all calls succeed, `{:ok, results}`is returned.
+  If any of the calls fail, `{:error, "failed"}` is returned instead.
+
+  Note that on failure, the succesful calls still take effect. Because of this, it's heavily
+  advised that you use this function inside a Multi transaction, specially if you are combining
+  it with other DB acesses.
   """
   def substract_currencies(_user_id, []), do: {:ok, []}
 
