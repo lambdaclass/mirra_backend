@@ -224,6 +224,8 @@ defmodule Champions.Units do
   @doc """
   Consume a list of units that meet specific rank and character requirements based on the target
   unit's rank in order to increase it.
+
+  Returns `{:ok, unit}` or `{:error, reason}`.
   """
   def fuse(user_id, unit_id, consumed_units_ids) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
