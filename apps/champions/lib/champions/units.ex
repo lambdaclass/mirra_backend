@@ -90,7 +90,7 @@ defmodule Champions.Units do
     do: [
       %CurrencyCost{
         currency_id: Currencies.get_currency_by_name!("Gold").id,
-        amount: unit.level |> Math.pow(2) |> round()
+        amount: unit.unit_level |> Math.pow(2) |> round()
       }
     ]
 
@@ -99,7 +99,7 @@ defmodule Champions.Units do
 
   This will eventually be provided by configuration files.
   """
-  def can_level_up(unit), do: can_level_up(unit.tier, unit.level)
+  def can_level_up(unit), do: can_level_up(unit.tier, unit.unit_level)
   defp can_level_up(1, level) when level < 20, do: true
   defp can_level_up(2, level) when level < 40, do: true
   defp can_level_up(3, level) when level < 60, do: true

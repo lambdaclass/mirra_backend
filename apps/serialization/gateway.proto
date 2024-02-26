@@ -135,7 +135,7 @@ syntax = "proto3";
 
   message Unit {
     string id = 1;
-    uint32 level = 2;
+    uint32 unit_level = 2;
     uint32 tier = 3;
     uint32 rank = 4;
     bool selected = 5;

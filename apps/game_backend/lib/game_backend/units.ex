@@ -155,10 +155,10 @@ defmodule GameBackend.Units do
   @doc """
   Create params for a level with a random character.
   """
-  def unit_params_for_level(possible_characters, level, slot) do
+  def unit_params_for_level(possible_characters, unit_level, slot) do
     character = Enum.random(possible_characters)
 
-    %{level: level, tier: 1, selected: true, character_id: character.id, slot: slot}
+    %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id, slot: slot}
   end
 
   @doc """
@@ -168,16 +168,16 @@ defmodule GameBackend.Units do
     do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
 
   @doc """
-  Increment an unit's level (not to be confused with units' `level` association).
+  Increment an unit's unit_level (not to be confused with units' `level` association).
 
   ## Examples
 
-      iex> add_level(%Unit{level: 41}, 1)
-      {:ok, %Unit{level: 42}}
+      iex> add_level(%Unit{unit_level: 41}, 1)
+      {:ok, %Unit{unit_level: 42}}
   """
   def add_level(unit, level \\ 1) do
     unit
-    |> Unit.update_changeset(%{level: unit.level + level})
+    |> Unit.update_changeset(%{unit_level: unit.unit_level + level})
     |> Repo.update()
   end
 end
