@@ -51,7 +51,7 @@ defmodule GameBackend.Units do
   def unselect_unit(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id} do
-        update_unit(unit, %{selected: false, slot: nil})
+      update_unit(unit, %{selected: false, slot: nil})
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
       {:unit_owned, false} -> {:error, :not_owned}
