@@ -14,7 +14,7 @@ Characters.insert_character(%{
   active: true,
   name: "Muflus",
   faction: "Araban",
-  quality: "Epic",
+  quality: Champions.Units.get_quality(:epic),
   base_health: 621,
   base_attack: 63,
   base_armor: 78,
@@ -53,7 +53,7 @@ Characters.insert_character(%{
   active: true,
   name: "Uma",
   faction: "Kaline",
-  quality: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Characters.insert_character(%{
@@ -61,7 +61,7 @@ Characters.insert_character(%{
   active: true,
   name: "Dagna",
   faction: "Merliot",
-  quality: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Characters.insert_character(%{
@@ -69,7 +69,7 @@ Characters.insert_character(%{
   active: true,
   name: "H4ck",
   faction: "Otobi",
-  quality: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Items.insert_item_template(%{
