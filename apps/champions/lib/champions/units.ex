@@ -47,7 +47,7 @@ defmodule Champions.Units do
   Returns `{:error, :not_found}` if unit doesn't exist or if it's not owned by user.
   Returns `{:error, :cant_afford}` if user cannot afford the cost.
   Returns `{:error, :cant_level_up}`if unit cant level up due to tier restrictions.
-  Returns `{:ok, unit: %Unit{}, user_currency: %UserCurrency{}}` if succesful.
+  Returns `{:ok, %{unit: %Unit{}, user_currency: %UserCurrency{}}}` if succesful.
   """
   def level_up(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
