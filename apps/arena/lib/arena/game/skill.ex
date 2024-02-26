@@ -310,8 +310,7 @@ defmodule Arena.Game.Skill do
   end
 
   defp do_effect_mechanics(game_state, player, effect, {:pull, pull_params}) do
-    Map.get(game_state.pools, effect.owner_id)
-    |> case do
+    case Map.get(game_state.pools, effect.owner_id) do
       nil ->
         player
 
