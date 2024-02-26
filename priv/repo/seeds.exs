@@ -14,7 +14,7 @@ Characters.insert_character(%{
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: "Epic",
+  quality: "Epic",
   base_health: 621,
   base_attack: 63,
   base_armor: 78,
@@ -53,7 +53,7 @@ Characters.insert_character(%{
   active: true,
   name: "Uma",
   faction: "Kaline",
-  rarity: "Epic"
+  quality: "Epic"
 })
 
 Characters.insert_character(%{
@@ -61,7 +61,7 @@ Characters.insert_character(%{
   active: true,
   name: "Dagna",
   faction: "Merliot",
-  rarity: "Epic"
+  quality: "Epic"
 })
 
 Characters.insert_character(%{
@@ -69,7 +69,7 @@ Characters.insert_character(%{
   active: true,
   name: "H4ck",
   faction: "Otobi",
-  rarity: "Epic"
+  quality: "Epic"
 })
 
 Items.insert_item_template(%{

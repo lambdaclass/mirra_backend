@@ -10,6 +10,8 @@ defmodule Champions.Units do
   alias Ecto.Multi
   alias GameBackend.Transaction
   alias GameBackend.Units
+  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies
   alias GameBackend.Users.Currencies.CurrencyCost
 
@@ -23,6 +25,10 @@ defmodule Champions.Units do
   @illumination3 8
   @awakened 9
 
+  @epic 3
+  @rare 2
+  @common 1
+
   def get_rank(:star1), do: @star1
   def get_rank(:star2), do: @star2
   def get_rank(:star3), do: @star3
@@ -32,6 +38,10 @@ defmodule Champions.Units do
   def get_rank(:illumination2), do: @illumination2
   def get_rank(:illumination3), do: @illumination3
   def get_rank(:awakened), do: @awakened
+
+  def get_quality(:epic), do: @epic
+  def get_quality(:rare), do: @rare
+  def get_quality(:common), do: @common
 
   @doc """
   Marks a unit as selected for a user. Units cannot be selected to the same slot.
@@ -206,6 +216,149 @@ defmodule Champions.Units do
       },
       %CurrencyCost{currency_id: Currencies.get_currency_by_name!("Gems").id, amount: 50}
     ]
+
+  ##########
+  # Fusion #
+  ##########
+
+  @doc """
+  Consume a list of units that meet specific rank and character requirements based on the target
+  unit's rank in order to increase it.
+  """
+  def fuse(user_id, unit_id, consumed_units_ids) do
+    with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
+         {:can_rank_up, true} <- {:can_rank_up, can_rank_up(unit)},
+         consumed_units <- Units.get_units(consumed_units_ids),
+         {:consumed_units_count, true} <-
+           {:consumed_units_count, Enum.count(consumed_units) == Enum.count(consumed_units_ids)},
+         {:consumed_units_valid, true} <-
+           {:consumed_units_valid, validate_consumed_units(unit, consumed_units)} do
+      result =
+        Multi.new()
+        |> Multi.run(:unit, fn _, _ -> Units.add_rank(unit) end)
+        |> Multi.run(:deleted_units, fn _, _ -> delete_consumed_units(consumed_units_ids) end)
+        |> Transaction.run()
+
+      case result do
+        {:error, reason} ->
+          {:error, reason}
+
+        {:error, _, _, _} ->
+          {:error, :transaction}
+
+        {:ok, %{unit: unit}} ->
+          {:ok, unit}
+      end
+    else
+      {:unit, {:error, :not_found}} ->
+        {:error, :not_found}
+
+      {:unit_owned, false} ->
+        {:error, :not_owned}
+
+      {:can_rank_up, false} ->
+        {:error, :cant_rank_up}
+
+      {:consumed_units_count, false} ->
+        {:error, :consumed_units_not_found}
+
+      {:consumed_units_valid, false} ->
+        {:error, :consumed_units_invalid}
+    end
+  end
+
+  defp delete_consumed_units(unit_ids) do
+    {amount_deleted, _return} = Units.delete_units(unit_ids)
+
+    if Enum.count(unit_ids) == amount_deleted, do: {:ok, amount_deleted}, else: {:error, "failed"}
+  end
+
+  defp validate_consumed_units(unit, unit_list) do
+    {same_character_amount, same_character_rank} = same_character_requirements(unit)
+    {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
+
+    try do
+      validate_units(
+        unit,
+        unit_list,
+        same_character_amount,
+        same_character_rank,
+        same_faction_amount,
+        same_faction_rank
+      )
+    rescue
+      _e in RuntimeError -> false
+    end
+  end
+
+  defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
+  defp same_character_requirements(%Unit{rank: @star5}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination1}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination2}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination3}), do: {3, @star5}
+
+  defp same_faction_requirements(%Unit{rank: @star4}), do: {4, @star4}
+  defp same_faction_requirements(%Unit{rank: @star5}), do: {4, @star5}
+  defp same_faction_requirements(%Unit{rank: @illumination1}), do: {1, @illumination1}
+  defp same_faction_requirements(%Unit{rank: @illumination2}), do: {2, @illumination2}
+  defp same_faction_requirements(%Unit{rank: @illumination3}), do: {2, @illumination2}
+
+  defp validate_units(
+         unit,
+         unit_list,
+         same_character_amount,
+         same_character_rank,
+         same_faction_amount,
+         same_faction_rank
+       ) do
+    # Remove necessary units with the same character
+    removed_same_character =
+      Enum.reduce(1..same_character_amount, unit_list, fn _, list ->
+        same_character =
+          Enum.find(
+            list,
+            &(&1.character_id == unit.character_id and &1.rank == same_character_rank)
+          )
+
+        if is_nil(same_character), do: raise("not enough of same character")
+        if same_character.user_id != unit.user_id, do: raise("consumed unit not owned")
+
+        List.delete(list, same_character)
+      end)
+
+    # Remove necessary units with the same faction
+    removed_same_faction =
+      Enum.reduce(1..same_faction_amount, removed_same_character, fn _, list ->
+        same_faction =
+          Enum.find(
+            list,
+            &(&1.character.faction == unit.character.faction and &1.rank == same_faction_rank)
+          )
+
+        if is_nil(same_faction), do: raise("not enough of same faction")
+        if same_faction.user_id != unit.user_id, do: raise("consumed unit not owned")
+
+        List.delete(list, same_faction)
+      end)
+
+    # If we got here with no raises and an empty list, then the units are valid
+    if Enum.empty?(removed_same_faction), do: true, else: raise("too many units given")
+  end
+
+  @doc """
+  Returns whether a unit can rank up, based on its current rank and its character's quality.
+  """
+  def can_rank_up(%Unit{rank: rank, character: %Character{quality: @epic}}), do: rank < @awakened
+
+  def can_rank_up(%Unit{rank: rank, character: %Character{quality: @rare}}),
+    do: rank < @illumination2
+
+  def can_rank_up(_unit), do: false
+
+  ##########
+  # Battle #
+  ##########
 
   @doc """
   Get a unit's max health stat for battle. Buffs from items and similar belong here.

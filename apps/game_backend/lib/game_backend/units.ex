@@ -170,7 +170,7 @@ defmodule GameBackend.Units do
     do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
 
   @doc """
-  Increment an unit's level (not to be confused with units' `level` association).
+  Increment a unit's level (not to be confused with units' `level` association).
 
   ## Examples
 
@@ -184,7 +184,7 @@ defmodule GameBackend.Units do
   end
 
   @doc """
-  Increment an unit's tier.
+  Increment a unit's tier.
 
   ## Examples
 
@@ -194,6 +194,20 @@ defmodule GameBackend.Units do
   def add_tier(unit, tier \\ 1) do
     unit
     |> Unit.update_changeset(%{tier: unit.tier + tier})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment a unit's rank.
+
+  ## Examples
+
+      iex> add_rank(%Unit{rank: 41}, 1)
+      {:ok, %Unit{rank: 42}}
+  """
+  def add_rank(unit, rank \\ 1) do
+    unit
+    |> Unit.update_changeset(%{rank: unit.rank + rank})
     |> Repo.update()
   end
 end
