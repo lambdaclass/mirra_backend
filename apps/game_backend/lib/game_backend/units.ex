@@ -24,9 +24,9 @@ defmodule GameBackend.Units do
   end
 
   @doc """
-  Sets the selected value of a unit.
+  Updates a unit.
   """
-  def update_selected(unit, params) do
+  def update_unit(unit, params) do
     unit
     |> Unit.update_changeset(params)
     |> Repo.update()
@@ -38,7 +38,7 @@ defmodule GameBackend.Units do
   def select_unit(user_id, unit_id, slot \\ nil) do
     with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id} do
-      update_selected(unit, %{selected: true, slot: slot})
+      update_unit(unit, %{selected: true, slot: slot})
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
       {:unit_owned, false} -> {:error, :not_owned}
@@ -51,7 +51,7 @@ defmodule GameBackend.Units do
   def unselect_unit(user_id, unit_id) do
     with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id} do
-      update_selected(unit, %{selected: false, slot: nil})
+        update_unit(unit, %{selected: false, slot: nil})
     else
       {:unit, {:error, :not_found}} -> {:error, :not_found}
       {:unit_owned, false} -> {:error, :not_owned}

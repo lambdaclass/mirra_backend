@@ -5,31 +5,35 @@ defmodule Arena.Game.Skill do
   alias Arena.{Entities, Utils}
   alias Arena.Game.Player
 
-  def do_mechanic(game_state, player, mechanics, skill_params) when is_list(mechanics) do
+  def do_mechanic(game_state, entity, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
-      do_mechanic(game_state_acc, player, mechanic, skill_params)
+      do_mechanic(game_state_acc, entity, mechanic, skill_params)
     end)
   end
 
-  def do_mechanic(game_state, player, {:circle_hit, circle_hit}, _skill_params) do
+  def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
     circular_damage_area =
-      Entities.make_circular_area(player.id, player.position, circle_hit.range)
+      Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
 
-    alive_players = Player.alive_players(game_state.players)
+    entity_player_owner = get_entity_player_owner(game_state, entity)
+
+    alive_players =
+      Player.alive_players(game_state.players)
+      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
 
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        real_damage = Player.calculate_real_damage(player, circle_hit.damage)
+        real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
 
         target_player =
           Map.get(players_acc, player_id)
           |> Player.take_damage(real_damage)
 
-        send(self(), {:damage_done, player.id, circle_hit.damage})
+        send(self(), {:damage_done, entity_player_owner.id, circle_hit.damage})
 
         unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, player.id, target_player.id})
+          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
         end
 
         Map.put(players_acc, player_id, target_player)
@@ -38,32 +42,33 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:cone_hit, cone_hit}, _skill_params) do
+  def do_mechanic(game_state, entity, {:cone_hit, cone_hit}, _skill_params) do
     triangle_points =
       Physics.calculate_triangle_vertices(
-        player.position,
-        player.direction,
+        entity.position,
+        entity.direction,
         cone_hit.range,
         cone_hit.angle
       )
 
-    cone_area = Entities.make_polygon(player.id, triangle_points)
+    cone_area = Entities.make_polygon(entity.id, triangle_points)
 
     alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
 
     players =
       Physics.check_collisions(cone_area, alive_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        real_damage = Player.calculate_real_damage(player, cone_hit.damage)
+        entity_player_owner = get_entity_player_owner(game_state, entity)
+        real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
 
         target_player =
           Map.get(players_acc, player_id)
           |> Player.take_damage(real_damage)
 
-        send(self(), {:damage_done, player.id, cone_hit.damage})
+        send(self(), {:damage_done, entity_player_owner.id, cone_hit.damage})
 
         unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, player.id, target_player.id})
+          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
         end
 
         Map.put(players_acc, player_id, target_player)
@@ -72,35 +77,40 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:multi_cone_hit, multi_cone_hit}, skill_params) do
+  def do_mechanic(game_state, entity, {:multi_cone_hit, multi_cone_hit}, skill_params) do
     Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
       mechanic = {:cone_hit, multi_cone_hit}
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, mechanic, skill_params},
+        {:trigger_mechanic, entity.id, mechanic, skill_params},
         i * multi_cone_hit.interval_ms
       )
     end)
 
-    do_mechanic(game_state, player, {:cone_hit, multi_cone_hit}, skill_params)
+    do_mechanic(game_state, entity, {:cone_hit, multi_cone_hit}, skill_params)
   end
 
-  def do_mechanic(game_state, player, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
-    Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
+  def do_mechanic(
+        game_state,
+        entity,
+        {:dash, %{speed: speed, duration: duration}},
+        _skill_params
+      ) do
+    Process.send_after(self(), {:stop_dash, entity.id, entity.speed}, duration)
 
     player =
-      player
+      entity
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    players = Map.put(game_state.players, player.id, player)
+    players = Map.put(game_state.players, entity.id, player)
 
     %{game_state | players: players}
   end
 
-  def do_mechanic(game_state, player, {:repeated_shot, repeated_shot}, skill_params) do
+  def do_mechanic(game_state, entity, {:repeated_shot, repeated_shot}, skill_params) do
     remaining_amount = repeated_shot.amount - 1
 
     if remaining_amount > 0 do
@@ -108,19 +118,21 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(
         self(),
-        {:trigger_mechanic, player.id, {:repeated_shot, repeated_shot}, skill_params},
+        {:trigger_mechanic, entity.id, {:repeated_shot, repeated_shot}, skill_params},
         repeated_shot.interval_ms
       )
     end
+
+    entity_player_owner = get_entity_player_owner(game_state, entity)
 
     last_id = game_state.last_id + 1
 
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(player, repeated_shot),
-        randomize_direction_in_angle(player.direction, repeated_shot.angle),
-        player.id,
+        get_real_projectile_spawn_position(entity_player_owner, repeated_shot),
+        randomize_direction_in_angle(entity.direction, repeated_shot.angle),
+        entity_player_owner.id,
         skill_params.skill_key,
         repeated_shot
       )
@@ -132,17 +144,19 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:multi_shoot, multishot}, skill_params) do
-    calculate_angle_directions(multishot.amount, multishot.angle_between, player.direction)
+  def do_mechanic(game_state, entity, {:multi_shoot, multishot}, skill_params) do
+    entity_player_owner = get_entity_player_owner(game_state, entity)
+
+    calculate_angle_directions(multishot.amount, multishot.angle_between, entity.direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
 
       projectile =
         Entities.new_projectile(
           last_id,
-          get_real_projectile_spawn_position(player, multishot),
+          get_real_projectile_spawn_position(entity_player_owner, multishot),
           direction,
-          player.id,
+          entity_player_owner.id,
           skill_params.skill_key,
           multishot
         )
@@ -155,16 +169,17 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, player, {:simple_shoot, simple_shoot}, _skill_params) do
+  def do_mechanic(game_state, entity, {:simple_shoot, simple_shoot}, skill_params) do
     last_id = game_state.last_id + 1
+    entity_player_owner = get_entity_player_owner(game_state, entity)
 
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(player, simple_shoot),
-        player.direction,
-        player.id,
-        "SLINGSHOT",
+        get_real_projectile_spawn_position(entity_player_owner, simple_shoot),
+        entity.direction,
+        entity_player_owner.id,
+        skill_params.skill_key,
         simple_shoot
       )
 
@@ -175,29 +190,29 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, player, {:leap, leap}, %{skill_direction: skill_direction}) do
+  def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction}) do
     Process.send_after(
       self(),
-      {:stop_leap, player.id, player.speed, leap.on_arrival_mechanic},
+      {:stop_leap, entity.id, entity.speed, leap.on_arrival_mechanic},
       leap.duration_ms
     )
 
     ## TODO: Cap target_position to leap.range
     target_position = %{
-      x: player.position.x + skill_direction.x * leap.range,
-      y: player.position.y + skill_direction.y * leap.range
+      x: entity.position.x + skill_direction.x * leap.range,
+      y: entity.position.y + skill_direction.y * leap.range
     }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    speed = Physics.calculate_speed(player.position, target_position, leap.duration_ms) * 30
+    speed = Physics.calculate_speed(entity.position, target_position, leap.duration_ms) * 30
 
     player =
-      player
+      entity
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    put_in(game_state, [:players, player.id], player)
+    put_in(game_state, [:players, entity.id], player)
   end
 
   def handle_skill_effects(game_state, player, effects, game_config) do
@@ -263,11 +278,27 @@ defmodule Arena.Game.Skill do
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
       true -> Physics.nearest_entity_direction(player, entities)
-      false -> player.direction |> Utils.normalize()
+      false -> player.direction |> maybe_normalize(not skill.can_pick_destination)
     end
   end
 
-  def maybe_auto_aim(skill_direction, _skill, _player, _entities) do
-    skill_direction |> Utils.normalize()
+  def maybe_auto_aim(skill_direction, skill, _player, _entities) do
+    skill_direction |> maybe_normalize(not skill.can_pick_destination)
   end
+
+  defp maybe_normalize(direction, true) do
+    Utils.normalize(direction)
+  end
+
+  defp maybe_normalize(direction, _false) do
+    direction
+  end
+
+  defp get_entity_player_owner(_game_state, %{category: :player} = player), do: player
+
+  defp get_entity_player_owner(game_state, %{
+         category: :projectile,
+         aditional_info: %{owner_id: owner_id}
+       }),
+       do: get_in(game_state, [:players, owner_id])
 end
