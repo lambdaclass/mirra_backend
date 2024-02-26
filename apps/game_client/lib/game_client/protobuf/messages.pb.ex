@@ -1,3 +1,13 @@
+defmodule GameClient.Protobuf.GameStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PREPARING, 0)
+  field(:RUNNING, 1)
+  field(:ENDED, 2)
+end
+
 defmodule GameClient.Protobuf.ProjectileStatus do
   @moduledoc false
 
@@ -265,6 +275,9 @@ defmodule GameClient.Protobuf.GameState do
     json_name: "powerUps",
     map: true
   )
+
+  field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
+  field(:countdown, 12, type: :int64)
 end
 
 defmodule GameClient.Protobuf.Entity do

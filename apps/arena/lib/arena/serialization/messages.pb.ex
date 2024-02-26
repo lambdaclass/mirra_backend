@@ -1,3 +1,13 @@
+defmodule Arena.Serialization.GameStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:PREPARING, 0)
+  field(:RUNNING, 1)
+  field(:ENDED, 2)
+end
+
 defmodule Arena.Serialization.ProjectileStatus do
   @moduledoc false
 
@@ -164,6 +174,7 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
   field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
+  field(:stamina_cost, 6, type: :uint64, json_name: "staminaCost")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -275,7 +286,9 @@ defmodule Arena.Serialization.GameState do
     map: true
   )
 
-  field(:pools, 11, repeated: true, type: Arena.Serialization.GameState.PoolsEntry, map: true)
+  field(:status, 11, type: Arena.Serialization.GameStatus, enum: true)
+  field(:countdown, 12, type: :int64)
+  field(:pools, 13, repeated: true, type: Arena.Serialization.GameState.PoolsEntry, map: true)
 end
 
 defmodule Arena.Serialization.Entity do
@@ -306,7 +319,7 @@ end
 defmodule Arena.Serialization.Player.EffectsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: Arena.Serialization.Effect)
@@ -338,7 +351,7 @@ end
 defmodule Arena.Serialization.Effect do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
@@ -409,7 +422,7 @@ end
 defmodule Arena.Serialization.AttackParameters do
   @moduledoc false
 
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:target, 1, type: Arena.Serialization.Direction)
 end

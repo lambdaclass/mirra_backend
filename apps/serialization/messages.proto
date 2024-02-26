@@ -73,6 +73,7 @@ message ConfigSkill {
   uint64 execution_duration_ms = 3;
   float targetting_radius = 4;
   float targetting_angle = 5;
+  uint64 stamina_cost = 6;
 }
 
 
@@ -90,7 +91,15 @@ message GameState {
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
-  map<uint64, Entity> pools = 11;
+  GameStatus status = 11;
+  int64 countdown = 12;
+  map<uint64, Entity> pools = 13;
+}
+
+enum GameStatus {
+  PREPARING = 0;
+  RUNNING = 1;
+  ENDED = 2;
 }
 
 /*

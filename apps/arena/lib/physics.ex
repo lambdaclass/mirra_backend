@@ -11,10 +11,11 @@ defmodule Physics do
   def add(_arg1, _arg2), do: :erlang.nif_error(:nif_not_loaded)
   def check_collisions(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_entities(_entities, _ticks_to_move, _external_wall),
+  def move_entities(_entities, _ticks_to_move, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_entity(_entity, _ticks_to_move, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
+  def move_entity(_entity, _ticks_to_move, _external_wall, _obstacles),
+    do: :erlang.nif_error(:nif_not_loaded)
 
   def move_entity_to_direction(_entity, _direction, _amount),
     do: :erlang.nif_error(:nif_not_loaded)
