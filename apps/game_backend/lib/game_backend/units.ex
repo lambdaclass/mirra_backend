@@ -160,7 +160,7 @@ defmodule GameBackend.Units do
   def unit_params_for_level(possible_characters, level, slot) do
     character = Enum.random(possible_characters)
 
-    %{level: level, tier: 1, selected: true, character_id: character.id, slot: slot}
+    %{level: level, tier: 1, rank: 1, selected: true, character_id: character.id, slot: slot}
   end
 
   @doc """
