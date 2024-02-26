@@ -11,10 +11,13 @@ syntax = "proto3";
       FightLevel fight_level = 7;
       SelectUnit select_unit = 8;
       UnselectUnit unselect_unit = 9;
-      EquipItem equip_item = 10;
-      UnequipItem unequip_item = 11;
-      GetItem get_item = 12;
-      LevelUpItem level_up_item = 13;
+      LevelUpUnit level_up_unit = 10;
+      TierUpUnit tier_up_unit = 11;
+      FuseUnit fuse_unit = 12;
+      EquipItem equip_item = 13;
+      UnequipItem unequip_item = 14;
+      GetItem get_item = 15;
+      LevelUpItem level_up_item = 16;
     }
   }
 
@@ -59,6 +62,22 @@ syntax = "proto3";
    string user_id = 1;
    string unit_id = 2;
   }
+
+  message LevelUpUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+  
+  message TierUpUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+  
+  message FuseUnit {
+    string user_id = 1;
+    string unit_id = 2;
+    repeated string consumed_units_ids = 3;
+  }
   
   message EquipItem {
     string user_id = 1;
@@ -87,12 +106,13 @@ syntax = "proto3";
     oneof response_type {
       User user = 1;
       Unit unit = 2;
-      Item item = 3;
-      Campaigns campaigns = 4;
-      Campaign campaign = 5;
-      Level level = 6;
-      BattleResult battle_result = 7;
-      Error error = 8;
+      UnitAndCurrencies unit_and_currencies = 3;
+      Item item = 4;
+      Campaigns campaigns = 5;
+      Campaign campaign = 6;
+      Level level = 7;
+      BattleResult battle_result = 8;
+      Error error = 9;
     }
   }
   
@@ -117,19 +137,25 @@ syntax = "proto3";
     string id = 1;
     uint32 unit_level = 2;
     uint32 tier = 3;
-    bool selected = 4;
-    uint32 slot = 5;
-    string level_id = 6;
-    string user_id = 7;
-    Character character = 8;
-    repeated Item items = 9;
+    uint32 rank = 4;
+    bool selected = 5;
+    uint32 slot = 6;
+    string level_id = 7;
+    string user_id = 8;
+    Character character = 9;
+    repeated Item items = 10;
+  }
+
+  message UnitAndCurrencies {
+    Unit unit = 1;
+    repeated UserCurrency user_currency = 2;
   }
   
   message Character {
     bool active = 1;
     string name = 2;
     string faction = 3;
-    string rarity = 4;
+    uint32 rarity = 4;
   }
   
   message Item {
