@@ -273,24 +273,19 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:update_zone_shrink_time, state) do
-    state =
-      state
-      |> update_in([:game_state, :zone, :zone_shrink_time], fn
-        current_time when current_time > 0 ->
-          Process.send_after(self(), :update_zone_shrink_time, 1000)
+    if get_in(state, [:game_state, :zone, :zone_shrink_time]) > 0 do
+      Process.send_after(self(), :update_zone_shrink_time, 1000)
+
+      state =
+        state
+        |> update_in([:game_state, :zone, :zone_shrink_time], fn current_time ->
           current_time - 1000
+        end)
 
-        _ ->
-          Process.send_after(
-            self(),
-            :update_zone_shrink_time,
-            state.game_config.game.zone_stop_interval_ms
-          )
-
-          state.game_config.game.zone_start_interval_ms
-      end)
-
-    {:noreply, state}
+      {:noreply, state}
+    else
+      {:noreply, state}
+    end
   end
 
   def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
