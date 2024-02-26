@@ -155,4 +155,20 @@ defmodule GameBackend.Users.Currencies do
       {:error, "failed"}
     end
   end
+
+  @doc """
+  Gets how much a user has of a given currency by its name.
+  """
+  def get_amount_of_currency_by_name!(user_id, currency_name),
+    do:
+      user_id
+      |> get_amount_of_currency(get_currency_by_name!(currency_name).id)
+
+  @doc """
+  Add amount of currency to user by its name.
+  """
+  def add_currency_by_name!(user_id, currency_name, amount),
+    do:
+      user_id
+      |> add_currency(get_currency_by_name!(currency_name).id, amount)
 end
