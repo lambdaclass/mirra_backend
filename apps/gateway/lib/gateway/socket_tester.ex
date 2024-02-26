@@ -28,6 +28,7 @@ defmodule SocketTester do
     SelectUnit,
     UnselectUnit,
     LevelUpUnit,
+    TierUpUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -146,7 +147,7 @@ defmodule SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:tier_up_unit, %LevelUpUnit{user_id: user_id, unit_id: unit_id}}
+           request_type: {:tier_up_unit, %TierUpUnit{user_id: user_id, unit_id: unit_id}}
          })}
       )
 
