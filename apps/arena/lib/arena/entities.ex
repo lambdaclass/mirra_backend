@@ -66,7 +66,8 @@ defmodule Arena.Entities do
         damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: config_params.remove_on_collision
+        remove_on_collision: config_params.remove_on_collision,
+        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics)
       }
     }
   end
@@ -101,6 +102,24 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
+      radius: radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
+  def new_circular_obstacle(id, position, radius) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :circle,
+      name: "Obstacle" <> Integer.to_string(id),
+      position: position,
       radius: radius,
       vertices: [],
       speed: 0.0,

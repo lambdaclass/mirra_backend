@@ -8,7 +8,6 @@ defmodule GameBackend.Units.Characters.Character do
 
   alias GameBackend.Units.Skill
 
-  @derive {Jason.Encoder, only: [:active, :name, :faction, :rarity]}
   schema "characters" do
     field(:game_id, :integer)
     field(:active, :boolean, default: true)
