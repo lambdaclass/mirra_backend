@@ -229,7 +229,7 @@ defmodule Champions.Units do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
          {:can_rank_up, true} <- {:can_rank_up, can_rank_up(unit)},
-         consumed_units <- Units.get_units(consumed_units_ids),
+         consumed_units <- Units.get_units_by_ids(consumed_units_ids),
          {:consumed_units_count, true} <-
            {:consumed_units_count, Enum.count(consumed_units) == Enum.count(consumed_units_ids)},
          {:consumed_units_valid, true} <-
