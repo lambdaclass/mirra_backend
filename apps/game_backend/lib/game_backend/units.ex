@@ -141,6 +141,11 @@ defmodule GameBackend.Units do
   def delete_unit(id), do: Repo.get(Unit, id) |> delete_unit()
 
   @doc """
+  Deletes all units in a given list.
+  """
+  def delete_units(unit_ids), do: Repo.delete_all(from(u in Unit, where: u.id in ^unit_ids))
+
+  @doc """
   Sets all of the user's units' selected value to false.
   """
   def remove_all_selected_units(user_id),
