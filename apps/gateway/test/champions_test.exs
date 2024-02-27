@@ -9,11 +9,14 @@ defmodule Gateway.Test.Champions do
   alias GameBackend.Users.Currencies
 
   alias Gateway.Serialization.{
+    Box,
+    Boxes,
     Currency,
     Error,
     Unit,
     UnitAndCurrencies,
     User,
+    UserAndUnit,
     UserCurrency,
     WebSocketResponse
   }
@@ -234,6 +237,71 @@ defmodule Gateway.Test.Champions do
 
       assert unit.rank == rank + 1
       assert user_units_count == user.id |> GameBackend.Units.get_units() |> Enum.count()
+    end
+
+    test "summon", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("Summon user")
+      units = Enum.count(user.units)
+
+      {:ok, previous_scrolls} = Currencies.add_currency_by_name!(user.id, "Scrolls", 1)
+
+      {:ok, box} = GameBackend.Gacha.get_box_by_name("Basic Summon")
+
+      ### Get boxes
+      SocketTester.get_boxes(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:boxes, %Boxes{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:boxes, %Boxes{boxes: boxes}}
+      } = get_last_message()
+
+      assert box.id in Enum.map(boxes, & &1.id)
+
+      ### Get box
+
+      SocketTester.get_box(socket_tester, box.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:box, %Box{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:box, %Box{id: box_id, name: box_name}}
+      } = get_last_message()
+
+      assert box_id == box.id
+      assert box_name == box.name
+
+      ### Pull champion
+
+      SocketTester.pull_box(socket_tester, user.id, box_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:user_and_unit, %UserAndUnit{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:user_and_unit, %UserAndUnit{user: new_user, unit: new_unit}}
+      } = get_last_message()
+
+      assert new_unit.rank in Enum.map(box.rank_weights, & &1.rank)
+
+      new_scrolls = Enum.find(new_user.currencies, &(&1.currency.name == "Scrolls"))
+      assert new_scrolls.amount == previous_scrolls.amount - List.first(box.cost).amount
+
+      assert GameBackend.Units.get_units(user.id) |> Enum.count() == units + 1
     end
   end
 
