@@ -456,6 +456,7 @@ defmodule Arena.Serialization.Zone do
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
+  field(:zone_shrink_time, 3, type: :int32, json_name: "zoneShrinkTime")
 end
 
 defmodule Arena.Serialization.KillEntry do
