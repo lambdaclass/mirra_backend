@@ -39,6 +39,7 @@ goog.exportSymbol('proto.GameEvent.EventCase', null, global);
 goog.exportSymbol('proto.GameFinished', null, global);
 goog.exportSymbol('proto.GameJoined', null, global);
 goog.exportSymbol('proto.GameState', null, global);
+goog.exportSymbol('proto.GameStatus', null, global);
 goog.exportSymbol('proto.KillEntry', null, global);
 goog.exportSymbol('proto.Move', null, global);
 goog.exportSymbol('proto.Obstacle', null, global);
@@ -2597,7 +2598,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     cooldownMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
     executionDurationMs: jspb.Message.getFieldWithDefault(msg, 3, 0),
     targettingRadius: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0)
+    targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
+    staminaCost: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -2653,6 +2655,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setTargettingAngle(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setStaminaCost(value);
       break;
     default:
       reader.skipField();
@@ -2715,6 +2721,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeFloat(
       5,
+      f
+    );
+  }
+  f = message.getStaminaCost();
+  if (f !== 0) {
+    writer.writeUint64(
+      6,
       f
     );
   }
@@ -2811,6 +2824,24 @@ proto.ConfigSkill.prototype.setTargettingAngle = function(value) {
 };
 
 
+/**
+ * optional uint64 stamina_cost = 6;
+ * @return {number}
+ */
+proto.ConfigSkill.prototype.getStaminaCost = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setStaminaCost = function(value) {
+  return jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
 
 /**
  * List of repeated fields within this message type.
@@ -2860,7 +2891,9 @@ proto.GameState.toObject = function(includeInstance, msg) {
     proto.KillEntry.toObject, includeInstance),
     damageTakenMap: (f = msg.getDamageTakenMap()) ? f.toObject(includeInstance, undefined) : [],
     damageDoneMap: (f = msg.getDamageDoneMap()) ? f.toObject(includeInstance, undefined) : [],
-    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    status: jspb.Message.getFieldWithDefault(msg, 11, 0),
+    countdown: jspb.Message.getFieldWithDefault(msg, 12, 0)
   };
 
   if (includeInstance) {
@@ -2951,6 +2984,14 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 11:
+      var value = /** @type {!proto.GameStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 12:
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setCountdown(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3033,6 +3074,20 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getPowerUpsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      11,
+      f
+    );
+  }
+  f = message.getCountdown();
+  if (f !== 0) {
+    writer.writeInt64(
+      12,
+      f
+    );
   }
 };
 
@@ -3283,6 +3338,42 @@ proto.GameState.prototype.getPowerUpsMap = function(opt_noLazyCreate) {
 proto.GameState.prototype.clearPowerUpsMap = function() {
   this.getPowerUpsMap().clear();
   return this;
+};
+
+
+/**
+ * optional GameStatus status = 11;
+ * @return {!proto.GameStatus}
+ */
+proto.GameState.prototype.getStatus = function() {
+  return /** @type {!proto.GameStatus} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+};
+
+
+/**
+ * @param {!proto.GameStatus} value
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 11, value);
+};
+
+
+/**
+ * optional int64 countdown = 12;
+ * @return {number}
+ */
+proto.GameState.prototype.getCountdown = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.setCountdown = function(value) {
+  return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
@@ -6079,7 +6170,8 @@ proto.Zone.prototype.toObject = function(opt_includeInstance) {
 proto.Zone.toObject = function(includeInstance, msg) {
   var f, obj = {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
-    enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false)
+    enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    zoneShrinkTime: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -6124,6 +6216,10 @@ proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setEnabled(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setZoneShrinkTime(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -6167,6 +6263,13 @@ proto.Zone.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getZoneShrinkTime();
+  if (f !== 0) {
+    writer.writeInt32(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -6203,6 +6306,24 @@ proto.Zone.prototype.getEnabled = function() {
  */
 proto.Zone.prototype.setEnabled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional int32 zone_shrink_time = 3;
+ * @return {number}
+ */
+proto.Zone.prototype.getZoneShrinkTime = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Zone} returns this
+ */
+proto.Zone.prototype.setZoneShrinkTime = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -6365,6 +6486,15 @@ proto.KillEntry.prototype.setVictimId = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
+
+/**
+ * @enum {number}
+ */
+proto.GameStatus = {
+  PREPARING: 0,
+  RUNNING: 1,
+  ENDED: 2
+};
 
 /**
  * @enum {number}

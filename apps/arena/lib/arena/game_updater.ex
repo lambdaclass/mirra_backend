@@ -18,6 +18,8 @@ defmodule Arena.GameUpdater do
   @game_ended_shutdown_wait_ms 10_000
   ## Time between natural healing intervals
   @natural_healing_interval_ms 300
+  ## Time to prepare the game before starting
+  @enable_incomming_messages_ms 9_000
 
   ##########################
   # API
@@ -55,7 +57,7 @@ defmodule Arena.GameUpdater do
     )
 
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
-    Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
+    Process.send_after(self(), :update_finish_preparing_game, 1_000)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -71,7 +73,11 @@ defmodule Arena.GameUpdater do
 
     {players, power_ups} =
       game_state.players
-      |> Physics.move_entities(ticks_to_move, state.game_state.external_wall)
+      |> Physics.move_entities(
+        ticks_to_move,
+        state.game_state.external_wall,
+        state.game_state.obstacles
+      )
       |> update_collisions(game_state.players, game_state.power_ups)
       |> handle_power_ups(game_state.power_ups)
 
@@ -95,7 +101,7 @@ defmodule Arena.GameUpdater do
     projectiles =
       game_state.projectiles
       |> remove_exploded_and_expired_projectiles()
-      |> Physics.move_entities(ticks_to_move, game_state.external_wall)
+      |> Physics.move_entities(ticks_to_move, game_state.external_wall, %{})
       |> update_collisions(
         game_state.projectiles,
         Map.merge(entities_to_collide_projectiles, %{
@@ -121,6 +127,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, projectiles)
       |> Map.put(:power_ups, power_ups)
       |> Map.put(:server_timestamp, now)
+      |> execute_on_explode_mechanics(projectiles)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -216,6 +223,33 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info(:update_finish_preparing_game, state) do
+    case state.game_state.status do
+      :PREPARING when state.game_state.countdown >= 1_000 ->
+        Process.send_after(self(), :update_finish_preparing_game, 1_000)
+        {:noreply, state |> put_in([:game_state, :countdown], state.game_state.countdown - 1_000)}
+
+      :PREPARING ->
+        broadcast_enable_incomming_messages(state.game_state.game_id)
+
+        Process.send_after(
+          self(),
+          :start_zone_shrink,
+          state.game_config.game.zone_shrink_start_ms
+        )
+
+        send(self(), :update_zone_shrink_time)
+
+        {:noreply,
+         state
+         |> put_in([:game_state, :status], :RUNNING)
+         |> put_in([:game_state, :countdown], 0)}
+
+      _ ->
+        {:noreply, state}
+    end
+  end
+
   # Natural healing
   def handle_info(:natural_healing, state) do
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
@@ -240,6 +274,22 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
     state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
     {:noreply, state}
+  end
+
+  def handle_info(:update_zone_shrink_time, state) do
+    if get_in(state, [:game_state, :zone, :zone_shrink_time]) > 0 do
+      Process.send_after(self(), :update_zone_shrink_time, 1000)
+
+      state =
+        state
+        |> update_in([:game_state, :zone, :zone_shrink_time], fn current_time ->
+          current_time - 1000
+        end)
+
+      {:noreply, state}
+    else
+      {:noreply, state}
+    end
   end
 
   def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
@@ -398,6 +448,10 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, {:player_dead, player_id})
   end
 
+  defp broadcast_enable_incomming_messages(game_id) do
+    PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
+  end
+
   defp broadcast_game_update(state) do
     encoded_state =
       GameEvent.encode(%GameEvent{
@@ -413,7 +467,9 @@ defmodule Arena.GameUpdater do
              zone: state.zone,
              killfeed: state.killfeed,
              damage_taken: state.damage_taken,
-             damage_done: state.damage_done
+             damage_done: state.damage_done,
+             status: state.status,
+             countdown: state.countdown
            }}
       })
 
@@ -468,7 +524,12 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:zone, %{radius: config.map.radius, enabled: false, shrinking: :disabled})
+      |> Map.put(:zone, %{
+        radius: config.map.radius,
+        enabled: false,
+        shrinking: :disabled,
+        zone_shrink_time: config.game.zone_shrink_start_ms
+      })
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
@@ -504,6 +565,8 @@ defmodule Arena.GameUpdater do
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
+    |> Map.put(:status, :PREPARING)
+    |> Map.put(:countdown, @enable_incomming_messages_ms)
   end
 
   # Initialize obstacles
@@ -512,7 +575,11 @@ defmodule Arena.GameUpdater do
       last_id = last_id + 1
 
       obstacles_acc =
-        Map.put(obstacles_acc, last_id, Entities.make_polygon(last_id, obstacle.vertices))
+        Map.put(
+          obstacles_acc,
+          last_id,
+          Entities.new_circular_obstacle(last_id, obstacle.position, obstacle.radius)
+        )
 
       {obstacles_acc, last_id}
     end)
@@ -766,6 +833,22 @@ defmodule Arena.GameUpdater do
         {Map.put(players_acc, player.id, player), Map.put(power_ups_acc, power_up.id, power_up)}
       else
         accs
+      end
+    end)
+  end
+
+  defp execute_on_explode_mechanics(game_state, projectiles) do
+    Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
+      if projectile.aditional_info.status == :EXPLODED &&
+           Map.get(projectile.aditional_info, :on_explode_mechanics) do
+        Skill.do_mechanic(
+          game_state,
+          projectile,
+          projectile.aditional_info.on_explode_mechanics,
+          %{}
+        )
+      else
+        game_state
       end
     end)
   end
