@@ -26,12 +26,12 @@ defmodule Champions.Gacha do
 
   Returns a map with the new created unit and the user's new state (mainly for their currency).
   """
-  def pull(user_id, box_id) do
+  def summon(user_id, box_id) do
     with {:user_exists, true} <- {:user_exists, Users.exists?(user_id)},
          {:get_box, {:ok, box}} <- {:get_box, Gacha.get_box(box_id)},
          {:can_afford, true} <-
            {:can_afford, Currencies.can_afford(user_id, box.cost)},
-         {:pull, {:ok, {rank, character}}} <- {:pull, Gacha.pull(box)} do
+         {:pull, {:ok, {rank, character}}} <- {:pull, Gacha.pull_box(box)} do
       params = %{
         character_id: character.id,
         user_id: user_id,

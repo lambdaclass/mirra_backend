@@ -36,7 +36,7 @@ defmodule Gateway.SocketTester do
     LevelUpItem,
     GetBox,
     GetBoxes,
-    PullBox
+    Summon
   }
 
   def start_link() do
@@ -232,13 +232,13 @@ defmodule Gateway.SocketTester do
          })}
       )
 
-  def pull_box(pid, user_id, box_id),
+  def summon(pid, user_id, box_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:pull_box, %PullBox{user_id: user_id, box_id: box_id}}
+           request_type: {:summon, %Summon{user_id: user_id, box_id: box_id}}
          })}
       )
 

@@ -283,7 +283,7 @@ defmodule Gateway.Test.Champions do
 
       ### Pull champion
 
-      SocketTester.pull_box(socket_tester, user.id, box_id)
+      SocketTester.summon(socket_tester, user.id, box_id)
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{

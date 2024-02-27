@@ -84,7 +84,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
 
   field(:get_boxes, 18, type: Gateway.Serialization.GetBoxes, json_name: "getBoxes", oneof: 0)
   field(:get_box, 19, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
-  field(:pull_box, 20, type: Gateway.Serialization.PullBox, json_name: "pullBox", oneof: 0)
+  field(:summon, 20, type: Gateway.Serialization.Summon, json_name: "pullBox", oneof: 0)
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -254,7 +254,7 @@ defmodule Gateway.Serialization.GetBox do
   field(:box_id, 1, type: :string, json_name: "boxId")
 end
 
-defmodule Gateway.Serialization.PullBox do
+defmodule Gateway.Serialization.Summon do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

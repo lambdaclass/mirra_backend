@@ -45,7 +45,7 @@ defmodule GameBackend.Gacha do
   @doc """
   Get a character from the given box. Does not add as unit (that logic is left to game apps)
   """
-  def pull(box) do
+  def pull_box(box) do
     total_weight =
       Enum.reduce(box.rank_weights, 0, fn rank_weight, acc -> rank_weight.weight + acc end)
 

@@ -27,7 +27,7 @@ defmodule Gateway.ChampionsSocketHandler do
     LevelUpItem,
     GetBoxes,
     GetBox,
-    PullBox
+    Summon
   }
 
   @behaviour :cowboy_websocket
@@ -163,8 +163,8 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
-  defp handle(%PullBox{user_id: user_id, box_id: box_id}) do
-    case Gacha.pull(user_id, box_id) do
+  defp handle(%Summon{user_id: user_id, box_id: box_id}) do
+    case Gacha.summon(user_id, box_id) do
       {:ok, user_and_unit} -> prepare_response(user_and_unit, :user_and_unit)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end

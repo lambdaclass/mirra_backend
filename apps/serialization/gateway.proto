@@ -21,7 +21,7 @@ syntax = "proto3";
       LevelUpItem level_up_item = 17;
       GetBoxes get_boxes = 18;
       GetBox get_box = 19;
-      PullBox pull_box = 20;
+      Summon summon = 20;
     }
   }
 
@@ -116,7 +116,7 @@ syntax = "proto3";
     string box_id = 1;
   }
 
-  message PullBox {
+  message Summon {
     string user_id = 1;
     string box_id = 2;
   }
