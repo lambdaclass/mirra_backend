@@ -99,9 +99,11 @@ defmodule Arena.Game.Player do
   end
 
   def get_skill_if_usable(player, skill_key) do
-    case player.aditional_info.available_stamina > 0 do
-      false -> nil
-      true -> get_in(player, [:aditional_info, :skills, skill_key])
+    available_stamina = player.aditional_info.available_stamina
+
+    case get_in(player, [:aditional_info, :skills, skill_key]) do
+      %{stamina_cost: cost} = skill when cost <= available_stamina -> skill
+      _ -> nil
     end
   end
 
@@ -183,9 +185,10 @@ defmodule Arena.Game.Player do
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
-          |> change_stamina(-1)
+          |> change_stamina(-skill.stamina_cost)
           |> put_in([:direction], skill_direction)
           |> put_in([:is_moving], false)
+          |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
 
         player =
           case stamina_recharging?(player) do
@@ -286,7 +289,11 @@ defmodule Arena.Game.Player do
       player.aditional_info.last_damage_received +
         player.aditional_info.natural_healing_damage_interval < now
 
-    case heal_interval? and damage_interval? do
+    use_skill_interval? =
+      player.aditional_info.last_skill_triggered +
+        player.aditional_info.natural_healing_damage_interval < now
+
+    case heal_interval? and damage_interval? and use_skill_interval? do
       true ->
         heal_amount = floor(player.aditional_info.base_health * 0.1)
 
