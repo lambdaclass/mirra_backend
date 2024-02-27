@@ -3,6 +3,32 @@ defmodule Arena.Configuration do
   Module in charge of configuration related things
   """
 
+  def update_config(config_json) do
+    case validate_config(config_json) do
+      :ok ->
+        File.write!(Application.app_dir(:arena, "priv/config.json"), config_json)
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
+  def validate_config(config_json) do
+    try do
+      config = Jason.decode!(config_json, [{:keys, :atoms}])
+      skills = parse_skills_config(config.skills)
+      characters = parse_characters_config(config.characters, skills)
+      _config = %{config | skills: skills, characters: characters}
+      ## TODO: Maybe we should do a validation on the final config
+      :ok
+    rescue
+      reason ->
+        IO.inspect(reason)
+        {:error, Exception.message(reason)}
+    end
+
+
+  end
+
   def get_character_config(name, config) do
     Enum.find(config.characters, fn character -> character.name == name end)
   end

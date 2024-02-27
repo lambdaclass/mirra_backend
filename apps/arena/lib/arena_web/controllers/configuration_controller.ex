@@ -11,11 +11,17 @@ defmodule ArenaWeb.ConfigurationController do
   end
 
   def update(conn, %{"config" => config_json}) do
-    File.write!(Application.app_dir(:arena, "priv/config.json"), config_json)
     rows = Enum.count(String.split(config_json, "\n"))
 
-    conn
-    |> put_layout(false)
-    |> render("edit.html", config_json: config_json, rows: rows, updated: true)
+    case Arena.Configuration.update_config(config_json) do
+      :ok ->
+        conn
+        |> put_layout(false)
+        |> render("edit.html", config_json: config_json, rows: rows, updated: true)
+      {:error, reason} ->
+        conn
+        |> put_layout(false)
+        |> render("edit.html", config_json: config_json, rows: rows, error_reason: reason)
+    end
   end
 end
