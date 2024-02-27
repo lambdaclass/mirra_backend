@@ -36,7 +36,7 @@ syntax = "proto3";
   
   message GetCampaign {
     string user_id = 1;
-    uint32 campaign_number = 2;
+    string campaign_id = 2;
   }
   
   message GetLevel {
@@ -99,9 +99,18 @@ syntax = "proto3";
   message User {
     string id = 1;
     string username = 2;
-    repeated UserCurrency currencies = 3;
-    repeated Unit units = 4;
-    repeated Item items = 5;    
+    uint64 level = 3;
+    uint64 experience = 4;
+    repeated CampaignProgression campaigns_progression = 6;
+    repeated UserCurrency currencies = 7;
+    repeated Unit units = 8;
+    repeated Item items = 9;
+  }
+
+  message CampaignProgression {
+    string user_id = 1;
+    string campaign_id = 2;
+    string level_id = 3;
   }
 
   message UserCurrency {
@@ -151,13 +160,16 @@ syntax = "proto3";
   }
 
   message Campaign {
-    repeated Level levels = 1;
+    string id = 1;
+    string super_campaign_id = 2;
+    uint32 campaign_number = 3;
+    repeated Level levels = 4;
   }
 
   message Level {
     string id = 1;
-    uint32 level_number = 2;
-    uint32 campaign = 3;
+    string campaign_id = 2;
+    uint32 level_number = 3;
     repeated Unit units = 4;
   }
 

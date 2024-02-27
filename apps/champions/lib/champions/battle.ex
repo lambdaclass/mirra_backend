@@ -10,27 +10,22 @@ defmodule Champions.Battle do
 
   @doc """
   Plays a level for a user, which means fighting its units with their selected ones.
-  Returns `:win` or `:loss` accordingly.
-
-  No tracking for level progress is done yet.
+  Returns `:win` or `:loss` accordingly, and updates the user's progress if they win..
   """
   def fight_level(user_id, level_id) do
-    user = Users.get_user(user_id)
-    level = Campaigns.get_level(level_id)
-
-    cond do
-      is_nil(user) ->
-        {:error, :user_not_found}
-
-      is_nil(level) ->
-        {:error, :level_not_found}
-
-      true ->
-        if battle(user.units, level.units) == :team_1 do
-          :win
-        else
-          :loss
+    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+         {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)} do
+      if battle(user.units, level.units) == :team_1 do
+        case Users.advance_level(user_id, level.campaign_id) do
+          {:ok, _changes} -> :win
+          _error -> {:error, :failed_to_advance}
         end
+      else
+        :loss
+      end
+    else
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+      {:level, {:error, :not_found}} -> {:error, :level_not_found}
     end
   end
 

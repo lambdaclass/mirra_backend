@@ -23,6 +23,7 @@ defmodule Champions.Users do
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
+        add_campaigns_progression(user)
 
         Users.get_user(user.id)
 
@@ -44,10 +45,7 @@ defmodule Champions.Users do
   Returns `{:error, :not_found}` if no user is found.
   """
   def get_user(user_id) do
-    case Users.get_user(user_id) do
-      nil -> {:error, :not_found}
-      user -> user
-    end
+    Users.get_user(user_id)
   end
 
   @doc """
@@ -56,10 +54,7 @@ defmodule Champions.Users do
   Returns `{:error, :not_found}` if no user is found.
   """
   def get_user_by_username(username) do
-    case Users.get_user_by_username(username) do
-      nil -> {:error, :not_found}
-      user -> user
-    end
+    Users.get_user_by_username(username)
   end
 
   defp add_sample_units(user) do
@@ -89,6 +84,19 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
   end
 
+  defp add_campaigns_progression(user) do
+    campaigns = GameBackend.Campaigns.get_campaigns()
+
+    Enum.each(campaigns, fn campaign ->
+      GameBackend.Campaigns.insert_campaign_progression(%{
+        game_id: @game_id,
+        user_id: user.id,
+        campaign_id: campaign.id,
+        level_id: campaign.levels |> hd() |> Map.get(:id)
+      })
+    end)
+  end
+
   @doc """
   Adds the given experience to a user. If the user were to have enough resulting experience to level up,
   it is performed automatically.
@@ -96,8 +104,6 @@ defmodule Champions.Users do
   def add_experience(user_id, experience) do
     user = get_user(user_id)
     new_experience = user.experience + experience
-
-    # Level up
 
     {new_level, new_experience} = process_level_ups(user.level, new_experience)
 
