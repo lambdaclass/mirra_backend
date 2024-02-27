@@ -5,10 +5,24 @@ defmodule ArenaWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :secure_browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug :basic_auth, username: "hello", password: "secret"
+  end
+
   scope "/api", ArenaWeb do
     pipe_through :api
 
     get "/health", HealthController, :check
+  end
+
+  scope "/configuration", ArenaWeb do
+    pipe_through :secure_browser
+
+    get "/edit", ConfigurationController, :edit
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

@@ -7,12 +7,18 @@ defmodule Arena.Configuration do
     Enum.find(config.characters, fn character -> character.name == name end)
   end
 
-  def get_game_config() do
+  def get_json_game_config() do
     {:ok, config_json} =
       Application.app_dir(:arena, "priv/config.json")
       |> File.read()
+    config_json
+  end
 
-    config = Jason.decode!(config_json, [{:keys, :atoms}])
+  def get_game_config() do
+    config =
+      get_json_game_config()
+      |> Jason.decode!([{:keys, :atoms}])
+
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
     %{config | skills: skills, characters: characters}
