@@ -8,7 +8,7 @@ defmodule ArenaWeb.Router do
   pipeline :secure_browser do
     plug :accepts, ["html"]
     plug :fetch_session
-    plug :protect_from_forgery
+    # plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug :basic_auth, username: "hello", password: "secret"
   end
@@ -22,7 +22,8 @@ defmodule ArenaWeb.Router do
   scope "/configuration", ArenaWeb do
     pipe_through :secure_browser
 
-    get "/edit", ConfigurationController, :edit
+    get "/", ConfigurationController, :edit
+    post "/", ConfigurationController, :update
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

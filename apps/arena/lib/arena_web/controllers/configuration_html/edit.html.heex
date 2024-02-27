@@ -1,7 +1,11 @@
-<label for="config">Modify the configuration</label>
+<%= if @conn.assigns[:updated] do %>
+    <h3>Configuration has been updated!</h3>
+<% end %>
 
-<textarea id="config" name="config" rows={@rows} cols="120">
-    <%= @config_json%>
-</textarea>
+<form method="post" action={~p"/configuration"}>
+    <textarea id="config" name="config" rows={@rows} cols="120">
+        <%= @config_json%>
+    </textarea>
 
-<button>Save</button>
+    <button>Save</button>
+</form>
