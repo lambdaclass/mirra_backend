@@ -36,7 +36,7 @@ defmodule Champions.Gacha do
         character_id: character.id,
         user_id: user_id,
         rank: rank,
-        unit_level: 1,
+        level: 1,
         tier: 1,
         selected: false
       }
