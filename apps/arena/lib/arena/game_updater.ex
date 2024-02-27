@@ -62,7 +62,6 @@ defmodule Arena.GameUpdater do
 
     Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
     Process.send_after(self(), :spawn_item, game_config.game.item_spawn_interval_ms)
-    Process.send_after(self(), :start_zone_shrink, game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :update_finish_preparing_game, 1_000)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
