@@ -5,7 +5,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
   alias Gateway.Serialization.WebSocketResponse
-  alias Champions.{Battle, Campaigns, Items, Users, Units}
+  alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
   alias Gateway.Serialization.{
     WebSocketRequest,

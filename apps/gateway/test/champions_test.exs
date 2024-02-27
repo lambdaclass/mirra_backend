@@ -117,7 +117,8 @@ defmodule Gateway.Test.Champions do
       level = unit.level
 
       #### Level up
-      [%CurrencyCost{currency_id: _gold_id, amount: level_up_cost}] = Units.calculate_level_up_cost(unit)
+      [%CurrencyCost{currency_id: _gold_id, amount: level_up_cost}] =
+        Units.calculate_level_up_cost(unit)
 
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
@@ -148,7 +149,11 @@ defmodule Gateway.Test.Champions do
 
       user_gold = Currencies.get_amount_of_currency_by_name!(user.id, "Gold")
       user_gems = Currencies.get_amount_of_currency_by_name!(user.id, "Gems")
-      [%CurrencyCost{currency_id: _gold_id, amount: gold_cost}, %CurrencyCost{currency_id: _gems_id, amount: gems_cost}] = Units.calculate_tier_up_cost(unit)
+
+      [
+        %CurrencyCost{currency_id: _gold_id, amount: gold_cost},
+        %CurrencyCost{currency_id: _gems_id, amount: gems_cost}
+      ] = Units.calculate_tier_up_cost(unit)
 
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
