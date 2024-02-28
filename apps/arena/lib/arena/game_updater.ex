@@ -538,23 +538,16 @@ defmodule Arena.GameUpdater do
   # Update expired to explode status
   defp update_projectiles_status(%{projectiles: projectiles} = game_state) do
     updated_projectiles =
-      projectiles
-      |> Map.reject(fn {_projectile_id, projectile} ->
-        projectile.aditional_info.status == :EXPLODED
-      end)
-      |> Enum.reduce(%{}, fn {projectile_id, projectile}, acc ->
-        if projectile.aditional_info.status == :EXPIRED do
-          acc
-          |> Map.put(
-            projectile_id,
-            put_in(
-              projectile,
-              [:aditional_info, :status],
-              :EXPLODED
-            )
-          )
-        else
-          acc |> Map.put(projectile_id, projectile)
+      Enum.reduce(projectiles, projectiles, fn {projectile_id, projectile}, acc ->
+        case projectile.aditional_info.status do
+          :EXPLODED ->
+            Map.delete(acc, projectile_id)
+
+          :EXPIRED ->
+            Map.put(acc, projectile_id, put_in(projectile, [:aditional_info, :status], :EXPLODED))
+
+          _ ->
+            acc
         end
       end)
 
