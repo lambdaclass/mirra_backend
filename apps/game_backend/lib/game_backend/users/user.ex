@@ -9,7 +9,6 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
 
-  @derive {Jason.Encoder, only: [:id, :username, :currencies, :units, :items]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
