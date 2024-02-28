@@ -23,6 +23,6 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
     unit_reward
     |> cast(attrs, [:unit_id, :level_id, :amount])
     |> validate_number(:amount, greater_than_or_equal_to: 0)
-    |> validate_required([:unit_id, :amount])
+    |> validate_required([:amount])
   end
 end
