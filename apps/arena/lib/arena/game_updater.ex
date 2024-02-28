@@ -566,7 +566,7 @@ defmodule Arena.GameUpdater do
     # We don't want to move recently exploded projectiles
     {recently_exploded_projectiles, alive_projectiles} =
       projectiles
-      |> Enum.split_with(fn {_projectile_id, projectile} ->
+      |> Map.split_with(fn {_projectile_id, projectile} ->
         projectile.aditional_info.status == :EXPLODED
       end)
 
@@ -576,13 +576,13 @@ defmodule Arena.GameUpdater do
       |> Map.merge(%{external_wall.id => external_wall})
 
     moved_projectiles =
-      Map.new(alive_projectiles)
+      alive_projectiles
       |> Physics.move_entities(ticks_to_move, external_wall, %{})
       |> update_collisions(
         projectiles,
         entities_to_collide_with
       )
-      |> Map.merge(Map.new(recently_exploded_projectiles))
+      |> Map.merge(recently_exploded_projectiles)
 
     %{game_state | projectiles: moved_projectiles}
   end
