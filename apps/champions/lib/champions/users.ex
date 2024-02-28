@@ -94,7 +94,7 @@ defmodule Champions.Users do
             game_id: @game_id,
             user_id: user.id,
             campaign_id: campaign.id,
-            level_id: campaign.levels |> hd() |> Map.get(:id)
+            level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
           })
     end)
   end
