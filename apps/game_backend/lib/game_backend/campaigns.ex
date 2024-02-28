@@ -13,7 +13,7 @@ defmodule GameBackend.Campaigns do
   def get_campaigns() do
     campaigns =
       Repo.all(from(c in Campaign))
-      |> Repo.preload(levels: [:currency_rewards, :item_rewards, :unit_rewards, units: :items])
+      |> Repo.preload(levels: [units: :items])
 
     if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
   end
