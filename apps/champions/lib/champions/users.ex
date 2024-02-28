@@ -102,12 +102,17 @@ defmodule Champions.Users do
   it is performed automatically.
   """
   def add_experience(user_id, experience) do
-    user = get_user(user_id)
-    new_experience = user.experience + experience
+    case get_user(user_id) do
+      {:ok, user} ->
+        new_experience = user.experience + experience
 
-    {new_level, new_experience} = process_level_ups(user.level, new_experience)
+        {new_level, new_experience} = process_level_ups(user.level, new_experience)
 
-    Users.update_experience(user, %{level: new_level, experience: new_experience})
+        Users.update_experience(user, %{level: new_level, experience: new_experience})
+
+      error ->
+        error
+    end
   end
 
   defp process_level_ups(level, experience) do
