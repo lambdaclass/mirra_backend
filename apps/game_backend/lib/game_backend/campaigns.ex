@@ -15,7 +15,7 @@ defmodule GameBackend.Campaigns do
       Repo.all(from(c in Campaign))
       |> Repo.preload(levels: [units: :items])
 
-    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
+    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: Enum.sort_by(campaigns, & &1.campaign_number)
   end
 
   @doc """
@@ -24,7 +24,7 @@ defmodule GameBackend.Campaigns do
   def get_campaign(campaign_id) do
     case Repo.get(Campaign, campaign_id) |> Repo.preload(levels: [:units]) do
       nil -> {:error, :not_found}
-      campaign -> {:ok, campaign}
+      campaign -> {:ok, Map.put(campaign, :levels, Enum.sort_by(campaign.levels, & &1.level_number))}
     end
   end
 
