@@ -6,12 +6,12 @@ defmodule GameBackend.Campaigns.Rewards.ItemReward do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Items.Item
+  alias GameBackend.Items.ItemTemplate
   alias GameBackend.Campaigns.Level
 
   schema "item_rewards" do
-    belongs_to(:item, Item)
     belongs_to(:level, Level)
+    belongs_to(:item_template, ItemTemplate)
     field(:amount, :integer)
 
     timestamps()
@@ -20,7 +20,7 @@ defmodule GameBackend.Campaigns.Rewards.ItemReward do
   @doc false
   def changeset(item_reward, attrs) do
     item_reward
-    |> cast(attrs, [:item_id, :level_id, :amount])
+    |> cast(attrs, [:item_template_id, :level_id, :amount])
     |> validate_number(:amount, greater_than_or_equal_to: 0)
     |> validate_required([:amount])
   end

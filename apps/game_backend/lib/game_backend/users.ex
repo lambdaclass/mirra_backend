@@ -14,8 +14,6 @@ defmodule GameBackend.Users do
   alias Ecto.Multi
   alias GameBackend.Units.Unit
   alias GameBackend.Items.Item
-  alias GameBackend.Units
-  alias GameBackend.Items
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Campaigns
@@ -153,44 +151,37 @@ defmodule GameBackend.Users do
 
   defp build_item_rewards_params(user_id, item_rewards) do
     Enum.map(item_rewards, fn item_reward ->
-      Items.get_item(item_reward.item_id)
-      |> case do
-        {:ok, item} ->
-          Enum.map(1..item_reward.amount, fn _ ->
-            %{
-              user_id: user_id,
-              template_id: item.template_id,
-              level: item.level,
-              inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-              updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-            }
-          end)
-      end
+      Enum.map(1..item_reward.amount, fn _ ->
+        %{
+          user_id: user_id,
+          template_id: item_reward.item_template_id,
+          level: 1,
+          inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+          updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        }
+      end)
     end)
     |> List.flatten()
   end
 
   defp build_unit_rewards_params(user_id, unit_rewards) do
+    IO.inspect(unit_rewards, label: :rewards)
+
     Enum.map(unit_rewards, fn unit_reward ->
-      Units.get_unit(unit_reward.unit_id)
-      |> case do
-        {:ok, unit} ->
-          Enum.map(1..unit_reward.amount, fn _ ->
-            %{
-              user_id: user_id,
-              character_id: unit.character_id,
-              unit_level: unit.unit_level,
-              tier: unit.tier,
-              selected: false,
-              inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-              updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-            }
-          end)
-      end
+      Enum.map(1..unit_reward.amount, fn _ ->
+        %{
+          user_id: user_id,
+          character_id: unit_reward.character_id,
+          unit_level: 1,
+          tier: 1,
+          selected: false,
+          inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+          updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        }
+      end)
     end)
     |> List.flatten()
   end
-
 
   defp check_result(result, element_name) do
     if Enum.all?(result, fn

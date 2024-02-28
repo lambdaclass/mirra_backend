@@ -14,14 +14,16 @@ defmodule GameBackend.Repo.Migrations.AddLevelRewards do
     end
 
     create table(:item_rewards) do
-      add :item_id, references(:items, on_delete: :delete_all)
+      add :item_template_id, references(:item_templates, on_delete: :delete_all)
+      add :item_level, :integer
       add :level_id, references(:levels, on_delete: :delete_all)
       add :amount, :integer, null: false
       timestamps()
     end
 
     create table(:unit_rewards) do
-      add :unit_id, references(:units, on_delete: :delete_all)
+      add :character_id, references(:characters, on_delete: :delete_all)
+      add :rank, :integer
       add :level_id, references(:levels, on_delete: :delete_all)
       add :amount, :integer, null: false
       timestamps()

@@ -205,15 +205,16 @@ currency_rewards =
       }
 
   end)
-  Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
+
+Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
 level_2 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 2) |> Repo.preload(:item_rewards)
 level_3 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 3) |> Repo.preload(:unit_rewards)
 
 level_2
-|> Level.changeset(%{item_rewards: [%{amount: 1, item: %{level: 1, item_template_id: epic_sword.id}}]})
+|> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
 |> Repo.update!()
 
 level_3
-|> Level.changeset(%{unit_rewards: [%{amount: 1, unit: %{level: 4, character_id: muflus.id}}]})
+|> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id}]})
 |> Repo.update!()

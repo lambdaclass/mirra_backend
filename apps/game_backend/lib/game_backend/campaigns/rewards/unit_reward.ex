@@ -6,12 +6,12 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Unit
   alias GameBackend.Campaigns.Level
+  alias GameBackend.Units.Characters.Character
 
   schema "unit_rewards" do
     # TODO: Should have a character and other unit params to build it, not an unit [CHoM-#215]
-    belongs_to(:unit, Unit)
+    belongs_to(:character, Character)
     belongs_to(:level, Level)
     field(:amount, :integer)
 
@@ -21,7 +21,7 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
   @doc false
   def changeset(unit_reward, attrs) do
     unit_reward
-    |> cast(attrs, [:unit_id, :level_id, :amount])
+    |> cast(attrs, [:character_id, :level_id, :amount])
     |> validate_number(:amount, greater_than_or_equal_to: 0)
     |> validate_required([:amount])
   end
