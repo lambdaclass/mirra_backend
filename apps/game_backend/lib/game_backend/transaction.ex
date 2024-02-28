@@ -1,6 +1,6 @@
 defmodule GameBackend.Transaction do
   @moduledoc """
-  Module for exponsing transactions to game applications.
+  Module for exposing transactions to game applications.
   """
 
   alias GameBackend.Repo
