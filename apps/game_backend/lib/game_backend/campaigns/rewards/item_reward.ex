@@ -22,6 +22,6 @@ defmodule GameBackend.Campaigns.Rewards.ItemReward do
     item_reward
     |> cast(attrs, [:item_id, :level_id, :amount])
     |> validate_number(:amount, greater_than_or_equal_to: 0)
-    |> validate_required([:item_id, :amount])
+    |> validate_required([:amount])
   end
 end

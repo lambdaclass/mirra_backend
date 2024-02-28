@@ -8,11 +8,12 @@ alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
+import Ecto.Query
 
 champions_of_mirra_id = 2
 units_per_level = 5
 
-Characters.insert_character(%{
+{:ok, muflus} = Characters.insert_character(%{
   game_id: champions_of_mirra_id,
   active: true,
   name: "Muflus",
@@ -75,7 +76,7 @@ Characters.insert_character(%{
   rarity: "Epic"
 })
 
-Items.insert_item_template(%{
+{:ok, epic_sword} = Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
   type: "weapon"
@@ -205,3 +206,14 @@ currency_rewards =
 
   end)
   Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
+
+level_2 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 2) |> Repo.preload(:item_rewards)
+level_3 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id,where: c.campaign_number == 1 and l.level_number == 3) |> Repo.preload(:unit_rewards)
+
+level_2
+|> Level.changeset(%{item_rewards: [%{amount: 1, item: %{level: 1, item_template_id: epic_sword.id}}]})
+|> Repo.update!()
+
+level_3
+|> Level.changeset(%{unit_rewards: [%{amount: 1, unit: %{level: 4, character_id: muflus.id}}]})
+|> Repo.update!()
