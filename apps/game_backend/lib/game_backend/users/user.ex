@@ -15,11 +15,13 @@ defmodule GameBackend.Users.User do
     field(:username, :string)
     field(:level, :integer)
     field(:experience, :integer)
+    field(:last_afk_reward_claim, :utc_datetime)
 
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)
     has_many(:campaign_progressions, CampaignProgression)
+    has_many(:afk_reward_rates, AfkRewardRate)
 
     timestamps()
   end
@@ -27,7 +29,7 @@ defmodule GameBackend.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:game_id, :username])
+    |> cast(attrs, [:game_id, :username, :last_afk_reward_claim])
     |> put_change(:level, 1)
     |> put_change(:experience, 0)
     |> unique_constraint([:game_id, :username])

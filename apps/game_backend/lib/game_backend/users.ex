@@ -114,9 +114,19 @@ defmodule GameBackend.Users do
     end
   end
 
+  def reset_afk_rewards_claim(user_id) do
+    {:ok, user} = get_user(user_id)
+
+    user
+    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
+    |> Repo.update()
+  end
+
   defp preload(user),
     do:
-      Repo.preload(user,
+      Repo.preload(
+        user,
+        :afk_reward_rates,
         items: :template,
         units: [:character, :items],
         currencies: :currency
@@ -147,6 +157,13 @@ defmodule GameBackend.Users do
       Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
     end)
     |> check_result(:currency_rewards)
+  end
+
+  defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
+    Enum.map(afk_rewards_increments, fn increment ->
+      Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
+    end)
+    |> check_result(:afk_rewards_increments)
   end
 
   defp build_item_rewards_params(user_id, item_rewards) do

@@ -218,3 +218,17 @@ level_2
 level_3
 |> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id}]})
 |> Repo.update!()
+
+afk_reward_increments =
+  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      %{
+        level_id: level.id,
+        amount: 1 * level_index,
+        currency_id: scrolls_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+
+  end)
+
+Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)

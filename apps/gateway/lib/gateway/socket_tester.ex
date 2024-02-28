@@ -29,7 +29,9 @@ defmodule SocketTester do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem
+    LevelUpItem,
+    GetAfkRewards,
+    ClaimAfkRewards
   }
 
   def start_link() do
@@ -165,6 +167,26 @@ defmodule SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:level_up_item, %LevelUpItem{user_id: user_id, item_id: item_id}}
+         })}
+      )
+
+  def get_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_afk_rewards, %GetAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def claim_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
          })}
       )
 

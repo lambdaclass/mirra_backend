@@ -8,8 +8,10 @@ defmodule Champions.Users do
   alias GameBackend.Users
   alias GameBackend.Units
   alias GameBackend.Items
+  alias GameBackend.Rewards
 
   @game_id 2
+  @max_afk_reward_hours 12
 
   @doc """
   Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
@@ -24,6 +26,7 @@ defmodule Champions.Users do
         add_sample_items(user)
         add_sample_currencies(user)
         add_campaigns_progress(user)
+        add_afk_reward_rates(user)
 
         Users.get_user(user.id)
 
@@ -99,6 +102,17 @@ defmodule Champions.Users do
     end)
   end
 
+  defp add_afk_reward_rates(user) do
+    ["Gold", "Gems", "Summon Scrolls"]
+    |> Enum.each(fn currency_name ->
+      Rewards.insert_afk_reward_rate(%{
+        user_id: user.id,
+        currency_id: Currencies.get_currency_by_name!(currency_name).id,
+        rate: 0
+      })
+    end)
+  end
+
   @doc """
   Adds the given experience to a user. If the user were to have enough resulting experience to level up,
   it is performed automatically.
@@ -130,5 +144,46 @@ defmodule Champions.Users do
   """
   def calculate_experience_to_next_level(level) do
     Math.pow(100, 1 + level / 10) |> ceil()
+  end
+
+  @doc """
+  Get a user's available AFK rewards, according to their AFK reward rates and the time since their last claim.
+  If more than 12 hours have passed since the last claim, the user will have accumulated the maximum amount of rewards.
+  """
+  def get_afk_rewards(user_id) do
+    case Users.get_user(user_id) do
+      {:ok, user} ->
+        user.afk_reward_rates
+        |> Enum.map(fn reward_rate ->
+          currency = Currencies.get_currency(reward_rate.currency_id)
+          amount = calculate_afk_rewards(user, reward_rate)
+          %{currency: currency, amount: amount}
+        end)
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
+  defp calculate_afk_rewards(user, afk_reward_rate) do
+    last_claim = user.last_afk_reward_claim
+    now = DateTime.utc_now()
+
+    # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
+    hours_since_last_claim = DateTime.diff(now, last_claim, :hour)
+    afk_reward_rate.rate * min(hours_since_last_claim, @max_afk_reward_hours)
+  end
+
+  @doc """
+  Claim a user's AFK rewards, and reset their last AFK reward claim time.
+  """
+  def claim_afk_rewards(user_id) do
+    afk_rewards = get_afk_rewards(user_id)
+
+    Enum.each(afk_rewards, fn afk_reward ->
+      Currencies.add_currency(user_id, afk_reward.currency.id, afk_reward.amount)
+    end)
+
+    Users.reset_afk_rewards_claim(user_id)
   end
 end
