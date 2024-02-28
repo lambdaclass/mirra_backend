@@ -9,7 +9,7 @@ defmodule GameBackend.Users do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
-  alias GameBackend.Campaigns.Campaignprogress
+  alias GameBackend.Campaigns.CampaignProgression
   alias GameBackend.Campaigns
   alias GameBackend.Repo
   alias GameBackend.Users.User
@@ -79,22 +79,22 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    with {:campaign_data, {:ok, campaign_progress}} <-
-           {:campaign_data, retrieve_campaign_progress_data(user_id, campaign_id)},
+    with {:campaign_data, {:ok, campaign_progression}} <-
+           {:campaign_data, retrieve_campaign_progression_data(user_id, campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} =
-           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
-      level = campaign_progress.level
+           {:next_level, Campaigns.get_next_level(campaign_progression.level)} do
+      level = campaign_progression.level
 
       Multi.new()
-      |> Multi.run(:update_campaign_progress, fn _, _ ->
+      |> Multi.run(:update_campaign_progression, fn _, _ ->
         if next_level_id == level.id,
           do: {:ok, nil},
-          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
+          else: update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
       end)
       |> Repo.transaction()
     else
       {:campaign_data, _transaction_error} -> {:error, :campaign_data_error}
-      {:next_level, _transaction_error} -> {:campaign_progress_error}
+      {:next_level, _transaction_error} -> {:campaign_progression_error}
     end
   end
 
@@ -114,20 +114,20 @@ defmodule GameBackend.Users do
         currencies: :currency
       )
 
-  defp retrieve_campaign_progress_data(user_id, campaign_id) do
-    progress =
-      Repo.get_by(Campaignprogress, user_id: user_id, campaign_id: campaign_id)
+  defp retrieve_campaign_progression_data(user_id, campaign_id) do
+    progression =
+      Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
       |> Repo.preload(level: :campaign)
 
-    case progress do
+    case progression do
       nil -> {:error, :not_found}
-      campaign_progress -> {:ok, campaign_progress}
+      campaign_progression -> {:ok, campaign_progression}
     end
   end
 
-  defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
-    campaign_progress
-    |> Campaignprogress.advance_level_changeset(%{
+  defp update_campaign_progression(campaign_progression, next_campaign_id, next_level_id) do
+    campaign_progression
+    |> CampaignProgression.advance_level_changeset(%{
       campaign_id: next_campaign_id,
       level_id: next_level_id
     })
