@@ -7,6 +7,7 @@ alias GameBackend.Units
 alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Campaigns.Rewards.CurrencyReward
 
 champions_of_mirra_id = 2
 units_per_level = 5
@@ -140,6 +141,7 @@ levels =
         game_id: champions_of_mirra_id,
         campaign_id: campaign.id,
         level_number: level_index,
+        experience_reward: 100 * level_index,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
@@ -190,3 +192,16 @@ units =
   end)
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
+
+currency_rewards =
+  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+      %{
+        level_id: level.id,
+        amount: 10 * level_index,
+        currency_id: gold_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+
+  end)
+  Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
