@@ -195,7 +195,7 @@ units =
 Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 currency_rewards =
-  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
       %{
         level_id: level.id,
         amount: 10 * level_index,
