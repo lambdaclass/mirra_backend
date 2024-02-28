@@ -17,6 +17,7 @@ defmodule Champions.Battle do
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)} do
       if battle(user.units, level.units) == :team_1 do
         case Users.advance_level(user_id, level.campaign_id) do
+          # TODO: Validate level fought is the correct one before advancing - [CHoM-#214]
           {:ok, _changes} -> :win
           _error -> {:error, :failed_to_advance}
         end
