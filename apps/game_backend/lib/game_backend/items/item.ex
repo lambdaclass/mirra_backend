@@ -6,6 +6,7 @@ defmodule GameBackend.Items.Item do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Campaigns.Level
   alias GameBackend.Items.ItemTemplate
   alias GameBackend.Users.User
   alias GameBackend.Units.Unit
@@ -17,13 +18,14 @@ defmodule GameBackend.Items.Item do
     belongs_to(:template, ItemTemplate)
     belongs_to(:user, User)
     belongs_to(:unit, Unit)
+    belongs_to(:campaign_level, Level)
     timestamps()
   end
 
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:level, :template_id, :user_id, :unit_id])
+    |> cast(attrs, [:level, :template_id, :user_id, :unit_id, :campaign_level_id])
     |> validate_required([:level, :template_id, :user_id])
   end
 
