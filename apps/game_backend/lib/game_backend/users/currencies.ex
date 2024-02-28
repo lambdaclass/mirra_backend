@@ -146,9 +146,7 @@ defmodule GameBackend.Users.Currencies do
         add_currency(user_id, currency_id, -cost)
       end)
 
-    if Enum.all?(result, fn
-         {:ok, _} -> true
-         _ -> false
+    if Enum.all?(results, fn {result, _} -> result == :ok end)
        end) do
       {:ok, Enum.map(result, fn {_ok, currency} -> currency end)}
     else
