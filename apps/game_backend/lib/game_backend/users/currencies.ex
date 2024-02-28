@@ -150,7 +150,7 @@ defmodule GameBackend.Users.Currencies do
          {:ok, _} -> true
          _ -> false
        end) do
-      {:ok, Enum.map(result, &elem(&1, 1))}
+      {:ok, Enum.map(result, fn {_ok, currency} -> currency end)}
     else
       {:error, "failed"}
     end
