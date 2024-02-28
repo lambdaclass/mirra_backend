@@ -88,12 +88,14 @@ defmodule Champions.Users do
     campaigns = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
-      GameBackend.Campaigns.insert_campaign_progress(%{
-        game_id: @game_id,
-        user_id: user.id,
-        campaign_id: campaign.id,
-        level_id: campaign.levels |> hd() |> Map.get(:id)
-      })
+      if campaign.campaign_number == 1,
+        do:
+          GameBackend.Campaigns.insert_campaign_progress(%{
+            game_id: @game_id,
+            user_id: user.id,
+            campaign_id: campaign.id,
+            level_id: campaign.levels |> hd() |> Map.get(:id)
+          })
     end)
   end
 
