@@ -15,7 +15,7 @@ defmodule GameBackend.Repo.Migrations.AddCurrentCampaignAndLevelToUser do
       timestamps()
     end
 
-    create table(:campaign_progressions) do
+    create table(:campaign_progresss) do
       add :game_id, :integer, null: false
       add :user_id, references(:users, on_delete: :delete_all)
       add :level_id, references(:levels, on_delete: :delete_all)

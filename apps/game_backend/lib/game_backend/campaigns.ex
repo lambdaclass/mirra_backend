@@ -5,7 +5,7 @@ defmodule GameBackend.Campaigns do
 
   import Ecto.Query
   alias GameBackend.Repo
-  alias GameBackend.Campaigns.{Campaign, CampaignProgression, Level, SuperCampaign}
+  alias GameBackend.Campaigns.{Campaign, CampaignProgress, Level, SuperCampaign}
 
   @doc """
   Gets all levels, grouped by campaign and sorted ascendingly.
@@ -47,11 +47,11 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
-  Inserts a campaign progression.
+  Inserts a campaign progress.
   """
-  def insert_campaign_progression(attrs, opts \\ []) do
-    %CampaignProgression{}
-    |> CampaignProgression.changeset(attrs)
+  def insert_campaign_progress(attrs, opts \\ []) do
+    %CampaignProgress{}
+    |> CampaignProgress.changeset(attrs)
     |> Repo.insert(opts)
   end
 
@@ -75,17 +75,17 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
-  Get a campaign progression by user id and campaign id.
-  Returns `{:error, :not_found}` if no progression is found.
+  Get a campaign progress by user id and campaign id.
+  Returns `{:error, :not_found}` if no progress is found.
   """
-  def get_campaign_progression(user_id, campaign_id) do
-    campaign_progression =
-      Repo.get_by(GameBackend.Campaigns.CampaignProgression,
+  def get_campaign_progress(user_id, campaign_id) do
+    campaign_progress =
+      Repo.get_by(GameBackend.Campaigns.CampaignProgress,
         user_id: user_id,
         campaign_id: campaign_id
       )
 
-    if campaign_progression, do: {:ok, campaign_progression}, else: {:error, :not_found}
+    if campaign_progress, do: {:ok, campaign_progress}, else: {:error, :not_found}
   end
 
   @doc """
