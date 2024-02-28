@@ -160,7 +160,9 @@ defmodule GameBackend.Users do
             %{
               user_id: user_id,
               template_id: item.template_id,
-              level: item.level
+              level: item.level,
+              inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+              updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
             }
           end)
       end
@@ -177,9 +179,11 @@ defmodule GameBackend.Users do
             %{
               user_id: user_id,
               character_id: unit.character_id,
-              level: unit.level,
+              unit_level: unit.unit_level,
               tier: unit.tier,
-              selected: false
+              selected: false,
+              inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+              updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
             }
           end)
       end
