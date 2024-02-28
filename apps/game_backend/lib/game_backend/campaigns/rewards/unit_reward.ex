@@ -10,7 +10,6 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
   alias GameBackend.Units.Characters.Character
 
   schema "unit_rewards" do
-    # TODO: Should have a character and other unit params to build it, not an unit [CHoM-#215]
     belongs_to(:character, Character)
     belongs_to(:level, Level)
     field(:amount, :integer)
