@@ -879,7 +879,6 @@ defmodule Arena.GameUpdater do
         |> put_in(
           [:players, player.id, :aditional_info, :effects, last_id],
           Map.put(effect, :owner_id, pool.id)
-          |> Map.put(:last_application_time, 0)
           |> Map.put(:id, last_id)
         )
         |> put_in([:last_id], last_id)
