@@ -5,10 +5,8 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
-  alias Arena.Configuration
-  alias Arena.Entities
-  alias Arena.Game.Player
-  alias Arena.Game.Skill
+  alias Arena.{Configuration, Entities}
+  alias Arena.Game.{Player, Skill}
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
 
