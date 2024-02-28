@@ -22,7 +22,6 @@ defmodule Champions.Battle do
       if battle(user.units, level.units) == :team_1 do
         case Users.advance_level(user_id, level.campaign_id) do
           # TODO: add rewards to response [CHoM-191]
-          # TODO: Validate level fought is the correct one before advancing - [CHoM-#214]
           {:ok, _changes} -> :win
           _error -> {:error, :failed_to_advance}
         end
@@ -41,6 +40,8 @@ defmodule Champions.Battle do
   Run a battle between two teams. The outcome is decided randomly, favoring the team
   with the higher aggregate level of their selected units. Returns `:team_1` or `:team_2`.
   """
+  def battle(_team_1, _team_2), do: :team_1
+
   def battle(team_1, team_2) do
     team_1_agg_level =
       Enum.reduce(team_1, 0, fn unit, acc ->
