@@ -315,16 +315,14 @@ defmodule Arena.GameUpdater do
 
     state =
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-      |> spawn_power_ups(victim, amount_of_power_ups)
-
-    game_state =
-      update_in(game_state, [:players, killer_id, :aditional_info, :kill_count], fn count ->
+      |> update_in([:game_state, :players, killer_id, :aditional_info, :kill_count], fn count ->
         count + 1
       end)
+      |> spawn_power_ups(victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
-    {:noreply, %{state | game_state: game_state}}
+    {:noreply, state}
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
