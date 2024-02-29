@@ -10,15 +10,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
 
-  ## Time between checking that a game has ended
-  @check_game_ended_interval_ms 1_000
-  ## Time to wait between a game ended detected and shutting down this process
-  @game_ended_shutdown_wait_ms 10_000
-  ## Time between natural healing intervals
-  @natural_healing_interval_ms 300
-  ## Time to prepare the game before starting
-  @enable_incomming_messages_ms 9_000
-
   ##########################
   # API
   ##########################
@@ -45,17 +36,7 @@ defmodule Arena.GameUpdater do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients, game_config)
-
-    Process.send_after(self(), :update_game, 1_000)
-
-    Process.send_after(
-      self(),
-      {:check_game_ended, Map.keys(game_state.players)},
-      @check_game_ended_interval_ms * 10
-    )
-
-    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
-    Process.send_after(self(), :update_finish_preparing_game, 1_000)
+    send(self(), :game_preparation)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -150,13 +131,13 @@ defmodule Arena.GameUpdater do
     {:stop, :normal, state}
   end
 
-  def handle_info({:check_game_ended, last_players_ids}, state) do
+  def handle_info({:end_game_check, last_players_ids}, state) do
     case check_game_ended(state.game_state.players, last_players_ids) do
       {:ongoing, players_ids} ->
         Process.send_after(
           self(),
-          {:check_game_ended, players_ids},
-          @check_game_ended_interval_ms
+          {:end_game_check, players_ids},
+          state.game_config.game.end_game_interval_ms
         )
 
       {:ended, winner} ->
@@ -165,33 +146,31 @@ defmodule Arena.GameUpdater do
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
         ## (sending to inexistant process will cause them to crash)
-        Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
+        Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
     end
 
     {:noreply, state}
   end
 
-  def handle_info(:update_finish_preparing_game, state) do
+  def handle_info(:game_preparation, state) do
     case state.game_state.status do
-      :PREPARING when state.game_state.countdown >= 1_000 ->
-        Process.send_after(self(), :update_finish_preparing_game, 1_000)
-        {:noreply, state |> put_in([:game_state, :countdown], state.game_state.countdown - 1_000)}
-
-      :PREPARING ->
-        broadcast_enable_incomming_messages(state.game_state.game_id)
-
+      :PREPARING
+      when state.game_state.countdown >= state.game_config.game.start_game_interval_ms ->
         Process.send_after(
           self(),
-          :start_zone_shrink,
-          state.game_config.game.zone_shrink_start_ms
+          :game_preparation,
+          state.game_config.game.start_game_interval_ms
         )
-
-        send(self(), :update_zone_shrink_time)
 
         {:noreply,
          state
-         |> put_in([:game_state, :status], :RUNNING)
-         |> put_in([:game_state, :countdown], 0)}
+         |> put_in(
+           [:game_state, :countdown],
+           state.game_state.countdown - state.game_config.game.start_game_interval_ms
+         )}
+
+      :PREPARING ->
+        start_game(state)
 
       _ ->
         {:noreply, state}
@@ -200,7 +179,11 @@ defmodule Arena.GameUpdater do
 
   # Natural healing
   def handle_info(:natural_healing, state) do
-    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
+    Process.send_after(
+      self(),
+      :natural_healing,
+      state.game_config.game.natural_healing_interval_ms
+    )
 
     players = Player.trigger_natural_healings(state.game_state.players)
     state = put_in(state, [:game_state, :players], players)
@@ -479,6 +462,8 @@ defmodule Arena.GameUpdater do
         shrinking: :disabled,
         zone_shrink_time: config.game.zone_shrink_start_ms
       })
+      |> Map.put(:status, :PREPARING)
+      |> Map.put(:countdown, config.game.start_game_time_ms)
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
@@ -511,8 +496,6 @@ defmodule Arena.GameUpdater do
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
-    |> Map.put(:status, :PREPARING)
-    |> Map.put(:countdown, @enable_incomming_messages_ms)
   end
 
   # Initialize obstacles
@@ -529,6 +512,21 @@ defmodule Arena.GameUpdater do
 
       {obstacles_acc, last_id}
     end)
+  end
+
+  # Start the game
+  defp start_game(state) do
+    broadcast_enable_incomming_messages(state.game_state.game_id)
+    Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
+    send(self(), :update_zone_shrink_time)
+    send(self(), :update_game)
+    send(self(), :natural_healing)
+    send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+
+    {:noreply,
+     state
+     |> put_in([:game_state, :status], :RUNNING)
+     |> put_in([:game_state, :countdown], 0)}
   end
 
   ##########################
