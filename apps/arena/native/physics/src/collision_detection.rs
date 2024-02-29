@@ -54,6 +54,38 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
     point_circle_collision(&closest_point, circle)
 }
 
+pub(crate) fn get_closest_point_between_line_and_circle(
+    line: &Entity,
+    circle: &Entity,
+) -> Option<Entity> {
+    // Check if the vertices are inside the circle
+    let point_1 = Entity::new_point(0, line.vertices[0]);
+    let point_2 = Entity::new_point(0, line.vertices[1]);
+
+    // Find the closest point on the line to the circle
+    let dist_x = point_1.position.x - point_2.position.x;
+    let dist_y = point_1.position.y - point_2.position.y;
+    let line_length = ((dist_x * dist_x) + (dist_y * dist_y)).sqrt();
+
+    let dot = (((circle.position.x - point_1.position.x)
+        * (point_2.position.x - point_1.position.x))
+        + ((circle.position.y - point_1.position.y) * (point_2.position.y - point_1.position.y)))
+        / line_length.powi(2);
+
+    let closest_point = Entity::new_point(
+        0,
+        Position {
+            x: point_1.position.x + (dot * (point_2.position.x - point_1.position.x)),
+            y: point_1.position.y + (dot * (point_2.position.y - point_1.position.y)),
+        },
+    );
+    if line_point_colision(line, &closest_point) {
+        return Some(closest_point);
+    } else {
+        None
+    }
+}
+
 /*
  * Determines if a collision has occured between two circles
  * If the distance between the centers of the circles is less than
