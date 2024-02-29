@@ -174,6 +174,7 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
   field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
+  field(:stamina_cost, 6, type: :uint64, json_name: "staminaCost")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -426,6 +427,7 @@ defmodule GameClient.Protobuf.Zone do
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
+  field(:zone_shrink_time, 3, type: :int32, json_name: "zoneShrinkTime")
 end
 
 defmodule GameClient.Protobuf.KillEntry do
