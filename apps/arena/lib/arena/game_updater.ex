@@ -153,21 +153,14 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:game_preparation, state) do
-    case state.game_state.status do
-      :PREPARING
-      when state.game_state.countdown >= state.game_config.game.start_game_interval_ms ->
-        Process.send_after(
-          self(),
-          :game_preparation,
-          state.game_config.game.start_game_interval_ms
-        )
+    countdown = state.game_state.countdown
+    start_game_interval_ms = state.game_config.game.start_game_interval_ms
 
-        {:noreply,
-         state
-         |> put_in(
-           [:game_state, :countdown],
-           state.game_state.countdown - state.game_config.game.start_game_interval_ms
-         )}
+    case state.game_state.status do
+      :PREPARING when countdown >= start_game_interval_ms ->
+        Process.send_after(self(), :game_preparation, start_game_interval_ms)
+
+        {:noreply, state |> put_in([:game_state, :countdown], countdown - start_game_interval_ms)}
 
       :PREPARING ->
         start_game(state)
