@@ -141,16 +141,13 @@ defmodule GameBackend.Users.Currencies do
   def substract_currencies(_user_id, []), do: {:ok, []}
 
   def substract_currencies(user_id, costs) do
-    result =
+    results =
       Enum.map(costs, fn %CurrencyCost{currency_id: currency_id, amount: cost} ->
         add_currency(user_id, currency_id, -cost)
       end)
 
-    if Enum.all?(result, fn
-         {:ok, _} -> true
-         _ -> false
-       end) do
-      {:ok, Enum.map(result, &elem(&1, 1))}
+    if Enum.all?(results, fn {result, _} -> result == :ok end) do
+      {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
     else
       {:error, "failed"}
     end
@@ -159,10 +156,15 @@ defmodule GameBackend.Users.Currencies do
   @doc """
   Gets how much a user has of a given currency by its name.
   """
-  def get_amount_of_currency_by_name!(user_id, currency_name),
-    do:
-      user_id
-      |> get_amount_of_currency(get_currency_by_name!(currency_name).id)
+  def get_amount_of_currency_by_name(user_id, currency_name) do
+    Repo.one(
+      from(uc in UserCurrency,
+        join: currency in assoc(uc, :currency),
+        where: uc.user_id == ^user_id and currency.name == ^currency_name,
+        select: uc.amount
+      )
+    ) || 0
+  end
 
   @doc """
   Add amount of currency to user by its name.

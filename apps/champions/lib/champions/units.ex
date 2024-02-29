@@ -224,12 +224,18 @@ defmodule Champions.Units do
   @doc """
   Consume a list of units that meet specific rank and character requirements based on the target
   unit's rank in order to increase it.
+
+  Returns `{:ok, unit}` or `{:error, reason}`.
   """
   def fuse(user_id, unit_id, consumed_units_ids) do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
          {:can_rank_up, true} <- {:can_rank_up, can_rank_up(unit)},
+         {:unit_not_in_consumed_units, true} <-
+           {:unit_not_in_consumed_units, unit_id not in consumed_units_ids},
          consumed_units <- Units.get_units_by_ids(consumed_units_ids),
+         {:consumed_units_owned, true} <-
+           {:consumed_units_owned, Enum.all?(consumed_units, &(&1.user_id == user_id))},
          {:consumed_units_count, true} <-
            {:consumed_units_count, Enum.count(consumed_units) == Enum.count(consumed_units_ids)},
          {:consumed_units_valid, true} <-
@@ -260,6 +266,9 @@ defmodule Champions.Units do
       {:can_rank_up, false} ->
         {:error, :cant_rank_up}
 
+      {:unit_not_in_consumed_units, false} ->
+        {:error, :consumed_units_invalid}
+
       {:consumed_units_count, false} ->
         {:error, :consumed_units_not_found}
 
@@ -278,18 +287,14 @@ defmodule Champions.Units do
     {same_character_amount, same_character_rank} = same_character_requirements(unit)
     {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
 
-    try do
-      validate_units(
-        unit,
-        unit_list,
-        same_character_amount,
-        same_character_rank,
-        same_faction_amount,
-        same_faction_rank
-      )
-    rescue
-      _e in RuntimeError -> false
-    end
+    validate_units(
+      unit,
+      unit_list,
+      same_character_amount,
+      same_character_rank,
+      same_faction_amount,
+      same_faction_rank
+    )
   end
 
   defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
@@ -313,37 +318,62 @@ defmodule Champions.Units do
          same_faction_rank
        ) do
     # Remove necessary units with the same character
-    removed_same_character =
-      Enum.reduce(1..same_character_amount, unit_list, fn _, list ->
-        same_character =
-          Enum.find(
-            list,
-            &(&1.character_id == unit.character_id and &1.rank == same_character_rank)
-          )
+    with {:ok, removed_same_character} <-
+           remove_same_character(unit, unit_list, same_character_amount, same_character_rank),
+         {:ok, removed_same_faction} <-
+           remove_same_faction(
+             unit,
+             removed_same_character,
+             same_faction_amount,
+             same_faction_rank
+           ) do
+      # If we got here with an empty list, then the units are valid
+      if Enum.empty?(removed_same_faction), do: true, else: false
+    else
+      :error -> false
+    end
+  end
 
-        if is_nil(same_character), do: raise("not enough of same character")
-        if same_character.user_id != unit.user_id, do: raise("consumed unit not owned")
+  defp remove_same_character(unit, unit_list, amount, rank) do
+    Enum.reduce_while(1..amount, unit_list, fn _, list ->
+      same_character =
+        Enum.find(
+          list,
+          &(&1.character_id == unit.character_id and &1.rank == rank)
+        )
 
-        List.delete(list, same_character)
-      end)
+      if is_nil(same_character) do
+        # Not enough of same character
+        {:halt, :error}
+      else
+        {:cont, List.delete(list, same_character)}
+      end
+    end)
+    |> case do
+      :error -> :error
+      list -> {:ok, list}
+    end
+  end
 
-    # Remove necessary units with the same faction
-    removed_same_faction =
-      Enum.reduce(1..same_faction_amount, removed_same_character, fn _, list ->
-        same_faction =
-          Enum.find(
-            list,
-            &(&1.character.faction == unit.character.faction and &1.rank == same_faction_rank)
-          )
+  defp remove_same_faction(unit, unit_list, amount, rank) do
+    Enum.reduce_while(1..amount, unit_list, fn _, list ->
+      same_character =
+        Enum.find(
+          list,
+          &(&1.character.faction == unit.character.faction and &1.rank == rank)
+        )
 
-        if is_nil(same_faction), do: raise("not enough of same faction")
-        if same_faction.user_id != unit.user_id, do: raise("consumed unit not owned")
-
-        List.delete(list, same_faction)
-      end)
-
-    # If we got here with no raises and an empty list, then the units are valid
-    if Enum.empty?(removed_same_faction), do: true, else: raise("too many units given")
+      if is_nil(same_character) do
+        # Not enough of same faction
+        {:halt, :error}
+      else
+        {:cont, List.delete(list, same_character)}
+      end
+    end)
+    |> case do
+      :error -> :error
+      list -> {:ok, list}
+    end
   end
 
   @doc """
