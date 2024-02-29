@@ -83,12 +83,20 @@
             "y": 500.0
           },
           {
+            "x": 0.0,
+            "y": 750.0
+          },
+          {
             "x": 500.0,
             "y": 500.0
           },
           {
             "x": 500.0,
             "y": -500.0
+          },
+          {
+            "x": 0.0,
+            "y": -750.0
           }
         ],
         "radius": 317.0,
@@ -98,7 +106,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "zone_shrink_start_ms": 35000,
+    "zone_shrink_start_ms": 99999999,
     "zone_stop_interval_ms": 13000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
