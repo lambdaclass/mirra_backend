@@ -12,7 +12,6 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
   schema "afk_reward_rates" do
     belongs_to(:user, User)
     belongs_to(:currency, Currency)
-    # Per hour
     field(:rate, :float)
 
     timestamps()

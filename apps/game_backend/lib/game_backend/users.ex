@@ -139,7 +139,15 @@ defmodule GameBackend.Users do
   defp retrieve_campaign_progress_data(user_id, campaign_id) do
     progress =
       Repo.get_by(CampaignProgress, user_id: user_id, campaign_id: campaign_id)
-      |> Repo.preload(level: [:campaign, :currency_rewards, :unit_rewards, :item_rewards])
+      |> Repo.preload(
+        level: [
+          :campaign,
+          :currency_rewards,
+          :unit_rewards,
+          :item_rewards,
+          :afk_rewards_increments
+        ]
+      )
 
     case progress do
       nil -> {:error, :not_found}
