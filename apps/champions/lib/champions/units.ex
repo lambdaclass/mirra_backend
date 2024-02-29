@@ -231,6 +231,8 @@ defmodule Champions.Units do
     with {:unit, {:ok, unit}} <- {:unit, Units.get_unit(unit_id)},
          {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id},
          {:can_rank_up, true} <- {:can_rank_up, can_rank_up(unit)},
+         {:unit_not_in_consumed_units, true} <-
+           {:unit_not_in_consumed_units, unit_id not in consumed_units_ids},
          consumed_units <- Units.get_units_by_ids(consumed_units_ids),
          {:consumed_units_count, true} <-
            {:consumed_units_count, Enum.count(consumed_units) == Enum.count(consumed_units_ids)},
@@ -261,6 +263,9 @@ defmodule Champions.Units do
 
       {:can_rank_up, false} ->
         {:error, :cant_rank_up}
+
+      {:unit_not_in_consumed_units, false} ->
+        {:error, :consumed_units_invalid}
 
       {:consumed_units_count, false} ->
         {:error, :consumed_units_not_found}

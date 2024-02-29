@@ -79,8 +79,7 @@ defmodule GameBackend.Units do
   Gets all units from ids in a list.
   """
   def get_units_by_ids(unit_ids) when is_list(unit_ids),
-    do:
-      Repo.all(from(u in Unit, where: u.id in ^unit_ids, preload: [:character, :user, :items]))
+    do: Repo.all(from(u in Unit, where: u.id in ^unit_ids, preload: [:character, :user, :items]))
 
   @doc """
   Gets all units for a user.
