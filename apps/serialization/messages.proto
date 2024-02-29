@@ -93,6 +93,7 @@ message GameState {
   map<uint64, Entity> power_ups = 10;
   GameStatus status = 11;
   int64 countdown = 12;
+  map<uint64, Entity> obstacles = 13;
 }
 
 enum GameStatus {
