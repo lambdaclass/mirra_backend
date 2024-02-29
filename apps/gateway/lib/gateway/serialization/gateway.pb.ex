@@ -289,12 +289,12 @@ defmodule Gateway.Serialization.Unit do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:id, 1, type: :string)
-  field(:unit_level, 2, type: :uint32, json_name: "unitLevel")
+  field(:level, 2, type: :uint32, json_name: "unitLevel")
   field(:tier, 3, type: :uint32)
   field(:rank, 4, type: :uint32)
   field(:selected, 5, type: :bool)
   field(:slot, 6, type: :uint32)
-  field(:level_id, 7, type: :string, json_name: "levelId")
+  field(:campaign_level_id, 7, type: :string, json_name: "levelId")
   field(:user_id, 8, type: :string, json_name: "userId")
   field(:character, 9, type: Gateway.Serialization.Character)
   field(:items, 10, repeated: true, type: Gateway.Serialization.Item)
