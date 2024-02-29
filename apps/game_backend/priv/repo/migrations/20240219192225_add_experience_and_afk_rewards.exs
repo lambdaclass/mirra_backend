@@ -10,7 +10,6 @@ defmodule GameBackend.Repo.Migrations.AddExperienceAndAfkRewards do
     end
 
     alter(table(:levels)) do
-      add(:experience_reward, :integer)
       add(:afk_rewards_increment_id, references(:currency_rewards, on_delete: :delete_all))
     end
 
