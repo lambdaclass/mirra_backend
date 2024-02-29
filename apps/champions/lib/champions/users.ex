@@ -69,6 +69,7 @@ defmodule Champions.Users do
         character_id: Enum.random(characters).id,
         user_id: user.id,
         level: Enum.random(1..5),
+        rank: Champions.Units.get_rank(:star5),
         tier: 1,
         selected: true,
         slot: index

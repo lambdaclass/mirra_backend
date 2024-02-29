@@ -13,7 +13,7 @@ defmodule GameBackend.Campaigns.Level do
     field(:level_number, :integer)
     field(:campaign, :integer)
 
-    has_many(:units, Unit)
+    has_many(:units, Unit, foreign_key: :campaign_level_id)
 
     timestamps()
   end
