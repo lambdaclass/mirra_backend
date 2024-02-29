@@ -41,6 +41,7 @@ defmodule GameBackend.Rewards do
         |> Repo.update()
 
       {:error, :not_found} ->
+        # TODO: Should create it if there is none, like we do with currencies [#CHoM-223]
         {:error, :not_found}
     end
   end

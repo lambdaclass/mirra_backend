@@ -5,6 +5,7 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
