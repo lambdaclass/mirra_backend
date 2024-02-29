@@ -469,6 +469,9 @@ defmodule Arena.GameUpdater do
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
+      |> Map.put(:killfeed, [])
+      |> Map.put(:damage_taken, %{})
+      |> Map.put(:damage_done, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
         radius: config.map.radius,
@@ -497,9 +500,6 @@ defmodule Arena.GameUpdater do
           new_game
           |> Map.put(:last_id, last_id)
           |> Map.put(:players, players)
-          |> Map.put(:killfeed, [])
-          |> Map.put(:damage_taken, %{})
-          |> Map.put(:damage_done, %{})
           |> put_in([:client_to_player_map, client_id], last_id)
           |> put_in([:player_timestamps, last_id], 0)
 
