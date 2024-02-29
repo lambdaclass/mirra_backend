@@ -96,6 +96,9 @@ defmodule GameBackend.Users do
       |> Multi.run(:currency_rewards, fn _, _ ->
         apply_currency_rewards(user_id, level.currency_rewards)
       end)
+      |> Multi.run(:afk_rewards_increments, fn _, _ ->
+        apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
+      end)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
         build_item_rewards_params(user_id, level.item_rewards)
       end)
@@ -182,8 +185,6 @@ defmodule GameBackend.Users do
   end
 
   defp build_unit_rewards_params(user_id, unit_rewards) do
-    IO.inspect(unit_rewards, label: :rewards)
-
     Enum.map(unit_rewards, fn unit_reward ->
       Enum.map(1..unit_reward.amount, fn _ ->
         %{
