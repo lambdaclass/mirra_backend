@@ -322,8 +322,10 @@ defmodule Arena.Game.Player do
   end
 
   defp apply_effect({:stamina_faster, stamina_faster}, player) do
+    ## TODO: arreglar esto
     change_stamina(player, 3)
 
+    ## Aca deberiamos mandar el monto que vamos a restar del intervalo asi podemos sumarle al deshacer
     Process.send_after(
       self(),
       {:stop_stamina_faster, player.id, player.aditional_info.stamina_interval},
