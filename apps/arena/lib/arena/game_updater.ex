@@ -623,7 +623,8 @@ defmodule Arena.GameUpdater do
           nil ->
             {players_acc, power_ups_acc}
 
-          power_up ->
+          power_up_id ->
+            power_up = Map.get(power_ups_acc, power_up_id)
             process_power_up(player, power_up, players_acc, power_ups_acc)
         end
       end)
