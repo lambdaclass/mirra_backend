@@ -294,7 +294,7 @@ defmodule Gateway.Serialization.Unit do
   field(:rank, 4, type: :uint32)
   field(:selected, 5, type: :bool)
   field(:slot, 6, type: :uint32)
-  field(:level_id, 7, type: :string, json_name: "levelId")
+  field(:campaign_level_id, 7, type: :string, json_name: "levelId")
   field(:user_id, 8, type: :string, json_name: "userId")
   field(:character, 9, type: Gateway.Serialization.Character)
   field(:items, 10, repeated: true, type: Gateway.Serialization.Item)
