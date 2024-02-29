@@ -19,7 +19,6 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)
-    has_many(:campaign_progressions, CampaignProgression)
 
     timestamps()
   end
