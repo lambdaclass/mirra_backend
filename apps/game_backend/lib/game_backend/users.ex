@@ -14,6 +14,7 @@ defmodule GameBackend.Users do
   alias Ecto.Multi
   alias GameBackend.Units.Unit
   alias GameBackend.Items.Item
+  alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Campaigns
