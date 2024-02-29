@@ -37,6 +37,7 @@ defmodule Arena.GameUpdater do
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients, game_config)
     send(self(), :game_preparation)
+    send(self(), :update_game)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -512,7 +513,6 @@ defmodule Arena.GameUpdater do
     broadcast_enable_incomming_messages(state.game_state.game_id)
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     send(self(), :update_zone_shrink_time)
-    send(self(), :update_game)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
