@@ -159,10 +159,15 @@ defmodule GameBackend.Users.Currencies do
   @doc """
   Gets how much a user has of a given currency by its name.
   """
-  def get_amount_of_currency_by_name!(user_id, currency_name),
-    do:
-      user_id
-      |> get_amount_of_currency(get_currency_by_name!(currency_name).id)
+  def get_amount_of_currency_by_name(user_id, currency_name) do
+    Repo.one(
+      from(uc in UserCurrency,
+        join: currency in assoc(uc, :currency),
+        where: uc.user_id == ^user_id and currency.name == ^currency_name,
+        select: uc.amount
+      )
+    ) || 0
+  end
 
   @doc """
   Add amount of currency to user by its name.
