@@ -8,13 +8,12 @@ defmodule GameBackend.Campaigns.Level do
 
   alias GameBackend.Units.Unit
 
-  @derive {Jason.Encoder, only: [:id, :level_number, :campaign, :units]}
   schema "levels" do
     field(:game_id, :integer)
     field(:level_number, :integer)
     field(:campaign, :integer)
 
-    has_many(:units, Unit)
+    has_many(:units, Unit, foreign_key: :campaign_level_id)
 
     timestamps()
   end
