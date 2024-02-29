@@ -3,7 +3,9 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias GameBackend.Transaction
   alias Ecto.Changeset
+  alias Ecto.Multi
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
   alias GameBackend.Units
@@ -180,10 +182,20 @@ defmodule Champions.Users do
   def claim_afk_rewards(user_id) do
     afk_rewards = get_afk_rewards(user_id)
 
-    Enum.each(afk_rewards, fn afk_reward ->
-      Currencies.add_currency(user_id, afk_reward.currency.id, afk_reward.amount)
-    end)
+    Multi.new()
+    |> Multi.run(:add_currencies, fn _, _ ->
+      results =
+        Enum.map(afk_rewards, fn afk_reward ->
+          Currencies.add_currency(user_id, afk_reward.currency.id, floor(afk_reward.amount))
+        end)
 
-    Users.reset_afk_rewards_claim(user_id)
+      if Enum.all?(results, fn {result, _} -> result == :ok end) do
+        {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
+      else
+        {:error, "failed"}
+      end
+    end)
+    |> Multi.run(:reset_afk_claim, fn _, _ -> Users.reset_afk_rewards_claim(user_id) end)
+    |> Transaction.run()
   end
 end
