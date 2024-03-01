@@ -80,9 +80,11 @@ defmodule GameBackend.Campaigns do
   """
   def get_campaign_progress(user_id, campaign_id) do
     campaign_progress =
-      Repo.get_by(GameBackend.Campaigns.CampaignProgress,
-        user_id: user_id,
-        campaign_id: campaign_id
+      Repo.one(
+        from(cp in CampaignProgress,
+          where: cp.user_id == ^user_id and cp.campaign_id == ^campaign_id,
+          preload: [level: :campaign]
+        )
       )
 
     if campaign_progress, do: {:ok, campaign_progress}, else: {:error, :not_found}
