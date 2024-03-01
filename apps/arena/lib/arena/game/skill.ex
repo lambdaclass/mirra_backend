@@ -266,19 +266,19 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def apply_effect_mechanic(players, game_state) do
-    updated_players =
-      Map.filter(players, fn {_, player} -> Player.alive?(player) end)
-      |> Map.new(fn {_player_id, player} ->
+  def apply_effect_mechanic(%{players: players} = game_state) do
+    Enum.reduce(players, game_state, fn {_, player}, game_state ->
+      if Player.alive?(player) do
         player =
           Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
             apply_effect_mechanic(player, effect, game_state)
           end)
 
-        {player.id, player}
-      end)
-
-    Map.merge(players, updated_players)
+        put_in(game_state, [:players, player.id], player)
+      else
+        game_state
+      end
+    end)
   end
 
   def apply_effect_mechanic(player, effect, game_state) do

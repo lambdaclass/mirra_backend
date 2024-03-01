@@ -399,15 +399,15 @@
   "power_ups": {
     "power_ups_per_kill": [
       {
-        "minimun_amount": 0,
+        "minimum_amount": 0,
         "amount_of_drops": 1
       },
       {
-        "minimun_amount": 2,
+        "minimum_amount": 2,
         "amount_of_drops": 2
       },
       {
-        "minimun_amount": 6,
+        "minimum_amount": 6,
         "amount_of_drops": 3
       }
     ],
