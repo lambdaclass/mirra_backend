@@ -106,17 +106,6 @@ defmodule GameBackend.Users do
         currencies: :currency
       )
 
-  defp retrieve_campaign_progress_data(user_id, campaign_id) do
-    progress =
-      Repo.get_by(CampaignProgress, user_id: user_id, campaign_id: campaign_id)
-      |> Repo.preload(level: :campaign)
-
-    case progress do
-      nil -> {:error, :not_found}
-      campaign_progress -> {:ok, campaign_progress}
-    end
-  end
-
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
     campaign_progress
     |> CampaignProgress.advance_level_changeset(%{
