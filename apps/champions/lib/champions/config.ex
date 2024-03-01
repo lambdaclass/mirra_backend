@@ -3,6 +3,7 @@ defmodule Champions.Config do
   Configuration utilities.
   """
 
+  alias Champions.Units
   alias Champions.Utils
   alias GameBackend.Units.Characters
 
@@ -17,12 +18,13 @@ defmodule Champions.Config do
       |> Enum.to_list()
 
     characters
-    |> Enum.map(fn [name, class, faction, quality, attack, health, defense] ->
+    |> Enum.map(fn [name, quality, ranks_dropped_in, class, faction, attack, health, defense] ->
       %{
         name: name,
+        quality: String.downcase(quality) |> String.to_atom() |> Units.get_quality(),
+        ranks_dropped_in: String.split(ranks_dropped_in, "/"),
         class: class,
         faction: faction,
-        quality: quality,
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
         base_armor: Integer.parse(defense) |> elem(0),
