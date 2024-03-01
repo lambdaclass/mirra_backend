@@ -1,5 +1,4 @@
 alias GameBackend.Campaigns.Level
-alias GameBackend.Units.Characters
 alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
@@ -10,40 +9,8 @@ alias GameBackend.Users
 champions_of_mirra_id = 2
 units_per_level = 5
 
+Champions.Config.import_skill_config()
 Champions.Config.import_character_config()
-
-muflus = Characters.get_character_by_name("Muflus")
-
-{:ok, _muflus} = Characters.update_character(muflus, %{
-  basic_skill: %{
-    effects: [%{
-      type: "instant",
-      stat_affected: "health",
-      amount: -80,
-      stat_based_on: "attack",
-      amount_format: "additive",
-      targeting_strategy: "random", # TODO: Change back to nearest
-      amount_of_targets: 2,
-      targets_allies: false
-    }],
-    cooldown: 5
-  },
-  ultimate_skill: %{
-    effects: [
-      %{
-        type: "instant",
-        stat_affected: "health",
-        amount: -205,
-        stat_based_on: "attack",
-        amount_format: "additive",
-        targeting_strategy: "random", # TODO: Change back to nearest
-        amount_of_targets: 2,
-        targets_allies: false
-      }
-      # TODO: Add stun effect
-      ],
-  }
-})
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,

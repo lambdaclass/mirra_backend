@@ -1,0 +1,33 @@
+[
+  {
+    "name": "Muflus hit",
+    "effects": [
+      {
+        "type": "instant",
+        "stat_affected": "health",
+        "amount": -80,
+        "stat_based_on": "attack",
+        "amount_format": "additive",
+        "targeting_strategy": "random",
+        "amount_of_targets": 2,
+        "targets_allies": false
+      }
+    ],
+    "cooldown": 5
+  },
+  {
+    "name": "Muflus SMASH!",
+    "effects": [
+      {
+        "type": "instant",
+        "stat_affected": "health",
+        "amount": -205,
+        "stat_based_on": "attack",
+        "amount_format": "additive",
+        "targeting_strategy": "random",
+        "amount_of_targets": 2,
+        "targets_allies": false
+      }
+    ]
+  }
+]
