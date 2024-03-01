@@ -86,6 +86,12 @@ result = Champions.Battle.fight_level(user_id, level_id)
 
 ### Units
 
+#### Create Character
+The parameters described are the required ones, the optional ones that can also be added are: rarity, base_health, base_attack, base_armor, basic_skill_id and ultimate_skill_id
+```
+{:ok, character} = GameBackend.Units.Characters.insert_character(%{game_id: Champions.Utils.game_id(), active: true, name: character_name, faction: faction_name})
+```
+
 #### Create Unit
 
 ```
@@ -146,9 +152,9 @@ item = Champions.Items.get_item(item_id)
 ```
 
 #### Create Item Template
-champions of mirra game id = 2
+
 ```
-{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: game_id, name: name, type: item_type})
+{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: Champions.Utils.game_id(), name: name, type: item_type})
 ```
 
 #### Create Item
