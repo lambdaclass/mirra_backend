@@ -287,37 +287,6 @@ defmodule Champions.Units do
     {same_character_amount, same_character_rank} = same_character_requirements(unit)
     {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
 
-    validate_units(
-      unit,
-      unit_list,
-      same_character_amount,
-      same_character_rank,
-      same_faction_amount,
-      same_faction_rank
-    )
-  end
-
-  defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
-  defp same_character_requirements(%Unit{rank: @star5}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination1}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination2}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination3}), do: {3, @star5}
-
-  defp same_faction_requirements(%Unit{rank: @star4}), do: {4, @star4}
-  defp same_faction_requirements(%Unit{rank: @star5}), do: {4, @star5}
-  defp same_faction_requirements(%Unit{rank: @illumination1}), do: {1, @illumination1}
-  defp same_faction_requirements(%Unit{rank: @illumination2}), do: {2, @illumination2}
-  defp same_faction_requirements(%Unit{rank: @illumination3}), do: {2, @illumination2}
-
-  defp validate_units(
-         unit,
-         unit_list,
-         same_character_amount,
-         same_character_rank,
-         same_faction_amount,
-         same_faction_rank
-       ) do
-    # Remove necessary units with the same character
     with {:ok, removed_same_character} <-
            remove_same_character(unit, unit_list, same_character_amount, same_character_rank),
          {:ok, removed_same_faction} <-
@@ -333,6 +302,18 @@ defmodule Champions.Units do
       :error -> false
     end
   end
+
+  defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
+  defp same_character_requirements(%Unit{rank: @star5}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination1}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination2}), do: {1, @star5}
+  defp same_character_requirements(%Unit{rank: @illumination3}), do: {3, @star5}
+
+  defp same_faction_requirements(%Unit{rank: @star4}), do: {4, @star4}
+  defp same_faction_requirements(%Unit{rank: @star5}), do: {4, @star5}
+  defp same_faction_requirements(%Unit{rank: @illumination1}), do: {1, @illumination1}
+  defp same_faction_requirements(%Unit{rank: @illumination2}), do: {2, @illumination2}
+  defp same_faction_requirements(%Unit{rank: @illumination3}), do: {2, @illumination2}
 
   defp remove_same_character(unit, unit_list, amount, rank) do
     Enum.reduce_while(1..amount, unit_list, fn _, list ->
