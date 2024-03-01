@@ -1,6 +1,10 @@
 defmodule GameBackend.Campaigns.CampaignProgress do
   @moduledoc """
   Table to track the user's progress in a campaign.
+
+  User can only have one CampaignProgress for every SuperCampaign, meaning they cannot be at
+  Level 5 for Campaign 1 of a SuperCampaign and Level 2 for Campaign 2 of the same SuperCampaign.
+  The progression would be: [1-5 -> 1-6 (last of campaign) -> 2-1]
   """
   # TODO: [CHoM-193] Refactor to SuperCampaignProgress
   alias GameBackend.Campaigns.Level
