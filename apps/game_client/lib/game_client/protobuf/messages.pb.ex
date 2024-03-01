@@ -278,7 +278,7 @@ defmodule GameClient.Protobuf.GameState do
   )
 
   field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
-  field(:countdown, 12, type: :int64)
+  field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
 end
 
 defmodule GameClient.Protobuf.Entity do

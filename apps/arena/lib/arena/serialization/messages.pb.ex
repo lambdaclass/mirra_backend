@@ -278,7 +278,7 @@ defmodule Arena.Serialization.GameState do
   )
 
   field(:status, 11, type: Arena.Serialization.GameStatus, enum: true)
-  field(:countdown, 12, type: :int64)
+  field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
 end
 
 defmodule Arena.Serialization.Entity do
