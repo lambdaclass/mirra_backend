@@ -1,3 +1,13 @@
+defmodule GameClient.Protobuf.GameStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PREPARING, 0)
+  field(:RUNNING, 1)
+  field(:ENDED, 2)
+end
+
 defmodule GameClient.Protobuf.ProjectileStatus do
   @moduledoc false
 
@@ -164,6 +174,7 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
   field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
+  field(:stamina_cost, 6, type: :uint64, json_name: "staminaCost")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -265,6 +276,9 @@ defmodule GameClient.Protobuf.GameState do
     json_name: "powerUps",
     map: true
   )
+
+  field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
+  field(:countdown, 12, type: :int64)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -413,6 +427,7 @@ defmodule GameClient.Protobuf.Zone do
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
+  field(:zone_shrink_time, 3, type: :int32, json_name: "zoneShrinkTime")
 end
 
 defmodule GameClient.Protobuf.KillEntry do

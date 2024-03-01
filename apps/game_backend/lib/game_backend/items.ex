@@ -142,7 +142,7 @@ defmodule GameBackend.Items do
   end
 
   @doc """
-  Increment an item's level by 1.
+  Increment an item's level.
 
   ## Examples
 

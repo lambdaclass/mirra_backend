@@ -59,6 +59,13 @@ defmodule GameBackend.Users do
   """
   def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
 
+  @doc """
+  Checks whether a user exists with the given id.
+
+  Useful if you want to validate an id while not needing to operate with the user itself.
+  """
+  def exists?(user_id), do: Repo.exists?(from(u in User, where: u.id == ^user_id))
+
   def update_experience(user, params),
     do:
       user

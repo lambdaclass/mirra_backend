@@ -1,5 +1,6 @@
 alias GameBackend.Campaigns.Level
 alias GameBackend.Units.Characters
+alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
@@ -14,9 +15,6 @@ Champions.Config.import_character_config()
 muflus = Characters.get_character_by_name("Muflus")
 
 {:ok, _muflus} = Characters.update_character(muflus, %{
-  game_id: champions_of_mirra_id,
-  active: true,
-  rarity: "Epic",
   basic_skill: %{
     effects: [%{
       type: "instant",
@@ -71,9 +69,34 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
+{:ok, _gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
+{:ok, _gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
+
+
+{:ok, _} =
+  Gacha.insert_box(%{
+    name: "Basic Summon",
+    rank_weights: [
+      %{rank: Champions.Units.get_rank(:star1), weight: 90},
+      %{rank: Champions.Units.get_rank(:star2), weight: 70},
+      %{rank: Champions.Units.get_rank(:star3), weight: 30},
+      %{rank: Champions.Units.get_rank(:star4), weight: 7},
+      %{rank: Champions.Units.get_rank(:star5), weight: 3}
+    ],
+    cost: [%{currency_id: scrolls.id, amount: 1}]
+  })
+
+{:ok, _} =
+  GameBackend.Gacha.insert_box(%{
+    name: "Mystic Summon",
+    rank_weights: [
+      %{rank: Champions.Units.get_rank(:star3), weight: 75},
+      %{rank: Champions.Units.get_rank(:star4), weight: 20},
+      %{rank: Champions.Units.get_rank(:star5), weight: 5}
+    ],
+    cost: [%{currency_id: scrolls.id, amount: 10}]
+  })
 
 ######################
 # Campaigns creation #
@@ -121,7 +144,7 @@ units =
     agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
 
     units =
-      Enum.map(0..4, fn slot ->
+      Enum.map(1..6, fn slot ->
         Units.unit_params_for_level(
           possible_characters,
           div(agg_difficulty, units_per_level),
@@ -139,12 +162,12 @@ units =
 
         missing_levels ->
           Enum.reduce(0..missing_levels, units, fn index, units ->
-            List.update_at(units, index, fn unit -> %{unit | unit_level: unit.unit_level + 1} end)
+            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
           end)
       end
 
     Enum.map(level_units, fn unit_attrs ->
-      Map.put(unit_attrs, :level_id, level.id)
+      Map.put(unit_attrs, :campaign_level_id, level.id)
     end)
   end)
 

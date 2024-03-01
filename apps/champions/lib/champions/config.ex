@@ -3,6 +3,7 @@ defmodule Champions.Config do
   Configuration utilities.
   """
 
+  alias Champions.Utils
   alias GameBackend.Units.Characters
 
   @doc """
@@ -25,7 +26,7 @@ defmodule Champions.Config do
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
         base_armor: Integer.parse(defense) |> elem(0),
-        game_id: 2,
+        game_id: Utils.game_id(),
         active: true
       }
     end)

@@ -5,7 +5,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
   alias Gateway.Serialization.WebSocketResponse
-  alias Champions.{Battle, Campaigns, Items, Users, Units}
+  alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
   alias Gateway.Serialization.{
     WebSocketRequest,
@@ -18,10 +18,16 @@ defmodule Gateway.ChampionsSocketHandler do
     FightLevel,
     SelectUnit,
     UnselectUnit,
+    LevelUpUnit,
+    TierUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem
+    LevelUpItem,
+    GetBoxes,
+    GetBox,
+    Summon
   }
 
   @behaviour :cowboy_websocket
@@ -104,6 +110,31 @@ defmodule Gateway.ChampionsSocketHandler do
   defp handle(%UnselectUnit{user_id: user_id, unit_id: unit_id}),
     do: Units.unselect_unit(user_id, unit_id) |> prepare_response(:unit)
 
+  defp handle(%LevelUpUnit{user_id: user_id, unit_id: unit_id}) do
+    case Units.level_up(user_id, unit_id) do
+      {:ok, result} -> prepare_response(result, :unit_and_currencies)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%TierUpUnit{user_id: user_id, unit_id: unit_id}) do
+    case Units.tier_up(user_id, unit_id) do
+      {:ok, result} -> prepare_response(result, :unit_and_currencies)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%FuseUnit{
+         user_id: user_id,
+         unit_id: unit_id,
+         consumed_units_ids: consumed_units_ids
+       }) do
+    case Units.fuse(user_id, unit_id, consumed_units_ids) do
+      {:ok, result} -> prepare_response(result, :unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
   defp handle(%EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}),
     do: Items.equip_item(user_id, item_id, unit_id) |> prepare_response(:item)
 
@@ -118,6 +149,24 @@ defmodule Gateway.ChampionsSocketHandler do
       {:ok, %{item: item}} -> prepare_response(item, :item)
       {:error, reason} -> prepare_response({:error, reason}, nil)
       {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
+    end
+  end
+
+  defp handle(%GetBoxes{}) do
+    %{boxes: Gacha.get_boxes()} |> prepare_response(:boxes)
+  end
+
+  defp handle(%GetBox{box_id: box_id}) do
+    case Gacha.get_box(box_id) do
+      {:ok, box} -> prepare_response(box, :box)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%Summon{user_id: user_id, box_id: box_id}) do
+    case Gacha.summon(user_id, box_id) do
+      {:ok, user_and_unit} -> prepare_response(user_and_unit, :user_and_unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
     end
   end
 

@@ -16,7 +16,8 @@ defmodule GameBackend.Units.Characters.Character do
     field(:lore, :string)
     field(:faction, :string)
     field(:class, :string)
-    field(:quality, :string)
+    field(:quality, :integer)
+    field(:ranks_dropped_in, {:array, :integer})
 
     field(:base_health, :integer)
     field(:base_attack, :integer)
@@ -40,6 +41,7 @@ defmodule GameBackend.Units.Characters.Character do
       :title,
       :lore,
       :class,
+      :ranks_dropped_in,
       :basic_skill_id,
       :ultimate_skill_id,
       :base_health,
