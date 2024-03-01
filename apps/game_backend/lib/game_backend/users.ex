@@ -98,14 +98,6 @@ defmodule GameBackend.Users do
     end
   end
 
-  def reset_afk_rewards_claim(user_id) do
-    {:ok, user} = get_user(user_id)
-
-    user
-    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
-    |> Repo.update()
-  end
-
   defp preload(user),
     do:
       Repo.preload(user,
