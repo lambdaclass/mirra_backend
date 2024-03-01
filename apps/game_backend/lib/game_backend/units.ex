@@ -4,8 +4,10 @@ defmodule GameBackend.Units do
   - Create
   - Select to a slot/Unselect
   - Level up
+  - Tier up
 
-  Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character. Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
+  Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character.
+  Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
   """
 
   import Ecto.Query
@@ -158,7 +160,7 @@ defmodule GameBackend.Units do
   def unit_params_for_level(possible_characters, level, slot) do
     character = Enum.random(possible_characters)
 
-    %{level: level, tier: 1, selected: true, character_id: character.id, slot: slot}
+    %{level: level, tier: 1, rank: 1, selected: true, character_id: character.id, slot: slot}
   end
 
   @doc """
@@ -178,6 +180,20 @@ defmodule GameBackend.Units do
   def add_level(unit, level \\ 1) do
     unit
     |> Unit.update_changeset(%{level: unit.level + level})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment an unit's tier.
+
+  ## Examples
+
+      iex> add_tier(%Unit{tier: 41}, 1)
+      {:ok, %Unit{tier: 42}}
+  """
+  def add_tier(unit, tier \\ 1) do
+    unit
+    |> Unit.update_changeset(%{tier: unit.tier + tier})
     |> Repo.update()
   end
 end

@@ -146,7 +146,7 @@ units =
     agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
 
     units =
-      Enum.map(0..4, fn slot ->
+      Enum.map(1..6, fn slot ->
         Units.unit_params_for_level(
           possible_characters,
           div(agg_difficulty, units_per_level),
