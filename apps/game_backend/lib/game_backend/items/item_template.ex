@@ -6,7 +6,6 @@ defmodule GameBackend.Items.ItemTemplate do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:id, :name, :type]}
   schema "item_templates" do
     field(:game_id, :integer)
     field(:name, :string)
