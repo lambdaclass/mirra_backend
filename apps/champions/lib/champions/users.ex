@@ -90,7 +90,7 @@ defmodule Champions.Users do
       if campaign.campaign_number == 1,
         do:
           GameBackend.Campaigns.insert_campaign_progress(%{
-            game_id: @game_id,
+            game_id: Utils.game_id(),
             user_id: user.id,
             campaign_id: campaign.id,
             level_id: campaign.levels |> hd() |> Map.get(:id)
