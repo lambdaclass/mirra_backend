@@ -7,7 +7,12 @@
 <% end %>
 
 <form method="post" action={~p"/configuration"}>
-    <textarea id="config" name="config" rows={@rows} cols="120">
+    <label for="base_config">Base Configuration</label>
+    <textarea id="base_config" name="base_config" rows={@rows} cols="80">
+        <%= @base_config%>
+    </textarea>
+
+    <textarea id="config" name="config" rows={@rows} cols="80">
         <%= @config_json%>
     </textarea>
 

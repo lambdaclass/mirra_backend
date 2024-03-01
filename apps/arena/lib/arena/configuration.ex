@@ -3,10 +3,14 @@ defmodule Arena.Configuration do
   Module in charge of configuration related things
   """
 
+  @config_dir Path.join([Path.expand("~"), ".mirra", "arena"])
+  @config_path Path.join([@config_dir, "instance_config.json"])
+  @base_config_path Application.app_dir(:arena, "priv/config.json")
+
   def update_config(config_json) do
     case validate_config(config_json) do
       :ok ->
-        File.write!(Application.app_dir(:arena, "priv/config.json"), config_json)
+        File.write!(@config_path, config_json)
       {:error, reason} ->
         {:error, reason}
     end
@@ -33,16 +37,22 @@ defmodule Arena.Configuration do
     Enum.find(config.characters, fn character -> character.name == name end)
   end
 
-  def get_json_game_config() do
-    {:ok, config_json} =
-      Application.app_dir(:arena, "priv/config.json")
-      |> File.read()
-    config_json
+  def read_base_json_game_config() do
+    File.read!(@base_config_path)
+  end
+
+  def read_json_game_config() do
+    unless File.exists?(@config_path) do
+      File.mkdir_p!(@config_dir)
+      File.copy(@base_config_path, @config_path)
+    end
+
+    File.read!(@config_path)
   end
 
   def get_game_config() do
     config =
-      get_json_game_config()
+      read_json_game_config()
       |> Jason.decode!([{:keys, :atoms}])
 
     skills = parse_skills_config(config.skills)
