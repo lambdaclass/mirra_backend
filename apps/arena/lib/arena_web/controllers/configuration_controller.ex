@@ -20,11 +20,22 @@ defmodule ArenaWeb.ConfigurationController do
       :ok ->
         conn
         |> put_layout(false)
-        |> render("edit.html", config_json: config_json, base_config: base_config, rows: rows, updated: true)
+        |> render("edit.html",
+          config_json: config_json,
+          base_config: base_config,
+          rows: rows,
+          updated: true
+        )
+
       {:error, reason} ->
         conn
         |> put_layout(false)
-        |> render("edit.html", config_json: config_json, base_config: base_config, rows: rows, error_reason: reason)
+        |> render("edit.html",
+          config_json: config_json,
+          base_config: base_config,
+          rows: rows,
+          error_reason: reason
+        )
     end
   end
 end

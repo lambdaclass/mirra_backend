@@ -11,6 +11,7 @@ defmodule Arena.Configuration do
     case validate_config(config_json) do
       :ok ->
         File.write!(@config_path, config_json)
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -29,8 +30,6 @@ defmodule Arena.Configuration do
         IO.inspect(reason)
         {:error, Exception.message(reason)}
     end
-
-
   end
 
   def get_character_config(name, config) do
