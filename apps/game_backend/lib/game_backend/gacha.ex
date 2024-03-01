@@ -31,7 +31,7 @@ defmodule GameBackend.Gacha do
   Gets a Box by name.
   """
   def get_box_by_name(name) do
-    case Repo.one(from(b in Box, where: b.name == ^name)) do
+    case Repo.one(from(b in Box, where: b.name == ^name, preload: [cost: :currency])) do
       nil -> {:error, :not_found}
       box -> {:ok, box}
     end
@@ -40,7 +40,7 @@ defmodule GameBackend.Gacha do
   @doc """
   Gets all Boxes.
   """
-  def get_boxes(), do: Repo.all(Box)
+  def get_boxes(), do: Repo.all(from b in Box, preload: [cost: :currency])
 
   @doc """
   Get a character from the given box. Does not add as unit (that logic is left to game apps)
