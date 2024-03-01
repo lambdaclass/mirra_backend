@@ -6,7 +6,6 @@ defmodule GameBackend.Users.Currencies.Currency do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:name]}
   schema "currencies" do
     field(:game_id, :integer)
     field(:name, :string)
