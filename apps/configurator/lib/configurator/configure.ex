@@ -38,6 +38,25 @@ defmodule Configurator.Configure do
   def get_configuration!(id), do: Repo.get!(Configuration, id)
 
   @doc """
+  Gets the default configuration.
+
+  Raises `Ecto.NoResultsError` if no default Configuration exists.
+
+  ## Examples
+
+      iex> get_default_configuration!()
+      %Configuration{}
+
+      iex> get_default_configuration!()
+      ** (Ecto.NoResultsError)
+  """
+
+  def get_default_configuration!() do
+    from(c in Configuration, where: c.is_default == true)
+    |> Repo.one()
+  end
+
+  @doc """
   Creates a configuration.
 
   ## Examples

@@ -9,8 +9,14 @@ defmodule ConfiguratorWeb.ConfigurationController do
     render(conn, :index, configurations: configurations)
   end
 
-  def new(conn, _params) do
-    changeset = Configure.change_configuration(%Configuration{})
+  def new(conn, params) do
+    config =
+      case params["id"] do
+        nil -> Configure.get_default_configuration!()
+        id -> Configure.get_configuration!(id)
+      end
+
+    changeset = Configure.change_configuration(%Configuration{data: config.data})
     render(conn, :new, changeset: changeset)
   end
 

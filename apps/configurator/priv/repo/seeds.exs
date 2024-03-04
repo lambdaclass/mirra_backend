@@ -1,11 +1,6 @@
-# Script for populating the database. You can run it as:
-#
-#     mix run priv/repo/seeds.exs
-#
-# Inside the script, you can read and write to any of your
-# repositories directly:
-#
-#     Configurator.Repo.insert!(%Configurator.SomeSchema{})
-#
-# We recommend using the bang functions (`insert!`, `update!`
-# and so on) as they will fail if something goes wrong.
+
+## TODO: Change this once PR#336 is merged
+{:ok, data_json} = File.read("../arena/priv/config.json")
+
+%Configurator.Configure.Configuration{data: data_json, is_default: true}
+|> Configurator.Repo.insert!()

@@ -19,6 +19,7 @@ defmodule ConfiguratorWeb.Router do
 
     get "/", PageController, :home
     resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
+    get "/configurations/new/:id", ConfigurationController, :new
   end
 
   # Other scopes may use custom stacks.
