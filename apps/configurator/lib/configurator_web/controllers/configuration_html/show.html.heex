@@ -1,0 +1,16 @@
+<.header>
+  Configuration <%= @configuration.id %>
+  <:subtitle>This is a configuration record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/configurations/#{@configuration}/edit"}>
+      <.button>Edit configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Data"><%= @configuration.data %></:item>
+  <:item title="Is default"><%= @configuration.is_default %></:item>
+</.list>
+
+<.back navigate={~p"/configurations"}>Back to configurations</.back>

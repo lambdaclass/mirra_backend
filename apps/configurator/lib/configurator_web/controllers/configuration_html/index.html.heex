@@ -1,0 +1,24 @@
+<.header>
+  Listing Configurations
+  <:actions>
+    <.link href={~p"/configurations/new"}>
+      <.button>New Configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="configurations" rows={@configurations} row_click={&JS.navigate(~p"/configurations/#{&1}")}>
+  <:col :let={configuration} label="Data"><%= configuration.data %></:col>
+  <:col :let={configuration} label="Is default"><%= configuration.is_default %></:col>
+  <:action :let={configuration}>
+    <div class="sr-only">
+      <.link navigate={~p"/configurations/#{configuration}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/configurations/#{configuration}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={configuration}>
+    <.link href={~p"/configurations/#{configuration}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
