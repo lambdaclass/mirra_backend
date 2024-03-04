@@ -29,6 +29,16 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
+  def init(%{clients: clients}) do
+    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
+    game_config = Configuration.get_game_config()
+    game_state = new_game(game_id, clients, game_config)
+    send(self(), :update_game)
+    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+
+    {:ok, %{game_config: game_config, game_state: game_state}}
+  end
+
   ##########################
   # API Callbacks
   ##########################
@@ -72,16 +82,6 @@ defmodule Arena.GameUpdater do
   ##########################
   # END API Callbacks
   ##########################
-
-  def init(%{clients: clients}) do
-    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients, game_config)
-    send(self(), :update_game)
-    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
-
-    {:ok, %{game_config: game_config, game_state: game_state}}
-  end
 
   ##########################
   # Game Callbacks
