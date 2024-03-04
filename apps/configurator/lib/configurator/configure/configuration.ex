@@ -3,7 +3,7 @@ defmodule Configurator.Configure.Configuration do
   import Ecto.Changeset
 
   schema "configurations" do
-    field :data, :map
+    field :data, Configurator.Ecto.JsonBlob
     field :is_default, :boolean, default: false
 
     timestamps(type: :utc_datetime)
@@ -13,6 +13,6 @@ defmodule Configurator.Configure.Configuration do
   def changeset(configuration, attrs) do
     configuration
     |> cast(attrs, [:data, :is_default])
-    |> validate_required([:is_default])
+    |> validate_required([:data, :is_default])
   end
 end
