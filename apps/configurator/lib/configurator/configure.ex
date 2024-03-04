@@ -56,40 +56,6 @@ defmodule Configurator.Configure do
   end
 
   @doc """
-  Updates a configuration.
-
-  ## Examples
-
-      iex> update_configuration(configuration, %{field: new_value})
-      {:ok, %Configuration{}}
-
-      iex> update_configuration(configuration, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_configuration(%Configuration{} = configuration, attrs) do
-    configuration
-    |> Configuration.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a configuration.
-
-  ## Examples
-
-      iex> delete_configuration(configuration)
-      {:ok, %Configuration{}}
-
-      iex> delete_configuration(configuration)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_configuration(%Configuration{} = configuration) do
-    Repo.delete(configuration)
-  end
-
-  @doc """
   Returns an `%Ecto.Changeset{}` for tracking configuration changes.
 
   ## Examples

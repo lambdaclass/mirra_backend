@@ -18,7 +18,7 @@ defmodule ConfiguratorWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-    resources "/configurations", ConfigurationController
+    resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
   end
 
   # Other scopes may use custom stacks.
