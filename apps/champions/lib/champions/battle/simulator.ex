@@ -74,9 +74,20 @@ defmodule Champions.Battle.Simulator do
         initial_step_state
         |> Enum.map(fn {id, _unit} -> id end)
         |> Enum.reduce(initial_step_state, fn unit_id, current_state ->
+          IO.inspect("Process step #{step} for unit #{unit_id}")
           process_step(initial_step_state[unit_id], initial_step_state, current_state)
         end)
 
+      IO.inspect(
+        new_state
+        |> Enum.map(fn {_id, unit} ->
+          Map.take(unit, [:id, :health, :energy, :team])
+          |> Map.put(:skill_cooldown, unit.basic_skill.remaining_cooldown)
+        end)
+        |> Enum.sort(fn a, b -> if a.team == b.team, do: a.id < b.id, else: a.team < b.team end)
+        |> Enum.group_by(fn a -> a.team end),
+        label: :new_state
+      )
       remove_dead_units(new_state)
       |> check_winner(step)
     end)
@@ -89,11 +100,13 @@ defmodule Champions.Battle.Simulator do
           current_state
 
         can_cast_ultimate_skill(unit) ->
+          IO.inspect("#{unit.id} casting ULTIMATE skill")
           unit
           |> cast_skill(unit.ultimate_skill, initial_step_state, current_state)
           |> put_in([unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
+          IO.inspect("#{unit.id} casting basic skill")
           new_state = cast_skill(unit, unit.basic_skill, initial_step_state, current_state)
 
           new_state
