@@ -87,6 +87,7 @@ defmodule Champions.Users do
     campaigns = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
+      # Only add campaign progress to the first ones of each SuperCampaign
       if campaign.campaign_number == 1,
         do:
           GameBackend.Campaigns.insert_campaign_progress(%{
