@@ -294,7 +294,7 @@ afk_reward_increments =
       %{
         level_id: level.id,
         amount: 1 * level_index,
-        currency_id: scrolls_currency.id,
+        currency_id: scrolls.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
