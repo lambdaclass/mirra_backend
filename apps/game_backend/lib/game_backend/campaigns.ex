@@ -104,21 +104,20 @@ defmodule GameBackend.Campaigns do
     next_level =
       Repo.get_by(Level, campaign_id: campaign.id, level_number: level.level_number + 1)
 
-    if next_level do
-      {campaign.id, next_level.id}
-    else
-      next_campaign =
-        Repo.get_by(Campaign,
-          super_campaign_id: campaign.super_campaign_id,
-          campaign_number: campaign.campaign_number + 1
-        )
+    next_campaign =
+      Repo.get_by(Campaign,
+        super_campaign_id: campaign.super_campaign_id,
+        campaign_number: campaign.campaign_number + 1
+      )
 
-      if next_campaign do
+    cond do
+      not is_nil(next_level) ->
+        {campaign.id, next_level.id}
+      not is_nil(next_campaign) ->
         first_level = Repo.get_by(Level, campaign_id: next_campaign.id, level_number: 1)
         {next_campaign.id, first_level.id}
-      else
+      true ->
         {campaign.id, level.id}
       end
-    end
   end
 end
