@@ -113,11 +113,13 @@ defmodule GameBackend.Campaigns do
     cond do
       not is_nil(next_level) ->
         {campaign.id, next_level.id}
+
       not is_nil(next_campaign) ->
         first_level = Repo.get_by(Level, campaign_id: next_campaign.id, level_number: 1)
         {next_campaign.id, first_level.id}
+
       true ->
         {campaign.id, level.id}
-      end
+    end
   end
 end
