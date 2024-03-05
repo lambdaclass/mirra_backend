@@ -7,6 +7,7 @@ defmodule Champions.Battle do
 
   alias GameBackend.Campaigns
   alias GameBackend.Campaigns.CampaignProgress
+  alias GameBackend.Units
   alias GameBackend.Users
 
   @doc """
@@ -19,7 +20,8 @@ defmodule Champions.Battle do
          {:campaign_progress, {:ok, %CampaignProgress{level_id: current_level_id}}} <-
            {:campaign_progress, Campaigns.get_campaign_progress(user_id, level.campaign_id)},
          {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
-      if battle(user.units, level.units) == :team_1 do
+      units = Units.get_selected_units(user_id)
+      if battle(units, level.units) == :team_1 do
         case Users.advance_level(user_id, level.campaign_id) do
           # TODO: add rewards to response [CHoM-191]
           {:ok, _changes} -> :win
