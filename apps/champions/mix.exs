@@ -32,7 +32,9 @@ defmodule Champions.MixProject do
       {:game_backend, in_umbrella: true},
       {:math, "~> 0.7.0"},
       {:ecto, "~> 3.11"},
-      {:ecto_sql, "~> 3.6"}
+      {:ecto_sql, "~> 3.6"},
+      {:csv, "~> 3.2"},
+      {:jason, "~> 1.4"}
     ]
   end
 end
