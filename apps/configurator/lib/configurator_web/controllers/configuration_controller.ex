@@ -36,4 +36,18 @@ defmodule ConfiguratorWeb.ConfigurationController do
     configuration = Configure.get_configuration!(id)
     render(conn, :show, configuration: configuration)
   end
+
+  def set_default(conn, %{"id" => id}) do
+    case Configure.set_default_configuration(id) do
+      {:ok, _} ->
+        conn
+        |> put_flash(:info, "Default configuration set successfully.")
+        |> redirect(to: ~p"/configurations/#{id}")
+
+      {:error, _} ->
+        conn
+        |> put_flash(:error, "Failed to set default configuration.")
+        |> redirect(to: ~p"/configurations/#{id}")
+    end
+  end
 end

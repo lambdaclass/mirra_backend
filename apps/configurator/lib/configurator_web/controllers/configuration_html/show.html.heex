@@ -2,8 +2,8 @@
   Configuration <%= @configuration.id %>
   <:subtitle>This is a configuration record from your database.</:subtitle>
   <:actions>
-    <.link href={~p"/configurations/#{@configuration}/edit"}>
-      <.button>Edit configuration</.button>
+    <.link href={~p"/configurations/new/#{@configuration}"}>
+      <.button>Modify</.button>
     </.link>
   </:actions>
 </.header>

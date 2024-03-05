@@ -5,8 +5,8 @@ defmodule Configurator.Configure do
 
   import Ecto.Query, warn: false
   alias Configurator.Repo
-
   alias Configurator.Configure.Configuration
+  alias Ecto.Multi
 
   @doc """
   Returns the list of configurations.
@@ -85,5 +85,18 @@ defmodule Configurator.Configure do
   """
   def change_configuration(%Configuration{} = configuration, attrs \\ %{}) do
     Configuration.changeset(configuration, attrs)
+  end
+
+  @doc """
+  Changes the current default configuration to the one matching the given id.
+  """
+  def set_default_configuration(id) do
+    default_config = get_default_configuration!()
+    new_default_config = get_configuration!(id)
+
+    Multi.new()
+    |> Multi.update(:unset_default_config, Configuration.changeset(default_config, %{is_default: false}))
+    |> Multi.update(:set_default_config, Configuration.changeset(new_default_config, %{is_default: true}))
+    |> Repo.transaction()
   end
 end
