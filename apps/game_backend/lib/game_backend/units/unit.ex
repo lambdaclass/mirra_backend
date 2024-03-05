@@ -1,6 +1,8 @@
 defmodule GameBackend.Units.Unit do
   @moduledoc """
   Units are instances of characters tied to a user.
+
+  Slots must not be assigned the value `0`, since this is the way Protobuf sends nil values.
   """
 
   use GameBackend.Schema
@@ -10,15 +12,13 @@ defmodule GameBackend.Units.Unit do
   alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.User
 
-  @derive {Jason.Encoder,
-           only: [:id, :unit_level, :tier, :selected, :slot, :level_id, :user_id, :character]}
   schema "units" do
-    field(:unit_level, :integer)
+    field(:level, :integer)
     field(:tier, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
 
-    belongs_to(:level, Level)
+    belongs_to(:campaign_level, Level)
     belongs_to(:user, User)
     belongs_to(:character, Character)
 
@@ -30,12 +30,13 @@ defmodule GameBackend.Units.Unit do
   @doc false
   def changeset(unit, attrs) do
     unit
-    |> cast(attrs, [:unit_level, :tier, :selected, :slot, :character_id, :user_id, :level_id])
-    |> validate_required([:unit_level, :tier, :selected, :character_id])
+    |> cast(attrs, [:level, :tier, :selected, :slot, :character_id, :user_id, :campaign_level_id])
+    |> validate_required([:level, :tier, :selected, :character_id])
   end
 
   @doc """
-  Changeset for when selecting or unselecting a unit.
+  Changeset for when updating a units.
   """
-  def selected_changeset(unit, attrs), do: cast(unit, attrs, [:selected, :slot])
+  def update_changeset(unit, attrs),
+    do: cast(unit, attrs, [:selected, :slot, :level, :tier])
 end
