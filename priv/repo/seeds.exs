@@ -5,6 +5,7 @@ alias GameBackend.Campaigns.Campaign
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
+alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
@@ -15,6 +16,8 @@ units_per_level = 5
 
 Champions.Config.import_skill_config()
 Champions.Config.import_character_config()
+
+muflus = Characters.get_character_by_name("Muflus")
 
 {:ok, epic_sword} =
   Items.insert_item_template(%{

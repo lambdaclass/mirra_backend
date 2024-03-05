@@ -88,6 +88,7 @@ defmodule Champions.Battle.Simulator do
         |> Enum.group_by(fn a -> a.team end),
         label: :new_state
       )
+
       remove_dead_units(new_state)
       |> check_winner(step)
     end)
@@ -101,6 +102,7 @@ defmodule Champions.Battle.Simulator do
 
         can_cast_ultimate_skill(unit) ->
           IO.inspect("#{unit.id} casting ULTIMATE skill")
+
           unit
           |> cast_skill(unit.ultimate_skill, initial_step_state, current_state)
           |> put_in([unit.id, :energy], 0)

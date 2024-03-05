@@ -47,7 +47,10 @@ defmodule GameBackend.Units.Characters do
 
   def get_characters(), do: Repo.all(Character) |> Repo.preload([:basic_skill, :ultimate_skill])
 
-  def get_character_by_name(name), do: Repo.one(from(c in Character, where: c.name == ^name)) |> Repo.preload([:basic_skill, :ultimate_skill])
+  def get_character_by_name(name),
+    do:
+      Repo.one(from(c in Character, where: c.name == ^name))
+      |> Repo.preload([:basic_skill, :ultimate_skill])
 
   def delete_all_characters(), do: Repo.delete_all(Character)
 
