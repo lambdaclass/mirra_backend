@@ -27,7 +27,9 @@ defmodule Gateway.ChampionsSocketHandler do
     LevelUpItem,
     GetBoxes,
     GetBox,
-    Summon
+    Summon,
+    GetAfkRewards,
+    ClaimAfkRewards
   }
 
   @behaviour :cowboy_websocket
@@ -82,15 +84,21 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%GetCampaigns{user_id: _user_id}) do
     case Campaigns.get_campaigns() do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      campaigns -> prepare_response(%{campaigns: Enum.map(campaigns, &%{levels: &1})}, :campaigns)
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      campaigns ->
+        prepare_response(%{campaigns: campaigns}, :campaigns)
     end
   end
 
-  defp handle(%GetCampaign{user_id: _user_id, campaign_number: campaign_number}) do
-    case Campaigns.get_campaign(campaign_number) do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      campaign -> prepare_response(%{levels: campaign}, :campaign)
+  defp handle(%GetCampaign{user_id: _user_id, campaign_id: campaign_id}) do
+    case Campaigns.get_campaign(campaign_id) do
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      {:ok, campaign} ->
+        prepare_response(%{levels: campaign}, :campaign)
     end
   end
 
@@ -168,6 +176,13 @@ defmodule Gateway.ChampionsSocketHandler do
       {:ok, user_and_unit} -> prepare_response(user_and_unit, :user_and_unit)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
+  end
+
+  defp handle(%GetAfkRewards{user_id: user_id}),
+    do: prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id)}, :afk_rewards)
+
+  defp handle(%ClaimAfkRewards{user_id: user_id}) do
+    Users.claim_afk_rewards(user_id) |> prepare_response(:user)
   end
 
   defp handle(unknown_request),

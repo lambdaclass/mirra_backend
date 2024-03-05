@@ -12,8 +12,11 @@ defmodule Champions.Campaigns do
     Campaigns.get_campaigns()
   end
 
-  def get_campaign(campaign_number) do
-    Campaigns.get_campaign(campaign_number)
+  @doc """
+  Get a campaign by id.
+  """
+  def get_campaign(campaign_id) do
+    Campaigns.get_campaign(campaign_id)
   end
 
   @doc """
@@ -27,9 +30,6 @@ defmodule Champions.Campaigns do
   Get a level by id.
   """
   def get_level(level_id) do
-    case Campaigns.get_level(level_id) do
-      nil -> {:error, :not_found}
-      level -> level
-    end
+    Campaigns.get_level(level_id)
   end
 end

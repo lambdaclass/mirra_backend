@@ -17,7 +17,8 @@ defmodule GameBackend.Units.Characters do
     |> Repo.insert()
   end
 
-  def get_character(id), do: Repo.get(Character, id) |> Repo.preload([:basic_skill, :ultimate_skill])
+  def get_character(id),
+    do: Repo.get(Character, id) |> Repo.preload([:basic_skill, :ultimate_skill])
 
   def get_characters(), do: Repo.all(Character) |> Repo.preload([:basic_skill, :ultimate_skill])
 

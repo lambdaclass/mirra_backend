@@ -1,11 +1,15 @@
+alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Level
 alias GameBackend.Gacha
+alias GameBackend.Campaigns.Campaign
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Campaigns.Rewards.CurrencyReward
+import Ecto.Query
 
 champions_of_mirra_id = 2
 units_per_level = 5
@@ -54,7 +58,7 @@ units_per_level = 5
     ranks_dropped_in: [Champions.Units.get_rank(:star4), Champions.Units.get_rank(:star5)]
   })
 
-Characters.insert_character(%{
+{:ok, muflus} = Characters.insert_character(%{
   game_id: champions_of_mirra_id,
   active: true,
   name: "Muflus",
@@ -117,7 +121,7 @@ Characters.insert_character(%{
   quality: Champions.Units.get_quality(:epic)
 })
 
-Items.insert_item_template(%{
+{:ok, epic_sword} = Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
   type: "weapon"
@@ -141,7 +145,7 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-{:ok, _gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
+{:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 {:ok, _gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 {:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
 
@@ -187,14 +191,28 @@ rules = [
   %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
+super_campaign = %{
+  game_id: champions_of_mirra_id,
+  name: "Main Campaign",
+}
+
+{_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
+
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
   Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
+    {_, campaign} = Campaigns.insert_campaign(%{
+      game_id: champions_of_mirra_id,
+      super_campaign_id: super_campaign.id,
+      campaign_number: campaign_index
+    }, returning: true)
+
     Enum.map(1..campaign_rules.length, fn level_index ->
       %{
         game_id: champions_of_mirra_id,
-        campaign: campaign_index,
+        campaign_id: campaign.id,
         level_number: level_index,
+        experience_reward: 100 * level_index,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
@@ -202,11 +220,12 @@ levels =
   end)
 
 {_, levels_without_units} =
-  Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign])
+  Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign_id])
 
 units =
   Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    campaign_rules = Enum.at(rules, level.campaign - 1)
+    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
+    campaign_rules = Enum.at(rules, campaign_number - 1)
 
     base_level = campaign_rules.base_level
     level_scaler = campaign_rules.scaler
@@ -244,3 +263,42 @@ units =
   end)
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
+
+currency_rewards =
+  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      %{
+        level_id: level.id,
+        amount: 10 * level_index,
+        currency_id: gold.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+
+  end)
+
+Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
+
+level_2 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 2) |> Repo.preload(:item_rewards)
+level_3 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 3) |> Repo.preload(:unit_rewards)
+
+level_2
+|> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
+|> Repo.update!()
+
+level_3
+|> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id}]})
+|> Repo.update!()
+
+afk_reward_increments =
+  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      %{
+        level_id: level.id,
+        amount: 1 * level_index,
+        currency_id: scrolls_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+
+  end)
+
+Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)
