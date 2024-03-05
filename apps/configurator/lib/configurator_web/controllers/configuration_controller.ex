@@ -37,6 +37,11 @@ defmodule ConfiguratorWeb.ConfigurationController do
     render(conn, :show, configuration: configuration)
   end
 
+  def show(conn, _) do
+    configuration = Configure.get_default_configuration!()
+    render(conn, :show, configuration: configuration)
+  end
+
   def set_default(conn, %{"id" => id}) do
     case Configure.set_default_configuration(id) do
       {:ok, _} ->
