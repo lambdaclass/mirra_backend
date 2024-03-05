@@ -187,7 +187,7 @@ defmodule GameBackend.Users do
         %{
           user_id: user_id,
           character_id: unit_reward.character_id,
-          unit_level: 1,
+          level: 1,
           tier: 1,
           selected: false,
           inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
