@@ -97,7 +97,7 @@ defmodule GameBackend.Users do
            {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} =
            {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
-      level = campaign_progress.level
+      level = campaign_progress.level |> GameBackend.Repo.preload([:currency_rewards, :afk_rewards_increments, :item_rewards, :unit_rewards])
 
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
@@ -142,25 +142,6 @@ defmodule GameBackend.Users do
         units: [:character, :items],
         currencies: :currency
       )
-
-  defp retrieve_campaign_progress_data(user_id, campaign_id) do
-    progress =
-      Repo.get_by(CampaignProgress, user_id: user_id, campaign_id: campaign_id)
-      |> Repo.preload(
-        level: [
-          :campaign,
-          :currency_rewards,
-          :unit_rewards,
-          :item_rewards,
-          :afk_rewards_increments
-        ]
-      )
-
-    case progress do
-      nil -> {:error, :not_found}
-      campaign_progress -> {:ok, campaign_progress}
-    end
-  end
 
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
     campaign_progress

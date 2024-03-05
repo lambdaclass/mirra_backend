@@ -5,6 +5,7 @@ defmodule Champions.Battle do
   Fight outcomes are decided randomly, favoring the team with the higher aggregate level.
   """
 
+  alias Champions.Battle.Simulator
   alias GameBackend.Campaigns
   alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Units
@@ -21,7 +22,10 @@ defmodule Champions.Battle do
            {:campaign_progress, Campaigns.get_campaign_progress(user_id, level.campaign_id)},
          {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
       units = Units.get_selected_units(user_id)
-      if battle(units, level.units) == :team_1 do
+      level_units = level.units |> Enum.map(& GameBackend.Repo.preload(&1, [character: [:basic_skill, :ultimate_skill]]))
+      seed = Enum.random(1..500)
+      IO.inspect("Running battle with seed #{seed}")
+      if Simulator.run_battle(units, level_units, seed) == :team_1 do
         case Users.advance_level(user_id, level.campaign_id) do
           # TODO: add rewards to response [CHoM-191]
           {:ok, _changes} -> :win
@@ -36,29 +40,5 @@ defmodule Champions.Battle do
       {:campaign_progress, {:error, :not_found}} -> {:error, :campaign_progress_not_found}
       {:level_valid, false} -> {:error, :level_invalid}
     end
-  end
-
-  @doc """
-  Run a battle between two teams. The outcome is decided randomly, favoring the team
-  with the higher aggregate level of their selected units. Returns `:team_1` or `:team_2`.
-  """
-  def battle(team_1, team_2) do
-    team_1_agg_level =
-      Enum.reduce(team_1, 0, fn unit, acc ->
-        unit.level + item_level_agg(unit.items) + acc
-      end)
-
-    team_2_agg_level =
-      Enum.reduce(team_2, 0, fn unit, acc ->
-        unit.level + item_level_agg(unit.items) + acc
-      end)
-
-    total_level = team_1_agg_level + team_2_agg_level
-
-    if Enum.random(1..total_level) <= team_1_agg_level, do: :team_1, else: :team_2
-  end
-
-  defp item_level_agg(items) do
-    Enum.reduce(items, 0, fn item, acc -> item.level + acc end)
   end
 end

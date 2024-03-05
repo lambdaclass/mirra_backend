@@ -13,7 +13,6 @@ defmodule Champions.Users do
   alias GameBackend.Users
   alias GameBackend.Units
 
-  @game_id 2
   @max_afk_reward_seconds 12 * 60 * 60
 
   @doc """
@@ -109,7 +108,7 @@ defmodule Champions.Users do
   end
 
   defp add_afk_reward_rates(user) do
-    ["Gold", "Gems", "Summon Scrolls"]
+    ["Gold", "Gems", "Scrolls"]
     |> Enum.each(fn currency_name ->
       Rewards.insert_afk_reward_rate(%{
         user_id: user.id,

@@ -114,7 +114,7 @@ defmodule GameBackend.Units do
     do:
       from(unit in user_units_query(user_id), where: unit.selected)
       |> Repo.all()
-      |> Repo.preload([:character, :user])
+      |> Repo.preload([:user, character: [:basic_skill, :ultimate_skill]])
 
   @doc """
   Get a user's unit associated to the given character.
