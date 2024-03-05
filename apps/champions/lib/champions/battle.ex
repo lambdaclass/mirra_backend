@@ -45,12 +45,12 @@ defmodule Champions.Battle do
   def battle(team_1, team_2) do
     team_1_agg_level =
       Enum.reduce(team_1, 0, fn unit, acc ->
-        unit.unit_level + item_level_agg(unit.items) + acc
+        unit.level + item_level_agg(unit.items) + acc
       end)
 
     team_2_agg_level =
       Enum.reduce(team_2, 0, fn unit, acc ->
-        unit.unit_level + item_level_agg(unit.items) + acc
+        unit.level + item_level_agg(unit.items) + acc
       end)
 
     total_level = team_1_agg_level + team_2_agg_level

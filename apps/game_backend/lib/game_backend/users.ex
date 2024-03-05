@@ -86,7 +86,7 @@ defmodule GameBackend.Users do
   """
   def advance_level(user_id, campaign_id) do
     with {:campaign_data, {:ok, campaign_progress}} <-
-           {:campaign_data, retrieve_campaign_progress_data(user_id, campaign_id)},
+           {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} =
            {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
       level = campaign_progress.level

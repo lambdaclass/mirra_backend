@@ -3,13 +3,12 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias Champions.Utils
   alias Ecto.Changeset
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
   alias GameBackend.Units
   alias GameBackend.Items
-
-  @game_id 2
 
   @doc """
   Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
@@ -17,7 +16,7 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
-    case Users.register_user(%{username: username, game_id: @game_id}) do
+    case Users.register_user(%{username: username, game_id: Utils.game_id()}) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
         add_sample_units(user)
@@ -60,11 +59,11 @@ defmodule Champions.Users do
   defp add_sample_units(user) do
     characters = Units.all_characters()
 
-    Enum.each(0..4, fn index ->
+    Enum.each(1..6, fn index ->
       Units.insert_unit(%{
         character_id: Enum.random(characters).id,
         user_id: user.id,
-        unit_level: Enum.random(1..5),
+        level: Enum.random(1..5),
         tier: 1,
         selected: true,
         slot: index
@@ -88,10 +87,11 @@ defmodule Champions.Users do
     campaigns = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
+      # Only add campaign progress to the first ones of each SuperCampaign
       if campaign.campaign_number == 1,
         do:
           GameBackend.Campaigns.insert_campaign_progress(%{
-            game_id: @game_id,
+            game_id: Utils.game_id(),
             user_id: user.id,
             campaign_id: campaign.id,
             level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)

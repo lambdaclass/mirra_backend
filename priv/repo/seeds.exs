@@ -183,12 +183,12 @@ units =
 
         missing_levels ->
           Enum.reduce(0..missing_levels, units, fn index, units ->
-            List.update_at(units, index, fn unit -> %{unit | unit_level: unit.unit_level + 1} end)
+            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
           end)
       end
 
     Enum.map(level_units, fn unit_attrs ->
-      Map.put(unit_attrs, :level_id, level.id)
+      Map.put(unit_attrs, :campaign_level_id, level.id)
     end)
   end)
 
