@@ -22,8 +22,9 @@ defmodule Champions.Users do
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
+        add_campaigns_progress(user)
 
-        {:ok, Users.get_user(user.id)}
+        Users.get_user(user.id)
 
       {:error, changeset} ->
         [[first_error | _other_errors] | _other_fields_errors] =
@@ -43,10 +44,7 @@ defmodule Champions.Users do
   Returns `{:error, :not_found}` if no user is found.
   """
   def get_user(user_id) do
-    case Users.get_user(user_id) do
-      nil -> {:error, :not_found}
-      user -> user
-    end
+    Users.get_user(user_id)
   end
 
   @doc """
@@ -55,10 +53,7 @@ defmodule Champions.Users do
   Returns `{:error, :not_found}` if no user is found.
   """
   def get_user_by_username(username) do
-    case Users.get_user_by_username(username) do
-      nil -> {:error, :not_found}
-      user -> user
-    end
+    Users.get_user_by_username(username)
   end
 
   defp add_sample_units(user) do
@@ -88,19 +83,38 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
   end
 
+  defp add_campaigns_progress(user) do
+    campaigns = GameBackend.Campaigns.get_campaigns()
+
+    Enum.each(campaigns, fn campaign ->
+      # Only add campaign progress to the first ones of each SuperCampaign
+      if campaign.campaign_number == 1,
+        do:
+          GameBackend.Campaigns.insert_campaign_progress(%{
+            game_id: Utils.game_id(),
+            user_id: user.id,
+            campaign_id: campaign.id,
+            level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
+          })
+    end)
+  end
+
   @doc """
   Adds the given experience to a user. If the user were to have enough resulting experience to level up,
   it is performed automatically.
   """
   def add_experience(user_id, experience) do
-    user = get_user(user_id)
-    new_experience = user.experience + experience
+    case get_user(user_id) do
+      {:ok, user} ->
+        new_experience = user.experience + experience
 
-    # Level up
+        {new_level, new_experience} = process_level_ups(user.level, new_experience)
 
-    {new_level, new_experience} = process_level_ups(user.level, new_experience)
+        Users.update_experience(user, %{level: new_level, experience: new_experience})
 
-    Users.update_experience(user, %{level: new_level, experience: new_experience})
+      error ->
+        error
+    end
   end
 
   defp process_level_ups(level, experience) do
