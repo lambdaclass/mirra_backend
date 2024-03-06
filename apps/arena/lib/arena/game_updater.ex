@@ -612,7 +612,8 @@ defmodule Arena.GameUpdater do
            ticks_to_move: ticks_to_move,
            external_wall: external_wall,
            obstacles: obstacles,
-           power_ups: power_ups
+           power_ups: power_ups,
+           items: items
          } = game_state
        ) do
     moved_players =
@@ -622,7 +623,7 @@ defmodule Arena.GameUpdater do
         external_wall,
         obstacles
       )
-      |> update_collisions(players, power_ups)
+      |> update_collisions(players, Map.merge(power_ups, items))
 
     %{game_state | players: moved_players}
   end
@@ -712,6 +713,7 @@ defmodule Arena.GameUpdater do
             {players_acc, items_acc}
 
           item ->
+            IO.inspect(item)
             process_item(player, item, players_acc, items_acc)
         end
       end)
