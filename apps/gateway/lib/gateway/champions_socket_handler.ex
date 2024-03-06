@@ -49,9 +49,7 @@ defmodule Gateway.ChampionsSocketHandler do
       {:reply, {:binary, encode}, state}
     else
       unknown_request ->
-        Logger.warning(
-          "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
-        )
+        Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
 
         {:ok, state}
     end
@@ -144,10 +142,7 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   defp handle(unknown_request),
-    do:
-      Logger.warning(
-        "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
-      )
+    do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
 
   defp prepare_response({:error, reason}, _response_type) when is_atom(reason),
     do: prepare_response({:error, Atom.to_string(reason)}, nil)
