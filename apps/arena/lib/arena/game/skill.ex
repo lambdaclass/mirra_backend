@@ -329,7 +329,7 @@ defmodule Arena.Game.Skill do
   end
 
   defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
-    # TODO not all effects may come from pools entities, maybe we should upgrade this when we implement other skills that
+    # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
     # applies this effect
     Map.get(game_state.pools, effect.owner_id)
     |> case do
