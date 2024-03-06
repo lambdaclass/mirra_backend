@@ -261,6 +261,7 @@ defmodule Arena.Game.Skill do
         game_state,
         [:players, player.id, :aditional_info, :effects, last_id],
         Map.put(effect, :id, last_id)
+        |> Map.put(:owner_id, player.id)
       )
       |> put_in([:last_id], last_id)
     end)
