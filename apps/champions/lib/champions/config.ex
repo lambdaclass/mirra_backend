@@ -16,16 +16,7 @@ defmodule Champions.Config do
       |> File.read()
 
     Jason.decode!(skills_json, [{:keys, :atoms}])
-    |> Enum.reduce({0, 0}, fn attrs, {succesful, error} ->
-      case Skills.insert_skill(attrs) do
-        {:ok, _skill} ->
-          {succesful + 1, error}
-
-        {:error, _reason} ->
-          Logger.error("Could not insert skill #{Map.get(attrs, :name)}")
-          {succesful, error + 1}
-      end
-    end)
+    |> Skills.upsert_skills()
   end
 
   @doc """
@@ -51,12 +42,12 @@ defmodule Champions.Config do
                      basic_skill_name,
                      ultimate_skill_name
                    ] ->
-      basic_skill_id = Skills.get_skill_id_by_name(basic_skill_name)
-      ultimate_skill_id = Skills.get_skill_id_by_name(ultimate_skill_name)
+      basic_skill = Skills.get_skill_by_name(basic_skill_name)
+      ultimate_skill = Skills.get_skill_by_name(ultimate_skill_name)
 
-      if is_nil(basic_skill_id), do: Logger.error("Could not find skill #{basic_skill_name}")
+      if is_nil(basic_skill), do: Logger.error("Could not find skill #{basic_skill_name}")
 
-      if is_nil(ultimate_skill_id),
+      if is_nil(ultimate_skill),
         do: Logger.error("Could not find skill #{ultimate_skill_name}")
 
       %{
@@ -70,8 +61,8 @@ defmodule Champions.Config do
         base_armor: Integer.parse(defense) |> elem(0),
         game_id: Utils.game_id(),
         active: true,
-        basic_skill_id: basic_skill_id,
-        ultimate_skill_id: ultimate_skill_id
+        basic_skill_id: Map.get(basic_skill || %{}, :id),
+        ultimate_skill_id: Map.get(ultimate_skill || %{}, :id)
       }
     end)
     |> Characters.upsert_characters()
