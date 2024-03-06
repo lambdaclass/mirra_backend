@@ -713,7 +713,6 @@ defmodule Arena.GameUpdater do
             {players_acc, items_acc}
 
           item ->
-            IO.inspect(item)
             process_item(player, item, players_acc, items_acc)
         end
       end)
