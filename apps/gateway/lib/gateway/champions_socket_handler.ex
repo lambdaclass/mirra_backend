@@ -19,6 +19,7 @@ defmodule Gateway.ChampionsSocketHandler do
     SelectUnit,
     UnselectUnit,
     LevelUpUnit,
+    TierUpUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -113,6 +114,13 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%LevelUpUnit{user_id: user_id, unit_id: unit_id}) do
     case Units.level_up(user_id, unit_id) do
+      {:ok, result} -> prepare_response(result, :unit_and_currencies)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%TierUpUnit{user_id: user_id, unit_id: unit_id}) do
+    case Units.tier_up(user_id, unit_id) do
       {:ok, result} -> prepare_response(result, :unit_and_currencies)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
