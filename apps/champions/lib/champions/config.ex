@@ -16,16 +16,6 @@ defmodule Champions.Config do
       |> File.read()
 
     Jason.decode!(skills_json, [{:keys, :atoms}])
-    |> Enum.map(fn attrs ->
-      %{
-        name: attrs.name,
-        effects: attrs.effects,
-        targeting_strategy: attrs.targeting_strategy,
-        targets_allies: attrs.targets_allies,
-        amount_of_targets: attrs.amount_of_targets,
-        cooldown: attrs.cooldown
-      }
-    end)
     |> Skills.upsert_skills()
   end
 
