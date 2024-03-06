@@ -83,10 +83,11 @@ defmodule Champions.Battle.Simulator do
         |> Enum.map(fn {_id, unit} ->
           Map.take(unit, [:id, :health, :energy, :team])
           |> Map.put(:skill_cooldown, unit.basic_skill.remaining_cooldown)
+          |> Map.put(:character, unit.character_name)
         end)
         |> Enum.sort(fn a, b -> if a.team == b.team, do: a.id < b.id, else: a.team < b.team end)
         |> Enum.group_by(fn a -> a.team end),
-        label: :new_state
+        label: "Finished step #{step}. Battle State:"
       )
 
       remove_dead_units(new_state)
@@ -201,7 +202,8 @@ defmodule Champions.Battle.Simulator do
          |> Enum.map(fn {id, _unit} -> id end)
 
   defp apply_effect(%{type: "instant"} = effect, caster, target) do
-    new_value = calculate_value(effect, caster, target)
+    {new_value, amount} = calculate_value(effect, caster, target)
+    IO.inspect("#{caster.character_name} (#{String.slice(caster.id, 0..7)}) hitting #{target.character_name} (#{String.slice(target.id, 0..7)}) for #{amount}")
     Map.put(target, String.to_atom(effect.stat_affected), new_value)
   end
 
@@ -210,14 +212,14 @@ defmodule Champions.Battle.Simulator do
          _caster,
          target
        ),
-       do: target[String.to_atom(effect.stat_affected)] + effect.amount
+       do: {target[String.to_atom(effect.stat_affected)] + effect.amount, effect.amount}
 
   defp calculate_value(
          %{amount_format: "multiplicative", stat_based_on: nil} = effect,
          _caster,
          target
        ),
-       do: target[String.to_atom(effect.stat_affected)] * effect.amount
+       do: {target[String.to_atom(effect.stat_affected)] * effect.amount, effect.amount}
 
   defp calculate_value(
          %{amount_format: "additive", stat_based_on: stat_based_on} = effect,
@@ -225,8 +227,8 @@ defmodule Champions.Battle.Simulator do
          target
        ),
        do:
-         target[String.to_atom(effect.stat_affected)] +
-           floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100)
+         {target[String.to_atom(effect.stat_affected)] +
+           floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100), floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100)}
 
   defp create_unit_map(%Unit{character: character} = unit, team),
     do:
@@ -242,7 +244,8 @@ defmodule Champions.Battle.Simulator do
          basic_skill: create_skill_map(character.basic_skill),
          ultimate_skill: create_skill_map(character.ultimate_skill),
          energy: 0,
-         team: team
+         team: team,
+         character_name: character.name
        }}
 
   defp create_skill_map(%Skill{} = skill),
