@@ -41,6 +41,7 @@ defmodule GameBackend.Repo.Migrations.CreateInitialTables do
     create table(:units) do
       add :level, :integer
       add :tier, :integer
+      add :rank, :integer
       add :selected, :boolean, null: false
       add :slot, :integer
       add :user_id, references(:users, on_delete: :delete_all)
