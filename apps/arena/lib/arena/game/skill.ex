@@ -322,9 +322,8 @@ defmodule Arena.Game.Skill do
       pool ->
         direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-        rust_player = Physics.move_entity_to_direction(player, direction, pull_params.force)
-
-        Map.put(rust_player, :aditional_info, player.aditional_info)
+        Physics.move_entity_to_direction(player, direction, pull_params.force)
+        |> Map.put(:aditional_info, player.aditional_info)
         |> Map.put(:collides_with, player.collides_with)
     end
   end
