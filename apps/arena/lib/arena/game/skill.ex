@@ -267,7 +267,7 @@ defmodule Arena.Game.Skill do
   end
 
   def apply_effect_mechanic(%{players: players} = game_state) do
-    Enum.reduce(players, game_state, fn {_, player}, game_state ->
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
       if Player.alive?(player) do
         player =
           Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
