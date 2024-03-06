@@ -99,7 +99,9 @@ defmodule Arena.Game.Player do
   end
 
   def revert_stamina_interval(player, revert_by, max_stamina_interval) do
-    stamina_interval = min(player.aditional_info.stamina_interval + revert_by, max_stamina_interval)
+    stamina_interval =
+      min(player.aditional_info.stamina_interval + revert_by, max_stamina_interval)
+
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
@@ -328,7 +330,7 @@ defmodule Arena.Game.Player do
 
   defp apply_effect({:stamina_faster, stamina_faster}, player) do
     stamina_speedup_by =
-      player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by
+      (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
       |> round()
 
     new_stamina_interval = player.aditional_info.stamina_interval - stamina_speedup_by
@@ -340,7 +342,7 @@ defmodule Arena.Game.Player do
     )
 
     change_stamina(player, 3)
-    |> put_in([:aditional_info, :stamina_interval], stamina_interval)
+    |> put_in([:aditional_info, :stamina_interval], new_stamina_interval)
   end
 
   defp apply_effect({:speed_boost, speed_boost}, player) do
