@@ -36,7 +36,7 @@
       {
         "type": "instant",
         "stat_affected": "health",
-        "amount": -100,
+        "amount": -150,
         "stat_based_on": "attack",
         "amount_format": "additive",
         "targeting_strategy": "random",
