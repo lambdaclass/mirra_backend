@@ -13,6 +13,9 @@
         "targets_allies": false
       }
     ],
+    "targeting_strategy": null,
+    "amount_of_targets": null,
+    "targets_allies": null,
     "cooldown": 5
   },
   {
@@ -28,6 +31,10 @@
         "amount_of_targets": 2,
         "targets_allies": false
       }
-    ]
+    ],
+    "targeting_strategy": null,
+    "amount_of_targets": null,
+    "targets_allies": null,
+    "cooldown": null
   }
 ]
