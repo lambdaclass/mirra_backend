@@ -1,33 +1,33 @@
 Name,Quality,RanksDroppedIn,Class,Faction,ATK,HP,DEF,Basic,Ultimate
-Melo,Common,1,Warrior,Araban,27,254,45,,
-Arupe,Common,1,Mage,Kaline,45,156,40,,
-NoName3,Common,1,Hunter,Merliot,36,161,43,,
-NoName4,Common,1,Warrior,Otobi,29,227,46,,
-Qurin,Common,2,Hunter,Araban,49,251,53,,
-Chekla,Common,2,Cleric,Kaline,45,265,56,,
-NoName7,Common,2,Mage,Merliot,56,232,54,,
-NoName8,Common,2,Assassin,Otobi,64,206,49,,
-Kel'mut,Common,3,Assassin,Araban,81,289,53,,
-Toburo,Common,3,Warrior,Kaline,51,438,61,,
-NoName11,Common,3,Cleric,Merliot,59,394,58,,
-NoName12,Common,3,Hunter,Otobi,70,325,57,,
-Obure,Rare,4,Cleric,Araban,62,542,66,,
-Zil'kan,Rare,4/5,Hunter,Araban,72,481,65,,
-Fetra,Rare,4/5,Assassin,Araban,86,365,64,,
-Kampako,Rare,4/5,Warrior,Kaline,64,549,67,,
-Zanochi,Rare,4/5,Hunter,Kaline,69,471,65,,
-Kura'bara,Rare,4/5,Mage,Kaline,82,442,67,,
-NoName19,Rare,4/5,Hunter,Merliot,86,431,64,,
-NoName20,Rare,4/5,Assassin,Merliot,82,425,59,,
-NoName21,Rare,4/5,Warrior,Merliot,45,615,68,,
-NoName22,Rare,4/5,Cleric,Otobi,70,519,65,,
-NoName23,Rare,4/5,Assassin,Otobi,91,394,62,,
-NoName24,Rare,4/5,Mage,Otobi,73,482,63,,
+Melo,Common,1,Warrior,Araban,27,254,45,Basic Attack,Basic Ultimate
+Arupe,Common,1,Mage,Kaline,45,156,40,Basic Attack,Basic Ultimate
+NoName3,Common,1,Hunter,Merliot,36,161,43,Basic Attack,Basic Ultimate
+NoName4,Common,1,Warrior,Otobi,29,227,46,Basic Attack,Basic Ultimate
+Qurin,Common,2,Hunter,Araban,49,251,53,Basic Attack,Basic Ultimate
+Chekla,Common,2,Cleric,Kaline,45,265,56,Basic Attack,Basic Ultimate
+NoName7,Common,2,Mage,Merliot,56,232,54,Basic Attack,Basic Ultimate
+NoName8,Common,2,Assassin,Otobi,64,206,49,Basic Attack,Basic Ultimate
+Kel'mut,Common,3,Assassin,Araban,81,289,53,Basic Attack,Basic Ultimate
+Toburo,Common,3,Warrior,Kaline,51,438,61,Basic Attack,Basic Ultimate
+NoName11,Common,3,Cleric,Merliot,59,394,58,Basic Attack,Basic Ultimate
+NoName12,Common,3,Hunter,Otobi,70,325,57,Basic Attack,Basic Ultimate
+Obure,Rare,4,Cleric,Araban,62,542,66,Basic Attack,Basic Ultimate
+Zil'kan,Rare,4/5,Hunter,Araban,72,481,65,Basic Attack,Basic Ultimate
+Fetra,Rare,4/5,Assassin,Araban,86,365,64,Basic Attack,Basic Ultimate
+Kampako,Rare,4/5,Warrior,Kaline,64,549,67,Basic Attack,Basic Ultimate
+Zanochi,Rare,4/5,Hunter,Kaline,69,471,65,Basic Attack,Basic Ultimate
+Kura'bara,Rare,4/5,Mage,Kaline,82,442,67,Basic Attack,Basic Ultimate
+NoName19,Rare,4/5,Hunter,Merliot,86,431,64,Basic Attack,Basic Ultimate
+NoName20,Rare,4/5,Assassin,Merliot,82,425,59,Basic Attack,Basic Ultimate
+NoName21,Rare,4/5,Warrior,Merliot,45,615,68,Basic Attack,Basic Ultimate
+NoName22,Rare,4/5,Cleric,Otobi,70,519,65,Basic Attack,Basic Ultimate
+NoName23,Rare,4/5,Assassin,Otobi,91,394,62,Basic Attack,Basic Ultimate
+NoName24,Rare,4/5,Mage,Otobi,73,482,63,Basic Attack,Basic Ultimate
 Muflus,Epic,5,Warrior,Araban,63,621,78,Muflus hit,Muflus SMASH!
-Otix,Epic,5,Mage,Araban,91,409,73,,
-Uma,Epic,5,Assassin,Kaline,98,413,68,,
-Uren,Epic,5,Cleric,Kaline,77,598,71,,
-D'agna,Epic,5,Cleric,Merliot,84,556,65,,
-Valtimer,Epic,5,Mage,Merliot,93,519,67,,
-H4ck,Epic,5,Hunter,Otobi,90,515,66,,
-Kenzu,Epic,5,Warrior,Otobi,92,510,71,,
+Otix,Epic,5,Mage,Araban,91,409,73,Basic Attack,Basic Ultimate
+Uma,Epic,5,Assassin,Kaline,98,413,68,Basic Attack,Basic Ultimate
+Uren,Epic,5,Cleric,Kaline,77,598,71,Basic Attack,Basic Ultimate
+D'agna,Epic,5,Cleric,Merliot,84,556,65,Basic Attack,Basic Ultimate
+Valtimer,Epic,5,Mage,Merliot,93,519,67,Basic Attack,Basic Ultimate
+H4ck,Epic,5,Hunter,Otobi,90,515,66,Basic Attack,Basic Ultimate
+Kenzu,Epic,5,Warrior,Otobi,92,510,71,Basic Attack,Basic Ultimate

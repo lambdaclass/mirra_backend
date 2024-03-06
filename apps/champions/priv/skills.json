@@ -29,5 +29,37 @@
         "targets_allies": false
       }
     ]
+  },
+  {
+    "name": "Basic Attack",
+    "effects": [
+      {
+        "type": "instant",
+        "stat_affected": "health",
+        "amount": -100,
+        "stat_based_on": "attack",
+        "amount_format": "additive",
+        "targeting_strategy": "random",
+        "amount_of_targets": 1,
+        "targets_allies": false
+      }
+    ],
+    "cooldown": 3
+  }
+  ,
+  {
+    "name": "Basic Ultimate",
+    "effects": [
+      {
+        "type": "instant",
+        "stat_affected": "health",
+        "amount": -300,
+        "stat_based_on": "attack",
+        "amount_format": "additive",
+        "targeting_strategy": "random",
+        "amount_of_targets": 1,
+        "targets_allies": false
+      }
+    ]
   }
 ]
