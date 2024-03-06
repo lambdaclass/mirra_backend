@@ -3,6 +3,7 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias GameBackend.Units.Characters
   alias Champions.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
@@ -63,7 +64,7 @@ defmodule Champions.Users do
   end
 
   defp add_sample_units(user) do
-    characters = Units.all_characters()
+    characters = Characters.get_characters_by_rank(Champions.Units.get_quality(:epic))
 
     Enum.each(1..6, fn index ->
       Units.insert_unit(%{
