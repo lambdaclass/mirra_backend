@@ -119,11 +119,10 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_info({:stop_stamina_faster, player_id, stamina_interval}, state) do
-    player =
-      Map.get(state.game_state.players, player_id)
-      |> Player.set_stamina_interval(stamina_interval)
-
+  def handle_info({:stop_stamina_faster, player_id, revert_by}, state) do
+    player = Map.get(state.game_state.players, player_id)
+    %{stamina_interva: max_stamina_interval} = Configuration.get_character_config(player.aditional_info.character_name, state.game_config)
+    player = Player.revert_stamina_interval(player, revert_by, max_stamina_interval)
     state = put_in(state, [:game_state, :players, player.id], player)
     {:noreply, state}
   end
