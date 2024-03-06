@@ -276,8 +276,8 @@
     {
       "name": "antimatter",
       "cooldown_ms": 2000,
-      "execution_duration_ms": 300,
-      "activation_delay_ms": 0,
+      "execution_duration_ms": 800,
+      "activation_delay_ms": 400,
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
