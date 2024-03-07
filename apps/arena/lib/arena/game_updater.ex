@@ -702,8 +702,10 @@ defmodule Arena.GameUpdater do
 
   defp resolve_players_collisions_with_items(game_state) do
     {players, items} =
-      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
-                                                                                 {players_acc, items_acc} ->
+      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id,
+                                                                                  player},
+                                                                                 {players_acc,
+                                                                                  items_acc} ->
         case find_collided_item(player.collides_with, items_acc) do
           nil ->
             {players_acc, items_acc}
