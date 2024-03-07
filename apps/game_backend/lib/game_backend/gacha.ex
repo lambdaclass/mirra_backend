@@ -50,8 +50,7 @@ defmodule GameBackend.Gacha do
       Enum.reduce(box.rank_weights, 0, fn rank_weight, acc -> rank_weight.weight + acc end)
 
     rank =
-      Enum.reduce_while(box.rank_weights, Enum.random(1..total_weight), fn rank_weight,
-                                                                           acc_weight ->
+      Enum.reduce_while(box.rank_weights, Enum.random(1..total_weight), fn rank_weight, acc_weight ->
         acc_weight = acc_weight - rank_weight.weight
         if acc_weight <= 0, do: {:halt, rank_weight.rank}, else: {:cont, acc_weight}
       end)
