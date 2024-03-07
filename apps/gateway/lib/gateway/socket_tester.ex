@@ -78,14 +78,13 @@ defmodule SocketTester do
          })}
       )
 
-  def get_campaign(pid, user_id, campaign_number),
+  def get_campaign(pid, user_id, campaign_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:get_campaign, %GetCampaign{user_id: user_id, campaign_number: campaign_number}}
+           request_type: {:get_campaign, %GetCampaign{user_id: user_id, campaign_id: campaign_id}}
          })}
       )
 
@@ -115,8 +114,7 @@ defmodule SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:select_unit, %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}}
+           request_type: {:select_unit, %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}}
          })}
       )
 
@@ -140,14 +138,23 @@ defmodule SocketTester do
          })}
       )
 
+  def tier_up_unit(pid, user_id, unit_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:tier_up_unit, %LevelUpUnit{user_id: user_id, unit_id: unit_id}}
+         })}
+      )
+
   def equip_item(pid, user_id, item_id, unit_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:equip_item, %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}}
+           request_type: {:equip_item, %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}}
          })}
       )
 
