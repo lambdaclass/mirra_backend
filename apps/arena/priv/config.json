@@ -228,7 +228,8 @@
             "range": 800.0,
             "angle": 45.0,
             "interval_ms": 250,
-            "amount": 3
+            "amount": 3,
+            "move_by": 150.0
           }
         }
       ],
