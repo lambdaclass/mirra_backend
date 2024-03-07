@@ -28,7 +28,7 @@ defmodule Champions.Users do
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
-        add_campaigns_progress(user)
+        add_campaign_progresses(user)
         add_afk_reward_rates(user)
 
         Users.get_user(user.id)
@@ -92,7 +92,7 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Scrolls").id, 100)
   end
 
-  defp add_campaigns_progress(user) do
+  defp add_campaign_progresses(user) do
     campaigns = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->

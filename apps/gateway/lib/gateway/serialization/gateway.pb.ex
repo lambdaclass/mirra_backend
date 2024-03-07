@@ -346,10 +346,10 @@ defmodule Gateway.Serialization.User do
   field(:level, 3, type: :uint64)
   field(:experience, 4, type: :uint64)
 
-  field(:campaigns_progress, 6,
+  field(:campaign_progresses, 6,
     repeated: true,
     type: Gateway.Serialization.CampaignProgress,
-    json_name: "campaignsProgress"
+    json_name: "campaignsProgresses"
   )
 
   field(:currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency)
