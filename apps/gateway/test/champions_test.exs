@@ -116,7 +116,7 @@ defmodule Gateway.Test.Champions do
           character_id: muflus.id
         })
 
-      gold = Currencies.get_amount_of_currency_by_name!(user.id, "Gold")
+      gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
       level = unit.level
 
       #### Level up
@@ -133,8 +133,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type:
-          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
       } = get_last_message()
 
       assert unit.level == level + 1
@@ -150,8 +149,8 @@ defmodule Gateway.Test.Champions do
 
       #### Tier up
 
-      user_gold = Currencies.get_amount_of_currency_by_name!(user.id, "Gold")
-      user_gems = Currencies.get_amount_of_currency_by_name!(user.id, "Gems")
+      user_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      user_gems = Currencies.get_amount_of_currency_by_name(user.id, "Gems")
 
       [
         %CurrencyCost{currency_id: _gold_id, amount: gold_cost},
@@ -168,8 +167,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type:
-          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
       } = get_last_message()
 
       user_currencies =
