@@ -119,8 +119,7 @@ defmodule Gateway.SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:select_unit, %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}}
+           request_type: {:select_unit, %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}}
          })}
       )
 
@@ -176,8 +175,7 @@ defmodule Gateway.SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:equip_item, %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}}
+           request_type: {:equip_item, %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}}
          })}
       )
 
