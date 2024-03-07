@@ -57,10 +57,12 @@ defmodule Champions.Gacha do
           {:error, :transaction}
 
         {:ok, %{unit: unit}} ->
+          {:ok, user} = Users.get_user(user_id)
+
           {:ok,
            %{
              unit: unit |> Repo.preload([:items, :character]),
-             user: Users.get_user(user_id)
+             user: user
            }}
       end
     else
