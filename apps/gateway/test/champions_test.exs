@@ -133,8 +133,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type:
-          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
       } = get_last_message()
 
       assert unit.level == level + 1
@@ -168,8 +167,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type:
-          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
       } = get_last_message()
 
       user_currencies =

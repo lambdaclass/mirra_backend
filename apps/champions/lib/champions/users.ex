@@ -11,8 +11,11 @@ defmodule Champions.Users do
   alias GameBackend.Rewards
   alias GameBackend.Transaction
   alias GameBackend.Users.Currencies
+  alias GameBackend.Items
   alias GameBackend.Users
+  alias GameBackend.Users.Currencies
   alias GameBackend.Units
+  alias GameBackend.Units.Characters
 
   @max_afk_reward_seconds 12 * 60 * 60
 
@@ -116,6 +119,22 @@ defmodule Champions.Users do
         currency_id: Currencies.get_currency_by_name!(currency_name).id,
         rate: 0
       })
+    end)
+  end
+
+  defp add_campaigns_progressses(user) do
+    campaigns = GameBackend.Campaigns.get_campaigns()
+
+    Enum.each(campaigns, fn campaign ->
+      # Only add campaign progress to the first ones of each SuperCampaign
+      if campaign.campaign_number == 1,
+        do:
+          GameBackend.Campaigns.insert_campaign_progress(%{
+            game_id: Utils.game_id(),
+            user_id: user.id,
+            campaign_id: campaign.id,
+            level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
+          })
     end)
   end
 

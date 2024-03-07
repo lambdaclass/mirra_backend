@@ -1,5 +1,6 @@
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Level
+alias GameBackend.Campaigns.Campaign
 alias GameBackend.Gacha
 alias GameBackend.Campaigns.Campaign
 alias GameBackend.Items

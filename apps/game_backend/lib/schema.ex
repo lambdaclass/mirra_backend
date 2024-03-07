@@ -1,4 +1,9 @@
 defmodule GameBackend.Schema do
+  @moduledoc """
+  Base module for all schemas in game_backend
+
+  It sets the primary key to be a binary_id and the foreign key type to be a binary_id
+  """
   defmacro __using__(_) do
     quote do
       use Ecto.Schema
