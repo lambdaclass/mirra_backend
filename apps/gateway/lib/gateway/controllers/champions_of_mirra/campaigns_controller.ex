@@ -11,8 +11,8 @@ defmodule Gateway.Champions.CampaignsController do
     Champions.Campaigns.get_campaigns() |> Gateway.Utils.format_response(conn)
   end
 
-  def get_campaign(conn, %{"campaign_number" => campaign_number}) do
-    Champions.Campaigns.get_campaign(campaign_number)
+  def get_campaign(conn, %{"campaign_id" => campaign_id}) do
+    Champions.Campaigns.get_campaign(campaign_id)
     |> Gateway.Utils.format_response(conn)
   end
 

@@ -80,14 +80,13 @@ defmodule SocketTester do
          })}
       )
 
-  def get_campaign(pid, user_id, campaign_number),
+  def get_campaign(pid, user_id, campaign_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:get_campaign, %GetCampaign{user_id: user_id, campaign_number: campaign_number}}
+           request_type: {:get_campaign, %GetCampaign{user_id: user_id, campaign_id: campaign_id}}
          })}
       )
 

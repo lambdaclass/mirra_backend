@@ -64,10 +64,8 @@ defmodule GameBackend.Units do
   Gets a unit given its id.
   """
   def get_unit(id) do
-    case Repo.get(Unit, id) |> Repo.preload([:character, :user, :items]) do
-      nil -> {:error, :not_found}
-      unit -> {:ok, unit}
-    end
+    unit = Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+    if unit, do: {:ok, unit}, else: {:error, :not_found}
   end
 
   @doc """
