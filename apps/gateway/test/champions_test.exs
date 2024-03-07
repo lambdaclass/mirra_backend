@@ -113,7 +113,7 @@ defmodule Gateway.Test.Champions do
           character_id: muflus.id
         })
 
-      gold = Currencies.get_amount_of_currency_by_name!(user.id, "Gold")
+      gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
       level = unit.level
 
       #### Level up
@@ -146,8 +146,8 @@ defmodule Gateway.Test.Champions do
 
       #### Tier up
 
-      user_gold = Currencies.get_amount_of_currency_by_name!(user.id, "Gold")
-      user_gems = Currencies.get_amount_of_currency_by_name!(user.id, "Gems")
+      user_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      user_gems = Currencies.get_amount_of_currency_by_name(user.id, "Gems")
       [%CurrencyCost{currency_id: _gold_id, amount: gold_cost}, %CurrencyCost{currency_id: _gems_id, amount: gems_cost}] = Units.calculate_tier_up_cost(unit)
 
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
