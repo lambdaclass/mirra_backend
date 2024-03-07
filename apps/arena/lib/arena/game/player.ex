@@ -174,7 +174,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action_name, skill.execution_duration_ms)
           |> change_stamina(-skill.stamina_cost)
-          |> put_in([:direction], skill_direction)
+          |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
 
