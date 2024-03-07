@@ -275,8 +275,7 @@ defmodule Arena.GameUpdater do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
 
-    amount_of_power_ups =
-      get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     state =
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
@@ -401,7 +400,6 @@ defmodule Arena.GameUpdater do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_item(state.game_state)
-      |> put_in([:player_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -699,10 +697,8 @@ defmodule Arena.GameUpdater do
 
   defp resolve_players_collisions_with_items(game_state) do
     {players, items} =
-      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id,
-                                                                                  player},
-                                                                                 {players_acc,
-                                                                                  items_acc} ->
+      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
+                                                                                 {players_acc, items_acc} ->
         case find_collided_item(player.collides_with, items_acc) do
           nil ->
             {players_acc, items_acc}
@@ -740,8 +736,7 @@ defmodule Arena.GameUpdater do
             entities -> List.delete(entities, external_wall.id)
           end
 
-        collided_entity =
-          decide_collided_entity(projectile, collides_with, external_wall.id, players_acc)
+        collided_entity = decide_collided_entity(projectile, collides_with, external_wall.id, players_acc)
 
         process_projectile_collision(
           projectile,
@@ -990,8 +985,7 @@ defmodule Arena.GameUpdater do
     if power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
       updated_power_up = put_in(power_up, [:aditional_info, :status], :TAKEN)
 
-      updated_player =
-        update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
+      updated_player = update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
 
       {Map.put(players_acc, player.id, updated_player), Map.put(power_ups_acc, power_up.id, updated_power_up)}
     else
