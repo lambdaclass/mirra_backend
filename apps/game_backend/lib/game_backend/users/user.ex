@@ -5,6 +5,7 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
@@ -17,6 +18,7 @@ defmodule GameBackend.Users.User do
     field(:experience, :integer)
     field(:last_afk_reward_claim, :utc_datetime)
 
+    has_many(:campaign_progresses, CampaignProgress)
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)

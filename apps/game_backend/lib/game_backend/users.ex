@@ -146,9 +146,10 @@ defmodule GameBackend.Users do
         user,
         [
           :afk_reward_rates,
+          :campaigns_progresses,
           items: :template,
           units: [:character, :items],
-          currencies: :currency
+          currencies: :currency,
         ]
       )
 
