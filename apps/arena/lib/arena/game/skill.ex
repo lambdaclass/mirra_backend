@@ -286,8 +286,7 @@ defmodule Arena.Game.Skill do
   def apply_effect_mechanic(player, effect, game_state) do
     now = System.monotonic_time(:millisecond)
 
-    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic,
-                                                    player ->
+    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
       should_re_apply? =
         is_nil(Map.get(mechanic_params, :last_application_time)) or
           now - Map.get(mechanic_params, :last_application_time) >=
