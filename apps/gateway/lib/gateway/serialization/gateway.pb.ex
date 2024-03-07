@@ -84,7 +84,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
 
   field(:get_boxes, 18, type: Gateway.Serialization.GetBoxes, json_name: "getBoxes", oneof: 0)
   field(:get_box, 19, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
-  field(:summon, 20, type: Gateway.Serialization.Summon, json_name: "pullBox", oneof: 0)
+  field(:summon, 20, type: Gateway.Serialization.Summon, oneof: 0)
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -125,7 +125,7 @@ defmodule Gateway.Serialization.GetCampaign do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:campaign_number, 2, type: :uint32, json_name: "campaignNumber")
+  field(:campaign_id, 2, type: :string, json_name: "campaignId")
 end
 
 defmodule Gateway.Serialization.GetLevel do
@@ -309,9 +309,28 @@ defmodule Gateway.Serialization.User do
 
   field(:id, 1, type: :string)
   field(:username, 2, type: :string)
-  field(:currencies, 3, repeated: true, type: Gateway.Serialization.UserCurrency)
-  field(:units, 4, repeated: true, type: Gateway.Serialization.Unit)
-  field(:items, 5, repeated: true, type: Gateway.Serialization.Item)
+  field(:level, 3, type: :uint64)
+  field(:experience, 4, type: :uint64)
+
+  field(:campaigns_progress, 6,
+    repeated: true,
+    type: Gateway.Serialization.CampaignProgress,
+    json_name: "campaignsProgress"
+  )
+
+  field(:currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency)
+  field(:units, 8, repeated: true, type: Gateway.Serialization.Unit)
+  field(:items, 9, repeated: true, type: Gateway.Serialization.Item)
+end
+
+defmodule Gateway.Serialization.CampaignProgress do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:campaign_id, 2, type: :string, json_name: "campaignId")
+  field(:level_id, 3, type: :string, json_name: "levelId")
 end
 
 defmodule Gateway.Serialization.UserCurrency do
@@ -342,7 +361,7 @@ defmodule Gateway.Serialization.Unit do
   field(:rank, 4, type: :uint32)
   field(:selected, 5, type: :bool)
   field(:slot, 6, type: :uint32)
-  field(:campaign_level_id, 7, type: :string, json_name: "levelId")
+  field(:campaign_level_id, 7, type: :string, json_name: "campaignLevelId")
   field(:user_id, 8, type: :string, json_name: "userId")
   field(:character, 9, type: Gateway.Serialization.Character)
   field(:items, 10, repeated: true, type: Gateway.Serialization.Item)
@@ -416,7 +435,10 @@ defmodule Gateway.Serialization.Campaign do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:levels, 1, repeated: true, type: Gateway.Serialization.Level)
+  field(:id, 1, type: :string)
+  field(:super_campaign_id, 2, type: :string, json_name: "superCampaignId")
+  field(:campaign_number, 3, type: :uint32, json_name: "campaignNumber")
+  field(:levels, 4, repeated: true, type: Gateway.Serialization.Level)
 end
 
 defmodule Gateway.Serialization.Level do
@@ -425,8 +447,8 @@ defmodule Gateway.Serialization.Level do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:id, 1, type: :string)
-  field(:level_number, 2, type: :uint32, json_name: "levelNumber")
-  field(:campaign, 3, type: :uint32)
+  field(:campaign_id, 2, type: :string, json_name: "campaignId")
+  field(:level_number, 3, type: :uint32, json_name: "levelNumber")
   field(:units, 4, repeated: true, type: Gateway.Serialization.Unit)
 end
 
@@ -488,7 +510,7 @@ defmodule Gateway.Serialization.CurrencyCost do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:currency, 1, type: Gateway.Serialization.Currency)
-  field(:cost, 2, type: :int32)
+  field(:amount, 2, type: :int32)
 end
 
 defmodule Gateway.Serialization.UserAndUnit do

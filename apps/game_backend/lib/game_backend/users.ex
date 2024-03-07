@@ -8,6 +8,9 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias Ecto.Multi
+  alias GameBackend.Campaigns.CampaignProgress
+  alias GameBackend.Campaigns
   alias GameBackend.Repo
   alias GameBackend.Users.User
 
@@ -32,7 +35,7 @@ defmodule GameBackend.Users do
   @doc """
   Gets a single user.
 
-  Returns nil if no user is found.
+  Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
@@ -42,22 +45,28 @@ defmodule GameBackend.Users do
       iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
       nil
   """
-  def get_user(id), do: Repo.get(User, id) |> preload()
+  def get_user(id) do
+    user = Repo.get(User, id) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
 
   @doc """
   Gets a user by their username.
 
-  Returns nil if no user is found.
+  Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
       iex> get_user_by_username("some_user")
-      %User{}
+      {:ok, %User{}}
 
       iex> get_user_by_username("non_existing_user")
-      nil
+      {:error, :not_found}
   """
-  def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
+  def get_user_by_username(username) do
+    user = Repo.get_by(User, username: username) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
 
   @doc """
   Checks whether a user exists with the given id.
@@ -72,6 +81,44 @@ defmodule GameBackend.Users do
       |> User.experience_changeset(params)
       |> Repo.update()
 
+  @doc """
+  Increments a user's level and apply the level's rewards.
+  If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
+  """
+  def advance_level(user_id, campaign_id) do
+    with {:campaign_progress, {:ok, campaign_progress}} <-
+           {:campaign_progress, Campaigns.get_campaign_progress(user_id, campaign_id)},
+         {:next_level, {next_campaign_id, next_level_id}} =
+           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
+      level = campaign_progress.level
+
+      Multi.new()
+      |> Multi.run(:update_campaign_progress, fn _, _ ->
+        if next_level_id == level.id,
+          do: {:ok, nil},
+          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
+      end)
+      |> Repo.transaction()
+    else
+      {:campaign_progress, _transaction_error} -> {:error, :campaign_progress_not_found}
+      {:next_level, _transaction_error} -> {:campaign_progress_error}
+    end
+  end
+
   defp preload(user),
-    do: Repo.preload(user, items: :template, units: [:character, :items], currencies: :currency)
+    do:
+      Repo.preload(user,
+        items: :template,
+        units: [:character, :items],
+        currencies: :currency
+      )
+
+  defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
+    campaign_progress
+    |> CampaignProgress.advance_level_changeset(%{
+      campaign_id: next_campaign_id,
+      level_id: next_level_id
+    })
+    |> Repo.update()
+  end
 end
