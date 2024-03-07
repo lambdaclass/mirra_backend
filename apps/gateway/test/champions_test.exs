@@ -48,7 +48,7 @@ defmodule Gateway.Test.Champions do
 
   describe "users" do
     test "users", %{socket_tester: socket_tester} do
-      # Create our user
+      # CreateUser
       :ok = SocketTester.create_user(socket_tester, "Username")
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{}}}
@@ -56,13 +56,18 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
       %WebSocketResponse{response_type: {:user, user}} = get_last_message()
 
-      # Creating another user with the same name fails
+      # CreateUser with the same name fails
       :ok = SocketTester.create_user(socket_tester, "Username")
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "username_taken"}}}
 
-      # Get user by name
+      # GetUserByName
       :ok = SocketTester.get_user_by_username(socket_tester, "Username")
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, ^user}}
+
+      # GetUser
+      :ok = SocketTester.get_user(socket_tester, user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, ^user}}
     end
