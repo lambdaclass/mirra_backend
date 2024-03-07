@@ -149,7 +149,7 @@ defmodule GameBackend.Users do
           :campaign_progresses,
           items: :template,
           units: [:character, :items],
-          currencies: :currency,
+          currencies: :currency
         ]
       )
 

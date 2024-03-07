@@ -203,7 +203,11 @@ defmodule Champions.Battle.Simulator do
 
   defp apply_effect(%{type: "instant"} = effect, caster, target) do
     {new_value, amount} = calculate_value(effect, caster, target)
-    IO.inspect("#{caster.character_name} (#{String.slice(caster.id, 0..7)}) hitting #{target.character_name} (#{String.slice(target.id, 0..7)}) for #{amount}")
+
+    IO.inspect(
+      "#{caster.character_name} (#{String.slice(caster.id, 0..7)}) hitting #{target.character_name} (#{String.slice(target.id, 0..7)}) for #{amount}"
+    )
+
     Map.put(target, String.to_atom(effect.stat_affected), new_value)
   end
 
@@ -228,7 +232,8 @@ defmodule Champions.Battle.Simulator do
        ),
        do:
          {target[String.to_atom(effect.stat_affected)] +
-           floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100), floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100)}
+            floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100),
+          floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100)}
 
   defp create_unit_map(%Unit{character: character} = unit, team),
     do:
