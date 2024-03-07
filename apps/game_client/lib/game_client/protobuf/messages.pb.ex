@@ -427,7 +427,8 @@ defmodule GameClient.Protobuf.Zone do
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
-  field(:zone_shrink_time, 3, type: :int32, json_name: "zoneShrinkTime")
+  field(:next_zone_change_timestamp, 3, type: :int64, json_name: "nextZoneChangeTimestamp")
+  field(:shrinking, 4, type: :bool)
 end
 
 defmodule GameClient.Protobuf.KillEntry do

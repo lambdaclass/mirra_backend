@@ -6171,7 +6171,8 @@ proto.Zone.toObject = function(includeInstance, msg) {
   var f, obj = {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    zoneShrinkTime: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    nextZoneChangeTimestamp: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    shrinking: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -6217,8 +6218,12 @@ proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEnabled(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setZoneShrinkTime(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setNextZoneChangeTimestamp(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setShrinking(value);
       break;
     default:
       reader.skipField();
@@ -6263,10 +6268,17 @@ proto.Zone.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getZoneShrinkTime();
+  f = message.getNextZoneChangeTimestamp();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeInt64(
       3,
+      f
+    );
+  }
+  f = message.getShrinking();
+  if (f) {
+    writer.writeBool(
+      4,
       f
     );
   }
@@ -6310,10 +6322,10 @@ proto.Zone.prototype.setEnabled = function(value) {
 
 
 /**
- * optional int32 zone_shrink_time = 3;
+ * optional int64 next_zone_change_timestamp = 3;
  * @return {number}
  */
-proto.Zone.prototype.getZoneShrinkTime = function() {
+proto.Zone.prototype.getNextZoneChangeTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -6322,8 +6334,26 @@ proto.Zone.prototype.getZoneShrinkTime = function() {
  * @param {number} value
  * @return {!proto.Zone} returns this
  */
-proto.Zone.prototype.setZoneShrinkTime = function(value) {
+proto.Zone.prototype.setNextZoneChangeTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional bool shrinking = 4;
+ * @return {boolean}
+ */
+proto.Zone.prototype.getShrinking = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Zone} returns this
+ */
+proto.Zone.prototype.setShrinking = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 

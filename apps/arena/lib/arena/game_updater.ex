@@ -241,27 +241,42 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
     send(self(), :zone_shrink)
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     state =
-      put_in(state, [:game_state, :zone, :shrinking], :enabled)
+      put_in(state, [:game_state, :zone, :shrinking], true)
       |> put_in([:game_state, :zone, :enabled], true)
+      |> put_in(
+        [:game_state, :zone, :next_zone_change_timestamp],
+        now + state.game_config.game.zone_stop_interval_ms
+      )
 
     {:noreply, state}
   end
 
   def handle_info(:stop_zone_shrink, state) do
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
-    state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    state =
+      put_in(state, [:game_state, :zone, :shrinking], false)
+      |> put_in(
+        [:game_state, :zone, :next_zone_change_timestamp],
+        now + state.game_config.game.zone_start_interval_ms
+      )
+
     {:noreply, state}
   end
 
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
-    Process.send_after(self(), :zone_shrink, state.game_config.game.zone_start_interval_ms)
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: true}}} = state) do
+    Process.send_after(self(), :zone_shrink, state.game_config.game.zone_shrink_interval)
     radius = max(state.game_state.zone.radius - state.game_config.game.zone_shrink_radius_by, 0.0)
     state = put_in(state, [:game_state, :zone, :radius], radius)
     {:noreply, state}
   end
 
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: false}}} = state) do
     {:noreply, state}
   end
 
@@ -459,8 +474,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:zone, %{
         radius: config.map.radius,
         enabled: false,
-        shrinking: :disabled,
-        start_zone_shrink_timestamp: initial_timestamp + config.game.zone_shrink_start_ms
+        shrinking: false,
+        next_zone_change_timestamp: initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
       })
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
