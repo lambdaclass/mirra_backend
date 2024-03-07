@@ -14,7 +14,7 @@ defmodule GameBackend.Campaigns.CampaignProgress do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  schema "campaign_progresss" do
+  schema "campaign_progresses" do
     field(:game_id, :integer)
     belongs_to(:user, User)
     belongs_to(:campaign, Campaign)
