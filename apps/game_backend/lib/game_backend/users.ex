@@ -106,7 +106,7 @@ defmodule GameBackend.Users do
       |> Multi.insert_all(:unit_rewards, Unit, fn _ ->
         build_unit_rewards_params(user_id, level.unit_rewards)
       end)
-      |> Multi.run(:update_campaign_progression, fn _, _ ->
+      |> Multi.run(:update_campaign_progress, fn _, _ ->
         if next_level_id == level.id,
           do: {:ok, nil},
           else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
@@ -135,25 +135,6 @@ defmodule GameBackend.Users do
         units: [:character, :items],
         currencies: :currency
       )
-
-  defp retrieve_campaign_progress_data(user_id, campaign_id) do
-    progress =
-      Repo.get_by(CampaignProgress, user_id: user_id, campaign_id: campaign_id)
-      |> Repo.preload(
-        level: [
-          :campaign,
-          :currency_rewards,
-          :unit_rewards,
-          :item_rewards,
-          :afk_rewards_increments
-        ]
-      )
-
-    case progress do
-      nil -> {:error, :not_found}
-      campaign_progress -> {:ok, campaign_progress}
-    end
-  end
 
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
     campaign_progress
