@@ -239,7 +239,7 @@ defmodule Champions.Units do
          {:consumed_units_count, true} <-
            {:consumed_units_count, Enum.count(consumed_units) == Enum.count(consumed_units_ids)},
          {:consumed_units_valid, true} <-
-           {:consumed_units_valid, validate_consumed_units(unit, consumed_units)} do
+           {:consumed_units_valid, meets_fuse_requirements?(unit, consumed_units)} do
       result =
         Multi.new()
         |> Multi.run(:unit, fn _, _ -> Units.add_rank(unit) end)
@@ -283,7 +283,7 @@ defmodule Champions.Units do
     if Enum.count(unit_ids) == amount_deleted, do: {:ok, amount_deleted}, else: {:error, "failed"}
   end
 
-  defp validate_consumed_units(unit, unit_list) do
+  defp meets_fuse_requirements?(unit, unit_list) do
     {same_character_amount, same_character_rank} = same_character_requirements(unit)
     {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
 
