@@ -116,7 +116,7 @@ The `Runner`'s appropriate handler eventually picks up this message, which in th
 
     state =
       Map.put(state, :game_state, game_state)
-      |> put_in([:player_movement_timestamps, user_id], timestamp)
+      |> put_in([:player_timestamps, user_id], timestamp)
 
     {:noreply, state}
   end
