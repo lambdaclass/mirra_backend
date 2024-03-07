@@ -550,9 +550,7 @@ defmodule Arena.GameUpdater do
       })
 
     {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
-                                                                         character_name,
-                                                                         _from_pid},
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
@@ -684,12 +682,9 @@ defmodule Arena.GameUpdater do
     %{game_state | projectiles: moved_projectiles}
   end
 
-  defp resolve_players_collisions_with_power_ups(
-         %{players: players, power_ups: power_ups} = game_state
-       ) do
+  defp resolve_players_collisions_with_power_ups(%{players: players, power_ups: power_ups} = game_state) do
     {updated_players, updated_power_ups} =
-      Enum.reduce(players, {players, power_ups}, fn {_player_id, player},
-                                                    {players_acc, power_ups_acc} ->
+      Enum.reduce(players, {players, power_ups}, fn {_player_id, player}, {players_acc, power_ups_acc} ->
         case find_collided_power_up(player.collides_with, power_ups_acc) do
           nil ->
             {players_acc, power_ups_acc}
@@ -999,8 +994,7 @@ defmodule Arena.GameUpdater do
       updated_player =
         update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
 
-      {Map.put(players_acc, player.id, updated_player),
-       Map.put(power_ups_acc, power_up.id, updated_power_up)}
+      {Map.put(players_acc, player.id, updated_player), Map.put(power_ups_acc, power_up.id, updated_power_up)}
     else
       {players_acc, power_ups_acc}
     end

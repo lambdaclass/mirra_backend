@@ -79,22 +79,21 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    with {:campaign_data, {:ok, campaign_progress}} <-
-           {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
-         {:next_level, {next_campaign_id, next_level_id}} =
-           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
-      level = campaign_progress.level
+    case Campaigns.get_campaign_progress(user_id, campaign_id) do
+      {:ok, campaign_progress} ->
+        {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign_progress.level)
+        level = campaign_progress.level
 
-      Multi.new()
-      |> Multi.run(:update_campaign_progress, fn _, _ ->
-        if next_level_id == level.id,
-          do: {:ok, nil},
-          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
-      end)
-      |> Repo.transaction()
-    else
-      {:campaign_data, _transaction_error} -> {:error, :campaign_data_error}
-      {:next_level, _transaction_error} -> {:campaign_progress_error}
+        Multi.new()
+        |> Multi.run(:update_campaign_progress, fn _, _ ->
+          if next_level_id == level.id,
+            do: {:ok, nil},
+            else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
+        end)
+        |> Repo.transaction()
+
+      {:error, _} ->
+        {:error, :campaign_data_error}
     end
   end
 
