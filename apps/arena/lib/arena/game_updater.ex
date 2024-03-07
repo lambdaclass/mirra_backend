@@ -401,7 +401,7 @@ defmodule Arena.GameUpdater do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_item(state.game_state)
-      |> put_in([:player_timestamps, player_id], timestamp)
+      |> put_in([:player_actions_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -415,7 +415,7 @@ defmodule Arena.GameUpdater do
     game_state =
       state.game_state
       |> put_in([:players, player_id], player)
-      |> put_in([:player_timestamps, player_id], timestamp)
+      |> put_in([:player_movement_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -426,7 +426,7 @@ defmodule Arena.GameUpdater do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_skill(skill_key, skill_params, state)
-      |> put_in([:player_timestamps, player_id], timestamp)
+      |> put_in([:player_actions_timestamps, player_id], timestamp)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -475,7 +475,8 @@ defmodule Arena.GameUpdater do
              power_ups: complete_entities(state.power_ups),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
-             player_timestamps: state.player_timestamps,
+             player_movement_timestamps: state.player_movement_timestamps,
+             player_actions_timestamps: state.player_actions_timestamps,
              zone: state.zone,
              killfeed: state.killfeed,
              damage_taken: state.damage_taken,
@@ -533,7 +534,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:power_ups, %{})
       |> Map.put(:projectiles, %{})
       |> Map.put(:items, %{})
-      |> Map.put(:player_timestamps, %{})
+      |> Map.put(:player_actions_timestamps, %{})
+      |> Map.put(:player_movement_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:killfeed, [])
@@ -568,7 +570,8 @@ defmodule Arena.GameUpdater do
           |> Map.put(:last_id, last_id)
           |> Map.put(:players, players)
           |> put_in([:client_to_player_map, client_id], last_id)
-          |> put_in([:player_timestamps, last_id], 0)
+          |> put_in([:player_movement_timestamps, last_id], 0)
+          |> put_in([:player_actions_timestamps, last_id], 0)
 
         {new_game, positions}
       end)

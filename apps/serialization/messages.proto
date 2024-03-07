@@ -84,16 +84,17 @@ message GameState {
   string game_id = 1;
   map<uint64, Entity> players = 2;
   map<uint64, Entity> projectiles = 3;
-  map<uint64, int64> player_timestamps = 4;
-  int64 server_timestamp = 5;
-  Zone zone = 6;
-  repeated KillEntry killfeed = 7;
-  map<uint64, uint64> damage_taken = 8;
-  map<uint64, uint64> damage_done = 9;
-  map<uint64, Entity> power_ups = 10;
-  GameStatus status = 11;
-  int64 countdown = 12;
-  map<uint64, Entity> items = 13;
+  map<uint64, int64> player_movement_timestamps = 4;
+  map<uint64, int64> player_actions_timestamps = 5;
+  int64 server_timestamp = 6;
+  Zone zone = 7;
+  repeated KillEntry killfeed = 8;
+  map<uint64, uint64> damage_taken = 9;
+  map<uint64, uint64> damage_done = 10;
+  map<uint64, Entity> power_ups = 11;
+  GameStatus status = 12;
+  int64 countdown = 13;
+  map<uint64, Entity> items = 14;
 }
 
 enum GameStatus {
