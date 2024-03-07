@@ -129,8 +129,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type:
-          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
       } = get_last_message()
 
       assert unit.level == level + 1
@@ -148,7 +147,9 @@ defmodule Gateway.Test.Champions do
 
       user_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
       user_gems = Currencies.get_amount_of_currency_by_name(user.id, "Gems")
-      [%CurrencyCost{currency_id: _gold_id, amount: gold_cost}, %CurrencyCost{currency_id: _gems_id, amount: gems_cost}] = Units.calculate_tier_up_cost(unit)
+
+      [%CurrencyCost{currency_id: _gold_id, amount: gold_cost}, %CurrencyCost{currency_id: _gems_id, amount: gems_cost}] =
+        Units.calculate_tier_up_cost(unit)
 
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
@@ -160,8 +161,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
-        response_type:
-          {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
       } = get_last_message()
 
       user_currencies =
