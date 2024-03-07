@@ -1,7 +1,7 @@
 defmodule Arena.Serialization.GameStatus do
   @moduledoc false
 
-  use Protobuf, enum: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:PREPARING, 0)
   field(:RUNNING, 1)
@@ -174,7 +174,8 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
   field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
-  field(:stamina_cost, 6, type: :uint64, json_name: "staminaCost")
+  field(:targetting_range, 6, type: :float, json_name: "targettingRange")
+  field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -234,7 +235,7 @@ end
 defmodule Arena.Serialization.GameState.PoolsEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: Arena.Serialization.Entity)
@@ -388,7 +389,7 @@ end
 defmodule Arena.Serialization.Pool do
   @moduledoc false
 
-  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
 end

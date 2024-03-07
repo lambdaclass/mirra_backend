@@ -73,7 +73,8 @@ message ConfigSkill {
   uint64 execution_duration_ms = 3;
   float targetting_radius = 4;
   float targetting_angle = 5;
-  uint64 stamina_cost = 6;
+  float targetting_range = 6;
+  uint64 stamina_cost = 7;
 }
 
 

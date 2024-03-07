@@ -154,7 +154,13 @@ defmodule Arena.GameSocketHandler do
     ## TODO: This will break once a skill has more than 1 mechanic, until then
     ##   we can use this "shortcut" and deal with it when the time comes
     [{_mechanic, params}] = skill.mechanics
-    extra_params = %{targetting_radius: params[:range], targetting_angle: params[:angle]}
+
+    extra_params = %{
+      targetting_radius: params[:radius],
+      targetting_angle: params[:angle],
+      targetting_range: params[:range]
+    }
+
     {key, Map.merge(skill, extra_params)}
   end
 end
