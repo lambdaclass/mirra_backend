@@ -1,4 +1,6 @@
+alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Level
+alias GameBackend.Campaigns.Campaign
 alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
@@ -187,13 +189,26 @@ rules = [
   %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
+super_campaign = %{
+  game_id: champions_of_mirra_id,
+  name: "Main Campaign",
+}
+
+{_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
+
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
   Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
+    {_, campaign} = Campaigns.insert_campaign(%{
+      game_id: champions_of_mirra_id,
+      super_campaign_id: super_campaign.id,
+      campaign_number: campaign_index
+    }, returning: true)
+
     Enum.map(1..campaign_rules.length, fn level_index ->
       %{
         game_id: champions_of_mirra_id,
-        campaign: campaign_index,
+        campaign_id: campaign.id,
         level_number: level_index,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -202,11 +217,12 @@ levels =
   end)
 
 {_, levels_without_units} =
-  Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign])
+  Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign_id])
 
 units =
   Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    campaign_rules = Enum.at(rules, level.campaign - 1)
+    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
+    campaign_rules = Enum.at(rules, campaign_number - 1)
 
     base_level = campaign_rules.base_level
     level_scaler = campaign_rules.scaler

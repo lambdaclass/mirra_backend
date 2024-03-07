@@ -75,6 +75,7 @@ defmodule Arena.Game.Skill do
       end)
 
     %{game_state | players: players}
+    |> maybe_move_player(entity, cone_hit[:move_by])
   end
 
   def do_mechanic(game_state, entity, {:multi_cone_hit, multi_cone_hit}, skill_params) do
@@ -301,4 +302,19 @@ defmodule Arena.Game.Skill do
          aditional_info: %{owner_id: owner_id}
        }),
        do: get_in(game_state, [:players, owner_id])
+
+  defp maybe_move_player(game_state, %{category: :player} = player, move_by)
+       when not is_nil(move_by) do
+    player_for_moving = %{player | is_moving: true, speed: move_by}
+
+    physics_player =
+      Physics.move_entity(player_for_moving, 1.0, game_state.external_wall, game_state.obstacles)
+
+    player = Map.merge(player, %{physics_player | is_moving: false, speed: player.speed})
+    put_in(game_state, [:players, player.id], player)
+  end
+
+  defp maybe_move_player(game_state, _, _) do
+    game_state
+  end
 end

@@ -40,7 +40,7 @@ defmodule GameBackend.Gacha do
   @doc """
   Gets all Boxes.
   """
-  def get_boxes(), do: Repo.all(from b in Box, preload: [cost: :currency])
+  def get_boxes(), do: Repo.all(from(b in Box, preload: [cost: :currency]))
 
   @doc """
   Get a character from the given box. Does not add as unit (that logic is left to game apps)
