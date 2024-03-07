@@ -396,7 +396,7 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_call({:use_item, player_id, timestamp}, _from, state) do
+  def handle_call({:use_item, player_id, _timestamp}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_item(state.game_state)
