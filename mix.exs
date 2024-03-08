@@ -44,7 +44,5 @@ defmodule MirraBackend.MixProject do
         ]
       ]
     ]
-
-
   end
 end
