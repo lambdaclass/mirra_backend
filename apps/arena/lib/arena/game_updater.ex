@@ -10,15 +10,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
 
-  ## Time between checking that a game has ended
-  @check_game_ended_interval_ms 1_000
-  ## Time to wait between a game ended detected and shutting down this process
-  @game_ended_shutdown_wait_ms 10_000
-  ## Time between natural healing intervals
-  @natural_healing_interval_ms 300
-  ## Time to prepare the game before starting
-  @enable_incomming_messages_ms 9_000
-
   ##########################
   # API
   ##########################
@@ -42,28 +33,72 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  ##########################
-  # Callbacks
-  ##########################
   def init(%{clients: clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients, game_config)
 
-    Process.send_after(self(), :update_game, 1_000)
-
-    Process.send_after(
-      self(),
-      {:check_game_ended, Map.keys(game_state.players)},
-      @check_game_ended_interval_ms * 10
-    )
-
-    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
-    Process.send_after(self(), :spawn_item, game_config.game.item_spawn_interval_ms)
-    Process.send_after(self(), :update_finish_preparing_game, 1_000)
+    send(self(), :update_game)
+    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
+
+  ##########################
+  # API Callbacks
+  ##########################
+
+  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
+    player =
+      state.game_state.players
+      |> Map.get(player_id)
+      |> Player.move(direction)
+
+    game_state =
+      state.game_state
+      |> put_in([:players, player_id], player)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
+
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_skill(skill_key, skill_params, state)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  def handle_call({:join, client_id}, _from, state) do
+    case get_in(state.game_state, [:client_to_player_map, client_id]) do
+      nil ->
+        {:reply, :not_a_client, state}
+
+      player_id ->
+        response = %{player_id: player_id, game_config: state.game_config}
+        {:reply, {:ok, response}, state}
+    end
+  end
+
+  def handle_call({:use_item, player_id, _timestamp}, _from, state) do
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_item(state.game_state)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  ##########################
+  # END API Callbacks
+  ##########################
+
+  ##########################
+  # Game Callbacks
+  ##########################
 
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
@@ -88,6 +123,51 @@ defmodule Arena.GameUpdater do
 
     {:noreply, %{state | game_state: game_state}}
   end
+
+  def handle_info(:game_start, state) do
+    broadcast_enable_incomming_messages(state.game_state.game_id)
+    Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
+    Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    send(self(), :natural_healing)
+    send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+
+    {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
+  end
+
+  def handle_info({:end_game_check, last_players_ids}, state) do
+    case check_game_ended(state.game_state.players, last_players_ids) do
+      {:ongoing, players_ids} ->
+        Process.send_after(
+          self(),
+          {:end_game_check, players_ids},
+          state.game_config.game.end_game_interval_ms
+        )
+
+      {:ended, winner} ->
+        state = put_in(state, [:game_state, :status], :ENDED)
+        broadcast_game_ended(winner, state.game_state)
+
+        ## The idea of having this waiting period is in case websocket processes keep
+        ## sending messages, this way we give some time before making them crash
+        ## (sending to inexistant process will cause them to crash)
+        Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
+    end
+
+    {:noreply, state}
+  end
+
+  # Shutdown
+  def handle_info(:game_ended, state) do
+    {:stop, :normal, state}
+  end
+
+  ##########################
+  # End Game Callbacks
+  ##########################
+
+  ##########################
+  # Skill Callbacks
+  ##########################
 
   def handle_info({:remove_skill_action, player_id, skill_action}, state) do
     player =
@@ -162,111 +242,73 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  # End game
-  def handle_info(:game_ended, state) do
-    {:stop, :normal, state}
-  end
-
-  def handle_info({:check_game_ended, last_players_ids}, state) do
-    case check_game_ended(state.game_state.players, last_players_ids) do
-      {:ongoing, players_ids} ->
-        Process.send_after(
-          self(),
-          {:check_game_ended, players_ids},
-          @check_game_ended_interval_ms
-        )
-
-      {:ended, winner} ->
-        broadcast_game_ended(winner, state.game_state)
-
-        ## The idea of having this waiting period is in case websocket processes keep
-        ## sending messages, this way we give some time before making them crash
-        ## (sending to inexistant process will cause them to crash)
-        Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info(:update_finish_preparing_game, state) do
-    case state.game_state.status do
-      :PREPARING when state.game_state.countdown >= 1_000 ->
-        Process.send_after(self(), :update_finish_preparing_game, 1_000)
-        {:noreply, state |> put_in([:game_state, :countdown], state.game_state.countdown - 1_000)}
-
-      :PREPARING ->
-        broadcast_enable_incomming_messages(state.game_state.game_id)
-
-        Process.send_after(
-          self(),
-          :start_zone_shrink,
-          state.game_config.game.zone_shrink_start_ms
-        )
-
-        send(self(), :update_zone_shrink_time)
-
-        {:noreply,
-         state
-         |> put_in([:game_state, :status], :RUNNING)
-         |> put_in([:game_state, :countdown], 0)}
-
-      _ ->
-        {:noreply, state}
-    end
-  end
-
   # Natural healing
   def handle_info(:natural_healing, state) do
-    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
+    Process.send_after(
+      self(),
+      :natural_healing,
+      state.game_config.game.natural_healing_interval_ms
+    )
 
     players = Player.trigger_natural_healings(state.game_state.players)
     state = put_in(state, [:game_state, :players], players)
     {:noreply, state}
   end
 
+  ##########################
+  # End Skill Callbacks
+  ##########################
+
+  ##########################
+  # Zone Callbacks
+  ##########################
+
   def handle_info(:start_zone_shrink, state) do
     Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
     send(self(), :zone_shrink)
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     state =
-      put_in(state, [:game_state, :zone, :shrinking], :enabled)
+      put_in(state, [:game_state, :zone, :shrinking], true)
       |> put_in([:game_state, :zone, :enabled], true)
+      |> put_in(
+        [:game_state, :zone, :next_zone_change_timestamp],
+        now + state.game_config.game.zone_stop_interval_ms
+      )
 
     {:noreply, state}
   end
 
   def handle_info(:stop_zone_shrink, state) do
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
-    state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    state =
+      put_in(state, [:game_state, :zone, :shrinking], false)
+      |> put_in(
+        [:game_state, :zone, :next_zone_change_timestamp],
+        now + state.game_config.game.zone_start_interval_ms
+      )
+
     {:noreply, state}
   end
 
-  def handle_info(:update_zone_shrink_time, state) do
-    if get_in(state, [:game_state, :zone, :zone_shrink_time]) > 0 do
-      Process.send_after(self(), :update_zone_shrink_time, 1000)
-
-      state =
-        state
-        |> update_in([:game_state, :zone, :zone_shrink_time], fn current_time ->
-          current_time - 1000
-        end)
-
-      {:noreply, state}
-    else
-      {:noreply, state}
-    end
-  end
-
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
-    Process.send_after(self(), :zone_shrink, 100)
-    radius = max(state.game_state.zone.radius - 10.0, 0.0)
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: true}}} = state) do
+    Process.send_after(self(), :zone_shrink, state.game_config.game.zone_shrink_interval)
+    radius = max(state.game_state.zone.radius - state.game_config.game.zone_shrink_radius_by, 0.0)
     state = put_in(state, [:game_state, :zone, :radius], radius)
     {:noreply, state}
   end
 
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: false}}} = state) do
     {:noreply, state}
   end
+
+  ##########################
+  # End Zone Callbacks
+  ##########################
 
   def handle_info(
         {:to_killfeed, killer_id, victim_id},
@@ -396,50 +438,6 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_call({:use_item, player_id, _timestamp}, _from, state) do
-    game_state =
-      get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
-    player =
-      state.game_state.players
-      |> Map.get(player_id)
-      |> Player.move(direction)
-
-    game_state =
-      state.game_state
-      |> put_in([:players, player_id], player)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
-
-    game_state =
-      get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, skill_params, state)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:join, client_id}, _from, state) do
-    case get_in(state.game_state, [:client_to_player_map, client_id]) do
-      nil ->
-        {:reply, :not_a_client, state}
-
-      player_id ->
-        response = %{player_id: player_id, game_config: state.game_config}
-        {:reply, {:ok, response}, state}
-    end
-  end
-
   ##########################
   # End callbacks
   ##########################
@@ -479,7 +477,7 @@ defmodule Arena.GameUpdater do
              damage_taken: state.damage_taken,
              damage_done: state.damage_done,
              status: state.status,
-             countdown: state.countdown
+             start_game_timestamp: state.start_game_timestamp
            }}
       })
 
@@ -523,6 +521,7 @@ defmodule Arena.GameUpdater do
   # Create a new game
   defp new_game(game_id, clients, config) do
     now = System.monotonic_time(:millisecond)
+    initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     new_game =
       Map.new(game_id: game_id)
@@ -541,9 +540,12 @@ defmodule Arena.GameUpdater do
       |> Map.put(:zone, %{
         radius: config.map.radius,
         enabled: false,
-        shrinking: :disabled,
-        zone_shrink_time: config.game.zone_shrink_start_ms
+        shrinking: false,
+        next_zone_change_timestamp:
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
       })
+      |> Map.put(:status, :PREPARING)
+      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
@@ -574,8 +576,6 @@ defmodule Arena.GameUpdater do
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
-    |> Map.put(:status, :PREPARING)
-    |> Map.put(:countdown, @enable_incomming_messages_ms)
   end
 
   # Initialize obstacles

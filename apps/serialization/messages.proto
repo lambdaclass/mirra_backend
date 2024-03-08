@@ -92,7 +92,7 @@ message GameState {
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
   GameStatus status = 11;
-  int64 countdown = 12;
+  int64 start_game_timestamp = 12;
   map<uint64, Entity> items = 13;
 }
 
@@ -232,7 +232,8 @@ message GameAction {
 message Zone {
   float radius = 1;
   bool enabled = 2;
-  int32 zone_shrink_time = 3;
+  int64 next_zone_change_timestamp = 3;
+  bool shrinking = 4;
 }
 
 message KillEntry {

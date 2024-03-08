@@ -2937,7 +2937,7 @@ proto.GameState.toObject = function(includeInstance, msg) {
     damageDoneMap: (f = msg.getDamageDoneMap()) ? f.toObject(includeInstance, undefined) : [],
     powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     status: jspb.Message.getFieldWithDefault(msg, 11, 0),
-    countdown: jspb.Message.getFieldWithDefault(msg, 12, 0),
+    startGameTimestamp: jspb.Message.getFieldWithDefault(msg, 12, 0),
     itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
@@ -3035,7 +3035,7 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 12:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setCountdown(value);
+      msg.setStartGameTimestamp(value);
       break;
     case 13:
       var value = msg.getItemsMap();
@@ -3133,7 +3133,7 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getCountdown();
+  f = message.getStartGameTimestamp();
   if (f !== 0) {
     writer.writeInt64(
       12,
@@ -3415,10 +3415,10 @@ proto.GameState.prototype.setStatus = function(value) {
 
 
 /**
- * optional int64 countdown = 12;
+ * optional int64 start_game_timestamp = 12;
  * @return {number}
  */
-proto.GameState.prototype.getCountdown = function() {
+proto.GameState.prototype.getStartGameTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
 };
 
@@ -3427,7 +3427,7 @@ proto.GameState.prototype.getCountdown = function() {
  * @param {number} value
  * @return {!proto.GameState} returns this
  */
-proto.GameState.prototype.setCountdown = function(value) {
+proto.GameState.prototype.setStartGameTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 12, value);
 };
 
@@ -6664,7 +6664,8 @@ proto.Zone.toObject = function(includeInstance, msg) {
   var f, obj = {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    zoneShrinkTime: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    nextZoneChangeTimestamp: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    shrinking: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
   };
 
   if (includeInstance) {
@@ -6710,8 +6711,12 @@ proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
       msg.setEnabled(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readInt32());
-      msg.setZoneShrinkTime(value);
+      var value = /** @type {number} */ (reader.readInt64());
+      msg.setNextZoneChangeTimestamp(value);
+      break;
+    case 4:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setShrinking(value);
       break;
     default:
       reader.skipField();
@@ -6756,10 +6761,17 @@ proto.Zone.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getZoneShrinkTime();
+  f = message.getNextZoneChangeTimestamp();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeInt64(
       3,
+      f
+    );
+  }
+  f = message.getShrinking();
+  if (f) {
+    writer.writeBool(
+      4,
       f
     );
   }
@@ -6803,10 +6815,10 @@ proto.Zone.prototype.setEnabled = function(value) {
 
 
 /**
- * optional int32 zone_shrink_time = 3;
+ * optional int64 next_zone_change_timestamp = 3;
  * @return {number}
  */
-proto.Zone.prototype.getZoneShrinkTime = function() {
+proto.Zone.prototype.getNextZoneChangeTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -6815,8 +6827,26 @@ proto.Zone.prototype.getZoneShrinkTime = function() {
  * @param {number} value
  * @return {!proto.Zone} returns this
  */
-proto.Zone.prototype.setZoneShrinkTime = function(value) {
+proto.Zone.prototype.setNextZoneChangeTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
+};
+
+
+/**
+ * optional bool shrinking = 4;
+ * @return {boolean}
+ */
+proto.Zone.prototype.getShrinking = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Zone} returns this
+ */
+proto.Zone.prototype.setShrinking = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
 
