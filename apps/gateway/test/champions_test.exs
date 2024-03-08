@@ -4,8 +4,9 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
-  alias GameBackend.Users.Currencies.CurrencyCost
   alias Champions.{Units, Users, Utils}
+  alias GameBackend.Repo
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
 
   alias Gateway.Serialization.{
@@ -22,9 +23,6 @@ defmodule Gateway.Test.Champions do
   }
 
   alias Gateway.SocketTester
-
-  # import Plug.Conn
-  # import Phoenix.ConnTest
 
   setup_all do
     # Start Phoenix endpoint
@@ -48,16 +46,17 @@ defmodule Gateway.Test.Champions do
 
   describe "users" do
     test "users", %{socket_tester: socket_tester} do
-      # Create our user
-      :ok = SocketTester.create_user(socket_tester, "Username")
-      fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user, %User{}}}
+      username = "Username"
 
+      # Create our user
+      :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:user, user}} = get_last_message()
+      %WebSocketResponse{response_type: {:user, %User{} = user}} = get_last_message()
+
+      assert user.username == username
 
       # Creating another user with the same name fails
-      :ok = SocketTester.create_user(socket_tester, "Username")
+      :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "username_taken"}}}
 
@@ -81,21 +80,16 @@ defmodule Gateway.Test.Champions do
       # Unselect the unit
       :ok = SocketTester.unselect_unit(socket_tester, user.id, unit_to_unselect.id)
       fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:unit, %Unit{}}}
-
-      fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:unit, unselected_unit}} = get_last_message()
+      %WebSocketResponse{response_type: {:unit, %Unit{} = unselected_unit}} = get_last_message()
 
       assert not unselected_unit.selected
       # Protobuf doesn't support nil values, returns zero instead
       assert unselected_unit.slot == 0
+      assert unselected_unit.id == unit_to_unselect.id
 
       :ok = SocketTester.select_unit(socket_tester, user.id, unselected_unit.id, slot)
       fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:unit, %Unit{}}}
-
-      fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:unit, selected_unit}} = get_last_message()
+      %WebSocketResponse{response_type: {:unit, %Unit{} = selected_unit}} = get_last_message()
 
       assert selected_unit.selected
       assert selected_unit.slot == slot
@@ -126,12 +120,6 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      assert_receive %WebSocketResponse{
-        response_type: {:unit_and_currencies, %UnitAndCurrencies{}}
-      }
-
-      fetch_last_message(socket_tester)
-
       %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
       } = get_last_message()
@@ -158,12 +146,6 @@ defmodule Gateway.Test.Champions do
       ] = Units.calculate_tier_up_cost(unit)
 
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:unit_and_currencies, %UnitAndCurrencies{}}
-      }
-
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
@@ -197,6 +179,8 @@ defmodule Gateway.Test.Champions do
           character_id: muflus.id
         })
 
+      unit = Repo.preload(unit, [:character])
+
       rank = unit.rank
       user_units_count = user.id |> GameBackend.Units.get_units() |> Enum.count()
 
@@ -215,18 +199,12 @@ defmodule Gateway.Test.Champions do
       # For the same faction, we will do one of each unit.
       units_to_consume = create_units_to_consume(user, muflus, same_faction_character)
 
-      # Characters need a certain rarity to rank up
-      # assert unit.character.rarity = Units.get_quality()
+      # Characters need a certain quality to rank up
+      assert unit.character.quality == Units.get_quality(:epic)
 
       # TODO: Check that we cant tier up again without ranking up
 
       :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:unit, %Unit{}}
-      }
-
       fetch_last_message(socket_tester)
 
       %WebSocketResponse{
@@ -318,40 +296,27 @@ defmodule Gateway.Test.Champions do
     send(socket_tester, {:last_message, self()})
   end
 
-  defp create_units_to_consume(user, same_character, same_faction),
-    do:
-      (Enum.map(1..3, fn _ ->
-         {:ok, unit} =
-           GameBackend.Units.insert_unit(%{
-             user_id: user.id,
-             level: 100,
-             tier: 5,
-             rank: Units.get_rank(:star5),
-             selected: false,
-             character_id: same_character.id
-           })
+  defp create_units_to_consume(user, same_character, same_faction) do
+    params = %{
+      user_id: user.id,
+      level: 100,
+      tier: 5,
+      rank: Units.get_rank(:star5),
+      selected: false
+    }
 
-         unit
-       end) ++
-         [
-           GameBackend.Units.insert_unit(%{
-             user_id: user.id,
-             level: 100,
-             tier: 5,
-             rank: Units.get_rank(:star5),
-             selected: false,
-             character_id: same_faction.id
-           })
-           |> elem(1),
-           GameBackend.Units.insert_unit(%{
-             user_id: user.id,
-             level: 100,
-             tier: 5,
-             rank: Units.get_rank(:star5),
-             selected: false,
-             character_id: same_faction.id
-           })
-           |> elem(1)
-         ])
-      |> Enum.map(& &1.id)
+    same_character_ids =
+      Enum.map(1..3, fn _ ->
+        {:ok, unit} = params |> Map.put(:character_id, same_character.id) |> GameBackend.Units.insert_unit()
+        unit.id
+      end)
+
+    same_faction_ids =
+      Enum.map(1..2, fn _ ->
+        {:ok, unit} = params |> Map.put(:character_id, same_faction.id) |> GameBackend.Units.insert_unit()
+        unit.id
+      end)
+
+    same_character_ids ++ same_faction_ids
+  end
 end
