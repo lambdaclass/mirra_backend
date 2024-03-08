@@ -20,9 +20,6 @@ defmodule Gateway.Test.Champions do
 
   alias Gateway.SocketTester
 
-  # import Plug.Conn
-  # import Phoenix.ConnTest
-
   setup_all do
     # Start Phoenix endpoint
     {:ok, _} =
@@ -248,40 +245,27 @@ defmodule Gateway.Test.Champions do
     send(socket_tester, {:last_message, self()})
   end
 
-  defp create_units_to_consume(user, same_character, same_faction),
-    do:
-      (Enum.map(1..3, fn _ ->
-         {:ok, unit} =
-           GameBackend.Units.insert_unit(%{
-             user_id: user.id,
-             level: 100,
-             tier: 5,
-             rank: Units.get_rank(:star5),
-             selected: false,
-             character_id: same_character.id
-           })
+  defp create_units_to_consume(user, same_character, same_faction) do
+    params = %{
+      user_id: user.id,
+      level: 100,
+      tier: 5,
+      rank: Units.get_rank(:star5),
+      selected: false
+    }
 
-         unit
-       end) ++
-         [
-           GameBackend.Units.insert_unit(%{
-             user_id: user.id,
-             level: 100,
-             tier: 5,
-             rank: Units.get_rank(:star5),
-             selected: false,
-             character_id: same_faction.id
-           })
-           |> elem(1),
-           GameBackend.Units.insert_unit(%{
-             user_id: user.id,
-             level: 100,
-             tier: 5,
-             rank: Units.get_rank(:star5),
-             selected: false,
-             character_id: same_faction.id
-           })
-           |> elem(1)
-         ])
-      |> Enum.map(& &1.id)
+    same_character_ids =
+      Enum.map(1..3, fn _ ->
+        {:ok, unit} = params |> Map.put(:character_id, same_character.id) |> GameBackend.Units.insert_unit()
+        unit.id
+      end)
+
+    same_faction_ids =
+      Enum.map(1..2, fn _ ->
+        {:ok, unit} = params |> Map.put(:character_id, same_faction.id) |> GameBackend.Units.insert_unit()
+        unit.id
+      end)
+
+    same_character_ids ++ same_faction_ids
+  end
 end
