@@ -209,7 +209,7 @@ defmodule Champions.Users do
     |> Multi.run(:add_currencies, fn _, _ ->
       results =
         Enum.map(afk_rewards, fn afk_reward ->
-          Currencies.add_currency(user_id, afk_reward.currency.id, floor(afk_reward.amount))
+          Currencies.add_currency(user_id, afk_reward.currency.id, trunc(afk_reward.amount))
         end)
 
       if Enum.all?(results, fn {result, _} -> result == :ok end) do
