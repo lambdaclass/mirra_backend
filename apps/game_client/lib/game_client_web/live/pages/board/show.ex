@@ -16,7 +16,7 @@ defmodule GameClientWeb.BoardLive.Show do
 
     mocked_board_width = 2000
     mocked_board_height = 2000
-    backend_board_size = 10000
+    backend_board_size = 10_000
     back_size_to_front_ratio = backend_board_size / mocked_board_width
 
     game_data = %{0 => %{0 => player_name(player_id)}}
