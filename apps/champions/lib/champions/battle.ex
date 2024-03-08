@@ -40,8 +40,6 @@ defmodule Champions.Battle do
   Run a battle between two teams. The outcome is decided randomly, favoring the team
   with the higher aggregate level of their selected units. Returns `:team_1` or `:team_2`.
   """
-  def battle(_team_1, _team_2), do: :team_1
-
   def battle(team_1, team_2) do
     team_1_agg_level =
       Enum.reduce(team_1, 0, fn unit, acc ->
