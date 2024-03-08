@@ -154,8 +154,6 @@ defmodule GameBackend.Users do
   end
 
   defp build_unit_rewards_params(user_id, unit_rewards) do
-    IO.inspect(unit_rewards, label: :rewards)
-
     Enum.map(unit_rewards, fn unit_reward ->
       Enum.map(1..unit_reward.amount, fn _ ->
         %{
