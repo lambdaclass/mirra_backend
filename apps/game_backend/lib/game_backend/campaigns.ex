@@ -90,7 +90,7 @@ defmodule GameBackend.Campaigns do
       Repo.one(
         from(cp in CampaignProgress,
           where: cp.user_id == ^user_id and cp.campaign_id == ^campaign_id,
-          preload: [level: :campaign]
+          preload: [level: [:campaign, :currency_rewards, :item_rewards, :unit_rewards]]
         )
       )
 
