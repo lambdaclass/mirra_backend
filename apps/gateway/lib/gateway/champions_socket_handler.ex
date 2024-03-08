@@ -19,6 +19,8 @@ defmodule Gateway.ChampionsSocketHandler do
     SelectUnit,
     UnselectUnit,
     LevelUpUnit,
+    TierUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -40,18 +42,14 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    with %WebSocketRequest{request_type: {_type, request}} <- WebSocketRequest.decode(message) do
-      response = handle(request)
+    case WebSocketRequest.decode(message) do
+      %WebSocketRequest{request_type: {_type, request}} ->
+        response = handle(request)
+        encode = WebSocketResponse.encode(%WebSocketResponse{response_type: response})
+        {:reply, {:binary, encode}, state}
 
-      encode = WebSocketResponse.encode(%WebSocketResponse{response_type: response})
-
-      {:reply, {:binary, encode}, state}
-    else
       unknown_request ->
-        Logger.warning(
-          "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
-        )
-
+        Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
         {:ok, state}
     end
   end
@@ -77,15 +75,21 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%GetCampaigns{user_id: _user_id}) do
     case Campaigns.get_campaigns() do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      campaigns -> prepare_response(%{campaigns: Enum.map(campaigns, &%{levels: &1})}, :campaigns)
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      {:ok, campaigns} ->
+        prepare_response(%{campaigns: campaigns}, :campaigns)
     end
   end
 
-  defp handle(%GetCampaign{user_id: _user_id, campaign_number: campaign_number}) do
-    case Campaigns.get_campaign(campaign_number) do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      campaign -> prepare_response(%{levels: campaign}, :campaign)
+  defp handle(%GetCampaign{user_id: _user_id, campaign_id: campaign_id}) do
+    case Campaigns.get_campaign(campaign_id) do
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      {:ok, campaign} ->
+        prepare_response(%{levels: campaign}, :campaign)
     end
   end
 
@@ -112,6 +116,24 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
+  defp handle(%TierUpUnit{user_id: user_id, unit_id: unit_id}) do
+    case Units.tier_up(user_id, unit_id) do
+      {:ok, result} -> prepare_response(result, :unit_and_currencies)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%FuseUnit{
+         user_id: user_id,
+         unit_id: unit_id,
+         consumed_units_ids: consumed_units_ids
+       }) do
+    case Units.fuse(user_id, unit_id, consumed_units_ids) do
+      {:ok, result} -> prepare_response(result, :unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
   defp handle(%EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}),
     do: Items.equip_item(user_id, item_id, unit_id) |> prepare_response(:item)
 
@@ -130,10 +152,7 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   defp handle(unknown_request),
-    do:
-      Logger.warning(
-        "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
-      )
+    do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
 
   defp prepare_response({:error, reason}, _response_type) when is_atom(reason),
     do: prepare_response({:error, Atom.to_string(reason)}, nil)

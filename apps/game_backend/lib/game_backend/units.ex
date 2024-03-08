@@ -4,8 +4,10 @@ defmodule GameBackend.Units do
   - Create
   - Select to a slot/Unselect
   - Level up
+  - Tier up
 
-  Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character. Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
+  Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character.
+  Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
   """
 
   import Ecto.Query
@@ -62,16 +64,20 @@ defmodule GameBackend.Units do
   Gets a unit given its id.
   """
   def get_unit(id) do
-    case Repo.get(Unit, id) |> Repo.preload([:character, :user, :items]) do
-      nil -> {:error, :not_found}
-      unit -> {:ok, unit}
-    end
+    unit = Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+    if unit, do: {:ok, unit}, else: {:error, :not_found}
   end
 
   @doc """
   Gets all units from all users.
   """
   def get_units(), do: Repo.all(Unit) |> Repo.preload([:character, :user, :items])
+
+  @doc """
+  Gets all units from ids in a list.
+  """
+  def get_units_by_ids(unit_ids) when is_list(unit_ids),
+    do: Repo.all(from(u in Unit, where: u.id in ^unit_ids, preload: [:character, :user, :items]))
 
   @doc """
   Gets all units for a user.
@@ -131,6 +137,11 @@ defmodule GameBackend.Units do
   def delete_unit(id), do: Repo.get(Unit, id) |> delete_unit()
 
   @doc """
+  Deletes all units in a given list.
+  """
+  def delete_units(unit_ids), do: Repo.delete_all(from(u in Unit, where: u.id in ^unit_ids))
+
+  @doc """
   Sets all of the user's units' selected value to false.
   """
   def remove_all_selected_units(user_id),
@@ -155,10 +166,10 @@ defmodule GameBackend.Units do
   @doc """
   Create params for a level with a random character.
   """
-  def unit_params_for_level(possible_characters, unit_level, slot) do
+  def unit_params_for_level(possible_characters, level, slot) do
     character = Enum.random(possible_characters)
 
-    %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id, slot: slot}
+    %{level: level, tier: 1, rank: 1, selected: true, character_id: character.id, slot: slot}
   end
 
   @doc """
@@ -168,16 +179,44 @@ defmodule GameBackend.Units do
     do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
 
   @doc """
-  Increment an unit's unit_level (not to be confused with units' `level` association).
+  Increment a unit's level (not to be confused with units' `level` association).
 
   ## Examples
 
-      iex> add_level(%Unit{unit_level: 41}, 1)
-      {:ok, %Unit{unit_level: 42}}
+      iex> add_level(%Unit{level: 41}, 1)
+      {:ok, %Unit{level: 42}}
   """
   def add_level(unit, level \\ 1) do
     unit
-    |> Unit.update_changeset(%{unit_level: unit.unit_level + level})
+    |> Unit.update_changeset(%{level: unit.level + level})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment a unit's tier.
+
+  ## Examples
+
+      iex> add_tier(%Unit{tier: 41}, 1)
+      {:ok, %Unit{tier: 42}}
+  """
+  def add_tier(unit, tier \\ 1) do
+    unit
+    |> Unit.update_changeset(%{tier: unit.tier + tier})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment a unit's rank.
+
+  ## Examples
+
+      iex> add_rank(%Unit{rank: 41}, 1)
+      {:ok, %Unit{rank: 42}}
+  """
+  def add_rank(unit, rank \\ 1) do
+    unit
+    |> Unit.update_changeset(%{rank: unit.rank + rank})
     |> Repo.update()
   end
 end

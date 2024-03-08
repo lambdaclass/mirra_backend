@@ -92,8 +92,9 @@ message GameState {
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
   GameStatus status = 11;
-  int64 countdown = 12;
-  map<uint64, Entity> obstacles = 13;
+  int64 start_game_timestamp = 12;
+  map<uint64, Entity> items = 13;
+  map<uint64, Entity> obstacles = 14;
 }
 
 enum GameStatus {
@@ -105,7 +106,7 @@ enum GameStatus {
 /*
  * Info about an entity
  * id: unique identifier
- * category: player, projectile, obstacle.
+ * category: player, projectile, obstacle, item.
  * shape: circle, point, line, polygon, point.
  * name: unique name of the entity
  * position: position of the entity (polyogns and lines don't have a position)
@@ -133,6 +134,7 @@ message Entity {
     Projectile projectile = 13;
     Obstacle obstacle = 14;
     PowerUp power_up = 15;
+    Item item = 16;
   }
 }
 
@@ -147,11 +149,16 @@ message Player {
   string character_name = 8;
   uint64 power_ups = 9;
   map<uint64, Effect> effects = 10;
+  Item inventory = 11;
 }
 
 message Effect {
   string name = 1;
   uint32 duration_ms = 2;
+}
+
+message Item {
+  string name = 2;
 }
 
 message Projectile {
@@ -210,10 +217,15 @@ message AttackParameters {
   Direction target = 1;
 }
 
+message UseItem {
+  uint64 item = 1;
+}
+
 message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
+    UseItem use_item = 4;
   }
   int64 timestamp = 3;
 }
@@ -221,7 +233,8 @@ message GameAction {
 message Zone {
   float radius = 1;
   bool enabled = 2;
-  int32 zone_shrink_time = 3;
+  int64 next_zone_change_timestamp = 3;
+  bool shrinking = 4;
 }
 
 message KillEntry {

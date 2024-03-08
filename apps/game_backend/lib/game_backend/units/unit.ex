@@ -13,12 +13,13 @@ defmodule GameBackend.Units.Unit do
   alias GameBackend.Users.User
 
   schema "units" do
-    field(:unit_level, :integer)
+    field(:level, :integer)
     field(:tier, :integer)
+    field(:rank, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
 
-    belongs_to(:level, Level)
+    belongs_to(:campaign_level, Level)
     belongs_to(:user, User)
     belongs_to(:character, Character)
 
@@ -30,13 +31,22 @@ defmodule GameBackend.Units.Unit do
   @doc false
   def changeset(unit, attrs) do
     unit
-    |> cast(attrs, [:unit_level, :tier, :selected, :slot, :character_id, :user_id, :level_id])
-    |> validate_required([:unit_level, :tier, :selected, :character_id])
+    |> cast(attrs, [
+      :level,
+      :tier,
+      :rank,
+      :selected,
+      :slot,
+      :character_id,
+      :user_id,
+      :campaign_level_id
+    ])
+    |> validate_required([:level, :selected, :character_id])
   end
 
   @doc """
-  Changeset for when updating a units.
+  Changeset for when updating a unit.
   """
   def update_changeset(unit, attrs),
-    do: cast(unit, attrs, [:selected, :slot, :unit_level, :tier])
+    do: cast(unit, attrs, [:selected, :slot, :level, :tier, :rank])
 end
