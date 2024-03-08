@@ -13,11 +13,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
     oneof: 0
   )
 
-  field(:create_user, 3,
-    type: Gateway.Serialization.CreateUser,
-    json_name: "createUser",
-    oneof: 0
-  )
+  field(:create_user, 3, type: Gateway.Serialization.CreateUser, json_name: "createUser", oneof: 0)
 
   field(:get_campaigns, 4,
     type: Gateway.Serialization.GetCampaigns,
@@ -32,20 +28,9 @@ defmodule Gateway.Serialization.WebSocketRequest do
   )
 
   field(:get_level, 6, type: Gateway.Serialization.GetLevel, json_name: "getLevel", oneof: 0)
-
-  field(:fight_level, 7,
-    type: Gateway.Serialization.FightLevel,
-    json_name: "fightLevel",
-    oneof: 0
-  )
-
+  field(:fight_level, 7, type: Gateway.Serialization.FightLevel, json_name: "fightLevel", oneof: 0)
   field(:get_units, 8, type: Gateway.Serialization.GetUnits, json_name: "getUnits", oneof: 0)
-
-  field(:select_unit, 9,
-    type: Gateway.Serialization.SelectUnit,
-    json_name: "selectUnit",
-    oneof: 0
-  )
+  field(:select_unit, 9, type: Gateway.Serialization.SelectUnit, json_name: "selectUnit", oneof: 0)
 
   field(:unselect_unit, 10,
     type: Gateway.Serialization.UnselectUnit,

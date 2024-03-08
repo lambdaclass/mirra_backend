@@ -5,6 +5,7 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
@@ -18,6 +19,7 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit)
     has_many(:items, Item)
+    has_many(:campaign_progress, CampaignProgress)
 
     timestamps()
   end

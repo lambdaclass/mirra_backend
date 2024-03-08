@@ -303,6 +303,36 @@ defmodule Gateway.Test.Champions do
     end
   end
 
+  describe "battle" do
+    test "battle", %{socket_tester: socket_tester} do
+      # Create user
+      {:ok, user} = Users.register("battle_user")
+
+      # Get user's first campaign progression
+      campaign_progression = Enum.at(user.campaign_progress, 0)
+
+      # Get the level of the campaign progression
+      level_id = campaign_progression.level_id
+
+      # Fight the level
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      } = get_last_message()
+
+      # Battle result should be either win or loss
+      assert battle_result.result == "win" or battle_result.result == "loss"
+    end
+  end
+
   defp get_last_message() do
     receive do
       message ->

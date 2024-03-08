@@ -107,10 +107,9 @@ defmodule GameBackend.Users do
 
   defp preload(user),
     do:
-      Repo.preload(user,
-        items: :template,
-        units: [:character, :items],
-        currencies: :currency
+      Repo.preload(
+        user,
+        [:campaign_progress, items: :template, units: [:character, :items], currencies: :currency]
       )
 
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
