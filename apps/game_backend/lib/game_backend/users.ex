@@ -93,9 +93,7 @@ defmodule GameBackend.Users do
 
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
-      |> Multi.run(:currency_rewards, fn _, _ ->
-        apply_currency_rewards(user_id, level.currency_rewards)
-      end)
+      |> apply_currency_rewards(user_id, level.currency_rewards)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
         build_item_rewards_params(user_id, level.item_rewards)
       end)
@@ -131,13 +129,6 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-  defp apply_currency_rewards(user_id, currency_rewards) do
-    Enum.map(currency_rewards, fn currency_reward ->
-      Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
-    end)
-    |> check_result(:currency_rewards)
-  end
-
   defp build_item_rewards_params(user_id, item_rewards) do
     Enum.map(item_rewards, fn item_reward ->
       Enum.map(1..item_reward.amount, fn _ ->
@@ -170,14 +161,11 @@ defmodule GameBackend.Users do
     |> List.flatten()
   end
 
-  defp check_result(result, element_name) do
-    if Enum.all?(result, fn
-         {:ok, _} -> true
-         _ -> false
-       end) do
-      {:ok, result}
-    else
-      {:error, "Failed to apply " <> Atom.to_string(element_name)}
-    end
+  defp apply_currency_rewards(multi, user_id, currency_rewards) do
+    Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
+      Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
+        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+    end)
   end
 end
