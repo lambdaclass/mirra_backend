@@ -158,8 +158,7 @@ defmodule Champions.Battle.Simulator do
           do: choose_targets(unit, effect, initial_step_state),
           else: target_ids
 
-      targets_after_effect =
-        Enum.map(target_ids, fn id -> apply_effect(effect, unit, new_state[id]) end)
+      targets_after_effect = Enum.map(target_ids, fn id -> apply_effect(effect, unit, new_state[id]) end)
 
       Enum.reduce(targets_after_effect, new_state, fn target_unit, acc_state ->
         Map.put(acc_state, target_unit.id, target_unit)
@@ -175,8 +174,7 @@ defmodule Champions.Battle.Simulator do
            targeting_strategy: "random",
            targets_allies: targets_allies,
            amount_of_targets: amount
-         } =
-           _effect,
+         } = _effect,
          state
        ),
        do:

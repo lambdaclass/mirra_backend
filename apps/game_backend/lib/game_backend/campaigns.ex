@@ -101,8 +101,7 @@ defmodule GameBackend.Campaigns do
   def get_next_level(level) do
     campaign = level.campaign
 
-    next_level =
-      Repo.get_by(Level, campaign_id: campaign.id, level_number: level.level_number + 1)
+    next_level = Repo.get_by(Level, campaign_id: campaign.id, level_number: level.level_number + 1)
 
     next_campaign =
       Repo.get_by(Campaign,

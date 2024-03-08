@@ -56,7 +56,7 @@ defmodule GameBackend.Users.Currencies do
           where: uc.user_id == ^user_id and uc.currency_id == ^currency_id,
           select: uc.amount
         )
-      )
+      ) || 0
 
   @doc """
   Adds (or substracts) the given amount of currency to a user.
@@ -152,4 +152,25 @@ defmodule GameBackend.Users.Currencies do
       {:error, "failed"}
     end
   end
+
+  @doc """
+  Gets how much a user has of a given currency by its name.
+  """
+  def get_amount_of_currency_by_name(user_id, currency_name) do
+    Repo.one(
+      from(uc in UserCurrency,
+        join: currency in assoc(uc, :currency),
+        where: uc.user_id == ^user_id and currency.name == ^currency_name,
+        select: uc.amount
+      )
+    ) || 0
+  end
+
+  @doc """
+  Add amount of currency to user by its name.
+  """
+  def add_currency_by_name!(user_id, currency_name, amount),
+    do:
+      user_id
+      |> add_currency(get_currency_by_name!(currency_name).id, amount)
 end

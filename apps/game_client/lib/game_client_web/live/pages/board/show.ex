@@ -54,6 +54,11 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("use_item", item, socket) do
+    send(socket.assigns.game_socket_handler_pid, {:use_item, item})
+    {:noreply, socket}
+  end
+
   defp player_name(player_id), do: "P#{player_id}"
 
   defp handle_game_event({:joined, _joined_info}, socket) do
@@ -61,55 +66,11 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   defp handle_game_event({:update, game_state}, socket) do
-    players =
-      game_state.players
-      |> Enum.map(fn {_entity_id, entity} ->
-        %{
-          id: entity.id,
-          category: entity.category,
-          shape: entity.shape,
-          name: entity.name,
-          x: entity.position.x / 5 + 1000,
-          y: entity.position.y / 5 + 1000,
-          radius: entity.radius / 5,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
-          is_colliding: entity.collides_with |> Enum.any?()
-        }
-      end)
+    entities =
+      Enum.concat([game_state.players, game_state.projectiles, game_state.items, game_state.pools])
+      |> Enum.map(&transform_entity_entry/1)
 
-    projectiles =
-      game_state.projectiles
-      |> Enum.map(fn {_entity_id, entity} ->
-        %{
-          id: entity.id,
-          category: entity.category,
-          shape: entity.shape,
-          name: entity.name,
-          x: entity.position.x / 5 + 1000,
-          y: entity.position.y / 5 + 1000,
-          radius: entity.radius / 5,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
-          is_colliding: entity.collides_with |> Enum.any?()
-        }
-      end)
-
-    pools =
-      game_state.pools
-      |> Enum.map(fn {_entity_id, entity} ->
-        %{
-          id: entity.id,
-          category: entity.category,
-          shape: entity.shape,
-          name: entity.name,
-          x: entity.position.x / 5 + 1000,
-          y: entity.position.y / 5 + 1000,
-          radius: entity.radius / 5,
-          coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
-          is_colliding: entity.collides_with |> Enum.any?()
-        }
-      end)
-
-    {:noreply, push_event(socket, "updateEntities", %{entities: players ++ projectiles ++ pools})}
+    {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
   end
 
   defp handle_game_event({:finished, finished_event}, socket) do
@@ -119,5 +80,19 @@ defmodule GameClientWeb.BoardLive.Show do
 
   defp handle_game_event({:ping, ping_event}, socket) do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
+  end
+
+  defp transform_entity_entry({_entity_id, entity}) do
+    %{
+      id: entity.id,
+      category: entity.category,
+      shape: entity.shape,
+      name: entity.name,
+      x: entity.position.x / 5 + 1000,
+      y: entity.position.y / 5 + 1000,
+      radius: entity.radius / 5,
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
+      is_colliding: entity.collides_with |> Enum.any?()
+    }
   end
 end

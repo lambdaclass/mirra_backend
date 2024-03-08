@@ -12,8 +12,7 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
-    circular_damage_area =
-      Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
+    circular_damage_area = Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -417,8 +416,7 @@ defmodule Arena.Game.Skill do
        when not is_nil(move_by) do
     player_for_moving = %{player | is_moving: true, speed: move_by}
 
-    physics_player =
-      Physics.move_entity(player_for_moving, 1.0, game_state.external_wall, game_state.obstacles)
+    physics_player = Physics.move_entity(player_for_moving, 1.0, game_state.external_wall, game_state.obstacles)
 
     player = Map.merge(player, %{physics_player | is_moving: false, speed: player.speed})
     put_in(game_state, [:players, player.id], player)

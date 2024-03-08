@@ -52,6 +52,7 @@ pub enum Category {
     Obstacle,
     PowerUp,
     Pool,
+    Item,
 }
 
 impl Entity {

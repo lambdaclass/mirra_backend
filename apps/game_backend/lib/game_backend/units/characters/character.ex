@@ -13,7 +13,7 @@ defmodule GameBackend.Units.Characters.Character do
     field(:active, :boolean, default: true)
     field(:name, :string)
     field(:faction, :string)
-    field(:rarity, :string)
+    field(:quality, :integer)
 
     field(:base_health, :integer)
     field(:base_attack, :integer)
@@ -33,7 +33,7 @@ defmodule GameBackend.Units.Characters.Character do
       :name,
       :active,
       :faction,
-      :rarity,
+      :quality,
       :basic_skill_id,
       :ultimate_skill_id,
       :base_health,
