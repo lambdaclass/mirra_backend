@@ -61,7 +61,7 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "username_taken"}}}
 
       # Get user by name
-      :ok = SocketTester.get_user_by_username(socket_tester, "Username")
+      :ok = SocketTester.get_user_by_username(socket_tester, username)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, ^user}}
     end
