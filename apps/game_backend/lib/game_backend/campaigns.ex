@@ -8,14 +8,18 @@ defmodule GameBackend.Campaigns do
   alias GameBackend.Campaigns.{Campaign, CampaignProgress, Level, SuperCampaign}
 
   @doc """
-  Gets all levels, grouped by campaign and sorted ascendingly.
+  Gets all campaigns, and sorted ascendingly by campaign number.
   """
   def get_campaigns() do
     campaigns =
-      Repo.all(from(c in Campaign))
-      |> Repo.preload(levels: [:currency_rewards, units: [:items, :character]])
+      Repo.all(
+        from(c in Campaign,
+          preload: [levels: [:currency_rewards, units: [:items, :character]]],
+          order_by: [asc: c.campaign_number]
+        )
+      )
 
-    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: Enum.sort_by(campaigns, & &1.campaign_number)
+    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: {:ok, campaigns}
   end
 
   @doc """
