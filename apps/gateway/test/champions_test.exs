@@ -115,6 +115,7 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
+
       %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
       } = get_last_message()
@@ -140,6 +141,7 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
+
       %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
       } = get_last_message()
@@ -171,7 +173,7 @@ defmodule Gateway.Test.Champions do
           character_id: muflus.id
         })
 
-        unit = Repo.preload(unit, [:character])
+      unit = Repo.preload(unit, [:character])
 
       rank = unit.rank
       user_units_count = user.id |> GameBackend.Units.get_units() |> Enum.count()
@@ -198,6 +200,7 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
       fetch_last_message(socket_tester)
+
       %WebSocketResponse{
         response_type: {:unit, %Unit{} = unit}
       } = get_last_message()
