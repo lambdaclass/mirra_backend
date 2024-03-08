@@ -231,6 +231,15 @@ defmodule GameClient.Protobuf.GameState.PowerUpsEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.ItemsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -279,6 +288,7 @@ defmodule GameClient.Protobuf.GameState do
 
   field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
   field(:countdown, 12, type: :int64)
+  field(:items, 13, repeated: true, type: GameClient.Protobuf.GameState.ItemsEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -303,6 +313,7 @@ defmodule GameClient.Protobuf.Entity do
   field(:projectile, 13, type: GameClient.Protobuf.Projectile, oneof: 0)
   field(:obstacle, 14, type: GameClient.Protobuf.Obstacle, oneof: 0)
   field(:power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0)
+  field(:item, 16, type: GameClient.Protobuf.Item, oneof: 0)
 end
 
 defmodule GameClient.Protobuf.Player.EffectsEntry do
@@ -335,6 +346,7 @@ defmodule GameClient.Protobuf.Player do
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
   field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
+  field(:inventory, 11, type: GameClient.Protobuf.Item)
 end
 
 defmodule GameClient.Protobuf.Effect do
@@ -344,6 +356,14 @@ defmodule GameClient.Protobuf.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+end
+
+defmodule GameClient.Protobuf.Item do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 2, type: :string)
 end
 
 defmodule GameClient.Protobuf.Projectile do
@@ -408,6 +428,14 @@ defmodule GameClient.Protobuf.AttackParameters do
   field(:target, 1, type: GameClient.Protobuf.Direction)
 end
 
+defmodule GameClient.Protobuf.UseItem do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:item, 1, type: :uint64)
+end
+
 defmodule GameClient.Protobuf.GameAction do
   @moduledoc false
 
@@ -417,6 +445,7 @@ defmodule GameClient.Protobuf.GameAction do
 
   field(:move, 1, type: GameClient.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: GameClient.Protobuf.Attack, oneof: 0)
+  field(:use_item, 4, type: GameClient.Protobuf.UseItem, json_name: "useItem", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
