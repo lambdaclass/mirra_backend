@@ -80,7 +80,8 @@
     "zone_stop_interval_ms": 13000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
-    "zone_damage": 9
+    "zone_damage": 9,
+    "item_spawn_interval_ms": 15000
   },
   "skills": [
     {
@@ -308,6 +309,40 @@
         }
       ],
       "effects_to_apply": []
+    }
+  ],
+  "items": [
+    {
+      "name": "golden_clock",
+      "effects": [
+        {
+          "stamina_faster": {
+            "interval_decrease_by": 0.3,
+            "duration_ms": 7000
+          }
+        }
+      ]
+    },
+    {
+      "name": "magic_boots",
+      "effects": [
+        {
+          "speed_boost": {
+            "amount": 25,
+            "duration_ms": 10000
+          }
+        }
+      ]
+    },
+    {
+      "name": "mirra_blessing",
+      "effects": [
+        {
+          "damage_immunity": {
+            "duration_ms": 5000
+          }
+        }
+      ]
     }
   ],
   "characters": [
