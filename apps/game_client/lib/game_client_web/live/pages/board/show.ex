@@ -95,7 +95,7 @@ defmodule GameClientWeb.BoardLive.Show do
       x: entity.position.x / 5 + 1000,
       y: entity.position.y / 5 + 1000,
       radius: entity.radius / 5,
-      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?()
     }
   end
