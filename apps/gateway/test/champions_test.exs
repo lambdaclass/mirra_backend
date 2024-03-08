@@ -86,6 +86,7 @@ defmodule Gateway.Test.Champions do
       assert not unselected_unit.selected
       # Protobuf doesn't support nil values, returns zero instead
       assert unselected_unit.slot == 0
+      assert unselected_unit.id == unit_to_unselect.id
 
       :ok = SocketTester.select_unit(socket_tester, user.id, unselected_unit.id, slot)
       fetch_last_message(socket_tester)
