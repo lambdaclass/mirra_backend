@@ -5,8 +5,8 @@ defmodule Gateway.Test.Champions do
   use ExUnit.Case
 
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias Champions.{Units, Users, Utils}
   alias GameBackend.Users.Currencies
+  alias Champions.{Units, Users, Utils}
 
   alias Gateway.Serialization.{
     Currency,
@@ -42,16 +42,17 @@ defmodule Gateway.Test.Champions do
 
   describe "users" do
     test "users", %{socket_tester: socket_tester} do
-      # Create our user
-      :ok = SocketTester.create_user(socket_tester, "Username")
-      fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user, %User{}}}
+      username = "Username"
 
+      # Create our user
+      :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:user, user}} = get_last_message()
+      %WebSocketResponse{response_type: {:user, %User{} = user}} = get_last_message()
+
+      assert user.username == username
 
       # Creating another user with the same name fails
-      :ok = SocketTester.create_user(socket_tester, "Username")
+      :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "username_taken"}}}
 
