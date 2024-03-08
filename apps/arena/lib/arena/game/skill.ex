@@ -100,13 +100,13 @@ defmodule Arena.Game.Skill do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
 
     player =
-      entity
+      player
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
       |> maybe_make_invinsible(Map.merge(dash, %{duration_ms: duration}))
 
-    players = Map.put(game_state.players, entity.id, player)
+    players = Map.put(game_state.players, player.id, player)
 
     %{game_state | players: players}
   end
@@ -217,19 +217,19 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
-  def do_mechanic(game_state, player, {:teleport, teleport}, %{skill_target: skill_target}) do
+  def do_mechanic(game_state, entity, {:teleport, teleport}, %{skill_target: skill_target}) do
     target_position = %{
-      x: player.position.x + skill_target.x * teleport.range,
-      y: player.position.y + skill_target.y * teleport.range
+      x: entity.position.x + skill_target.x * teleport.range,
+      y: entity.position.y + skill_target.y * teleport.range
     }
 
-    player =
-      player
+    entity =
+      entity
       |> Physics.move_entity_to_position(target_position, game_state.external_wall)
-      |> Map.put(:aditional_info, player.aditional_info)
+      |> Map.put(:aditional_info, entity.aditional_info)
       |> maybe_make_invinsible(teleport)
 
-    put_in(game_state, [:players, entity.id], player)
+    put_in(game_state, [:players, entity.id], entity)
   end
 
   def handle_skill_effects(game_state, player, effects, game_config) do
