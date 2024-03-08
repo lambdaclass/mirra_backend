@@ -18,7 +18,7 @@ units_per_level = 5
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: "Epic",
+  quality: Champions.Units.get_quality(:epic),
   base_health: 621,
   base_attack: 63,
   base_armor: 78,
@@ -57,7 +57,7 @@ Characters.insert_character(%{
   active: true,
   name: "Uma",
   faction: "Kaline",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Characters.insert_character(%{
@@ -65,7 +65,7 @@ Characters.insert_character(%{
   active: true,
   name: "Dagna",
   faction: "Merliot",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Characters.insert_character(%{
@@ -73,7 +73,7 @@ Characters.insert_character(%{
   active: true,
   name: "H4ck",
   faction: "Otobi",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 {:ok, epic_sword} = Items.insert_item_template(%{
