@@ -216,5 +216,5 @@ level_2
 |> Repo.update!()
 
 level_3
-|> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id}]})
+|> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]})
 |> Repo.update!()
