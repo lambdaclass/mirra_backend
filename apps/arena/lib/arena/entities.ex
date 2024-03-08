@@ -32,45 +32,57 @@ defmodule Arena.Entities do
         last_natural_healing_update: now,
         natural_healing_interval: character.natural_healing_interval,
         last_damage_received: now,
+        last_skill_triggered: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
         forced_movement: false,
         power_ups: 0,
-        power_up_damage_modifier: config.power_ups.power_up_damage_modifier,
+        power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
+        inventory: nil,
+        damage_immunity: false,
         effects: %{}
       }
     }
   end
 
-  def new_projectile(id, position, direction, owner_id, remove_on_collision, speed) do
+  def new_projectile(
+        id,
+        position,
+        direction,
+        owner_id,
+        skill_key,
+        config_params
+      ) do
     %{
       id: id,
       category: :projectile,
       shape: :circle,
       name: "Projectile" <> Integer.to_string(id),
       position: position,
-      radius: 10.0,
+      radius: config_params.radius,
       vertices: [],
-      speed: speed,
+      speed: config_params.speed,
       direction: direction,
       is_moving: true,
       aditional_info: %{
-        damage: 10,
+        skill_key: skill_key,
+        damage: config_params.damage,
         owner_id: owner_id,
         status: :ACTIVE,
-        remove_on_collision: remove_on_collision
+        remove_on_collision: config_params.remove_on_collision,
+        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics)
       }
     }
   end
 
-  def new_power_up(id, position, direction, owner_id) do
+  def new_power_up(id, position, direction, owner_id, power_up) do
     %{
       id: id,
       category: :power_up,
       shape: :circle,
       name: "Power Up" <> Integer.to_string(id),
       position: position,
-      radius: 10.0,
+      radius: power_up.radius,
       vertices: [],
       speed: 0.0,
       direction: direction,
@@ -93,6 +105,43 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
+      radius: radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
+  def new_item(id, position, config) do
+    %{
+      id: id,
+      category: :item,
+      shape: :circle,
+      name: "Item" <> Integer.to_string(id),
+      position: position,
+      radius: 30.0,
+      vertices: [],
+      speed: 0.0,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      aditional_info: %{
+        name: config.name,
+        effects: config.effects
+      }
+    }
+  end
+
+  def new_circular_obstacle(id, position, radius) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :circle,
+      name: "Obstacle" <> Integer.to_string(id),
+      position: position,
       radius: radius,
       vertices: [],
       speed: 0.0,
@@ -142,14 +191,15 @@ defmodule Arena.Entities do
      %Arena.Serialization.Player{
        health: entity.aditional_info.health,
        current_actions: entity.aditional_info.current_actions,
-       kill_count: 0,
+       kill_count: entity.aditional_info.kill_count,
        available_stamina: entity.aditional_info.available_stamina,
        max_stamina: entity.aditional_info.max_stamina,
        stamina_interval: entity.aditional_info.stamina_interval,
        recharging_stamina: entity.aditional_info.recharging_stamina,
        character_name: entity.aditional_info.character_name,
        effects: entity.aditional_info.effects,
-       power_ups: entity.aditional_info.power_ups
+       power_ups: entity.aditional_info.power_ups,
+       inventory: entity.aditional_info.inventory
      }}
   end
 
@@ -158,7 +208,8 @@ defmodule Arena.Entities do
      %Arena.Serialization.Projectile{
        damage: entity.aditional_info.damage,
        owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status
+       status: entity.aditional_info.status,
+       skill_key: entity.aditional_info.skill_key
      }}
   end
 
@@ -170,7 +221,14 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :item do
+    {:item,
+     %Arena.Serialization.Item{
+       name: entity.aditional_info.name
+     }}
+  end
+
   def maybe_add_custom_info(_entity) do
-    {}
+    nil
   end
 end

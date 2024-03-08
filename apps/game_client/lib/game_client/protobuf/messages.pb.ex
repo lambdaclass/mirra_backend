@@ -1,3 +1,13 @@
+defmodule GameClient.Protobuf.GameStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PREPARING, 0)
+  field(:RUNNING, 1)
+  field(:ENDED, 2)
+end
+
 defmodule GameClient.Protobuf.ProjectileStatus do
   @moduledoc false
 
@@ -162,6 +172,9 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:name, 1, type: :string)
   field(:cooldown_ms, 2, type: :uint64, json_name: "cooldownMs")
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
+  field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
+  field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
+  field(:stamina_cost, 6, type: :uint64, json_name: "staminaCost")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -218,6 +231,15 @@ defmodule GameClient.Protobuf.GameState.PowerUpsEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.ItemsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -263,6 +285,10 @@ defmodule GameClient.Protobuf.GameState do
     json_name: "powerUps",
     map: true
   )
+
+  field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
+  field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
+  field(:items, 13, repeated: true, type: GameClient.Protobuf.GameState.ItemsEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -287,6 +313,16 @@ defmodule GameClient.Protobuf.Entity do
   field(:projectile, 13, type: GameClient.Protobuf.Projectile, oneof: 0)
   field(:obstacle, 14, type: GameClient.Protobuf.Obstacle, oneof: 0)
   field(:power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0)
+  field(:item, 16, type: GameClient.Protobuf.Item, oneof: 0)
+end
+
+defmodule GameClient.Protobuf.Player.EffectsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Effect)
 end
 
 defmodule GameClient.Protobuf.Player do
@@ -309,6 +345,25 @@ defmodule GameClient.Protobuf.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
+  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
+  field(:inventory, 11, type: GameClient.Protobuf.Item)
+end
+
+defmodule GameClient.Protobuf.Effect do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+end
+
+defmodule GameClient.Protobuf.Item do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 2, type: :string)
 end
 
 defmodule GameClient.Protobuf.Projectile do
@@ -319,6 +374,7 @@ defmodule GameClient.Protobuf.Projectile do
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
   field(:status, 3, type: GameClient.Protobuf.ProjectileStatus, enum: true)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule GameClient.Protobuf.Obstacle do
@@ -372,6 +428,14 @@ defmodule GameClient.Protobuf.AttackParameters do
   field(:target, 1, type: GameClient.Protobuf.Direction)
 end
 
+defmodule GameClient.Protobuf.UseItem do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:item, 1, type: :uint64)
+end
+
 defmodule GameClient.Protobuf.GameAction do
   @moduledoc false
 
@@ -381,6 +445,7 @@ defmodule GameClient.Protobuf.GameAction do
 
   field(:move, 1, type: GameClient.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: GameClient.Protobuf.Attack, oneof: 0)
+  field(:use_item, 4, type: GameClient.Protobuf.UseItem, json_name: "useItem", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
@@ -391,6 +456,8 @@ defmodule GameClient.Protobuf.Zone do
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
+  field(:next_zone_change_timestamp, 3, type: :int64, json_name: "nextZoneChangeTimestamp")
+  field(:shrinking, 4, type: :bool)
 end
 
 defmodule GameClient.Protobuf.KillEntry do

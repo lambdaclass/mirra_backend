@@ -10,7 +10,6 @@ defmodule GameBackend.Items.Item do
   alias GameBackend.Users.User
   alias GameBackend.Units.Unit
 
-  @derive {Jason.Encoder, only: [:id, :level, :template, :user_id, :unit_id]}
   schema "items" do
     field(:level, :integer)
 

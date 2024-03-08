@@ -46,7 +46,28 @@ defmodule GameClient.ClientSocketHandler do
 
     game_action =
       GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
-        action_type: {:attack, %GameClient.Protobuf.Attack{skill: skill}}
+        action_type:
+          {:attack,
+           %GameClient.Protobuf.Attack{
+             skill: skill,
+             parameters: %GameClient.Protobuf.AttackParameters{
+               target: %GameClient.Protobuf.Direction{
+                 x: 0,
+                 y: 0
+               }
+             }
+           }}
+      })
+
+    {:reply, {:binary, game_action}, state}
+  end
+
+  def handle_info({:use_item, item}, state) do
+    Logger.info("Sending GameAction frame with USE_ITEM payload")
+
+    game_action =
+      GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
+        action_type: {:use_item, %GameClient.Protobuf.UseItem{item: String.to_integer(item)}}
       })
 
     {:reply, {:binary, game_action}, state}

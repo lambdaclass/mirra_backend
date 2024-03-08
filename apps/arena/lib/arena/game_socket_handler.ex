@@ -10,7 +10,6 @@ defmodule Arena.GameSocketHandler do
   @behaviour :cowboy_websocket
 
   @ping_interval_ms 500
-  @enable_incomming_messages_ms 12_000
 
   @impl true
   def init(req, _opts) do
@@ -32,20 +31,25 @@ defmodule Arena.GameSocketHandler do
     state =
       Map.put(state, :player_id, player_id)
       |> Map.put(:enable, false)
+      |> Map.put(:block_actions, false)
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: config}}
+        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config)}}
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
-    Process.send_after(self(), :enable_incomming_messages, @enable_incomming_messages_ms)
 
     {:reply, {:binary, encoded_msg}, state}
   end
 
   @impl true
   def websocket_handle(_, %{enable: false} = state) do
+    {:ok, state}
+  end
+
+  @impl true
+  def websocket_handle(_, %{block_actions: true} = state) do
     {:ok, state}
   end
 
@@ -70,8 +74,11 @@ defmodule Arena.GameSocketHandler do
 
   def websocket_handle({:binary, message}, state) do
     case Serialization.GameAction.decode(message) do
-      %{action_type: {:attack, %{skill: skill, parameters: params}}} ->
-        GameUpdater.attack(state.game_pid, state.player_id, skill, params)
+      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
+        GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+
+      %{action_type: {:use_item, _}, timestamp: timestamp} ->
+        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
 
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
         GameUpdater.move(
@@ -124,8 +131,33 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
+  def websocket_info({:block_actions, player_id, value}, state) do
+    if state.player_id == player_id do
+      {:ok, Map.put(state, :block_actions, value)}
+    else
+      {:ok, state}
+    end
+  end
+
+  @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
+  end
+
+  defp to_broadcast_config(config) do
+    %{config | characters: Enum.map(config.characters, &to_broadcast_character/1)}
+  end
+
+  defp to_broadcast_character(character) do
+    %{character | skills: Map.new(character.skills, &to_broadcast_skill/1)}
+  end
+
+  defp to_broadcast_skill({key, skill}) do
+    ## TODO: This will break once a skill has more than 1 mechanic, until then
+    ##   we can use this "shortcut" and deal with it when the time comes
+    [{_mechanic, params}] = skill.mechanics
+    extra_params = %{targetting_radius: params[:range], targetting_angle: params[:angle]}
+    {key, Map.merge(skill, extra_params)}
   end
 end

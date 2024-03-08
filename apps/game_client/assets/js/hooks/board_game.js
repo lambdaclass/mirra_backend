@@ -21,6 +21,7 @@ export const BoardGame = function () {
     obstacle: 0x00aa77,
     colliding: 0xff0000,
     projectile: 0x0000ff,
+    item: 0x238636,
   };
   let player_id;
 
@@ -102,6 +103,11 @@ export const BoardGame = function () {
         _this.pushEvent("attack", "3");
         _this.updateDebug("key: " + key);
       }
+
+      if (event.key === "l") {
+        _this.pushEvent("use_item", "1");
+        _this.updateDebug("key: " + key);
+      }
     });
 
     document.addEventListener("keyup", function onPress(event) {
@@ -154,6 +160,9 @@ export const BoardGame = function () {
         case "projectile":
           newEntity.boardObject.zIndex = 15;
           break;
+        case "item":
+          newEntity.boardObject.zIndex = 20;
+          break;
       }
 
       newEntity.boardObject.endFill();
@@ -197,6 +206,9 @@ export const BoardGame = function () {
             break;
           case "projectile":
             color = colors.projectile;
+            break;
+          case "item":
+            color = colors.item;
             break;
         }
       }
