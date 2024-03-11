@@ -13,11 +13,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
     oneof: 0
   )
 
-  field(:create_user, 3,
-    type: Gateway.Serialization.CreateUser,
-    json_name: "createUser",
-    oneof: 0
-  )
+  field(:create_user, 3, type: Gateway.Serialization.CreateUser, json_name: "createUser", oneof: 0)
 
   field(:get_campaigns, 4,
     type: Gateway.Serialization.GetCampaigns,
@@ -32,18 +28,8 @@ defmodule Gateway.Serialization.WebSocketRequest do
   )
 
   field(:get_level, 6, type: Gateway.Serialization.GetLevel, json_name: "getLevel", oneof: 0)
-
-  field(:fight_level, 7,
-    type: Gateway.Serialization.FightLevel,
-    json_name: "fightLevel",
-    oneof: 0
-  )
-
-  field(:select_unit, 8,
-    type: Gateway.Serialization.SelectUnit,
-    json_name: "selectUnit",
-    oneof: 0
-  )
+  field(:fight_level, 7, type: Gateway.Serialization.FightLevel, json_name: "fightLevel", oneof: 0)
+  field(:select_unit, 8, type: Gateway.Serialization.SelectUnit, json_name: "selectUnit", oneof: 0)
 
   field(:unselect_unit, 9,
     type: Gateway.Serialization.UnselectUnit,
@@ -308,12 +294,12 @@ defmodule Gateway.Serialization.Unit do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:id, 1, type: :string)
-  field(:level, 2, type: :uint32, json_name: "unitLevel")
+  field(:level, 2, type: :uint32)
   field(:tier, 3, type: :uint32)
   field(:rank, 4, type: :uint32)
   field(:selected, 5, type: :bool)
   field(:slot, 6, type: :uint32)
-  field(:campaign_level_id, 7, type: :string, json_name: "levelId")
+  field(:campaign_level_id, 7, type: :string, json_name: "campaignLevelId")
   field(:user_id, 8, type: :string, json_name: "userId")
   field(:character, 9, type: Gateway.Serialization.Character)
   field(:items, 10, repeated: true, type: Gateway.Serialization.Item)
@@ -341,7 +327,7 @@ defmodule Gateway.Serialization.Character do
   field(:active, 1, type: :bool)
   field(:name, 2, type: :string)
   field(:faction, 3, type: :string)
-  field(:quality, 4, type: :uint32)
+  field(:quality, 4, type: :int32)
 end
 
 defmodule Gateway.Serialization.Item do
