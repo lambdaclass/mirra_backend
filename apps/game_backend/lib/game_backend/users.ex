@@ -141,8 +141,6 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-
-
   defp build_item_rewards_params(user_id, item_rewards) do
     Enum.map(item_rewards, fn item_reward ->
       Enum.map(1..item_reward.amount, fn _ ->
