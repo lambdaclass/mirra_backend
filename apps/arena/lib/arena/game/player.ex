@@ -194,6 +194,7 @@ defmodule Arena.Game.Player do
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
+          |> maybe_make_invinsible(skill)
 
         player =
           case stamina_recharging?(player) do
@@ -356,5 +357,17 @@ defmodule Arena.Game.Player do
   def apply_effect({:damage_immunity, damage_immunity}, player) do
     Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
     put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  defp maybe_make_invinsible(
+         player,
+         %{inmune_while_executing: true, execution_duration_ms: execution_duration_ms} = _skill
+       ) do
+    Process.send_after(self(), {:remove_damage_immunity, player.id}, execution_duration_ms)
+    put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  defp maybe_make_invinsible(player, _) do
+    player
   end
 end

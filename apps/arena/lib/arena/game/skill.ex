@@ -94,7 +94,7 @@ defmodule Arena.Game.Skill do
   def do_mechanic(
         game_state,
         player,
-        {:dash, %{speed: speed, duration: duration} = dash},
+        {:dash, %{speed: speed, duration: duration}},
         _skill_params
       ) do
     Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
@@ -104,7 +104,6 @@ defmodule Arena.Game.Skill do
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
-      |> maybe_make_invinsible(Map.merge(dash, %{duration_ms: duration}))
 
     players = Map.put(game_state.players, player.id, player)
 
@@ -212,7 +211,6 @@ defmodule Arena.Game.Skill do
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
-      |> maybe_make_invinsible(leap)
 
     put_in(game_state, [:players, player.id], player)
   end
@@ -227,7 +225,6 @@ defmodule Arena.Game.Skill do
       entity
       |> Physics.move_entity_to_position(target_position, game_state.external_wall)
       |> Map.put(:aditional_info, entity.aditional_info)
-      |> maybe_make_invinsible(teleport)
 
     put_in(game_state, [:players, entity.id], entity)
   end
@@ -331,13 +328,5 @@ defmodule Arena.Game.Skill do
 
   defp maybe_move_player(game_state, _, _) do
     game_state
-  end
-
-  defp maybe_make_invinsible(player, %{inmune_while_executing: true} = mechanic) do
-    Player.apply_effect({:damage_immunity, mechanic}, player)
-  end
-
-  defp maybe_make_invinsible(player, _) do
-    player
   end
 end
