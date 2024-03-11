@@ -438,15 +438,6 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_info({:remove_damage_immunity, player_id}, state) do
-    player =
-      Map.get(state.game_state.players, player_id)
-      |> Player.remove_damage_immunity()
-
-    state = put_in(state, [:game_state, :players, player_id], player)
-    {:noreply, state}
-  end
-
   ##########################
   # End callbacks
   ##########################
