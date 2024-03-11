@@ -11,6 +11,8 @@ defmodule Gateway.Test.Champions do
   alias Gateway.Serialization.{
     Box,
     Boxes,
+    Campaign,
+    Campaigns,
     Currency,
     Error,
     Unit,
@@ -304,6 +306,40 @@ defmodule Gateway.Test.Champions do
   end
 
   describe "campaigns" do
+    test "get campaigns", %{socket_tester: socket_tester} do
+      # Create user
+      {:ok, user} = Users.register("campaign_user")
+
+      # Get user's campaigns
+      SocketTester.get_campaigns(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaigns, %Campaigns{} = campaigns}
+      }
+
+      assert Enum.count(campaigns.campaigns) > 0
+
+      sample_campaign = Enum.random(campaigns.campaigns)
+
+      # Get a campaign
+      SocketTester.get_campaign(socket_tester, user.id, sample_campaign.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaign, %Campaign{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:campaign, %Campaign{} = campaign_to_verify}
+      } =
+        get_last_message()
+
+      assert campaign_to_verify.id == sample_campaign.id
+    end
+
     test "fight level", %{socket_tester: socket_tester} do
       # Create user
       {:ok, user} = Users.register("battle_user")

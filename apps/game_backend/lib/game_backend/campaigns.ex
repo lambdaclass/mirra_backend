@@ -22,7 +22,7 @@ defmodule GameBackend.Campaigns do
   Get a campaign by id.
   """
   def get_campaign(campaign_id) do
-    case Repo.get(Campaign, campaign_id) |> Repo.preload(levels: [:units]) do
+    case Repo.get(Campaign, campaign_id) |> Repo.preload(levels: [units: :items]) do
       nil -> {:error, :not_found}
       campaign -> {:ok, campaign}
     end
