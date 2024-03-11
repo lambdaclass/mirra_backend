@@ -231,6 +231,15 @@ defmodule Arena.Serialization.GameState.PowerUpsEntry do
   field(:value, 2, type: Arena.Serialization.Entity)
 end
 
+defmodule Arena.Serialization.GameState.ItemsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: Arena.Serialization.Entity)
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -278,7 +287,8 @@ defmodule Arena.Serialization.GameState do
   )
 
   field(:status, 11, type: Arena.Serialization.GameStatus, enum: true)
-  field(:countdown, 12, type: :int64)
+  field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
+  field(:items, 13, repeated: true, type: Arena.Serialization.GameState.ItemsEntry, map: true)
 end
 
 defmodule Arena.Serialization.Entity do
@@ -303,6 +313,7 @@ defmodule Arena.Serialization.Entity do
   field(:projectile, 13, type: Arena.Serialization.Projectile, oneof: 0)
   field(:obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0)
   field(:power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0)
+  field(:item, 16, type: Arena.Serialization.Item, oneof: 0)
 end
 
 defmodule Arena.Serialization.Player.EffectsEntry do
@@ -335,6 +346,7 @@ defmodule Arena.Serialization.Player do
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
   field(:effects, 10, repeated: true, type: Arena.Serialization.Player.EffectsEntry, map: true)
+  field(:inventory, 11, type: Arena.Serialization.Item)
 end
 
 defmodule Arena.Serialization.Effect do
@@ -344,6 +356,14 @@ defmodule Arena.Serialization.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+end
+
+defmodule Arena.Serialization.Item do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 2, type: :string)
 end
 
 defmodule Arena.Serialization.Projectile do
@@ -408,6 +428,14 @@ defmodule Arena.Serialization.AttackParameters do
   field(:target, 1, type: Arena.Serialization.Direction)
 end
 
+defmodule Arena.Serialization.UseItem do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:item, 1, type: :uint64)
+end
+
 defmodule Arena.Serialization.GameAction do
   @moduledoc false
 
@@ -417,6 +445,7 @@ defmodule Arena.Serialization.GameAction do
 
   field(:move, 1, type: Arena.Serialization.Move, oneof: 0)
   field(:attack, 2, type: Arena.Serialization.Attack, oneof: 0)
+  field(:use_item, 4, type: Arena.Serialization.UseItem, json_name: "useItem", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
@@ -427,7 +456,8 @@ defmodule Arena.Serialization.Zone do
 
   field(:radius, 1, type: :float)
   field(:enabled, 2, type: :bool)
-  field(:zone_shrink_time, 3, type: :int32, json_name: "zoneShrinkTime")
+  field(:next_zone_change_timestamp, 3, type: :int64, json_name: "nextZoneChangeTimestamp")
+  field(:shrinking, 4, type: :bool)
 end
 
 defmodule Arena.Serialization.KillEntry do
