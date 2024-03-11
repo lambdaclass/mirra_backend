@@ -45,14 +45,9 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-{:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, _gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-
-{:ok, scrolls} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
-
-{:ok, scrolls} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Scrolls"})
+{:ok, gold_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
+{:ok, gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
 {:ok, _} =
   Gacha.insert_box(%{
@@ -64,7 +59,7 @@ Items.insert_item_template(%{
       %{rank: Champions.Units.get_rank(:star4), weight: 7},
       %{rank: Champions.Units.get_rank(:star5), weight: 3}
     ],
-    cost: [%{currency_id: scrolls.id, amount: 1}]
+    cost: [%{currency_id: scrolls_currency.id, amount: 1}]
   })
 
 {:ok, _} =
@@ -75,7 +70,7 @@ Items.insert_item_template(%{
       %{rank: Champions.Units.get_rank(:star4), weight: 20},
       %{rank: Champions.Units.get_rank(:star5), weight: 5}
     ],
-    cost: [%{currency_id: scrolls.id, amount: 10}]
+    cost: [%{currency_id: scrolls_currency.id, amount: 10}]
   })
 
 ######################
@@ -174,13 +169,15 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 currency_rewards =
   Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-    %{
-      level_id: level.id,
-      amount: 10 * level_index,
-      currency_id: gold.id,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
+      %{
+        level_id: level.id,
+        amount: 10 * level_index,
+        currency_id: gold_currency.id,
+        afk_reward: false,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+
   end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
@@ -216,14 +213,24 @@ level_3
 |> Repo.update!()
 
 afk_reward_increments =
-  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-    %{
-      level_id: level.id,
-      amount: 1 * level_index,
-      currency_id: scrolls.id,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
+  Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      [%{
+        level_id: level.id,
+        amount: 10 * level_index ,
+        currency_id: gold_currency.id,
+        afk_reward: true,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
+      %{
+        level_id: level.id,
+        amount: level_index,
+        currency_id: gems_currency.id,
+        afk_reward: true,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+    ]
   end)
 
 Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)
