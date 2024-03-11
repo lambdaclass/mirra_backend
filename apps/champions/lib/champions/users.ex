@@ -83,27 +83,11 @@ defmodule Champions.Users do
   defp add_sample_currencies(user) do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Scrolls").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
   end
 
   defp add_campaigns_progress(user) do
-    campaigns = GameBackend.Campaigns.get_campaigns()
-
-    Enum.each(campaigns, fn campaign ->
-      # Only add campaign progress to the first ones of each SuperCampaign
-      if campaign.campaign_number == 1,
-        do:
-          GameBackend.Campaigns.insert_campaign_progress(%{
-            game_id: Utils.game_id(),
-            user_id: user.id,
-            campaign_id: campaign.id,
-            level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
-          })
-    end)
-  end
-
-  defp add_campaigns_progress(user) do
-    campaigns = GameBackend.Campaigns.get_campaigns()
+    {:ok, campaigns} = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
       # Only add campaign progress to the first ones of each SuperCampaign
