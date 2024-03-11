@@ -103,7 +103,7 @@ defmodule Champions.Users do
   end
 
   defp add_campaigns_progress(user) do
-    campaigns = GameBackend.Campaigns.get_campaigns()
+    {:ok, campaigns} = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
       # Only add campaign progress to the first ones of each SuperCampaign

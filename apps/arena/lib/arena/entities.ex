@@ -37,6 +37,8 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
+        inventory: nil,
+        damage_immunity: false,
         effects: %{}
       }
     }
@@ -113,6 +115,25 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_item(id, position, config) do
+    %{
+      id: id,
+      category: :item,
+      shape: :circle,
+      name: "Item" <> Integer.to_string(id),
+      position: position,
+      radius: 30.0,
+      vertices: [],
+      speed: 0.0,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      aditional_info: %{
+        name: config.name,
+        effects: config.effects
+      }
+    }
+  end
+
   def new_circular_obstacle(id, position, radius) do
     %{
       id: id,
@@ -176,7 +197,8 @@ defmodule Arena.Entities do
        recharging_stamina: entity.aditional_info.recharging_stamina,
        character_name: entity.aditional_info.character_name,
        effects: entity.aditional_info.effects,
-       power_ups: entity.aditional_info.power_ups
+       power_ups: entity.aditional_info.power_ups,
+       inventory: entity.aditional_info.inventory
      }}
   end
 
@@ -198,7 +220,14 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :item do
+    {:item,
+     %Arena.Serialization.Item{
+       name: entity.aditional_info.name
+     }}
+  end
+
   def maybe_add_custom_info(_entity) do
-    {}
+    nil
   end
 end
