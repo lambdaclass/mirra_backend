@@ -233,7 +233,7 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("Summon user")
       units = Enum.count(user.units)
 
-      {:ok, previous_scrolls} = Currencies.add_currency_by_name!(user.id, "Scrolls", 1)
+      {:ok, previous_scrolls} = Currencies.add_currency_by_name!(user.id, "Summon Scrolls", 1)
 
       {:ok, box} = GameBackend.Gacha.get_box_by_name("Basic Summon")
 
@@ -288,7 +288,7 @@ defmodule Gateway.Test.Champions do
 
       assert new_unit.rank in Enum.map(box.rank_weights, & &1.rank)
 
-      new_scrolls = Enum.find(new_user.currencies, &(&1.currency.name == "Scrolls"))
+      new_scrolls = Enum.find(new_user.currencies, &(&1.currency.name == "Summon Scrolls"))
       assert new_scrolls.amount == previous_scrolls.amount - List.first(box.cost).amount
 
       assert GameBackend.Units.get_units(user.id) |> Enum.count() == units + 1
