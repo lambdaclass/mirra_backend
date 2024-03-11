@@ -33,7 +33,11 @@ defmodule GameBackend.Campaigns do
   end
 
   defp level_preload_query(),
-    do: from(l in Level, order_by: [asc: l.level_number], preload: [currency_rewards: :currency, units: [:items, :character]])
+    do:
+      from(l in Level,
+        order_by: [asc: l.level_number],
+        preload: [currency_rewards: :currency, units: [:items, :character]]
+      )
 
   @doc """
   Inserts a level.
@@ -90,7 +94,9 @@ defmodule GameBackend.Campaigns do
       Repo.one(
         from(cp in CampaignProgress,
           where: cp.user_id == ^user_id and cp.campaign_id == ^campaign_id,
-          preload: [level: [:campaign, :item_rewards, :unit_rewards, :afk_rewards_increments,  currency_rewards: :currency]]
+          preload: [
+            level: [:campaign, :item_rewards, :unit_rewards, :afk_rewards_increments, currency_rewards: :currency]
+          ]
         )
       )
 
