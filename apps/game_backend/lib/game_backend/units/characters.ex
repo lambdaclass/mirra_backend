@@ -54,6 +54,9 @@ defmodule GameBackend.Units.Characters do
 
   def delete_all_characters(), do: Repo.delete_all(Character)
 
+  def get_characters_by_quality(quality),
+    do: Repo.all(from(c in Character, where: c.quality == ^quality))
+
   def get_characters_by_rank(rank),
     do: Repo.all(from(c in Character, where: ^rank in c.ranks_dropped_in))
 

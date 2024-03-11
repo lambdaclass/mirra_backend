@@ -67,7 +67,7 @@ defmodule Champions.Users do
   end
 
   defp add_sample_units(user) do
-    characters = Characters.get_characters_by_rank(Champions.Units.get_quality(:epic))
+    characters = Characters.get_characters_by_quality(Champions.Units.get_quality(:epic))
 
     Enum.each(1..6, fn index ->
       Units.insert_unit(%{
