@@ -81,7 +81,7 @@ defmodule Gateway.ChampionsSocketHandler do
       {:error, reason} ->
         prepare_response({:error, reason}, nil)
 
-      campaigns ->
+      {:ok, campaigns} ->
         prepare_response(%{campaigns: campaigns}, :campaigns)
     end
   end

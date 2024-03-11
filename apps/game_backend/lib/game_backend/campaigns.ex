@@ -8,25 +8,32 @@ defmodule GameBackend.Campaigns do
   alias GameBackend.Campaigns.{Campaign, CampaignProgress, Level, SuperCampaign}
 
   @doc """
-  Gets all levels, grouped by campaign and sorted ascendingly.
+  Gets all campaigns, and sorted ascendingly by campaign number.
   """
   def get_campaigns() do
     campaigns =
-      Repo.all(from(c in Campaign))
-      |> Repo.preload(levels: [units: :items])
+      Repo.all(
+        from(c in Campaign,
+          preload: [levels: ^level_preload_query()],
+          order_by: [asc: c.campaign_number]
+        )
+      )
 
-    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: campaigns
+    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: {:ok, campaigns}
   end
 
   @doc """
   Get a campaign by id.
   """
   def get_campaign(campaign_id) do
-    case Repo.get(Campaign, campaign_id) |> Repo.preload(levels: [units: :items]) do
+    case Repo.one(from(c in Campaign, where: c.id == ^campaign_id, preload: [levels: ^level_preload_query()])) do
       nil -> {:error, :not_found}
-      campaign -> {:ok, campaign}
+      campaign -> {:ok, Map.put(campaign, :levels, Enum.sort_by(campaign.levels, & &1.level_number))}
     end
   end
+
+  defp level_preload_query(),
+    do: from(l in Level, order_by: [asc: l.level_number], preload: [:currency_rewards, units: [:items, :character]])
 
   @doc """
   Inserts a level.
@@ -83,7 +90,7 @@ defmodule GameBackend.Campaigns do
       Repo.one(
         from(cp in CampaignProgress,
           where: cp.user_id == ^user_id and cp.campaign_id == ^campaign_id,
-          preload: [level: :campaign]
+          preload: [level: [:campaign, :currency_rewards, :item_rewards, :unit_rewards]]
         )
       )
 
