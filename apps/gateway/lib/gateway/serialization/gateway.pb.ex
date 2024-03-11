@@ -365,7 +365,7 @@ defmodule Gateway.Serialization.AfkRewardRate do
 
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:currency_id, 2, type: :string, json_name: "currencyId")
-  field(:rate, 3, type: :uint64)
+  field(:rate, 3, type: :float)
 end
 
 defmodule Gateway.Serialization.UserCurrency do
