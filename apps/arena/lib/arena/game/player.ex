@@ -99,8 +99,7 @@ defmodule Arena.Game.Player do
   end
 
   def revert_stamina_interval(player, revert_by, max_stamina_interval) do
-    stamina_interval =
-      min(player.aditional_info.stamina_interval + revert_by, max_stamina_interval)
+    stamina_interval = min(player.aditional_info.stamina_interval + revert_by, max_stamina_interval)
 
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
@@ -119,8 +118,7 @@ defmodule Arena.Game.Player do
   end
 
   def move(player, direction) do
-    current_actions =
-      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
+    current_actions = add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
     {x, y} = direction
     is_moving = x != 0.0 || y != 0.0
