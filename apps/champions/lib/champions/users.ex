@@ -25,7 +25,7 @@ defmodule Champions.Users do
         add_sample_currencies(user)
         add_campaigns_progress(user)
 
-        Users.get_user(user.id)
+        {:ok, Users.get_user(user.id)}
 
       {:error, changeset} ->
         [[first_error | _other_errors] | _other_fields_errors] =
