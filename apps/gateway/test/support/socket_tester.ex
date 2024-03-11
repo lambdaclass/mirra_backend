@@ -1,4 +1,4 @@
-defmodule SocketTester do
+defmodule Gateway.SocketTester do
   @moduledoc """
   Module for manually testing the CoM websocket.
   Logs received messages and keeps the last one received in the state.
