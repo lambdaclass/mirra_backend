@@ -247,8 +247,7 @@ syntax = "proto3";
   }
 
   message CurrencyReward {
-    string currency_id = 1; 
-    string level_id = 2;
+    Currency currency = 1; 
     uint64 amount = 3;
   }
 
