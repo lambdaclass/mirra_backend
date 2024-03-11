@@ -20,6 +20,7 @@ defmodule Gateway.ChampionsSocketHandler do
     UnselectUnit,
     LevelUpUnit,
     TierUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -43,18 +44,14 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    with %WebSocketRequest{request_type: {_type, request}} <- WebSocketRequest.decode(message) do
-      response = handle(request)
+    case WebSocketRequest.decode(message) do
+      %WebSocketRequest{request_type: {_type, request}} ->
+        response = handle(request)
+        encode = WebSocketResponse.encode(%WebSocketResponse{response_type: response})
+        {:reply, {:binary, encode}, state}
 
-      encode = WebSocketResponse.encode(%WebSocketResponse{response_type: response})
-
-      {:reply, {:binary, encode}, state}
-    else
       unknown_request ->
-        Logger.warning(
-          "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
-        )
-
+        Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
         {:ok, state}
     end
   end
@@ -83,7 +80,7 @@ defmodule Gateway.ChampionsSocketHandler do
       {:error, reason} ->
         prepare_response({:error, reason}, nil)
 
-      campaigns ->
+      {:ok, campaigns} ->
         prepare_response(%{campaigns: campaigns}, :campaigns)
     end
   end
@@ -128,6 +125,17 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
+  defp handle(%FuseUnit{
+         user_id: user_id,
+         unit_id: unit_id,
+         consumed_units_ids: consumed_units_ids
+       }) do
+    case Units.fuse(user_id, unit_id, consumed_units_ids) do
+      {:ok, result} -> prepare_response(result, :unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
   defp handle(%EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}),
     do: Items.equip_item(user_id, item_id, unit_id) |> prepare_response(:item)
 
@@ -153,10 +161,7 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   defp handle(unknown_request),
-    do:
-      Logger.warning(
-        "[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}"
-      )
+    do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
 
   defp prepare_response({:error, reason}, _response_type) when is_atom(reason),
     do: prepare_response({:error, Atom.to_string(reason)}, nil)

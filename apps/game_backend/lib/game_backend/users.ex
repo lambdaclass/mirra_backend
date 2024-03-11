@@ -88,15 +88,13 @@ defmodule GameBackend.Users do
   def advance_level(user_id, campaign_id) do
     with {:campaign_data, {:ok, campaign_progress}} <-
            {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
-         {:next_level, {next_campaign_id, next_level_id}} =
+         {:next_level, {next_campaign_id, next_level_id}} <-
            {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
       level = campaign_progress.level
 
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
-      |> Multi.run(:currency_rewards, fn _, _ ->
-        apply_currency_rewards(user_id, level.currency_rewards)
-      end)
+      |> apply_currency_rewards(user_id, level.currency_rewards)
       |> Multi.run(:afk_rewards_increments, fn _, _ ->
         apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       end)
@@ -180,8 +178,9 @@ defmodule GameBackend.Users do
         %{
           user_id: user_id,
           character_id: unit_reward.character_id,
-          unit_level: 1,
+          level: 1,
           tier: 1,
+          rank: unit_reward.rank,
           selected: false,
           inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
           updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -200,5 +199,13 @@ defmodule GameBackend.Users do
     else
       {:error, "Failed to apply " <> Atom.to_string(element_name)}
     end
+  end
+
+  defp apply_currency_rewards(multi, user_id, currency_rewards) do
+    Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
+      Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
+        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+    end)
   end
 end

@@ -41,12 +41,12 @@ defmodule GameBackend.Units.Unit do
       :user_id,
       :campaign_level_id
     ])
-    |> validate_required([:level, :tier, :selected, :character_id])
+    |> validate_required([:level, :selected, :character_id])
   end
 
   @doc """
   Changeset for when updating a unit.
   """
   def update_changeset(unit, attrs),
-    do: cast(unit, attrs, [:selected, :slot, :rank, :level, :tier])
+    do: cast(unit, attrs, [:selected, :slot, :level, :tier, :rank])
 end
