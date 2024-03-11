@@ -143,13 +143,6 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-  defp apply_currency_rewards(user_id, currency_rewards) do
-    Enum.map(currency_rewards, fn currency_reward ->
-      Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
-    end)
-    |> check_result(:currency_rewards)
-  end
-
   defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
     Enum.map(afk_rewards_increments, fn increment ->
       Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
