@@ -21,8 +21,8 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
   @doc false
   def changeset(unit_reward, attrs) do
     unit_reward
-    |> cast(attrs, [:character_id, :level_id, :amount])
+    |> cast(attrs, [:character_id, :level_id, :amount, :rank])
     |> validate_number(:amount, greater_than_or_equal_to: 0)
-    |> validate_required([:amount])
+    |> validate_required([:amount, :rank])
   end
 end
