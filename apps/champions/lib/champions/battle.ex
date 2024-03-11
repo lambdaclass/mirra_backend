@@ -21,6 +21,7 @@ defmodule Champions.Battle do
            {:campaign_progress, Campaigns.get_campaign_progress(user_id, level.campaign_id)},
          {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
       units = Units.get_selected_units(user_id)
+
       if battle(units, level.units) == :team_1 do
         case Users.advance_level(user_id, level.campaign_id) do
           # TODO: add rewards to response [CHoM-191]
