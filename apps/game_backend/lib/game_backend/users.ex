@@ -95,9 +95,7 @@ defmodule GameBackend.Users do
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
       |> apply_currency_rewards(user_id, level.currency_rewards)
-      |> Multi.run(:afk_rewards_increments, fn _, _ ->
-        apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
-      end)
+      |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
         build_item_rewards_params(user_id, level.item_rewards)
       end)
@@ -143,12 +141,7 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-  defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
-    Enum.map(afk_rewards_increments, fn increment ->
-      Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
-    end)
-    |> check_result(:afk_rewards_increments)
-  end
+
 
   defp build_item_rewards_params(user_id, item_rewards) do
     Enum.map(item_rewards, fn item_reward ->
@@ -183,21 +176,18 @@ defmodule GameBackend.Users do
     |> List.flatten()
   end
 
-  defp check_result(result, element_name) do
-    if Enum.all?(result, fn
-         {:ok, _} -> true
-         _ -> false
-       end) do
-      {:ok, result}
-    else
-      {:error, "Failed to apply " <> Atom.to_string(element_name)}
-    end
-  end
-
   defp apply_currency_rewards(multi, user_id, currency_rewards) do
     Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
       Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
         Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+    end)
+  end
+
+  defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
+    Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
+      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
+        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
       end)
     end)
   end
