@@ -303,8 +303,8 @@ defmodule Gateway.Test.Champions do
     end
   end
 
-  describe "battle" do
-    test "battle", %{socket_tester: socket_tester} do
+  describe "campaigns" do
+    test "fight level", %{socket_tester: socket_tester} do
       # Create user
       {:ok, user} = Users.register("battle_user")
 
