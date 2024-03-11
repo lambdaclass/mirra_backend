@@ -101,8 +101,8 @@ Items.insert_item_template(%{
 })
 
 {:ok, gold_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, _gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-{:ok, scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+{:ok, gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, _scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
 ######################
 # Campaigns creation #
@@ -200,6 +200,7 @@ currency_rewards =
         level_id: level.id,
         amount: 10 * level_index,
         currency_id: gold_currency.id,
+        afk_reward: false,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
@@ -220,15 +221,24 @@ level_3
 |> Repo.update!()
 
 afk_reward_increments =
-  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+  Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      [%{
+        level_id: level.id,
+        amount: 10 * level_index ,
+        currency_id: gold_currency.id,
+        afk_reward: true,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
       %{
         level_id: level.id,
-        amount: 1 * level_index,
-        currency_id: scrolls_currency.id,
+        amount: level_index,
+        currency_id: gems_currency.id,
+        afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-
+    ]
   end)
 
 Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)
