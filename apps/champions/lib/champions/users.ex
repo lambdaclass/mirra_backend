@@ -122,17 +122,6 @@ defmodule Champions.Users do
     end)
   end
 
-  defp add_afk_reward_rates(user) do
-    ["Gold", "Gems", "Summon Scrolls"]
-    |> Enum.each(fn currency_name ->
-      Rewards.insert_afk_reward_rate(%{
-        user_id: user.id,
-        currency_id: Currencies.get_currency_by_name!(currency_name).id,
-        rate: 0
-      })
-    end)
-  end
-
   @doc """
   Adds the given experience to a user. If the user were to have enough resulting experience to level up,
   it is performed automatically.
