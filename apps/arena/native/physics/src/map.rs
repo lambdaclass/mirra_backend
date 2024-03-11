@@ -2,8 +2,8 @@ use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
 use crate::collision_detection::{
-    circle_circle_collision, circle_polygon_collision, line_circle_collision,
-    point_circle_collision,
+    circle_circle_collision, circle_polygon_collision, get_closest_point_between_line_and_circle,
+    line_circle_collision, point_circle_collision,
 };
 
 #[derive(NifMap, Clone)]
@@ -182,18 +182,50 @@ impl Entity {
                 }
             }
             Shape::Polygon => {
-                let x = self.position.x - entity.position.x;
-                let y = self.position.y - entity.position.y;
-                let length = (x.powf(2.) + y.powf(2.)).sqrt();
-                let normalized_direction = Position {
-                    x: x / length,
-                    y: y / length,
-                };
+                let mut collition_points: Vec<Entity> = vec![];
+                for current in 0..entity.vertices.len() {
+                    let mut next = current + 1;
+                    if next == entity.vertices.len() {
+                        next = 0
+                    };
 
-                Position {
-                    x: self.position.x + normalized_direction.x * self.radius / 2.0,
-                    y: self.position.y + normalized_direction.y * self.radius / 2.0,
+                    let current_line =
+                        Entity::new_line(0, vec![entity.vertices[current], entity.vertices[next]]);
+                    for collided_point in
+                        get_closest_point_between_line_and_circle(&current_line, &self)
+                    {
+                        let x = self.position.x - collided_point.position.x;
+                        let y = self.position.y - collided_point.position.y;
+                        let closest_point_length = (x.powf(2.) + y.powf(2.)).sqrt();
+
+                        if closest_point_length < self.radius {
+                            collition_points.push(collided_point);
+                        }
+                    }
                 }
+
+                let mut base_position = self.position;
+                collition_points
+                    .dedup_by(|a, b| a.position.x == b.position.x && a.position.y == b.position.y);
+
+                for collided_point in collition_points {
+                    println!(
+                        "aber point x: {:?} y: {:?}",
+                        collided_point.position.x, collided_point.position.y
+                    );
+                    let x = base_position.x - collided_point.position.x;
+                    let y = base_position.y - collided_point.position.y;
+                    let length = (x.powf(2.) + y.powf(2.)).sqrt();
+                    let normalized_direction = Position {
+                        x: x / length,
+                        y: y / length,
+                    };
+                    base_position.x =
+                        collided_point.position.x + normalized_direction.x * self.radius;
+                    base_position.y =
+                        collided_point.position.y + normalized_direction.y * self.radius;
+                }
+                base_position
             }
             _ => self.position,
         }
