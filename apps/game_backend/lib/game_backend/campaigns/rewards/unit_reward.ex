@@ -13,6 +13,7 @@ defmodule GameBackend.Campaigns.Rewards.UnitReward do
     belongs_to(:character, Character)
     belongs_to(:level, Level)
     field(:amount, :integer)
+    field(:rank, :integer)
 
     timestamps()
   end

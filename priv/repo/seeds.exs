@@ -203,11 +203,13 @@ level_3 =
   |> Repo.preload(:unit_rewards)
 
 level_2
-|> Level.changeset(%{item_rewards: [%{amount: 10, level: 1, item_template_id: epic_sword.id}]})
+|> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
 |> Repo.update!()
 
 level_3
-|> Level.changeset(%{unit_rewards: [%{amount: 10, character_id: muflus.id}]})
+|> Level.changeset(%{
+  unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]
+})
 |> Repo.update!()
 
 afk_reward_increments =

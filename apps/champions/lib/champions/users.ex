@@ -31,7 +31,7 @@ defmodule Champions.Users do
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
-        add_campaign_progresses(user)
+        add_campaigns_progress(user)
         add_afk_reward_rates(user)
 
         Users.get_user(user.id)
@@ -106,8 +106,8 @@ defmodule Champions.Users do
     end)
   end
 
-  defp add_campaign_progresses(user) do
-    campaigns = GameBackend.Campaigns.get_campaigns()
+  defp add_campaigns_progress(user) do
+    {:ok, campaigns} = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
       # Only add campaign progress to the first ones of each SuperCampaign
@@ -119,6 +119,17 @@ defmodule Champions.Users do
             campaign_id: campaign.id,
             level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
           })
+    end)
+  end
+
+  defp add_afk_reward_rates(user) do
+    ["Gold", "Gems", "Summon Scrolls"]
+    |> Enum.each(fn currency_name ->
+      Rewards.insert_afk_reward_rate(%{
+        user_id: user.id,
+        currency_id: Currencies.get_currency_by_name!(currency_name).id,
+        rate: 0
+      })
     end)
   end
 
