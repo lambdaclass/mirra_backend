@@ -306,7 +306,7 @@ defmodule Gateway.Test.Champions do
   end
 
   defp fetch_last_message(socket_tester) do
-    :timer.sleep(50)
+    :timer.sleep(100)
     send(socket_tester, {:last_message, self()})
   end
 
