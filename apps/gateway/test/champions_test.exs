@@ -15,6 +15,7 @@ defmodule Gateway.Test.Champions do
     Campaigns,
     Currency,
     Error,
+    Level,
     Unit,
     UnitAndCurrencies,
     User,
@@ -306,8 +307,8 @@ defmodule Gateway.Test.Champions do
   end
 
   describe "campaigns" do
-    test "get campaigns", %{socket_tester: socket_tester} do
-      # Create user
+    test "get campaigns and levels", %{socket_tester: socket_tester} do
+      # CreateUser
       {:ok, user} = Users.register("campaign_user")
 
       # Get user's campaigns
@@ -338,6 +339,24 @@ defmodule Gateway.Test.Champions do
         get_last_message()
 
       assert campaign_to_verify.id == sample_campaign.id
+
+      # Get a level
+      level = Enum.random(sample_campaign.levels)
+
+      SocketTester.get_level(socket_tester, user.id, level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:level, %Level{}}
+      }
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:level, %Level{} = level_to_verify}
+      } = get_last_message()
+
+      assert level_to_verify.id == level.id
     end
 
     test "fight level", %{socket_tester: socket_tester} do
@@ -345,7 +364,7 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("battle_user")
 
       # Get user's first campaign progression
-      campaign_progression = Enum.at(user.campaign_progress, 0)
+      [campaign_progression | _] = user.campaign_progress
 
       # Get the level of the campaign progression
       level_id = campaign_progression.level_id
@@ -366,6 +385,8 @@ defmodule Gateway.Test.Champions do
 
       # Battle result should be either win or loss
       assert battle_result.result == "win" or battle_result.result == "loss"
+
+      # TODO: check rewards [#CHoM-341]
     end
   end
 
