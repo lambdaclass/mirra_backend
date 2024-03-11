@@ -75,7 +75,7 @@ fn move_entity_to_position(
     entity.position = new_position;
 
     if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-        entity.move_to_next_valid_position(&external_wall);
+        entity.move_to_next_valid_position_inside(&external_wall);
     }
 
     entity

@@ -174,7 +174,7 @@ defmodule Arena.Game.Player do
 
         Process.send_after(
           self(),
-          {:delayed_skill_mechanics, player.id, skill.mechanics,
+          {:trigger_mechanic, player.id, skill.mechanics,
            Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
            |> Map.merge(skill)},
           skill.activation_delay_ms
@@ -326,7 +326,7 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
-  defp apply_effect({:stamina_faster, stamina_faster}, player) do
+  def apply_effect({:stamina_faster, stamina_faster}, player) do
     stamina_speedup_by =
       (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
       |> round()
@@ -343,7 +343,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :stamina_interval], new_stamina_interval)
   end
 
-  defp apply_effect({:speed_boost, speed_boost}, player) do
+  def apply_effect({:speed_boost, speed_boost}, player) do
     Process.send_after(
       self(),
       {:remove_speed_boost, player.id, speed_boost.amount},
@@ -353,7 +353,7 @@ defmodule Arena.Game.Player do
     %{player | speed: player.speed + speed_boost.amount}
   end
 
-  defp apply_effect({:damage_immunity, damage_immunity}, player) do
+  def apply_effect({:damage_immunity, damage_immunity}, player) do
     Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
     put_in(player, [:aditional_info, :damage_immunity], true)
   end

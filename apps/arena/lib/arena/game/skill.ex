@@ -217,7 +217,7 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
-  def do_mechanic(game_state, entity, {:teleport, teleport}, %{skill_target: skill_target}) do
+  def do_mechanic(game_state, entity, {:teleport, teleport}, %{skill_direction: skill_target}) do
     target_position = %{
       x: entity.position.x + skill_target.x * teleport.range,
       y: entity.position.y + skill_target.y * teleport.range
