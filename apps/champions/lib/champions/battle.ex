@@ -15,7 +15,7 @@ defmodule Champions.Battle do
   Returns `:win` or `:loss` accordingly, and updates the user's progress if they win..
   """
   def fight_level(user_id, level_id) do
-    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+    with {:user, {:ok, _user}} <- {:user, Users.get_user(user_id)},
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)},
          {:campaign_progress, {:ok, %CampaignProgress{level_id: current_level_id}}} <-
            {:campaign_progress, Campaigns.get_campaign_progress(user_id, level.campaign_id)},
