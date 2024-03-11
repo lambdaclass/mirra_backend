@@ -73,7 +73,8 @@ message ConfigSkill {
   uint64 execution_duration_ms = 3;
   float targetting_radius = 4;
   float targetting_angle = 5;
-  uint64 stamina_cost = 6;
+  float targetting_range = 6;
+  uint64 stamina_cost = 7;
 }
 
 
@@ -95,6 +96,7 @@ message GameState {
   int64 start_game_timestamp = 12;
   map<uint64, Entity> items = 13;
   map<uint64, Entity> obstacles = 14;
+  map<uint64, Entity> pools = 15;
 }
 
 enum GameStatus {
@@ -135,6 +137,7 @@ message Entity {
     Obstacle obstacle = 14;
     PowerUp power_up = 15;
     Item item = 16;
+    Pool pool = 17;
   }
 }
 
@@ -185,6 +188,10 @@ message PowerUp {
 enum  PowerUpstatus {
   AVAILABLE = 0;
   TAKEN = 1;
+}
+
+message Pool {
+  uint64 owner_id = 1;
 }
 
 message PlayerAction {

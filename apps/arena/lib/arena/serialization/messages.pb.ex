@@ -174,7 +174,8 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:execution_duration_ms, 3, type: :uint64, json_name: "executionDurationMs")
   field(:targetting_radius, 4, type: :float, json_name: "targettingRadius")
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
-  field(:stamina_cost, 6, type: :uint64, json_name: "staminaCost")
+  field(:targetting_range, 6, type: :float, json_name: "targettingRange")
+  field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -249,6 +250,15 @@ defmodule Arena.Serialization.GameState.ObstaclesEntry do
   field(:value, 2, type: Arena.Serialization.Entity)
 end
 
+defmodule Arena.Serialization.GameState.PoolsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: Arena.Serialization.Entity)
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -304,6 +314,8 @@ defmodule Arena.Serialization.GameState do
     type: Arena.Serialization.GameState.ObstaclesEntry,
     map: true
   )
+
+  field(:pools, 15, repeated: true, type: Arena.Serialization.GameState.PoolsEntry, map: true)
 end
 
 defmodule Arena.Serialization.Entity do
@@ -329,6 +341,7 @@ defmodule Arena.Serialization.Entity do
   field(:obstacle, 14, type: Arena.Serialization.Obstacle, oneof: 0)
   field(:power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0)
   field(:item, 16, type: Arena.Serialization.Item, oneof: 0)
+  field(:pool, 17, type: Arena.Serialization.Pool, oneof: 0)
 end
 
 defmodule Arena.Serialization.Player.EffectsEntry do
@@ -407,6 +420,14 @@ defmodule Arena.Serialization.PowerUp do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: Arena.Serialization.PowerUpstatus, enum: true)
+end
+
+defmodule Arena.Serialization.Pool do
+  @moduledoc false
+
+  use Protobuf, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
 end
 
 defmodule Arena.Serialization.PlayerAction do
