@@ -118,9 +118,8 @@ defmodule Gateway.Test.Champions do
       gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
       level = unit.level
 
-      #### Level up
-      [%CurrencyCost{currency_id: _gold_id, amount: level_up_cost}] =
-        Units.calculate_level_up_cost(unit)
+      #### LevelUpUnit
+      [%CurrencyCost{currency_id: _gold_id, amount: level_up_cost}] = Units.calculate_level_up_cost(unit)
 
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
@@ -140,7 +139,7 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_level_up"}}}
 
-      #### Tier up
+      #### TierUpUnit
 
       user_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
       user_gems = Currencies.get_amount_of_currency_by_name(user.id, "Gems")
@@ -170,15 +169,23 @@ defmodule Gateway.Test.Champions do
       assert user_currencies["Gold"] == user_gold - gold_cost
       assert user_currencies["Gems"] == user_gems - gems_cost
 
-      # TODO: Check that we can now level up
+      # Check that we can now LevelUpUnit
+      :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
+      fetch_last_message(socket_tester)
 
-      #### Rank up (fuse)
+      %WebSocketResponse{
+        response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit}}
+      } = get_last_message()
+
+      assert unit.level == level + 2
+
+      #### Rank up (FuseUnit)
 
       {:ok, unit} =
         GameBackend.Units.insert_unit(%{
           user_id: user.id,
-          level: 220,
-          tier: 8,
+          level: 100,
+          tier: 5,
           rank: Units.get_rank(:star5),
           selected: false,
           character_id: muflus.id
@@ -207,8 +214,15 @@ defmodule Gateway.Test.Champions do
       # Characters need a certain quality to rank up
       assert unit.character.quality == Units.get_quality(:epic)
 
-      # TODO: Check that we cant tier up again without ranking up
+      # Check that we cant TierUpUnit again without ranking up
+      :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
+      fetch_last_message(socket_tester)
 
+      %WebSocketResponse{
+        response_type: {:error, %Error{reason: "cant_tier_up"}}
+      } = get_last_message()
+
+      # FuseUnit
       :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
       fetch_last_message(socket_tester)
 
