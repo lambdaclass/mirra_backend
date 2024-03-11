@@ -126,10 +126,12 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
-        :afk_reward_rates,
-        items: :template,
-        units: [:character, :items],
-        currencies: :currency
+        [
+          :afk_reward_rates,
+          items: :template,
+          units: [:character, :items],
+          currencies: :currency
+        ]
       )
 
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
