@@ -64,6 +64,7 @@ defmodule Champions.Users do
         character_id: Enum.random(characters).id,
         user_id: user.id,
         level: Enum.random(1..5),
+        rank: Champions.Units.get_rank(:star5),
         tier: 1,
         selected: true,
         slot: index
@@ -84,7 +85,7 @@ defmodule Champions.Users do
   end
 
   defp add_campaigns_progress(user) do
-    campaigns = GameBackend.Campaigns.get_campaigns()
+    {:ok, campaigns} = GameBackend.Campaigns.get_campaigns()
 
     Enum.each(campaigns, fn campaign ->
       # Only add campaign progress to the first ones of each SuperCampaign

@@ -28,6 +28,8 @@ defmodule SocketTester do
     SelectUnit,
     UnselectUnit,
     LevelUpUnit,
+    TierUpUnit,
+    FuseUnit,
     EquipItem,
     UnequipItem,
     GetItem,
@@ -114,8 +116,7 @@ defmodule SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:select_unit, %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}}
+           request_type: {:select_unit, %SelectUnit{user_id: user_id, unit_id: unit_id, slot: slot}}
          })}
       )
 
@@ -145,7 +146,23 @@ defmodule SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:tier_up_unit, %LevelUpUnit{user_id: user_id, unit_id: unit_id}}
+           request_type: {:tier_up_unit, %TierUpUnit{user_id: user_id, unit_id: unit_id}}
+         })}
+      )
+
+  def fuse_unit(pid, user_id, unit_id, consumed_units_ids),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type:
+             {:fuse_unit,
+              %FuseUnit{
+                user_id: user_id,
+                unit_id: unit_id,
+                consumed_units_ids: consumed_units_ids
+              }}
          })}
       )
 
@@ -155,8 +172,7 @@ defmodule SocketTester do
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type:
-             {:equip_item, %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}}
+           request_type: {:equip_item, %EquipItem{user_id: user_id, item_id: item_id, unit_id: unit_id}}
          })}
       )
 

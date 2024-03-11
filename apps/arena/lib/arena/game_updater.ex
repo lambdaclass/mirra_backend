@@ -10,15 +10,6 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
 
-  ## Time between checking that a game has ended
-  @check_game_ended_interval_ms 1_000
-  ## Time to wait between a game ended detected and shutting down this process
-  @game_ended_shutdown_wait_ms 10_000
-  ## Time between natural healing intervals
-  @natural_healing_interval_ms 300
-  ## Time to prepare the game before starting
-  @enable_incomming_messages_ms 9_000
-
   ##########################
   # API
   ##########################
@@ -34,31 +25,80 @@ defmodule Arena.GameUpdater do
     GenServer.call(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
+  def use_item(game_pid, player_id, timestamp) do
+    GenServer.call(game_pid, {:use_item, player_id, timestamp})
+  end
+
   ##########################
   # END API
   ##########################
 
-  ##########################
-  # Callbacks
-  ##########################
   def init(%{clients: clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients, game_config)
 
-    Process.send_after(self(), :update_game, 1_000)
-
-    Process.send_after(
-      self(),
-      {:check_game_ended, Map.keys(game_state.players)},
-      @check_game_ended_interval_ms * 10
-    )
-
-    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms * 10)
-    Process.send_after(self(), :update_finish_preparing_game, 1_000)
+    send(self(), :update_game)
+    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
+
+  ##########################
+  # API Callbacks
+  ##########################
+
+  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
+    player =
+      state.game_state.players
+      |> Map.get(player_id)
+      |> Player.move(direction)
+
+    game_state =
+      state.game_state
+      |> put_in([:players, player_id], player)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
+
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_skill(skill_key, skill_params, state)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  def handle_call({:join, client_id}, _from, state) do
+    case get_in(state.game_state, [:client_to_player_map, client_id]) do
+      nil ->
+        {:reply, :not_a_client, state}
+
+      player_id ->
+        response = %{player_id: player_id, game_config: state.game_config}
+        {:reply, {:ok, response}, state}
+    end
+  end
+
+  def handle_call({:use_item, player_id, _timestamp}, _from, state) do
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_item(state.game_state)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  ##########################
+  # END API Callbacks
+  ##########################
+
+  ##########################
+  # Game Callbacks
+  ##########################
 
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
@@ -72,6 +112,7 @@ defmodule Arena.GameUpdater do
       |> update_projectiles_status()
       |> move_projectiles()
       |> resolve_players_collisions_with_power_ups()
+      |> resolve_players_collisions_with_items()
       |> resolve_projectiles_collisions_with_players()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> explode_projectiles()
@@ -82,6 +123,51 @@ defmodule Arena.GameUpdater do
 
     {:noreply, %{state | game_state: game_state}}
   end
+
+  def handle_info(:game_start, state) do
+    broadcast_enable_incomming_messages(state.game_state.game_id)
+    Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
+    Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    send(self(), :natural_healing)
+    send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+
+    {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
+  end
+
+  def handle_info({:end_game_check, last_players_ids}, state) do
+    case check_game_ended(state.game_state.players, last_players_ids) do
+      {:ongoing, players_ids} ->
+        Process.send_after(
+          self(),
+          {:end_game_check, players_ids},
+          state.game_config.game.end_game_interval_ms
+        )
+
+      {:ended, winner} ->
+        state = put_in(state, [:game_state, :status], :ENDED)
+        broadcast_game_ended(winner, state.game_state)
+
+        ## The idea of having this waiting period is in case websocket processes keep
+        ## sending messages, this way we give some time before making them crash
+        ## (sending to inexistant process will cause them to crash)
+        Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
+    end
+
+    {:noreply, state}
+  end
+
+  # Shutdown
+  def handle_info(:game_ended, state) do
+    {:stop, :normal, state}
+  end
+
+  ##########################
+  # End Game Callbacks
+  ##########################
+
+  ##########################
+  # Skill Callbacks
+  ##########################
 
   def handle_info({:remove_skill_action, player_id, skill_action}, state) do
     player =
@@ -111,6 +197,17 @@ defmodule Arena.GameUpdater do
       |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_info({:stop_stamina_faster, player_id, revert_by}, state) do
+    player = Map.get(state.game_state.players, player_id)
+
+    %{stamina_interval: max_stamina_interval} =
+      Configuration.get_character_config(player.aditional_info.character_name, state.game_config)
+
+    player = Player.revert_stamina_interval(player, revert_by, max_stamina_interval)
+    state = put_in(state, [:game_state, :players, player.id], player)
+    {:noreply, state}
   end
 
   def handle_info({:trigger_mechanic, player_id, mechanic, skill_params}, state) do
@@ -145,111 +242,73 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  # End game
-  def handle_info(:game_ended, state) do
-    {:stop, :normal, state}
-  end
-
-  def handle_info({:check_game_ended, last_players_ids}, state) do
-    case check_game_ended(state.game_state.players, last_players_ids) do
-      {:ongoing, players_ids} ->
-        Process.send_after(
-          self(),
-          {:check_game_ended, players_ids},
-          @check_game_ended_interval_ms
-        )
-
-      {:ended, winner} ->
-        broadcast_game_ended(winner, state.game_state)
-
-        ## The idea of having this waiting period is in case websocket processes keep
-        ## sending messages, this way we give some time before making them crash
-        ## (sending to inexistant process will cause them to crash)
-        Process.send_after(self(), :game_ended, @game_ended_shutdown_wait_ms)
-    end
-
-    {:noreply, state}
-  end
-
-  def handle_info(:update_finish_preparing_game, state) do
-    case state.game_state.status do
-      :PREPARING when state.game_state.countdown >= 1_000 ->
-        Process.send_after(self(), :update_finish_preparing_game, 1_000)
-        {:noreply, state |> put_in([:game_state, :countdown], state.game_state.countdown - 1_000)}
-
-      :PREPARING ->
-        broadcast_enable_incomming_messages(state.game_state.game_id)
-
-        Process.send_after(
-          self(),
-          :start_zone_shrink,
-          state.game_config.game.zone_shrink_start_ms
-        )
-
-        send(self(), :update_zone_shrink_time)
-
-        {:noreply,
-         state
-         |> put_in([:game_state, :status], :RUNNING)
-         |> put_in([:game_state, :countdown], 0)}
-
-      _ ->
-        {:noreply, state}
-    end
-  end
-
   # Natural healing
   def handle_info(:natural_healing, state) do
-    Process.send_after(self(), :natural_healing, @natural_healing_interval_ms)
+    Process.send_after(
+      self(),
+      :natural_healing,
+      state.game_config.game.natural_healing_interval_ms
+    )
 
     players = Player.trigger_natural_healings(state.game_state.players)
     state = put_in(state, [:game_state, :players], players)
     {:noreply, state}
   end
 
+  ##########################
+  # End Skill Callbacks
+  ##########################
+
+  ##########################
+  # Zone Callbacks
+  ##########################
+
   def handle_info(:start_zone_shrink, state) do
     Process.send_after(self(), :stop_zone_shrink, state.game_config.game.zone_stop_interval_ms)
     send(self(), :zone_shrink)
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     state =
-      put_in(state, [:game_state, :zone, :shrinking], :enabled)
+      put_in(state, [:game_state, :zone, :shrinking], true)
       |> put_in([:game_state, :zone, :enabled], true)
+      |> put_in(
+        [:game_state, :zone, :next_zone_change_timestamp],
+        now + state.game_config.game.zone_stop_interval_ms
+      )
 
     {:noreply, state}
   end
 
   def handle_info(:stop_zone_shrink, state) do
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_start_interval_ms)
-    state = put_in(state, [:game_state, :zone, :shrinking], :disabled)
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    state =
+      put_in(state, [:game_state, :zone, :shrinking], false)
+      |> put_in(
+        [:game_state, :zone, :next_zone_change_timestamp],
+        now + state.game_config.game.zone_start_interval_ms
+      )
+
     {:noreply, state}
   end
 
-  def handle_info(:update_zone_shrink_time, state) do
-    if get_in(state, [:game_state, :zone, :zone_shrink_time]) > 0 do
-      Process.send_after(self(), :update_zone_shrink_time, 1000)
-
-      state =
-        state
-        |> update_in([:game_state, :zone, :zone_shrink_time], fn current_time ->
-          current_time - 1000
-        end)
-
-      {:noreply, state}
-    else
-      {:noreply, state}
-    end
-  end
-
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :enabled}}} = state) do
-    Process.send_after(self(), :zone_shrink, 100)
-    radius = max(state.game_state.zone.radius - 10.0, 0.0)
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: true}}} = state) do
+    Process.send_after(self(), :zone_shrink, state.game_config.game.zone_shrink_interval)
+    radius = max(state.game_state.zone.radius - state.game_config.game.zone_shrink_radius_by, 0.0)
     state = put_in(state, [:game_state, :zone, :radius], radius)
     {:noreply, state}
   end
 
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: :disabled}}} = state) do
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: false}}} = state) do
     {:noreply, state}
   end
+
+  ##########################
+  # End Zone Callbacks
+  ##########################
 
   def handle_info(
         {:to_killfeed, killer_id, victim_id},
@@ -258,8 +317,7 @@ defmodule Arena.GameUpdater do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
 
-    amount_of_power_ups =
-      get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     state =
       update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
@@ -319,6 +377,45 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info(:spawn_item, state) do
+    Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+
+    last_id = state.game_state.last_id + 1
+    ## TODO: make random position
+    position =
+      random_position_in_map(
+        state.game_state.external_wall.radius,
+        state.game_state.external_wall
+      )
+
+    item_config = Enum.random(state.game_config.items)
+    item = Entities.new_item(last_id, position, item_config)
+
+    state =
+      put_in(state, [:game_state, :last_id], last_id)
+      |> put_in([:game_state, :items, item.id], item)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:remove_speed_boost, player_id, amount}, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.change_speed(-amount)
+
+    state = put_in(state, [:game_state, :players, player_id], player)
+    {:noreply, state}
+  end
+
+  def handle_info({:remove_damage_immunity, player_id}, state) do
+    player =
+      Map.get(state.game_state.players, player_id)
+      |> Player.remove_damage_immunity()
+
+    state = put_in(state, [:game_state, :players, player_id], player)
+    {:noreply, state}
+  end
+
   def handle_info({:block_actions, player_id}, state) do
     broadcast_player_block_actions(state.game_state.game_id, player_id, false)
     {:noreply, state}
@@ -338,42 +435,6 @@ defmodule Arena.GameUpdater do
 
       _ ->
         {:noreply, state}
-    end
-  end
-
-  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
-    player =
-      state.game_state.players
-      |> Map.get(player_id)
-      |> Player.move(direction)
-
-    game_state =
-      state.game_state
-      |> put_in([:players, player_id], player)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
-
-    game_state =
-      get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, skill_params, state)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:join, client_id}, _from, state) do
-    case get_in(state.game_state, [:client_to_player_map, client_id]) do
-      nil ->
-        {:reply, :not_a_client, state}
-
-      player_id ->
-        response = %{player_id: player_id, game_config: state.game_config}
-        {:reply, {:ok, response}, state}
     end
   end
 
@@ -408,6 +469,7 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
+             items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
              zone: state.zone,
@@ -415,7 +477,7 @@ defmodule Arena.GameUpdater do
              damage_taken: state.damage_taken,
              damage_done: state.damage_done,
              status: state.status,
-             countdown: state.countdown
+             start_game_timestamp: state.start_game_timestamp
            }}
       })
 
@@ -459,6 +521,7 @@ defmodule Arena.GameUpdater do
   # Create a new game
   defp new_game(game_id, clients, config) do
     now = System.monotonic_time(:millisecond)
+    initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     new_game =
       Map.new(game_id: game_id)
@@ -466,6 +529,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:players, %{})
       |> Map.put(:power_ups, %{})
       |> Map.put(:projectiles, %{})
+      |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
@@ -476,14 +540,15 @@ defmodule Arena.GameUpdater do
       |> Map.put(:zone, %{
         radius: config.map.radius,
         enabled: false,
-        shrinking: :disabled,
-        zone_shrink_time: config.game.zone_shrink_start_ms
+        shrinking: false,
+        next_zone_change_timestamp:
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
       })
+      |> Map.put(:status, :PREPARING)
+      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
     {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id,
-                                                                         character_name,
-                                                                         _from_pid},
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
@@ -511,8 +576,6 @@ defmodule Arena.GameUpdater do
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
-    |> Map.put(:status, :PREPARING)
-    |> Map.put(:countdown, @enable_incomming_messages_ms)
   end
 
   # Initialize obstacles
@@ -545,7 +608,8 @@ defmodule Arena.GameUpdater do
            ticks_to_move: ticks_to_move,
            external_wall: external_wall,
            obstacles: obstacles,
-           power_ups: power_ups
+           power_ups: power_ups,
+           items: items
          } = game_state
        ) do
     moved_players =
@@ -555,7 +619,7 @@ defmodule Arena.GameUpdater do
         external_wall,
         obstacles
       )
-      |> update_collisions(players, power_ups)
+      |> update_collisions(players, Map.merge(power_ups, items))
 
     %{game_state | players: moved_players}
   end
@@ -613,12 +677,9 @@ defmodule Arena.GameUpdater do
     %{game_state | projectiles: moved_projectiles}
   end
 
-  defp resolve_players_collisions_with_power_ups(
-         %{players: players, power_ups: power_ups} = game_state
-       ) do
+  defp resolve_players_collisions_with_power_ups(%{players: players, power_ups: power_ups} = game_state) do
     {updated_players, updated_power_ups} =
-      Enum.reduce(players, {players, power_ups}, fn {_player_id, player},
-                                                    {players_acc, power_ups_acc} ->
+      Enum.reduce(players, {players, power_ups}, fn {_player_id, player}, {players_acc, power_ups_acc} ->
         case find_collided_power_up(player.collides_with, power_ups_acc) do
           nil ->
             {players_acc, power_ups_acc}
@@ -632,6 +693,24 @@ defmodule Arena.GameUpdater do
     game_state
     |> Map.put(:players, updated_players)
     |> Map.put(:power_ups, updated_power_ups)
+  end
+
+  defp resolve_players_collisions_with_items(game_state) do
+    {players, items} =
+      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
+                                                                                 {players_acc, items_acc} ->
+        case find_collided_item(player.collides_with, items_acc) do
+          nil ->
+            {players_acc, items_acc}
+
+          item ->
+            process_item(player, item, players_acc, items_acc)
+        end
+      end)
+
+    game_state
+    |> Map.put(:players, players)
+    |> Map.put(:items, items)
   end
 
   # This method will decide what to do when a projectile has collided with something in the map
@@ -657,8 +736,7 @@ defmodule Arena.GameUpdater do
             entities -> List.delete(entities, external_wall.id)
           end
 
-        collided_entity =
-          decide_collided_entity(projectile, collides_with, external_wall.id, players_acc)
+        collided_entity = decide_collided_entity(projectile, collides_with, external_wall.id, players_acc)
 
         process_projectile_collision(
           projectile,
@@ -897,17 +975,53 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp find_collided_item(collides_with, items) do
+    Enum.find_value(collides_with, fn collided_entity_id ->
+      Map.get(items, collided_entity_id)
+    end)
+  end
+
   defp process_power_up(player, power_up, players_acc, power_ups_acc) do
     if power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
       updated_power_up = put_in(power_up, [:aditional_info, :status], :TAKEN)
 
-      updated_player =
-        update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
+      updated_player = update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
 
-      {Map.put(players_acc, player.id, updated_player),
-       Map.put(power_ups_acc, power_up.id, updated_power_up)}
+      {Map.put(players_acc, player.id, updated_player), Map.put(power_ups_acc, power_up.id, updated_power_up)}
     else
       {players_acc, power_ups_acc}
+    end
+  end
+
+  defp process_item(player, item, players_acc, items_acc) do
+    if Player.inventory_full?(player) do
+      {players_acc, items_acc}
+    else
+      player = Player.store_item(player, item.aditional_info)
+      {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
+    end
+  end
+
+  defp random_position_in_map(radius, external_wall) do
+    integer_radius = trunc(radius)
+    x = Enum.random(-integer_radius..integer_radius) / 1.0
+    y = Enum.random(-integer_radius..integer_radius) / 1.0
+
+    point = %{
+      id: 1,
+      shape: :point,
+      position: %{x: x, y: y},
+      radius: 0.0,
+      vertices: [],
+      speed: 0.0,
+      category: :obstacle,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false
+    }
+
+    case Physics.check_collisions(point, %{0 => external_wall}) do
+      [] -> random_position_in_map(integer_radius * 0.95, external_wall)
+      _ -> point.position
     end
   end
 
