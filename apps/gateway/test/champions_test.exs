@@ -73,7 +73,7 @@ defmodule Gateway.Test.Champions do
   end
 
   describe "units" do
-    test "unit selection", %{socket_tester: socket_tester} do
+    test "selection", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("SelectUser")
 
       [unit_to_unselect | _] = user.units
@@ -100,7 +100,7 @@ defmodule Gateway.Test.Champions do
       assert selected_unit.slot == slot
     end
 
-    test "unit progression", %{socket_tester: socket_tester} do
+    test "progression", %{socket_tester: socket_tester} do
       muflus = GameBackend.Units.Characters.get_character_by_name("Muflus")
       {:ok, user} = Users.register("LevelUpUser")
       Currencies.add_currency_by_name!(user.id, "Gold", 9999)
@@ -323,5 +323,9 @@ defmodule Gateway.Test.Champions do
       end)
 
     same_character_ids ++ same_faction_ids
+  end
+
+  defp compare_as_mapsets(actual, expected) do
+    MapSet.new(actual) == MapSet.new(expected)
   end
 end
