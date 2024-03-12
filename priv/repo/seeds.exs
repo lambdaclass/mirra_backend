@@ -210,6 +210,17 @@ currency_rewards =
 
   end)
 
+currency_rewards = currency_rewards ++
+  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+    %{
+      level_id: level.id,
+      amount: 10 * (15 + level.level_number - 1) * 1.025 |> round(),
+      currency_id: hero_souls_currency.id,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
 level_2 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 2) |> Repo.preload(:item_rewards)
