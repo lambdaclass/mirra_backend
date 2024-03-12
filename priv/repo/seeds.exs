@@ -23,31 +23,34 @@ units_per_level = 5
   base_attack: 63,
   base_defense: 78,
   basic_skill: %{
+    name: "Muflus Basic",
     effects: [%{
       type: "instant",
-      stat_affected: "health",
-      amount: -80,
-      stat_based_on: "attack",
-      amount_format: "additive",
-      target_strategy: "random", # TODO: Change back to nearest
-      amount_of_targets: 2,
-      targets_allies: false
+      initial_delay: 0,
+      components: [],
+      modifier: [],
+      executions: [%{"type" => "DealDamage", "attack_ratio" => 80, "energy_recharge" => 50, "delay" => 0}],
+      target_strategy: "random",
+      target_count: 2,
+      target_allies: false,
+      target_attribute: "Health"
     }],
     cooldown: 5
   },
   ultimate_skill: %{
+    name: "Muflus Ultimate",
     effects: [
       %{
         type: "instant",
-        stat_affected: "health",
-        amount: -205,
-        stat_based_on: "attack",
-        amount_format: "additive",
-        target_strategy: "random", # TODO: Change back to nearest
-        amount_of_targets: 2,
-        targets_allies: false
+        initial_delay: 0,
+        components: [],
+        modifier: [],
+        executions: [%{"type" => "DealDamage", "attack_ratio" => 205, "energy_recharge" => 0, "delay" => 0}],
+        target_strategy: "random",
+        target_count: 2,
+        target_allies: false,
+        target_attribute: "Health"
       }
-      # TODO: Add stun effect
       ],
   }
 })
