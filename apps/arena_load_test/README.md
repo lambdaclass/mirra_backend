@@ -6,6 +6,7 @@ Application to load test the Arena backend implementation. It simulates *N* clie
 
 ```bash
 # arena_server_ip is the IP of the server that's running the Arena application
+# SERVER_HOST is localhost:4000 if not explicited
 export SERVER_HOST=${arena_server_ip}:4000
 make run
 ```
