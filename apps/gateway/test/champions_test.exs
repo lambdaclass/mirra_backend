@@ -6,6 +6,7 @@ defmodule Gateway.Test.Champions do
 
   alias Champions.{Units, Users, Utils}
   alias GameBackend.Repo
+  alias GameBackend.Items
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
 
@@ -14,6 +15,7 @@ defmodule Gateway.Test.Champions do
     Boxes,
     Currency,
     Error,
+    Item,
     Unit,
     UnitAndCurrencies,
     User,
@@ -292,6 +294,48 @@ defmodule Gateway.Test.Champions do
       assert new_scrolls.amount == previous_scrolls.amount - List.first(box.cost).amount
 
       assert GameBackend.Units.get_units(user.id) |> Enum.count() == units + 1
+    end
+  end
+
+  describe "items" do
+    test "equip and unequip item", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("EquipItemUser")
+
+      unit = user.units |> Enum.at(0)
+
+      {:ok, epic_sword} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Sword of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = GameBackend.Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+
+      # EquipItem
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:item, %Item{} = equipped_item}
+      } = get_last_message()
+
+      # The item is now equipped to the unit
+      assert equipped_item.user_id == user.id
+      assert equipped_item.unit_id == unit.id
+
+      # UnequipItem
+      :ok = SocketTester.unequip_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:item, %Item{} = unequipped_item}
+      } = get_last_message()
+
+      # The item is now unequipped
+      assert unequipped_item.user_id == user.id
+      assert unequipped_item.unit_id == ""
     end
   end
 
