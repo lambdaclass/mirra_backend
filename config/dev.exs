@@ -155,3 +155,9 @@ config :game_client, dev_routes: true
 ##############################
 # App configuration: gateway #
 ##############################
+
+##################################
+# App configuration: bot_manager #
+##################################
+
+config :bot_manager, :end_point, port: [port: 5000]
