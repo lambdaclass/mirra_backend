@@ -6,7 +6,7 @@ defmodule Arena.GameLauncher do
   # Amount of clients needed to start a game
   @clients_needed 10
   # Time to wait to start game with any amount of clients
-  @start_timeout_ms 10_000
+  @start_timeout_ms 1000
 
   # API
   def start_link(_) do
@@ -51,7 +51,11 @@ defmodule Arena.GameLauncher do
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
 
-    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{clients: game_clients})
+    {:ok, game_pid} =
+      GenServer.start(Arena.GameUpdater, %{
+        clients: game_clients,
+        missing_clients: @clients_needed - Enum.count(game_clients)
+      })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
