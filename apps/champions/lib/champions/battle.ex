@@ -6,58 +6,33 @@ defmodule Champions.Battle do
   """
 
   alias GameBackend.Campaigns
+  alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Users
-
-  # @doc """
-  # Run an automatic battle between two users. Only validation done is for empty teams.
-
-  # Returns the id of the winner.
-  # """
-  # def pvp_battle(user_1, user_2) do
-  #   user_1_units = Units.get_selected_units(user_1)
-  #   user_2_units = Units.get_selected_units(user_2)
-
-  #   cond do
-  #     user_1_units == [] ->
-  #       {:error, {:user_1, :no_selected_units}}
-
-  #     user_2_units == [] ->
-  #       {:error, {:user_2, :no_selected_units}}
-
-  #     true ->
-  #       case battle(user_1_units, user_2_units) do
-  #         :team_1 -> user_1
-  #         :team_2 -> user_2
-  #       end
-  #   end
-  # end
 
   @doc """
   Plays a level for a user, which means fighting its units with their selected ones.
-  Returns :win or :loss accordingly, and updates the user's progress if they win.
+  Returns `:win` or `:loss` accordingly, and updates the user's progress if they win..
   """
-  def fight_level(user_id, campaign_id, level_id) do
-    user = Users.get_user(user_id)
-    level = Campaigns.get_level(level_id)
-    campaign_progression = Campaigns.get_campaign_progression(user_id, campaign_id)
-
-    cond do
-      is_nil(user) ->
-        {:error, :user_not_found}
-
-      is_nil(level) ->
-        {:error, :level_not_found}
-
-      is_nil(campaign_progression) ->
-        {:error, :campaign_progression_not_found}
-
-      true ->
-        if battle(user.units, level.units) == :team_1 do
-          Users.advance_level(user_id, campaign_id)
-          :win
-        else
-          :loss
+  def fight_level(user_id, level_id) do
+    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+         {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)},
+         {:campaign_progress, {:ok, %CampaignProgress{level_id: current_level_id}}} <-
+           {:campaign_progress, Campaigns.get_campaign_progress(user_id, level.campaign_id)},
+         {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
+      if battle(user.units, level.units) == :team_1 do
+        case Users.advance_level(user_id, level.campaign_id) do
+          # TODO: add rewards to response [CHoM-191]
+          {:ok, _changes} -> :win
+          _error -> {:error, :failed_to_advance}
         end
+      else
+        :loss
+      end
+    else
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+      {:level, {:error, :not_found}} -> {:error, :level_not_found}
+      {:campaign_progress, {:error, :not_found}} -> {:error, :campaign_progress_not_found}
+      {:level_valid, false} -> {:error, :level_invalid}
     end
   end
 
@@ -68,12 +43,12 @@ defmodule Champions.Battle do
   def battle(team_1, team_2) do
     team_1_agg_level =
       Enum.reduce(team_1, 0, fn unit, acc ->
-        unit.unit_level + item_level_agg(unit.items) + acc
+        unit.level + item_level_agg(unit.items) + acc
       end)
 
     team_2_agg_level =
       Enum.reduce(team_2, 0, fn unit, acc ->
-        unit.unit_level + item_level_agg(unit.items) + acc
+        unit.level + item_level_agg(unit.items) + acc
       end)
 
     total_level = team_1_agg_level + team_2_agg_level

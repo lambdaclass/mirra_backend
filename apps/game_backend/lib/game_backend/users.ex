@@ -1,20 +1,22 @@
 defmodule GameBackend.Users do
   @moduledoc """
-  The Users module defines utilites for interacting with Users, that are common across all games. Also defines the data structures themselves. Operations that can be done to a User are:
+  The Users module defines utilites for interacting with Users, that are common across all games.
+
+  Operations that can be done to a User are:
   - Create
+  - Give rewards (units, items, currency, experience)
 
   For now, users consist of only a username. No authentication of any sort has been implemented.
   """
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Units
-  alias GameBackend.Items
+  alias Ecto.Multi
+  alias GameBackend.Units.Unit
+  alias GameBackend.Items.Item
   alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
-  alias GameBackend.Campaigns.CampaignProgression
-  alias GameBackend.Campaigns.Campaign
-  alias GameBackend.Campaigns.Level
+  alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Campaigns
   alias GameBackend.Repo
   alias GameBackend.Users.User
@@ -40,7 +42,7 @@ defmodule GameBackend.Users do
   @doc """
   Gets a single user.
 
-  Returns nil if no user is found.
+  Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
@@ -50,22 +52,28 @@ defmodule GameBackend.Users do
       iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
       nil
   """
-  def get_user(id), do: Repo.get(User, id) |> preload()
+  def get_user(id) do
+    user = Repo.get(User, id) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
 
   @doc """
   Gets a user by their username.
 
-  Returns nil if no user is found.
+  Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
       iex> get_user_by_username("some_user")
-      %User{}
+      {:ok, %User{}}
 
       iex> get_user_by_username("non_existing_user")
-      nil
+      {:error, :not_found}
   """
-  def get_user_by_username(username), do: Repo.get_by(User, username: username) |> preload()
+  def get_user_by_username(username) do
+    user = Repo.get_by(User, username: username) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
 
   def update_experience(user, params),
     do:
@@ -78,21 +86,36 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    {:ok, {campaign_progression, level, campaign}} =
-      retrieve_campaign_data(user_id, campaign_id)
+    with {:campaign_data, {:ok, campaign_progress}} <-
+           {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
+         {:next_level, {next_campaign_id, next_level_id}} <-
+           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
+      level = campaign_progress.level
 
-    {next_campaign_id, next_level_id} = Campaigns.get_next_level(campaign, level)
-
-    {:ok, _} =
-      update_campaign_progression(campaign_progression, next_campaign_id, next_level_id)
-
-    update_user(user_id, level)
-
-    :ok
+      # TODO: Implement experience rewards [CHoM-#216]
+      Multi.new()
+      |> apply_currency_rewards(user_id, level.currency_rewards)
+      |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
+      |> Multi.insert_all(:item_rewards, Item, fn _ ->
+        build_item_rewards_params(user_id, level.item_rewards)
+      end)
+      |> Multi.insert_all(:unit_rewards, Unit, fn _ ->
+        build_unit_rewards_params(user_id, level.unit_rewards)
+      end)
+      |> Multi.run(:update_campaign_progress, fn _, _ ->
+        if next_level_id == level.id,
+          do: {:ok, nil},
+          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
+      end)
+      |> Repo.transaction()
+    else
+      {:campaign_data, _transaction_error} -> {:error, :campaign_data_error}
+      {:next_level, _transaction_error} -> {:campaign_progress_error}
+    end
   end
 
   def reset_afk_rewards_claim(user_id) do
-    user = get_user(user_id)
+    {:ok, user} = get_user(user_id)
 
     user
     |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
@@ -101,94 +124,70 @@ defmodule GameBackend.Users do
 
   defp preload(user),
     do:
-      Repo.preload(user, [
-        :afk_reward_rates,
-        items: :template,
-        units: [:character, :items],
-        currencies: :currency
-      ])
+      Repo.preload(
+        user,
+        [
+          :afk_reward_rates,
+          items: :template,
+          units: [:character, :items],
+          currencies: :currency
+        ]
+      )
 
-  defp retrieve_campaign_data(user_id, campaign_id) do
-    Repo.transaction(fn ->
-      campaign_progression =
-        Repo.get_by(CampaignProgression, user_id: user_id, campaign_id: campaign_id)
-
-      level =
-        Repo.get(Level, campaign_progression.level_id)
-        |> Repo.preload([
-          :currency_rewards,
-          :afk_rewards_incrementers,
-          :item_rewards,
-          :unit_rewards
-        ])
-
-      campaign = Repo.get(Campaign, campaign_id)
-
-      {campaign_progression, level, campaign}
-    end)
-  end
-
-  defp update_campaign_progression(campaign_progression, next_campaign_id, next_level_id) do
-    campaign_progression
-    |> CampaignProgression.advance_level_changeset(%{
+  defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
+    campaign_progress
+    |> CampaignProgress.advance_level_changeset(%{
       campaign_id: next_campaign_id,
       level_id: next_level_id
     })
     |> Repo.update()
   end
 
-  defp update_user(user_id, level) do
-    Repo.transaction(fn ->
-      apply_currency_rewards(user_id, level.currency_rewards)
-      apply_afk_rewards_incrementers(user_id, level.afk_rewards_incrementers)
-      apply_item_rewards(user_id, level.item_rewards)
-      apply_unit_rewards(user_id, level.unit_rewards)
-      :ok
-    end)
-  end
-
-  defp apply_currency_rewards(user_id, currency_rewards) do
-    currency_rewards
-    |> Enum.each(fn currency_reward ->
-      Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
-    end)
-  end
-
-  defp apply_afk_rewards_incrementers(user_id, afk_rewards_incrementers) do
-    afk_rewards_incrementers
-    |> Enum.each(fn incrementer ->
-      Rewards.increment_afk_reward_rate(user_id, incrementer.currency_id, incrementer.amount)
-    end)
-  end
-
-  defp apply_item_rewards(user_id, item_rewards) do
-    item_rewards
-    |> Enum.each(fn item_reward ->
-      {:ok, item} = Items.get_item(item_reward.item_id)
-
-      Enum.each(1..item_reward.amount, fn _ ->
-        Items.insert_item(%{
+  defp build_item_rewards_params(user_id, item_rewards) do
+    Enum.map(item_rewards, fn item_reward ->
+      Enum.map(1..item_reward.amount, fn _ ->
+        %{
           user_id: user_id,
-          template_id: item.template_id,
-          level: item.level
-        })
+          template_id: item_reward.item_template_id,
+          level: 1,
+          inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+          updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        }
+      end)
+    end)
+    |> List.flatten()
+  end
+
+  defp build_unit_rewards_params(user_id, unit_rewards) do
+    Enum.map(unit_rewards, fn unit_reward ->
+      Enum.map(1..unit_reward.amount, fn _ ->
+        %{
+          user_id: user_id,
+          character_id: unit_reward.character_id,
+          level: 1,
+          tier: 1,
+          rank: unit_reward.rank,
+          selected: false,
+          inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+          updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        }
+      end)
+    end)
+    |> List.flatten()
+  end
+
+  defp apply_currency_rewards(multi, user_id, currency_rewards) do
+    Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
+      Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
+        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
       end)
     end)
   end
 
-  defp apply_unit_rewards(user_id, unit_rewards) do
-    unit_rewards
-    |> Enum.each(fn unit_reward ->
-      unit = Units.get_unit(unit_reward.unit_id)
-
-      Enum.each(1..unit_reward.amount, fn _ ->
-        Units.insert_unit(%{
-          user_id: user_id,
-          character_id: unit.character_id,
-          unit_level: unit.level,
-          tier: unit.tier,
-          selected: false
-        })
+  defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
+    Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
+      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
+        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
       end)
     end)
   end

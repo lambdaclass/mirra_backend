@@ -11,12 +11,15 @@ syntax = "proto3";
       FightLevel fight_level = 7;
       SelectUnit select_unit = 8;
       UnselectUnit unselect_unit = 9;
-      EquipItem equip_item = 10;
-      UnequipItem unequip_item = 11;
-      GetItem get_item = 12;
-      LevelUpItem level_up_item = 13;
-      GetAfkRewards get_afk_rewards = 14;
-      ClaimAfkRewards claim_afk_rewards = 15;
+      LevelUpUnit level_up_unit = 10;
+      TierUpUnit tier_up_unit = 11;
+      FuseUnit fuse_unit = 12;
+      EquipItem equip_item = 13;
+      UnequipItem unequip_item = 14;
+      GetItem get_item = 15;
+      LevelUpItem level_up_item = 16;
+      GetAfkRewards get_afk_rewards = 17;
+      ClaimAfkRewards claim_afk_rewards = 18;
     }
   }
 
@@ -38,7 +41,7 @@ syntax = "proto3";
   
   message GetCampaign {
     string user_id = 1;
-    uint32 campaign_number = 2;
+    string campaign_id = 2;
   }
   
   message GetLevel {
@@ -61,6 +64,22 @@ syntax = "proto3";
   message UnselectUnit {
    string user_id = 1;
    string unit_id = 2;
+  }
+
+  message LevelUpUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+  
+  message TierUpUnit {
+   string user_id = 1;
+   string unit_id = 2;
+  }
+  
+  message FuseUnit {
+    string user_id = 1;
+    string unit_id = 2;
+    repeated string consumed_units_ids = 3;
   }
   
   message EquipItem {
@@ -98,13 +117,14 @@ syntax = "proto3";
     oneof response_type {
       User user = 1;
       Unit unit = 2;
-      Item item = 3;
-      Campaigns campaigns = 4;
-      Campaign campaign = 5;
-      Level level = 6;
-      BattleResult battle_result = 7;
-      AfkRewards afk_rewards = 8;
-      Error error = 9;
+      UnitAndCurrencies unit_and_currencies = 3;
+      Item item = 4;
+      Campaigns campaigns = 5;
+      Campaign campaign = 6;
+      Level level = 7;
+      BattleResult battle_result = 8;
+      AfkRewards afk_rewards = 9;
+      Error error = 10;
     }
   }
   
@@ -113,14 +133,14 @@ syntax = "proto3";
     string username = 2;
     uint64 level = 3;
     uint64 experience = 4;
-    repeated CampaignProgression campaigns_progression = 6;
+    repeated CampaignProgress campaigns_progress = 6;
     repeated UserCurrency currencies = 7;
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
   }
 
-  message CampaignProgression {
+  message CampaignProgress {
     string user_id = 1;
     string campaign_id = 2;
     string level_id = 3;
@@ -129,7 +149,7 @@ syntax = "proto3";
   message AfkRewardRate {
     string user_id = 1;
     string currency_id = 2;
-    uint64 rate = 3;
+    float rate = 3;
   }
 
   message UserCurrency {
@@ -143,21 +163,27 @@ syntax = "proto3";
 
   message Unit {
     string id = 1;
-    uint32 unit_level = 2;
+    uint32 level = 2;
     uint32 tier = 3;
-    bool selected = 4;
-    uint32 slot = 5;
-    string level_id = 6;
-    string user_id = 7;
-    Character character = 8;
-    repeated Item items = 9;
+    uint32 rank = 4;
+    bool selected = 5;
+    uint32 slot = 6;
+    string campaign_level_id = 7;
+    string user_id = 8;
+    Character character = 9;
+    repeated Item items = 10;
+  }
+
+  message UnitAndCurrencies {
+    Unit unit = 1;
+    repeated UserCurrency user_currency = 2;
   }
   
   message Character {
     bool active = 1;
     string name = 2;
     string faction = 3;
-    string rarity = 4;
+    int32 quality = 4;
   }
   
   message Item {
@@ -180,7 +206,7 @@ syntax = "proto3";
 
   message Campaign {
     string id = 1;
-    string quest_id = 2;
+    string super_campaign_id = 2;
     uint32 campaign_number = 3;
     repeated Level levels = 4;
   }
@@ -194,8 +220,7 @@ syntax = "proto3";
   }
 
   message CurrencyReward {
-    string currency_id = 1; 
-    string level_id = 2;
+    Currency currency = 1; 
     uint64 amount = 3;
   }
 

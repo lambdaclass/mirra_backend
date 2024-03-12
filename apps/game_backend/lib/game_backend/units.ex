@@ -3,14 +3,16 @@ defmodule GameBackend.Units do
   The Units module defines utilites for interacting with Units, that are common across all games. Also defines the data structures themselves. Operations that can be done to a Unit are:
   - Create
   - Select to a slot/Unselect
+  - Level up
+  - Tier up
 
-  Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character. Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
+  Units are created by instantiating copies of Characters. This way, many users can have their own copy of the "Muflus" character.
+  Likewise, this allows for a user to have many copies of them, each with their own level, selected status and slot.
   """
 
   import Ecto.Query
 
   alias GameBackend.Repo
-  alias GameBackend.Units
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
 
@@ -24,49 +26,58 @@ defmodule GameBackend.Units do
   end
 
   @doc """
-  Sets the selected value of a unit.
+  Updates a unit.
   """
-  def update_selected(unit, params) do
+  def update_unit(unit, params) do
     unit
-    |> Unit.selected_changeset(params)
+    |> Unit.update_changeset(params)
     |> Repo.update()
   end
 
+  @doc """
+  Sets a unit as selected in the given slot.
+  """
   def select_unit(user_id, unit_id, slot \\ nil) do
-    unit = Units.get_unit(unit_id) || %{}
-
-    if Map.get(unit, :user_id, nil) == user_id do
-      case update_selected(unit, %{selected: true, slot: slot}) do
-        {:ok, unit} -> unit
-        {:error, reason} -> {:error, reason}
-      end
+    with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id} do
+      update_unit(unit, %{selected: true, slot: slot})
     else
-      {:error, :not_found}
+      {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:unit_owned, false} -> {:error, :not_owned}
     end
   end
 
+  @doc """
+  Sets a unit as unselected and clears its slot.
+  """
   def unselect_unit(user_id, unit_id) do
-    unit = Units.get_unit(unit_id) || %{}
-
-    if Map.get(unit, :user_id, nil) == user_id do
-      case update_selected(unit, %{selected: false, slot: nil}) do
-        {:ok, unit} -> unit
-        {:error, reason} -> {:error, reason}
-      end
+    with {:unit, {:ok, unit}} <- {:unit, get_unit(unit_id)},
+         {:unit_owned, true} <- {:unit_owned, unit.user_id == user_id} do
+      update_unit(unit, %{selected: false, slot: nil})
     else
-      {:error, :not_found}
+      {:unit, {:error, :not_found}} -> {:error, :not_found}
+      {:unit_owned, false} -> {:error, :not_owned}
     end
   end
 
   @doc """
   Gets a unit given its id.
   """
-  def get_unit(id), do: Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+  def get_unit(id) do
+    unit = Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+    if unit, do: {:ok, unit}, else: {:error, :not_found}
+  end
 
   @doc """
   Gets all units from all users.
   """
   def get_units(), do: Repo.all(Unit) |> Repo.preload([:character, :user, :items])
+
+  @doc """
+  Gets all units from ids in a list.
+  """
+  def get_units_by_ids(unit_ids) when is_list(unit_ids),
+    do: Repo.all(from(u in Unit, where: u.id in ^unit_ids, preload: [:character, :user, :items]))
 
   @doc """
   Gets all units for a user.
@@ -126,6 +137,11 @@ defmodule GameBackend.Units do
   def delete_unit(id), do: Repo.get(Unit, id) |> delete_unit()
 
   @doc """
+  Deletes all units in a list by ids.
+  """
+  def delete_units(unit_ids), do: Repo.delete_all(from(u in Unit, where: u.id in ^unit_ids))
+
+  @doc """
   Sets all of the user's units' selected value to false.
   """
   def remove_all_selected_units(user_id),
@@ -150,12 +166,57 @@ defmodule GameBackend.Units do
   @doc """
   Create params for a level with a random character.
   """
-  def unit_params_for_level(possible_characters, unit_level, slot) do
+  def unit_params_for_level(possible_characters, level, slot) do
     character = Enum.random(possible_characters)
 
-    %{unit_level: unit_level, tier: 1, selected: true, character_id: character.id, slot: slot}
+    %{level: level, tier: 1, rank: 1, selected: true, character_id: character.id, slot: slot}
   end
 
+  @doc """
+  Returns whether a unit belongs to a user.
+  """
   def unit_belongs_to_user(unit_id, user_id),
-    do: Map.get(get_unit(unit_id) || %{}, :user_id) == user_id
+    do: Repo.exists?(from(u in Unit, where: u.id == ^unit_id and u.user_id == ^user_id))
+
+  @doc """
+  Increment a unit's level (not to be confused with units' `level` association).
+
+  ## Examples
+
+      iex> add_level(%Unit{level: 41}, 1)
+      {:ok, %Unit{level: 42}}
+  """
+  def add_level(unit, level \\ 1) do
+    unit
+    |> Unit.update_changeset(%{level: unit.level + level})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment a unit's tier.
+
+  ## Examples
+
+      iex> add_tier(%Unit{tier: 41}, 1)
+      {:ok, %Unit{tier: 42}}
+  """
+  def add_tier(unit, tier \\ 1) do
+    unit
+    |> Unit.update_changeset(%{tier: unit.tier + tier})
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment a unit's rank.
+
+  ## Examples
+
+      iex> add_rank(%Unit{rank: 41}, 1)
+      {:ok, %Unit{rank: 42}}
+  """
+  def add_rank(unit, rank \\ 1) do
+    unit
+    |> Unit.update_changeset(%{rank: unit.rank + rank})
+    |> Repo.update()
+  end
 end

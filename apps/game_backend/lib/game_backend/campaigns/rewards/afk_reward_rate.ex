@@ -12,8 +12,7 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
   schema "afk_reward_rates" do
     belongs_to(:user, User)
     belongs_to(:currency, Currency)
-    # Per minute
-    field(:rate, :integer)
+    field(:rate, :float)
 
     timestamps()
   end
@@ -24,12 +23,5 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
     |> cast(attrs, [:user_id, :currency_id, :rate])
     |> validate_number(:rate, greater_than_or_equal_to: 0)
     |> validate_required([:user_id, :currency_id, :rate])
-  end
-
-  @doc false
-  def update_changeset(afk_reward_rate, attrs) do
-    afk_reward_rate
-    |> cast(attrs, [:rate])
-    |> validate_required([:rate])
   end
 end

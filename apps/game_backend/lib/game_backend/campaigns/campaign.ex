@@ -3,7 +3,7 @@ defmodule GameBackend.Campaigns.Campaign do
   Campaigns
   """
   alias GameBackend.Campaigns.Level
-  alias GameBackend.Campaigns.Quest
+  alias GameBackend.Campaigns.SuperCampaign
   use GameBackend.Schema
   import Ecto.Changeset
 
@@ -11,7 +11,7 @@ defmodule GameBackend.Campaigns.Campaign do
     field(:game_id, :integer)
     field(:campaign_number, :integer)
 
-    belongs_to(:quest, Quest)
+    belongs_to(:super_campaign, SuperCampaign)
     has_many(:levels, Level)
 
     timestamps()
@@ -20,8 +20,8 @@ defmodule GameBackend.Campaigns.Campaign do
   @doc false
   def changeset(campaign, attrs \\ %{}) do
     campaign
-    |> cast(attrs, [:game_id, :campaign_number, :quest_id])
+    |> cast(attrs, [:game_id, :campaign_number, :super_campaign_id])
     |> cast_assoc(:levels)
-    |> validate_required([:game_id, :quest_id])
+    |> validate_required([:game_id, :super_campaign_id])
   end
 end

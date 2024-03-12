@@ -24,7 +24,7 @@ To get all the campaigns available to that user in Champions of Mirra, you can r
 iex(3)> SocketTester.get_campaigns(pid, "user_id")
 ```
 
-Now, to play a battle in the first level of the first campaign, get the campaign and level ids from the previous request and run the following command (replace `campaign_id` and `level_id` with the corresponding fields returned in the previous request):
+Now, to play a battle in the first level of the first campaign, get the level ids from the previous request and run the following command (replace `level_id` with the corresponding fields returned in the previous request):
 
 ```
 iex(4)> SocketTester.fight_level(pid, "user_id", "campaign_id", "level_id")

@@ -1,8 +1,5 @@
 { pkgs, lib, ... }: {
 
-  # Example for passing env var to make and caddy to deploy the app automatically
-  # env.DOMAIN = "brazil-testing.curseofmirra.com";
-
   processes = {
     main.exec = "make start";
   };
@@ -13,6 +10,7 @@
     pkgs.protobuf
     pkgs.rustc
     pkgs.cargo
+    pkgs.clang
 
   ] ++ lib.optionals pkgs.stdenv.isLinux [ 
     # Packages only for Linux
@@ -32,10 +30,6 @@
     erlang = {
       enable = true;
     };
-
-    #rust = {
-    #  enable = true;
-    #};
     
     javascript = {
       enable = true;

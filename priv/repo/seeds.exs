@@ -8,16 +8,48 @@ alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
+import Ecto.Query
 
 champions_of_mirra_id = 2
 units_per_level = 5
 
-Characters.insert_character(%{
+{:ok, muflus} = Characters.insert_character(%{
   game_id: champions_of_mirra_id,
   active: true,
   name: "Muflus",
   faction: "Araban",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic),
+  base_health: 621,
+  base_attack: 63,
+  base_armor: 78,
+  basic_skill: %{
+    effects: [%{
+      type: "instant",
+      stat_affected: "health",
+      amount: -80,
+      stat_based_on: "attack",
+      amount_format: "additive",
+      targeting_strategy: "random", # TODO: Change back to nearest
+      amount_of_targets: 2,
+      targets_allies: false
+    }],
+    cooldown: 5
+  },
+  ultimate_skill: %{
+    effects: [
+      %{
+        type: "instant",
+        stat_affected: "health",
+        amount: -205,
+        stat_based_on: "attack",
+        amount_format: "additive",
+        targeting_strategy: "random", # TODO: Change back to nearest
+        amount_of_targets: 2,
+        targets_allies: false
+      }
+      # TODO: Add stun effect
+      ],
+  }
 })
 
 Characters.insert_character(%{
@@ -25,7 +57,7 @@ Characters.insert_character(%{
   active: true,
   name: "Uma",
   faction: "Kaline",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Characters.insert_character(%{
@@ -33,7 +65,7 @@ Characters.insert_character(%{
   active: true,
   name: "Dagna",
   faction: "Merliot",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
 Characters.insert_character(%{
@@ -41,10 +73,10 @@ Characters.insert_character(%{
   active: true,
   name: "H4ck",
   faction: "Otobi",
-  rarity: "Epic"
+  quality: Champions.Units.get_quality(:epic)
 })
 
-Items.insert_item_template(%{
+{:ok, epic_sword} = Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
   type: "weapon"
@@ -92,19 +124,19 @@ rules = [
   %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
-quest = %{
+super_campaign = %{
   game_id: champions_of_mirra_id,
-  name: "Main Quest",
+  name: "Main Campaign",
 }
 
-{_, quest} = Campaigns.insert_quest(quest, returning: true)
+{_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
 
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
   Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
     {_, campaign} = Campaigns.insert_campaign(%{
       game_id: champions_of_mirra_id,
-      quest_id: quest.id,
+      super_campaign_id: super_campaign.id,
       campaign_number: campaign_index
     }, returning: true)
 
@@ -136,7 +168,7 @@ units =
     agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
 
     units =
-      Enum.map(0..4, fn slot ->
+      Enum.map(1..6, fn slot ->
         Units.unit_params_for_level(
           possible_characters,
           div(agg_difficulty, units_per_level),
@@ -154,49 +186,62 @@ units =
 
         missing_levels ->
           Enum.reduce(0..missing_levels, units, fn index, units ->
-            List.update_at(units, index, fn unit -> %{unit | unit_level: unit.unit_level + 1} end)
+            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
           end)
       end
 
     Enum.map(level_units, fn unit_attrs ->
-      Map.put(unit_attrs, :level_id, level.id)
+      Map.put(unit_attrs, :campaign_level_id, level.id)
     end)
   end)
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 currency_rewards =
-  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
       %{
         level_id: level.id,
         amount: 10 * (20 + level.level_number - 1),
         currency_id: gold_currency.id,
+        afk_reward: false,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
+
   end)
 
-currency_rewards = currency_rewards ++
-  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    %{
-      level_id: level.id,
-      amount: 10 * (15 + level.level_number - 1) * 1.025 |> round(),
-      currency_id: hero_souls_currency.id,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
-afk_reward_incrementers =
-  Enum.map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+level_2 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 2) |> Repo.preload(:item_rewards)
+level_3 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 3) |> Repo.preload(:unit_rewards)
+
+level_2
+|> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
+|> Repo.update!()
+
+level_3
+|> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]})
+|> Repo.update!()
+
+afk_reward_increments =
+  Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      [%{
+        level_id: level.id,
+        amount: 10 * level_index ,
+        currency_id: gold_currency.id,
+        afk_reward: true,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
       %{
         level_id: level.id,
-        amount: 1*level_index,
-        currency_id: scrolls_currency.id,
+        amount: level_index,
+        currency_id: gems_currency.id,
+        afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-
+    ]
   end)
-Repo.insert_all(CurrencyReward, afk_reward_incrementers, on_conflict: :nothing)
+
+Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)
