@@ -8,19 +8,8 @@ defmodule GameBackend.Units.Skills.Type do
   def type(), do: :string
 
   def cast("instant"), do: {:ok, "instant"}
-  def cast(%{"duration" => duration}), do: {:ok, %{"duration" => duration}}
-
-  def cast(%{
-        "interval" => interval,
-        "trigger_count" => trigger_count
-      }),
-      do:
-        {:ok,
-         %{
-           "interval" => interval,
-           "trigger_count" => trigger_count
-         }}
-
+  def cast(%{"duration" => duration, "period" => period}), do: {:ok, %{"duration" => duration, "period" => period}}
+  def cast(%{"period" => period}), do: {:ok, %{"period" => period}}
   def cast(_), do: :error
 
   def load(string), do: {:ok, time_type_from_string(string)}
@@ -32,17 +21,11 @@ defmodule GameBackend.Units.Skills.Type do
       "instant" ->
         "instant"
 
-      %{"duration" => duration} ->
-        "duration,#{duration}"
+      %{"duration" => duration, "period" => period} ->
+        "duration,#{duration},#{period}"
 
-      %{
-        "interval" => interval,
-        "trigger_count" => trigger_count
-      } ->
-        "periodic,#{interval},#{trigger_count}"
-
-      _ ->
-        nil
+      %{"period" => period} ->
+        "permanent,#{period}"
     end
   end
 
@@ -50,15 +33,11 @@ defmodule GameBackend.Units.Skills.Type do
 
   defp time_type_from_string(string) when is_binary(string) do
     case String.split(string, ",") do
-      ["duration", duration] ->
-        {"duration", %{duration: String.to_integer(duration)}}
+      ["duration", duration, period] ->
+        {"duration", %{duration: String.to_integer(duration), period: String.to_integer(period)}}
 
-      ["periodic", interval, trigger_count] ->
-        {"periodic",
-         %{
-           interval: String.to_integer(interval),
-           trigger_count: String.to_integer(trigger_count)
-         }}
+      ["permanent", period] ->
+        {"permanent", %{period: String.to_integer(period)}}
 
       _ ->
         nil
