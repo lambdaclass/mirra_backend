@@ -298,6 +298,30 @@ defmodule Gateway.Test.Champions do
   end
 
   describe "items" do
+    test "get item", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("GetItemUser")
+
+      {:ok, epic_bow} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Bow of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_bow.id, level: 1})
+
+      :ok = SocketTester.get_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:item, %Item{} = fetched_item}
+      } = get_last_message()
+
+      assert fetched_item.id == item.id
+      assert fetched_item.user_id == user.id
+      assert fetched_item.unit_id == ""
+    end
+
     test "equip and unequip item", %{socket_tester: socket_tester} do
       # Register user
       {:ok, user} = Users.register("EquipItemUser")
@@ -311,7 +335,7 @@ defmodule Gateway.Test.Champions do
           type: "weapon"
         })
 
-      {:ok, item} = GameBackend.Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
 
       # EquipItem
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
@@ -336,6 +360,39 @@ defmodule Gateway.Test.Champions do
       # The item is now unequipped
       assert unequipped_item.user_id == user.id
       assert unequipped_item.unit_id == ""
+    end
+
+    test "level up item", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("LevelUpItemUser")
+
+      {:ok, epic_axe} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Axe of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
+
+      gold_amount_before_level_up = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+
+      # LevelUpItem
+      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:item, %Item{} = leveled_up_item}
+      } = get_last_message()
+
+      assert leveled_up_item.level == item.level + 1
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") < gold_amount_before_level_up
+
+      # Can not level up item if currency is not enough
+      level_up_item_until_unaffordable(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
     end
   end
 
@@ -376,5 +433,18 @@ defmodule Gateway.Test.Champions do
       end)
 
     same_character_ids ++ same_faction_ids
+  end
+
+  defp level_up_item_until_unaffordable(socket_tester, user_id, item_id) do
+    :ok = SocketTester.level_up_item(socket_tester, user_id, item_id)
+    fetch_last_message(socket_tester)
+
+    case get_last_message() do
+      %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}} ->
+        :ok
+
+      _ ->
+        level_up_item_until_unaffordable(socket_tester, user_id, item_id)
+    end
   end
 end
