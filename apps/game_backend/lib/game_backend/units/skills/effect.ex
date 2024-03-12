@@ -13,7 +13,7 @@ defmodule GameBackend.Units.Skills.Effect do
 
     embeds_many(:components, Component)
     embeds_many(:modifiers, Modifier)
-    embeds_many(:executions, Execution)
+    field(:executions, {:array, Execution})
 
     field(:target_count, :integer)
     field(:target_strategy, TargetStrategy)
@@ -26,24 +26,23 @@ defmodule GameBackend.Units.Skills.Effect do
     effect
     |> cast(attrs, [
       :type,
-      :stat_affected,
-      :stat_based_on,
-      :amount,
-      :amount_format,
-      :amount_of_targets,
+      :initial_delay,
+      :target_count,
       :target_strategy,
-      :targets_allies
+      :target_allies,
+      :target_attribute,
+      :executions
     ])
-    |> validate_inclusion(:stat_affected, ["health", "max_health", "attack", "energy", "defense"])
-    |> validate_inclusion(:amount_format, ["additive", "multiplicative"])
     |> validate_required([
       :type,
-      :stat_affected,
-      :amount,
-      :amount_format,
+      :initial_delay,
+      :target_count,
       :target_strategy,
-      :targets_allies
+      :target_allies,
+      :target_attribute
     ])
+    |> cast_embed(:components)
+    |> cast_embed(:modifiers)
   end
 
   @doc """
