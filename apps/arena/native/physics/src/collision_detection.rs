@@ -58,6 +58,17 @@ pub fn get_closest_point_between_line_and_circle(line: &Entity, circle: &Entity)
     let mut result = Vec::new();
     let point_1_position = line.vertices[0];
     let point_2_position = line.vertices[1];
+    let point_1 = Entity::new_point(0, point_1_position);
+    let inside_1 = point_circle_collision(&point_1, circle);
+    let point_2 = Entity::new_point(0, point_2_position);
+    let inside_2 = point_circle_collision(&point_2, circle);
+
+    if inside_1 {
+        result.push(point_1);
+    }
+    if inside_2 {
+        result.push(point_2);
+    }
 
     // Find the closest point on the line to the circle
     let dist_x = point_1_position.x - point_2_position.x;
