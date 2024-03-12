@@ -202,7 +202,7 @@ impl Entity {
                     let current_line =
                         Entity::new_line(0, vec![entity.vertices[current], entity.vertices[next]]);
                     for collided_point in
-                        get_closest_point_between_line_and_circle(&current_line, &self)
+                        get_closest_point_between_line_and_circle(&current_line, self)
                     {
                         let x = self.position.x - collided_point.position.x;
                         let y = self.position.y - collided_point.position.y;
@@ -219,10 +219,6 @@ impl Entity {
                     .dedup_by(|a, b| a.position.x == b.position.x && a.position.y == b.position.y);
 
                 for collided_point in collition_points {
-                    println!(
-                        "aber point x: {:?} y: {:?}",
-                        collided_point.position.x, collided_point.position.y
-                    );
                     let x = base_position.x - collided_point.position.x;
                     let y = base_position.y - collided_point.position.y;
                     let length = (x.powf(2.) + y.powf(2.)).sqrt();
