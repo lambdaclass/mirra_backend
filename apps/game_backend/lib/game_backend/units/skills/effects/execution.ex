@@ -85,18 +85,18 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
   defp execution_from_string(string) when is_binary(string) do
     case String.split(string, ",") do
       ["DealDamage", attack_ratio, energy_recharge, delay] ->
-        {"DealDamage",
-         %{
-           attack_ratio: String.to_float(attack_ratio),
-           energy_recharge: String.to_integer(energy_recharge),
-           delay: String.to_integer(delay)
-         }}
+        %{
+          type: "DealDamage",
+          attack_ratio: String.to_float(attack_ratio),
+          energy_recharge: String.to_integer(energy_recharge),
+          delay: String.to_integer(delay)
+        }
 
       ["Heal", attack_ratio, delay] ->
-        {"Heal", %{attack_ratio: String.to_float(attack_ratio), delay: String.to_integer(delay)}}
+        %{type: "Heal", attack_ratio: String.to_float(attack_ratio), delay: String.to_integer(delay)}
 
       ["AddEnergy", amount] ->
-        {"AddEnergy", %{amount: String.to_integer(amount)}}
+        %{type: "AddEnergy", amount: String.to_integer(amount)}
 
       _ ->
         nil
