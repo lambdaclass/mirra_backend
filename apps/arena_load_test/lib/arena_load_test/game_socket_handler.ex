@@ -55,16 +55,22 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_info(:attack, state) do
-    Logger.info("Sending GameAction frame with MOVE payload")
-
+    Logger.info("Sending GameAction frame with ATTACK payload")
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    {x, y} = create_random_movement()
 
     game_action =
       Serialization.GameAction.encode(%Serialization.GameAction{
         action_type:
           {:attack,
            %Serialization.Attack{
-             skill: "1"
+             skill: "1",
+             parameters: %Serialization.AttackParameters{
+              target: %Serialization.Direction{
+                x: x,
+                y: y
+              }
+             }
            }},
         timestamp: timestamp
       })
