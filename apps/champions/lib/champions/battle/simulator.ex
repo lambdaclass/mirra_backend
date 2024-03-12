@@ -233,12 +233,11 @@ defmodule Champions.Battle.Simulator do
   defp create_effect_map(%Effect{} = effect),
     do: %{
       type: effect.type,
-      stat_affected: effect.stat_affected,
-      stat_based_on: effect.stat_based_on,
-      amount: effect.amount,
-      amount_format: effect.amount_format,
+      initial_delay: effect.initial_delay,
+      target_count: effect.target_count,
       target_strategy: effect.target_strategy,
-      amount_of_targets: effect.amount_of_targets,
-      targets_allies: effect.targets_allies
+      target_allies: effect.target_allies,
+      target_attribute: effect.target_attribute,
+      executions: effect.executions
     }
 end
