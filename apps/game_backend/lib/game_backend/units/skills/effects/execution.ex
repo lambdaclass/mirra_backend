@@ -14,14 +14,12 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
 
   def type(), do: :string
 
-  def cast(
-        {"DealDamage",
-         %{
-           "attack_ratio" => attack_ratio,
-           "energy_recharge" => energy_recharge,
-           "delay" => delay
-         }}
-      ),
+  def cast(%{
+        "type" => "DealDamage",
+        "attack_ratio" => attack_ratio,
+        "energy_recharge" => energy_recharge,
+        "delay" => delay
+      }),
       do:
         {:ok,
          {"DealDamage",
@@ -31,13 +29,11 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
             "delay" => delay
           }}}
 
-  def cast(
-        {"Heal",
-         %{
-           "attack_ratio" => attack_ratio,
-           "delay" => delay
-         }}
-      ),
+  def cast(%{
+        "type" => "Heal",
+        "attack_ratio" => attack_ratio,
+        "delay" => delay
+      }),
       do:
         {:ok,
          {"Heal",
@@ -46,12 +42,10 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
             "delay" => delay
           }}}
 
-  def cast(
-        {"AddEnergy",
-         %{
-           "amount" => amount
-         }}
-      ),
+  def cast(%{
+        "type" => "AddEnergy",
+        "amount" => amount
+      }),
       do:
         {:ok,
          {"AddEnergy",
