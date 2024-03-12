@@ -4,14 +4,14 @@ defmodule Arena.Entities do
   """
   alias Arena.Configuration
 
-  def new_player(id, character_name, position, direction, config, now) do
+  def new_player(id, character_name, player_name, position, direction, config, now) do
     character = Configuration.get_character_config(character_name, config)
 
     %{
       id: id,
       category: :player,
       shape: :circle,
-      name: "Player" <> Integer.to_string(id),
+      name: player_name,
       position: position,
       radius: character.base_size,
       vertices: [],
