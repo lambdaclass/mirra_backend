@@ -22,10 +22,9 @@ defmodule Gateway.Champions.CampaignsController do
 
   def fight_level(conn, %{
         "user_id" => user_id,
-        "campaign_id" => campaign_id,
         "level_id" => level_id
       }) do
-    Champions.Battle.fight_level(user_id, campaign_id, level_id)
+    Champions.Battle.fight_level(user_id, level_id)
     |> Gateway.Utils.format_response(conn)
   end
 end

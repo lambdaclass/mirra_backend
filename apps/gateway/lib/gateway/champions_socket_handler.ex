@@ -98,8 +98,8 @@ defmodule Gateway.ChampionsSocketHandler do
   defp handle(%GetLevel{user_id: _user_id, level_id: level_id}),
     do: Campaigns.get_level(level_id) |> prepare_response(:level)
 
-  defp handle(%FightLevel{user_id: user_id, campaign_id: campaign_id, level_id: level_id}) do
-    case Battle.fight_level(user_id, campaign_id, level_id) do
+  defp handle(%FightLevel{user_id: user_id, level_id: level_id}) do
+    case Battle.fight_level(user_id, level_id) do
       {:error, reason} -> prepare_response({:error, reason}, nil)
       battle_result -> prepare_response(%{result: Atom.to_string(battle_result)}, :battle_result)
     end

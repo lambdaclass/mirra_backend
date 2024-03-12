@@ -9,7 +9,6 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
-  alias GameBackend.Campaigns.CampaignProgression
 
   schema "users" do
     field(:game_id, :integer)

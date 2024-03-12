@@ -52,7 +52,6 @@ syntax = "proto3";
   message FightLevel {
    string user_id = 1;
    string level_id = 2;
-   string campaign_id = 3;
   }
   
   message SelectUnit {

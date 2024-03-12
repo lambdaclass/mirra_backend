@@ -27,5 +27,5 @@ iex(3)> SocketTester.get_campaigns(pid, "user_id")
 Now, to play a battle in the first level of the first campaign, get the level ids from the previous request and run the following command (replace `level_id` with the corresponding fields returned in the previous request):
 
 ```
-iex(4)> SocketTester.fight_level(pid, "user_id", "campaign_id", "level_id")
+iex(4)> SocketTester.fight_level(pid, "user_id", "level_id")
 ```

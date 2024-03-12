@@ -13,11 +13,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
     oneof: 0
   )
 
-  field(:create_user, 3,
-    type: Gateway.Serialization.CreateUser,
-    json_name: "createUser",
-    oneof: 0
-  )
+  field(:create_user, 3, type: Gateway.Serialization.CreateUser, json_name: "createUser", oneof: 0)
 
   field(:get_campaigns, 4,
     type: Gateway.Serialization.GetCampaigns,
@@ -140,7 +136,6 @@ defmodule Gateway.Serialization.FightLevel do
 
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:level_id, 2, type: :string, json_name: "levelId")
-  field(:campaign_id, 3, type: :string, json_name: "campaignId")
 end
 
 defmodule Gateway.Serialization.SelectUnit do
@@ -270,12 +265,7 @@ defmodule Gateway.Serialization.WebSocketResponse do
     oneof: 0
   )
 
-  field(:afk_rewards, 9,
-    type: Gateway.Serialization.AfkRewards,
-    json_name: "afkRewards",
-    oneof: 0
-  )
-
+  field(:afk_rewards, 9, type: Gateway.Serialization.AfkRewards, json_name: "afkRewards", oneof: 0)
   field(:error, 10, type: Gateway.Serialization.Error, oneof: 0)
 end
 
@@ -448,8 +438,7 @@ defmodule Gateway.Serialization.CurrencyReward do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:currency_id, 1, type: :string, json_name: "currencyId")
-  field(:level_id, 2, type: :string, json_name: "levelId")
+  field(:currency, 1, type: Gateway.Serialization.Currency)
   field(:amount, 3, type: :uint64)
 end
 
