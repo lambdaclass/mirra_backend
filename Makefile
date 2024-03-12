@@ -24,7 +24,7 @@ credo:
 
 check: credo format
 
-generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos format
+generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos generate-bot-manager-protos format
 
 generate-gateway-protos:
 	protoc \
@@ -49,5 +49,12 @@ generate-game-client-protos:
 
 	protoc \
 		--js_out=import_style=commonjs:apps/game_client/assets/js/protobuf \
+		--proto_path=apps/serialization \
+		messages.proto
+
+generate-bot-manager-protos:
+	protoc \
+		--elixir_out=apps/bot_manager/lib/protobuf \
+		--elixir_opt=package_prefix=bot_manager.protobuf \
 		--proto_path=apps/serialization \
 		messages.proto
