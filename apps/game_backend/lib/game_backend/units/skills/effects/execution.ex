@@ -22,12 +22,12 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
       }),
       do:
         {:ok,
-         {"DealDamage",
-          %{
-            "attack_ratio" => attack_ratio,
-            "energy_recharge" => energy_recharge,
-            "delay" => delay
-          }}}
+         %{
+           "type" => "DealDamage",
+           "attack_ratio" => attack_ratio,
+           "energy_recharge" => energy_recharge,
+           "delay" => delay
+         }}
 
   def cast(%{
         "type" => "Heal",
@@ -36,11 +36,11 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
       }),
       do:
         {:ok,
-         {"Heal",
-          %{
-            "attack_ratio" => attack_ratio,
-            "delay" => delay
-          }}}
+         %{
+           "type" => "Heal",
+           "attack_ratio" => attack_ratio,
+           "delay" => delay
+         }}
 
   def cast(%{
         "type" => "AddEnergy",
@@ -48,10 +48,10 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
       }),
       do:
         {:ok,
-         {"AddEnergy",
-          %{
-            "amount" => amount
-          }}}
+         %{
+           "type" => "AddEnergy",
+           "amount" => amount
+         }}
 
   def load(string), do: {:ok, execution_from_string(string)}
 
@@ -59,25 +59,26 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
 
   defp execution_to_string(effect_time_type) do
     case effect_time_type do
-      {"DealDamage",
        %{
-         "attack_ratio" => attack_ratio,
-         "energy_recharge" => energy_recharge,
-         "delay" => delay
-       }} ->
-        "DealDamage,#{attack_ratio},#{energy_recharge},#{delay}"
+        "type" => "DealDamage",
+        "attack_ratio" => attack_ratio,
+        "energy_recharge" => energy_recharge,
+        "delay" => delay
+        } ->
+          "DealDamage,#{attack_ratio},#{energy_recharge},#{delay}"
 
-      {"Heal",
-       %{
+
+          %{
+            "type" => "Heal",
          "attack_ratio" => attack_ratio,
          "delay" => delay
-       }} ->
+       } ->
         "Heal,#{attack_ratio},#{delay}"
 
-      {"AddEnergy",
        %{
+        "type" => "AddEnergy",
          "amount" => amount
-       }} ->
+       } ->
         "AddEnergy,#{amount}"
     end
   end
