@@ -497,8 +497,7 @@ defmodule Gateway.Serialization.CurrencyReward do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:currency_id, 1, type: :string, json_name: "currencyId")
-  field(:level_id, 2, type: :string, json_name: "levelId")
+  field(:currency, 1, type: Gateway.Serialization.Currency)
   field(:amount, 3, type: :uint64)
 end
 
