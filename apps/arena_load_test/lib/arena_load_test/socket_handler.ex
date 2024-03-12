@@ -57,6 +57,7 @@ defmodule ArenaLoadTest.SocketHandler do
   # Private
   defp ws_url(player_id) do
     host = SocketSupervisor.server_host()
+    # TODO must replace character with a random available one.
     # Enum.random(["h4ck", "muflus"])
     character = "h4ck"
 
