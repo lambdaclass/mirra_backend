@@ -68,6 +68,7 @@ defmodule Champions.Users do
 
   defp add_sample_units(user) do
     characters = Characters.get_characters_by_quality(Champions.Units.get_quality(:epic))
+    muflus_id = GameBackend.Units.Characters.get_character_by_name("Muflus").id
 
     Enum.each(1..6, fn index ->
       Units.insert_unit(%{
@@ -78,6 +79,18 @@ defmodule Champions.Users do
         tier: 1,
         selected: true,
         slot: index
+      })
+    end)
+
+    Enum.map(1..7, fn _ ->
+      GameBackend.Units.insert_unit(%{
+        character_id: muflus_id,
+        level: 20,
+        tier: 1,
+        rank: 4,
+        selected: false,
+        user_id: user.id,
+        slot: nil
       })
     end)
   end
