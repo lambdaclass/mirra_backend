@@ -57,7 +57,8 @@ defmodule ArenaLoadTest.SocketHandler do
   # Private
   defp ws_url(player_id) do
     host = SocketSupervisor.server_host()
-    character = "h4ck" #Enum.random(["h4ck", "muflus"])
+    # Enum.random(["h4ck", "muflus"])
+    character = "h4ck"
 
     case System.get_env("SSL_ENABLED") do
       "true" ->

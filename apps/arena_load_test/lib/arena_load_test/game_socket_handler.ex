@@ -64,7 +64,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         action_type:
           {:attack,
            %Serialization.Attack{
-             skill: "1",
+             skill: "1"
            }},
         timestamp: timestamp
       })
