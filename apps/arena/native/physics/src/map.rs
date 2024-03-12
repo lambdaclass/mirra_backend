@@ -2,8 +2,8 @@ use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
 
 use crate::collision_detection::{
-    circle_circle_collision, circle_polygon_collision, get_closest_point_between_line_and_circle,
-    line_circle_collision, point_circle_collision,
+    circle_circle_collision, circle_polygon_collision,
+    get_colliding_points_between_line_and_circle, line_circle_collision, point_circle_collision,
 };
 
 #[derive(NifMap, Clone)]
@@ -202,7 +202,7 @@ impl Entity {
                     let current_line =
                         Entity::new_line(0, vec![entity.vertices[current], entity.vertices[next]]);
                     for collided_point in
-                        get_closest_point_between_line_and_circle(&current_line, self)
+                        get_colliding_points_between_line_and_circle(&current_line, self)
                     {
                         let x = self.position.x - collided_point.position.x;
                         let y = self.position.y - collided_point.position.y;

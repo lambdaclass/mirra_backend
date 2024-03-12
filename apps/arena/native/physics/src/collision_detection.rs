@@ -54,8 +54,8 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
     point_circle_collision(&closest_point, circle)
 }
 
-pub fn get_closest_point_between_line_and_circle(line: &Entity, circle: &Entity) -> Vec<Entity> {
-    let mut result = Vec::new();
+pub fn get_colliding_points_between_line_and_circle(line: &Entity, circle: &Entity) -> Vec<Entity> {
+    let mut collided_points = Vec::new();
     let point_1_position = line.vertices[0];
     let point_2_position = line.vertices[1];
     let point_1 = Entity::new_point(0, point_1_position);
@@ -64,10 +64,10 @@ pub fn get_closest_point_between_line_and_circle(line: &Entity, circle: &Entity)
     let inside_2 = point_circle_collision(&point_2, circle);
 
     if inside_1 {
-        result.push(point_1);
+        collided_points.push(point_1);
     }
     if inside_2 {
-        result.push(point_2);
+        collided_points.push(point_2);
     }
 
     // Find the closest point on the line to the circle
@@ -89,10 +89,10 @@ pub fn get_closest_point_between_line_and_circle(line: &Entity, circle: &Entity)
     );
     let on_line = line_point_colision(line, &closest_point);
     if on_line {
-        result.push(closest_point);
+        collided_points.push(closest_point);
     }
 
-    result
+    collided_points
 }
 
 /*
