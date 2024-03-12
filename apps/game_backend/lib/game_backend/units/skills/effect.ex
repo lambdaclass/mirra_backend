@@ -34,7 +34,7 @@ defmodule GameBackend.Units.Skills.Effect do
       :targeting_strategy,
       :targets_allies
     ])
-    |> validate_inclusion(:stat_affected, ["health", "max_health", "attack", "energy", "armor"])
+    |> validate_inclusion(:stat_affected, ["health", "max_health", "attack", "energy", "defense"])
     |> validate_inclusion(:amount_format, ["additive", "multiplicative"])
     |> validate_required([
       :type,

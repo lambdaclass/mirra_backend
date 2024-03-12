@@ -21,7 +21,7 @@ units_per_level = 5
   quality: Champions.Units.get_quality(:epic),
   base_health: 621,
   base_attack: 63,
-  base_armor: 78,
+  base_defense: 78,
   basic_skill: %{
     effects: [%{
       type: "instant",
