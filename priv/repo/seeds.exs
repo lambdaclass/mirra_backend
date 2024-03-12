@@ -102,10 +102,10 @@ Items.insert_item_template(%{
 
 {:ok, gold_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 {:ok, gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-{:ok, arcane_crystals_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
+{:ok, _arcane_crystals_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
 {:ok, hero_souls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Hero Souls"})
-{:ok, scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
-{:ok, mystic_scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Mystic Summon Scrolls"})
+{:ok, _scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+{:ok, _mystic_scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Mystic Summon Scrolls"})
 
 ######################
 # Campaigns creation #
@@ -197,25 +197,26 @@ units =
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
 
+# Add each level's rewards
 currency_rewards =
-  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+  Enum.map(levels_without_units, fn level ->
       %{
         level_id: level.id,
-        amount: 10 * (20 + level.level_number - 1),
+        amount: 10 * (20 + level.level_number),
         currency_id: gold_currency.id,
         afk_reward: false,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-
   end)
 
 currency_rewards = currency_rewards ++
-  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+  Enum.map(levels_without_units, fn level ->
     %{
       level_id: level.id,
       amount: 10 * (15 + level.level_number - 1) * 1.025 |> round(),
       currency_id: hero_souls_currency.id,
+      afk_reward: false,
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }

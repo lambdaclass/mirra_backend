@@ -265,7 +265,12 @@ defmodule Gateway.Serialization.WebSocketResponse do
     oneof: 0
   )
 
-  field(:afk_rewards, 9, type: Gateway.Serialization.AfkRewards, json_name: "afkRewards", oneof: 0)
+  field(:afk_rewards, 9,
+    type: Gateway.Serialization.AfkRewards,
+    json_name: "afkRewards",
+    oneof: 0
+  )
+
   field(:error, 10, type: Gateway.Serialization.Error, oneof: 0)
 end
 
@@ -438,7 +443,8 @@ defmodule Gateway.Serialization.CurrencyReward do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:currency, 1, type: Gateway.Serialization.Currency)
+  field(:currency_id, 1, type: :string, json_name: "currencyId")
+  field(:level_id, 2, type: :string, json_name: "levelId")
   field(:amount, 3, type: :uint64)
 end
 
