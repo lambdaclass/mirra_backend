@@ -149,14 +149,8 @@ defmodule Champions.Battle.Simulator do
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
   defp cast_skill(unit, skill, initial_step_state, current_state) do
-    target_ids = choose_targets(unit, skill, initial_step_state)
-
     Enum.reduce(skill.effects, current_state, fn effect, new_state ->
-      # If skill doesn't have targeting strategy, we fall back to the effects'
-      target_ids =
-        if is_nil(target_ids),
-          do: choose_targets(unit, effect, initial_step_state),
-          else: target_ids
+      target_ids = choose_targets(unit, effect, initial_step_state)
 
       targets_after_effect = Enum.map(target_ids, fn id -> apply_effect(effect, unit, new_state[id]) end)
 
