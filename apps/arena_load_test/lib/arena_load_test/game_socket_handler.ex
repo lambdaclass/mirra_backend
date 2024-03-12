@@ -66,10 +66,10 @@ defmodule ArenaLoadTest.GameSocketHandler do
            %Serialization.Attack{
              skill: "1",
              parameters: %Serialization.AttackParameters{
-              target: %Serialization.Direction{
-                x: x,
-                y: y
-              }
+               target: %Serialization.Direction{
+                 x: x,
+                 y: y
+               }
              }
            }},
         timestamp: timestamp
