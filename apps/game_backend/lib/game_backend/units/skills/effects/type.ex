@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Skills.Type do
+defmodule GameBackend.Units.Skills.Effects.Type do
   @moduledoc """
   The Type type for skill effects.
   """

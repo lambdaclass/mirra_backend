@@ -160,12 +160,12 @@ defmodule Champions.Battle.Simulator do
     end)
   end
 
-  defp choose_targets(_unit, %{targeting_strategy: nil}, _state), do: nil
+  defp choose_targets(_unit, %{target_strategy: nil}, _state), do: nil
 
   defp choose_targets(
          %{team: team},
          %{
-           targeting_strategy: "random",
+           target_strategy: "random",
            targets_allies: targets_allies,
            amount_of_targets: amount
          } = _effect,
@@ -237,7 +237,7 @@ defmodule Champions.Battle.Simulator do
       stat_based_on: effect.stat_based_on,
       amount: effect.amount,
       amount_format: effect.amount_format,
-      targeting_strategy: effect.targeting_strategy,
+      target_strategy: effect.target_strategy,
       amount_of_targets: effect.amount_of_targets,
       targets_allies: effect.targets_allies
     }

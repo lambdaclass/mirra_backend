@@ -29,7 +29,7 @@ units_per_level = 5
       amount: -80,
       stat_based_on: "attack",
       amount_format: "additive",
-      targeting_strategy: "random", # TODO: Change back to nearest
+      target_strategy: "random", # TODO: Change back to nearest
       amount_of_targets: 2,
       targets_allies: false
     }],
@@ -43,7 +43,7 @@ units_per_level = 5
         amount: -205,
         stat_based_on: "attack",
         amount_format: "additive",
-        targeting_strategy: "random", # TODO: Change back to nearest
+        target_strategy: "random", # TODO: Change back to nearest
         amount_of_targets: 2,
         targets_allies: false
       }

@@ -4,21 +4,21 @@ defmodule GameBackend.Units.Skills.Effect do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Skills.TargetingStrategy
-  alias GameBackend.Units.Skills.Type
+  alias GameBackend.Units.Skills.Effects.{Component, Modifier, Execution, TargetStrategy, Type}
 
   @primary_key false
   embedded_schema do
     field(:type, Type)
+    field(:initial_delay, :integer)
 
-    field(:stat_affected, :string)
-    # amount will be treated as the % of this stat if its set
-    field(:stat_based_on, :string)
-    field(:amount, :integer)
-    field(:amount_format, :string)
-    field(:amount_of_targets, :integer)
-    field(:targeting_strategy, TargetingStrategy)
-    field(:targets_allies, :boolean)
+    embeds_many(:components, Component)
+    embeds_many(:modifiers, Modifier)
+    embeds_many(:executions, Execution)
+
+    field(:target_count, :integer)
+    field(:target_strategy, TargetStrategy)
+    field(:target_allies, :boolean)
+    field(:target_attribute, :string)
   end
 
   @doc false
@@ -31,7 +31,7 @@ defmodule GameBackend.Units.Skills.Effect do
       :amount,
       :amount_format,
       :amount_of_targets,
-      :targeting_strategy,
+      :target_strategy,
       :targets_allies
     ])
     |> validate_inclusion(:stat_affected, ["health", "max_health", "attack", "energy", "defense"])
@@ -41,7 +41,7 @@ defmodule GameBackend.Units.Skills.Effect do
       :stat_affected,
       :amount,
       :amount_format,
-      :targeting_strategy,
+      :target_strategy,
       :targets_allies
     ])
   end
