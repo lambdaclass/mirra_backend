@@ -33,10 +33,13 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients}) do
-    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
+  def init(%{clients: clients, missing_clients: missing_clients}) do
     game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients, game_config)
+    game_id = self() |> :erlang.term_to_binary() |> Base58.encode() |> IO.inspect(label: "aber game id")
+
+    Process.sleep(1_000_000)
+    IO.inspect("desperté")
+    game_state = new_game(game_id, clients, game_config, missing_clients)
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
@@ -519,7 +522,7 @@ defmodule Arena.GameUpdater do
   ##########################
 
   # Create a new game
-  defp new_game(game_id, clients, config) do
+  defp new_game(game_id, clients, config, missing_clients) do
     now = System.monotonic_time(:millisecond)
     initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
@@ -536,6 +539,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:killfeed, [])
       |> Map.put(:damage_taken, %{})
       |> Map.put(:damage_done, %{})
+      |> Map.put(:positions, config.map.initial_positions)
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
         radius: config.map.radius,
@@ -547,11 +551,10 @@ defmodule Arena.GameUpdater do
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
-    {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
-                                                                        {new_game, positions} ->
+    game =
+      Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
         last_id = new_game.last_id + 1
-        {pos, positions} = get_next_position(positions)
+        {pos, positions} = get_next_position(new_game.positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
         players =
@@ -561,15 +564,14 @@ defmodule Arena.GameUpdater do
             Entities.new_player(last_id, character_name, pos, direction, config, now)
           )
 
-        new_game =
-          new_game
-          |> Map.put(:last_id, last_id)
-          |> Map.put(:players, players)
-          |> put_in([:client_to_player_map, client_id], last_id)
-          |> put_in([:player_timestamps, last_id], 0)
-
-        {new_game, positions}
+        new_game
+        |> Map.put(:last_id, last_id)
+        |> Map.put(:players, players)
+        |> Map.put(:positions, positions)
+        |> put_in([:client_to_player_map, client_id], last_id)
+        |> put_in([:player_timestamps, last_id], 0)
       end)
+      |> fill_bot_players(missing_clients, config)
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
 
@@ -591,6 +593,41 @@ defmodule Arena.GameUpdater do
         )
 
       {obstacles_acc, last_id}
+    end)
+  end
+
+  defp fill_bot_players(game_state, missing_players, game_config) do
+    now = System.monotonic_time(:millisecond)
+
+    Enum.reduce((game_state.last_id + 1)..(game_state.last_id + missing_players), game_state, fn last_id, game_state ->
+      character_name =
+        Enum.random(game_config.characters)
+        |> Map.get(:name)
+
+      bot_specs = %{
+        bot_id: last_id,
+        character_name: character_name,
+        game_pid: self()
+      }
+
+      # Call bot application
+      # BotSupervisor.spawn_bot(bot_specs)
+      
+      {pos, positions} = get_next_position(game_state.positions)
+      direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
+
+      players =
+        game_state.players
+        |> Map.put(
+          last_id,
+          Entities.new_player(last_id, character_name, pos, direction, game_config, now)
+        )
+
+      game_state
+      |> Map.put(:last_id, last_id)
+      |> Map.put(:players, players)
+      |> Map.put(:positions, positions)
+      |> put_in([:player_timestamps, last_id], 0)
     end)
   end
 
