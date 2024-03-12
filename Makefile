@@ -1,9 +1,20 @@
-.PHONY: start format credo check generate-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos
+.PHONY: deps db run start format credo check generate-protos generate-arena-protos generate-game-client-protos
 
-start:
+deps:
 	cd apps/game_client/assets && npm install
 	mix deps.get
+
+db: deps
+	mix ecto.reset
+
+run:
 	iex -S mix phx.server
+
+start: db run
+
+purge:
+	rm -rf devenv.lock .devenv .devenv.flake.nix _build/
+	devenv gc
 
 format:
 	mix format
@@ -13,7 +24,14 @@ credo:
 
 check: credo format
 
-generate-protos: generate-arena-protos generate-game-client-protos generate-arena-load-test-protos
+generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos format
+
+generate-gateway-protos:
+	protoc \
+		--elixir_out=apps/gateway/lib/gateway/serialization \
+		--elixir_opt=package_prefix=gateway.serialization \
+		--proto_path=apps/serialization \
+		gateway.proto
 
 generate-arena-protos:
 	protoc \

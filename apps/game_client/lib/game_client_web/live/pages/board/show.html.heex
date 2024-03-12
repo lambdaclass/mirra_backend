@@ -1,4 +1,4 @@
-<%= unless @game_status == :pending do %>
+<%= if @game_status == :running do %>
   <div class="flex items-top justify-between mb-4 w-full">
     <div>
       <div class="text-2xl font-bold text-yellow-400">Game #<%= @game_id %></div>
@@ -25,4 +25,8 @@
     </div>
     <div id="board_container" phx-update="ignore"></div>
   </div>
+<% end %>
+
+<%= if @game_status == :finished do %>
+  Game ended, winner is: Player <%= @winner_id %>
 <% end %>

@@ -71,6 +71,10 @@ message ConfigSkill {
   string name = 1;
   uint64 cooldown_ms = 2;
   uint64 execution_duration_ms = 3;
+  float targetting_radius = 4;
+  float targetting_angle = 5;
+  float targetting_range = 6;
+  uint64 stamina_cost = 7;
 }
 
 
@@ -85,12 +89,25 @@ message GameState {
   int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
+  map<uint64, uint64> damage_taken = 8;
+  map<uint64, uint64> damage_done = 9;
+  map<uint64, Entity> power_ups = 10;
+  GameStatus status = 11;
+  int64 start_game_timestamp = 12;
+  map<uint64, Entity> items = 13;
+  map<uint64, Entity> pools = 14;
+}
+
+enum GameStatus {
+  PREPARING = 0;
+  RUNNING = 1;
+  ENDED = 2;
 }
 
 /*
  * Info about an entity
  * id: unique identifier
- * category: player, projectile, obstacle.
+ * category: player, projectile, obstacle, item.
  * shape: circle, point, line, polygon, point.
  * name: unique name of the entity
  * position: position of the entity (polyogns and lines don't have a position)
@@ -117,6 +134,9 @@ message Entity {
     Player player = 12;
     Projectile projectile = 13;
     Obstacle obstacle = 14;
+    PowerUp power_up = 15;
+    Item item = 16;
+    Pool pool = 17;
   }
 }
 
@@ -128,12 +148,26 @@ message Player {
   uint64 max_stamina = 5;
   uint64 stamina_interval = 6;
   bool recharging_stamina = 7;
+  string character_name = 8;
+  uint64 power_ups = 9;
+  map<uint64, Effect> effects = 10;
+  Item inventory = 11;
+}
+
+message Effect {
+  string name = 1;
+  uint32 duration_ms = 2;
+}
+
+message Item {
+  string name = 2;
 }
 
 message Projectile {
   uint64 damage = 1;
   uint64 owner_id = 2;
   ProjectileStatus status = 3;
+  string skill_key = 4;
 }
 
 enum ProjectileStatus {
@@ -143,6 +177,20 @@ enum ProjectileStatus {
 
 message Obstacle {
   string color = 1;
+}
+
+message PowerUp {
+  uint64 owner_id = 1;
+  PowerUpstatus status = 2;
+}
+
+enum  PowerUpstatus {
+  AVAILABLE = 0;
+  TAKEN = 1;
+}
+
+message Pool {
+  uint64 owner_id = 1;
 }
 
 message PlayerAction {
@@ -156,6 +204,7 @@ enum PlayerActionType {
     STARTING_SKILL_2 = 2;
     EXECUTING_SKILL_1 = 3;
     EXECUTING_SKILL_2 = 4;
+    EXECUTING_SKILL_3 = 5;
 }
 
 /*
@@ -167,18 +216,31 @@ message Move {
 
 message Attack {
   string skill = 1;
+  AttackParameters parameters = 2;
+}
+
+message AttackParameters {
+  Direction target = 1;
+}
+
+message UseItem {
+  uint64 item = 1;
 }
 
 message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
+    UseItem use_item = 4;
   }
   int64 timestamp = 3;
 }
 
 message Zone {
   float radius = 1;
+  bool enabled = 2;
+  int64 next_zone_change_timestamp = 3;
+  bool shrinking = 4;
 }
 
 message KillEntry {

@@ -4,10 +4,13 @@ defmodule MirraBackend.MixProject do
   def project do
     [
       apps_path: "apps",
-      apps: [:arena, :game_client],
+      apps: [:arena, :champions, :game_client, :gateway, :game_backend],
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases(),
+      releases: releases(),
+      default_release: :all
     ]
   end
 
@@ -18,5 +21,28 @@ defmodule MirraBackend.MixProject do
   # Run "mix help deps" for examples and options.
   defp deps do
     []
+  end
+
+  defp aliases() do
+    [
+      setup: ["deps.get", "ecto.setup"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: ["ecto.reset --quiet", "ecto.migrate --quiet", "run priv/repo/seeds.exs", "test"]
+    ]
+  end
+
+  defp releases() do
+    [
+      all: [
+        applications: [
+          arena: :permanent,
+          champions: :permanent,
+          game_backend: :permanent,
+          game_client: :permanent,
+          gateway: :permanent
+        ]
+      ]
+    ]
   end
 end

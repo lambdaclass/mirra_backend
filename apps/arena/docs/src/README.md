@@ -9,6 +9,7 @@
   * [Skills](./configuration/skills.md)
   * [Characters](./configuration/characters.md)
   * [Game](./configuration/game.md)
+  * [Power Ups](./configuration/power_ups.md)
 * [Attributes](./attributes/attributes.md)
   * [Player attributes](./attributes/players.md)
   * [Projectile attributes](./attributes/projectiles.md)

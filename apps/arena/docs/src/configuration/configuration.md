@@ -10,6 +10,7 @@ The game can be configured through a JSON file which is passed on initiation of 
   "skills": [...]
   "characters": [...]
   "game": [...]
+  "power_ups": [...]
 }
 ```
 
@@ -20,3 +21,4 @@ Read more about each field
 - [Skills](./skills.md)
 - [Characters](./characters.md)
 - [Game](./game.md)
+- [Power Ups](./power_ups.md)

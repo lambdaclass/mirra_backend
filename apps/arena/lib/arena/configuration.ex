@@ -15,7 +15,8 @@ defmodule Arena.Configuration do
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
-    %{config | skills: skills, characters: characters}
+    items = parse_items_config(config.items)
+    %{config | skills: skills, characters: characters, items: items}
   end
 
   defp parse_skills_config(skills_config) do
@@ -39,7 +40,20 @@ defmodule Arena.Configuration do
 
   defp parse_mechanic_config(mechanic) do
     Map.to_list(mechanic)
+    |> Enum.map(&parse_mechanic_fields/1)
     |> hd()
+  end
+
+  defp parse_mechanic_fields({:leap, attrs}) do
+    {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
+  end
+
+  defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
+    {name, %{attrs | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)}}
+  end
+
+  defp parse_mechanic_fields(mechanic) do
+    mechanic
   end
 
   defp parse_characters_config(characters, config_skills) do
@@ -64,5 +78,29 @@ defmodule Arena.Configuration do
     else
       skill
     end
+  end
+
+  defp parse_items_config(items_config) do
+    Enum.reduce(items_config, [], fn item_config, items ->
+      effects = parse_effects_config(item_config.effects)
+      item = %{item_config | effects: effects}
+      [item | items]
+    end)
+  end
+
+  defp parse_effects_config(effects_config) do
+    Enum.reduce(effects_config, [], fn effect_config, acc ->
+      effect = parse_effect_config(effect_config)
+      [effect | acc]
+    end)
+  end
+
+  defp parse_effect_config(effect) when map_size(effect) > 1 do
+    raise "Config has effect with 2 values: #{inspect(effect)}"
+  end
+
+  defp parse_effect_config(effect) do
+    Map.to_list(effect)
+    |> hd()
   end
 end

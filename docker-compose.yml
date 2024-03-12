@@ -1,0 +1,18 @@
+version: '3.2'
+
+services:
+  postgres:
+    container_name: game_backend_db
+    image: postgres:16.1
+    ports:
+      - 127.0.0.1:5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=game_backend_dev
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - game_backend_data:/var/lib/postgresql/data/
+
+volumes:
+  game_backend_data:
