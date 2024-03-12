@@ -230,12 +230,10 @@ defmodule Champions.Battle.Simulator do
 
   defp create_skill_map(%Skill{} = skill),
     do: %{
+      name: skill.name,
       effects: Enum.map(skill.effects, &create_effect_map/1),
       base_cooldown: skill.cooldown,
-      remaining_cooldown: skill.cooldown,
-      targeting_strategy: skill.targeting_strategy,
-      amount_of_targets: skill.amount_of_targets,
-      targets_allies: skill.targets_allies
+      remaining_cooldown: skill.cooldown
     }
 
   defp create_effect_map(%Effect{} = effect),
