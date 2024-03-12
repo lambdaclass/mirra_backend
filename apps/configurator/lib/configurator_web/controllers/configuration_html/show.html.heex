@@ -8,9 +8,9 @@
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Data"><%= @configuration.data %></:item>
-  <:item title="Is default"><%= @configuration.is_default %></:item>
-</.list>
-
 <.back navigate={~p"/configurations"}>Back to configurations</.back>
+
+<.list>
+  <:item title="Is default?"><%= @configuration.is_default %></:item>
+  <:item title="Data"><%= @configuration.data %></:item>
+</.list>

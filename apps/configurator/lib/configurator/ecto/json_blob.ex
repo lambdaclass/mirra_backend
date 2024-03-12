@@ -23,7 +23,7 @@ defmodule Configurator.Ecto.JsonBlob do
 
   def load(value) when is_map(value) do
     case Jason.encode(value) do
-      {:ok, json_data} -> {:ok, json_data}
+      {:ok, json_data} -> {:ok, Jason.Formatter.pretty_print(json_data)}
       _ -> :error
     end
   end
