@@ -41,7 +41,10 @@ defmodule ConfiguratorWeb.ConfigurationControllerTest do
   describe "edit configuration" do
     setup [:create_configuration]
 
-    test "renders form for editing chosen configuration", %{conn: conn, configuration: configuration} do
+    test "renders form for editing chosen configuration", %{
+      conn: conn,
+      configuration: configuration
+    } do
       conn = get(conn, ~p"/configurations/#{configuration}/edit")
       assert html_response(conn, 200) =~ "Edit Configuration"
     end

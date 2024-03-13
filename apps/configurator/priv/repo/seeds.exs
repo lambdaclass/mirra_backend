@@ -1,4 +1,3 @@
-
 ## TODO: Change this once PR#336 is merged
 {:ok, data_json} = File.read("../arena/priv/config.json")
 

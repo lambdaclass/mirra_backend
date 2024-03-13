@@ -95,8 +95,14 @@ defmodule Configurator.Configure do
     new_default_config = get_configuration!(id)
 
     Multi.new()
-    |> Multi.update(:unset_default_config, Configuration.changeset(default_config, %{is_default: false}))
-    |> Multi.update(:set_default_config, Configuration.changeset(new_default_config, %{is_default: true}))
+    |> Multi.update(
+      :unset_default_config,
+      Configuration.changeset(default_config, %{is_default: false})
+    )
+    |> Multi.update(
+      :set_default_config,
+      Configuration.changeset(new_default_config, %{is_default: true})
+    )
     |> Repo.transaction()
   end
 end

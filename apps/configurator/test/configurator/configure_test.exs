@@ -36,14 +36,19 @@ defmodule Configurator.ConfigureTest do
       configuration = configuration_fixture()
       update_attrs = %{data: %{}, is_default: false}
 
-      assert {:ok, %Configuration{} = configuration} = Configure.update_configuration(configuration, update_attrs)
+      assert {:ok, %Configuration{} = configuration} =
+               Configure.update_configuration(configuration, update_attrs)
+
       assert configuration.data == %{}
       assert configuration.is_default == false
     end
 
     test "update_configuration/2 with invalid data returns error changeset" do
       configuration = configuration_fixture()
-      assert {:error, %Ecto.Changeset{}} = Configure.update_configuration(configuration, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Configure.update_configuration(configuration, @invalid_attrs)
+
       assert configuration == Configure.get_configuration!(configuration.id)
     end
 
