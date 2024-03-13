@@ -87,7 +87,7 @@ defmodule Champions.Battle.Simulator do
           put_in(new_state, [unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
-          new_state = cast_skill(unit, unit.basic_skill, initial_step_state, current_state)
+          new_state = cast_skill(unit.basic_skill, unit, initial_step_state, current_state)
 
           new_state
           |> put_in(
@@ -158,21 +158,19 @@ defmodule Champions.Battle.Simulator do
     Map.put(new_state, caster.id, new_caster)
   end
 
-  defp choose_targets(_unit, %{target_strategy: nil}, _state), do: nil
-
   defp choose_targets(
          %{team: team},
          %{
-           target_strategy: "random",
-           targets_allies: targets_allies,
-           amount_of_targets: amount
+           target_count: count,
+           target_strategy: "Random",
+           target_allies: target_allies
          } = _effect,
          state
        ),
        do:
          state
-         |> Enum.filter(fn {_id, unit} -> unit.team == team == targets_allies end)
-         |> Enum.take_random(amount)
+         |> Enum.filter(fn {_id, unit} -> unit.team == team == target_allies end)
+         |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
   defp maybe_apply_effect(effect, target, caster) do
@@ -241,7 +239,8 @@ defmodule Champions.Battle.Simulator do
          basic_skill: create_skill_map(character.basic_skill),
          ultimate_skill: create_skill_map(character.ultimate_skill),
          energy: 0,
-         team: team
+         team: team,
+         modifiers: []
        }}
 
   defp create_skill_map(%Skill{} = skill),
