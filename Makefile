@@ -18,6 +18,7 @@ purge:
 
 format:
 	mix format
+	mix format priv/repo/seeds.exs
 
 credo:
 	mix credo
