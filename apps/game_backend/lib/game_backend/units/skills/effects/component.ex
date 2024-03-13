@@ -23,13 +23,16 @@ defmodule GameBackend.Units.Skills.Effects.Component do
   def cast(%{
         "type" => "ChanceToApply",
         "chance" => chance
-      }),
-      do:
+      }) do
+    if chance > 1 or chance < 0,
+      do: :error,
+      else:
         {:ok,
          %{
            "type" => "ChanceToApply",
            "chance" => chance
          }}
+  end
 
   def load(string), do: {:ok, component_from_string(string)}
 
