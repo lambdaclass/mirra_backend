@@ -45,11 +45,10 @@
     ],
     "obstacles": [
       {
-        "position":
-          {
-            "x": -6044.0,
-            "y": -1439.0
-          },
+        "position": {
+          "x": -6044.0,
+          "y": -1439.0
+        },
         "radius": 1567.0
       },
       {
@@ -70,11 +69,18 @@
   },
   "game": {
     "tick_rate_ms": 30,
+    "start_game_time_ms": 10000,
+    "end_game_interval_ms": 1000,
+    "shutdown_game_wait_ms": 10000,
+    "natural_healing_interval_ms": 300,
     "zone_shrink_start_ms": 35000,
+    "zone_shrink_radius_by": 10,
+    "zone_shrink_interval": 100,
     "zone_stop_interval_ms": 13000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
-    "zone_damage": 9
+    "zone_damage": 9,
+    "item_spawn_interval_ms": 15000
   },
   "skills": [
     {
@@ -98,6 +104,30 @@
       "effects_to_apply": []
     },
     {
+      "name": "singularity",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "activation_delay_ms": 300,
+      "is_passive": false,
+      "autoaim": true,
+      "stamina_cost": 2,
+      "can_pick_destination": true,
+      "mechanics": [
+        {
+          "spawn_pool": {
+            "name": "singularity",
+            "duration_ms": 5000,
+            "radius": 500.0,
+            "range": 1500.0,
+            "effects_to_apply": [
+              "singularity"
+            ]
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
       "name": "leap",
       "cooldown_ms": 2000,
       "execution_duration_ms": 800,
@@ -111,6 +141,7 @@
           "leap": {
             "range": 1000.0,
             "duration_ms": 600,
+            "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
                 "damage": 22,
@@ -277,8 +308,8 @@
     {
       "name": "antimatter",
       "cooldown_ms": 2000,
-      "execution_duration_ms": 300,
-      "activation_delay_ms": 0,
+      "execution_duration_ms": 800,
+      "activation_delay_ms": 500,
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
@@ -302,6 +333,40 @@
         }
       ],
       "effects_to_apply": []
+    }
+  ],
+  "items": [
+    {
+      "name": "golden_clock",
+      "effects": [
+        {
+          "stamina_faster": {
+            "interval_decrease_by": 0.3,
+            "duration_ms": 7000
+          }
+        }
+      ]
+    },
+    {
+      "name": "magic_boots",
+      "effects": [
+        {
+          "speed_boost": {
+            "amount": 25,
+            "duration_ms": 10000
+          }
+        }
+      ]
+    },
+    {
+      "name": "mirra_blessing",
+      "effects": [
+        {
+          "damage_immunity": {
+            "duration_ms": 5000
+          }
+        }
+      ]
     }
   ],
   "characters": [
@@ -369,7 +434,7 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "antimatter",
-        "2": "veil_radiance",
+        "2": "singularity",
         "3": "sneak"
       }
     }
@@ -399,7 +464,22 @@
     {
       "name": "invisible",
       "duration_ms": 4000,
-      "remove_on_action": true
+      "remove_on_action": true,
+      "effect_mechanics": {}
+    },
+    {
+      "name": "singularity",
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "pull": {
+          "force": 15.0,
+          "effect_delay_ms": 0
+        },
+        "damage": {
+          "damage": 4,
+          "effect_delay_ms": 400
+        }
+      }
     }
   ]
 }
