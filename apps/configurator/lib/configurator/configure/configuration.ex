@@ -17,10 +17,10 @@ defmodule Configurator.Configure.Configuration do
     configuration
     |> cast(attrs, [:data, :is_default])
     |> validate_required([:data, :is_default])
-    |> validate_change(:data, &is_valid_json/2)
+    |> validate_change(:data, &valid_json?/2)
   end
 
-  defp is_valid_json(field, data) do
+  defp valid_json?(field, data) do
     case Jason.decode(data) do
       {:ok, _} -> []
       {:error, _} -> [{field, "is not valid JSON"}]

@@ -11,7 +11,7 @@ defmodule Configurator.ConfigureFixtures do
     {:ok, configuration} =
       attrs
       |> Enum.into(%{
-        data: %{},
+        data: "{}",
         is_default: true
       })
       |> Configurator.Configure.create_configuration()

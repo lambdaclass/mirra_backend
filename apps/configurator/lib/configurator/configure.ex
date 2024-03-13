@@ -53,7 +53,7 @@ defmodule Configurator.Configure do
 
   def get_default_configuration!() do
     from(c in Configuration, where: c.is_default == true)
-    |> Repo.one()
+    |> Repo.one!()
   end
 
   @doc """
