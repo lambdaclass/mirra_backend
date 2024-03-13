@@ -3,7 +3,7 @@ defmodule Configurator.Configure.Configuration do
   import Ecto.Changeset
 
   schema "configurations" do
-    field :data, Configurator.Ecto.JsonBlob
+    field :data, :string
     field :is_default, :boolean, default: false
 
     timestamps(type: :utc_datetime)

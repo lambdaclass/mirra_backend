@@ -3,7 +3,7 @@ defmodule Configurator.Repo.Migrations.CreateConfigurations do
 
   def change do
     create table(:configurations) do
-      add :data, :map, null: false
+      add :data, :text, null: false
       add :is_default, :boolean, default: false, null: false
 
       timestamps(type: :utc_datetime)
