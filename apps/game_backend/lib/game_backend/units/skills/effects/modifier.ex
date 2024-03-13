@@ -31,7 +31,7 @@ defmodule GameBackend.Units.Skills.Effects.Modifier do
 
   def changeset(modifier, attrs) do
     modifier
-    |> cast(attrs, [:modifier_operation])
+    |> cast(attrs, [:modifier_operation, :magnitude_calc_type, :float_magnitude])
     |> validate_inclusion(:modifier_operation, ~w[Add Multiply Override])
     |> validate_inclusion(:magnitude_calc_type, ~w[Float])
     |> validate_required([:modifier_operation, :magnitude_calc_type])

@@ -53,7 +53,7 @@ defmodule GameBackend.Units.Skills.Effects.Component do
       ["ChanceToApply", chance] ->
         %{
           type: "ChanceToApply",
-          chance: chance
+          chance: String.to_float(chance)
         }
 
       _ ->

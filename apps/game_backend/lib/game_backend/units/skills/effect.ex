@@ -27,6 +27,7 @@ defmodule GameBackend.Units.Skills.Effect do
     |> cast(attrs, [
       :type,
       :initial_delay,
+      :components,
       :executions,
       :target_count,
       :target_strategy,
@@ -41,7 +42,6 @@ defmodule GameBackend.Units.Skills.Effect do
       :target_allies,
       :target_attribute
     ])
-    |> cast_embed(:components)
     |> cast_embed(:modifiers)
   end
 end
