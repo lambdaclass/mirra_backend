@@ -24,7 +24,7 @@ credo:
 
 check: credo format
 
-generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos format
+generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos format
 
 generate-gateway-protos:
 	protoc \
