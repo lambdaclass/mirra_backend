@@ -35,10 +35,7 @@ defmodule Arena.GameUpdater do
 
   def init(%{clients: clients, missing_clients: missing_clients}) do
     game_config = Configuration.get_game_config()
-    game_id = self() |> :erlang.term_to_binary() |> Base58.encode() |> IO.inspect(label: "aber game id")
-
-    Process.sleep(1_000_000)
-    IO.inspect("desperté")
+    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_state = new_game(game_id, clients, game_config, missing_clients)
 
     send(self(), :update_game)
@@ -441,6 +438,13 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info({:spawn_bot, bot_specs}, state) do
+    Finch.build(:get, build_bot_url(bot_specs))
+    |> Finch.request(Arena.Finch)
+
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -605,14 +609,14 @@ defmodule Arena.GameUpdater do
         |> Map.get(:name)
 
       bot_specs = %{
-        bot_id: last_id,
+        player_id: last_id,
         character_name: character_name,
-        game_pid: self()
+        game_id: self() |> :erlang.term_to_binary() |> Base58.encode()
       }
 
       # Call bot application
-      # BotSupervisor.spawn_bot(bot_specs)
-      
+      Process.send_after(self(), {:spawn_bot, bot_specs}, 500)
+
       {pos, positions} = get_next_position(game_state.positions)
       direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
@@ -628,6 +632,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:players, players)
       |> Map.put(:positions, positions)
       |> put_in([:player_timestamps, last_id], 0)
+      |> put_in([:client_to_player_map, last_id |> to_string], last_id)
     end)
   end
 
@@ -1060,6 +1065,11 @@ defmodule Arena.GameUpdater do
       [] -> random_position_in_map(integer_radius * 0.95, external_wall)
       _ -> point.position
     end
+  end
+
+  defp build_bot_url(%{game_id: game_id, player_id: player_id, character_name: character_name}) do
+    # TODO remove this hardcode url when servers are implemented
+    "http://localhost:5000/join/#{game_id}/#{player_id}/#{character_name}"
   end
 
   ##########################
