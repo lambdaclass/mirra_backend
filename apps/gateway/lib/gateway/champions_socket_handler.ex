@@ -5,7 +5,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
   alias Gateway.Serialization.WebSocketResponse
-  alias Champions.{Battle, Campaigns, Items, Users, Units}
+  alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
   alias Gateway.Serialization.{
     WebSocketRequest,
@@ -24,7 +24,10 @@ defmodule Gateway.ChampionsSocketHandler do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem
+    LevelUpItem,
+    GetBoxes,
+    GetBox,
+    Summon
   }
 
   @behaviour :cowboy_websocket
@@ -148,6 +151,24 @@ defmodule Gateway.ChampionsSocketHandler do
       {:ok, %{item: item}} -> prepare_response(item, :item)
       {:error, reason} -> prepare_response({:error, reason}, nil)
       {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
+    end
+  end
+
+  defp handle(%GetBoxes{}) do
+    %{boxes: Gacha.get_boxes()} |> prepare_response(:boxes)
+  end
+
+  defp handle(%GetBox{box_id: box_id}) do
+    case Gacha.get_box(box_id) do
+      {:ok, box} -> prepare_response(box, :box)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%Summon{user_id: user_id, box_id: box_id}) do
+    case Gacha.summon(user_id, box_id) do
+      {:ok, user_and_unit} -> prepare_response(user_and_unit, :user_and_unit)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
     end
   end
 

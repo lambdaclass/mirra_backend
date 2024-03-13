@@ -5,10 +5,11 @@ defmodule Champions.Users do
 
   alias Champions.Utils
   alias Ecto.Changeset
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users
-  alias GameBackend.Units
   alias GameBackend.Items
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Units
+  alias GameBackend.Units.Characters
 
   @doc """
   Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
@@ -57,7 +58,7 @@ defmodule Champions.Users do
   end
 
   defp add_sample_units(user) do
-    characters = Units.all_characters()
+    characters = Characters.get_characters_by_rank(Champions.Units.get_quality(:epic))
 
     Enum.each(1..6, fn index ->
       Units.insert_unit(%{
@@ -82,6 +83,7 @@ defmodule Champions.Users do
   defp add_sample_currencies(user) do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
   end
 
   defp add_campaigns_progress(user) do
