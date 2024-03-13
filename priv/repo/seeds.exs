@@ -32,7 +32,7 @@ units_per_level = 5
           components: [],
           modifier: [],
           executions: [
-            %{"type" => "DealDamage", "attack_ratio" => 80, "energy_recharge" => 50, "delay" => 0}
+            %{"type" => "DealDamage", "attack_ratio" => 0.8, "energy_recharge" => 50, "delay" => 0}
           ],
           target_strategy: "random",
           target_count: 2,
@@ -52,7 +52,7 @@ units_per_level = 5
           components: [],
           modifier: [],
           executions: [
-            %{"type" => "DealDamage", "attack_ratio" => 205, "energy_recharge" => 0, "delay" => 0}
+            %{"type" => "DealDamage", "attack_ratio" => 2.05, "energy_recharge" => 0, "delay" => 0}
           ],
           target_strategy: "random",
           target_count: 2,

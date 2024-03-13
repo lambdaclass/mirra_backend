@@ -66,8 +66,7 @@ defmodule Champions.Battle.Simulator do
     Enum.reduce_while(1..@maximum_steps, units, fn step, initial_step_state ->
       new_state =
         initial_step_state
-        |> Enum.map(fn {id, _unit} -> id end)
-        |> Enum.reduce(initial_step_state, fn unit_id, current_state ->
+        |> Enum.reduce(initial_step_state, fn {unit_id, _unit}, current_state ->
           process_step(initial_step_state[unit_id], initial_step_state, current_state)
         end)
 
@@ -83,11 +82,11 @@ defmodule Champions.Battle.Simulator do
           current_state
 
         can_cast_ultimate_skill(unit) ->
-          new_state = cast_skill(unit.ultimate_skill, unit, initial_step_state, current_state)
+          new_state = cast_skill(unit.ultimate_skill, unit.id, initial_step_state, current_state)
           put_in(new_state, [unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
-          new_state = cast_skill(unit.basic_skill, unit, initial_step_state, current_state)
+          new_state = cast_skill(unit.basic_skill, unit.id, initial_step_state, current_state)
 
           new_state
           |> put_in(
@@ -141,21 +140,22 @@ defmodule Champions.Battle.Simulator do
   # Is cooldown ready?
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
-  defp cast_skill(skill, caster, initial_step_state, current_state) do
+  defp cast_skill(skill, caster_id, initial_step_state, current_state) do
     new_state =
       Enum.reduce(skill.effects, current_state, fn effect, new_state ->
-        target_ids = choose_targets(caster, effect, initial_step_state)
+        target_ids = choose_targets(new_state[caster_id], effect, initial_step_state)
 
-        targets_after_effect = Enum.map(target_ids, fn id -> maybe_apply_effect(effect, caster, new_state[id]) end)
+        targets_after_effect =
+          Enum.map(target_ids, fn id -> maybe_apply_effect(effect, new_state[id], new_state[caster_id]) end)
 
         Enum.reduce(targets_after_effect, new_state, fn target, acc_state ->
           Map.put(acc_state, target.id, target)
         end)
       end)
 
-    new_caster = Map.put(caster, :energy, caster.energy + skill.energy_regen)
+    new_caster = Map.put(new_state[caster_id], :energy, new_state[caster_id].energy + skill.energy_regen)
 
-    Map.put(new_state, caster.id, new_caster)
+    Map.put(new_state, new_caster.id, new_caster)
   end
 
   defp choose_targets(
@@ -202,8 +202,8 @@ defmodule Champions.Battle.Simulator do
     target_after_modifiers = target
 
     target_after_executions =
-      Enum.reduce(effect.executions, target_after_modifiers, fn execution, target ->
-        process_execution(execution, target, caster)
+      Enum.reduce(effect.executions, target_after_modifiers, fn execution, target_acc ->
+        process_execution(execution, target_acc, caster)
       end)
 
     target_after_executions
@@ -221,7 +221,7 @@ defmodule Champions.Battle.Simulator do
          caster
        ) do
     target
-    |> Map.put(:health, target.health + floor(attack_ratio * caster.attack / 100))
+    |> Map.put(:health, target.health - floor(attack_ratio * caster.attack))
     |> Map.put(:energy, max(target.energy + energy_recharge, 500))
   end
 
@@ -249,7 +249,7 @@ defmodule Champions.Battle.Simulator do
       effects: Enum.map(skill.effects, &create_effect_map/1),
       base_cooldown: skill.cooldown,
       remaining_cooldown: skill.cooldown,
-      energy_regen: skill.energy_regen
+      energy_regen: skill.energy_regen || 0
     }
 
   defp create_effect_map(%Effect{} = effect),
