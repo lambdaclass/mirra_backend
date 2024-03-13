@@ -162,7 +162,7 @@ defmodule Champions.Battle.Simulator do
          %{team: team},
          %{
            target_count: count,
-           target_strategy: "Random",
+           target_strategy: "random",
            target_allies: target_allies
          } = _effect,
          state
