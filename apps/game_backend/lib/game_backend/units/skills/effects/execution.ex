@@ -59,26 +59,25 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
 
   defp execution_to_string(effect_time_type) do
     case effect_time_type do
-       %{
+      %{
         "type" => "DealDamage",
         "attack_ratio" => attack_ratio,
         "energy_recharge" => energy_recharge,
         "delay" => delay
-        } ->
-          "DealDamage,#{attack_ratio},#{energy_recharge},#{delay}"
+      } ->
+        "DealDamage,#{attack_ratio},#{energy_recharge},#{delay}"
 
-
-          %{
-            "type" => "Heal",
-         "attack_ratio" => attack_ratio,
-         "delay" => delay
-       } ->
+      %{
+        "type" => "Heal",
+        "attack_ratio" => attack_ratio,
+        "delay" => delay
+      } ->
         "Heal,#{attack_ratio},#{delay}"
 
-       %{
+      %{
         "type" => "AddEnergy",
-         "amount" => amount
-       } ->
+        "amount" => amount
+      } ->
         "AddEnergy,#{amount}"
     end
   end
