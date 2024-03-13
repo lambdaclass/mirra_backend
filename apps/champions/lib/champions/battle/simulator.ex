@@ -196,12 +196,30 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp apply_effect(effect, caster, target) do
-    _target_after_executions =
-      Enum.reduce(effect.executions, target, fn execution, target -> process_execution(execution, target, caster) end)
+    # TODO
+    target_after_modifiers = target
+
+    target_after_executions =
+      Enum.reduce(effect.executions, target_after_modifiers, fn execution, target ->
+        process_execution(execution, target, caster)
+      end)
+
+    target_after_executions
   end
 
-  defp process_execution(_execution, target, _caster) do
+  defp process_execution(
+         %{
+           "type" => "DealDamage",
+           "attack_ratio" => attack_ratio,
+           "energy_recharge" => energy_recharge,
+           "delay" => _delay
+         },
+         target,
+         caster
+       ) do
     target
+    |> Map.put(:health, target.health + floor(attack_ratio * caster.attack / 100))
+    |> Map.put(:energy, max(target.energy + energy_recharge, 500))
   end
 
   defp create_unit_map(%Unit{character: character} = unit, team),
