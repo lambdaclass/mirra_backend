@@ -17,7 +17,7 @@ defmodule GameBackend.Units.Skill do
   @doc false
   def changeset(skill, attrs \\ %{}) do
     skill
-    |> cast(attrs, [:name, :cooldown])
+    |> cast(attrs, [:name, :cooldown, :energy_regen])
     |> cast_embed(:effects)
   end
 end
