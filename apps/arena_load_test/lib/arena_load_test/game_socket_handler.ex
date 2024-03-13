@@ -24,7 +24,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
   # Callbacks
   def handle_frame({_type, _msg} = _frame, state) do
-    # Logger.info("Received frame with msg: #{_msg}")
     {:ok, state}
   end
 
@@ -81,7 +80,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_cast({:send, {_type, _msg} = frame}, state) do
-    # Logger.info("Sending frame with payload: #{msg}")
     {:reply, frame, state}
   end
 
