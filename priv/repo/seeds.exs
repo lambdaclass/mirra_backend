@@ -1,6 +1,7 @@
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Level
 alias GameBackend.Campaigns.Campaign
+alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
@@ -12,6 +13,50 @@ import Ecto.Query
 
 champions_of_mirra_id = 2
 units_per_level = 5
+
+{:ok, _rank1} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Super Weak Mage",
+    class: "Mage",
+    faction: "Kaline",
+    rarity: Champions.Units.get_quality(:common),
+    ranks_dropped_in: [Champions.Units.get_rank(:star1)]
+  })
+
+{:ok, _rank2} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Weak Hunter",
+    class: "Hunter",
+    faction: "Araban",
+    rarity: Champions.Units.get_quality(:common),
+    ranks_dropped_in: [Champions.Units.get_rank(:star2)]
+  })
+
+{:ok, _rank3} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Mediocre Assasin",
+    class: "Assasin",
+    faction: "Merliot",
+    rarity: Champions.Units.get_quality(:common),
+    ranks_dropped_in: [Champions.Units.get_rank(:star3)]
+  })
+
+{:ok, _rank4} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Ok Cleric",
+    class: "Cleric",
+    faction: "Otobi",
+    rarity: Champions.Units.get_quality(:rare),
+    ranks_dropped_in: [Champions.Units.get_rank(:star4), Champions.Units.get_rank(:star5)]
+  })
 
 {:ok, muflus} = Characters.insert_character(%{
   game_id: champions_of_mirra_id,
@@ -100,9 +145,34 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-{:ok, gold_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, _gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-{:ok, _scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+{:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
+{:ok, _gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+
+
+{:ok, _} =
+  Gacha.insert_box(%{
+    name: "Basic Summon",
+    rank_weights: [
+      %{rank: Champions.Units.get_rank(:star1), weight: 90},
+      %{rank: Champions.Units.get_rank(:star2), weight: 70},
+      %{rank: Champions.Units.get_rank(:star3), weight: 30},
+      %{rank: Champions.Units.get_rank(:star4), weight: 7},
+      %{rank: Champions.Units.get_rank(:star5), weight: 3}
+    ],
+    cost: [%{currency_id: scrolls.id, amount: 1}]
+  })
+
+{:ok, _} =
+  GameBackend.Gacha.insert_box(%{
+    name: "Mystic Summon",
+    rank_weights: [
+      %{rank: Champions.Units.get_rank(:star3), weight: 75},
+      %{rank: Champions.Units.get_rank(:star4), weight: 20},
+      %{rank: Champions.Units.get_rank(:star5), weight: 5}
+    ],
+    cost: [%{currency_id: scrolls.id, amount: 10}]
+  })
 
 ######################
 # Campaigns creation #
@@ -199,7 +269,7 @@ currency_rewards =
       %{
         level_id: level.id,
         amount: 10 * level_index,
-        currency_id: gold_currency.id,
+        currency_id: gold.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
