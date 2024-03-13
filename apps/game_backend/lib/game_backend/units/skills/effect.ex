@@ -27,11 +27,11 @@ defmodule GameBackend.Units.Skills.Effect do
     |> cast(attrs, [
       :type,
       :initial_delay,
+      :executions,
       :target_count,
       :target_strategy,
       :target_allies,
-      :target_attribute,
-      :executions
+      :target_attribute
     ])
     |> validate_required([
       :type,
@@ -44,9 +44,4 @@ defmodule GameBackend.Units.Skills.Effect do
     |> cast_embed(:components)
     |> cast_embed(:modifiers)
   end
-
-  @doc """
-  Changeset for editing a level's basic attributes.
-  """
-  def edit_changeset(level, attrs), do: cast(level, attrs, [:campaign])
 end
