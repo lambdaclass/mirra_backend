@@ -146,7 +146,7 @@ defmodule Champions.Battle.Simulator do
     Enum.reduce(skill.effects, current_state, fn effect, new_state ->
       target_ids = choose_targets(unit, effect, initial_step_state)
 
-      targets_after_effect = Enum.map(target_ids, fn id -> apply_effect(effect, unit, new_state[id]) end)
+      targets_after_effect = Enum.map(target_ids, fn id -> maybe_apply_effect(effect, unit, new_state[id]) end)
 
       Enum.reduce(targets_after_effect, new_state, fn target_unit, acc_state ->
         Map.put(acc_state, target_unit.id, target_unit)
@@ -171,9 +171,34 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(amount)
          |> Enum.map(fn {id, _unit} -> id end)
 
-  defp apply_effect(%{type: "instant"} = effect, caster, target) do
-    new_value = calculate_value(effect, caster, target)
-    Map.put(target, String.to_atom(effect.stat_affected), new_value)
+  defp maybe_apply_effect(effect, caster, target) do
+    chance_to_apply = calculate_chance_to_apply(effect)
+
+    if effect_hits?(chance_to_apply),
+      do: apply_effect(effect, caster, target),
+      else: target
+  end
+
+  # TODO
+  defp apply_effect(_effect, _caster, target) do
+    target
+  end
+
+  defp effect_hits?(chance_to_apply), do: chance_to_apply >= :rand.uniform()
+
+  defp calculate_chance_to_apply(effect) do
+    chance_to_apply_component =
+      Enum.find(effect.components, fn comp ->
+        case comp do
+          %{"type" => "ChanceToApply"} -> true
+          _ -> false
+        end
+      end)
+
+    case chance_to_apply_component do
+      nil -> 100
+      chance_to_apply_component -> chance_to_apply_component["chance"]
+    end
   end
 
   defp calculate_value(
