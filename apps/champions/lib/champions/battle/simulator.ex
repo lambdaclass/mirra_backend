@@ -260,6 +260,8 @@ defmodule Champions.Battle.Simulator do
       target_strategy: effect.target_strategy,
       target_allies: effect.target_allies,
       target_attribute: effect.target_attribute,
+      components: effect.components,
+      modifiers: effect.modifiers,
       executions: effect.executions
     }
 end
