@@ -83,9 +83,8 @@ defmodule Champions.Battle.Simulator do
           current_state
 
         can_cast_ultimate_skill(unit) ->
-          unit
-          |> cast_skill(unit.ultimate_skill, initial_step_state, current_state)
-          |> put_in([unit.id, :energy], 0)
+          new_state = cast_skill(unit.ultimate_skill, unit, initial_step_state, current_state)
+          put_in(new_state, [unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
           new_state = cast_skill(unit, unit.basic_skill, initial_step_state, current_state)
@@ -142,16 +141,21 @@ defmodule Champions.Battle.Simulator do
   # Is cooldown ready?
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
-  defp cast_skill(unit, skill, initial_step_state, current_state) do
-    Enum.reduce(skill.effects, current_state, fn effect, new_state ->
-      target_ids = choose_targets(unit, effect, initial_step_state)
+  defp cast_skill(skill, caster, initial_step_state, current_state) do
+    new_state =
+      Enum.reduce(skill.effects, current_state, fn effect, new_state ->
+        target_ids = choose_targets(caster, effect, initial_step_state)
 
-      targets_after_effect = Enum.map(target_ids, fn id -> maybe_apply_effect(effect, unit, new_state[id]) end)
+        targets_after_effect = Enum.map(target_ids, fn id -> maybe_apply_effect(effect, caster, new_state[id]) end)
 
-      Enum.reduce(targets_after_effect, new_state, fn target_unit, acc_state ->
-        Map.put(acc_state, target_unit.id, target_unit)
+        Enum.reduce(targets_after_effect, new_state, fn target, acc_state ->
+          Map.put(acc_state, target.id, target)
+        end)
       end)
-    end)
+
+    new_caster = Map.put(caster, :energy, caster.energy + skill.energy_regen)
+
+    Map.put(new_state, caster.id, new_caster)
   end
 
   defp choose_targets(_unit, %{target_strategy: nil}, _state), do: nil
@@ -171,9 +175,9 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(amount)
          |> Enum.map(fn {id, _unit} -> id end)
 
-  defp maybe_apply_effect(effect, caster, target) do
+  defp maybe_apply_effect(effect, target, caster) do
     if effect_hits?(effect),
-      do: apply_effect(effect, caster, target),
+      do: apply_effect(effect, target, caster),
       else: target
   end
 
@@ -195,7 +199,7 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  defp apply_effect(effect, caster, target) do
+  defp apply_effect(effect, target, caster) do
     # TODO
     target_after_modifiers = target
 
@@ -245,7 +249,8 @@ defmodule Champions.Battle.Simulator do
       name: skill.name,
       effects: Enum.map(skill.effects, &create_effect_map/1),
       base_cooldown: skill.cooldown,
-      remaining_cooldown: skill.cooldown
+      remaining_cooldown: skill.cooldown,
+      energy_regen: skill.energy_regen
     }
 
   defp create_effect_map(%Effect{} = effect),

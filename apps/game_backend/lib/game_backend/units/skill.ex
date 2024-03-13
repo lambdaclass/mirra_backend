@@ -10,6 +10,7 @@ defmodule GameBackend.Units.Skill do
     field(:name, :string)
     embeds_many(:effects, Effect)
     field(:cooldown, :integer)
+    field(:energy_regen, :integer)
     timestamps()
   end
 
