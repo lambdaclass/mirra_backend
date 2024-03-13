@@ -73,11 +73,11 @@
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,
     "natural_healing_interval_ms": 300,
-    "zone_shrink_start_ms": 35000000,
+    "zone_shrink_start_ms": 35000,
     "zone_shrink_radius_by": 10,
     "zone_shrink_interval": 100,
     "zone_stop_interval_ms": 13000,
-    "zone_start_interval_ms": 2000000,
+    "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
     "zone_damage": 9,
     "item_spawn_interval_ms": 15000
@@ -97,8 +97,7 @@
           "cone_hit": {
             "damage": 16,
             "range": 1100.0,
-            "angle": 50.0,
-            "radius": 150.0
+            "angle": 50.0
           }
         }
       ],
