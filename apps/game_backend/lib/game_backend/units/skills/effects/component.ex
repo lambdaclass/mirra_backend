@@ -16,15 +16,48 @@ defmodule GameBackend.Units.Skills.Effects.Component do
   Also being able to specify a required tag or a tag required to *not* be present.
   """
 
-  use GameBackend.Schema
-  import Ecto.Changeset
+  use Ecto.Type
 
-  embedded_schema do
-    field(:todo, :string)
+  def type(), do: :string
+
+  def cast(%{
+        "type" => "ChanceToApply",
+        "chance" => chance
+      }),
+      do:
+        {:ok,
+         %{
+           "type" => "ChanceToApply",
+           "chance" => chance
+         }}
+
+  def load(string), do: {:ok, component_from_string(string)}
+
+  def dump(component), do: {:ok, component_to_string(component)}
+
+  defp component_to_string(component) do
+    case component do
+      %{
+        "type" => "ChanceToApply",
+        "chance" => chance
+      } ->
+        "ChanceToApply,#{chance}"
+
+      _ ->
+        nil
+    end
   end
 
-  def changeset(component, attrs) do
-    component
-    |> cast(attrs, [:todo])
+  defp component_from_string(string) when is_binary(string) do
+    case String.split(string, ",") do
+      ["ChanceToApply", chance] ->
+        %{
+          type: "ChanceToApply",
+          chance: chance
+        }
+
+      _ ->
+        nil
+    end
   end
 end

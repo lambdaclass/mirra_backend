@@ -57,8 +57,8 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
 
   def dump(execution), do: {:ok, execution_to_string(execution)}
 
-  defp execution_to_string(effect_time_type) do
-    case effect_time_type do
+  defp execution_to_string(execution) do
+    case execution do
       %{
         "type" => "DealDamage",
         "attack_ratio" => attack_ratio,

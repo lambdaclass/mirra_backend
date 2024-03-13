@@ -11,7 +11,7 @@ defmodule GameBackend.Units.Skills.Effect do
     field(:type, Type)
     field(:initial_delay, :integer)
 
-    embeds_many(:components, Component)
+    field(:components, {:array, Component})
     embeds_many(:modifiers, Modifier)
     field(:executions, {:array, Execution})
 
