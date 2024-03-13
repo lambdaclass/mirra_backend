@@ -172,21 +172,12 @@ defmodule Champions.Battle.Simulator do
          |> Enum.map(fn {id, _unit} -> id end)
 
   defp maybe_apply_effect(effect, caster, target) do
-    chance_to_apply = calculate_chance_to_apply(effect)
-
-    if effect_hits?(chance_to_apply),
+    if effect_hits?(effect),
       do: apply_effect(effect, caster, target),
       else: target
   end
 
-  # TODO
-  defp apply_effect(_effect, _caster, target) do
-    target
-  end
-
-  defp effect_hits?(chance_to_apply), do: chance_to_apply >= :rand.uniform()
-
-  defp calculate_chance_to_apply(effect) do
+  defp effect_hits?(effect) do
     chance_to_apply_component =
       Enum.find(effect.components, fn comp ->
         case comp do
@@ -196,33 +187,22 @@ defmodule Champions.Battle.Simulator do
       end)
 
     case chance_to_apply_component do
-      nil -> 100
-      chance_to_apply_component -> chance_to_apply_component["chance"]
+      nil ->
+        true
+
+      chance_to_apply_component ->
+        chance_to_apply_component["chance"] >= :rand.uniform()
     end
   end
 
-  defp calculate_value(
-         %{amount_format: "additive", stat_based_on: nil} = effect,
-         _caster,
-         target
-       ),
-       do: target[String.to_atom(effect.stat_affected)] + effect.amount
+  defp apply_effect(effect, caster, target) do
+    _target_after_executions =
+      Enum.reduce(effect.executions, target, fn execution, target -> process_execution(execution, target, caster) end)
+  end
 
-  defp calculate_value(
-         %{amount_format: "multiplicative", stat_based_on: nil} = effect,
-         _caster,
-         target
-       ),
-       do: target[String.to_atom(effect.stat_affected)] * effect.amount
-
-  defp calculate_value(
-         %{amount_format: "additive", stat_based_on: stat_based_on} = effect,
-         caster,
-         target
-       ),
-       do:
-         target[String.to_atom(effect.stat_affected)] +
-           floor(effect.amount * caster[String.to_atom(stat_based_on)] / 100)
+  defp process_execution(_execution, target, _caster) do
+    target
+  end
 
   defp create_unit_map(%Unit{character: character} = unit, team),
     do:
