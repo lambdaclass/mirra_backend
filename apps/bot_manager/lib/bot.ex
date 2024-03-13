@@ -12,8 +12,6 @@ defmodule BotManager.Bot do
 
   @impl true
   def init(bot_config) do
-    IO.inspect(bot_config, label: "aber bot config")
-
     {:ok, game_socket_handler_pid} =
       BotManager.GameSocketHandler.start_link(
         bot_config["player_id"],
@@ -21,22 +19,19 @@ defmodule BotManager.Bot do
       )
 
     Logger.info("intializing bot #{self() |> :erlang.term_to_binary() |> Base58.encode()}")
-    # send(self(), :random_action)
-    {:ok, bot_config}
+    send(self(), :random_action)
+    {:ok, %{"game_socket_handler_pid" => game_socket_handler_pid} |> Map.merge(bot_config)}
   end
 
-  # @impl true
-  # def handle_info(:random_action, state) do
-  #   Process.send_after(self(), :random_action, @message_delay_ms)
-  #   timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+  @impl true
+  def handle_info(:random_action, state) do
+    Process.send_after(self(), :random_action, @message_delay_ms)
 
-  #   GameUpdater.move(
-  #     state["game_pid"],
-  #     state["bot_id"],
-  #     {:rand.uniform(), :rand.uniform()},
-  #     timestamp
-  #   )
+    send(
+      state["game_socket_handler_pid"],
+      {:move, %{"x" => :rand.uniform(), "y" => :rand.uniform()}}
+    )
 
-  #   {:noreply, state}
-  # end
+    {:noreply, state}
+  end
 end
