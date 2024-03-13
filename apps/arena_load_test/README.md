@@ -21,5 +21,16 @@ This will create the requested amount of players that will connect to the server
 game.
 Once it starts they send random game actions (such as move in some direction) every 300 ms.
 
-### Disclaimer
+## Considerations
+
+### Amount of clients playing simultaneously
+The OS running the application limits the File Descriptors per process. Here, we're opening as many clients (processes) as needed, in case we need more clients than our OS allows, we can increase it by running in a shell:
+```bash
+# number_of_file_descriptors is an integer that represents the amount needed
+ulimit -n number_of_file_descriptors
+# You can also check your current File Descriptors' limit by running the following
+ulimit -n
+```
+
+### Amount of players per game
 It's important to note that the Arena application defines how many players play in the same game match. If you want to increase the number of players in a game, you have to deploy the Arena application in the desired server with that configuration.
