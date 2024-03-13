@@ -2666,7 +2666,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     targettingRadius: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
-    staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0)
+    targettingDamage: jspb.Message.getFloatingPointFieldWithDefault(msg, 7, 0.0),
+    staminaCost: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -2728,6 +2729,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTargettingRange(value);
       break;
     case 7:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setTargettingDamage(value);
+      break;
+    case 8:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setStaminaCost(value);
       break;
@@ -2802,10 +2807,17 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getTargettingDamage();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      7,
+      f
+    );
+  }
   f = message.getStaminaCost();
   if (f !== 0) {
     writer.writeUint64(
-      7,
+      8,
       f
     );
   }
@@ -2921,11 +2933,29 @@ proto.ConfigSkill.prototype.setTargettingRange = function(value) {
 
 
 /**
- * optional uint64 stamina_cost = 7;
+ * optional float targetting_damage = 7;
+ * @return {number}
+ */
+proto.ConfigSkill.prototype.getTargettingDamage = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 7, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setTargettingDamage = function(value) {
+  return jspb.Message.setProto3FloatField(this, 7, value);
+};
+
+
+/**
+ * optional uint64 stamina_cost = 8;
  * @return {number}
  */
 proto.ConfigSkill.prototype.getStaminaCost = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
 };
 
 
@@ -2934,7 +2964,7 @@ proto.ConfigSkill.prototype.getStaminaCost = function() {
  * @return {!proto.ConfigSkill} returns this
  */
 proto.ConfigSkill.prototype.setStaminaCost = function(value) {
-  return jspb.Message.setProto3IntField(this, 7, value);
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 

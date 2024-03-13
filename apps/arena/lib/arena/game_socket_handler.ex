@@ -160,7 +160,8 @@ defmodule Arena.GameSocketHandler do
     extra_params = %{
       targetting_radius: params[:radius],
       targetting_angle: params[:angle],
-      targetting_range: params[:range]
+      targetting_range: params[:range],
+      targetting_damage: params[:damage]
     }
 
     {key, Map.merge(skill, extra_params)}
