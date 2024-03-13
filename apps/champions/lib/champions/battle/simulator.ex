@@ -212,6 +212,7 @@ defmodule Champions.Battle.Simulator do
            "type" => "DealDamage",
            "attack_ratio" => attack_ratio,
            "energy_recharge" => energy_recharge,
+           # TODO
            "delay" => _delay
          },
          target,
