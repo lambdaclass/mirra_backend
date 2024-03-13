@@ -8,8 +8,6 @@ defmodule BotManager.GameSocketHandler do
   require Logger
 
   def start_link(player_id, game_id) do
-    IO.inspect(game_id, label: "aber game_id")
-    IO.inspect(player_id, label: "aber player_id")
     ws_url = ws_url(player_id, game_id)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
@@ -19,8 +17,6 @@ defmodule BotManager.GameSocketHandler do
   end
 
   def handle_info({:move, %{"x" => x, "y" => y}}, state) do
-    Logger.info("Sending GameAction frame with MOVE payload")
-
     game_action =
       BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
         action_type:
@@ -33,12 +29,14 @@ defmodule BotManager.GameSocketHandler do
            }}
       })
 
-    {:reply, {:binary, game_action}, state}
+    WebSockex.cast(self(), {:send, {:binary, game_action}})
+
+    {:ok, state}
   end
 
   defp ws_url(player_id, game_id) do
     # FIX ME Remove hardcoded host
-    host = "localhost:3000"
+    host = "localhost:4000"
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
@@ -47,6 +45,5 @@ defmodule BotManager.GameSocketHandler do
       _ ->
         "ws://#{host}/play/#{game_id}/#{player_id}"
     end
-    |> IO.inspect(label: "aber url")
   end
 end
