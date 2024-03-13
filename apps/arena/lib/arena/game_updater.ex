@@ -629,7 +629,6 @@ defmodule Arena.GameUpdater do
 
       bot_specs = %{
         player_id: last_id,
-        character_name: character_name,
         game_id: self() |> :erlang.term_to_binary() |> Base58.encode()
       }
 
@@ -1132,9 +1131,9 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp build_bot_url(%{game_id: game_id, player_id: player_id, character_name: character_name}) do
+  defp build_bot_url(%{game_id: game_id, player_id: player_id}) do
     # TODO remove this hardcode url when servers are implemented
-    "http://localhost:5000/join/#{game_id}/#{player_id}/#{character_name}"
+    "http://localhost:5000/join/#{game_id}/#{player_id}"
   end
 
   ##########################

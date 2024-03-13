@@ -25,7 +25,7 @@ defmodule BotManager.Endpoint do
   # responsible for dispatching responses
   plug(:dispatch)
 
-  get "/join/:game_pid/:player_id/:character_name" do
+  get "/join/:game_pid/:player_id" do
     BotManager.BotSupervisor.spawn_bot(conn.params)
 
     conn
