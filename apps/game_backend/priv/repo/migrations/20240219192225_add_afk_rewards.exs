@@ -1,4 +1,4 @@
-defmodule GameBackend.Repo.Migrations.AddExperienceAndAfkRewards do
+defmodule GameBackend.Repo.Migrations.AddAfkRewards do
   use Ecto.Migration
 
   def change do
