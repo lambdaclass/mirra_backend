@@ -34,6 +34,8 @@ defmodule Gateway.SocketTester do
     UnequipItem,
     GetItem,
     LevelUpItem,
+    GetAfkRewards,
+    ClaimAfkRewards,
     GetBox,
     GetBoxes,
     Summon
@@ -236,6 +238,26 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:summon, %Summon{user_id: user_id, box_id: box_id}}
+         })}
+      )
+
+  def get_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_afk_rewards, %GetAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def claim_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
          })}
       )
 

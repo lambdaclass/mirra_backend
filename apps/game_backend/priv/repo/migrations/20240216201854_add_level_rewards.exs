@@ -10,6 +10,7 @@ defmodule GameBackend.Repo.Migrations.AddLevelRewards do
       add :currency_id, references(:currencies, on_delete: :delete_all)
       add :level_id, references(:levels, on_delete: :delete_all)
       add :amount, :integer, null: false
+      add :afk_reward, :boolean, null: :false
       timestamps()
     end
 
