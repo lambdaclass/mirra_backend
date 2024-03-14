@@ -146,7 +146,7 @@ Items.insert_item_template(%{
 })
 
 {:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, _gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 {:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
 
@@ -303,7 +303,7 @@ afk_reward_increments =
       %{
         level_id: level.id,
         amount: level_index,
-        currency_id: gems_currency.id,
+        currency_id: gems.id,
         afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
