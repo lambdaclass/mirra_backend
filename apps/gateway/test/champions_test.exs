@@ -295,6 +295,22 @@ defmodule Gateway.Test.Champions do
     end
   end
 
+  describe "afk rewards" do
+    test "afk rewards", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("AfkRewardsUser")
+
+      # Get afk rewards
+      SocketTester.get_afk_rewards(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %UserAndUnit{}}}
+
+      # Claim afk rewards
+      SocketTester.claim_afk_rewards(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user_and_unit, %UserAndUnit{}}}
+    end
+  end
+
   defp get_last_message() do
     receive do
       message ->
