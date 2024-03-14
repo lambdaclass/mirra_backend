@@ -75,6 +75,13 @@ defmodule GameBackend.Users do
     if user, do: {:ok, user}, else: {:error, :not_found}
   end
 
+  @doc """
+  Checks whether a user exists with the given id.
+
+  Useful if you want to validate an id while not needing to operate with the user itself.
+  """
+  def exists?(user_id), do: Repo.exists?(from(u in User, where: u.id == ^user_id))
+
   def update_experience(user, params),
     do:
       user
@@ -109,7 +116,7 @@ defmodule GameBackend.Users do
       end)
       |> Repo.transaction()
     else
-      {:campaign_data, _transaction_error} -> {:error, :campaign_data_error}
+      {:campaign_progress, _transaction_error} -> {:error, :campaign_progress_not_found}
       {:next_level, _transaction_error} -> {:campaign_progress_error}
     end
   end

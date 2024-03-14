@@ -29,50 +29,55 @@ defmodule Gateway.Serialization.WebSocketRequest do
 
   field(:get_level, 6, type: Gateway.Serialization.GetLevel, json_name: "getLevel", oneof: 0)
   field(:fight_level, 7, type: Gateway.Serialization.FightLevel, json_name: "fightLevel", oneof: 0)
-  field(:select_unit, 8, type: Gateway.Serialization.SelectUnit, json_name: "selectUnit", oneof: 0)
+  field(:get_units, 8, type: Gateway.Serialization.GetUnits, json_name: "getUnits", oneof: 0)
+  field(:select_unit, 9, type: Gateway.Serialization.SelectUnit, json_name: "selectUnit", oneof: 0)
 
-  field(:unselect_unit, 9,
+  field(:unselect_unit, 10,
     type: Gateway.Serialization.UnselectUnit,
     json_name: "unselectUnit",
     oneof: 0
   )
 
-  field(:level_up_unit, 10,
+  field(:level_up_unit, 11,
     type: Gateway.Serialization.LevelUpUnit,
     json_name: "levelUpUnit",
     oneof: 0
   )
 
-  field(:tier_up_unit, 11,
+  field(:tier_up_unit, 12,
     type: Gateway.Serialization.TierUpUnit,
     json_name: "tierUpUnit",
     oneof: 0
   )
 
-  field(:fuse_unit, 12, type: Gateway.Serialization.FuseUnit, json_name: "fuseUnit", oneof: 0)
-  field(:equip_item, 13, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
+  field(:fuse_unit, 13, type: Gateway.Serialization.FuseUnit, json_name: "fuseUnit", oneof: 0)
+  field(:equip_item, 14, type: Gateway.Serialization.EquipItem, json_name: "equipItem", oneof: 0)
 
-  field(:unequip_item, 14,
+  field(:unequip_item, 15,
     type: Gateway.Serialization.UnequipItem,
     json_name: "unequipItem",
     oneof: 0
   )
 
-  field(:get_item, 15, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
+  field(:get_item, 16, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
 
-  field(:level_up_item, 16,
+  field(:level_up_item, 17,
     type: Gateway.Serialization.LevelUpItem,
     json_name: "levelUpItem",
     oneof: 0
   )
 
-  field(:get_afk_rewards, 17,
+  field(:get_boxes, 18, type: Gateway.Serialization.GetBoxes, json_name: "getBoxes", oneof: 0)
+  field(:get_box, 19, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
+  field(:summon, 20, type: Gateway.Serialization.Summon, oneof: 0)
+
+  field(:get_afk_rewards, 21,
     type: Gateway.Serialization.GetAfkRewards,
     json_name: "getAfkRewards",
     oneof: 0
   )
 
-  field(:claim_afk_rewards, 18,
+  field(:claim_afk_rewards, 22,
     type: Gateway.Serialization.ClaimAfkRewards,
     json_name: "claimAfkRewards",
     oneof: 0
@@ -136,6 +141,14 @@ defmodule Gateway.Serialization.FightLevel do
 
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:level_id, 2, type: :string, json_name: "levelId")
+end
+
+defmodule Gateway.Serialization.GetUnits do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
 end
 
 defmodule Gateway.Serialization.SelectUnit do
@@ -238,6 +251,31 @@ defmodule Gateway.Serialization.ClaimAfkRewards do
   field(:user_id, 1, type: :string, json_name: "userId")
 end
 
+defmodule Gateway.Serialization.GetBoxes do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
+defmodule Gateway.Serialization.GetBox do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:box_id, 1, type: :string, json_name: "boxId")
+end
+
+defmodule Gateway.Serialization.Summon do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:box_id, 2, type: :string, json_name: "boxId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -247,31 +285,40 @@ defmodule Gateway.Serialization.WebSocketResponse do
 
   field(:user, 1, type: Gateway.Serialization.User, oneof: 0)
   field(:unit, 2, type: Gateway.Serialization.Unit, oneof: 0)
+  field(:units, 3, type: Gateway.Serialization.Units, oneof: 0)
 
-  field(:unit_and_currencies, 3,
+  field(:unit_and_currencies, 4,
     type: Gateway.Serialization.UnitAndCurrencies,
     json_name: "unitAndCurrencies",
     oneof: 0
   )
 
-  field(:item, 4, type: Gateway.Serialization.Item, oneof: 0)
-  field(:campaigns, 5, type: Gateway.Serialization.Campaigns, oneof: 0)
-  field(:campaign, 6, type: Gateway.Serialization.Campaign, oneof: 0)
-  field(:level, 7, type: Gateway.Serialization.Level, oneof: 0)
+  field(:item, 5, type: Gateway.Serialization.Item, oneof: 0)
+  field(:campaigns, 6, type: Gateway.Serialization.Campaigns, oneof: 0)
+  field(:campaign, 7, type: Gateway.Serialization.Campaign, oneof: 0)
+  field(:level, 8, type: Gateway.Serialization.Level, oneof: 0)
 
-  field(:battle_result, 8,
+  field(:battle_result, 9,
     type: Gateway.Serialization.BattleResult,
     json_name: "battleResult",
     oneof: 0
   )
 
-  field(:afk_rewards, 9,
+  field(:error, 10, type: Gateway.Serialization.Error, oneof: 0)
+  field(:boxes, 11, type: Gateway.Serialization.Boxes, oneof: 0)
+  field(:box, 12, type: Gateway.Serialization.Box, oneof: 0)
+
+  field(:user_and_unit, 13,
+    type: Gateway.Serialization.UserAndUnit,
+    json_name: "userAndUnit",
+    oneof: 0
+  )
+
+  field(:afk_rewards, 14,
     type: Gateway.Serialization.AfkRewards,
     json_name: "afkRewards",
     oneof: 0
   )
-
-  field(:error, 10, type: Gateway.Serialization.Error, oneof: 0)
 end
 
 defmodule Gateway.Serialization.User do
@@ -355,6 +402,14 @@ defmodule Gateway.Serialization.Unit do
   field(:items, 10, repeated: true, type: Gateway.Serialization.Item)
 end
 
+defmodule Gateway.Serialization.Units do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:units, 1, repeated: true, type: Gateway.Serialization.Unit)
+end
+
 defmodule Gateway.Serialization.UnitAndCurrencies do
   @moduledoc false
 
@@ -377,7 +432,7 @@ defmodule Gateway.Serialization.Character do
   field(:active, 1, type: :bool)
   field(:name, 2, type: :string)
   field(:faction, 3, type: :string)
-  field(:quality, 4, type: :int32)
+  field(:quality, 4, type: :uint32)
 end
 
 defmodule Gateway.Serialization.Item do
@@ -443,8 +498,7 @@ defmodule Gateway.Serialization.CurrencyReward do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:currency_id, 1, type: :string, json_name: "currencyId")
-  field(:level_id, 2, type: :string, json_name: "levelId")
+  field(:currency, 1, type: Gateway.Serialization.Currency)
   field(:amount, 3, type: :uint64)
 end
 
@@ -483,4 +537,58 @@ defmodule Gateway.Serialization.Error do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:reason, 1, type: :string)
+end
+
+defmodule Gateway.Serialization.Boxes do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:boxes, 1, repeated: true, type: Gateway.Serialization.Box)
+end
+
+defmodule Gateway.Serialization.Box do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:name, 2, type: :string)
+  field(:description, 3, type: :string)
+  field(:factions, 4, repeated: true, type: :string)
+
+  field(:rank_weights, 5,
+    repeated: true,
+    type: Gateway.Serialization.RankWeights,
+    json_name: "rankWeights"
+  )
+
+  field(:cost, 6, repeated: true, type: Gateway.Serialization.CurrencyCost)
+end
+
+defmodule Gateway.Serialization.RankWeights do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:rank, 1, type: :int32)
+  field(:weight, 2, type: :int32)
+end
+
+defmodule Gateway.Serialization.CurrencyCost do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: Gateway.Serialization.Currency)
+  field(:amount, 2, type: :int32)
+end
+
+defmodule Gateway.Serialization.UserAndUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user, 1, type: Gateway.Serialization.User)
+  field(:unit, 2, type: Gateway.Serialization.Unit)
 end
