@@ -5,7 +5,7 @@ export const GameQueue = function () {
     this.mounted = function () {
         let player_id = document.getElementById("board_game").dataset.playerId
         let character = document.getElementById("board_game").dataset.character
-        let player_name = document.getElementById("board_game").dataset.player_name
+        let player_name = document.getElementById("board_game").dataset.playerName
         let player = new Player(getQueueSocketUrl(player_id, character, player_name))
 
         player.socket.addEventListener("message", (event) => {
