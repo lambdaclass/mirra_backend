@@ -11,12 +11,12 @@ do
 	for i in "${!latencies[@]}"; do
 		latency=${latencies[i]}
 		latency_duration=${latency_durations[i]}
-        # Update latency with toxiproxy-cli
-        toxiproxy-cli toxic update -n latency -a latency=$latency game_proxy
+		# Update latency with toxiproxy-cli
+		toxiproxy-cli toxic update -n latency -a latency=$latency game_proxy
 
-        echo "Applied latency: $latency ms for $latency_duration seconds"
+		echo "Applied latency: $latency ms for $latency_duration seconds"
 
-        # Sleep for the defined latency duration
-        sleep $latency_duration
+		# Sleep for the defined latency duration
+		sleep $latency_duration
 	done
 done
