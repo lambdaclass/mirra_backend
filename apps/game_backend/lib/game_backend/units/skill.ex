@@ -11,13 +11,14 @@ defmodule GameBackend.Units.Skill do
     embeds_many(:effects, Effect)
     field(:cooldown, :integer)
     field(:energy_regen, :integer)
+    field(:delay, :integer)
     timestamps()
   end
 
   @doc false
   def changeset(skill, attrs \\ %{}) do
     skill
-    |> cast(attrs, [:name, :cooldown, :energy_regen])
+    |> cast(attrs, [:name, :cooldown, :energy_regen, :delay])
     |> cast_embed(:effects)
   end
 end
