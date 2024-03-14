@@ -68,7 +68,12 @@ defmodule Champions.Battle.Simulator do
     Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
       new_state =
         Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, _unit}, current_state ->
-          process_step(initial_step_state.units[unit_id], initial_step_state, current_state)
+          process_step_for_unit(initial_step_state.units[unit_id], current_state)
+        end)
+
+      new_state =
+        Enum.reduce(initial_step_state.skills_being_cast, new_state, fn skill, current_state ->
+          process_step_for_skill(skill, initial_step_state, current_state)
         end)
 
       remove_dead_units(new_state)
@@ -76,25 +81,25 @@ defmodule Champions.Battle.Simulator do
     end)
   end
 
-  defp process_step(unit, initial_step_state, current_state) do
+  defp process_step_for_unit(unit, current_state) do
     new_state =
       cond do
         not can_attack(unit) ->
           current_state
 
         can_cast_ultimate_skill(unit) ->
-          new_state = cast_skill(unit.ultimate_skill, unit.id, initial_step_state, current_state)
-          put_in(new_state, [:units, unit.id, :energy], 0)
+          current_state
+          |> Map.put(:skills_being_cast, [unit.ultimate_skill | current_state.skills_being_cast])
+          |> put_in([:units, unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
-          new_state = cast_skill(unit.basic_skill, unit.id, initial_step_state, current_state)
-
-          new_state
+          current_state
+          |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
           |> put_in(
             [:units, unit.id, :basic_skill, :remaining_cooldown],
             unit.basic_skill.base_cooldown + 1
           )
-          |> put_in([:units, unit.id, :energy], new_state.units[unit.id][:energy] + 75)
+          |> put_in([:units, unit.id, :energy], current_state.units[unit.id][:energy] + 75)
 
         true ->
           current_state
@@ -107,6 +112,22 @@ defmodule Champions.Battle.Simulator do
     )
 
     # TODO: decrease_effects_remaining_steps(unit, current_state)
+  end
+
+  defp process_step_for_skill(%{delay: 0} = skill, initial_step_state, current_state) do
+    # Check if the casting unit has died
+    current_state =
+      if Enum.any?(current_state.units, fn {unit_id, _unit} -> unit_id == skill.caster_id end),
+        do: cast_skill(current_state, skill, initial_step_state),
+        else: current_state
+
+    Map.put(current_state, :skills_being_cast, List.delete(current_state.skills_being_cast, skill))
+  end
+
+  defp process_step_for_skill(skill, _initial_step_state, current_state) do
+    Map.put(current_state, :skills_being_cast, [
+      %{skill | delay: skill.delay - 1} | List.delete(current_state.skills_being_cast, skill)
+    ])
   end
 
   defp remove_dead_units(state),
@@ -141,20 +162,23 @@ defmodule Champions.Battle.Simulator do
   # Is cooldown ready?
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
-  defp cast_skill(skill, caster_id, initial_step_state, current_state) do
+  defp cast_skill(current_state, skill, initial_step_state) do
     new_state =
       Enum.reduce(skill.effects, current_state, fn effect, new_state ->
-        target_ids = choose_targets(new_state.units[caster_id], effect, initial_step_state)
+        target_ids = choose_targets(new_state.units[skill.caster_id], effect, initial_step_state)
 
         targets_after_effect =
-          Enum.map(target_ids, fn id -> maybe_apply_effect(effect, new_state.units[id], new_state.units[caster_id]) end)
+          Enum.map(target_ids, fn id ->
+            maybe_apply_effect(effect, new_state.units[id], new_state.units[skill.caster_id])
+          end)
 
         Enum.reduce(targets_after_effect, new_state, fn target, acc_state ->
           put_in(acc_state, [:units, target.id], target)
         end)
       end)
 
-    new_caster = Map.put(new_state.units[caster_id], :energy, new_state.units[caster_id].energy + skill.energy_regen)
+    new_caster =
+      Map.put(new_state.units[skill.caster_id], :energy, new_state.units[skill.caster_id].energy + skill.energy_regen)
 
     put_in(new_state, [:units, new_caster.id], new_caster)
   end
@@ -237,8 +261,8 @@ defmodule Champions.Battle.Simulator do
          defense: Units.get_defense(unit),
          faction: character.faction,
          # class: character.class,
-         basic_skill: create_skill_map(character.basic_skill),
-         ultimate_skill: create_skill_map(character.ultimate_skill),
+         basic_skill: Map.put(create_skill_map(character.basic_skill), :caster_id, unit.id),
+         ultimate_skill: Map.put(create_skill_map(character.ultimate_skill), :caster_id, unit.id),
          energy: 0,
          team: team,
          modifiers: []
@@ -251,7 +275,7 @@ defmodule Champions.Battle.Simulator do
       base_cooldown: skill.cooldown,
       remaining_cooldown: skill.cooldown,
       energy_regen: skill.energy_regen || 0,
-      delay: skill.delay || 0
+      delay: skill.delay || 3
     }
 
   defp create_effect_map(%Effect{} = effect),
