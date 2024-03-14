@@ -103,11 +103,13 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    ticks_to_move = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
+    time_diff = now - game_state.server_timestamp
+    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
 
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
       |> move_projectiles()
@@ -620,6 +622,22 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game flow. Actions executed in every tick.
   ##########################
+
+  defp reduce_players_cooldowns(game_state, time_diff) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        cooldowns =
+          Map.new(player.aditional_info.cooldowns, fn {skill_key, cooldown} ->
+            {skill_key, cooldown - time_diff}
+          end)
+          |> Map.filter(fn {_skill_key, cooldown} -> cooldown > 0 end)
+
+        player = put_in(player, [:aditional_info, :cooldowns], cooldowns)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
 
   defp move_players(
          %{

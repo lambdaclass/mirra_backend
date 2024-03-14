@@ -4,7 +4,7 @@ defmodule Arena.GameLauncher do
   use GenServer
 
   # Amount of clients needed to start a game
-  @clients_needed 10
+  @clients_needed 1
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 10_000
 
