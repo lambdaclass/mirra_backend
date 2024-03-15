@@ -13,47 +13,55 @@ import Ecto.Query
 champions_of_mirra_id = 2
 units_per_level = 5
 
-{:ok, muflus} = Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Muflus",
-  faction: "Araban",
-  quality: Champions.Units.get_quality(:epic),
-  base_health: 621,
-  base_attack: 63,
-  base_defense: 78,
-  basic_skill: %{
-    name: "Muflus Basic",
-    effects: [%{
-      type: "instant",
-      initial_delay: 0,
-      components: [],
-      modifier: [],
-      executions: [%{"type" => "DealDamage", "attack_ratio" => 80, "energy_recharge" => 50, "delay" => 0}],
-      target_strategy: "random",
-      target_count: 2,
-      target_allies: false,
-      target_attribute: "Health"
-    }],
-    cooldown: 5
-  },
-  ultimate_skill: %{
-    name: "Muflus Ultimate",
-    effects: [
-      %{
-        type: "instant",
-        initial_delay: 0,
-        components: [],
-        modifier: [],
-        executions: [%{"type" => "DealDamage", "attack_ratio" => 205, "energy_recharge" => 0, "delay" => 0}],
-        target_strategy: "random",
-        target_count: 2,
-        target_allies: false,
-        target_attribute: "Health"
-      }
+{:ok, muflus} =
+  Characters.insert_character(%{
+    game_id: champions_of_mirra_id,
+    active: true,
+    name: "Muflus",
+    faction: "Araban",
+    quality: Champions.Units.get_quality(:epic),
+    base_health: 621,
+    base_attack: 63,
+    base_defense: 78,
+    basic_skill: %{
+      name: "Muflus Basic",
+      effects: [
+        %{
+          type: "instant",
+          initial_delay: 0,
+          components: [],
+          modifier: [],
+          executions: [
+            %{"type" => "DealDamage", "attack_ratio" => 0.8, "energy_recharge" => 50, "delay" => 0}
+          ],
+          target_strategy: "random",
+          target_count: 2,
+          target_allies: false,
+          target_attribute: "Health"
+        }
       ],
-  }
-})
+      cooldown: 5,
+      energy_regen: 80
+    },
+    ultimate_skill: %{
+      name: "Muflus Ultimate",
+      effects: [
+        %{
+          type: "instant",
+          initial_delay: 0,
+          components: [],
+          modifier: [],
+          executions: [
+            %{"type" => "DealDamage", "attack_ratio" => 2.05, "energy_recharge" => 0, "delay" => 0}
+          ],
+          target_strategy: "random",
+          target_count: 2,
+          target_allies: false,
+          target_attribute: "Health"
+        }
+      ]
+    }
+  })
 
 Characters.insert_character(%{
   game_id: champions_of_mirra_id,
@@ -79,11 +87,12 @@ Characters.insert_character(%{
   quality: Champions.Units.get_quality(:epic)
 })
 
-{:ok, epic_sword} = Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Epic Sword of Epicness",
-  type: "weapon"
-})
+{:ok, epic_sword} =
+  Items.insert_item_template(%{
+    game_id: champions_of_mirra_id,
+    name: "Epic Sword of Epicness",
+    type: "weapon"
+  })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
@@ -103,9 +112,14 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-{:ok, gold_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, _gems_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-{:ok, _scrolls_currency} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+{:ok, gold_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
+
+{:ok, _gems_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+
+{:ok, _scrolls_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
 ######################
 # Campaigns creation #
@@ -126,7 +140,7 @@ rules = [
 
 super_campaign = %{
   game_id: champions_of_mirra_id,
-  name: "Main Campaign",
+  name: "Main Campaign"
 }
 
 {_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
@@ -134,11 +148,15 @@ super_campaign = %{
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
   Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
-    {_, campaign} = Campaigns.insert_campaign(%{
-      game_id: champions_of_mirra_id,
-      super_campaign_id: super_campaign.id,
-      campaign_number: campaign_index
-    }, returning: true)
+    {_, campaign} =
+      Campaigns.insert_campaign(
+        %{
+          game_id: champions_of_mirra_id,
+          super_campaign_id: super_campaign.id,
+          campaign_number: campaign_index
+        },
+        returning: true
+      )
 
     Enum.map(1..campaign_rules.length, fn level_index ->
       %{
@@ -199,25 +217,43 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 currency_rewards =
   Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-      %{
-        level_id: level.id,
-        amount: 10 * level_index,
-        currency_id: gold_currency.id,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
-
+    %{
+      level_id: level.id,
+      amount: 10 * level_index,
+      currency_id: gold_currency.id,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
   end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
-level_2 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 2) |> Repo.preload(:item_rewards)
-level_3 = Repo.one!(from l in Level, join: c in Campaign, on: l.campaign_id == c.id, where: c.campaign_number == 1 and l.level_number == 3) |> Repo.preload(:unit_rewards)
+level_2 =
+  Repo.one!(
+    from(l in Level,
+      join: c in Campaign,
+      on: l.campaign_id == c.id,
+      where: c.campaign_number == 1 and l.level_number == 2
+    )
+  )
+  |> Repo.preload(:item_rewards)
+
+level_3 =
+  Repo.one!(
+    from(l in Level,
+      join: c in Campaign,
+      on: l.campaign_id == c.id,
+      where: c.campaign_number == 1 and l.level_number == 3
+    )
+  )
+  |> Repo.preload(:unit_rewards)
 
 level_2
 |> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
 |> Repo.update!()
 
 level_3
-|> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]})
+|> Level.changeset(%{
+  unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]
+})
 |> Repo.update!()
