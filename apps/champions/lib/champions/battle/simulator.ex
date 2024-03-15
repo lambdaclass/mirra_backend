@@ -315,7 +315,7 @@ defmodule Champions.Battle.Simulator do
          id: unit.id,
          character_name: character.name,
          team: team,
-         # class: character.class,
+         class: character.class,
          faction: character.faction,
          ultimate_skill: create_skill_map(character.ultimate_skill, unit.id),
          basic_skill: create_skill_map(character.basic_skill, unit.id),
