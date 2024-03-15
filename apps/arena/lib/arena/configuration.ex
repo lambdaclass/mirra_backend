@@ -37,7 +37,16 @@ defmodule Arena.Configuration do
   end
 
   defp parse_skill_config(skill_config) do
-    raise "Invalid Skill config for `#{skill_config[:name]}`: cooldown_mechanism or corresponding attribute is invalid"
+    case skill_config.cooldown_mechanism do
+      "stamina" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` stamina_cost should be a number greater than or equal to zero"
+
+      "time" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      _ ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
+    end
   end
 
   defp parse_mechanics_config(mechanics_config) do
