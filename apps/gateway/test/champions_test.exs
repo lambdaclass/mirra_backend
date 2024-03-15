@@ -393,6 +393,13 @@ defmodule Gateway.Test.Champions do
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
 
+      # Set user gold to the minimum amount required to level up the item
+      Currencies.add_currency(
+        user.id,
+        Currencies.get_currency_by_name!("Gold").id,
+        1 - Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      )
+
       gold_amount_before_level_up = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
 
       # LevelUpItem
@@ -406,8 +413,8 @@ defmodule Gateway.Test.Champions do
       assert leveled_up_item.level == item.level + 1
       assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") < gold_amount_before_level_up
 
-      # Can not level up item if currency is not enough
-      level_up_item_until_unaffordable(socket_tester, user.id, item.id)
+      # LevelUpItem once again to check that we can't afford it
+      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
