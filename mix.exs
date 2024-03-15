@@ -4,7 +4,15 @@ defmodule MirraBackend.MixProject do
   def project do
     [
       apps_path: "apps",
-      apps: [:arena, :champions, :game_client, :gateway, :game_backend, :configurator],
+      apps: [
+        :arena,
+        :champions,
+        :game_client,
+        :gateway,
+        :game_backend,
+        :arena_load_test,
+        :configurator
+      ],
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -41,6 +49,7 @@ defmodule MirraBackend.MixProject do
           game_backend: :permanent,
           game_client: :permanent,
           gateway: :permanent,
+          arena_load_test: :permanent,
           configurator: :permanent
         ]
       ]
