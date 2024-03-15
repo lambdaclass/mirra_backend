@@ -395,6 +395,7 @@ defmodule Gateway.Test.Champions do
 
       # Get the level of the campaign progression
       level_id = campaign_progression.level_id
+      level_number = campaign_progression.level.level_number
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
@@ -418,6 +419,7 @@ defmodule Gateway.Test.Champions do
 
       assert user.id == advanced_user.id
       assert advanced_campaign_progression.level_id != level_id
+      assert advanced_campaign_progression.level.level_number > level_number
     end
 
     test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
