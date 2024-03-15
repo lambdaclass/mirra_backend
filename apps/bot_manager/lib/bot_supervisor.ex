@@ -1,4 +1,7 @@
 defmodule BotManager.BotSupervisor do
+  @moduledoc """
+  This will be the endrypoint to spawn bots and assign them to games
+  """
   use DynamicSupervisor
 
   def start_link(init_args) do
