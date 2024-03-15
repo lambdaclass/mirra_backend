@@ -94,7 +94,7 @@ defmodule Champions.Battle.Simulator do
           process_step_for_effect(effect, initial_step_state, current_state)
         end)
 
-      Logger.info(format_step_state_for_print(new_state), label: "step #{step}")
+      Logger.info(format_step_state_for_log(new_state), label: "step #{step}")
 
       remove_dead_units(new_state)
       |> check_winner(step)
@@ -352,7 +352,7 @@ defmodule Champions.Battle.Simulator do
       executions: effect.executions
     }
 
-  defp format_step_state_for_print(%{
+  defp format_step_state_for_log(%{
          units: units,
          skills_being_cast: skl,
          pending_effects: eff,
