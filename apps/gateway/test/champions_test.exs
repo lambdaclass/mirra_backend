@@ -356,7 +356,7 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("battle_user")
 
       # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progress
+      [campaign_progression | _] = user.campaign_progresses
 
       # Get the level of the campaign progression
       level_id = campaign_progression.level_id
@@ -391,7 +391,7 @@ defmodule Gateway.Test.Champions do
       end)
 
       # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progress
+      [campaign_progression | _] = user.campaign_progresses
 
       # Get the level of the campaign progression
       level_id = campaign_progression.level_id
@@ -414,9 +414,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, advanced_user} = Users.get_user(user.id)
 
-      IO.inspect(advanced_user, label: "advanced_user")
-
-      [advanced_campaign_progression | _] = advanced_user.campaign_progress
+      [advanced_campaign_progression | _] = advanced_user.campaign_progresses
 
       assert user.id == advanced_user.id
       assert advanced_campaign_progression.level_id != level_id
@@ -427,7 +425,7 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("invalid_battle_user")
 
       # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progress
+      [campaign_progression | _] = user.campaign_progresses
 
       # Get the level of the campaign progression
       next_level_id = campaign_progression.level_id
