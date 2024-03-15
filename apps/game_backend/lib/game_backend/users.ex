@@ -14,6 +14,7 @@ defmodule GameBackend.Users do
   alias Ecto.Multi
   alias GameBackend.Units.Unit
   alias GameBackend.Items.Item
+  alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Campaigns
@@ -101,6 +102,7 @@ defmodule GameBackend.Users do
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
       |> apply_currency_rewards(user_id, level.currency_rewards)
+      |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
         build_item_rewards_params(user_id, level.item_rewards)
       end)
@@ -119,11 +121,25 @@ defmodule GameBackend.Users do
     end
   end
 
+  def reset_afk_rewards_claim(user_id) do
+    {:ok, user} = get_user(user_id)
+
+    user
+    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
+    |> Repo.update()
+  end
+
   defp preload(user),
     do:
       Repo.preload(
         user,
-        [:campaign_progress, items: :template, units: [:character, :items], currencies: :currency]
+        [
+          :campaign_progresses,
+          :afk_reward_rates,
+          items: :template,
+          units: [:character, :items],
+          currencies: :currency
+        ]
       )
 
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
@@ -172,6 +188,14 @@ defmodule GameBackend.Users do
     Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
       Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
         Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+    end)
+  end
+
+  defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
+    Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
+      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
+        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
       end)
     end)
   end

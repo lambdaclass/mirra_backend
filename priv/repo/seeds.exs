@@ -14,59 +14,11 @@ import Ecto.Query
 champions_of_mirra_id = 2
 units_per_level = 5
 
-{:ok, _rank1} =
-  Characters.insert_character(%{
-    game_id: champions_of_mirra_id,
-    active: true,
-    name: "Super Weak Mage",
-    class: "Mage",
-    faction: "Kaline",
-    rarity: Champions.Units.get_quality(:common),
-    ranks_dropped_in: [Champions.Units.get_rank(:star1)]
-  })
+Champions.Config.import_character_config()
 
-{:ok, _rank2} =
-  Characters.insert_character(%{
-    game_id: champions_of_mirra_id,
-    active: true,
-    name: "Weak Hunter",
-    class: "Hunter",
-    faction: "Araban",
-    rarity: Champions.Units.get_quality(:common),
-    ranks_dropped_in: [Champions.Units.get_rank(:star2)]
-  })
+muflus = Characters.get_character_by_name("Muflus")
 
-{:ok, _rank3} =
-  Characters.insert_character(%{
-    game_id: champions_of_mirra_id,
-    active: true,
-    name: "Mediocre Assasin",
-    class: "Assasin",
-    faction: "Merliot",
-    rarity: Champions.Units.get_quality(:common),
-    ranks_dropped_in: [Champions.Units.get_rank(:star3)]
-  })
-
-{:ok, _rank4} =
-  Characters.insert_character(%{
-    game_id: champions_of_mirra_id,
-    active: true,
-    name: "Ok Cleric",
-    class: "Cleric",
-    faction: "Otobi",
-    rarity: Champions.Units.get_quality(:rare),
-    ranks_dropped_in: [Champions.Units.get_rank(:star4), Champions.Units.get_rank(:star5)]
-  })
-
-{:ok, muflus} = Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Muflus",
-  faction: "Araban",
-  quality: Champions.Units.get_quality(:epic),
-  base_health: 621,
-  base_attack: 63,
-  base_armor: 78,
+{:ok, _muflus} = Characters.update_character(muflus, %{
   basic_skill: %{
     effects: [%{
       type: "instant",
@@ -97,30 +49,6 @@ units_per_level = 5
   }
 })
 
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Uma",
-  faction: "Kaline",
-  quality: Champions.Units.get_quality(:epic)
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "Dagna",
-  faction: "Merliot",
-  quality: Champions.Units.get_quality(:epic)
-})
-
-Characters.insert_character(%{
-  game_id: champions_of_mirra_id,
-  active: true,
-  name: "H4ck",
-  faction: "Otobi",
-  quality: Champions.Units.get_quality(:epic)
-})
-
 {:ok, epic_sword} = Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
@@ -146,7 +74,7 @@ Items.insert_item_template(%{
 })
 
 {:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, _gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 {:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
 
@@ -270,6 +198,7 @@ currency_rewards =
         level_id: level.id,
         amount: 10 * level_index,
         currency_id: gold.id,
+        afk_reward: false,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
@@ -288,3 +217,26 @@ level_2
 level_3
 |> Level.changeset(%{unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]})
 |> Repo.update!()
+
+afk_reward_increments =
+  Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+      [%{
+        level_id: level.id,
+        amount: 10 * level_index ,
+        currency_id: gold.id,
+        afk_reward: true,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
+      %{
+        level_id: level.id,
+        amount: level_index,
+        currency_id: gems.id,
+        afk_reward: true,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+    ]
+  end)
+
+Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)
