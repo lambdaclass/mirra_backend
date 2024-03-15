@@ -353,6 +353,20 @@ defmodule Gateway.Test.Champions do
       assert equipped_item.user_id == user.id
       assert equipped_item.unit_id == unit.id
 
+      # EquipItem again, to another unit
+      another_unit = user.units |> Enum.at(1)
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, another_unit.id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:item, %Item{} = equipped_item}
+      } = get_last_message()
+
+      # The item is now equipped to the second unit
+      assert equipped_item.user_id == user.id
+      assert equipped_item.unit_id != unit.id
+      assert equipped_item.unit_id == another_unit.id
+
       # UnequipItem
       :ok = SocketTester.unequip_item(socket_tester, user.id, item.id)
       fetch_last_message(socket_tester)
