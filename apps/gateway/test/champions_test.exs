@@ -54,7 +54,7 @@ defmodule Gateway.Test.Champions do
       # Create our user
       :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:user, %User{} = user}} = get_last_message()
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = user}}
 
       assert user.username == username
 
@@ -83,7 +83,7 @@ defmodule Gateway.Test.Champions do
       # Unselect the unit
       :ok = SocketTester.unselect_unit(socket_tester, user.id, unit_to_unselect.id)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:unit, %Unit{} = unselected_unit}} = get_last_message()
+      assert_receive %WebSocketResponse{response_type: {:unit, %Unit{} = unselected_unit}}
 
       assert not unselected_unit.selected
       # Protobuf doesn't support nil values, returns zero instead
@@ -92,7 +92,7 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.select_unit(socket_tester, user.id, unselected_unit.id, slot)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:unit, %Unit{} = selected_unit}} = get_last_message()
+      assert_receive %WebSocketResponse{response_type: {:unit, %Unit{} = selected_unit}}
 
       assert selected_unit.selected
       assert selected_unit.slot == slot
@@ -122,9 +122,9 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
-      } = get_last_message()
+      }
 
       assert unit.level == level + 1
       assert user_currency.currency.name == "Gold"
@@ -150,9 +150,9 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
-      } = get_last_message()
+      }
 
       user_currencies =
         Enum.into(user_currencies, %{}, fn %UserCurrency{
@@ -171,9 +171,9 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit}}
-      } = get_last_message()
+      }
 
       assert unit.level == level + 2
 
@@ -216,17 +216,17 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:error, %Error{reason: "cant_tier_up"}}
-      } = get_last_message()
+      }
 
       # FuseUnit
       :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit, %Unit{} = unit}
-      } = get_last_message()
+      }
 
       assert unit.rank == rank + 1
       assert user_units_count == user.id |> GameBackend.Units.get_units() |> Enum.count()
@@ -245,14 +245,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:boxes, %Boxes{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:boxes, %Boxes{boxes: boxes}}
-      } = get_last_message()
+      }
 
       assert box.id in Enum.map(boxes, & &1.id)
 
@@ -262,14 +256,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:box, %Box{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:box, %Box{id: box_id, name: box_name}}
-      } = get_last_message()
+      }
 
       assert box_id == box.id
       assert box_name == box.name
@@ -280,14 +268,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:user_and_unit, %UserAndUnit{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:user_and_unit, %UserAndUnit{user: new_user, unit: new_unit}}
-      } = get_last_message()
+      }
 
       assert new_unit.rank in Enum.map(box.rank_weights, & &1.rank)
 
@@ -320,15 +302,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:campaign, %Campaign{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:campaign, %Campaign{} = campaign_to_verify}
-      } =
-        get_last_message()
+      }
 
       assert campaign_to_verify.id == sample_campaign.id
 
@@ -339,14 +314,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:level, %Level{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:level, %Level{} = level_to_verify}
-      } = get_last_message()
+      }
 
       assert level_to_verify.id == level.id
     end
@@ -366,14 +335,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:battle_result, _}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:battle_result, _ = battle_result}
-      } = get_last_message()
+      }
 
       # Battle result should be either win or loss
       assert battle_result.result == "win" or battle_result.result == "loss"
@@ -402,14 +365,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:battle_result, _}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:battle_result, _ = battle_result}
-      } = get_last_message()
+      }
 
       assert battle_result.result == "win"
 
@@ -436,9 +393,9 @@ defmodule Gateway.Test.Champions do
       SocketTester.get_campaigns(socket_tester, user.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:campaigns, %Campaigns{} = campaigns}
-      } = get_last_message()
+      }
 
       levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
       invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
@@ -451,16 +408,6 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{
         response_type: {:error, %Error{reason: "level_invalid"}}
       }
-    end
-  end
-
-  defp get_last_message() do
-    receive do
-      message ->
-        message
-    after
-      5000 ->
-        raise "No message"
     end
   end
 
