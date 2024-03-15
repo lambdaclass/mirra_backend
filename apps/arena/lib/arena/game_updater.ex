@@ -624,7 +624,10 @@ defmodule Arena.GameUpdater do
 
     Enum.reduce((game_state.last_id + 1)..(game_state.last_id + missing_players), game_state, fn last_id, game_state ->
       character_name =
-        Enum.random(game_config.characters)
+        game_config.characters
+        # TODO remove this filter when valtimer is implemented
+        |> Enum.reject(fn chara -> Map.get(chara, :name) in ["valtimer"] end)
+        |> Enum.random()
         |> Map.get(:name)
 
       bot_specs = %{
