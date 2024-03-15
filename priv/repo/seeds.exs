@@ -18,37 +18,45 @@ Champions.Config.import_character_config()
 
 muflus = Characters.get_character_by_name("Muflus")
 
-{:ok, _muflus} = Characters.update_character(muflus, %{
-  basic_skill: %{
-    effects: [
-      %{
-        type: "instant",
-        initial_delay: 0,
-        components: [],
-        modifier: [],
-        executions: [
-          %{"type" => "DealDamage", "attack_ratio" => 0.8, "energy_recharge" => 50, "delay" => 0}
-        ],
-        target_strategy: "random",
-        target_count: 2,
-        target_allies: false,
-        target_attribute: "Health"
-      }],
-    cooldown: 5
-  },
-  ultimate_skill: %{
-    effects: [
-      %{
-        type: "instant",
-        stat_affected: "health",
-        amount: -205,
-        stat_based_on: "attack",
-        amount_format: "additive",
-        targeting_strategy: "random", # TODO: Change back to nearest
-        amount_of_targets: 2,
-        targets_allies: false
-      }
-      # TODO: Add stun effect
+{:ok, _muflus} =
+  Characters.update_character(muflus, %{
+    basic_skill: %{
+      effects: [
+        %{
+          type: "instant",
+          initial_delay: 0,
+          components: [],
+          modifier: [],
+          executions: [
+            %{
+              "type" => "DealDamage",
+              "attack_ratio" => 0.8,
+              "energy_recharge" => 50,
+              "delay" => 0
+            }
+          ],
+          target_strategy: "random",
+          target_count: 2,
+          target_allies: false,
+          target_attribute: "Health"
+        }
+      ],
+      cooldown: 5
+    },
+    ultimate_skill: %{
+      effects: [
+        %{
+          type: "instant",
+          stat_affected: "health",
+          amount: -205,
+          stat_based_on: "attack",
+          amount_format: "additive",
+          # TODO: Change back to nearest
+          targeting_strategy: "random",
+          amount_of_targets: 2,
+          targets_allies: false
+        }
+        # TODO: Add stun effect
       ],
       cooldown: 5,
       energy_regen: 80
@@ -62,7 +70,12 @@ muflus = Characters.get_character_by_name("Muflus")
           components: [],
           modifier: [],
           executions: [
-            %{"type" => "DealDamage", "attack_ratio" => 2.05, "energy_recharge" => 0, "delay" => 0}
+            %{
+              "type" => "DealDamage",
+              "attack_ratio" => 2.05,
+              "energy_recharge" => 0,
+              "delay" => 0
+            }
           ],
           target_strategy: "random",
           target_count: 2,
@@ -73,11 +86,12 @@ muflus = Characters.get_character_by_name("Muflus")
     }
   })
 
-{:ok, epic_sword} = Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Epic Sword of Epicness",
-  type: "weapon"
-})
+{:ok, epic_sword} =
+  Items.insert_item_template(%{
+    game_id: champions_of_mirra_id,
+    name: "Epic Sword of Epicness",
+    type: "weapon"
+  })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
@@ -99,8 +113,9 @@ Items.insert_item_template(%{
 
 {:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 {:ok, gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
-{:ok, scrolls} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
+{:ok, scrolls} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
 {:ok, _} =
   Gacha.insert_box(%{
@@ -222,15 +237,14 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 currency_rewards =
   Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-      %{
-        level_id: level.id,
-        amount: 10 * level_index,
-        currency_id: gold.id,
-        afk_reward: false,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
-
+    %{
+      level_id: level.id,
+      amount: 10 * level_index,
+      currency_id: gold.id,
+      afk_reward: false,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
   end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
@@ -267,9 +281,10 @@ level_3
 
 afk_reward_increments =
   Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-      [%{
+    [
+      %{
         level_id: level.id,
-        amount: 10 * level_index ,
+        amount: 10 * level_index,
         currency_id: gold.id,
         afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
