@@ -20,6 +20,7 @@ defmodule BotManager.GameSocketHandler do
 
   def handle_connect(_conn, state) do
     send(self(), :move)
+    send(self(), :attack)
     {:ok, state}
   end
 
@@ -31,7 +32,7 @@ defmodule BotManager.GameSocketHandler do
     Process.send_after(
       self(),
       :move,
-      300
+      @message_delay_ms
     )
 
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
@@ -52,6 +53,33 @@ defmodule BotManager.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
+    {:ok, state}
+  end
+
+  def handle_info(:attack, state) do
+    Logger.info("Sending GameAction frame with ATTACK payload")
+    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    {x, y} = create_random_movement()
+
+    game_action =
+      BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
+        action_type:
+          {:attack,
+           %BotManager.Protobuf.Attack{
+             skill: "1",
+             parameters: %BotManager.Protobuf.AttackParameters{
+               target: %BotManager.Protobuf.Direction{
+                 x: x,
+                 y: y
+               }
+             }
+           }},
+        timestamp: timestamp
+      })
+
+    WebSockex.cast(self(), {:send, {:binary, game_action}})
+
+    Process.send_after(self(), :attack, 300, [])
     {:ok, state}
   end
 
