@@ -330,7 +330,7 @@ defmodule Gateway.Test.Champions do
       # Register user
       {:ok, user} = Users.register("EquipItemUser")
 
-      unit = user.units |> Enum.at(0)
+      [unit | _] = user.units
 
       {:ok, epic_sword} =
         Items.insert_item_template(%{
