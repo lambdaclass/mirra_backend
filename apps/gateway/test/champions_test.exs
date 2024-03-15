@@ -320,6 +320,8 @@ defmodule Gateway.Test.Champions do
       assert fetched_item.id == item.id
       assert fetched_item.user_id == user.id
       assert fetched_item.unit_id == ""
+      assert fetched_item.level == 1
+      assert fetched_item.template.id == epic_bow.id
     end
 
     test "equip and unequip item", %{socket_tester: socket_tester} do
