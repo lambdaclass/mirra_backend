@@ -73,76 +73,50 @@ defmodule Champions.Battle.Simulator do
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
     Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
       new_state =
-        Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, _unit}, current_state ->
-          IO.inspect("Process step #{step} for unit #{String.slice(unit_id, 0..2)}")
+        Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
+          Logger.info("Process step #{step} for unit #{unit.character_name}-#{String.slice(unit_id, 0..2)}")
           process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state)
         end)
 
       new_state =
         Enum.reduce(new_state.skills_being_cast, new_state, fn skill, current_state ->
-          IO.inspect("Process step #{step} for skill cast by #{String.slice(skill.caster_id, 0..2)}")
+          Logger.info("Process step #{step} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}")
+
           process_step_for_skill(skill, current_state, initial_step_state)
         end)
 
       new_state =
         Enum.reduce(new_state.pending_effects, new_state, fn effect, current_state ->
-          IO.inspect("Process step #{step} for effect cast by #{String.slice(effect.caster.id, 0..2)}")
+          Logger.info(
+            "Process step #{step} for effect cast by #{effect.caster.character_name}-#{String.slice(effect.caster.id, 0..2)}"
+          )
+
           process_step_for_effect(effect, initial_step_state, current_state)
         end)
 
-      IO.inspect(format_step_state_for_print(new_state), label: "step #{step}")
+      Logger.info(format_step_state_for_print(new_state), label: "step #{step}")
 
       remove_dead_units(new_state)
       |> check_winner(step)
     end)
   end
 
-  defp format_step_state_for_print(%{
-         units: units,
-         skills_being_cast: skl,
-         pending_effects: eff,
-         pending_executions: exec
-       }),
-       do: %{
-         units:
-           Enum.map(units, fn {_, unit} ->
-             %{
-               unit: String.slice(unit.id, 0..2),
-               health: unit.health,
-               energy: unit.energy,
-               cooldown: unit.basic_skill.remaining_cooldown
-             }
-           end),
-         skills_being_cast:
-           Enum.map(
-             skl,
-             &%{
-               name: &1.name,
-               animation_duration: &1.animation_duration,
-               animation_trigger: &1.animation_trigger,
-               caster_id: &1.caster_id
-             }
-           ),
-         pending_effects: eff,
-         pending_executions: exec
-       }
-
   defp process_step_for_unit(unit, current_state, initial_step_state) do
     new_state =
       cond do
         not can_attack(unit, initial_step_state) ->
-          IO.inspect("Unit #{String.slice(unit.id, 0..2)} cannot attack")
+          Logger.info("Unit #{unit.character_name}-#{String.slice(unit.id, 0..2)} cannot attack")
           current_state
 
         can_cast_ultimate_skill(unit) ->
-          IO.inspect("Unit #{String.slice(unit.id, 0..2)} casting Ultimate skill")
+          Logger.info("Unit #{unit.character_name}-#{String.slice(unit.id, 0..2)} casting Ultimate skill")
 
           current_state
           |> Map.put(:skills_being_cast, [unit.ultimate_skill | current_state.skills_being_cast])
           |> put_in([:units, unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
-          IO.inspect("Unit #{String.slice(unit.id, 0..2)} casting basic skill")
+          Logger.info("Unit #{unit.character_name}-#{String.slice(unit.id, 0..2)} casting basic skill")
 
           current_state
           |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
@@ -166,7 +140,6 @@ defmodule Champions.Battle.Simulator do
   defp process_step_for_skill(skill, current_state, initial_step_state) do
     # Check if the casting unit has died
     if Enum.any?(current_state.units, fn {unit_id, _unit} -> unit_id == skill.caster_id end) do
-      IO.inspect("Casting unit has not died")
       {new_skill, new_state} = process_animation_trigger(skill, current_state, initial_step_state)
 
       new_skill = %{new_skill | animation_duration: skill.animation_duration - 1}
@@ -177,13 +150,14 @@ defmodule Champions.Battle.Simulator do
         else: Map.put(new_state, :skills_being_cast, [new_skill | List.delete(new_state.skills_being_cast, skill)])
     else
       # If the unit died, just delete the skill being cast
+      Logger.info("Skill caster #{String.slice(skill.caster_id, 0..2)} died. Deleting skill from list.")
       Map.put(current_state, :skills_being_cast, List.delete(current_state.skills_being_cast, skill))
     end
   end
 
   # If the animation is ready, trigger the skill effects
   defp process_animation_trigger(%{animation_trigger: 0} = skill, current_state, initial_step_state) do
-    IO.inspect("Animation trigger ready. Adding effects.")
+    Logger.info("Animation trigger for skill #{skill.name} ready. Creating effects.")
     current_state = trigger_skill_effects(skill, current_state, initial_step_state)
     {%{skill | animation_trigger: -1}, current_state}
   end
@@ -325,7 +299,7 @@ defmodule Champions.Battle.Simulator do
        ) do
     damage = floor(attack_ratio * caster.attack)
 
-    IO.inspect(
+    Logger.info(
       "Dealing #{damage} damage to #{String.slice(target.id, 0..2)} (#{target.health} -> #{target.health - damage})"
     )
 
@@ -339,16 +313,17 @@ defmodule Champions.Battle.Simulator do
       {unit.id,
        %{
          id: unit.id,
+         character_name: character.name,
+         team: team,
+         # class: character.class,
+         faction: character.faction,
+         ultimate_skill: create_skill_map(character.ultimate_skill, unit.id),
+         basic_skill: create_skill_map(character.basic_skill, unit.id),
          max_health: Units.get_max_health(unit),
          health: Units.get_max_health(unit),
          attack: Units.get_attack(unit),
          defense: Units.get_defense(unit),
-         faction: character.faction,
-         # class: character.class,
-         basic_skill: create_skill_map(character.basic_skill, unit.id),
-         ultimate_skill: create_skill_map(character.ultimate_skill, unit.id),
          energy: 0,
-         team: team,
          modifiers: []
        }}
 
@@ -376,4 +351,37 @@ defmodule Champions.Battle.Simulator do
       modifiers: effect.modifiers,
       executions: effect.executions
     }
+
+  defp format_step_state_for_print(%{
+         units: units,
+         skills_being_cast: skl,
+         pending_effects: eff,
+         pending_executions: _exec
+       }) do
+    units = Enum.map(units, fn {_unit_id, unit} -> unit end)
+
+    %{
+      units:
+        Enum.group_by(units, &Map.get(&1, :team), fn unit ->
+          %{
+            unit: String.slice(unit.id, 0..2),
+            health: unit.health,
+            energy: unit.energy,
+            cooldown: unit.basic_skill.remaining_cooldown
+          }
+        end),
+      skills_being_cast:
+        Enum.map(
+          skl,
+          &%{
+            name: &1.name,
+            animation_duration: &1.animation_duration,
+            animation_trigger: &1.animation_trigger,
+            caster_id: &1.caster_id
+          }
+        ),
+      pending_effects: eff
+      #  pending_executions: exec
+    }
+  end
 end
