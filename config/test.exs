@@ -87,6 +87,3 @@ config :configurator, ConfiguratorWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "VD24DNfwxloA29uofA2lhyx0yMQ48/uwJJsoUHksnksuEk5AcV4C+jNmxkQeP7f8",
   server: false
-
-# In test we don't send emails.
-config :configurator, Configurator.Mailer, adapter: Swoosh.Adapters.Test

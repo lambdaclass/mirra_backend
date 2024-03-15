@@ -43,7 +43,6 @@ defmodule ConfiguratorWeb do
         layouts: [html: ConfiguratorWeb.Layouts]
 
       import Plug.Conn
-      import ConfiguratorWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -85,7 +84,6 @@ defmodule ConfiguratorWeb do
       import Phoenix.HTML
       # Core UI components and translation
       import ConfiguratorWeb.CoreComponents
-      import ConfiguratorWeb.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS

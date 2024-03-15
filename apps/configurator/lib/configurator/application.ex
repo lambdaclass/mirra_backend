@@ -10,7 +10,6 @@ defmodule Configurator.Application do
     children = [
       ConfiguratorWeb.Telemetry,
       Configurator.Repo,
-      {DNSCluster, query: Application.get_env(:configurator, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Configurator.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Configurator.Finch},

@@ -7,11 +7,7 @@
   </:actions>
 </.header>
 
-<.table
-  id="configurations"
-  rows={@configurations}
-  row_click={&JS.navigate(~p"/configurations/#{&1}")}
->
+<.table id="configurations" rows={@configurations} row_click={&JS.navigate(~p"/configurations/#{&1}")}>
   <:col :let={configuration} label="ID"><%= configuration.id %></:col>
   <:col :let={configuration} label="Is default"><%= configuration.is_default %></:col>
   <:action :let={configuration}>
@@ -22,21 +18,13 @@
   </:action>
   <:action :let={configuration}>
     <%= unless configuration.is_default do %>
-      <.link
-        href={~p"/configurations/set_default/#{configuration}"}
-        method="put"
-        data-confirm="Are you sure?"
-      >
+      <.link href={~p"/configurations/set_default/#{configuration}"} method="put" data-confirm="Are you sure?">
         Set as default
       </.link>
     <% end %>
   </:action>
   <:action :let={configuration}>
-    <.link
-      href={~p"/configurations/#{configuration}"}
-      method="delete"
-      data-confirm="Are you sure?"
-    >
+    <.link href={~p"/configurations/#{configuration}"} method="delete" data-confirm="Are you sure?">
       Delete
     </.link>
   </:action>

@@ -189,15 +189,6 @@ config :configurator, ConfiguratorWeb.Endpoint,
   pubsub_server: Configurator.PubSub,
   live_view: [signing_salt: "6A8twvHJ"]
 
-# Configures the mailer
-#
-# By default it uses the "Local" adapter which stores the emails
-# locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
-config :configurator, Configurator.Mailer, adapter: Swoosh.Adapters.Local
-
 ############################
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
