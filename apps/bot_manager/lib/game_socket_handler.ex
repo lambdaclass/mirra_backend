@@ -87,6 +87,11 @@ defmodule BotManager.GameSocketHandler do
     {:reply, frame, state}
   end
 
+  def terminate(_, _, _) do
+    Logger.info("Websocket terminated")
+    :ok
+  end
+
   defp ws_url(player_id, game_id) do
     # FIX ME Remove hardcoded host
     host = "localhost:4000"
