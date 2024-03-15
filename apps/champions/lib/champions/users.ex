@@ -187,26 +187,20 @@ defmodule Champions.Users do
   def claim_afk_rewards(user_id) do
     afk_rewards = get_afk_rewards(user_id)
 
-    result =
-      Multi.new()
-      |> Multi.run(:add_currencies, fn _, _ ->
-        results =
-          Enum.map(afk_rewards, fn afk_reward ->
-            Currencies.add_currency(user_id, afk_reward.currency.id, trunc(afk_reward.amount))
-          end)
+    Multi.new()
+    |> Multi.run(:add_currencies, fn _, _ ->
+      results =
+        Enum.map(afk_rewards, fn afk_reward ->
+          Currencies.add_currency(user_id, afk_reward.currency.id, trunc(afk_reward.amount))
+        end)
 
-        if Enum.all?(results, fn {result, _} -> result == :ok end) do
-          {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
-        else
-          {:error, "failed"}
-        end
-      end)
-      |> Multi.run(:reset_afk_claim, fn _, _ -> Users.reset_afk_rewards_claim(user_id) end)
-      |> Transaction.run()
-
-    case result do
-      {:ok, %{reset_afk_claim: user}} -> {:ok, user}
-      {:error, _, _, _} -> {:error, :transaction_error}
-    end
+      if Enum.all?(results, fn {result, _} -> result == :ok end) do
+        {:ok, Enum.map(results, fn {_ok, currency} -> currency end)}
+      else
+        {:error, "failed"}
+      end
+    end)
+    |> Multi.run(:reset_afk_claim, fn _, _ -> Users.reset_afk_rewards_claim(user_id) end)
+    |> Transaction.run()
   end
 end
