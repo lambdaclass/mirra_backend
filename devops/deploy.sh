@@ -9,7 +9,7 @@ fi
 cd /tmp
 git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME}
 
-chmod +x devops/entrypoint.sh
+chmod +x entrypoint.sh
 
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
