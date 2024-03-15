@@ -7,7 +7,8 @@ defmodule GameBackend.Repo.Migrations.BattleStats do
       add :effects, :map
       add :cooldown, :integer
       add :energy_regen, :integer
-      add :delay, :integer
+      add :animation_duration, :integer
+      add :animation_trigger, :integer
       timestamps()
     end
 
