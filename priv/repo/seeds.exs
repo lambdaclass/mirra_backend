@@ -119,9 +119,6 @@ Items.insert_item_template(%{
 {:ok, scrolls} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
 
-{:ok, scrolls} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
-
 {:ok, _} =
   Gacha.insert_box(%{
     name: "Basic Summon",
