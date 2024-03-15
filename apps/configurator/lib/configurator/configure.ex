@@ -52,8 +52,14 @@ defmodule Configurator.Configure do
   """
 
   def get_default_configuration!() do
-    from(c in Configuration, where: c.is_default)
-    |> Repo.one!()
+    config =
+      from(c in Configuration, where: c.is_default)
+      |> Repo.one()
+
+    case config do
+      nil -> seed_default_configuration!()
+      config -> config
+    end
   end
 
   @doc """
@@ -104,5 +110,13 @@ defmodule Configurator.Configure do
       Configuration.changeset(new_default_config, %{is_default: true})
     )
     |> Repo.transaction()
+  end
+
+  defp seed_default_configuration!() do
+    data_json = File.read!(Application.app_dir(:configurator, "priv/config.json"))
+
+    %Configurator.Configure.Configuration{}
+    |> Configuration.changeset(%{data: data_json, is_default: true})
+    |> Repo.insert!()
   end
 end
