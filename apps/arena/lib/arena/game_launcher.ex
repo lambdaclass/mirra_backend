@@ -6,7 +6,7 @@ defmodule Arena.GameLauncher do
   # Amount of clients needed to start a game
   @clients_needed 10
   # Time to wait to start game with any amount of clients
-  @start_timeout_ms 1000
+  @start_timeout_ms 10_000
 
   # API
   def start_link(_) do
