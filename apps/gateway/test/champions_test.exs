@@ -380,37 +380,78 @@ defmodule Gateway.Test.Champions do
 
       # TODO: check rewards [#CHoM-341]
     end
-  end
 
-  test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
-    # Register user
-    {:ok, user} = Users.register("invalid_battle_user")
+    test "fight level advances level in the campaign progression", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("battle_winning_user")
 
-    # Get user's first campaign progression
-    [campaign_progression | _] = user.campaign_progress
+      # Make user units very strong to win the battle
+      Enum.each(user.units, fn unit ->
+        GameBackend.Units.update_unit(unit, %{level: 9999})
+      end)
 
-    # Get the level of the campaign progression
-    next_level_id = campaign_progression.level_id
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progress
 
-    # Get a level from the user where the id is not the next level in the progression
-    SocketTester.get_campaigns(socket_tester, user.id)
-    fetch_last_message(socket_tester)
+      # Get the level of the campaign progression
+      level_id = campaign_progression.level_id
 
-    %WebSocketResponse{
-      response_type: {:campaigns, %Campaigns{} = campaigns}
-    } = get_last_message()
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
 
-    levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
-    invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _}
+      }
 
-    # FightLevel
-    SocketTester.fight_level(socket_tester, user.id, invalid_level.id)
-    fetch_last_message(socket_tester)
+      fetch_last_message(socket_tester)
 
-    # Should return an error response with the reason "level_invalid"
-    assert_receive %WebSocketResponse{
-      response_type: {:error, %Error{reason: "level_invalid"}}
-    }
+      %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      } = get_last_message()
+
+      assert battle_result.result == "win"
+
+      {:ok, advanced_user} = Users.get_user(user.id)
+
+      IO.inspect(advanced_user, label: "advanced_user")
+
+      [advanced_campaign_progression | _] = advanced_user.campaign_progress
+
+      assert user.id == advanced_user.id
+      assert advanced_campaign_progression.level_id != level_id
+    end
+
+    test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("invalid_battle_user")
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progress
+
+      # Get the level of the campaign progression
+      next_level_id = campaign_progression.level_id
+
+      # Get a level from the user where the id is not the next level in the progression
+      SocketTester.get_campaigns(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:campaigns, %Campaigns{} = campaigns}
+      } = get_last_message()
+
+      levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
+      invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, invalid_level.id)
+      fetch_last_message(socket_tester)
+
+      # Should return an error response with the reason "level_invalid"
+      assert_receive %WebSocketResponse{
+        response_type: {:error, %Error{reason: "level_invalid"}}
+      }
+    end
   end
 
   defp get_last_message() do
