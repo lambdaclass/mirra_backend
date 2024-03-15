@@ -4,6 +4,8 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
+  alias Gateway.Serialization.AfkRewards
+  alias Gateway.Serialization.AfkReward
   alias Champions.{Units, Users, Utils}
   alias GameBackend.Repo
   alias GameBackend.Users.Currencies.CurrencyCost
@@ -298,16 +300,70 @@ defmodule Gateway.Test.Champions do
   describe "afk rewards" do
     test "afk rewards", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("AfkRewardsUser")
+      user_initial_currencies = user.currencies
 
-      # Get afk rewards
+      # Get initial afk rewards
       SocketTester.get_afk_rewards(socket_tester, user.id)
       fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %UserAndUnit{}}}
+      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{}}}
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: initial_afk_rewards}}} =
+        get_last_message()
+
+      # Set up a powerful team to win a level with the user. That should increment the afk rewards rates
+      Enum.each(user.units, fn unit ->
+        GameBackend.Units.update_unit(unit, %{level: 9999})
+      end)
+
+      [campaign_progression | _] = user.campaign_progresses
+      level_id = campaign_progression.level_id
+      level_number = campaign_progression.level.level_number
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      } = get_last_message()
+
+      assert battle_result.result == "win"
+
+      # Get new AFK rewards
+      SocketTester.get_afk_rewards(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{}}}
+
+      fetch_last_message(socket_tester)
+
+      %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: advanced_afk_rewards}}} =
+        get_last_message()
+
+      # Check that the afk rewards rates are now greater than the initial rewards
+      assert Enum.all?(advanced_afk_rewards, fn reward ->
+               initial_reward = Enum.find(initial_afk_rewards, &(&1.currency.name == reward.currency.name))
+               IO.inspect(reward.amount, label: "reward.amount")
+               IO.inspect(initial_reward.amount, label: "initial_reward.amount")
+               reward.amount >= initial_reward.amount
+             end)
 
       # Claim afk rewards
       SocketTester.claim_afk_rewards(socket_tester, user.id)
       fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user_and_unit, %UserAndUnit{}}}
+      assert_receive %WebSocketResponse{response_type: {:user, %User{}}}
+
+      fetch_last_message(socket_tester)
+      %WebSocketResponse{response_type: {:user, %User{} = advanced_user}} = get_last_message()
+
+      # Check that the user has received the claimed rewards
+      assert Enum.all?(user_initial_currencies, fn currency ->
+               user_currency = Enum.find(advanced_user.currencies, &(&1.currency.name == currency.currency.name))
+               user_currency.amount > currency.amount
+             end)
+
+      # Check that the user's last_afk_reward_claim has been updated
+      assert advanced_user.last_afk_reward_claim > user.last_afk_reward_claim &&
+               advanced_user.last_afk_reward_claim < DateTime.utc_now()
     end
   end
 
