@@ -17,6 +17,7 @@ defmodule ConfiguratorWeb.Router do
   scope "/", ConfiguratorWeb do
     pipe_through :browser
 
+    get "/", ConfigurationController, :index
     resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
     get "/configurations/new/:id", ConfigurationController, :new
     put "/configurations/set_default/:id", ConfigurationController, :set_default
