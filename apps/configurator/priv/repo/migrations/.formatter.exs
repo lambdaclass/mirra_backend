@@ -1,4 +1,5 @@
 [
   import_deps: [:ecto_sql],
-  inputs: ["*.exs"]
+  inputs: ["*.exs"],
+  line_length: 120
 ]
