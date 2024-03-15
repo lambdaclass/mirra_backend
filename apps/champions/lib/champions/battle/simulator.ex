@@ -2,30 +2,36 @@ defmodule Champions.Battle.Simulator do
   @moduledoc """
   Runs battles.
 
-  Units have stats that are calculated on battle start (Attack, Max Health, Defense), as well as two skills.
-  The ultimate has no cooldown and it's cast whenever a unit reaches 500 energy.
+  Units have stats that are calculated on battle start (Attack, Max Health, Armor), as well as two skills. The ultimate
+  has no cooldown and it's cast whenever a unit reaches 500 energy. Energy is gained whenever the target attacks.
+  The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
-  The primary skill has a cooldown and it's cast when it's available if the ultimate is not. Each skill has a
-  set amount of energy gained on cast.
-
-  Skills group many effects under a same cooldown and cast.
-  These effects are made of different parts that define how it behaves: `Modifiers`, `Components` and `Executions`.
+  Skills possess effects that affect other units' or oneself's stats (the one defined in the effect's `stat_affected` field).
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
-  [ ] Duration - Applied once and reverted once its duration ends.
   [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
+  [ ] Duration - Applied once and reverted once its duration ends.
+  [ ] Periodic - Applied many times every x number of steps for a total duration of y steps
 
   They also have different targeting strategies:
   [x] Random
   [ ] Nearest
   [ ] Furthest
+  [ ] Min Health
+  [ ] Max Health
+  [ ] Min Shield
+  [ ] Max Shield
   [ ] Frontline - Heroes in slots 1 and 2
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
   [ ] Classes
-  [ ] Highest (stat)
-  [ ] Lowest (stat)
+
+  And different ways in which their amount is interpreted:
+  [x] Additive
+  [x] Multiplicative
+  [x] Additive & based on stat - The amount is a % of one of the caster's stats
+  [ ] Multiplicative & based on stat?
 
   Two units can attack the same unit at the same time and over-kill them. This is expected behavior that results
   from having the battle be simultaneous.
@@ -143,8 +149,14 @@ defmodule Champions.Battle.Simulator do
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
   defp cast_skill(unit, skill, initial_step_state, current_state) do
+    target_ids = choose_targets(unit, skill, initial_step_state)
+
     Enum.reduce(skill.effects, current_state, fn effect, new_state ->
-      target_ids = choose_targets(unit, effect, initial_step_state)
+      # If skill doesn't have targeting strategy, we fall back to the effects'
+      target_ids =
+        if is_nil(target_ids),
+          do: choose_targets(unit, effect, initial_step_state),
+          else: target_ids
 
       targets_after_effect = Enum.map(target_ids, fn id -> apply_effect(effect, unit, new_state[id]) end)
 
@@ -154,12 +166,12 @@ defmodule Champions.Battle.Simulator do
     end)
   end
 
-  defp choose_targets(_unit, %{target_strategy: nil}, _state), do: nil
+  defp choose_targets(_unit, %{targeting_strategy: nil}, _state), do: nil
 
   defp choose_targets(
          %{team: team},
          %{
-           target_strategy: "random",
+           targeting_strategy: "random",
            targets_allies: targets_allies,
            amount_of_targets: amount
          } = _effect,
@@ -207,7 +219,7 @@ defmodule Champions.Battle.Simulator do
          max_health: Units.get_max_health(unit),
          health: Units.get_max_health(unit),
          attack: Units.get_attack(unit),
-         defense: Units.get_defense(unit),
+         armor: Units.get_armor(unit),
          faction: character.faction,
          # class: character.class,
          basic_skill: create_skill_map(character.basic_skill),
@@ -218,20 +230,23 @@ defmodule Champions.Battle.Simulator do
 
   defp create_skill_map(%Skill{} = skill),
     do: %{
-      name: skill.name,
       effects: Enum.map(skill.effects, &create_effect_map/1),
       base_cooldown: skill.cooldown,
-      remaining_cooldown: skill.cooldown
+      remaining_cooldown: skill.cooldown,
+      targeting_strategy: skill.targeting_strategy,
+      amount_of_targets: skill.amount_of_targets,
+      targets_allies: skill.targets_allies
     }
 
   defp create_effect_map(%Effect{} = effect),
     do: %{
       type: effect.type,
-      initial_delay: effect.initial_delay,
-      target_count: effect.target_count,
-      target_strategy: effect.target_strategy,
-      target_allies: effect.target_allies,
-      target_attribute: effect.target_attribute,
-      executions: effect.executions
+      stat_affected: effect.stat_affected,
+      stat_based_on: effect.stat_based_on,
+      amount: effect.amount,
+      amount_format: effect.amount_format,
+      targeting_strategy: effect.targeting_strategy,
+      amount_of_targets: effect.amount_of_targets,
+      targets_allies: effect.targets_allies
     }
 end
