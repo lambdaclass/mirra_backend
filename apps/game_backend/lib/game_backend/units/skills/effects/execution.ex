@@ -6,7 +6,7 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
 
   - Prevent the damage from happening, through stats like Dodge
   - Determine how much energy the target will recover when being damaged by that skill. Note that any individual instance of a skill should only be able to charge energy to the same target once. So if a skill hits all targets 5 times, only the first time will trigger energy gain.
-  - Reduce the damage taken based on the armor, or stats like damage reduction
+  - Reduce the damage taken based on the defense, or stats like damage reduction
   - Etc.
   """
 

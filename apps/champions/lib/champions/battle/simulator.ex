@@ -2,30 +2,36 @@ defmodule Champions.Battle.Simulator do
   @moduledoc """
   Runs battles.
 
-  Units have stats that are calculated on battle start (Attack, Max Health, Defense), as well as two skills.
-  The ultimate has no cooldown and it's cast whenever a unit reaches 500 energy.
+  Units have stats that are calculated on battle start (Attack, Max Health, Defense), as well as two skills. The ultimate
+  has no cooldown and it's cast whenever a unit reaches 500 energy. Energy is gained whenever the target attacks.
+  The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
-  The primary skill has a cooldown and it's cast when it's available if the ultimate is not. Each skill has a
-  set amount of energy gained on cast.
-
-  Skills group many effects under a same cooldown and cast.
-  These effects are made of different parts that define how it behaves: `Modifiers`, `Components` and `Executions`.
+  Skills possess effects that affect other units' or oneself's stats (the one defined in the effect's `stat_affected` field).
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
-  [ ] Duration - Applied once and reverted once its duration ends.
   [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
+  [ ] Duration - Applied once and reverted once its duration ends.
+  [ ] Periodic - Applied many times every x number of steps for a total duration of y steps
 
   They also have different targeting strategies:
   [x] Random
   [ ] Nearest
   [ ] Furthest
+  [ ] Min Health
+  [ ] Max Health
+  [ ] Min Shield
+  [ ] Max Shield
   [ ] Frontline - Heroes in slots 1 and 2
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
   [ ] Classes
-  [ ] Highest (stat)
-  [ ] Lowest (stat)
+
+  And different ways in which their amount is interpreted:
+  [x] Additive
+  [x] Multiplicative
+  [x] Additive & based on stat - The amount is a % of one of the caster's stats
+  [ ] Multiplicative & based on stat?
 
   Two units can attack the same unit at the same time and over-kill them. This is expected behavior that results
   from having the battle be simultaneous.
@@ -292,7 +298,6 @@ defmodule Champions.Battle.Simulator do
 
   defp create_skill_map(%Skill{} = skill, caster_id),
     do: %{
-      name: skill.name,
       effects: Enum.map(skill.effects, &create_effect_map/1),
       base_cooldown: skill.cooldown,
       remaining_cooldown: skill.cooldown,
