@@ -63,3 +63,9 @@ config :game_client, GameClient.Mailer, adapter: Swoosh.Adapters.Test
 ##############################
 # App configuration: gateway #
 ##############################
+
+##################################
+# App configuration: bot_manager #
+##################################
+
+config :bot_manager, :end_point, port: [port: 5000]
