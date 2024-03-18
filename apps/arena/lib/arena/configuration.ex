@@ -8,13 +8,11 @@ defmodule Arena.Configuration do
   end
 
   def get_game_config() do
-    config_url = ConfiguratorWeb.Endpoint.url() <> "/api/default_config"
+    {:ok, config_json} =
+      Application.app_dir(:arena, "priv/config.json")
+      |> File.read()
 
-    {:ok, %{body: body}} =
-      Finch.build(:get, config_url)
-      |> Finch.request(Arena.Finch)
-
-    config = Jason.decode!(body, [{:keys, :atoms}])
+    config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
     items = parse_items_config(config.items)
