@@ -91,7 +91,7 @@ defmodule Champions.Battle.Simulator do
           process_step_for_effect(effect, current_state)
         end)
 
-      Logger.info("Step #{step}: #{format_step_state_for_log(new_state) |> inspect()}")
+      Logger.info("Step #{step} finished: #{format_step_state_for_log(new_state) |> inspect()}")
 
       remove_dead_units(new_state)
       |> check_winner(step)
