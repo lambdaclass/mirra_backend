@@ -24,6 +24,7 @@ defmodule GameBackend.Units.Skills.Effects.Modifier do
   import Ecto.Changeset
 
   embedded_schema do
+    field(:attribute, :string)
     field(:modifier_operation, :string)
     field(:magnitude_calc_type, :string)
     field(:float_magnitude, :float)
@@ -31,7 +32,7 @@ defmodule GameBackend.Units.Skills.Effects.Modifier do
 
   def changeset(modifier, attrs) do
     modifier
-    |> cast(attrs, [:modifier_operation, :magnitude_calc_type, :float_magnitude])
+    |> cast(attrs, [:attribute, :modifier_operation, :magnitude_calc_type, :float_magnitude])
     |> validate_inclusion(:modifier_operation, ~w[Add Multiply Override])
     |> validate_inclusion(:magnitude_calc_type, ~w[Float])
     |> validate_required([:modifier_operation, :magnitude_calc_type])
