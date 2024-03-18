@@ -166,7 +166,7 @@ defmodule Champions.Battle.Simulator do
   defp process_animation_trigger(%{animation_trigger: -1} = skill, current_state, _initial_step_state),
     do: {skill, current_state}
 
-  # If the animation still has not triggered, reduce the remaining trigger
+  # If the animation still has not triggered, reduce the remaining counter
   defp process_animation_trigger(skill, current_state, _initial_step_state) do
     {%{skill | animation_trigger: skill.animation_trigger - 1}, current_state}
   end
