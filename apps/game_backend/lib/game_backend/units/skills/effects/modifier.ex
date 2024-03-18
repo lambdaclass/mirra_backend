@@ -18,6 +18,23 @@ defmodule GameBackend.Units.Skills.Effects.Modifier do
 
   magnitude_calc_type will eventually have a Stat-Based type
   It will not be implemented for MVP.
+
+  Examples:
+      # Modifier to reduce damage by 25%:
+      %Modifier{
+        attribute: "damage",
+        modifier_operation: "Multiply",
+        magnitude_calc_type: "Float",
+        float_magnitude: 0.75
+      }
+
+      # Modifier to reduce defense by 100:
+      %Modifier{
+        attribute: "defense",
+        modifier_operation: "Add",
+        magnitude_calc_type: "Float",
+        float_magnitude: -100
+      }
   """
 
   use GameBackend.Schema
