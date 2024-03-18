@@ -74,7 +74,7 @@ defmodule Champions.Battle.Simulator do
     Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
       new_state =
         Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
-          Logger.info("Process step #{step} for unit #{unit.character_name}-#{String.slice(unit_id, 0..2)}")
+          Logger.info("Process step #{step} for unit #{format_unit_name(unit)}")
           process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state)
         end)
 
@@ -87,14 +87,12 @@ defmodule Champions.Battle.Simulator do
 
       new_state =
         Enum.reduce(new_state.pending_effects, new_state, fn effect, current_state ->
-          Logger.info(
-            "Process step #{step} for effect cast by #{effect.caster.character_name}-#{String.slice(effect.caster.id, 0..2)}"
-          )
+          Logger.info("Process step #{step} for effect cast by #{format_unit_name(effect.caster)}")
 
           process_step_for_effect(effect, initial_step_state, current_state)
         end)
 
-      Logger.info(format_step_state_for_log(new_state), label: "step #{step}")
+      Logger.info("Step #{step}: #{format_step_state_for_log(new_state) |> inspect()}")
 
       remove_dead_units(new_state)
       |> check_winner(step)
@@ -105,18 +103,18 @@ defmodule Champions.Battle.Simulator do
     new_state =
       cond do
         not can_attack(unit, initial_step_state) ->
-          Logger.info("Unit #{unit.character_name}-#{String.slice(unit.id, 0..2)} cannot attack")
+          Logger.info("Unit #{format_unit_name(unit)} cannot attack")
           current_state
 
         can_cast_ultimate_skill(unit) ->
-          Logger.info("Unit #{unit.character_name}-#{String.slice(unit.id, 0..2)} casting Ultimate skill")
+          Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
 
           current_state
           |> Map.put(:skills_being_cast, [unit.ultimate_skill | current_state.skills_being_cast])
           |> put_in([:units, unit.id, :energy], 0)
 
         can_cast_basic_skill(unit) ->
-          Logger.info("Unit #{unit.character_name}-#{String.slice(unit.id, 0..2)} casting basic skill")
+          Logger.info("Unit #{format_unit_name(unit)} casting basic skill")
 
           current_state
           |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
@@ -193,8 +191,19 @@ defmodule Champions.Battle.Simulator do
     ])
   end
 
-  defp remove_dead_units(state),
-    do: Map.put(state, :units, Enum.filter(state.units, fn {_id, unit} -> unit.health > 0 end) |> Enum.into(%{}))
+  defp remove_dead_units(state) do
+    new_units =
+      Enum.reduce(state.units, %{}, fn {unit_id, unit}, units ->
+        if unit.health > 0 do
+          Map.put(units, unit_id, unit)
+        else
+          Logger.info("Unit #{format_unit_name(unit)} died.")
+          units
+        end
+      end)
+
+    Map.put(state, :units, new_units)
+  end
 
   defp check_winner(state, step) do
     winner =
@@ -300,7 +309,7 @@ defmodule Champions.Battle.Simulator do
     damage = floor(attack_ratio * caster.attack)
 
     Logger.info(
-      "Dealing #{damage} damage to #{String.slice(target.id, 0..2)} (#{target.health} -> #{target.health - damage})"
+      "Dealing #{damage} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage})"
     )
 
     target
@@ -362,7 +371,7 @@ defmodule Champions.Battle.Simulator do
 
     %{
       units:
-        Enum.group_by(units, &Map.get(&1, :team), fn unit ->
+        Enum.group_by(units, &"Team #{Map.get(&1, :team)}", fn unit ->
           %{
             unit: String.slice(unit.id, 0..2),
             health: unit.health,
@@ -384,4 +393,6 @@ defmodule Champions.Battle.Simulator do
       #  pending_executions: exec
     }
   end
+
+  defp format_unit_name(unit), do: "#{unit.character_name}-#{String.slice(unit.id, 0..2)}"
 end
