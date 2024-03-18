@@ -12,20 +12,17 @@ defmodule Champions.Battle.Simulator do
   [x] Instant - Applied once, irreversible.
   [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
   [ ] Duration - Applied once and reverted once its duration ends.
-  [ ] Periodic - Applied many times every x number of steps for a total duration of y steps
 
   They also have different targeting strategies:
   [x] Random
   [ ] Nearest
   [ ] Furthest
-  [ ] Min Health
-  [ ] Max Health
-  [ ] Min Shield
-  [ ] Max Shield
   [ ] Frontline - Heroes in slots 1 and 2
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
   [ ] Classes
+  [ ] Min (STAT)
+  [ ] Max (STAT)
 
   And different ways in which their amount is interpreted:
   [x] Additive
