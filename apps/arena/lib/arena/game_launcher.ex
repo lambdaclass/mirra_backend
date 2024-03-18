@@ -1,12 +1,13 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
+  alias Ecto.UUID
 
   use GenServer
 
   # Amount of clients needed to start a game
-  @clients_needed 10
+  @clients_needed 2
   # Time to wait to start game with any amount of clients
-  @start_timeout_ms 10_000
+  @start_timeout_ms 1000
 
   # API
   def start_link(_) do
@@ -49,12 +50,15 @@ defmodule Arena.GameLauncher do
   end
 
   def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
+    IO.inspect("aber start game")
+
+    {game_clients, remaining_clients} =
+      Enum.split(state.clients, @clients_needed)
+      |> spawn_bots(@clients_needed - Enum.count(state.clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients,
-        missing_clients: @clients_needed - Enum.count(game_clients)
+        clients: game_clients
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
@@ -73,5 +77,26 @@ defmodule Arena.GameLauncher do
 
   defp maybe_make_batch_start_at([_ | _], batch_start_at) do
     batch_start_at
+  end
+
+  defp spawn_bots(clients, 0), do: clients
+
+  defp spawn_bots({clients, remaining_clients}, missing_clients) do
+    Enum.map(1..missing_clients, fn _ ->
+      client_id = UUID.generate()
+
+      Finch.build(:get, build_bot_url(client_id))
+      |> Finch.request(Arena.Finch)
+      |> IO.inspect(label: "aber response")
+
+      {client_id, "muflus", "a"}
+    end)
+
+    {clients, remaining_clients}
+  end
+
+  defp build_bot_url(client_id) do
+    # TODO remove this hardcode url when servers are implemented
+    "http://localhost:5000/join/#{client_id}"
   end
 end
