@@ -33,10 +33,10 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients, missing_clients: missing_clients}) do
-    game_config = Configuration.get_game_config()
+  def init(%{clients: clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_state = new_game(game_id, clients, game_config, missing_clients)
+    game_config = Configuration.get_game_config()
+    game_state = new_game(game_id, clients, game_config)
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
@@ -103,11 +103,13 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    ticks_to_move = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
+    time_diff = now - game_state.server_timestamp
+    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
 
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
       |> move_projectiles()
@@ -455,13 +457,6 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_info({:spawn_bot, bot_specs}, state) do
-    Finch.build(:get, build_bot_url(bot_specs))
-    |> Finch.request(Arena.Finch)
-
-    {:noreply, state}
-  end
-
   ##########################
   # End callbacks
   ##########################
@@ -531,7 +526,7 @@ defmodule Arena.GameUpdater do
   defp complete_entity(entity) do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
+    |> Map.put(:name, entity.name)
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
@@ -544,7 +539,7 @@ defmodule Arena.GameUpdater do
   ##########################
 
   # Create a new game
-  defp new_game(game_id, clients, config, missing_clients) do
+  defp new_game(game_id, clients, config) do
     now = System.monotonic_time(:millisecond)
     initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
@@ -562,7 +557,6 @@ defmodule Arena.GameUpdater do
       |> Map.put(:killfeed, [])
       |> Map.put(:damage_taken, %{})
       |> Map.put(:damage_done, %{})
-      |> Map.put(:positions, config.map.initial_positions)
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
         radius: config.map.radius,
@@ -574,27 +568,30 @@ defmodule Arena.GameUpdater do
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
-    game =
-      Enum.reduce(clients, new_game, fn {client_id, character_name, _from_pid}, new_game ->
+    {game, _} =
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
+                                                                         _from_pid},
+                                                                        {new_game, positions} ->
         last_id = new_game.last_id + 1
-        {pos, positions} = get_next_position(new_game.positions)
+        {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
 
         players =
           new_game.players
           |> Map.put(
             last_id,
-            Entities.new_player(last_id, character_name, pos, direction, config, now)
+            Entities.new_player(last_id, character_name, player_name, pos, direction, config, now)
           )
 
-        new_game
-        |> Map.put(:last_id, last_id)
-        |> Map.put(:players, players)
-        |> Map.put(:positions, positions)
-        |> put_in([:client_to_player_map, client_id], last_id)
-        |> put_in([:player_timestamps, last_id], 0)
+        new_game =
+          new_game
+          |> Map.put(:last_id, last_id)
+          |> Map.put(:players, players)
+          |> put_in([:client_to_player_map, client_id], last_id)
+          |> put_in([:player_timestamps, last_id], 0)
+
+        {new_game, positions}
       end)
-      |> fill_bot_players(missing_clients, config)
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
 
@@ -619,44 +616,6 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp fill_bot_players(game_state, missing_players, game_config) do
-    now = System.monotonic_time(:millisecond)
-
-    Enum.reduce((game_state.last_id + 1)..(game_state.last_id + missing_players), game_state, fn last_id, game_state ->
-      character_name =
-        game_config.characters
-        # TODO remove this filter when valtimer is implemented
-        |> Enum.reject(fn chara -> Map.get(chara, :name) in ["valtimer"] end)
-        |> Enum.random()
-        |> Map.get(:name)
-
-      bot_specs = %{
-        player_id: last_id,
-        game_id: self() |> :erlang.term_to_binary() |> Base58.encode()
-      }
-
-      # Call bot application
-      Process.send_after(self(), {:spawn_bot, bot_specs}, 500)
-
-      {pos, positions} = get_next_position(game_state.positions)
-      direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
-
-      players =
-        game_state.players
-        |> Map.put(
-          last_id,
-          Entities.new_player(last_id, character_name, pos, direction, game_config, now)
-        )
-
-      game_state
-      |> Map.put(:last_id, last_id)
-      |> Map.put(:players, players)
-      |> Map.put(:positions, positions)
-      |> put_in([:player_timestamps, last_id], 0)
-      |> put_in([:client_to_player_map, last_id |> to_string], last_id)
-    end)
-  end
-
   ##########################
   # End Game Initialization
   ##########################
@@ -664,6 +623,22 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game flow. Actions executed in every tick.
   ##########################
+
+  defp reduce_players_cooldowns(game_state, time_diff) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        cooldowns =
+          Map.new(player.aditional_info.cooldowns, fn {skill_key, cooldown} ->
+            {skill_key, cooldown - time_diff}
+          end)
+          |> Map.filter(fn {_skill_key, cooldown} -> cooldown > 0 end)
+
+        player = put_in(player, [:aditional_info, :cooldowns], cooldowns)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
 
   defp move_players(
          %{
@@ -1132,11 +1107,6 @@ defmodule Arena.GameUpdater do
       [] -> random_position_in_map(integer_radius * 0.95, external_wall)
       _ -> point.position
     end
-  end
-
-  defp build_bot_url(%{game_id: game_id, player_id: player_id}) do
-    # TODO remove this hardcode url when servers are implemented
-    "http://localhost:5000/join/#{game_id}/#{player_id}"
   end
 
   ##########################
