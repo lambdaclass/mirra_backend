@@ -334,7 +334,7 @@ defmodule Gateway.Serialization.User do
   field(:campaign_progresses, 6,
     repeated: true,
     type: Gateway.Serialization.CampaignProgress,
-    json_name: "campaignsProgress"
+    json_name: "campaignProgresses"
   )
 
   field(:currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency)

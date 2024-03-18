@@ -202,5 +202,9 @@ defmodule Champions.Users do
     end)
     |> Multi.run(:reset_afk_claim, fn _, _ -> Users.reset_afk_rewards_claim(user_id) end)
     |> Transaction.run()
+    |> case do
+      {:ok, result} -> {:ok, result.reset_afk_claim}
+      {:error, reason} -> {:error, reason}
+    end
   end
 end

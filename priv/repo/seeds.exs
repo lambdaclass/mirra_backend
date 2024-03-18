@@ -52,39 +52,6 @@ muflus = Characters.get_character_by_name("Muflus")
         # TODO: Add stun effect
       ],
       cooldown: 5
-    },
-    ultimate_skill: %{
-      effects: [
-        %{
-          type: "instant",
-          stat_affected: "health",
-          amount: -205,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
-        }
-        # TODO: Add stun effect
-      ],
-      cooldown: 5
-    },
-    ultimate_skill: %{
-      effects: [
-        %{
-          type: "instant",
-          stat_affected: "health",
-          amount: -205,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
-        }
-        # TODO: Add stun effect
-      ]
     }
   })
 
