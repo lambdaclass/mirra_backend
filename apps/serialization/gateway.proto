@@ -9,17 +9,21 @@ syntax = "proto3";
       GetCampaign get_campaign = 5;
       GetLevel get_level = 6;
       FightLevel fight_level = 7;
-      SelectUnit select_unit = 8;
-      UnselectUnit unselect_unit = 9;
-      LevelUpUnit level_up_unit = 10;
-      TierUpUnit tier_up_unit = 11;
-      FuseUnit fuse_unit = 12;
-      EquipItem equip_item = 13;
-      UnequipItem unequip_item = 14;
-      GetItem get_item = 15;
-      LevelUpItem level_up_item = 16;
-      GetAfkRewards get_afk_rewards = 17;
-      ClaimAfkRewards claim_afk_rewards = 18;
+      GetUnits get_units = 8;
+      SelectUnit select_unit = 9;
+      UnselectUnit unselect_unit = 10;
+      LevelUpUnit level_up_unit = 11;
+      TierUpUnit tier_up_unit = 12;
+      FuseUnit fuse_unit = 13;
+      EquipItem equip_item = 14;
+      UnequipItem unequip_item = 15;
+      GetItem get_item = 16;
+      LevelUpItem level_up_item = 17;
+      GetBoxes get_boxes = 18;
+      GetBox get_box = 19;
+      Summon summon = 20;
+      GetAfkRewards get_afk_rewards = 21;
+      ClaimAfkRewards claim_afk_rewards = 22;
     }
   }
 
@@ -52,6 +56,10 @@ syntax = "proto3";
   message FightLevel {
    string user_id = 1;
    string level_id = 2;
+  }
+
+  message GetUnits {
+    string user_id = 1;
   }
   
   message SelectUnit {
@@ -110,20 +118,37 @@ syntax = "proto3";
     string user_id = 1;
  }
 
+  message GetBoxes {
+    string user_id = 1;
+  }
+  
+  message GetBox {
+    string box_id = 1;
+  }
+
+  message Summon {
+    string user_id = 1;
+    string box_id = 2;
+  }
+
   ////////////////////////////////////////
 
   message WebSocketResponse {
     oneof response_type {
       User user = 1;
       Unit unit = 2;
-      UnitAndCurrencies unit_and_currencies = 3;
-      Item item = 4;
-      Campaigns campaigns = 5;
-      Campaign campaign = 6;
-      Level level = 7;
-      BattleResult battle_result = 8;
-      AfkRewards afk_rewards = 9;
+      Units units = 3;
+      UnitAndCurrencies unit_and_currencies = 4;
+      Item item = 5;
+      Campaigns campaigns = 6;
+      Campaign campaign = 7;
+      Level level = 8;
+      BattleResult battle_result = 9;
       Error error = 10;
+      Boxes boxes = 11;
+      Box box = 12;
+      UserAndUnit user_and_unit = 13;
+      AfkRewards afk_rewards = 14;
     }
   }
   
@@ -132,7 +157,7 @@ syntax = "proto3";
     string username = 2;
     uint64 level = 3;
     uint64 experience = 4;
-    repeated CampaignProgress campaigns_progress = 6;
+    repeated CampaignProgress campaign_progresses = 6;
     repeated UserCurrency currencies = 7;
     repeated Unit units = 8;
     repeated Item items = 9;
@@ -173,6 +198,10 @@ syntax = "proto3";
     repeated Item items = 10;
   }
 
+  message Units {
+    repeated Unit units = 1;
+  }
+
   message UnitAndCurrencies {
     Unit unit = 1;
     repeated UserCurrency user_currency = 2;
@@ -182,7 +211,7 @@ syntax = "proto3";
     bool active = 1;
     string name = 2;
     string faction = 3;
-    int32 quality = 4;
+    uint32 quality = 4;
   }
   
   message Item {
@@ -238,4 +267,32 @@ syntax = "proto3";
 
   message Error {
     string reason = 1;
+  }
+
+  message Boxes {
+    repeated Box boxes = 1;
+  }
+
+  message Box {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    repeated string factions = 4;
+    repeated RankWeights rank_weights = 5; 
+    repeated CurrencyCost cost = 6;
+  }
+  
+  message RankWeights {
+    int32 rank = 1;
+    int32 weight = 2;
+  }
+
+  message CurrencyCost {
+    Currency currency = 1;
+    int32 amount = 2;
+  }
+
+  message UserAndUnit {
+    User user = 1;
+    Unit unit = 2;
   }
