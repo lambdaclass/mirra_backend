@@ -219,7 +219,8 @@ units =
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
 
-# Add each level's rewards
+# Add the rewards of each level.
+# The calculation of the `amount` field is done following the specification found in https://docs.google.com/spreadsheets/d/177mvJS75LecaAEpyYotQEcrmhGJWI424UnkE2JHLmyY
 currency_rewards =
   Enum.map(levels_without_units, fn level ->
     %{
