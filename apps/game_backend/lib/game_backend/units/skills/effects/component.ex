@@ -6,6 +6,14 @@ defmodule GameBackend.Units.Skills.Effects.Component do
 
   - Chance to Apply (float)
     - Determines a percentage chance that needs to be rolled in order for the effect to work.
+      Example:
+      ```
+      # Make the effect fail 50% of the time
+      %{
+        "type" => "ChanceToApply",
+        "chance" => 50
+      }
+      ```
   - Apply Tags
     - For the duration of the effect, tags will be applied to the unit.
   - Target Tag Requirements
