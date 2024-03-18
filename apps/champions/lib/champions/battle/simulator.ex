@@ -6,7 +6,8 @@ defmodule Champions.Battle.Simulator do
   has no cooldown and it's cast whenever a unit reaches 500 energy. Energy is gained whenever the target attacks.
   The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
-  Skills possess effects that affect other units' or oneself's stats (the one defined in the effect's `stat_affected` field).
+  Skills possess many effects with their own targets. Effects are composed of `Components`, `Modifiers` and
+  `Executions` (check module docs for more info on each).
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
