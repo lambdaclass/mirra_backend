@@ -168,10 +168,8 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_step_for_effect(%{delay: 0} = effect, initial_step_state, current_state) do
-    target_ids = choose_targets(effect.caster, effect, initial_step_state)
-
     targets_after_effect =
-      Enum.map(target_ids, fn id ->
+      Enum.map(effect.targets, fn id ->
         maybe_apply_effect(effect, current_state.units[id], effect.caster)
       end)
 
