@@ -213,11 +213,15 @@ defmodule Champions.Battle.Simulator do
 
     case winner do
       :none ->
-        if step == @maximum_steps,
-          do: {:halt, :timeout},
-          else: {:cont, state}
+        if step == @maximum_steps do
+          Logger.info("Battle timeout.")
+          {:halt, :timeout}
+        else
+          {:cont, state}
+        end
 
       result ->
+        Logger.info("Battle ended. Result: #{result}.")
         {:halt, result}
     end
   end
@@ -281,8 +285,14 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp apply_effect(effect, target, caster) do
-    # TODO
-    target_after_modifiers = target
+    target_after_modifiers =
+      Enum.reduce(effect.modifiers, target, fn modifier, target ->
+        case modifier.modifier_operation do
+          "Add" -> put_in(target, [:modifiers, :additives], modifier)
+          "Multiply" -> put_in(target, [:modifiers, :multiplicatives], modifier)
+          "Override" -> put_in(target, [:modifiers, :overrides], modifier)
+        end
+      end)
 
     target_after_executions =
       Enum.reduce(effect.executions, target_after_modifiers, fn execution, target_acc ->
@@ -303,7 +313,7 @@ defmodule Champions.Battle.Simulator do
          target,
          caster
        ) do
-    damage = floor(attack_ratio * caster.attack)
+    damage = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
 
     Logger.info(
       "Dealing #{damage} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage})"
@@ -330,7 +340,11 @@ defmodule Champions.Battle.Simulator do
          attack: Units.get_attack(unit),
          defense: Units.get_defense(unit),
          energy: 0,
-         modifiers: []
+         modifiers: %{
+           additives: [],
+           multiplicatives: [],
+           overrides: []
+         }
        }}
 
   defp create_skill_map(%Skill{} = skill, caster_id),
@@ -392,4 +406,22 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp format_unit_name(unit), do: "#{unit.character_name}-#{String.slice(unit.id, 0..2)}"
+
+  defp calculate_unit_stat(unit, attribute) do
+    overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == attribute))
+
+    if Enum.empty?(overrides) do
+      addition =
+        Enum.filter(unit.modifiers.additives, &(&1.attribute == attribute))
+        |> Enum.reduce(0, fn mod, acc -> mod.float_magnitude + acc end)
+
+      multiplication =
+        Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == attribute))
+        |> Enum.reduce(1, fn mod, acc -> mod.float_magnitude * acc end)
+
+      (unit[attribute] + addition) * multiplication
+    else
+      Enum.min_by(overrides, & &1.step_applied).float_magnitude
+    end
+  end
 end
