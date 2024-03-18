@@ -52,39 +52,6 @@ muflus = Characters.get_character_by_name("Muflus")
         # TODO: Add stun effect
       ],
       cooldown: 5
-    },
-    ultimate_skill: %{
-      effects: [
-        %{
-          type: "instant",
-          stat_affected: "health",
-          amount: -205,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
-        }
-        # TODO: Add stun effect
-      ],
-      cooldown: 5
-    },
-    ultimate_skill: %{
-      effects: [
-        %{
-          type: "instant",
-          stat_affected: "health",
-          amount: -205,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
-        }
-        # TODO: Add stun effect
-      ]
     }
   })
 
@@ -113,11 +80,26 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-{:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, gold_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 
-{:ok, scrolls} =
+{:ok, gems_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+
+{:ok, _arcane_crystals_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
+
+{:ok, hero_souls_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Hero Souls"})
+
+{:ok, summon_scrolls_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+
+{:ok, _mystic_scrolls_currency} =
+  Users.Currencies.insert_currency(%{
+    game_id: champions_of_mirra_id,
+    name: "Mystic Summon Scrolls"
+  })
 
 {:ok, _} =
   Gacha.insert_box(%{
@@ -129,7 +111,7 @@ Items.insert_item_template(%{
       %{rank: Champions.Units.get_rank(:star4), weight: 7},
       %{rank: Champions.Units.get_rank(:star5), weight: 3}
     ],
-    cost: [%{currency_id: scrolls.id, amount: 1}]
+    cost: [%{currency_id: summon_scrolls_currency.id, amount: 1}]
   })
 
 {:ok, _} =
@@ -140,7 +122,7 @@ Items.insert_item_template(%{
       %{rank: Champions.Units.get_rank(:star4), weight: 20},
       %{rank: Champions.Units.get_rank(:star5), weight: 5}
     ],
-    cost: [%{currency_id: scrolls.id, amount: 10}]
+    cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
 
 ######################
@@ -239,16 +221,29 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 
 # Add each level's rewards
 currency_rewards =
-  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+  Enum.map(levels_without_units, fn level ->
     %{
       level_id: level.id,
-      amount: 10 * level_index,
-      currency_id: gold.id,
+      amount: 10 * (20 + level.level_number),
+      currency_id: gold_currency.id,
       afk_reward: false,
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }
   end)
+
+currency_rewards =
+  currency_rewards ++
+    Enum.map(levels_without_units, fn level ->
+      %{
+        level_id: level.id,
+        amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
+        currency_id: hero_souls_currency.id,
+        afk_reward: false,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+    end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
@@ -288,7 +283,7 @@ afk_reward_increments =
       %{
         level_id: level.id,
         amount: 10 * level_index,
-        currency_id: gold.id,
+        currency_id: gold_currency.id,
         afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -296,7 +291,7 @@ afk_reward_increments =
       %{
         level_id: level.id,
         amount: level_index,
-        currency_id: gems.id,
+        currency_id: gems_currency.id,
         afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
