@@ -87,7 +87,7 @@ defmodule Champions.Battle.Simulator do
         Enum.reduce(new_state.pending_effects, new_state, fn effect, current_state ->
           Logger.info("Process step #{step} for effect cast by #{format_unit_name(effect.caster)}")
 
-          process_step_for_effect(effect, initial_step_state, current_state)
+          process_step_for_effect(effect, current_state)
         end)
 
       Logger.info("Step #{step}: #{format_step_state_for_log(new_state) |> inspect()}")
@@ -167,7 +167,7 @@ defmodule Champions.Battle.Simulator do
     {%{skill | animation_trigger: skill.animation_trigger - 1}, current_state}
   end
 
-  defp process_step_for_effect(%{delay: 0} = effect, initial_step_state, current_state) do
+  defp process_step_for_effect(%{delay: 0} = effect, current_state) do
     targets_after_effect =
       Enum.map(effect.targets, fn id ->
         maybe_apply_effect(effect, current_state.units[id], effect.caster)
@@ -181,7 +181,7 @@ defmodule Champions.Battle.Simulator do
     Map.put(current_state, :pending_effects, List.delete(current_state.pending_effects, effect))
   end
 
-  defp process_step_for_effect(effect, _initial_step_state, current_state) do
+  defp process_step_for_effect(effect, current_state) do
     Map.put(current_state, :pending_effects, [
       %{effect | delay: effect.delay - 1} | List.delete(current_state.pending_effects, effect)
     ])
