@@ -25,12 +25,12 @@ defmodule BotManager.Endpoint do
   # responsible for dispatching responses
   plug(:dispatch)
 
-  get "/join/:game_pid/:player_id" do
-    BotManager.BotSupervisor.spawn_bot(conn.params)
+  get "/join/:client_id" do
+    socket_handler_pid = BotManager.BotSupervisor.spawn_bot(conn.params)
 
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(200, Poison.encode!(%{response: "Spawneado rey"}))
+    |> send_resp(200, Poison.encode!(socket_handler_pid |> :erlang.term_to_binary() |> Base58.encode()))
   end
 
   # A catchall route, 'match' will match no matter the request method,

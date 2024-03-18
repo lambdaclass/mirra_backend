@@ -13,6 +13,11 @@ defmodule BotManager.BotSupervisor do
   end
 
   def spawn_bot(bot_config) do
-    DynamicSupervisor.start_child(__MODULE__, {BotManager.GameSocketHandler, bot_config})
+    IO.inspect(bot_config, label: "aber bot config")
+    DynamicSupervisor.start_child(__MODULE__, {BotManager.SocketHandler, bot_config})
+  end
+
+  def add_bot_to_game(client_id, game_id) do
+    DynamicSupervisor.start_child(__MODULE__, {BotManager.GameSocketHandler, {client_id, game_id}})
   end
 end
