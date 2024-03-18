@@ -4,14 +4,14 @@ defmodule Arena.Entities do
   """
   alias Arena.Configuration
 
-  def new_player(id, character_name, position, direction, config, now) do
+  def new_player(id, character_name, player_name, position, direction, config, now) do
     character = Configuration.get_character_config(character_name, config)
 
     %{
       id: id,
       category: :player,
       shape: :circle,
-      name: "Player" <> Integer.to_string(id),
+      name: player_name,
       position: position,
       radius: character.base_size,
       vertices: [],
@@ -39,7 +39,8 @@ defmodule Arena.Entities do
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
-        effects: %{}
+        effects: %{},
+        cooldowns: %{}
       }
     }
   end
@@ -220,7 +221,8 @@ defmodule Arena.Entities do
        character_name: entity.aditional_info.character_name,
        effects: entity.aditional_info.effects,
        power_ups: entity.aditional_info.power_ups,
-       inventory: entity.aditional_info.inventory
+       inventory: entity.aditional_info.inventory,
+       cooldowns: entity.aditional_info.cooldowns
      }}
   end
 

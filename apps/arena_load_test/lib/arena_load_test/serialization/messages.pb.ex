@@ -352,6 +352,15 @@ defmodule ArenaLoadTest.Serialization.Player.EffectsEntry do
   field(:value, 2, type: ArenaLoadTest.Serialization.Effect)
 end
 
+defmodule ArenaLoadTest.Serialization.Player.CooldownsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :string)
+  field(:value, 2, type: :uint64)
+end
+
 defmodule ArenaLoadTest.Serialization.Player do
   @moduledoc false
 
@@ -380,6 +389,12 @@ defmodule ArenaLoadTest.Serialization.Player do
   )
 
   field(:inventory, 11, type: ArenaLoadTest.Serialization.Item)
+
+  field(:cooldowns, 12,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.Player.CooldownsEntry,
+    map: true
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do
