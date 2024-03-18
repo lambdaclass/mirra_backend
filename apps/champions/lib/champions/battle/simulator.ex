@@ -42,7 +42,8 @@ defmodule Champions.Battle.Simulator do
 
   require Logger
 
-  @maximum_steps 500
+  @default_seed 1
+  @default_maximum_steps 500
   @ultimate_energy_cost 500
 
   @doc """
@@ -51,6 +52,11 @@ defmodule Champions.Battle.Simulator do
 
   Returns `:team_1`, `:team_2`, `:tie` or `:timeout`.
 
+  Options allowed are:
+
+  - `maximum_steps`
+  - `seed`
+
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
@@ -58,8 +64,12 @@ defmodule Champions.Battle.Simulator do
       iex> run_battle(team_1, team_2)
       :team_1
   """
-  def run_battle(team_1, team_2, seed \\ 1) do
+  def run_battle(team_1, team_2, options \\ []) do
+    maximum_steps = options[:maximum_steps] || @default_maximum_steps
+    seed = options[:seed] || @default_seed
+
     :rand.seed(:default, seed)
+
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
     units = Map.merge(team_1, team_2)
@@ -69,7 +79,7 @@ defmodule Champions.Battle.Simulator do
     # The initial_step_state is what allows the battle to be simultaneous. If we refreshed the accum on every action,
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
-    Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
+    Enum.reduce_while(1..maximum_steps, initial_state, fn step, initial_step_state ->
       new_state =
         Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
           Logger.info("Process step #{step} for unit #{format_unit_name(unit)}")
@@ -94,7 +104,7 @@ defmodule Champions.Battle.Simulator do
       Logger.info("Step #{step} finished: #{format_step_state_for_log(new_state) |> inspect()}")
 
       remove_dead_units(new_state)
-      |> check_winner(step)
+      |> check_winner(step, maximum_steps)
     end)
   end
 
@@ -202,7 +212,7 @@ defmodule Champions.Battle.Simulator do
     Map.put(state, :units, new_units)
   end
 
-  defp check_winner(state, step) do
+  defp check_winner(state, step, maximum_steps) do
     winner =
       cond do
         Enum.empty?(state.units) -> :tie
@@ -213,7 +223,7 @@ defmodule Champions.Battle.Simulator do
 
     case winner do
       :none ->
-        if step == @maximum_steps do
+        if step == maximum_steps do
           Logger.info("Battle timeout.")
           {:halt, :timeout}
         else

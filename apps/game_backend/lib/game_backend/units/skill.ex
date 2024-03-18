@@ -8,7 +8,7 @@ defmodule GameBackend.Units.Skill do
 
   schema "skills" do
     field(:name, :string)
-    embeds_many(:effects, Effect)
+    embeds_many(:effects, Effect, on_replace: :delete)
     field(:cooldown, :integer)
     field(:energy_regen, :integer)
     field(:animation_duration, :integer)
