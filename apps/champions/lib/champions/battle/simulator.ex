@@ -70,6 +70,8 @@ defmodule Champions.Battle.Simulator do
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
     Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
+      initial_step_state = Map.put(initial_step_state, :step_number, step)
+
       new_state =
         Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
           Logger.info("Process step #{step} for unit #{format_unit_name(unit)}")
@@ -171,7 +173,7 @@ defmodule Champions.Battle.Simulator do
   defp process_step_for_effect(%{delay: 0} = effect, current_state) do
     targets_after_effect =
       Enum.map(effect.targets, fn id ->
-        maybe_apply_effect(effect, current_state.units[id], effect.caster)
+        maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
       end)
 
     current_state =
@@ -265,9 +267,9 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
-  defp maybe_apply_effect(effect, target, caster) do
+  defp maybe_apply_effect(effect, target, caster, current_step_number) do
     if effect_hits?(effect),
-      do: apply_effect(effect, target, caster),
+      do: apply_effect(effect, target, caster, current_step_number),
       else: target
   end
 
@@ -284,13 +286,15 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  defp apply_effect(effect, target, caster) do
+  defp apply_effect(effect, target, caster, current_step_number) do
     target_after_modifiers =
       Enum.reduce(effect.modifiers, target, fn modifier, target ->
+        modifier_with_step = Map.put(modifier, :step_applied, current_step_number)
+
         case modifier.modifier_operation do
-          "Add" -> put_in(target, [:modifiers, :additives], modifier)
-          "Multiply" -> put_in(target, [:modifiers, :multiplicatives], modifier)
-          "Override" -> put_in(target, [:modifiers, :overrides], modifier)
+          "Add" -> put_in(target, [:modifiers, :additives], modifier_with_step)
+          "Multiply" -> put_in(target, [:modifiers, :multiplicatives], modifier_with_step)
+          "Override" -> put_in(target, [:modifiers, :overrides], modifier_with_step)
         end
       end)
 
@@ -376,7 +380,7 @@ defmodule Champions.Battle.Simulator do
          units: units,
          skills_being_cast: skl,
          pending_effects: eff,
-         pending_executions: _exec
+         pending_executions: exec
        }) do
     units = Enum.map(units, fn {_unit_id, unit} -> unit end)
 
@@ -400,8 +404,8 @@ defmodule Champions.Battle.Simulator do
             caster_id: &1.caster_id
           }
         ),
-      pending_effects: eff
-      #  pending_executions: exec
+      pending_effects: eff,
+      pending_executions: exec
     }
   end
 
