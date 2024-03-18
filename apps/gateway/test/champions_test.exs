@@ -302,7 +302,7 @@ defmodule Gateway.Test.Champions do
   end
 
   describe "afk rewards" do
-    test "afk rewards", %{socket_tester: socket_tester} do
+    test "winning a battle increments afk rewards", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("AfkRewardsUser")
       user_initial_currencies = user.currencies
 
