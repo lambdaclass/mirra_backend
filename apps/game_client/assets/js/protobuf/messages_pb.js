@@ -4450,7 +4450,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     characterName: jspb.Message.getFieldWithDefault(msg, 8, ""),
     powerUps: jspb.Message.getFieldWithDefault(msg, 9, 0),
     effectsMap: (f = msg.getEffectsMap()) ? f.toObject(includeInstance, proto.Effect.toObject) : [],
-    inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f)
+    inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
+    cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : []
   };
 
   if (includeInstance) {
@@ -4534,6 +4535,12 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       var value = new proto.Item;
       reader.readMessage(value,proto.Item.deserializeBinaryFromReader);
       msg.setInventory(value);
+      break;
+    case 12:
+      var value = msg.getCooldownsMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint64, null, "", 0);
+         });
       break;
     default:
       reader.skipField();
@@ -4639,6 +4646,10 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f,
       proto.Item.serializeBinaryToWriter
     );
+  }
+  f = message.getCooldownsMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
   }
 };
 
@@ -4882,6 +4893,29 @@ proto.Player.prototype.clearInventory = function() {
  */
 proto.Player.prototype.hasInventory = function() {
   return jspb.Message.getField(this, 11) != null;
+};
+
+
+/**
+ * map<string, uint64> cooldowns = 12;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<string,number>}
+ */
+proto.Player.prototype.getCooldownsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,number>} */ (
+      jspb.Message.getMapField(this, 12, opt_noLazyCreate,
+      null));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearCooldownsMap = function() {
+  this.getCooldownsMap().clear();
+  return this;
 };
 
 
