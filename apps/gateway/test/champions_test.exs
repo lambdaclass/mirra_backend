@@ -302,7 +302,7 @@ defmodule Gateway.Test.Champions do
   end
 
   describe "afk rewards" do
-    test "winning a battle increments afk rewards", %{socket_tester: socket_tester} do
+    test "winning battles increments the afk rewards", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("AfkRewardsUser")
       user_initial_currencies = user.currencies
 
@@ -334,7 +334,7 @@ defmodule Gateway.Test.Champions do
 
       assert battle_result.result == "win"
 
-      # Get new user
+      # Get advanced user
       SocketTester.get_user(socket_tester, user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = advanced_user}}
@@ -372,6 +372,39 @@ defmodule Gateway.Test.Champions do
                initial_gems = user_initial_currencies |> Enum.find(&(&1.currency.name == "Gems"))
 
                user_gems_currency.amount > initial_gems.amount
+             end)
+
+      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved
+
+      # Play another level to increment the afk rewards rates again
+      [campaign_progression | _] = advanced_user.campaign_progresses
+      next_level_id = campaign_progression.level_id
+      SocketTester.fight_level(socket_tester, advanced_user.id, next_level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      # Get new user
+      SocketTester.get_user(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
+
+      # Check that the gold and gems afk rewards rates are now greater than the rewards before the second battle
+      gold_currency_id = Currencies.get_currency_by_name!("Gold").id
+      gems_currency_id = Currencies.get_currency_by_name!("Gems").id
+
+      assert Enum.any?(more_advanced_user.afk_reward_rates, fn rate ->
+               previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
+               rate.currency_id == gold_currency_id && rate.rate > previous_rate
+             end)
+
+      assert Enum.any?(more_advanced_user.afk_reward_rates, fn rate ->
+               previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
+               rate.currency_id == gems_currency_id && rate.rate > previous_rate
              end)
     end
   end
