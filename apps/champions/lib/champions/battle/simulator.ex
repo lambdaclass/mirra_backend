@@ -80,6 +80,7 @@ defmodule Champions.Battle.Simulator do
         Enum.reduce(new_state.skills_being_cast, new_state, fn skill, current_state ->
           Logger.info("Process step #{step} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}")
 
+          # We need the initial_step_state to decide effect targets
           process_step_for_skill(skill, current_state, initial_step_state)
         end)
 
