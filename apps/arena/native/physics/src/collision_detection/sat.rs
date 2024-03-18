@@ -2,7 +2,7 @@ use std::mem::swap;
 
 use crate::map::{Entity, Position};
 /*
-    Collision detection using the [SAT theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
+    Collision detection using the [SAT theorem](https://dyn4j.org/2010/01/sat/)
     To determine if a pair of shapes are colliding we'll try to draw a line from an axis where the entities
     are not overlaped, if we found at least one axis that meet this we can ensure that the entities are not
     overlaping
