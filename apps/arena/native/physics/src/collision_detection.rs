@@ -1,5 +1,5 @@
 use crate::map::{Entity, Position};
-
+pub mod sat;
 /*
  * Determines if a collision has occured between a point and a circle
  * If the distance between the point and the center of the circle is less
@@ -52,47 +52,6 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
 
     // Check if the closest point is inside the circle
     point_circle_collision(&closest_point, circle)
-}
-
-pub fn get_colliding_points_between_line_and_circle(line: &Entity, circle: &Entity) -> Vec<Entity> {
-    let mut collided_points = Vec::new();
-    let point_1_position = line.vertices[0];
-    let point_2_position = line.vertices[1];
-    let point_1 = Entity::new_point(0, point_1_position);
-    let inside_1 = point_circle_collision(&point_1, circle);
-    let point_2 = Entity::new_point(0, point_2_position);
-    let inside_2 = point_circle_collision(&point_2, circle);
-
-    if inside_1 {
-        collided_points.push(point_1);
-    }
-    if inside_2 {
-        collided_points.push(point_2);
-    }
-
-    // Find the closest point on the line to the circle
-    let dist_x = point_1_position.x - point_2_position.x;
-    let dist_y = point_1_position.y - point_2_position.y;
-    let line_length = ((dist_x * dist_x) + (dist_y * dist_y)).sqrt();
-
-    let dot = (((circle.position.x - point_1_position.x)
-        * (point_2_position.x - point_1_position.x))
-        + ((circle.position.y - point_1_position.y) * (point_2_position.y - point_1_position.y)))
-        / line_length.powi(2);
-
-    let closest_point = Entity::new_point(
-        0,
-        Position {
-            x: point_1_position.x + (dot * (point_2_position.x - point_1_position.x)),
-            y: point_1_position.y + (dot * (point_2_position.y - point_1_position.y)),
-        },
-    );
-    let on_line = line_point_colision(line, &closest_point);
-    if on_line {
-        collided_points.push(closest_point);
-    }
-
-    collided_points
 }
 
 /*
