@@ -1,3 +1,5 @@
+use std::mem::swap;
+
 use crate::map::{Entity, Position};
 /*
     Collision detection using the [SAT theorem](https://en.wikipedia.org/wiki/Hyperplane_separation_theorem)
@@ -45,7 +47,7 @@ pub(crate) fn intersect_circle_polygon(
         // FIXME normalizing on this loop may be bad
         axis.normalize();
         let (min_a, max_a) = project_vertices(&polygon.vertices, axis);
-        let (min_b, max_b) = project_circle(&circle, axis);
+        let (min_b, max_b) = project_circle(circle, axis);
 
         // If there's a gap between the polygon it means they do not collide and we can safely return false
         if min_a >= max_b || min_b >= max_a {
@@ -76,7 +78,7 @@ pub(crate) fn intersect_circle_polygon(
     axis.normalize();
 
     let (min_a, max_a) = project_vertices(&polygon.vertices, axis);
-    let (min_b, max_b) = project_circle(&circle, axis);
+    let (min_b, max_b) = project_circle(circle, axis);
 
     // If there's a gap between the polygon it means they do not collide and we can safely return false
     if min_a >= max_b || min_b >= max_a {
@@ -102,104 +104,106 @@ pub(crate) fn intersect_circle_polygon(
     (true, normal, depth)
 }
 
+// Uncomment this if we need a polygon with polygon collision detection
+
 // Handle the intesection between two polygons, the return value is a tuple of 3 elements
 // a: bool = true if the entities are colliding
 // b: Position = nomalized line of collision
 // c: f32 = the amount of overlap between the shapes
-pub(crate) fn intersect_polygon_polygon(
-    polygonA: &Entity,
-    polygonB: &Entity,
-) -> (bool, Position, f32) {
-    // The normal will be the vector in wich the polygons should move to stop colliding
-    let mut normal = Position { x: 0.0, y: 0.0 };
-    // The depth is the amount of overlapping between both entities
-    let mut depth: f32 = f32::MAX;
+// pub(crate) fn intersect_polygon_polygon(
+//     polygonA: &Entity,
+//     polygonB: &Entity,
+// ) -> (bool, Position, f32) {
+//     // The normal will be the vector in wich the polygons should move to stop colliding
+//     let mut normal = Position { x: 0.0, y: 0.0 };
+//     // The depth is the amount of overlapping between both entities
+//     let mut depth: f32 = f32::MAX;
 
-    let mut axis: Position;
+//     let mut axis: Position;
 
-    // Check normal and depth for polygonA
-    for current in 0..polygonA.vertices.len() {
-        let mut next = current + 1;
-        if next == polygonA.vertices.len() {
-            next = 0
-        };
-        let va = polygonA.vertices[current];
-        let vb = polygonA.vertices[next];
+//     // Check normal and depth for polygonA
+//     for current in 0..polygonA.vertices.len() {
+//         let mut next = current + 1;
+//         if next == polygonA.vertices.len() {
+//             next = 0
+//         };
+//         let va = polygonA.vertices[current];
+//         let vb = polygonA.vertices[next];
 
-        let edge = Position::sub(va, vb);
-        axis = Position {
-            x: -edge.y,
-            y: edge.x,
-        };
-        // FIXME normalizing on this loop may be bad
-        axis.normalize();
-        let (min_a, max_a) = project_vertices(&polygonA.vertices, axis);
-        let (min_b, max_b) = project_vertices(&polygonB.vertices, axis);
+//         let edge = Position::sub(va, vb);
+//         axis = Position {
+//             x: -edge.y,
+//             y: edge.x,
+//         };
+//         // FIXME normalizing on this loop may be bad
+//         axis.normalize();
+//         let (min_a, max_a) = project_vertices(&polygonA.vertices, axis);
+//         let (min_b, max_b) = project_vertices(&polygonB.vertices, axis);
 
-        // If there's a gap between the polygon it means they do not collide and we can safely return false
-        if min_a >= max_b || min_b >= max_a {
-            return (false, normal, depth);
-        }
+//         // If there's a gap between the polygon it means they do not collide and we can safely return false
+//         if min_a >= max_b || min_b >= max_a {
+//             return (false, normal, depth);
+//         }
 
-        let depth_a = max_b - min_a;
-        let depth_b = max_a - min_b;
-        let axis_depth = f32::min(depth_a, depth_b);
+//         let depth_a = max_b - min_a;
+//         let depth_b = max_a - min_b;
+//         let axis_depth = f32::min(depth_a, depth_b);
 
-        if axis_depth < depth {
-            depth = axis_depth;
-            if depth_b > depth_a {
-                normal = Position {
-                    x: -axis.x,
-                    y: -axis.y,
-                };
-            } else {
-                normal = axis;
-            }
-        }
-    }
-    // Check normal and depth for polygonB
-    for current in 0..polygonB.vertices.len() {
-        let mut next = current + 1;
-        if next == polygonB.vertices.len() {
-            next = 0
-        };
-        let va = polygonB.vertices[current];
-        let vb = polygonB.vertices[next];
+//         if axis_depth < depth {
+//             depth = axis_depth;
+//             if depth_b > depth_a {
+//                 normal = Position {
+//                     x: -axis.x,
+//                     y: -axis.y,
+//                 };
+//             } else {
+//                 normal = axis;
+//             }
+//         }
+//     }
+//     // Check normal and depth for polygonB
+//     for current in 0..polygonB.vertices.len() {
+//         let mut next = current + 1;
+//         if next == polygonB.vertices.len() {
+//             next = 0
+//         };
+//         let va = polygonB.vertices[current];
+//         let vb = polygonB.vertices[next];
 
-        let edge = Position::sub(va, vb);
-        axis = Position {
-            x: -edge.y,
-            y: edge.x,
-        };
-        // FIXME normalizing on this loop may be bad
-        axis.normalize();
-        let (min_a, max_a) = project_vertices(&polygonB.vertices, axis);
-        let (min_b, max_b) = project_vertices(&polygonA.vertices, axis);
+//         let edge = Position::sub(va, vb);
+//         axis = Position {
+//             x: -edge.y,
+//             y: edge.x,
+//         };
+//         // FIXME normalizing on this loop may be bad
+//         axis.normalize();
+//         let (min_a, max_a) = project_vertices(&polygonB.vertices, axis);
+//         let (min_b, max_b) = project_vertices(&polygonA.vertices, axis);
 
-        // If there's a gap between the polygon it means they do not collide and we can safely return false
-        if min_a >= max_b || min_b >= max_a {
-            return (false, normal, depth);
-        }
+//         // If there's a gap between the polygon it means they do not collide and we can safely return false
+//         if min_a >= max_b || min_b >= max_a {
+//             return (false, normal, depth);
+//         }
 
-        let depth_a = max_b - min_a;
-        let depth_b = max_a - min_b;
-        let axis_depth = f32::min(depth_a, depth_b);
+//         let depth_a = max_b - min_a;
+//         let depth_b = max_a - min_b;
+//         let axis_depth = f32::min(depth_a, depth_b);
 
-        if axis_depth < depth {
-            depth = axis_depth;
-            if depth_b > depth_a {
-                normal = Position {
-                    x: -axis.x,
-                    y: -axis.y,
-                };
-            } else {
-                normal = axis;
-            }
-        }
-    }
+//         if axis_depth < depth {
+//             depth = axis_depth;
+//             if depth_b > depth_a {
+//                 normal = Position {
+//                     x: -axis.x,
+//                     y: -axis.y,
+//                 };
+//             } else {
+//                 normal = axis;
+//             }
+//         }
+//     }
 
-    (true, normal, depth)
-}
+//     (true, normal, depth)
+// }
 
 // Get the min and max values from a polygon projected on a specific axis
 fn project_vertices(vertices: &Vec<Position>, axis: Position) -> (f32, f32) {
@@ -237,9 +241,7 @@ fn project_circle(circle: &Entity, axis: Position) -> (f32, f32) {
     max = dot(&p2, axis);
 
     if min > max {
-        let t = max;
-        max = min;
-        min = t;
+        swap(&mut max, &mut min);
     }
 
     (min, max)
@@ -254,7 +256,7 @@ fn find_closest_vertex(center: &Position, vertices: &Vec<Position>) -> Position 
         let distance = center.distance_to_position(current);
         if distance < min_distance {
             min_distance = distance;
-            result = current.clone();
+            result = *current;
         }
     }
 
