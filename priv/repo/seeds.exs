@@ -21,12 +21,13 @@ muflus = Characters.get_character_by_name("Muflus")
 {:ok, _muflus} =
   Characters.update_character(muflus, %{
     basic_skill: %{
+      name: "Muflus Basic",
       effects: [
         %{
           type: "instant",
           initial_delay: 0,
           components: [],
-          modifier: [],
+          modifiers: [],
           executions: [
             %{
               "type" => "DealDamage",
@@ -50,7 +51,7 @@ muflus = Characters.get_character_by_name("Muflus")
           type: "instant",
           initial_delay: 0,
           components: [],
-          modifier: [],
+          modifiers: [],
           executions: [
             %{
               "type" => "DealDamage",

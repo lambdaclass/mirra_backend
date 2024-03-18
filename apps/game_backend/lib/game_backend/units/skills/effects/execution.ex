@@ -5,9 +5,20 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
   Depending on the execution calc used, different things will happen. For example, in the case of Damage, it can:
 
   - Prevent the damage from happening, through stats like Dodge
-  - Determine how much energy the target will recover when being damaged by that skill. Note that any individual instance of a skill should only be able to charge energy to the same target once. So if a skill hits all targets 5 times, only the first time will trigger energy gain.
-  - Reduce the damage taken based on the defense, or stats like damage reduction
+  - Determine how much energy the target will recover when being damaged by that skill.
+      - Note that any individual instance of a skill should only be able to charge energy to the same target once,
+        so if a skill hits all targets 5 times, only the first time will trigger energy gain.
+  - Reduce the damage taken based on the defense, or stats like damage reduction.
   - Etc.
+
+  Examples:
+      # DealDamage effect that hits for 80% of attack, gives 50 energy to its target and has no delay
+      %Effect{
+        "type" => "DealDamage",
+        "attack_ratio" => 0.8,
+        "energy_recharge" => 50,
+        "delay" => 0
+      }
   """
 
   use Ecto.Type

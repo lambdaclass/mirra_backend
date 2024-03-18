@@ -80,6 +80,8 @@ defmodule Champions.Battle.Simulator do
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
     Enum.reduce_while(1..maximum_steps, initial_state, fn step, initial_step_state ->
+      initial_step_state = Map.put(initial_step_state, :step_number, step)
+
       new_state =
         Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
           Logger.info("Process step #{step} for unit #{format_unit_name(unit)}")
@@ -137,24 +139,58 @@ defmodule Champions.Battle.Simulator do
           current_state
       end
 
-    put_in(
-      new_state,
+    # Reduce modifier remaining timers & remove expired ones
+    new_modifiers = %{
+      additives: reduce_modifier_timers(unit.modifiers.additives, unit),
+      multiplicatives: reduce_modifier_timers(unit.modifiers.multiplicatives, unit),
+      overrides: reduce_modifier_timers(unit.modifiers.overrides, unit)
+    }
+
+    new_state
+    |> put_in(
       [:units, unit.id, :basic_skill, :remaining_cooldown],
       max(new_state.units[unit.id].basic_skill.remaining_cooldown - 1, 0)
     )
+    |> put_in([:units, unit.id, :modifiers], new_modifiers)
+  end
+
+  defp reduce_modifier_timers(modifiers, unit) do
+    Enum.reduce(modifiers, [], fn modifier, acc ->
+      case modifier.remaining_steps do
+        # Modifier is permanent
+        -1 ->
+          [modifier | acc]
+
+        # Modifier expired
+        0 ->
+          Logger.info("Modifier [#{format_modifier_name(modifier)}] expired for #{format_unit_name(unit)}.")
+
+          acc
+
+        # Modifier still going, reduce its timer by one
+        remaining ->
+          Logger.info(
+            "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)}."
+          )
+
+          [Map.put(modifier, :remaining_steps, remaining - 1) | acc]
+      end
+    end)
   end
 
   defp process_step_for_skill(skill, current_state, initial_step_state) do
     # Check if the casting unit has died
     if Enum.any?(current_state.units, fn {unit_id, _unit} -> unit_id == skill.caster_id end) do
-      {new_skill, new_state} = process_animation_trigger(skill, current_state, initial_step_state)
+      {new_skill, new_state} = process_effects_trigger(skill, current_state, initial_step_state)
 
-      new_skill = %{new_skill | animation_duration: skill.animation_duration - 1}
-
-      # If the animation has finished, we remove skill from list. Otherwise, we update it with its new state.
-      if new_skill.animation_duration == -1,
-        do: Map.put(new_state, :skills_being_cast, List.delete(new_state.skills_being_cast, skill)),
-        else: Map.put(new_state, :skills_being_cast, [new_skill | List.delete(new_state.skills_being_cast, skill)])
+      if new_skill.animation_duration == 0 do
+        # If the animation has finished, we remove skill from list.
+        Map.put(new_state, :skills_being_cast, List.delete(new_state.skills_being_cast, skill))
+      else
+        # Otherwise, we update it with its new state.
+        new_skill = %{new_skill | animation_duration: skill.animation_duration - 1}
+        Map.put(new_state, :skills_being_cast, [new_skill | List.delete(new_state.skills_being_cast, skill)])
+      end
     else
       # If the unit died, just delete the skill being cast
       Logger.info("Skill caster #{String.slice(skill.caster_id, 0..2)} died. Deleting skill from list.")
@@ -163,25 +199,27 @@ defmodule Champions.Battle.Simulator do
   end
 
   # If the animation is ready, trigger the skill effects
-  defp process_animation_trigger(%{animation_trigger: 0} = skill, current_state, initial_step_state) do
-    Logger.info("Animation trigger for skill #{skill.name} ready. Creating effects.")
+  defp process_effects_trigger(%{effects_trigger: 0} = skill, current_state, initial_step_state) do
+    Logger.info("Animation trigger for skill #{skill.name} ready. Creating #{Enum.count(skill.effects)} effects.")
     current_state = trigger_skill_effects(skill, current_state, initial_step_state)
-    {%{skill | animation_trigger: -1}, current_state}
+    {%{skill | effects_trigger: -1}, current_state}
   end
 
   # If the animation has already triggered, do nothing
-  defp process_animation_trigger(%{animation_trigger: -1} = skill, current_state, _initial_step_state),
+  defp process_effects_trigger(%{effects_trigger: -1} = skill, current_state, _initial_step_state),
     do: {skill, current_state}
 
   # If the animation still has not triggered, reduce the remaining counter
-  defp process_animation_trigger(skill, current_state, _initial_step_state) do
-    {%{skill | animation_trigger: skill.animation_trigger - 1}, current_state}
+  defp process_effects_trigger(skill, current_state, _initial_step_state) do
+    {%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}
   end
 
   defp process_step_for_effect(%{delay: 0} = effect, current_state) do
+    Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
+
     targets_after_effect =
       Enum.map(effect.targets, fn id ->
-        maybe_apply_effect(effect, current_state.units[id], effect.caster)
+        maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
       end)
 
     current_state =
@@ -275,10 +313,13 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
-  defp maybe_apply_effect(effect, target, caster) do
-    if effect_hits?(effect),
-      do: apply_effect(effect, target, caster),
-      else: target
+  defp maybe_apply_effect(effect, target, caster, current_step_number) do
+    if effect_hits?(effect) do
+      apply_effect(effect, target, caster, current_step_number)
+    else
+      Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
+      target
+    end
   end
 
   defp effect_hits?(effect) do
@@ -294,13 +335,24 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  defp apply_effect(effect, target, caster) do
+  defp apply_effect(effect, target, caster, current_step_number) do
     target_after_modifiers =
       Enum.reduce(effect.modifiers, target, fn modifier, target ->
+        # If it's permanent, we set its duration to -1
+        new_modifier =
+          modifier
+          |> Map.put(:remaining_steps, Map.get(effect.type, "duration", -1))
+          |> Map.put(:step_applied_at, current_step_number)
+
         case modifier.modifier_operation do
-          "Add" -> put_in(target, [:modifiers, :additives], modifier)
-          "Multiply" -> put_in(target, [:modifiers, :multiplicatives], modifier)
-          "Override" -> put_in(target, [:modifiers, :overrides], modifier)
+          "Add" ->
+            put_in(target, [:modifiers, :additives], [new_modifier | target.modifiers.additives])
+
+          "Multiply" ->
+            put_in(target, [:modifiers, :multiplicatives], [new_modifier | target.modifiers.multiplicatives])
+
+          "Override" ->
+            put_in(target, [:modifiers, :overrides], [new_modifier | target.modifiers.overrides])
         end
       end)
 
@@ -365,7 +417,7 @@ defmodule Champions.Battle.Simulator do
       remaining_cooldown: skill.cooldown,
       energy_regen: skill.energy_regen || 0,
       animation_duration: skill.animation_duration || 0,
-      animation_trigger: skill.animation_trigger || 0,
+      effects_trigger: skill.animation_trigger || 0,
       caster_id: caster_id
     }
 
@@ -386,7 +438,7 @@ defmodule Champions.Battle.Simulator do
          units: units,
          skills_being_cast: skl,
          pending_effects: eff,
-         pending_executions: _exec
+         pending_executions: exec
        }) do
     units = Enum.map(units, fn {_unit_id, unit} -> unit end)
 
@@ -406,32 +458,36 @@ defmodule Champions.Battle.Simulator do
           &%{
             name: &1.name,
             animation_duration: &1.animation_duration,
-            animation_trigger: &1.animation_trigger,
+            effects_trigger: &1.effects_trigger,
             caster_id: &1.caster_id
           }
         ),
-      pending_effects: eff
-      #  pending_executions: exec
+      pending_effects: eff,
+      pending_executions: exec
     }
   end
 
   defp format_unit_name(unit), do: "#{unit.character_name}-#{String.slice(unit.id, 0..2)}"
 
+  defp format_modifier_name(modifier),
+    do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
+
   defp calculate_unit_stat(unit, attribute) do
-    overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == attribute))
+    Logger.info(:calculate_unit_stat)
+    overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
 
     if Enum.empty?(overrides) do
       addition =
-        Enum.filter(unit.modifiers.additives, &(&1.attribute == attribute))
+        Enum.filter(unit.modifiers.additives, &(&1.attribute == Atom.to_string(attribute)))
         |> Enum.reduce(0, fn mod, acc -> mod.float_magnitude + acc end)
 
       multiplication =
-        Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == attribute))
+        Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == Atom.to_string(attribute)))
         |> Enum.reduce(1, fn mod, acc -> mod.float_magnitude * acc end)
 
       (unit[attribute] + addition) * multiplication
     else
-      Enum.min_by(overrides, & &1.step_applied).float_magnitude
+      Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
     end
   end
 end
