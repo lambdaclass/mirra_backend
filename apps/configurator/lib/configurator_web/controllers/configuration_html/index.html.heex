@@ -2,7 +2,7 @@
   Listing Configurations
   <:actions>
     <.link href={~p"/configurations/new"}>
-      <.button>New Configuration</.button>
+      <.button>New configuration from default</.button>
     </.link>
   </:actions>
 </.header>
@@ -14,7 +14,7 @@
     <div class="sr-only">
       <.link navigate={~p"/configurations/#{configuration}"}>Show</.link>
     </div>
-    <.link navigate={~p"/configurations/new/#{configuration}"}>Modify</.link>
+    <.link navigate={~p"/configurations/new/#{configuration}"}>Copy</.link>
   </:action>
   <:action :let={configuration}>
     <%= unless configuration.is_default do %>
