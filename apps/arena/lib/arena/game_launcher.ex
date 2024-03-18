@@ -14,8 +14,8 @@ defmodule Arena.GameLauncher do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
   end
 
-  def join(client_id, character_name) do
-    GenServer.call(__MODULE__, {:join, client_id, character_name})
+  def join(client_id, character_name, player_name) do
+    GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
   end
 
   # Callbacks
@@ -26,14 +26,14 @@ defmodule Arena.GameLauncher do
   end
 
   @impl true
-  def handle_call({:join, client_id, character_name}, {from_pid, _}, %{clients: clients} = state) do
+  def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, %{clients: clients} = state) do
     batch_start_at = maybe_make_batch_start_at(state.clients, state.batch_start_at)
 
     {:reply, :ok,
      %{
        state
        | batch_start_at: batch_start_at,
-         clients: clients ++ [{client_id, character_name, from_pid}]
+         clients: clients ++ [{client_id, character_name, player_name, from_pid}]
      }}
   end
 
@@ -63,7 +63,7 @@ defmodule Arena.GameLauncher do
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
-    Enum.each(game_clients, fn {_client_id, _character_name, from_pid} ->
+    Enum.each(game_clients, fn {_client_id, _character_name, _player_name, from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])
       Process.send(from_pid, :leave_waiting_game, [])
     end)

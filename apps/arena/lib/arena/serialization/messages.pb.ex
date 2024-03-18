@@ -337,6 +337,15 @@ defmodule Arena.Serialization.Player.EffectsEntry do
   field(:value, 2, type: Arena.Serialization.Effect)
 end
 
+defmodule Arena.Serialization.Player.CooldownsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :string)
+  field(:value, 2, type: :uint64)
+end
+
 defmodule Arena.Serialization.Player do
   @moduledoc false
 
@@ -359,6 +368,7 @@ defmodule Arena.Serialization.Player do
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
   field(:effects, 10, repeated: true, type: Arena.Serialization.Player.EffectsEntry, map: true)
   field(:inventory, 11, type: Arena.Serialization.Item)
+  field(:cooldowns, 12, repeated: true, type: Arena.Serialization.Player.CooldownsEntry, map: true)
 end
 
 defmodule Arena.Serialization.Effect do
