@@ -58,7 +58,7 @@ config :tailwind,
 dispatch = [
   _: [
     {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
-    {"/join/:client_id/:character_name", Arena.SocketHandler, []},
+    {"/join/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
     {:_, Plug.Cowboy.Handler, {ArenaWeb.Endpoint, []}}
   ]
 ]

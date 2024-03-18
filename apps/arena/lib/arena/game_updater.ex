@@ -526,7 +526,7 @@ defmodule Arena.GameUpdater do
   defp complete_entity(entity) do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
+    |> Map.put(:name, entity.name)
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
@@ -569,7 +569,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
     {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
+                                                                         _from_pid},
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
@@ -579,7 +580,7 @@ defmodule Arena.GameUpdater do
           new_game.players
           |> Map.put(
             last_id,
-            Entities.new_player(last_id, character_name, pos, direction, config, now)
+            Entities.new_player(last_id, character_name, player_name, pos, direction, config, now)
           )
 
         new_game =
