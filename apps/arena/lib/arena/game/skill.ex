@@ -287,8 +287,8 @@ defmodule Arena.Game.Skill do
 
     Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
       should_re_apply? =
-        (not is_nil(Map.get(mechanic_params, :effect_delay_ms))) and
-        (is_nil(Map.get(mechanic_params, :last_application_time)) or
+        (is_nil(Map.get(mechanic_params, :last_application_time))) or
+        ( not is_nil(Map.get(mechanic_params, :effect_delay_ms)) and
           now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms)
 
       if should_re_apply? do
@@ -349,6 +349,11 @@ defmodule Arena.Game.Skill do
 
         player
     end
+  end
+
+  defp do_effect_mechanics(_game_state, player, effect, {:speed_boost, speed_boost_params}) do
+    Process.send_after(self(), {:remove_speed_boost, player.id, speed_boost_params.amount}, effect.duration_ms)
+    Map.put(player, :speed, player.speed + speed_boost_params.amount)
   end
 
   defp do_effect_mechanics(_game_state, player, _effect, {:damage_up, _}) do

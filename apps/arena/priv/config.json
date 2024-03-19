@@ -410,7 +410,7 @@
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
-      "on_death_effect": "muflus_death",
+      "on_death_effect": "h4ck_death",
       "skills": {
         "1": "slingshot",
         "2": "denial_of_service",
@@ -428,7 +428,7 @@
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
-      "on_death_effect": "muflus_death",
+      "on_death_effect": "invisible",
       "skills": {
         "1": "avenge",
         "2": "veil_radiance",
@@ -498,11 +498,21 @@
     },
     {
       "name": "muflus_death",
-      "duration_ms": 50000,
+      "duration_ms": 5000,
       "remove_on_action": false,
       "effect_mechanics": {
         "damage_up": {
           "amount": 30
+        }
+      }
+    },
+    {
+      "name": "h4ck_death",
+      "duration_ms": 5000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "speed_boost": {
+          "amount": 60
         }
       }
     }
