@@ -7,7 +7,7 @@ defmodule Arena.GameLauncher do
   # Amount of clients needed to start a game
   @clients_needed 10
   # Time to wait to start game with any amount of clients
-  @start_timeout_ms 1000
+  @start_timeout_ms 10_000
 
   # API
   def start_link(_) do
@@ -94,6 +94,7 @@ defmodule Arena.GameLauncher do
 
   defp build_bot_url(client_id) do
     # TODO remove this hardcode url when servers are implemented
-    "http://localhost:5000/join/#{client_id}"
+    host = System.get_env("BOT_MANAGER_HOST", "localhost:5000")
+    "http://#{host}/join/#{client_id}"
   end
 end
