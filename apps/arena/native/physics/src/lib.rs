@@ -77,6 +77,13 @@ fn move_entity_to_position(
     if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
         entity.move_to_next_valid_position_inside(&external_wall);
     }
+    entity
+}
+
+#[rustler::nif()]
+fn move_entity_to_direction(entity: Entity, direction: Position, amount: f32) -> Entity {
+    let mut entity: Entity = entity;
+    entity.move_entity_to_direction(direction, amount);
 
     entity
 }
@@ -189,6 +196,7 @@ rustler::init!(
         check_collisions,
         move_entities,
         move_entity,
+        move_entity_to_direction,
         add_angle_to_direction,
         calculate_triangle_vertices,
         get_direction_from_positions,

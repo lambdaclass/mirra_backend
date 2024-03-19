@@ -105,10 +105,13 @@ defmodule Arena.Game.Player do
   end
 
   def get_skill_if_usable(player, skill_key) do
+    skill = get_in(player, [:aditional_info, :skills, skill_key])
+    skill_cooldown = get_in(player, [:aditional_info, :cooldowns, skill_key])
     available_stamina = player.aditional_info.available_stamina
 
-    case get_in(player, [:aditional_info, :skills, skill_key]) do
-      %{stamina_cost: cost} = skill when cost <= available_stamina -> skill
+    case skill do
+      %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
+      %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
       _ -> nil
     end
   end
@@ -190,26 +193,11 @@ defmodule Arena.Game.Player do
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
-          |> change_stamina(-skill.stamina_cost)
+          |> apply_skill_cooldown(skill_key, skill)
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
           |> maybe_make_invinsible(skill)
-
-        player =
-          case stamina_recharging?(player) do
-            false ->
-              Process.send_after(
-                self(),
-                {:recharge_stamina, player.id},
-                player.aditional_info.stamina_interval
-              )
-
-              put_in(player, [:aditional_info, :recharging_stamina], true)
-
-            _ ->
-              player
-          end
 
         put_in(game_state, [:players, player.id], player)
     end
@@ -280,9 +268,9 @@ defmodule Arena.Game.Player do
   ####################
   # Internal helpers #
   ####################
-  defp skill_key_execution_action(skill_key) do
-    "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
-  end
+  defp skill_key_execution_action("1"), do: :EXECUTING_SKILL_1
+  defp skill_key_execution_action("2"), do: :EXECUTING_SKILL_2
+  defp skill_key_execution_action("3"), do: :EXECUTING_SKILL_3
 
   defp maybe_trigger_natural_heal(player, true) do
     now = System.monotonic_time(:millisecond)
@@ -357,6 +345,23 @@ defmodule Arena.Game.Player do
   def apply_effect({:damage_immunity, damage_immunity}, player) do
     Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
     put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
+    put_in(player, [:aditional_info, :cooldowns, skill_key], cooldown_ms)
+  end
+
+  defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}) do
+    player = change_stamina(player, -cost)
+
+    case stamina_recharging?(player) do
+      false ->
+        Process.send_after(self(), {:recharge_stamina, player.id}, player.aditional_info.stamina_interval)
+        put_in(player, [:aditional_info, :recharging_stamina], true)
+
+      _ ->
+        player
+    end
   end
 
   defp maybe_make_invinsible(

@@ -103,11 +103,13 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    ticks_to_move = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
+    time_diff = now - game_state.server_timestamp
+    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
 
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
       |> move_projectiles()
@@ -116,6 +118,8 @@ defmodule Arena.GameUpdater do
       |> resolve_projectiles_collisions_with_players()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> explode_projectiles()
+      |> handle_pools(state.game_config)
+      |> Skill.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -438,6 +442,21 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
+    game_state =
+      Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
+        remove_pool_effects(game_state, player, pool_id)
+      end)
+      |> update_in(
+        [:pools],
+        fn current_pools ->
+          Map.delete(current_pools, pool_id)
+        end
+      )
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -469,6 +488,7 @@ defmodule Arena.GameUpdater do
              players: complete_entities(state.players),
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
+             pools: complete_entities(state.pools),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -506,7 +526,7 @@ defmodule Arena.GameUpdater do
   defp complete_entity(entity) do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
+    |> Map.put(:name, entity.name)
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
@@ -533,6 +553,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
+      |> Map.put(:pools, %{})
       |> Map.put(:killfeed, [])
       |> Map.put(:damage_taken, %{})
       |> Map.put(:damage_done, %{})
@@ -548,7 +569,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
     {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
+                                                                         _from_pid},
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
@@ -558,7 +580,7 @@ defmodule Arena.GameUpdater do
           new_game.players
           |> Map.put(
             last_id,
-            Entities.new_player(last_id, character_name, pos, direction, config, now)
+            Entities.new_player(last_id, character_name, player_name, pos, direction, config, now)
           )
 
         new_game =
@@ -602,6 +624,22 @@ defmodule Arena.GameUpdater do
   # Game flow. Actions executed in every tick.
   ##########################
 
+  defp reduce_players_cooldowns(game_state, time_diff) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        cooldowns =
+          Map.new(player.aditional_info.cooldowns, fn {skill_key, cooldown} ->
+            {skill_key, cooldown - time_diff}
+          end)
+          |> Map.filter(fn {_skill_key, cooldown} -> cooldown > 0 end)
+
+        player = put_in(player, [:aditional_info, :cooldowns], cooldowns)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
+
   defp move_players(
          %{
            players: players,
@@ -609,9 +647,12 @@ defmodule Arena.GameUpdater do
            external_wall: external_wall,
            obstacles: obstacles,
            power_ups: power_ups,
+           pools: pools,
            items: items
          } = game_state
        ) do
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items)
+
     moved_players =
       players
       |> Physics.move_entities(
@@ -619,7 +660,7 @@ defmodule Arena.GameUpdater do
         external_wall,
         obstacles
       )
-      |> update_collisions(players, Map.merge(power_ups, items))
+      |> update_collisions(players, entities_to_collide)
 
     %{game_state | players: moved_players}
   end
@@ -991,6 +1032,49 @@ defmodule Arena.GameUpdater do
     else
       {players_acc, power_ups_acc}
     end
+  end
+
+  defp handle_pools(%{players: players} = game_state, game_config) do
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
+      Enum.reduce(game_state.pools, game_state, fn {pool_id, pool}, acc ->
+        if pool_id in player.collides_with do
+          add_pool_effects(acc, game_config, player, pool)
+        else
+          remove_pool_effects(acc, player, pool_id)
+        end
+      end)
+    end)
+  end
+
+  defp add_pool_effects(game_state, game_config, player, pool) do
+    player_contain_pool_effects? =
+      Enum.any?(player.aditional_info.effects, fn {_effect_id, effect} ->
+        effect.owner_id == pool.id
+      end)
+
+    if player_contain_pool_effects? or player.id == pool.aditional_info.owner_id do
+      game_state
+    else
+      Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
+        last_id = game_state.last_id + 1
+
+        effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+
+        game_state
+        |> put_in(
+          [:players, player.id, :aditional_info, :effects, last_id],
+          Map.put(effect, :owner_id, pool.id)
+          |> Map.put(:id, last_id)
+        )
+        |> put_in([:last_id], last_id)
+      end)
+    end
+  end
+
+  defp remove_pool_effects(game_state, player, pool_id) do
+    update_in(game_state, [:players, player.id, :aditional_info, :effects], fn current_effects ->
+      Map.reject(current_effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end)
+    end)
   end
 
   defp process_item(player, item, players_acc, items_acc) do

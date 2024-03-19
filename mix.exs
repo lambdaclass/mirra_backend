@@ -4,7 +4,7 @@ defmodule MirraBackend.MixProject do
   def project do
     [
       apps_path: "apps",
-      apps: [:arena, :champions, :game_client, :gateway, :game_backend],
+      apps: [:arena, :champions, :game_client, :gateway, :game_backend, :arena_load_test],
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -28,7 +28,7 @@ defmodule MirraBackend.MixProject do
       setup: ["deps.get", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
+      test: ["ecto.reset --quiet", "ecto.migrate --quiet", "run priv/repo/seeds.exs", "test"]
     ]
   end
 
@@ -40,7 +40,8 @@ defmodule MirraBackend.MixProject do
           champions: :permanent,
           game_backend: :permanent,
           game_client: :permanent,
-          gateway: :permanent
+          gateway: :permanent,
+          arena_load_test: :permanent
         ]
       ]
     ]
