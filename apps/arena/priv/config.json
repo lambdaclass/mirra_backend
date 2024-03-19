@@ -317,6 +317,7 @@
     },
     {
       "name": "warp",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
       "execution_duration_ms": 800,
       "inmune_while_executing": true,
