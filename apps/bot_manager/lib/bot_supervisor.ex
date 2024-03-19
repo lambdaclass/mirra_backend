@@ -13,7 +13,6 @@ defmodule BotManager.BotSupervisor do
   end
 
   def spawn_bot(bot_config) do
-    IO.inspect(bot_config, label: "aber bot config")
     DynamicSupervisor.start_child(__MODULE__, {BotManager.SocketHandler, bot_config})
   end
 
