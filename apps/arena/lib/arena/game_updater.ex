@@ -318,7 +318,10 @@ defmodule Arena.GameUpdater do
     last_id = game_state.last_id + 1
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    on_death_effect = Enum.find(game_config.effects, fn effect -> effect.name == victim.aditional_info.on_death_effect end)
+
+    on_death_effect =
+      Enum.find(game_config.effects, fn effect -> effect.name == victim.aditional_info.on_death_effect end)
+
     killer =
       Map.get(game_state.players, killer_id)
       |> Player.apply_on_death_effect(on_death_effect, last_id)
