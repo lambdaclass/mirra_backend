@@ -374,7 +374,7 @@ defmodule Gateway.Test.Champions do
                user_gems_currency.amount > initial_gems.amount
              end)
 
-      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved
+      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Play another level to increment the afk rewards rates again
       [campaign_progression | _] = advanced_user.campaign_progresses
