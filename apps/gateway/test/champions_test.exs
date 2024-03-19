@@ -352,26 +352,35 @@ defmodule Gateway.Test.Champions do
              end)
 
       # Wait for the afk rewards to increase
-      :timer.sleep(2000)
+      milliseconds_to_wait = 2000
+      :timer.sleep(milliseconds_to_wait)
 
       # Claim afk rewards
       SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
 
-      # Check that the user has received gold and gems
+      # Check that the user has received gold and gems.
+      # The amount should be greater than the initial amount, and be in the range of the expected amount considering the time waited.
+      # We add 1 to the time waited to account for the time it takes to process the message.
       assert Enum.any?(claimed_user.currencies, fn currency ->
                user_gold_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == "Gold"))
                initial_gold = user_initial_currencies |> Enum.find(&(&1.currency.name == "Gold"))
+               reward_rate = Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
 
-               user_gold_currency.amount > initial_gold.amount
+               user_gold_currency.amount in initial_gold.amount..trunc(
+                 initial_gold.amount + reward_rate * (milliseconds_to_wait / 1000 + 1)
+               )
              end)
 
       assert Enum.any?(claimed_user.currencies, fn currency ->
                user_gems_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == "Gems"))
                initial_gems = user_initial_currencies |> Enum.find(&(&1.currency.name == "Gems"))
+               reward_rate = Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
 
-               user_gems_currency.amount > initial_gems.amount
+               user_gems_currency.amount in initial_gems.amount..trunc(
+                 initial_gems.amount + reward_rate * (milliseconds_to_wait / 1000 + 1)
+               )
              end)
 
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
