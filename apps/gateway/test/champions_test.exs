@@ -312,7 +312,7 @@ defmodule Gateway.Test.Champions do
 
       assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: initial_afk_rewards}}}
 
-      # Check that te initial afk reward rates are all 0
+      # Check that the initial afk reward rates are all 0
       assert Enum.all?(user.afk_reward_rates, fn rate -> rate.rate == 0 end)
 
       # Check that the initial afk rewards are all 0
