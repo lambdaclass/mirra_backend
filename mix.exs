@@ -34,12 +34,12 @@ defmodule MirraBackend.MixProject do
 
   defp releases() do
     [
-      all: [
+      arena: [applications: [arena: :permanent]],
+      arena_load_test: [applications: [arena_load_test: :permanent]],
+      game_backend: [
         applications: [
-          arena: :permanent,
           champions: :permanent,
           game_backend: :permanent,
-          game_client: :permanent,
           gateway: :permanent,
           arena_load_test: :permanent
         ]
