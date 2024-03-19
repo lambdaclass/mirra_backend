@@ -14,6 +14,7 @@ defmodule GameBackend.Users do
   alias Ecto.Multi
   alias GameBackend.Units.Unit
   alias GameBackend.Items.Item
+  alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
   alias GameBackend.Campaigns.CampaignProgress
   alias GameBackend.Campaigns
@@ -74,6 +75,13 @@ defmodule GameBackend.Users do
     if user, do: {:ok, user}, else: {:error, :not_found}
   end
 
+  @doc """
+  Checks whether a user exists with the given id.
+
+  Useful if you want to validate an id while not needing to operate with the user itself.
+  """
+  def exists?(user_id), do: Repo.exists?(from(u in User, where: u.id == ^user_id))
+
   def update_experience(user, params),
     do:
       user
@@ -85,8 +93,8 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    with {:campaign_data, {:ok, campaign_progress}} <-
-           {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
+    with {:campaign_progress, {:ok, campaign_progress}} <-
+           {:campaign_progress, Campaigns.get_campaign_progress(user_id, campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} <-
            {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
       level = campaign_progress.level
@@ -94,6 +102,7 @@ defmodule GameBackend.Users do
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
       |> apply_currency_rewards(user_id, level.currency_rewards)
+      |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
         build_item_rewards_params(user_id, level.item_rewards)
       end)
@@ -107,17 +116,30 @@ defmodule GameBackend.Users do
       end)
       |> Repo.transaction()
     else
-      {:campaign_data, _transaction_error} -> {:error, :campaign_data_error}
+      {:campaign_progress, _transaction_error} -> {:error, :campaign_progress_not_found}
       {:next_level, _transaction_error} -> {:campaign_progress_error}
     end
   end
 
+  def reset_afk_rewards_claim(user_id) do
+    {:ok, user} = get_user(user_id)
+
+    user
+    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
+    |> Repo.update()
+  end
+
   defp preload(user),
     do:
-      Repo.preload(user,
-        items: :template,
-        units: [:character, :items],
-        currencies: :currency
+      Repo.preload(
+        user,
+        [
+          :campaign_progresses,
+          :afk_reward_rates,
+          items: :template,
+          units: [:character, :items],
+          currencies: :currency
+        ]
       )
 
   defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
@@ -166,6 +188,14 @@ defmodule GameBackend.Users do
     Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
       Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
         Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
+      end)
+    end)
+  end
+
+  defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
+    Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
+      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
+        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
       end)
     end)
   end

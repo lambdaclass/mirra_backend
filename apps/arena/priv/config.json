@@ -45,11 +45,10 @@
     ],
     "obstacles": [
       {
-        "position":
-          {
-            "x": -6044.0,
-            "y": -1439.0
-          },
+        "position": {
+          "x": -6044.0,
+          "y": -1439.0
+        },
         "radius": 1567.0
       },
       {
@@ -86,6 +85,7 @@
   "skills": [
     {
       "name": "hit",
+      "cooldown_mechanism": "stamina",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 300,
@@ -105,7 +105,33 @@
       "effects_to_apply": []
     },
     {
+      "name": "singularity",
+      "cooldown_mechanism": "time",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "activation_delay_ms": 300,
+      "is_passive": false,
+      "autoaim": true,
+      "stamina_cost": 2,
+      "can_pick_destination": true,
+      "mechanics": [
+        {
+          "spawn_pool": {
+            "name": "singularity",
+            "duration_ms": 5000,
+            "radius": 500.0,
+            "range": 1500.0,
+            "effects_to_apply": [
+              "singularity"
+            ]
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
       "name": "leap",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
       "execution_duration_ms": 800,
       "activation_delay_ms": 200,
@@ -118,6 +144,7 @@
           "leap": {
             "range": 1000.0,
             "duration_ms": 600,
+            "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
                 "damage": 22,
@@ -130,6 +157,7 @@
     },
     {
       "name": "shot",
+      "cooldown_mechanism": "stamina",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
@@ -151,6 +179,7 @@
     },
     {
       "name": "denial_of_service",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
@@ -177,6 +206,7 @@
     },
     {
       "name": "slingshot",
+      "cooldown_mechanism": "stamina",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
@@ -202,6 +232,7 @@
     },
     {
       "name": "dash",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
@@ -220,6 +251,7 @@
     },
     {
       "name": "avenge",
+      "cooldown_mechanism": "stamina",
       "cooldown_ms": 2000,
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
@@ -243,6 +275,7 @@
     },
     {
       "name": "veil_radiance",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 200,
@@ -264,6 +297,7 @@
     },
     {
       "name": "sneak",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
@@ -283,6 +317,7 @@
     },
     {
       "name": "antimatter",
+      "cooldown_mechanism": "stamina",
       "cooldown_ms": 2000,
       "execution_duration_ms": 800,
       "activation_delay_ms": 500,
@@ -410,7 +445,7 @@
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "antimatter",
-        "2": "veil_radiance",
+        "2": "singularity",
         "3": "sneak"
       }
     }
@@ -440,7 +475,22 @@
     {
       "name": "invisible",
       "duration_ms": 4000,
-      "remove_on_action": true
+      "remove_on_action": true,
+      "effect_mechanics": {}
+    },
+    {
+      "name": "singularity",
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "pull": {
+          "force": 15.0,
+          "effect_delay_ms": 0
+        },
+        "damage": {
+          "damage": 4,
+          "effect_delay_ms": 400
+        }
+      }
     }
   ]
 }
