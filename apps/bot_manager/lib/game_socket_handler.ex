@@ -16,7 +16,6 @@ defmodule BotManager.GameSocketHandler do
       client_id: player_id,
       game_id: game_id
     })
-    |> IO.inspect(label: "aber conexion jogo")
   end
 
   def handle_connect(_conn, state) do
