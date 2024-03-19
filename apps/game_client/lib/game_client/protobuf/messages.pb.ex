@@ -337,6 +337,15 @@ defmodule GameClient.Protobuf.Player.EffectsEntry do
   field(:value, 2, type: GameClient.Protobuf.Effect)
 end
 
+defmodule GameClient.Protobuf.Player.CooldownsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :string)
+  field(:value, 2, type: :uint64)
+end
+
 defmodule GameClient.Protobuf.Player do
   @moduledoc false
 
@@ -359,6 +368,7 @@ defmodule GameClient.Protobuf.Player do
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
   field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
   field(:inventory, 11, type: GameClient.Protobuf.Item)
+  field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Effect do

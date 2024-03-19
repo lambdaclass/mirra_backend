@@ -21,10 +21,32 @@ defmodule Arena.Configuration do
 
   defp parse_skills_config(skills_config) do
     Enum.reduce(skills_config, [], fn skill_config, skills ->
-      mechanics = parse_mechanics_config(skill_config.mechanics)
-      skill = %{skill_config | mechanics: mechanics}
+      skill = parse_skill_config(skill_config)
       [skill | skills]
     end)
+  end
+
+  defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
+  defp parse_skill_config(%{cooldown_mechanism: "time", cooldown_ms: cooldown} = skill_config) when cooldown >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
+  defp parse_skill_config(skill_config) do
+    case skill_config.cooldown_mechanism do
+      "stamina" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` stamina_cost should be a number greater than or equal to zero"
+
+      "time" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      _ ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
+    end
   end
 
   defp parse_mechanics_config(mechanics_config) do
