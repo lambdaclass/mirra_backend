@@ -11,26 +11,42 @@ To generate a bot just do a `get` to the following url: `http://localhost:5000/j
 ## Communication between arena and bot manager
 ```mermaid
 sequenceDiagram
+
     box  Arena
+    participant Arena.GameSocketHandler
     participant GameLauncher
     participant GameUpdater
-    participant GameSocketConnection
+    participant Sockethandler
     end
     box  Bot Manager
+    participant SocketHandler
     participant Endpoint
-    participant BotGameSocketConnection
     participant BotSupervisor
+    participant BotManager.GameSocketHandler
     end
 
-    GameLauncher->>GameUpdater:start(clients, missing_players) 
-    GameUpdater->>Endpoint:get(join/game_id/player_id)
-    Endpoint->>BotSupervisor:spawn_bot(bot_params)
-    BotSupervisor->>BotGameSocketConnection:init(bot_params)
-    BotGameSocketConnection->>GameSocketConnection:connect()
+    GameLauncher->>+GameLauncher:start_by_timeout
+    GameLauncher->>-Endpoint:get(join/client_id)
+    Endpoint->>BotSupervisor:spawn_bot(client_id)
+    BotSupervisor->>SocketHandler:init(client_id)
+    SocketHandler->>+Sockethandler:connect()
+    Sockethandler->>GameLauncher: send(:join)
+    GameLauncher->>GameUpdater:start(clients) 
+    GameUpdater->>GameLauncher:{:ok, game_state} 
+    GameLauncher->>Sockethandler: send(:join_game, game_id)
+    Sockethandler->>-SocketHandler:send(:binary, game_sate)
+    SocketHandler->>BotSupervisor:add_bot_to_game(client_id, game_id)
+    BotSupervisor->>BotManager.GameSocketHandler:init()
+    BotManager.GameSocketHandler->>Arena.GameSocketHandler:connect()
+
+
     loop Every 300ms
-        BotGameSocketConnection->>GameSocketConnection: do_action(:move)
-        GameSocketConnection->>GameUpdater:do_action()
+        BotManager.GameSocketHandler->>Arena.GameSocketHandler: do_action()
+        Arena.GameSocketHandler->>GameUpdater:do_action()
     end
+    
+
+
 ```
 
 ## Behavior
