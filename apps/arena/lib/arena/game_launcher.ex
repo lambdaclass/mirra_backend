@@ -5,7 +5,7 @@ defmodule Arena.GameLauncher do
   use GenServer
 
   # Amount of clients needed to start a game
-  @clients_needed 2
+  @clients_needed 10
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 1000
 
@@ -42,8 +42,15 @@ defmodule Arena.GameLauncher do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
-      send(self(), :start_game)
+    cond do
+      length(clients) >= @clients_needed ->
+        send(self(), :start_game)
+
+      diff >= @start_timeout_ms and length(clients) > 0 ->
+        spawn_bots(@clients_needed - Enum.count(state.clients))
+
+      true ->
+        nil
     end
 
     {:noreply, state}
@@ -52,7 +59,6 @@ defmodule Arena.GameLauncher do
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} =
       Enum.split(state.clients, @clients_needed)
-      |> spawn_bots(@clients_needed - Enum.count(state.clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
@@ -77,32 +83,13 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  defp spawn_bots(clients, 0), do: clients
+  defp spawn_bots(missing_clients) do
+    Enum.each(1..missing_clients, fn _ ->
+      client_id = UUID.generate()
 
-  defp spawn_bots({clients, remaining_clients}, missing_clients) do
-    bot_clients =
-      Enum.reduce(1..missing_clients, [], fn _, acc ->
-        client_id = UUID.generate()
-
-        Finch.build(:get, build_bot_url(client_id))
-        |> Finch.request(Arena.Finch)
-        |> case do
-          {:ok, response} ->
-            socket_pid = Poison.decode!(response.body)
-
-            {:ok, socket_pid} =
-              socket_pid |> Base58.decode() |> :erlang.binary_to_term()
-
-            [{client_id, "muflus", "a", socket_pid} | acc]
-
-          _ ->
-            acc
-        end
-      end)
-
-    (clients ++ bot_clients) |> IO.inspect(label: "aber clients")
-
-    {clients ++ bot_clients, remaining_clients}
+      Finch.build(:get, build_bot_url(client_id))
+      |> Finch.request(Arena.Finch)
+    end)
   end
 
   defp build_bot_url(client_id) do
