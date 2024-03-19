@@ -200,11 +200,13 @@ defmodule Champions.Users do
         {:error, "failed"}
       end
     end)
-    |> Multi.run(:reset_afk_claim, fn _, _ -> Users.reset_afk_rewards_claim(user_id) end)
+    |> Multi.run(:reset_afk_claim, fn _, _ ->
+      Users.reset_afk_rewards_claim(user_id)
+    end)
     |> Transaction.run()
     |> case do
       {:ok, result} -> {:ok, result.reset_afk_claim}
-      {:error, reason} -> {:error, reason}
+      {:error, _, reason, _} -> {:error, reason}
     end
   end
 end
