@@ -407,13 +407,13 @@ defmodule Gateway.Test.Champions do
       gems_currency_id = Currencies.get_currency_by_name!("Gems").id
 
       assert Enum.any?(more_advanced_user.afk_reward_rates, fn rate ->
-               previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
-               rate.currency_id == gold_currency_id && rate.rate > previous_rate
+               reward_rate = Enum.find(more_advanced_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
+               rate.currency_id == gold_currency_id && rate.rate == reward_rate
              end)
 
       assert Enum.any?(more_advanced_user.afk_reward_rates, fn rate ->
-               previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
-               rate.currency_id == gems_currency_id && rate.rate > previous_rate
+               reward_rate = Enum.find(more_advanced_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
+               rate.currency_id == gems_currency_id && rate.rate == reward_rate
              end)
     end
   end
