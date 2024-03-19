@@ -287,9 +287,9 @@ defmodule Arena.Game.Skill do
 
     Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
       should_re_apply? =
-        is_nil(Map.get(mechanic_params, :last_application_time)) or
-          now - Map.get(mechanic_params, :last_application_time) >=
-            mechanic_params.effect_delay_ms
+        (not is_nil(Map.get(mechanic_params, :effect_delay_ms))) and
+        (is_nil(Map.get(mechanic_params, :last_application_time)) or
+          now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms)
 
       if should_re_apply? do
         do_effect_mechanics(game_state, player, effect, mechanic)
@@ -349,6 +349,10 @@ defmodule Arena.Game.Skill do
 
         player
     end
+  end
+
+  defp do_effect_mechanics(_game_state, player, _effect, {:damage_up, _}) do
+    player
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do

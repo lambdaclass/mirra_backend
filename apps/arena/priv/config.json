@@ -392,6 +392,7 @@
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
+      "on_death_effect": "muflus_death",
       "skills": {
         "1": "hit",
         "2": "leap",
@@ -409,6 +410,7 @@
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
+      "on_death_effect": "muflus_death",
       "skills": {
         "1": "slingshot",
         "2": "denial_of_service",
@@ -426,6 +428,7 @@
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
+      "on_death_effect": "muflus_death",
       "skills": {
         "1": "avenge",
         "2": "veil_radiance",
@@ -443,6 +446,7 @@
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
+      "on_death_effect": "muflus_death",
       "skills": {
         "1": "antimatter",
         "2": "singularity",
@@ -489,6 +493,16 @@
         "damage": {
           "damage": 4,
           "effect_delay_ms": 400
+        }
+      }
+    },
+    {
+      "name": "muflus_death",
+      "duration_ms": 50000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "damage_up": {
+          "amount": 30
         }
       }
     }

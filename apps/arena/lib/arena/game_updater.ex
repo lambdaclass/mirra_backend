@@ -314,20 +314,21 @@ defmodule Arena.GameUpdater do
   # End Zone Callbacks
   ##########################
 
-  def handle_info(
-        {:to_killfeed, killer_id, victim_id},
-        %{game_state: game_state, game_config: game_config} = state
-      ) do
+  def handle_info({:to_killfeed, killer_id, victim_id}, %{game_state: game_state, game_config: game_config} = state) do
+    last_id = game_state.last_id + 1
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
+    on_death_effect = Enum.find(game_config.effects, fn effect -> effect.name == victim.aditional_info.on_death_effect end)
+    killer =
+      Map.get(game_state.players, killer_id)
+      |> Player.apply_on_death_effect(on_death_effect, last_id)
+      |> update_in([:aditional_info, :kill_count], fn count -> count + 1 end)
 
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     state =
-      update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-      |> update_in([:game_state, :players, killer_id, :aditional_info, :kill_count], fn count ->
-        count + 1
-      end)
+      put_in(state, [:game_state, :players, killer.id], killer)
+      |> update_in([:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
       |> spawn_power_ups(victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)

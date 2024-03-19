@@ -314,6 +314,11 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
+  def apply_on_death_effect(player, effect, effect_id) do
+    effect = Map.put(effect, :id, effect_id)
+    put_in(player, [:aditional_info, :effects, effect_id], effect)
+  end
+
   defp apply_effect({:stamina_faster, stamina_faster}, player) do
     stamina_speedup_by =
       (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
