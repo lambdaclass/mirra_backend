@@ -10,7 +10,7 @@ defmodule BotManager.SocketHandler do
 
   def start_link(%{"client_id" => client_id}) do
     Logger.info("Client INIT #{client_id}")
-    ws_url = ws_url(client_id) |> IO.inspect(label: "aber ws url")
+    ws_url = ws_url(client_id)
 
     WebSockex.start_link(
       ws_url,
@@ -19,7 +19,6 @@ defmodule BotManager.SocketHandler do
         client_id: client_id
       }
     )
-    |> IO.inspect(label: "aber")
   end
 
   # Callbacks
@@ -45,27 +44,6 @@ defmodule BotManager.SocketHandler do
   end
 
   @impl true
-  def handle_info({:join_game, game_id}, state) do
-    Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
-
-    game_state =
-      Protobuf.GameState.encode(%Protobuf.GameState{
-        game_id: game_id,
-        players: %{},
-        projectiles: %{}
-      })
-
-    {:reply, {:binary, game_state}, state}
-  end
-
-  @impl true
-  def handle_info(:leave_waiting_game, state) do
-    terminate({:remote, 1000, ""}, state)
-
-    {:ok, state}
-  end
-
-  @impl true
   def terminate({:remote, 1000, ""}, _state) do
     Logger.info("Client websocket terminated with {:remote, 1000} status")
     exit(:normal)
@@ -78,10 +56,10 @@ defmodule BotManager.SocketHandler do
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
-        "wss://#{host}/join/#{player_id}/#{character}/carlos"
+        "wss://#{host}/join/#{player_id}/#{character}/#{player_id}"
 
       _ ->
-        "ws://#{host}/join/#{player_id}/#{character}/carlos"
+        "ws://#{host}/join/#{player_id}/#{character}/#{player_id}"
     end
   end
 end
