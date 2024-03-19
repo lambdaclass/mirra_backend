@@ -2,14 +2,12 @@ alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Level
 alias GameBackend.Campaigns.Campaign
 alias GameBackend.Gacha
-alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
-import Ecto.Query
 
 champions_of_mirra_id = 2
 units_per_level = 5
@@ -54,31 +52,6 @@ muflus = Characters.get_character_by_name("Muflus")
       cooldown: 5
     }
   })
-
-{:ok, epic_sword} =
-  Items.insert_item_template(%{
-    game_id: champions_of_mirra_id,
-    name: "Epic Sword of Epicness",
-    type: "weapon"
-  })
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Mythical Helmet of Mythicness",
-  type: "helmet"
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Legendary Chestplate of Legendaryness",
-  type: "chest"
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Magical Boots of Magicness",
-  type: "boots"
-})
 
 {:ok, gold_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
@@ -247,36 +220,6 @@ currency_rewards =
     end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
-
-level_2 =
-  Repo.one!(
-    from(l in Level,
-      join: c in Campaign,
-      on: l.campaign_id == c.id,
-      where: c.campaign_number == 1 and l.level_number == 2
-    )
-  )
-  |> Repo.preload(:item_rewards)
-
-level_3 =
-  Repo.one!(
-    from(l in Level,
-      join: c in Campaign,
-      on: l.campaign_id == c.id,
-      where: c.campaign_number == 1 and l.level_number == 3
-    )
-  )
-  |> Repo.preload(:unit_rewards)
-
-level_2
-|> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
-|> Repo.update!()
-
-level_3
-|> Level.changeset(%{
-  unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]
-})
-|> Repo.update!()
 
 afk_reward_increments =
   Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
