@@ -4,6 +4,7 @@ defmodule Gateway.Test.Champions do
   """
   use ExUnit.Case
 
+  alias Champions.Campaigns
   alias Gateway.Serialization.AfkRewards
   alias Champions.{Units, Users, Utils}
   alias GameBackend.Repo
@@ -406,14 +407,21 @@ defmodule Gateway.Test.Champions do
       gold_currency_id = Currencies.get_currency_by_name!("Gold").id
       gems_currency_id = Currencies.get_currency_by_name!("Gems").id
 
+      # Get the current level number and check that the afk rewards rates have increased proportionally
+      current_level_id = hd(more_advanced_user.campaign_progresses).level_id
+      {:ok, level} = Campaigns.get_level(current_level_id)
+      current_level_number = level.level_number
+
       assert Enum.any?(more_advanced_user.afk_reward_rates, fn rate ->
-               reward_rate = Enum.find(more_advanced_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
-               rate.currency_id == gold_currency_id && rate.rate == reward_rate
+               previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
+               new_rate = previous_rate + 10 * current_level_number
+               rate.currency_id == gold_currency_id && rate.rate > previous_rate
              end)
 
       assert Enum.any?(more_advanced_user.afk_reward_rates, fn rate ->
-               reward_rate = Enum.find(more_advanced_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
-               rate.currency_id == gems_currency_id && rate.rate == reward_rate
+               previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
+               new_rate = previous_rate + current_level_number
+               rate.currency_id == gems_currency_id && rate.rate > previous_rate
              end)
     end
   end
