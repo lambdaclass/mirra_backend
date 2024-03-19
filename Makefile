@@ -52,7 +52,6 @@ generate-game-client-protos:
 		--proto_path=apps/serialization \
 		messages.proto
 
-		
 generate-arena-load-test-protos:
 	protoc \
 		--elixir_out=apps/arena_load_test/lib/arena_load_test/serialization \
