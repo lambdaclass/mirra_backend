@@ -36,6 +36,7 @@ defmodule MirraBackend.MixProject do
     [
       arena: [applications: [arena: :permanent]],
       arena_load_test: [applications: [arena_load_test: :permanent]],
+      game_client: [applications: [game_client: :permanent]],
       game_backend: [
         applications: [
           champions: :permanent,
