@@ -51,7 +51,7 @@ defmodule BotManager.SocketHandler do
 
   # Private
   defp ws_url(player_id) do
-    host = "localhost:4000"
+    host = System.get_env("SERVER_HOST", "localhost:4000")
     character = "h4ck"
 
     case System.get_env("SSL_ENABLED") do

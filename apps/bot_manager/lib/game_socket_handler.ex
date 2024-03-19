@@ -93,8 +93,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   defp ws_url(player_id, game_id) do
-    # FIX ME Remove hardcoded host
-    host = "localhost:4000"
+    host = System.get_env("SERVER_HOST", "localhost:4000")
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
