@@ -132,7 +132,7 @@
     {
       "name": "leap",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 3000,
       "execution_duration_ms": 800,
       "activation_delay_ms": 200,
       "is_passive": false,
@@ -147,7 +147,7 @@
             "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
-                "damage": 22,
+                "damage": 30,
                 "range": 600.0
               }
             }
@@ -180,7 +180,7 @@
     {
       "name": "denial_of_service",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 1800,
       "execution_duration_ms": 1000,
       "activation_delay_ms": 0,
       "is_passive": false,
@@ -197,7 +197,7 @@
             "remove_on_collision": true,
             "projectile_offset": 100,
             "angle": 80.0,
-            "damage": 9,
+            "damage": 11,
             "radius": 12.0
           }
         }
@@ -276,7 +276,7 @@
     {
       "name": "veil_radiance",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 1800,
       "execution_duration_ms": 500,
       "activation_delay_ms": 200,
       "is_passive": false,
@@ -286,7 +286,7 @@
       "mechanics": [
         {
           "circle_hit": {
-            "damage": 14,
+            "damage": 18,
             "range": 800.0
           }
         }
@@ -384,13 +384,13 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 30.0,
+      "base_speed": 25.0,
       "base_size": 100.0,
-      "base_health": 110,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
+      "base_health": 130,
+      "base_stamina": 2,
+      "stamina_interval": 2500,
       "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
+      "natural_healing_interval": 1500,
       "natural_healing_damage_interval": 5000,
       "skills": {
         "1": "hit",
@@ -401,11 +401,11 @@
     {
       "name": "h4ck",
       "active": true,
-      "base_speed": 30.0,
+      "base_speed": 35.0,
       "base_size": 80.0,
       "base_health": 100,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
+      "base_stamina": 4,
+      "stamina_interval": 1500,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
@@ -418,11 +418,11 @@
     {
       "name": "uma",
       "active": true,
-      "base_speed": 30.0,
+      "base_speed": 32.0,
       "base_size": 85.0,
-      "base_health": 100,
+      "base_health": 90,
       "base_stamina": 3,
-      "stamina_interval": 2000,
+      "stamina_interval": 1800,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
