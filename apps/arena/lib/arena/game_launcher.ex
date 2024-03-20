@@ -50,8 +50,7 @@ defmodule Arena.GameLauncher do
   end
 
   def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} =
-      Enum.split(state.clients, @clients_needed)
+    {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
 
     bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
 
