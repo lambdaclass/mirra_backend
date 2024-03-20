@@ -295,7 +295,7 @@
     {
       "name": "veil_radiance",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 1800,
+      "cooldown_ms": 4000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 200,
       "is_passive": false,
@@ -493,7 +493,7 @@
   "effects": [
     {
       "name": "invisible",
-      "duration_ms": 4000,
+      "duration_ms": 3000,
       "remove_on_action": true,
       "effect_mechanics": {}
     },
