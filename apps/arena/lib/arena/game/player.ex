@@ -156,24 +156,19 @@ defmodule Arena.Game.Player do
     player.aditional_info.forced_movement
   end
 
-  def use_skill(player, skill_key, skill_params, %{
-        game_state: game_state
-      }) do
+  def use_skill(player, skill_key, skill_params, %{game_state: game_state}) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         Process.send(self(), {:block_actions, player.id}, [])
         game_state
 
       skill ->
-        Process.send_after(
-          self(),
-          {:block_actions, player.id},
-          skill.execution_duration_ms
-        )
-
         skill_direction =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
+
+        execution_duration = calculate_duration(skill, player.position, skill_direction)
+        Process.send_after(self(), {:block_actions, player.id}, execution_duration)
 
         Process.send_after(
           self(),
@@ -192,7 +187,7 @@ defmodule Arena.Game.Player do
         action_name = skill_key_execution_action(skill_key)
 
         player =
-          add_action(player, action_name, skill.execution_duration_ms)
+          add_action(player, action_name, execution_duration)
           |> apply_skill_cooldown(skill_key, skill)
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
@@ -361,5 +356,24 @@ defmodule Arena.Game.Player do
       _ ->
         player
     end
+  end
+
+  ## Yes, we are pattern matching on exactly one mechanic. As of time writing we only have one mechanic per skill
+  ## so to simplify my life an executive decision was made to take thas as a fact
+  ## When the time comes to have more than one mechanic per skill this function will need to be refactored, good thing
+  ## is that it will crash here so not something we can ignore
+  defp calculate_duration(%{mechanics: [%{leap: leap}]}, position, direction) do
+    ## TODO: Cap target_position to leap.range
+    target_position = %{
+      x: position.x + direction.x * leap.range,
+      y: position.y + direction.y * leap.range
+    }
+
+    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
+    Physics.calculate_duration(position, target_position, leap.speed) * 30
+  end
+
+  defp calculate_duration(%{mechanics: [_]} = skill, _, _) do
+    skill.execution_duration_ms
   end
 end
