@@ -244,7 +244,8 @@
         {
           "dash": {
             "speed": 60.0,
-            "duration": 500
+            "duration": 500,
+            "range": 500
           }
         }
       ]
