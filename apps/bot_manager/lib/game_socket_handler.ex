@@ -9,11 +9,11 @@ defmodule BotManager.GameSocketHandler do
 
   @message_delay_ms 300
 
-  def start_link({player_id, game_id}) do
-    ws_url = ws_url(player_id, game_id)
+  def start_link(%{"bot_client" => bot_client, "game_id" => game_id}) do
+    ws_url = ws_url(bot_client, game_id)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
-      client_id: player_id,
+      client_id: bot_client,
       game_id: game_id
     })
   end

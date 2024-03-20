@@ -42,15 +42,8 @@ defmodule Arena.GameLauncher do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    cond do
-      length(clients) >= @clients_needed ->
-        send(self(), :start_game)
-
-      diff >= @start_timeout_ms and length(clients) > 0 ->
-        spawn_bots(@clients_needed - Enum.count(state.clients))
-
-      true ->
-        nil
+    if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
+      send(self(), :start_game)
     end
 
     {:noreply, state}
@@ -60,10 +53,14 @@ defmodule Arena.GameLauncher do
     {game_clients, remaining_clients} =
       Enum.split(state.clients, @clients_needed)
 
+    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
+
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients
+        clients: game_clients ++ bot_clients
       })
+
+    spawn_bot_for_player(bot_clients, game_pid)
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
@@ -75,6 +72,13 @@ defmodule Arena.GameLauncher do
     {:noreply, %{state | clients: remaining_clients}}
   end
 
+  def handle_info({:spawn_bot_for_player, bot_client, game_pid}, state) do
+    Finch.build(:get, build_bot_url(game_pid, bot_client))
+    |> Finch.request(Arena.Finch)
+
+    {:noreply, state}
+  end
+
   defp maybe_make_batch_start_at([], _) do
     System.monotonic_time(:millisecond)
   end
@@ -83,18 +87,24 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  defp spawn_bots(missing_clients) do
-    Enum.each(1..missing_clients, fn _ ->
+  defp get_bot_clients(missing_clients) do
+    Enum.map(1..missing_clients, fn _ ->
       client_id = UUID.generate()
 
-      Finch.build(:get, build_bot_url(client_id))
-      |> Finch.request(Arena.Finch)
+      {client_id, "h4ck", client_id, nil}
     end)
   end
 
-  defp build_bot_url(client_id) do
+  defp spawn_bot_for_player(bot_clients, game_pid) do
+    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
+      send(self(), {:spawn_bot_for_player, bot_client, game_pid})
+    end)
+  end
+
+  defp build_bot_url(game_pid, bot_client) do
+    encoded_game_pid = game_pid |> :erlang.term_to_binary() |> Base58.encode()
     # TODO remove this hardcode url when servers are implemented
     host = System.get_env("BOT_MANAGER_HOST", "localhost:5000")
-    "http://#{host}/join/#{client_id}"
+    "http://#{host}/join/#{encoded_game_pid}/#{bot_client}"
   end
 end
