@@ -2,6 +2,7 @@ alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Level
 alias GameBackend.Campaigns.Campaign
 alias GameBackend.Gacha
+alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Characters
@@ -52,6 +53,30 @@ muflus = Characters.get_character_by_name("Muflus")
       cooldown: 5
     }
   })
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Epic Sword of Epicness",
+  type: "weapon"
+})
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Mythical Helmet of Mythicness",
+  type: "helmet"
+})
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Legendary Chestplate of Legendaryness",
+  type: "chest"
+})
+
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Magical Boots of Magicness",
+  type: "boots"
+})
 
 {:ok, gold_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
