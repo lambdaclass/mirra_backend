@@ -16,7 +16,6 @@ mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
 mix deps.compile
 mix compile
-mix phx.gen.release
 mix release ${RELEASE} --overwrite
 
 rm -rf $HOME/mirra_backend
