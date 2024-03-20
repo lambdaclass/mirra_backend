@@ -1,7 +1,7 @@
-{ pkgs, lib, ... }: {
+{ pkgs, lib, config, ... }: {
 
   processes = {
-    main.exec = "make start";
+    arena.exec = "make start";
   };
 
   packages = [
@@ -17,7 +17,7 @@
     pkgs.inotify-tools
 
   ] ++ lib.optionals pkgs.stdenv.isDarwin [ 
-    #Packages only for MacOS
+    # Packages only for MacOS
   
   ];
 
@@ -34,15 +34,5 @@
     javascript = {
       enable = true;
     };
-  };
-  
-  services = {	
-    postgres = {	
-      enable = true;	
-      package = pkgs.postgresql_16;	
-      port = 5432;	
-      listen_addresses = "127.0.0.1";	
-      initialScript = "CREATE USER postgres WITH PASSWORD 'postgres'; ALTER USER postgres WITH SUPERUSER;";
-    };	
   };
 }

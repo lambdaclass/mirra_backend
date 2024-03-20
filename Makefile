@@ -8,7 +8,7 @@ db: deps
 	mix ecto.reset
 
 run:
-	iex -S mix phx.server
+	devops/deploy.sh
 
 start: db run
 

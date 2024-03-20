@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-. "$HOME/.cargo/env"
 set -ex
 
 if [ -d "/tmp/mirra_backend" ]; then
@@ -10,13 +9,10 @@ cd /tmp
 git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME}
 cd mirra_backend
 
-chmod +x devops/entrypoint.sh
-
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
 mix deps.compile
 mix compile
-mix phx.gen.release
 mix release --overwrite
 
 rm -rf $HOME/mirra_backend
@@ -30,12 +26,12 @@ Requires=network-online.target
 After=network-online.target
 
 [Service]
-WorkingDirectory=$HOME/mirra_backend
+WorkingDirectory=\$HOME/mirra_backend
 Restart=on-failure
-ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
+ExecStart=\$HOME/mirra_backend/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
-EnvironmentFile=$HOME/.env
+EnvironmentFile=\$HOME/mirra_backend/.env
 LimitNOFILE=4000
 
 [Install]
@@ -44,7 +40,7 @@ EOF
 
 systemctl --user enable game_backend
 
-cat <<EOF >$HOME/.env
+cat <<EOF >$HOME/mirra_backend/.env
 PHX_HOST=${PHX_HOST}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
