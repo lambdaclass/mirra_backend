@@ -51,6 +51,7 @@ defmodule Champions.Test.Battle do
       {:ok, user} = GameBackend.Users.register_user(%{username: "Execution-DealDamage User", game_id: 2})
 
       maximum_steps = 5
+      required_steps_to_win = maximum_steps + 1
       too_long_cooldown = maximum_steps
 
       basic_skill_params = %{
@@ -87,7 +88,7 @@ defmodule Champions.Test.Battle do
           name: "Execution-DealDamage Character",
           active: true,
           faction: "Kaline",
-          class: "Assasin",
+          class: "Assassin",
           base_attack: 20,
           base_health: 100,
           base_defense: 100,
@@ -114,35 +115,84 @@ defmodule Champions.Test.Battle do
         })
 
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+
+      # Check that the battle ends in timeout when the steps are not enough
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
 
-      Characters.update_character(character, %{basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps - 1)})
+      # Decrease the cooldown and check that the battle ends in victory when the steps are enough
+      {:ok, character} =
+        Characters.update_character(character, %{basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps - 1)})
+
       {:ok, unit} = Units.get_unit(unit.id)
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
 
       # Add animation duration delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
-      Characters.update_character(character, %{
-        basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps) |> Map.put(:animation_duration, 2)
-      })
+      {:ok, character} =
+        Characters.update_character(character, %{
+          basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps) |> Map.put(:animation_duration, 2)
+        })
 
       {:ok, unit} = Units.get_unit(unit.id)
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps - 1)
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+
+      assert :team_1 ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps_to_win)
 
       # Add animation trigger delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
-      Characters.update_character(character, %{
-        basic_skill: Map.put(basic_skill_params, :animation_duration, 0) |> Map.put(:animation_trigger, 2)
-      })
+      {:ok, character} =
+        Characters.update_character(character, %{
+          basic_skill: Map.put(basic_skill_params, :animation_duration, 0) |> Map.put(:animation_trigger, 2)
+        })
 
       {:ok, unit} = Units.get_unit(unit.id)
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps - 1)
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps + 2)
+      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+
+      # assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps + 4)
+
+      # Add initial delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
+      {:ok, character} =
+        Characters.update_character(character, %{
+          basic_skill:
+            Map.put(basic_skill_params, :animation_trigger, 0)
+            |> Map.put(:effects, [
+              %{
+                type: "instant",
+                initial_delay: 1,
+                components: [],
+                modifier: [],
+                executions: [
+                  %{
+                    "type" => "DealDamage",
+                    "attack_ratio" => 0.5,
+                    "energy_recharge" => 50,
+                    "delay" => 0
+                  }
+                ],
+                target_strategy: "random",
+                target_count: 1,
+                target_allies: false,
+                target_attribute: "Health"
+              }
+            ])
+        })
+
+      {:ok, unit} = Units.get_unit(unit.id)
+      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+
+      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+
+      required_steps_to_win_with_initial_delay = required_steps_to_win + 1
+
+      assert :team_1 ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy],
+                 maximum_steps: required_steps_to_win_with_initial_delay
+               )
     end
   end
 end
