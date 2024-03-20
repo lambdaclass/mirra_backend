@@ -6,7 +6,7 @@ if [ -d "/tmp/mirra_backend" ]; then
 fi
 
 cd /tmp
-git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME}
+git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME:=main}
 cd mirra_backend
 
 mix local.hex --force && mix local.rebar --force
