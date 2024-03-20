@@ -9,7 +9,7 @@ defmodule BotManager.MixProject do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      elixir: "~> 1.14",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
@@ -31,8 +31,7 @@ defmodule BotManager.MixProject do
       # {:sibling_app_in_umbrella, in_umbrella: true}
       # server
       {:plug_cowboy, "~> 2.2"},
-      # json encode/decode
-      {:poison, "~> 4.0.1"},
+      {:jason, "~> 1.2"},
       {:websockex, "~> 0.4.3"},
       {:exbase58, "~> 1.0.2"},
       {:protobuf, "~> 0.12.0"}

@@ -13,13 +13,13 @@ defmodule BotManager.Endpoint do
   # responsible for matching routes
   plug(:match)
 
-  # Using Poison for JSON decoding
+  # Using Jason for JSON decoding
   # Note, order of plugs is important, by placing this _after_ the 'match' plug,
   # we will only parse the request AFTER there is a route match.
   plug(Plug.Parsers,
     parsers: [:json],
     pass: ["application/json"],
-    json_decoder: Poison
+    json_decoder: Jason
   )
 
   # responsible for dispatching responses
@@ -30,7 +30,7 @@ defmodule BotManager.Endpoint do
 
     conn
     |> put_resp_content_type("application/json")
-    |> send_resp(200, Poison.encode!(bot_pid |> :erlang.term_to_binary() |> Base58.encode()))
+    |> send_resp(200, Jason.encode!(bot_pid |> :erlang.term_to_binary() |> Base58.encode()))
   end
 
   # A catchall route, 'match' will match no matter the request method,
