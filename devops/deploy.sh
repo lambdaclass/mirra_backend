@@ -15,23 +15,23 @@ mix deps.compile
 mix compile
 mix release --overwrite
 
-rm -rf $HOME/mirra_backend
-mv /tmp/mirra_backend $HOME/
+rm -rf /home/mirra_backend
+mv /tmp/mirra_backend /home/
 
-mkdir -p $HOME/.config/systemd/user/
-cat <<EOF >$HOME/.config/systemd/user/game_backend.service
+mkdir -p /home/.config/systemd/user/
+cat <<EOF >/home/.config/systemd/user/game_backend.service
 [Unit]
 Description=GameBackend
 Requires=network-online.target
 After=network-online.target
 
 [Service]
-WorkingDirectory=\$HOME/mirra_backend
+WorkingDirectory=/home/mirra_backend
 Restart=on-failure
-ExecStart=\$HOME/mirra_backend/devops/entrypoint.sh
+ExecStart=/home/mirra_backend/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
-EnvironmentFile=\$HOME/mirra_backend/.env
+EnvironmentFile=/home/mirra_backend/.env
 LimitNOFILE=4000
 
 [Install]
@@ -40,7 +40,7 @@ EOF
 
 systemctl --user enable game_backend
 
-cat <<EOF >$HOME/mirra_backend/.env
+cat <<EOF >/home/dev/.env
 PHX_HOST=${PHX_HOST}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
