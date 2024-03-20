@@ -132,7 +132,7 @@
     {
       "name": "leap",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 3000,
+      "cooldown_ms": 4000,
       "execution_duration_ms": 800,
       "activation_delay_ms": 200,
       "is_passive": false,
@@ -147,7 +147,7 @@
             "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
-                "damage": 30,
+                "damage": 40,
                 "range": 600.0
               }
             }
@@ -220,10 +220,10 @@
             "angle_between": 14.0,
             "amount": 3,
             "speed": 58.0,
-            "duration_ms": 1000,
+            "duration_ms": 750,
             "remove_on_collision": true,
             "projectile_offset": 100,
-            "damage": 9,
+            "damage": 12,
             "radius": 12.0
           }
         }
@@ -244,6 +244,25 @@
         {
           "dash": {
             "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ]
+    },
+    {
+      "name": "h4ck_dash",
+      "cooldown_mechanism": "time",
+      "cooldown_ms": 2000,
+      "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "autoaim": false,
+      "stamina_cost": 1,
+      "can_pick_destination": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 80.0,
             "duration": 500
           }
         }
@@ -412,7 +431,7 @@
       "skills": {
         "1": "slingshot",
         "2": "denial_of_service",
-        "3": "dash"
+        "3": "h4ck_dash"
       }
     },
     {
@@ -424,8 +443,8 @@
       "base_stamina": 3,
       "stamina_interval": 1800,
       "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 5000,
+      "natural_healing_interval": 300,
+      "natural_healing_damage_interval": 1600,
       "skills": {
         "1": "avenge",
         "2": "veil_radiance",
