@@ -148,7 +148,8 @@ config :gateway, Gateway.Endpoint,
   ],
   pubsub_server: Gateway.PubSub,
   live_view: [signing_salt: "XED/NEZq"],
-  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch]
+  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch],
+  server: true
 
 ############################
 # Import environment specific config. This must remain at the bottom
