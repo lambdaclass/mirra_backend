@@ -96,6 +96,16 @@ config :game_backend,
   ecto_repos: [GameBackend.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Configure your database
+config :game_backend, GameBackend.Repo,
+  username: System.get_env("DB_USERNAME"),
+  password: System.get_env("DB_PASSWORD"),
+  hostname: System.get_env("DB_HOSTNAME"),
+  database: System.get_env("DB_NAME"),
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
 # Configures Ecto migrations
 config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id]
 
