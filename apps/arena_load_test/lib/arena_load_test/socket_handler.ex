@@ -56,8 +56,6 @@ defmodule ArenaLoadTest.SocketHandler do
   # Private
   defp ws_url(player_id) do
     host = SocketSupervisor.server_host()
-    # TODO must replace character with a random available one.
-    # TODO this will be done as part of https://github.com/lambdaclass/mirra_backend/issues/361
     character = get_random_active_character()
     player_name = "Player_#{player_id}"
 
