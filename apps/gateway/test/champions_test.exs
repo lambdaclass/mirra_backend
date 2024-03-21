@@ -291,16 +291,15 @@ defmodule Gateway.Test.Champions do
   describe "afk rewards" do
     test "winning battles increments the afk rewards", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("AfkRewardsUser")
-      user_initial_currencies = user.currencies
+
+      # Check that the initial afk reward rates are all 0
+      assert Enum.all?(user.afk_reward_rates, fn rate -> rate.rate == 0 end)
 
       # Get initial afk rewards
       SocketTester.get_afk_rewards(socket_tester, user.id)
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: initial_afk_rewards}}}
-
-      # Check that the initial afk reward rates are all 0
-      assert Enum.all?(user.afk_reward_rates, fn rate -> rate.rate == 0 end)
 
       # Check that the initial afk rewards are all 0
       assert Enum.all?(initial_afk_rewards, fn reward -> reward.amount == 0 end)
@@ -343,6 +342,9 @@ defmodule Gateway.Test.Champions do
       :timer.sleep(milliseconds_to_wait)
 
       # Claim afk rewards
+      gold_before_claiming = Currencies.get_amount_of_currency_by_name(advanced_user.id, "Gold")
+      gems_before_claiming = Currencies.get_amount_of_currency_by_name(advanced_user.id, "Gems")
+
       SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
@@ -352,19 +354,16 @@ defmodule Gateway.Test.Champions do
       # We add 10% to the time waited to account for the time it takes to process the message.
       assert Enum.any?(claimed_user.currencies, fn currency ->
                user_gold_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == "Gold"))
-               initial_gold = user_initial_currencies |> Enum.find(&(&1.currency.name == "Gold"))
                reward_rate = Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
-
-               expected_amount = trunc(initial_gold.amount + reward_rate * (milliseconds_to_wait / 1000))
+               expected_amount = trunc(gold_before_claiming + reward_rate * (milliseconds_to_wait / 1000))
                user_gold_currency.amount in expected_amount..trunc(expected_amount * 1.1)
              end)
 
       assert Enum.any?(claimed_user.currencies, fn currency ->
                user_gems_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == "Gems"))
-               initial_gems = user_initial_currencies |> Enum.find(&(&1.currency.name == "Gems"))
                reward_rate = Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
 
-               expected_amount = trunc(initial_gems.amount + reward_rate * (milliseconds_to_wait / 1000))
+               expected_amount = trunc(gems_before_claiming + reward_rate * (milliseconds_to_wait / 1000))
                user_gems_currency.amount in expected_amount..trunc(expected_amount * 1.1)
              end)
 
