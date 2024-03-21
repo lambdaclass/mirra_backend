@@ -49,6 +49,14 @@ defmodule Arena.GameUpdater do
   ##########################
 
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do
+    Process.sleep(150)
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    time_elapsed = now - timestamp
+
+    IO.inspect(time_elapsed, label: "Time to reach Server: ")
+
     player =
       state.game_state.players
       |> Map.get(player_id)
