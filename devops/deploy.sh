@@ -22,8 +22,6 @@ mkdir -p /home/dev/.config/systemd/user/
 cat <<EOF >/home/dev/.config/systemd/user/game_backend.service
 [Unit]
 Description=GameBackend
-Requires=network-online.target
-After=network-online.target
 
 [Service]
 WorkingDirectory=/home/dev/mirra_backend
