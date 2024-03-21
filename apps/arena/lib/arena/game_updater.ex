@@ -103,11 +103,13 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    ticks_to_move = (now - game_state.server_timestamp) / state.game_config.game.tick_rate_ms
+    time_diff = now - game_state.server_timestamp
+    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
 
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
       |> move_projectiles()
@@ -525,7 +527,7 @@ defmodule Arena.GameUpdater do
   defp complete_entity(entity) do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:name, "Entity" <> Integer.to_string(entity.id))
+    |> Map.put(:name, entity.name)
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
@@ -569,7 +571,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
 
     {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, _from_pid},
+      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
+                                                                         _from_pid},
                                                                         {new_game, positions} ->
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
@@ -579,7 +582,7 @@ defmodule Arena.GameUpdater do
           new_game.players
           |> Map.put(
             last_id,
-            Entities.new_player(last_id, character_name, pos, direction, config, now)
+            Entities.new_player(last_id, character_name, player_name, pos, direction, config, now)
           )
 
         new_game =
@@ -628,6 +631,22 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game flow. Actions executed in every tick.
   ##########################
+
+  defp reduce_players_cooldowns(game_state, time_diff) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        cooldowns =
+          Map.new(player.aditional_info.cooldowns, fn {skill_key, cooldown} ->
+            {skill_key, cooldown - time_diff}
+          end)
+          |> Map.filter(fn {_skill_key, cooldown} -> cooldown > 0 end)
+
+        player = put_in(player, [:aditional_info, :cooldowns], cooldowns)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
 
   defp move_players(
          %{

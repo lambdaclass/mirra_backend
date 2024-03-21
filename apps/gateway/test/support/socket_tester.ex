@@ -33,7 +33,12 @@ defmodule Gateway.SocketTester do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem
+    LevelUpItem,
+    GetAfkRewards,
+    ClaimAfkRewards,
+    GetBox,
+    GetBoxes,
+    Summon
   }
 
   def start_link() do
@@ -203,6 +208,56 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:level_up_item, %LevelUpItem{user_id: user_id, item_id: item_id}}
+         })}
+      )
+
+  def get_boxes(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_boxes, %GetBoxes{user_id: user_id}}
+         })}
+      )
+
+  def get_box(pid, box_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_box, %GetBox{box_id: box_id}}
+         })}
+      )
+
+  def summon(pid, user_id, box_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:summon, %Summon{user_id: user_id, box_id: box_id}}
+         })}
+      )
+
+  def get_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_afk_rewards, %GetAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def claim_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
          })}
       )
 
