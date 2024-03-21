@@ -142,12 +142,12 @@
       "mechanics": [
         {
           "leap": {
-            "range": 1000.0,
-            "duration_ms": 600,
+            "range": 1250.0,
+            "duration_ms": 400,
             "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
-                "damage": 40,
+                "damage": 48,
                 "range": 600.0
               }
             }
@@ -193,7 +193,7 @@
             "interval_ms": 100,
             "amount": 10,
             "speed": 65.0,
-            "duration_ms": 1000,
+            "duration_ms": 500,
             "remove_on_collision": true,
             "projectile_offset": 100,
             "angle": 80.0,
@@ -252,7 +252,7 @@
     {
       "name": "h4ck_dash",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 2600,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
@@ -281,9 +281,9 @@
       "mechanics": [
         {
           "multi_cone_hit": {
-            "damage": 7,
+            "damage": 11,
             "range": 800.0,
-            "angle": 45.0,
+            "angle": 25.0,
             "interval_ms": 250,
             "amount": 3,
             "move_by": 150.0
@@ -443,7 +443,7 @@
       "base_stamina": 3,
       "stamina_interval": 1800,
       "max_inventory_size": 1,
-      "natural_healing_interval": 300,
+      "natural_healing_interval": 400,
       "natural_healing_damage_interval": 1600,
       "skills": {
         "1": "avenge",
