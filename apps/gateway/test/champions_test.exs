@@ -302,12 +302,13 @@ defmodule Gateway.Test.Champions do
 
       assert Enum.count(campaigns.campaigns) > 0
 
-      # Check the campaign numbers match the expected range
-      campaign_numbers = 1..length(campaigns.campaigns)
+      repo_campaigns = Repo.all(GameBackend.Campaigns.Campaign)
 
-      Enum.each(campaign_numbers, fn number ->
-        assert Enum.any?(campaigns.campaigns, &(&1.campaign_number == number))
-      end)
+      # Check that each campaign matches a campaign of repo_campaigns
+      assert :ok ==
+               Enum.each(campaigns.campaigns, fn campaign ->
+                 assert Enum.find(repo_campaigns, &(&1.id == campaign.id))
+               end)
 
       sample_campaign = Enum.random(campaigns.campaigns)
 
