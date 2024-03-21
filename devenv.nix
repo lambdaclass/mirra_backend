@@ -45,7 +45,7 @@
       initialScript = "CREATE USER postgres WITH PASSWORD 'postgres'; ALTER USER postgres WITH SUPERUSER;";
       initialDatabases = [
         { name = "game_backend_prod"; }
-      ]
-    };	
+      ];
+    };
   };
 }
