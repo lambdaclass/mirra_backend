@@ -96,13 +96,6 @@ config :game_backend,
   ecto_repos: [GameBackend.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-# Configure your database
-config :game_backend, GameBackend.Repo,
-  url: System.get_env("DATABASE_URL"),
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
 # Configures Ecto migrations
 config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id]
 
@@ -112,7 +105,7 @@ config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id
 
 # Configures the endpoint
 config :game_client, GameClientWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: 4002],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
     formats: [html: GameClientWeb.ErrorHTML, json: GameClientWeb.ErrorJSON],
