@@ -44,6 +44,7 @@ jobs:
           SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
+          RELEASE: ${{ vars.RELEASE }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.EUROPE_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
