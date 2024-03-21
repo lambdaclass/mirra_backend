@@ -98,10 +98,7 @@ config :game_backend,
 
 # Configure your database
 config :game_backend, GameBackend.Repo,
-  username: System.get_env("DB_USERNAME"),
-  password: System.get_env("DB_PASSWORD"),
-  hostname: System.get_env("DB_HOSTNAME"),
-  database: System.get_env("DB_NAME"),
+  url: System.get_env("DATABASE_URL"),
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
