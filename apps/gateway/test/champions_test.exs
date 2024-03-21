@@ -418,6 +418,130 @@ defmodule Gateway.Test.Champions do
     end
   end
 
+  describe "items" do
+    test "get item", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("GetItemUser")
+
+      {:ok, epic_bow} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Bow of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_bow.id, level: 1})
+
+      :ok = SocketTester.get_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = fetched_item}
+      }
+
+      assert fetched_item.id == item.id
+      assert fetched_item.user_id == user.id
+      assert fetched_item.level == 1
+      assert fetched_item.template.id == epic_bow.id
+
+      # We expect the item to be unequipped after creation. Since protobuf can't handle null messages, we get an empty string.
+      assert fetched_item.unit_id == ""
+    end
+
+    test "equip and unequip item", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("EquipItemUser")
+
+      [unit | _] = user.units
+
+      {:ok, epic_sword} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Sword of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+
+      # EquipItem
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = equipped_item}
+      }
+
+      # The item is now equipped to the unit
+      assert equipped_item.user_id == user.id
+      assert equipped_item.unit_id == unit.id
+
+      # EquipItem again, to another unit
+      another_unit = user.units |> Enum.at(1)
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, another_unit.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = equipped_item}
+      }
+
+      # The item is now equipped to the second unit
+      assert equipped_item.user_id == user.id
+      assert equipped_item.unit_id != unit.id
+      assert equipped_item.unit_id == another_unit.id
+
+      # UnequipItem
+      :ok = SocketTester.unequip_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = unequipped_item}
+      }
+
+      # The item is now unequipped
+      assert unequipped_item.user_id == user.id
+      assert unequipped_item.unit_id == ""
+    end
+
+    test "level up item", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("LevelUpItemUser")
+
+      {:ok, epic_axe} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Axe of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
+
+      # Set user gold to the minimum amount required to level up the item
+      Currencies.add_currency(
+        user.id,
+        Currencies.get_currency_by_name!("Gold").id,
+        1 - Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      )
+
+      gold_amount_before_level_up = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+
+      # LevelUpItem
+      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = leveled_up_item}
+      }
+
+      assert leveled_up_item.level == item.level + 1
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") < gold_amount_before_level_up
+
+      # LevelUpItem once again to check that we can't afford it
+      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+    end
+  end
+
   defp fetch_last_message(socket_tester) do
     :timer.sleep(100)
     send(socket_tester, {:last_message, self()})
