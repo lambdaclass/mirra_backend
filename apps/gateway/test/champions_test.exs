@@ -390,7 +390,7 @@ defmodule Gateway.Test.Champions do
 
       assert user.id == advanced_user.id
       assert advanced_campaign_progression.level_id != level_id
-      assert advanced_campaign_progression.level.level_number > level_number
+      assert advanced_campaign_progression.level.level_number == level_number + 1
     end
 
     test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
