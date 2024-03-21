@@ -93,8 +93,8 @@ defmodule GameBackend.Users do
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
   def advance_level(user_id, campaign_id) do
-    with {:campaign_data, {:ok, campaign_progress}} <-
-           {:campaign_data, Campaigns.get_campaign_progress(user_id, campaign_id)},
+    with {:campaign_progress, {:ok, campaign_progress}} <-
+           {:campaign_progress, Campaigns.get_campaign_progress(user_id, campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} <-
            {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
       level = campaign_progress.level

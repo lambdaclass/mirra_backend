@@ -6,6 +6,7 @@ defmodule Gateway.Test.Champions do
 
   alias Champions.{Units, Users, Utils}
   alias GameBackend.Repo
+  alias GameBackend.Items
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
 
@@ -16,6 +17,7 @@ defmodule Gateway.Test.Champions do
     Campaigns,
     Currency,
     Error,
+    Item,
     Level,
     Unit,
     UnitAndCurrencies,
@@ -51,27 +53,32 @@ defmodule Gateway.Test.Champions do
     test "users", %{socket_tester: socket_tester} do
       username = "Username"
 
-      # Create our user
+      # CreateUser
       :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = user}}
 
       assert user.username == username
 
-      # Creating another user with the same name fails
+      # CreateUser with the same username fails
       :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "username_taken"}}}
 
-      # Get user by name
+      # GetUserByUsername
       :ok = SocketTester.get_user_by_username(socket_tester, username)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, ^user}}
+
+      # GetUser
+      :ok = SocketTester.get_user(socket_tester, user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, ^user}}
     end
   end
 
   describe "units" do
-    test "unit selection", %{socket_tester: socket_tester} do
+    test "selection", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("SelectUser")
 
       [unit_to_unselect | _] = user.units
@@ -98,7 +105,7 @@ defmodule Gateway.Test.Champions do
       assert selected_unit.slot == slot
     end
 
-    test "unit progression", %{socket_tester: socket_tester} do
+    test "progression", %{socket_tester: socket_tester} do
       muflus = GameBackend.Units.Characters.get_character_by_name("Muflus")
       {:ok, user} = Users.register("LevelUpUser")
       Currencies.add_currency_by_name!(user.id, "Gold", 9999)
