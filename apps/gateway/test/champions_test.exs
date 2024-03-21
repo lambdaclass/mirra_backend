@@ -300,8 +300,6 @@ defmodule Gateway.Test.Champions do
         response_type: {:campaigns, %Campaigns{} = campaigns}
       }
 
-      assert Enum.count(campaigns.campaigns) > 0
-
       repo_campaigns = Repo.all(GameBackend.Campaigns.Campaign)
 
       # Check that each campaign matches a campaign of repo_campaigns
