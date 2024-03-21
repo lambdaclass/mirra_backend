@@ -25,8 +25,6 @@ mkdir -p $HOME/.config/systemd/user/
 cat <<EOF >$HOME/.config/systemd/user/${RELEASE}.service
 [Unit]
 Description=$RELEASE
-Requires=network-online.target
-After=network-online.target
 
 [Service]
 WorkingDirectory=$HOME/mirra_backend

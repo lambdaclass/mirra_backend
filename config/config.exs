@@ -96,6 +96,13 @@ config :game_backend,
   ecto_repos: [GameBackend.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+# Configure your database
+config :game_backend, GameBackend.Repo,
+  url: System.get_env("DATABASE_URL"),
+  stacktrace: true,
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
 # Configures Ecto migrations
 config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id]
 
@@ -148,7 +155,8 @@ config :gateway, Gateway.Endpoint,
   ],
   pubsub_server: Gateway.PubSub,
   live_view: [signing_salt: "XED/NEZq"],
-  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch]
+  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch],
+  server: true
 
 ############################
 # Import environment specific config. This must remain at the bottom
