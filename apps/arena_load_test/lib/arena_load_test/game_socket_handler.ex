@@ -11,13 +11,15 @@ defmodule ArenaLoadTest.GameSocketHandler do
   def start_link({client_id, game_id}) do
     Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
+    skills = get_available_skills()
 
     WebSockex.start_link(
       ws_url,
       __MODULE__,
       %{
         client_id: client_id,
-        game_id: game_id
+        game_id: game_id,
+        skills: skills
       }
     )
   end
@@ -62,7 +64,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         action_type:
           {:attack,
            %Serialization.Attack{
-             skill: "1",
+             skill: Enum.random(state.skills),
              parameters: %Serialization.AttackParameters{
                target: %Serialization.Direction{
                  x: x,
@@ -103,5 +105,15 @@ defmodule ArenaLoadTest.GameSocketHandler do
       _ ->
         "ws://#{host}/play/#{game_id}/#{client_id}"
     end
+  end
+
+  defp get_available_skills() do
+    Arena.Configuration.get_game_config()
+    |> Map.get(:characters)
+    # Taking anyone is fine since all of them have the same amount of skills
+    # and the skills are just numbers from 1 to N.
+    |> hd()
+    |> Map.get(:skills)
+    |> Map.keys()
   end
 end
