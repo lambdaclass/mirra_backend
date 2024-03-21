@@ -161,7 +161,7 @@ defmodule Arena.Entities do
     %{
       id: id,
       category: :obstacle,
-      shape: String.to_existing_atom(shape),
+      shape: get_shape(shape),
       name: "Obstacle" <> Integer.to_string(id),
       position: position,
       radius: radius,
@@ -268,4 +268,10 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(_entity) do
     nil
   end
+
+  defp get_shape("polygon"), do: :polygon
+  defp get_shape("circle"), do: :circle
+  defp get_shape("line"), do: :line
+  defp get_shape("point"), do: :point
+  defp get_shape(_), do: nil
 end
