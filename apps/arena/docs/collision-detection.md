@@ -69,7 +69,7 @@ maximum and minimum vertex to the normal of each pair of vertices. As soon as we
 #### Triangle example for axis where the cast in the axis are not overlapping
 ![Polygons axis not overlapping](./images/sat-no-overlapping.jpg "Polygons axis not overlapping")
 
-The collisions we curretly support are:
+The collisions we currently support are:
 
 1. Circle with polygon:
 ![Circle/Polygon not colliding](./images/circle-polygon-not-colliding.jpg "Circle/Polygon not colliding")
