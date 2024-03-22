@@ -362,7 +362,7 @@ defmodule Arena.Game.Player do
   ## so to simplify my life an executive decision was made to take thas as a fact
   ## When the time comes to have more than one mechanic per skill this function will need to be refactored, good thing
   ## is that it will crash here so not something we can ignore
-  defp calculate_duration(%{mechanics: [%{leap: leap}]}, position, direction) do
+  defp calculate_duration(%{mechanics: [{:leap, leap}]}, position, direction) do
     ## TODO: Cap target_position to leap.range
     target_position = %{
       x: position.x + direction.x * leap.range,
