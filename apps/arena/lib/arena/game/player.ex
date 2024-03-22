@@ -234,7 +234,7 @@ defmodule Arena.Game.Player do
       Enum.map(effects, fn {_, effects} -> effects.effect_mechanics end)
       |> List.flatten()
       |> Enum.reduce(0, fn
-        {:damage_up, damage_up}, damage_acc -> damage_acc + damage_up.amount
+        %{damage_up: damage_up}, damage_acc -> damage_acc + damage_up.amount
         _, damage_acc -> damage_acc
       end)
 
