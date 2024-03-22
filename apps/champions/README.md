@@ -64,7 +64,6 @@ be found at <https://hexdocs.pm/champions_of_mirra>.
 ```
 
 #### Get Campaign
-Return campaign
 
 ```
 {:ok, campaign} = Champions.Campaigns.get_campaign(campaign_id)
