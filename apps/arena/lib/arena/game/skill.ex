@@ -40,6 +40,7 @@ defmodule Arena.Game.Skill do
       end)
 
     %{game_state | players: players}
+    |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
   def do_mechanic(game_state, entity, {:cone_hit, cone_hit}, _skill_params) do
@@ -90,6 +91,20 @@ defmodule Arena.Game.Skill do
     end)
 
     do_mechanic(game_state, entity, {:cone_hit, multi_cone_hit}, skill_params)
+  end
+
+  def do_mechanic(game_state, entity, {:multi_circle_hit, multi_circle_hit}, skill_params) do
+    Enum.each(1..(multi_circle_hit.amount - 1), fn i ->
+      mechanic = {:circle_hit, multi_circle_hit}
+
+      Process.send_after(
+        self(),
+        {:trigger_mechanic, entity.id, mechanic, skill_params},
+        i * multi_circle_hit.interval_ms
+      )
+    end)
+
+    do_mechanic(game_state, entity, {:circle_hit, multi_circle_hit}, skill_params)
   end
 
   def do_mechanic(

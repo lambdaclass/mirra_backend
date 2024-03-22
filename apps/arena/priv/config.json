@@ -272,13 +272,13 @@
       "can_pick_destination": false,
       "mechanics": [
         {
-          "multi_cone_hit": {
+          "multi_circle_hit": {
             "damage": 7,
-            "range": 600.0,
-            "angle": 45.0,
+            "range": 200.0,
             "interval_ms": 200,
             "amount": 3,
-            "move_by": 200.0
+            "move_by": 200.0,
+            "offset": 200.0
           }
         }
       ],
