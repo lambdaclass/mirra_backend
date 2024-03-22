@@ -26,6 +26,10 @@ mv /tmp/mirra_backend $HOME/
 
 mkdir -p $HOME/.config/systemd/user/
 
+if [ "$(ls ~/.config/systemd/user/*.service 2>/dev/null | wc -l)" -gt 1 ]; then
+    exit 1
+fi
+
 if [ "$(ls ~/.config/systemd/user/*.service 2>/dev/null | wc -l)" -ne 1 ]; then
     exit 1
 fi
