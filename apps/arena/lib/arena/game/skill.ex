@@ -12,7 +12,8 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
-    circular_damage_area = Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
+    circle_center_position = get_position_with_offset(entity.position, entity.direction, circle_hit.offset)
+    circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -130,7 +131,11 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(entity_player_owner, repeated_shot),
+        get_position_with_offset(
+          entity_player_owner.position,
+          entity_player_owner.direction,
+          repeated_shot.projectile_offset
+        ),
         randomize_direction_in_angle(entity.direction, repeated_shot.angle),
         entity_player_owner.id,
         skill_params.skill_key,
@@ -154,7 +159,11 @@ defmodule Arena.Game.Skill do
       projectile =
         Entities.new_projectile(
           last_id,
-          get_real_projectile_spawn_position(entity_player_owner, multishot),
+          get_position_with_offset(
+            entity_player_owner.position,
+            entity_player_owner.direction,
+            multishot.projectile_offset
+          ),
           direction,
           entity_player_owner.id,
           skill_params.skill_key,
@@ -176,7 +185,11 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(entity_player_owner, simple_shoot),
+        get_position_with_offset(
+          entity_player_owner.position,
+          entity_player_owner.directio,
+          simple_shoot.projectile_offset
+        ),
         entity.direction,
         entity_player_owner.id,
         skill_params.skill_key,
@@ -373,9 +386,9 @@ defmodule Arena.Game.Skill do
     Enum.concat([add_side, middle, sub_side])
   end
 
-  defp get_real_projectile_spawn_position(spawner, specs) do
-    real_position_x = spawner.position.x + specs.projectile_offset * spawner.direction.x
-    real_position_y = spawner.position.y + specs.projectile_offset * spawner.direction.y
+  defp get_position_with_offset(position, direction, offset) do
+    real_position_x = position.x + offset * direction.x
+    real_position_y = position.y + offset * direction.y
 
     %{x: real_position_x, y: real_position_y}
   end

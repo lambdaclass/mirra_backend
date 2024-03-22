@@ -94,10 +94,10 @@
       "can_pick_destination": false,
       "mechanics": [
         {
-          "cone_hit": {
-            "damage": 22,
-            "range": 1100.0,
-            "angle": 75.0
+          "circle_hit": {
+            "damage": 16,
+            "range": 150.0,
+            "offset": 500
           }
         }
       ],
@@ -145,7 +145,8 @@
             "on_arrival_mechanic": {
               "circle_hit": {
                 "damage": 27,
-                "range": 650.0
+                "range": 650.0,
+                "offset": 0
               }
             }
           }
@@ -296,7 +297,8 @@
         {
           "circle_hit": {
             "damage": 20,
-            "range": 800.0
+            "range": 800.0,
+            "offset": 0
           }
         }
       ],
@@ -363,7 +365,8 @@
             "on_explode_mechanics": {
               "circle_hit": {
                 "damage": 15,
-                "range": 500.0
+                "range": 500.0,
+                "offset": 0
               }
             }
           }
