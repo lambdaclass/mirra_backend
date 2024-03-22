@@ -314,7 +314,7 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
-  def apply_on_death_effect(player, effect, effect_id) do
+  def put_effect(player, effect, effect_id) do
     effect = Map.put(effect, :id, effect_id)
     put_in(player, [:aditional_info, :effects, effect_id], effect)
   end
