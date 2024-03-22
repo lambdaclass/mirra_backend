@@ -33,9 +33,9 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients}) do
+  def init(%{clients: clients, game_config: game_config}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_config = Configuration.get_game_config()
+
     game_state = new_game(game_id, clients, game_config)
 
     send(self(), :update_game)

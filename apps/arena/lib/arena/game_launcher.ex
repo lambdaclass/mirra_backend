@@ -1,6 +1,7 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
   alias Ecto.UUID
+  alias Arena.Configuration
 
   use GenServer
 
@@ -52,11 +53,14 @@ defmodule Arena.GameLauncher do
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
 
-    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
+    game_config = Configuration.get_game_config()
+
+    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients), game_config)
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients ++ bot_clients
+        clients: game_clients ++ bot_clients,
+        game_config: game_config
       })
 
     spawn_bot_for_player(bot_clients, game_pid)
@@ -86,11 +90,31 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  defp get_bot_clients(missing_clients) do
-    Enum.map(1..missing_clients, fn _ ->
+  defp get_bot_clients(missing_clients, game_config) do
+    bot_names = [
+      "TheBlackSwordman",
+      "SlashJava",
+      "SteelBallRun",
+      "Bot h4ck",
+      "Bot Name",
+      "Stone Ocean",
+      "Jeepers Creepers",
+      "Bob",
+      "El javo",
+      "Alberso",
+      "Messi"
+    ]
+
+    Enum.map(0..(missing_clients + 1), fn i ->
+      character_name =
+        game_config.characters
+        |> Enum.filter(fn chara -> chara.active end)
+        |> Enum.random()
+        |> Map.get(:name)
+
       client_id = UUID.generate()
 
-      {client_id, "h4ck", client_id, nil}
+      {client_id, character_name, Enum.at(bot_names, i), nil}
     end)
   end
 
@@ -103,7 +127,8 @@ defmodule Arena.GameLauncher do
   defp build_bot_url(game_pid, bot_client) do
     encoded_game_pid = game_pid |> :erlang.term_to_binary() |> Base58.encode()
     # TODO remove this hardcode url when servers are implemented
-    host = System.get_env("BOT_MANAGER_HOST", "localhost:5000")
-    "http://#{host}/join/#{encoded_game_pid}/#{bot_client}"
+    host = System.get_env("BOT_MANAGER_HOST", "localhost")
+    port = System.get_env("BOT_MANAGER_PORT", "4003")
+    "http://#{host}:#{port}/join/#{encoded_game_pid}/#{bot_client}"
   end
 end
