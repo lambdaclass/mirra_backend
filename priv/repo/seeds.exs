@@ -9,7 +9,6 @@ alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
-import Ecto.Query
 
 champions_of_mirra_id = 2
 units_per_level = 5
@@ -58,40 +57,15 @@ muflus = Characters.get_character_by_name("Muflus")
         }
         # TODO: Add stun effect
       ],
-      cooldown: 5,
-      energy_regen: 80
-    },
-    ultimate_skill: %{
-      name: "Muflus Ultimate",
-      effects: [
-        %{
-          type: "instant",
-          initial_delay: 0,
-          components: [],
-          modifier: [],
-          executions: [
-            %{
-              "type" => "DealDamage",
-              "attack_ratio" => 2.05,
-              "energy_recharge" => 0,
-              "delay" => 0
-            }
-          ],
-          target_strategy: "random",
-          target_count: 2,
-          target_allies: false,
-          target_attribute: "Health"
-        }
-      ]
+      cooldown: 5
     }
   })
 
-{:ok, epic_sword} =
-  Items.insert_item_template(%{
-    game_id: champions_of_mirra_id,
-    name: "Epic Sword of Epicness",
-    type: "weapon"
-  })
+Items.insert_item_template(%{
+  game_id: champions_of_mirra_id,
+  name: "Epic Sword of Epicness",
+  type: "weapon"
+})
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
@@ -111,11 +85,26 @@ Items.insert_item_template(%{
   type: "boots"
 })
 
-{:ok, gold} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
-{:ok, gems} = Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+{:ok, gold_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 
-{:ok, scrolls} =
+{:ok, gems_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
+
+{:ok, _arcane_crystals_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
+
+{:ok, hero_souls_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Hero Souls"})
+
+{:ok, summon_scrolls_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Summon Scrolls"})
+
+{:ok, _mystic_scrolls_currency} =
+  Users.Currencies.insert_currency(%{
+    game_id: champions_of_mirra_id,
+    name: "Mystic Summon Scrolls"
+  })
 
 {:ok, _} =
   Gacha.insert_box(%{
@@ -127,7 +116,7 @@ Items.insert_item_template(%{
       %{rank: Champions.Units.get_rank(:star4), weight: 7},
       %{rank: Champions.Units.get_rank(:star5), weight: 3}
     ],
-    cost: [%{currency_id: scrolls.id, amount: 1}]
+    cost: [%{currency_id: summon_scrolls_currency.id, amount: 1}]
   })
 
 {:ok, _} =
@@ -138,7 +127,7 @@ Items.insert_item_template(%{
       %{rank: Champions.Units.get_rank(:star4), weight: 20},
       %{rank: Champions.Units.get_rank(:star5), weight: 5}
     ],
-    cost: [%{currency_id: scrolls.id, amount: 10}]
+    cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
 
 ######################
@@ -235,49 +224,34 @@ units =
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
 
+# Add the rewards of each level.
+# The calculation of the `amount` field is done following the specification found in https://docs.google.com/spreadsheets/d/177mvJS75LecaAEpyYotQEcrmhGJWI424UnkE2JHLmyY
 currency_rewards =
-  Enum.map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
+  Enum.map(levels_without_units, fn level ->
     %{
       level_id: level.id,
-      amount: 10 * level_index,
-      currency_id: gold.id,
+      amount: 10 * (20 + level.level_number),
+      currency_id: gold_currency.id,
       afk_reward: false,
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }
   end)
 
+currency_rewards =
+  currency_rewards ++
+    Enum.map(levels_without_units, fn level ->
+      %{
+        level_id: level.id,
+        amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
+        currency_id: hero_souls_currency.id,
+        afk_reward: false,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+    end)
+
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
-
-level_2 =
-  Repo.one!(
-    from(l in Level,
-      join: c in Campaign,
-      on: l.campaign_id == c.id,
-      where: c.campaign_number == 1 and l.level_number == 2
-    )
-  )
-  |> Repo.preload(:item_rewards)
-
-level_3 =
-  Repo.one!(
-    from(l in Level,
-      join: c in Campaign,
-      on: l.campaign_id == c.id,
-      where: c.campaign_number == 1 and l.level_number == 3
-    )
-  )
-  |> Repo.preload(:unit_rewards)
-
-level_2
-|> Level.changeset(%{item_rewards: [%{amount: 100, level: 1, item_template_id: epic_sword.id}]})
-|> Repo.update!()
-
-level_3
-|> Level.changeset(%{
-  unit_rewards: [%{amount: 100, character_id: muflus.id, rank: Champions.Units.get_rank(:star5)}]
-})
-|> Repo.update!()
 
 afk_reward_increments =
   Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
@@ -285,7 +259,7 @@ afk_reward_increments =
       %{
         level_id: level.id,
         amount: 10 * level_index,
-        currency_id: gold.id,
+        currency_id: gold_currency.id,
         afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -293,7 +267,7 @@ afk_reward_increments =
       %{
         level_id: level.id,
         amount: level_index,
-        currency_id: gems.id,
+        currency_id: gems_currency.id,
         afk_reward: true,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)

@@ -59,13 +59,14 @@ defmodule ArenaLoadTest.SocketHandler do
     # TODO must replace character with a random available one.
     # TODO this will be done as part of https://github.com/lambdaclass/mirra_backend/issues/361
     character = "h4ck"
+    player_name = "Player_#{player_id}"
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
-        "wss://#{host}/join/#{player_id}/#{character}"
+        "wss://#{host}/join/#{player_id}/#{character}/#{player_name}"
 
       _ ->
-        "ws://#{host}/join/#{player_id}/#{character}"
+        "ws://#{host}/join/#{player_id}/#{character}/#{player_name}"
     end
   end
 end
