@@ -272,7 +272,7 @@ defmodule Champions.Test.Battle do
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1000)
 
       # Change the component to have 100% chance to be applied
-      {:ok, character} =
+      {:ok, _character} =
         Characters.update_character(character, %{
           basic_skill:
             Map.put(basic_skill_params, :effects, [
@@ -303,6 +303,84 @@ defmodule Champions.Test.Battle do
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
+      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+
+      # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
+      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
+    end
+
+    test "Execution-DealDamage with modifiers", %{target_dummy: target_dummy} do
+      {:ok, user} = GameBackend.Users.register_user(%{username: "ModifiersUser", game_id: 2})
+      cooldown = 1
+
+      # Configure a basic skill with a modifier that increases the attack ratio
+      basic_skill_params = %{
+        name: "Basic",
+        energy_regen: 0,
+        animation_duration: 0,
+        animation_trigger: 0,
+        effects: [
+          %{
+            type: "instant",
+            initial_delay: 0,
+            components: [],
+            modifier: [
+              %{
+                attribute: "base_attack",
+                modifier_operation: "Multiply",
+                magnitude_calc_type: "Float",
+                float_magnitude: 0.1
+              }
+            ],
+            executions: [
+              %{
+                "type" => "DealDamage",
+                "attack_ratio" => 0.5,
+                "energy_recharge" => 50,
+                "delay" => 0
+              }
+            ],
+            target_strategy: "random",
+            target_count: 1,
+            target_allies: false,
+            target_attribute: "Health"
+          }
+        ],
+        cooldown: cooldown
+      }
+
+      {:ok, character} =
+        GameBackend.Units.Characters.insert_character(%{
+          game_id: 2,
+          name: "ModifiersCharacter",
+          active: true,
+          faction: "Kaline",
+          class: "Assassin",
+          base_attack: 20,
+          base_health: 100,
+          base_defense: 100,
+          basic_skill: basic_skill_params,
+          ultimate_skill: %{
+            name: "None",
+            energy_regen: 0,
+            animation_duration: 0,
+            animation_trigger: 0,
+            effects: [],
+            cooldown: 9999
+          }
+        })
+
+      {:ok, unit} =
+        Units.insert_unit(%{
+          character_id: character.id,
+          level: 1,
+          tier: 1,
+          rank: 1,
+          selected: true,
+          user_id: user.id,
+          slot: 1
+        })
+
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
