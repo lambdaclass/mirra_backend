@@ -47,7 +47,7 @@ jobs:
           SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
         run: |
           set -ex
-          rsync -avz --mkpath /devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
+          rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
