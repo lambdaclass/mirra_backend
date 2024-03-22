@@ -10,6 +10,7 @@ defmodule BotManager.GameSocketHandler do
   @message_delay_ms 300
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id}) do
+    Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id}")
     ws_url = ws_url(bot_client, game_id)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
@@ -29,14 +30,8 @@ defmodule BotManager.GameSocketHandler do
   end
 
   def handle_info(:move, state) do
-    Process.send_after(
-      self(),
-      :move,
-      @message_delay_ms
-    )
-
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    {x, y} = create_random_movement()
+    {x, y} = create_random_direction()
 
     game_action =
       BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
@@ -53,12 +48,14 @@ defmodule BotManager.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
+    Process.send_after(self(), :move, @message_delay_ms)
+
     {:ok, state}
   end
 
   def handle_info(:attack, state) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    {x, y} = create_random_movement()
+    {x, y} = create_random_direction()
 
     game_action =
       BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
@@ -78,12 +75,11 @@ defmodule BotManager.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :attack, 300, [])
+    Process.send_after(self(), :attack, @message_delay_ms)
     {:ok, state}
   end
 
   def handle_cast({:send, {_type, _msg} = frame}, state) do
-    # Logger.info("Sending frame with payload: #{msg}")
     {:reply, frame, state}
   end
 
@@ -104,7 +100,7 @@ defmodule BotManager.GameSocketHandler do
     end
   end
 
-  defp create_random_movement() do
+  defp create_random_direction() do
     Enum.random([
       {1, 0},
       {0, -1},

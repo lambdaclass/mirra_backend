@@ -160,4 +160,4 @@ config :game_client, dev_routes: true
 # App configuration: bot_manager #
 ##################################
 
-config :bot_manager, :end_point, port: [port: 5000]
+config :bot_manager, :end_point, port: [port: 4003]
