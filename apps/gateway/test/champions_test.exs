@@ -485,9 +485,9 @@ defmodule Gateway.Test.Champions do
       seconds_to_wait = 2
       {:ok, advanced_user_db} = Users.get_user(advanced_user.id)
 
-      advanced_user_db
+      {:ok, _} = advanced_user_db
       |> GameBackend.Users.User.changeset(%{
-        last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-1 * seconds_to_wait, :second)
+        last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
       })
       |> Repo.update()
 
