@@ -68,4 +68,4 @@ config :game_client, GameClient.Mailer, adapter: Swoosh.Adapters.Test
 # App configuration: bot_manager #
 ##################################
 
-config :bot_manager, :end_point, port: [port: 4003]
+config :bot_manager, :end_point, port: [port: System.get_env("BOT_MANAGER_PORT") || 4003]
