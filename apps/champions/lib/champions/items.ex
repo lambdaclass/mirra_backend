@@ -9,12 +9,7 @@ defmodule Champions.Items do
   @doc """
   Get an item by id.
   """
-  def get_item(item_id) do
-    case Items.get_item(item_id) do
-      {:ok, item} -> item
-      error -> error
-    end
-  end
+  def get_item(item_id), do: Items.get_item(item_id)
 
   @doc """
   Level up a user's item and substracts the currency cost from the user.
