@@ -11,15 +11,13 @@ defmodule ArenaLoadTest.GameSocketHandler do
   def start_link({client_id, game_id}) do
     Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
-    skills = get_available_skills()
 
     WebSockex.start_link(
       ws_url,
       __MODULE__,
       %{
         client_id: client_id,
-        game_id: game_id,
-        skills: skills
+        game_id: game_id
       }
     )
   end
@@ -64,7 +62,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         action_type:
           {:attack,
            %Serialization.Attack{
-             skill: Enum.random(state.skills),
+             skill: Enum.random(get_random_available_skill()),
              parameters: %Serialization.AttackParameters{
                target: %Serialization.Direction{
                  x: x,
@@ -109,7 +107,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
   # This is enough for now. We will get the skills from the requested bots
   # from the bots app. This will be done in future iterations.
-  defp get_available_skills() do
+  defp get_random_available_skill() do
     ["1", "2", "3"]
     |> Enum.random()
   end
