@@ -1,4 +1,4 @@
-name: Deploy to Brazil testing
+name: Deploy to Brazil testing (old)
 on:
   workflow_dispatch:
 
