@@ -82,8 +82,8 @@ The collisions we currently support are:
 
 The Jeffrey Thompson's implementation for collision detection is ideal since it's the cheapest way to 
 detect that two entities collided, but it's incomplete since we can only detect that a collision occurred 
-nothing else, so we decided to take the following approach:
+and nothing else, so we decided to take the following approach:
 
-1. We use the Jeffrey thompson implementation to detect that a collision actually happened
+1. We use the Jeffrey Thompson's implementation to detect that a collision actually happened.
 2. Using SAT we can get the normal that will resolve that collision and the amount of movement we should do 
-so the entities are no longer colliding, so when a collision occur we will use sat to push the entities in the direction that, with the minimum movement, will resolve that collision
+so the entities are no longer colliding, so when a collision occurs we will use SAT to push the entities in the direction that, with the minimum movement, will resolve that collision.
