@@ -484,8 +484,11 @@ defmodule Gateway.Test.Champions do
       # Simulate waiting 2 seconds before claiming the rewards
       seconds_to_wait = 2
       {:ok, advanced_user_db} = Users.get_user(advanced_user.id)
+
       advanced_user_db
-      |> GameBackend.Users.User.changeset(%{last_afk_reward_claim: DateTime.utc_now() |> DateTime.add((-1) * seconds_to_wait, :second)})
+      |> GameBackend.Users.User.changeset(%{
+        last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-1 * seconds_to_wait, :second)
+      })
       |> Repo.update()
 
       SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
