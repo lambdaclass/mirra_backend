@@ -485,11 +485,12 @@ defmodule Gateway.Test.Champions do
       seconds_to_wait = 2
       {:ok, advanced_user_db} = Users.get_user(advanced_user.id)
 
-      {:ok, _} = advanced_user_db
-      |> GameBackend.Users.User.changeset(%{
-        last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
-      })
-      |> Repo.update()
+      {:ok, _} =
+        advanced_user_db
+        |> GameBackend.Users.User.changeset(%{
+          last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+        })
+        |> Repo.update()
 
       SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
       fetch_last_message(socket_tester)
