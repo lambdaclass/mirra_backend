@@ -61,7 +61,7 @@ A collision detection library implementation based on the [SAT theorem](https://
 We'll keep working with entities with the same shapes as the ones used by Jeffrey Thompson.
 
 To detect a collision between two entities, we'll iterate over an axis for each pair of vertices from both entities that collided.
-for circle shaper we'll check the axis that's formed between the circle center and the closes polygon vertex, and then cast the
+For circular shapes, we'll check the axis that's formed between the circle center and the closest polygon vertex, and then cast the
 maximun and minimun vertex to the normal of each pair of vertices. As soon as we find an axis where the cast of the shapes are not overlapping we can safely say that the entities are not colliding
 
 #### Tiangle example for axis where the cast in the axis are overlapping
