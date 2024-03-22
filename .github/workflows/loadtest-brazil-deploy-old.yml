@@ -1,4 +1,4 @@
-name: Deploy to Brazil Loadtest
+name: Deploy to Brazil Loadtest OLD
 on:
   workflow_dispatch:
 
