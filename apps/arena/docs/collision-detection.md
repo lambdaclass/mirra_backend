@@ -1,6 +1,6 @@
 # Collision detection
 
-## Jeffrey thompson implementation
+## Jeffrey Thompson's implementation
 A collision detection library implementation based on [https://www.jeffreythompson.org/collision-detection/](https://www.jeffreythompson.org/collision-detection/).
 
 We are working with entities.
