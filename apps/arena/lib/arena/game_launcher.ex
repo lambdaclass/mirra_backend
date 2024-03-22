@@ -1,7 +1,6 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
   alias Ecto.UUID
-  alias Arena.Configuration
 
   use GenServer
 
@@ -67,14 +66,11 @@ defmodule Arena.GameLauncher do
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
 
-    game_config = Configuration.get_game_config()
-
-    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients), game_config)
+    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients ++ bot_clients,
-        game_config: game_config
+        clients: game_clients ++ bot_clients
       })
 
     spawn_bot_for_player(bot_clients, game_pid)
@@ -104,17 +100,11 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  defp get_bot_clients(missing_clients, game_config) do
-    Enum.map(0..(missing_clients + 1), fn i ->
-      character_name =
-        game_config.characters
-        |> Enum.filter(fn chara -> chara.active end)
-        |> Enum.random()
-        |> Map.get(:name)
-
+  defp get_bot_clients(missing_clients) do
+    Enum.map(0..missing_clients, fn i ->
       client_id = UUID.generate()
 
-      {client_id, character_name, Enum.at(@bot_names, i), nil}
+      {client_id, "h4ck", Enum.at(@bot_names, i), nil}
     end)
   end
 
