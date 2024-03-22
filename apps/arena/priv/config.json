@@ -95,9 +95,9 @@
       "mechanics": [
         {
           "circle_hit": {
-            "damage": 16,
-            "range": 150.0,
-            "offset": 500
+            "damage": 20,
+            "range": 400.0,
+            "offset": 400
           }
         }
       ],
