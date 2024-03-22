@@ -6,11 +6,11 @@ defmodule Arena.Game.Player do
   alias Arena.Utils
   alias Arena.Game.Skill
 
-  def add_action(player, action_name, duration_ms) do
-    Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
+  def add_action(player, action) do
+    Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
 
     update_in(player, [:aditional_info, :current_actions], fn current_actions ->
-      current_actions ++ [%{action: action_name, duration: duration_ms}]
+      current_actions ++ [action]
     end)
   end
 
@@ -189,10 +189,15 @@ defmodule Arena.Game.Player do
           skill.activation_delay_ms
         )
 
-        action_name = skill_key_execution_action(skill_key)
+        action =
+          %{
+            action: skill_key_execution_action(skill_key),
+            duration: skill.execution_duration_ms
+          }
+          |> maybe_add_destination(player, game_state, skill_direction, skill)
 
         player =
-          add_action(player, action_name, skill.execution_duration_ms)
+          add_action(player, action)
           |> apply_skill_cooldown(skill_key, skill)
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
@@ -202,6 +207,21 @@ defmodule Arena.Game.Player do
         put_in(game_state, [:players, player.id], player)
     end
   end
+
+  defp maybe_add_destination(action, player, game_state, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+    target_position = %{
+      x: player.position.x + skill_direction.x * teleport.range,
+      y: player.position.y + skill_direction.y * teleport.range
+    }
+
+    moved_entity =
+      player
+      |> Physics.move_entity_to_position(target_position, game_state.external_wall)
+
+    Map.put(action, :destination, moved_entity.position)
+  end
+
+  defp maybe_add_destination(action, _, _, _, _), do: action
 
   @doc """
 
@@ -268,9 +288,9 @@ defmodule Arena.Game.Player do
   ####################
   # Internal helpers #
   ####################
-  defp skill_key_execution_action("1"), do: :EXECUTING_SKILL_1
-  defp skill_key_execution_action("2"), do: :EXECUTING_SKILL_2
-  defp skill_key_execution_action("3"), do: :EXECUTING_SKILL_3
+  def skill_key_execution_action("1"), do: :EXECUTING_SKILL_1
+  def skill_key_execution_action("2"), do: :EXECUTING_SKILL_2
+  def skill_key_execution_action("3"), do: :EXECUTING_SKILL_3
 
   defp maybe_trigger_natural_heal(player, true) do
     now = System.monotonic_time(:millisecond)

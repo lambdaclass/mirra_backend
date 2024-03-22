@@ -5882,7 +5882,8 @@ proto.PlayerAction.prototype.toObject = function(opt_includeInstance) {
 proto.PlayerAction.toObject = function(includeInstance, msg) {
   var f, obj = {
     action: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    duration: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5927,6 +5928,11 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint64());
       msg.setDuration(value);
       break;
+    case 3:
+      var value = new proto.Position;
+      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      msg.setDestination(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5970,6 +5976,14 @@ proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getDestination();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.Position.serializeBinaryToWriter
+    );
+  }
 };
 
 
@@ -6006,6 +6020,43 @@ proto.PlayerAction.prototype.getDuration = function() {
  */
 proto.PlayerAction.prototype.setDuration = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional Position destination = 3;
+ * @return {?proto.Position}
+ */
+proto.PlayerAction.prototype.getDestination = function() {
+  return /** @type{?proto.Position} */ (
+    jspb.Message.getWrapperField(this, proto.Position, 3));
+};
+
+
+/**
+ * @param {?proto.Position|undefined} value
+ * @return {!proto.PlayerAction} returns this
+*/
+proto.PlayerAction.prototype.setDestination = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.PlayerAction} returns this
+ */
+proto.PlayerAction.prototype.clearDestination = function() {
+  return this.setDestination(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.PlayerAction.prototype.hasDestination = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 
