@@ -1,4 +1,4 @@
-name: Deploy to Europe testing
+name: Deploy to Europe Arena testing
 on:
   workflow_dispatch:
     inputs:
