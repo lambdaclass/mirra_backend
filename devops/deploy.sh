@@ -17,6 +17,9 @@ mix deps.get --only $MIX_ENV
 mix deps.compile
 mix compile
 mix release ${RELEASE} --overwrite
+if [ ${RELEASE} == "game_backend" ]; then
+	mix ecto.migrate
+fi
 
 rm -rf $HOME/mirra_backend
 mv /tmp/mirra_backend $HOME/
