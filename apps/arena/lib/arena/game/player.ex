@@ -222,14 +222,23 @@ defmodule Arena.Game.Player do
         %{
           aditional_info: %{
             power_ups: power_up_amount,
-            power_up_damage_modifier: power_up_damage_modifier
+            power_up_damage_modifier: power_up_damage_modifier,
+            effects: effects
           }
         } = _player_damage_owner,
         damage
       ) do
     aditional_damage = damage * power_up_damage_modifier * power_up_amount
 
-    (damage + aditional_damage)
+    effects_damage_bonus =
+      Enum.map(effects, fn {_, effects} -> effects.effect_mechanics end)
+      |> List.flatten()
+      |> Enum.reduce(0, fn
+        {:damage_up, damage_up}, damage_acc -> damage_acc + damage_up.amount
+        _, damage_acc -> damage_acc
+      end)
+
+    (damage + aditional_damage + effects_damage_bonus)
     |> round()
   end
 
