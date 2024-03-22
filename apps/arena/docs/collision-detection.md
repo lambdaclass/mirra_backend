@@ -58,7 +58,7 @@ It is necessary to clarify that there are other types of collisions that we do n
 ## SAT (Simple Axis Theorem) implementation
 A collision detection library implementation based on the [SAT theorem](https://dyn4j.org/2010/01/sat/).
 
-We'll keep working with entities with the same shapes as the Jeffrey thompson
+We'll keep working with entities with the same shapes as the ones used by Jeffrey Thompson.
 
 To detect a collision between two entities we'll iterate over an axis for each pair of vertices from both entities that collided,
 for circle shaper we'll check the axis that's formed between the circle center and the closes polygon vertex, and then cast the
