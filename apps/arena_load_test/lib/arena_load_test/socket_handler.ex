@@ -68,11 +68,9 @@ defmodule ArenaLoadTest.SocketHandler do
     end
   end
 
+  # This is enough for now. Will request bots from the bots app in future iterations.
   defp get_random_active_character() do
-    Arena.Configuration.get_game_config()
-    |> Map.get(:characters)
-    |> Enum.filter(fn character -> character.active end)
-    |> Enum.map(fn character -> character.name end)
+    ["muflus", "h4ck", "uma"]
     |> Enum.random()
   end
 end

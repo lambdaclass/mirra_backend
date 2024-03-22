@@ -107,13 +107,10 @@ defmodule ArenaLoadTest.GameSocketHandler do
     end
   end
 
+  # This is enough for now. We will get the skills from the requested bots
+  # from the bots app. This will be done in future iterations.
   defp get_available_skills() do
-    Arena.Configuration.get_game_config()
-    |> Map.get(:characters)
-    # Taking anyone is fine since all of them have the same amount of skills
-    # and the skills are just numbers from 1 to N.
-    |> hd()
-    |> Map.get(:skills)
-    |> Map.keys()
+    ["1", "2", "3"]
+    |> Enum.random()
   end
 end
