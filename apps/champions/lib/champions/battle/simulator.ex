@@ -12,7 +12,7 @@ defmodule Champions.Battle.Simulator do
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
   [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
-  [ ] Duration - Applied once and reverted once its duration ends.
+  [x] Duration - Applied once and reverted once its duration ends.
 
   They also have different targeting strategies:
   [x] Random

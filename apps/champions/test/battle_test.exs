@@ -309,13 +309,41 @@ defmodule Champions.Test.Battle do
       assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
     end
 
-    test "Execution-DealDamage with modifiers", %{target_dummy: target_dummy} do
+    test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
       {:ok, user} = GameBackend.Users.register_user(%{username: "ModifiersUser", game_id: 2})
       cooldown = 1
 
       # Configure a basic skill with a modifier that increases the attack ratio
       basic_skill_params = %{
         name: "Basic",
+        energy_regen: 500,
+        animation_duration: 0,
+        animation_trigger: 0,
+        effects: [
+          %{
+            type: %{"duration" => 1, "period" => 0},
+            initial_delay: 0,
+            components: [],
+            modifiers: [
+              %{
+                attribute: "attack",
+                modifier_operation: "Multiply",
+                magnitude_calc_type: "Float",
+                float_magnitude: 0.1
+              }
+            ],
+            executions: [],
+            target_strategy: "random",
+            target_count: 1,
+            target_allies: true,
+            target_attribute: "Health"
+          }
+        ],
+        cooldown: cooldown
+      }
+
+      ultimate_skill_params = %{
+        name: "Ultimate",
         energy_regen: 0,
         animation_duration: 0,
         animation_trigger: 0,
@@ -324,14 +352,7 @@ defmodule Champions.Test.Battle do
             type: "instant",
             initial_delay: 0,
             components: [],
-            modifier: [
-              %{
-                attribute: "base_attack",
-                modifier_operation: "Multiply",
-                magnitude_calc_type: "Float",
-                float_magnitude: 0.1
-              }
-            ],
+            modifiers: [],
             executions: [
               %{
                 "type" => "DealDamage",
@@ -346,7 +367,7 @@ defmodule Champions.Test.Battle do
             target_attribute: "Health"
           }
         ],
-        cooldown: cooldown
+        cooldown: 0
       }
 
       {:ok, character} =
@@ -360,14 +381,7 @@ defmodule Champions.Test.Battle do
           base_health: 100,
           base_defense: 100,
           basic_skill: basic_skill_params,
-          ultimate_skill: %{
-            name: "None",
-            energy_regen: 0,
-            animation_duration: 0,
-            animation_trigger: 0,
-            effects: [],
-            cooldown: 9999
-          }
+          ultimate_skill: ultimate_skill_params
         })
 
       {:ok, unit} =
@@ -383,8 +397,8 @@ defmodule Champions.Test.Battle do
 
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
-      # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
+      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
+      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21)
     end
   end
 end
