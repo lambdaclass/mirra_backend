@@ -477,13 +477,16 @@ defmodule Gateway.Test.Champions do
                rate.currency_id == gems_currency_id && rate.rate > 0
              end)
 
-      # Wait for the afk rewards to increase
-      milliseconds_to_wait = 2000
-      :timer.sleep(milliseconds_to_wait)
-
       # Claim afk rewards
       gold_before_claiming = Currencies.get_amount_of_currency_by_name(advanced_user.id, "Gold")
       gems_before_claiming = Currencies.get_amount_of_currency_by_name(advanced_user.id, "Gems")
+
+      # Simulate waiting 2 seconds before claiming the rewards
+      seconds_to_wait = 2
+      {:ok, advanced_user_db} = Users.get_user(advanced_user.id)
+      advanced_user_db
+      |> GameBackend.Users.User.changeset(%{last_afk_reward_claim: DateTime.utc_now() |> DateTime.add((-1) * seconds_to_wait, :second)})
+      |> Repo.update()
 
       SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
       fetch_last_message(socket_tester)
@@ -495,15 +498,14 @@ defmodule Gateway.Test.Champions do
       assert Enum.any?(claimed_user.currencies, fn currency ->
                user_gold_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == "Gold"))
                reward_rate = Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == gold_currency_id)).rate
-               expected_amount = trunc(gold_before_claiming + reward_rate * (milliseconds_to_wait / 1000))
+               expected_amount = trunc(gold_before_claiming + reward_rate * seconds_to_wait)
                user_gold_currency.amount in expected_amount..trunc(expected_amount * 1.1)
              end)
 
       assert Enum.any?(claimed_user.currencies, fn currency ->
                user_gems_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == "Gems"))
                reward_rate = Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == gems_currency_id)).rate
-
-               expected_amount = trunc(gems_before_claiming + reward_rate * (milliseconds_to_wait / 1000))
+               expected_amount = trunc(gems_before_claiming + reward_rate * seconds_to_wait)
                user_gems_currency.amount in expected_amount..trunc(expected_amount * 1.1)
              end)
 
