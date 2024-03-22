@@ -314,29 +314,16 @@ defmodule Arena.GameUpdater do
   # End Zone Callbacks
   ##########################
 
-  def handle_info({:to_killfeed, killer_id, victim_id}, %{game_state: game_state, game_config: game_config} = state) do
-    last_id = game_state.last_id + 1
-    entry = %{killer_id: killer_id, victim_id: victim_id}
-    victim = Map.get(game_state.players, victim_id)
+  def handle_info({:to_killfeed, killer_id, victim_id}, state) do
+    game_state =
+      state.game_state
+      |> update_killfeed(killer_id, victim_id)
+      |> update_killer_player(killer_id, victim_id, state.game_config)
+      |> spawn_power_ups(victim_id, state.game_config)
 
-    on_death_effect =
-      Enum.find(game_config.effects, fn effect -> effect.name == victim.aditional_info.on_death_effect end)
+    broadcast_player_dead(game_state.game_id, victim_id)
 
-    killer =
-      Map.get(game_state.players, killer_id)
-      |> Player.apply_on_death_effect(on_death_effect, last_id)
-      |> update_in([:aditional_info, :kill_count], fn count -> count + 1 end)
-
-    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
-
-    state =
-      put_in(state, [:game_state, :players, killer.id], killer)
-      |> update_in([:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-      |> spawn_power_ups(victim, amount_of_power_ups)
-
-    broadcast_player_dead(state.game_state.game_id, victim_id)
-
-    {:noreply, state}
+    {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
@@ -970,24 +957,16 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp spawn_power_ups(
-         %{game_config: game_config} = state,
-         victim,
-         amount
-       ) do
+  defp spawn_power_ups(game_state, victim_id, game_config) do
+    victim = Map.get(game_state.players, victim_id)
+    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
     distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
 
-    Enum.reduce(1..amount//1, state, fn _, state ->
-      random_x =
-        victim.position.x +
-          Enum.random(-distance_to_power_up..distance_to_power_up)
-
-      random_y =
-        victim.position.y +
-          Enum.random(-distance_to_power_up..distance_to_power_up)
-
+    Enum.reduce(1..amount_of_power_ups//1, game_state, fn _, game_state_acc ->
+      random_x = victim.position.x + Enum.random(-distance_to_power_up..distance_to_power_up)
+      random_y = victim.position.y + Enum.random(-distance_to_power_up..distance_to_power_up)
       random_position = %{x: random_x, y: random_y}
-      last_id = state.game_state.last_id + 1
+      last_id = game_state_acc.last_id + 1
 
       power_up =
         Entities.new_power_up(
@@ -998,8 +977,8 @@ defmodule Arena.GameUpdater do
           game_config.power_ups.power_up
         )
 
-      put_in(state, [:game_state, :power_ups, last_id], power_up)
-      |> put_in([:game_state, :last_id], last_id)
+      put_in(game_state_acc, [:power_ups, last_id], power_up)
+      |> put_in([:last_id], last_id)
     end)
   end
 
@@ -1012,6 +991,26 @@ defmodule Arena.GameUpdater do
       %{amount_of_drops: amount} -> amount
       _ -> 0
     end
+  end
+
+  defp update_killer_player(game_state, killer_id, victim_id, game_config) do
+    last_id = game_state.last_id + 1
+    victim = Map.get(game_state.players, victim_id)
+
+    on_death_effect =
+      Enum.find(game_config.effects, fn effect -> effect.name == victim.aditional_info.on_death_effect end)
+
+    killer =
+      Map.get(game_state.players, killer_id)
+      |> Player.put_effect(on_death_effect, last_id)
+      |> update_in([:aditional_info, :kill_count], fn count -> count + 1 end)
+
+    put_in(game_state, [:players, killer.id], killer)
+  end
+
+  defp update_killfeed(game_state, killer_id, victim_id) do
+    entry = %{killer_id: killer_id, victim_id: victim_id}
+    Map.update!(game_state, [:killfeed], fn killfeed -> [entry | killfeed] end)
   end
 
   defp find_collided_power_up(collides_with, power_ups) do
