@@ -93,19 +93,19 @@ defmodule Arena.Game.Skill do
 
   def do_mechanic(
         game_state,
-        player,
+        entity,
         {:dash, %{speed: speed, duration: duration}},
         _skill_params
       ) do
-    Process.send_after(self(), {:stop_dash, player.id, player.speed}, duration)
+    Process.send_after(self(), {:stop_dash, entity.id, entity.speed}, duration)
 
-    player =
-      player
+    entity =
+      entity
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    players = Map.put(game_state.players, player.id, player)
+    players = Map.put(game_state.players, entity.id, entity)
 
     %{game_state | players: players}
   end
