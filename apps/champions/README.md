@@ -53,6 +53,12 @@ be found at <https://hexdocs.pm/champions_of_mirra>.
 {:ok, user_currency} = GameBackend.Users.Currencies.add_currency_by_name!(user.id, "Gold", 100)
 ```
 
+#### Update User level/experience
+
+```
+{:ok, user} = GameBackend.Users.update_experience(user, %{level: level, experience: experience})
+```
+
 ---
 
 ### Campaigns & Levels
