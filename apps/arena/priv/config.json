@@ -386,7 +386,7 @@
       "active": true,
       "base_speed": 30.0,
       "base_size": 100.0,
-      "base_health": 137.5,
+      "base_health": 138,
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
