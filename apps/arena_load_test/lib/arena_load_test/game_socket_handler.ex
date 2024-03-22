@@ -62,7 +62,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         action_type:
           {:attack,
            %Serialization.Attack{
-             skill: Enum.random(get_random_available_skill()),
+             skill: get_random_available_skill(),
              parameters: %Serialization.AttackParameters{
                target: %Serialization.Direction{
                  x: x,
