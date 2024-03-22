@@ -64,7 +64,7 @@ To detect a collision between two entities, we'll iterate over an axis for each 
 For circular shapes, we'll check the axis that's formed between the circle center and the closest polygon vertex, and then cast the
 maximum and minimum vertex to the normal of each pair of vertices. As soon as we find an axis where the cast of the shapes are not overlapping, we can safely say that the entities are not colliding.
 
-#### Tiangle example for axis where the cast in the axis are overlapping
+#### Triangle example for axis where the cast in the axis are overlapping
 ![Polygons axis overlapping](./images/sat-overlapping.jpg "Polygons axis overlapping")
 #### Tiangle example for axis where the cast in the axis are not overlapping
 ![Polygons axis not overlapping](./images/sat-no-overlapping.jpg "Polygons axis not overlapping")
