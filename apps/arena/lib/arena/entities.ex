@@ -4,14 +4,14 @@ defmodule Arena.Entities do
   """
   alias Arena.Configuration
 
-  def new_player(id, character_name, position, direction, config, now) do
+  def new_player(id, character_name, player_name, position, direction, config, now) do
     character = Configuration.get_character_config(character_name, config)
 
     %{
       id: id,
       category: :player,
       shape: :circle,
-      name: "Player" <> Integer.to_string(id),
+      name: player_name,
       position: position,
       radius: character.base_size,
       vertices: [],
@@ -37,7 +37,10 @@ defmodule Arena.Entities do
         forced_movement: false,
         power_ups: 0,
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
-        effects: %{}
+        inventory: nil,
+        damage_immunity: false,
+        effects: %{},
+        cooldowns: %{}
       }
     }
   end
@@ -113,6 +116,47 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_pool(id, position, effects_to_apply, radius, owner_id) do
+    %{
+      id: id,
+      category: :pool,
+      shape: :circle,
+      name: "Pool " <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: [],
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false,
+      aditional_info: %{
+        effects_to_apply: effects_to_apply,
+        owner_id: owner_id
+      }
+    }
+  end
+
+  def new_item(id, position, config) do
+    %{
+      id: id,
+      category: :item,
+      shape: :circle,
+      name: "Item" <> Integer.to_string(id),
+      position: position,
+      radius: 30.0,
+      vertices: [],
+      speed: 0.0,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      aditional_info: %{
+        name: config.name,
+        effects: config.effects
+      }
+    }
+  end
+
   def new_circular_obstacle(id, position, radius) do
     %{
       id: id,
@@ -176,7 +220,9 @@ defmodule Arena.Entities do
        recharging_stamina: entity.aditional_info.recharging_stamina,
        character_name: entity.aditional_info.character_name,
        effects: entity.aditional_info.effects,
-       power_ups: entity.aditional_info.power_ups
+       power_ups: entity.aditional_info.power_ups,
+       inventory: entity.aditional_info.inventory,
+       cooldowns: entity.aditional_info.cooldowns
      }}
   end
 
@@ -198,7 +244,21 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :pool do
+    {:pool,
+     %Arena.Serialization.Pool{
+       owner_id: entity.aditional_info.owner_id
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :item do
+    {:item,
+     %Arena.Serialization.Item{
+       name: entity.aditional_info.name
+     }}
+  end
+
   def maybe_add_custom_info(_entity) do
-    {}
+    nil
   end
 end

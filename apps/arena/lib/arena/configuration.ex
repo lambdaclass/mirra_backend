@@ -15,15 +15,38 @@ defmodule Arena.Configuration do
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
-    %{config | skills: skills, characters: characters}
+    items = parse_items_config(config.items)
+    %{config | skills: skills, characters: characters, items: items}
   end
 
   defp parse_skills_config(skills_config) do
     Enum.reduce(skills_config, [], fn skill_config, skills ->
-      mechanics = parse_mechanics_config(skill_config.mechanics)
-      skill = %{skill_config | mechanics: mechanics}
+      skill = parse_skill_config(skill_config)
       [skill | skills]
     end)
+  end
+
+  defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
+  defp parse_skill_config(%{cooldown_mechanism: "time", cooldown_ms: cooldown} = skill_config) when cooldown >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
+  defp parse_skill_config(skill_config) do
+    case skill_config.cooldown_mechanism do
+      "stamina" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` stamina_cost should be a number greater than or equal to zero"
+
+      "time" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      _ ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
+    end
   end
 
   defp parse_mechanics_config(mechanics_config) do
@@ -41,6 +64,18 @@ defmodule Arena.Configuration do
     Map.to_list(mechanic)
     |> Enum.map(&parse_mechanic_fields/1)
     |> hd()
+  end
+
+  defp parse_mechanic_fields({:leap, attrs}) do
+    {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
+  end
+
+  defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
+    {name, %{attrs | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)}}
+  end
+
+  defp parse_mechanic_fields(mechanic) do
+    mechanic
   end
 
   defp parse_characters_config(characters, config_skills) do
@@ -67,15 +102,27 @@ defmodule Arena.Configuration do
     end
   end
 
-  defp parse_mechanic_fields({:leap, attrs}) do
-    {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
+  defp parse_items_config(items_config) do
+    Enum.reduce(items_config, [], fn item_config, items ->
+      effects = parse_effects_config(item_config.effects)
+      item = %{item_config | effects: effects}
+      [item | items]
+    end)
   end
 
-  defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
-    {name, %{attrs | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)}}
+  defp parse_effects_config(effects_config) do
+    Enum.reduce(effects_config, [], fn effect_config, acc ->
+      effect = parse_effect_config(effect_config)
+      [effect | acc]
+    end)
   end
 
-  defp parse_mechanic_fields(mechanic) do
-    mechanic
+  defp parse_effect_config(effect) when map_size(effect) > 1 do
+    raise "Config has effect with 2 values: #{inspect(effect)}"
+  end
+
+  defp parse_effect_config(effect) do
+    Map.to_list(effect)
+    |> hd()
   end
 end

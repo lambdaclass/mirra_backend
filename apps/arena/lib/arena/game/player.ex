@@ -20,6 +20,10 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def take_damage(%{aditional_info: %{damage_immunity: true}} = player, _) do
+    player
+  end
+
   def take_damage(player, damage) do
     send(self(), {:damage_taken, player.id, damage})
 
@@ -90,11 +94,24 @@ defmodule Arena.Game.Player do
     end
   end
 
+  def set_stamina_interval(player, interval) do
+    put_in(player, [:aditional_info, :stamina_interval], interval)
+  end
+
+  def revert_stamina_interval(player, revert_by, max_stamina_interval) do
+    stamina_interval = min(player.aditional_info.stamina_interval + revert_by, max_stamina_interval)
+
+    put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
+  end
+
   def get_skill_if_usable(player, skill_key) do
+    skill = get_in(player, [:aditional_info, :skills, skill_key])
+    skill_cooldown = get_in(player, [:aditional_info, :cooldowns, skill_key])
     available_stamina = player.aditional_info.available_stamina
 
-    case get_in(player, [:aditional_info, :skills, skill_key]) do
-      %{stamina_cost: cost} = skill when cost <= available_stamina -> skill
+    case skill do
+      %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
+      %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
       _ -> nil
     end
   end
@@ -104,8 +121,7 @@ defmodule Arena.Game.Player do
   end
 
   def move(player, direction) do
-    current_actions =
-      add_or_remove_moving_action(player.aditional_info.current_actions, direction)
+    current_actions = add_or_remove_moving_action(player.aditional_info.current_actions, direction)
 
     {x, y} = direction
     is_moving = x != 0.0 || y != 0.0
@@ -130,6 +146,10 @@ defmodule Arena.Game.Player do
     |> Map.put(:is_moving, false)
     |> Map.put(:speed, reset_speed)
     |> put_in([:aditional_info, :forced_movement], false)
+  end
+
+  def change_speed(player, change_amount) do
+    %{player | speed: player.speed + change_amount}
   end
 
   def forced_moving?(player) do
@@ -173,25 +193,10 @@ defmodule Arena.Game.Player do
 
         player =
           add_action(player, action_name, skill.execution_duration_ms)
-          |> change_stamina(-skill.stamina_cost)
-          |> put_in([:direction], skill_direction)
+          |> apply_skill_cooldown(skill_key, skill)
+          |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
-
-        player =
-          case stamina_recharging?(player) do
-            false ->
-              Process.send_after(
-                self(),
-                {:recharge_stamina, player.id},
-                player.aditional_info.stamina_interval
-              )
-
-              put_in(player, [:aditional_info, :recharging_stamina], true)
-
-            _ ->
-              player
-          end
 
         put_in(game_state, [:players, player.id], player)
     end
@@ -228,6 +233,32 @@ defmodule Arena.Game.Player do
     |> round()
   end
 
+  def store_item(player, item) do
+    put_in(player, [:aditional_info, :inventory], item)
+  end
+
+  def inventory_full?(player) do
+    player.aditional_info.inventory != nil
+  end
+
+  def use_item(player, game_state) do
+    case player.aditional_info.inventory do
+      nil ->
+        game_state
+
+      item ->
+        player =
+          Enum.reduce(item.effects, player, &apply_effect/2)
+          |> put_in([:aditional_info, :inventory], nil)
+
+        put_in(game_state, [:players, player.id], player)
+    end
+  end
+
+  def remove_damage_immunity(player) do
+    put_in(player, [:aditional_info, :damage_immunity], false)
+  end
+
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
     |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
@@ -236,9 +267,9 @@ defmodule Arena.Game.Player do
   ####################
   # Internal helpers #
   ####################
-  defp skill_key_execution_action(skill_key) do
-    "EXECUTING_SKILL_#{String.upcase(skill_key)}" |> String.to_existing_atom()
-  end
+  defp skill_key_execution_action("1"), do: :EXECUTING_SKILL_1
+  defp skill_key_execution_action("2"), do: :EXECUTING_SKILL_2
+  defp skill_key_execution_action("3"), do: :EXECUTING_SKILL_3
 
   defp maybe_trigger_natural_heal(player, true) do
     now = System.monotonic_time(:millisecond)
@@ -281,5 +312,54 @@ defmodule Arena.Game.Player do
       current_actions ++ [%{action: :MOVING, duration: 0}]
     end
     |> Enum.uniq()
+  end
+
+  defp apply_effect({:stamina_faster, stamina_faster}, player) do
+    stamina_speedup_by =
+      (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
+      |> round()
+
+    new_stamina_interval = player.aditional_info.stamina_interval - stamina_speedup_by
+
+    Process.send_after(
+      self(),
+      {:stop_stamina_faster, player.id, stamina_speedup_by},
+      stamina_faster.duration_ms
+    )
+
+    change_stamina(player, 3)
+    |> put_in([:aditional_info, :stamina_interval], new_stamina_interval)
+  end
+
+  defp apply_effect({:speed_boost, speed_boost}, player) do
+    Process.send_after(
+      self(),
+      {:remove_speed_boost, player.id, speed_boost.amount},
+      speed_boost.duration_ms
+    )
+
+    %{player | speed: player.speed + speed_boost.amount}
+  end
+
+  defp apply_effect({:damage_immunity, damage_immunity}, player) do
+    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
+    put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
+    put_in(player, [:aditional_info, :cooldowns, skill_key], cooldown_ms)
+  end
+
+  defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}) do
+    player = change_stamina(player, -cost)
+
+    case stamina_recharging?(player) do
+      false ->
+        Process.send_after(self(), {:recharge_stamina, player.id}, player.aditional_info.stamina_interval)
+        put_in(player, [:aditional_info, :recharging_stamina], true)
+
+      _ ->
+        player
+    end
   end
 end

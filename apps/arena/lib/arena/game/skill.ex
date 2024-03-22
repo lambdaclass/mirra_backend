@@ -12,8 +12,7 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
-    circular_damage_area =
-      Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
+    circular_damage_area = Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -75,6 +74,7 @@ defmodule Arena.Game.Skill do
       end)
 
     %{game_state | players: players}
+    |> maybe_move_player(entity, cone_hit[:move_by])
   end
 
   def do_mechanic(game_state, entity, {:multi_cone_hit, multi_cone_hit}, skill_params) do
@@ -215,6 +215,31 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, entity.id], player)
   end
 
+  def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
+        skill_direction: skill_direction
+      }) do
+    last_id = game_state.last_id + 1
+
+    target_position = %{
+      x: player.position.x + skill_direction.x * pool_params.range,
+      y: player.position.y + skill_direction.y * pool_params.range
+    }
+
+    pool =
+      Entities.new_pool(
+        last_id,
+        target_position,
+        pool_params.effects_to_apply,
+        pool_params.radius,
+        player.id
+      )
+
+    Process.send_after(self(), {:remove_pool, last_id}, pool_params.duration_ms)
+
+    put_in(game_state, [:pools, last_id], pool)
+    |> put_in([:last_id], last_id)
+  end
+
   def handle_skill_effects(game_state, player, effects, game_config) do
     effects_to_apply =
       Enum.map(effects, fn effect_name ->
@@ -232,13 +257,98 @@ defmodule Arena.Game.Skill do
 
       Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
 
-      effects =
-        get_in(game_state, [:players, player.id, :aditional_info, :effects])
-        |> Map.put(last_id, effect)
-
-      put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
+      put_in(
+        game_state,
+        [:players, player.id, :aditional_info, :effects, last_id],
+        Map.put(effect, :id, last_id)
+        |> Map.put(:owner_id, player.id)
+      )
       |> put_in([:last_id], last_id)
     end)
+  end
+
+  def apply_effect_mechanic(%{players: players} = game_state) do
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
+      if Player.alive?(player) do
+        player =
+          Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
+            apply_effect_mechanic(player, effect, game_state)
+          end)
+
+        put_in(game_state, [:players, player.id], player)
+      else
+        game_state
+      end
+    end)
+  end
+
+  def apply_effect_mechanic(player, effect, game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
+      should_re_apply? =
+        is_nil(Map.get(mechanic_params, :last_application_time)) or
+          now - Map.get(mechanic_params, :last_application_time) >=
+            mechanic_params.effect_delay_ms
+
+      if should_re_apply? do
+        do_effect_mechanics(game_state, player, effect, mechanic)
+        |> put_in(
+          [
+            :aditional_info,
+            :effects,
+            effect.id,
+            :effect_mechanics,
+            mechanic_name,
+            :last_application_time
+          ],
+          now
+        )
+      else
+        player
+      end
+    end)
+  end
+
+  defp do_effect_mechanics(game_state, player, effect, {:pull, pull_params}) do
+    case Map.get(game_state.pools, effect.owner_id) do
+      nil ->
+        player
+
+      %{position: pool_position} when pool_position == player.position ->
+        player
+
+      pool ->
+        direction = Physics.get_direction_from_positions(player.position, pool.position)
+
+        Physics.move_entity_to_direction(player, direction, pull_params.force)
+        |> Map.put(:aditional_info, player.aditional_info)
+        |> Map.put(:collides_with, player.collides_with)
+    end
+  end
+
+  defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
+    # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
+    # applies this effect
+    Map.get(game_state.pools, effect.owner_id)
+    |> case do
+      nil ->
+        player
+
+      pool ->
+        pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
+        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
+
+        send(self(), {:damage_done, pool_owner.id, real_damage})
+
+        player = Player.take_damage(player, real_damage)
+
+        unless Player.alive?(player) do
+          send(self(), {:to_killfeed, pool_owner.id, player.id})
+        end
+
+        player
+    end
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
@@ -301,4 +411,18 @@ defmodule Arena.Game.Skill do
          aditional_info: %{owner_id: owner_id}
        }),
        do: get_in(game_state, [:players, owner_id])
+
+  defp maybe_move_player(game_state, %{category: :player} = player, move_by)
+       when not is_nil(move_by) do
+    player_for_moving = %{player | is_moving: true, speed: move_by}
+
+    physics_player = Physics.move_entity(player_for_moving, 1.0, game_state.external_wall, game_state.obstacles)
+
+    player = Map.merge(player, %{physics_player | is_moving: false, speed: player.speed})
+    put_in(game_state, [:players, player.id], player)
+  end
+
+  defp maybe_move_player(game_state, _, _) do
+    game_state
+  end
 end

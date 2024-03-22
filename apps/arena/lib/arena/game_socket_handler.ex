@@ -25,8 +25,7 @@ defmodule Arena.GameSocketHandler do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
-    {:ok, %{player_id: player_id, game_config: config}} =
-      GameUpdater.join(state.game_pid, state.client_id)
+    {:ok, %{player_id: player_id, game_config: config}} = GameUpdater.join(state.game_pid, state.client_id)
 
     state =
       Map.put(state, :player_id, player_id)
@@ -76,6 +75,9 @@ defmodule Arena.GameSocketHandler do
     case Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
         GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+
+      %{action_type: {:use_item, _}, timestamp: timestamp} ->
+        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
 
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
         GameUpdater.move(
@@ -154,7 +156,13 @@ defmodule Arena.GameSocketHandler do
     ## TODO: This will break once a skill has more than 1 mechanic, until then
     ##   we can use this "shortcut" and deal with it when the time comes
     [{_mechanic, params}] = skill.mechanics
-    extra_params = %{targetting_radius: params[:range], targetting_angle: params[:angle]}
+
+    extra_params = %{
+      targetting_radius: params[:radius],
+      targetting_angle: params[:angle],
+      targetting_range: params[:range]
+    }
+
     {key, Map.merge(skill, extra_params)}
   end
 end

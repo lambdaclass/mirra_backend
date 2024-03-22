@@ -6,14 +6,24 @@ defmodule GameBackend.Campaigns.Level do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Items.ItemReward
+  alias GameBackend.Campaigns.Rewards.CurrencyReward
+  alias GameBackend.Campaigns.Rewards.UnitReward
+  alias GameBackend.Campaigns.Rewards.ItemReward
+  alias GameBackend.Campaigns.Campaign
   alias GameBackend.Units.Unit
 
   schema "levels" do
     field(:game_id, :integer)
     field(:level_number, :integer)
-    field(:campaign, :integer)
+    field(:experience_reward, :integer)
 
+    belongs_to(:campaign, Campaign)
     has_many(:units, Unit, foreign_key: :campaign_level_id)
+    has_many(:currency_rewards, CurrencyReward, where: [afk_reward: false])
+    has_many(:afk_rewards_increments, CurrencyReward, where: [afk_reward: true])
+    has_many(:item_rewards, ItemReward)
+    has_many(:unit_rewards, UnitReward)
 
     timestamps()
   end
@@ -21,13 +31,12 @@ defmodule GameBackend.Campaigns.Level do
   @doc false
   def changeset(level, attrs \\ %{}) do
     level
-    |> cast(attrs, [:game_id, :level_number, :campaign])
+    |> cast(attrs, [:game_id, :level_number, :campaign_id, :experience_reward])
     |> cast_assoc(:units)
-    |> validate_required([:game_id, :level_number, :campaign])
+    |> cast_assoc(:currency_rewards)
+    |> cast_assoc(:afk_rewards_increments)
+    |> cast_assoc(:item_rewards)
+    |> cast_assoc(:unit_rewards)
+    |> validate_required([:game_id, :level_number, :campaign_id])
   end
-
-  @doc """
-  Changeset for editing a level's basic attributes.
-  """
-  def edit_changeset(level, attrs), do: cast(level, attrs, [:campaign])
 end
