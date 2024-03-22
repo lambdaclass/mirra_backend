@@ -1010,7 +1010,7 @@ defmodule Arena.GameUpdater do
 
   defp update_killfeed(game_state, killer_id, victim_id) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
-    Map.update!(game_state, [:killfeed], fn killfeed -> [entry | killfeed] end)
+    Map.update!(game_state, :killfeed, fn killfeed -> [entry | killfeed] end)
   end
 
   defp find_collided_power_up(collides_with, power_ups) do
