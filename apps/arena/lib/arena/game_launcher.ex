@@ -9,6 +9,20 @@ defmodule Arena.GameLauncher do
   @clients_needed 10
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 10_000
+  # The available names for bots to enter a match, we should change this in the future
+  @bot_names [
+    "TheBlackSwordman",
+    "SlashJava",
+    "SteelBallRun",
+    "Jeff",
+    "Thomas",
+    "Stone Ocean",
+    "Jeepers Creepers",
+    "Bob",
+    "El javo",
+    "Alberso",
+    "Messi"
+  ]
 
   # API
   def start_link(_) do
@@ -91,20 +105,6 @@ defmodule Arena.GameLauncher do
   end
 
   defp get_bot_clients(missing_clients, game_config) do
-    bot_names = [
-      "TheBlackSwordman",
-      "SlashJava",
-      "SteelBallRun",
-      "Jeff",
-      "Thomas",
-      "Stone Ocean",
-      "Jeepers Creepers",
-      "Bob",
-      "El javo",
-      "Alberso",
-      "Messi"
-    ]
-
     Enum.map(0..(missing_clients + 1), fn i ->
       character_name =
         game_config.characters
@@ -114,7 +114,7 @@ defmodule Arena.GameLauncher do
 
       client_id = UUID.generate()
 
-      {client_id, character_name, Enum.at(bot_names, i), nil}
+      {client_id, character_name, Enum.at(@bot_names, i), nil}
     end)
   end
 
