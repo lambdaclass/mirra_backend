@@ -66,7 +66,7 @@ maximum and minimum vertex to the normal of each pair of vertices. As soon as we
 
 #### Triangle example for axis where the cast in the axis are overlapping
 ![Polygons axis overlapping](./images/sat-overlapping.jpg "Polygons axis overlapping")
-#### Tiangle example for axis where the cast in the axis are not overlapping
+#### Triangle example for axis where the cast in the axis are not overlapping
 ![Polygons axis not overlapping](./images/sat-no-overlapping.jpg "Polygons axis not overlapping")
 
 The collisions we curretly support are:
