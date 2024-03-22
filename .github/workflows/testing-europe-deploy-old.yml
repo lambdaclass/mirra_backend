@@ -37,14 +37,13 @@ jobs:
           SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
         run: |
           set -ex
-          rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
+          rsync -avz --mkpath apps/arena/devops/deploy_arena.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
           SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.EUROPE_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -57,11 +56,10 @@ jobs:
           ssh ${SSH_USERNAME}@${SSH_HOST} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
-                RELEASE=${RELEASE} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                /home/${SSH_USERNAME}/deploy-script/deploy.sh
+                /home/${SSH_USERNAME}/deploy-script/deploy_arena.sh
