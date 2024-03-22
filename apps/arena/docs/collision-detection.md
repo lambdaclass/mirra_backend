@@ -55,7 +55,7 @@ If you only need to detect when a circle collides with the "walls" of the polygo
 
 It is necessary to clarify that there are other types of collisions that we do not need to implement at the moment, for example Polygon/Polygon.
 
-## SAT (Simple Axis Theorem) implamentation
+## SAT (Simple Axis Theorem) implementation
 A collision detection library implementation based on the [SAT theorem](https://dyn4j.org/2010/01/sat/).
 
 We'll keep working with entities with the same shapes as the Jeffrey thompson
