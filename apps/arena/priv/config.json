@@ -434,7 +434,7 @@
     },
     {
       "name": "valtimer",
-      "active": false,
+      "active": true,
       "base_speed": 30.0,
       "base_size": 90.0,
       "base_health": 100,
