@@ -288,9 +288,9 @@ defmodule Arena.Game.Player do
   ####################
   # Internal helpers #
   ####################
-  def skill_key_execution_action("1"), do: :EXECUTING_SKILL_1
-  def skill_key_execution_action("2"), do: :EXECUTING_SKILL_2
-  def skill_key_execution_action("3"), do: :EXECUTING_SKILL_3
+  defp skill_key_execution_action("1"), do: :EXECUTING_SKILL_1
+  defp skill_key_execution_action("2"), do: :EXECUTING_SKILL_2
+  defp skill_key_execution_action("3"), do: :EXECUTING_SKILL_3
 
   defp maybe_trigger_natural_heal(player, true) do
     now = System.monotonic_time(:millisecond)
