@@ -81,7 +81,7 @@ The collisions we currently support are:
 ## Collision resolution
 
 The Jeffrey Thompson's implementation for collision detection is ideal since it's the cheapest way to 
-detect that two entities collided, but it's incomplete we can only detect that a collision occurred 
+detect that two entities collided, but it's incomplete since we can only detect that a collision occurred 
 nothing else, so we decided to take the following approach:
 
 1. We use the Jeffrey thompson implementation to detect that a collision actually happened
