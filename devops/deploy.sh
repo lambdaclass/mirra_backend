@@ -25,6 +25,10 @@ rm -rf $HOME/mirra_backend
 mv /tmp/mirra_backend $HOME/
 
 mkdir -p $HOME/.config/systemd/user/
+
+if [ "$(ls ~/.config/systemd/user/*.service 2>/dev/null | wc -l)" -ne 1 ]; then
+    exit 1
+fi
 cat <<EOF >$HOME/.config/systemd/user/${RELEASE}.service
 [Unit]
 Description=$RELEASE
