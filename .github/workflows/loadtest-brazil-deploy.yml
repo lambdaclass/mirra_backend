@@ -61,6 +61,7 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
+          SERVER_HOST: ${{ inputs.server_host }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -74,6 +75,7 @@ jobs:
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
                 RELEASE=${RELEASE} \
+                SERVER_HOST=${SERVER_HOST} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
