@@ -11,6 +11,12 @@ on:
           - arena_load_test
           - game_client
         required: true
+      target-url:
+        type: choice
+        description: Loadtest target
+        options:
+          - Brazil
+          - Europe
 
 jobs:
   build-deploy:
