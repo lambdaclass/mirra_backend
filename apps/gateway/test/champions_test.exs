@@ -323,11 +323,11 @@ defmodule Gateway.Test.Champions do
       # Register user
       {:ok, user} = Users.register("battle_user")
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      level_id = campaign_progression.level_id
+      # Get the SuperCampaignProgress' Level
+      level_id = super_campaign_progress.level_id
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
@@ -343,7 +343,7 @@ defmodule Gateway.Test.Champions do
       # TODO: check rewards [#CHoM-341]
     end
 
-    test "fight level advances level in the campaign progression", %{socket_tester: socket_tester} do
+    test "fight level advances level in the SuperCampaignProgress", %{socket_tester: socket_tester} do
       # Register user
       {:ok, user} = Users.register("battle_winning_user")
 
@@ -352,12 +352,12 @@ defmodule Gateway.Test.Champions do
         GameBackend.Units.update_unit(unit, %{level: 9999})
       end)
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progresses | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      level_id = campaign_progression.level_id
-      level_number = campaign_progression.level.level_number
+      # Get the SuperCampaignProgress' Level
+      level_id = super_campaign_progress.level_id
+      level_number = super_campaign_progress.level.level_number
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
@@ -371,24 +371,26 @@ defmodule Gateway.Test.Champions do
 
       {:ok, advanced_user} = Users.get_user(user.id)
 
-      [advanced_campaign_progression | _] = advanced_user.campaign_progresses
+      [advanced_super_campaign_progress | _] = advanced_user.super_campaign_progresses
 
       assert user.id == advanced_user.id
-      assert advanced_campaign_progression.level_id != level_id
-      assert advanced_campaign_progression.level.level_number == level_number + 1
+      assert advanced_super_campaign_progress.level_id != level_id
+      assert advanced_super_campaign_progress.level.level_number == level_number + 1
     end
 
-    test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
+    test "can not fight a Level that is not the next one in the SuperCampaignProgress", %{
+      socket_tester: socket_tester
+    } do
       # Register user
       {:ok, user} = Users.register("invalid_battle_user")
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      next_level_id = campaign_progression.level_id
+      # Get the level of the SuperCampaignProgress
+      next_level_id = super_campaign_progress.level_id
 
-      # Get a level from the user where the id is not the next level in the progression
+      # Get a Level that is not the next one in the SuperCampaignProgress
       SocketTester.get_campaigns(socket_tester, user.id)
       fetch_last_message(socket_tester)
 

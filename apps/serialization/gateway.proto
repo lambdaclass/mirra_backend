@@ -152,16 +152,16 @@ syntax = "proto3";
     string username = 2;
     uint64 level = 3;
     uint64 experience = 4;
-    repeated CampaignProgress campaign_progresses = 6;
+    repeated SuperCampaignProgress super_campaign_progresses = 6;
     repeated UserCurrency currencies = 7;
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
   }
 
-  message CampaignProgress {
+  message SuperCampaignProgress {
     string user_id = 1;
-    string campaign_id = 2;
+    string super_campaign_id = 2;
     string level_id = 3;
   }
 

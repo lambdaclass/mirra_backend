@@ -322,10 +322,10 @@ defmodule Gateway.Serialization.User do
   field(:level, 3, type: :uint64)
   field(:experience, 4, type: :uint64)
 
-  field(:campaign_progresses, 6,
+  field(:super_campaign_progresses, 6,
     repeated: true,
-    type: Gateway.Serialization.CampaignProgress,
-    json_name: "campaignProgresses"
+    type: Gateway.Serialization.SuperCampaignProgress,
+    json_name: "superCampaignProgresses"
   )
 
   field(:currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency)
@@ -339,13 +339,13 @@ defmodule Gateway.Serialization.User do
   )
 end
 
-defmodule Gateway.Serialization.CampaignProgress do
+defmodule Gateway.Serialization.SuperCampaignProgress do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:campaign_id, 2, type: :string, json_name: "campaignId")
+  field(:super_campaign_id, 2, type: :string, json_name: "superCampaignId")
   field(:level_id, 3, type: :string, json_name: "levelId")
 end
 
