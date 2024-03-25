@@ -12,6 +12,7 @@ defmodule Champions.Test.Battle do
   setup_all do
     {:ok, target_dummy_user} = Users.register("BattleUser")
 
+    # Create a character that won't ever get to attack because of its long cooldown. His health will be 10.
     {:ok, target_dummy_char} =
       Characters.insert_character(%{
         game_id: 2,
@@ -27,8 +28,7 @@ defmodule Champions.Test.Battle do
           cooldown: 9999
         },
         ultimate_skill: %{
-          effects: [],
-          cooldown: 9999
+          effects: []
         }
       })
 
@@ -48,13 +48,14 @@ defmodule Champions.Test.Battle do
 
   describe "Battle" do
     test "Execution-DealDamage with delays", %{target_dummy: target_dummy} do
-      {:ok, user} =
-        GameBackend.Users.register_user(%{username: "Execution-DealDamage User", game_id: 2})
+      {:ok, user} = GameBackend.Users.register_user(%{username: "Execution-DealDamage User", game_id: 2})
 
       maximum_steps = 5
       required_steps_to_win = maximum_steps + 1
       too_long_cooldown = maximum_steps
 
+      # Create a character with a basic skill that has a cooldown too long to execute
+      # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
       basic_skill_params = %{
         name: "Basic",
         energy_regen: 0,
@@ -90,6 +91,7 @@ defmodule Champions.Test.Battle do
           active: true,
           faction: "Kaline",
           class: "Assassin",
+          # Multiplied by the attack ratio of the basic skill, we get 10
           base_attack: 20,
           base_health: 100,
           base_defense: 100,
