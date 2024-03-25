@@ -35,8 +35,4 @@ defmodule ArenaLoadTest.SocketSupervisor do
       {:ok, _pid} = add_new_client(i)
     end
   end
-
-  def server_host() do
-    System.get_env("SERVER_HOST", "localhost:4000")
-  end
 end
