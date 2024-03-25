@@ -131,9 +131,9 @@ fn get_direction_from_positions(position_a: Position, position_b: Position) -> D
 }
 
 #[rustler::nif()]
-fn calculate_speed(position_a: Position, position_b: Position, duration: u64) -> f32 {
+fn calculate_duration(position_a: Position, position_b: Position, speed: f32) -> u64 {
     let len = distance_between_positions(position_a, position_b);
-    len / duration as f32
+    (len / speed) as u64
 }
 
 #[rustler::nif()]
@@ -185,7 +185,7 @@ rustler::init!(
         add_angle_to_direction,
         calculate_triangle_vertices,
         get_direction_from_positions,
-        calculate_speed,
+        calculate_duration,
         nearest_entity_direction
     ]
 );

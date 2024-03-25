@@ -191,12 +191,6 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction}) do
-    Process.send_after(
-      self(),
-      {:stop_leap, entity.id, entity.speed, leap.on_arrival_mechanic},
-      leap.duration_ms
-    )
-
     ## TODO: Cap target_position to leap.range
     target_position = %{
       x: entity.position.x + skill_direction.x * leap.range,
@@ -204,12 +198,14 @@ defmodule Arena.Game.Skill do
     }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    speed = Physics.calculate_speed(entity.position, target_position, leap.duration_ms) * 30
+    duration = Physics.calculate_duration(entity.position, target_position, leap.speed) * 30
+
+    Process.send_after(self(), {:stop_leap, entity.id, entity.speed, leap.on_arrival_mechanic}, duration)
 
     player =
       entity
       |> Map.put(:is_moving, true)
-      |> Map.put(:speed, speed)
+      |> Map.put(:speed, leap.speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, entity.id], player)

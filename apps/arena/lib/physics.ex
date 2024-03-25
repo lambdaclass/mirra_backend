@@ -28,7 +28,7 @@ defmodule Physics do
   def get_direction_from_positions(_position_a, _position_b),
     do: :erlang.nif_error(:nif_not_loaded)
 
-  def calculate_speed(_position_a, _position_b, _duration_ms),
+  def calculate_duration(_position_a, _position_b, _speed),
     do: :erlang.nif_error(:nif_not_loaded)
 
   def nearest_entity_direction(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
