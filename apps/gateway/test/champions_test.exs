@@ -353,7 +353,7 @@ defmodule Gateway.Test.Champions do
       end)
 
       # Get user's first SuperCampaignProgress
-      [super_campaign_progresses | _] = user.super_campaign_progresses
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
       # Get the SuperCampaignProgress' Level
       level_id = super_campaign_progress.level_id
