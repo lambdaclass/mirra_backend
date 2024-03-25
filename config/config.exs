@@ -126,7 +126,7 @@ config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id
 
 # Configures the endpoint
 config :game_client, GameClientWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: 4002],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
     formats: [html: GameClientWeb.ErrorHTML, json: GameClientWeb.ErrorJSON],
@@ -169,7 +169,8 @@ config :gateway, Gateway.Endpoint,
   ],
   pubsub_server: Gateway.PubSub,
   live_view: [signing_salt: "XED/NEZq"],
-  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch]
+  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch],
+  server: true
 
 ###################################
 # App configuration: configurator #
