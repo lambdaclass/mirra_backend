@@ -4514,7 +4514,7 @@ proto.Entity.prototype.hasBush = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Player.repeatedFields_ = [3];
+proto.Player.repeatedFields_ = [3,13];
 
 
 
@@ -4559,7 +4559,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     powerUps: jspb.Message.getFieldWithDefault(msg, 9, 0),
     effectsMap: (f = msg.getEffectsMap()) ? f.toObject(includeInstance, proto.Effect.toObject) : [],
     inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
-    cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : []
+    cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
+    visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f
   };
 
   if (includeInstance) {
@@ -4649,6 +4650,12 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint64, null, "", 0);
          });
+      break;
+    case 13:
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
+      for (var i = 0; i < values.length; i++) {
+        msg.addVisiblePlayers(values[i]);
+      }
       break;
     default:
       reader.skipField();
@@ -4758,6 +4765,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   f = message.getCooldownsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
+  }
+  f = message.getVisiblePlayersList();
+  if (f.length > 0) {
+    writer.writePackedUint64(
+      13,
+      f
+    );
   }
 };
 
@@ -5024,6 +5038,43 @@ proto.Player.prototype.getCooldownsMap = function(opt_noLazyCreate) {
 proto.Player.prototype.clearCooldownsMap = function() {
   this.getCooldownsMap().clear();
   return this;
+};
+
+
+/**
+ * repeated uint64 visible_players = 13;
+ * @return {!Array<number>}
+ */
+proto.Player.prototype.getVisiblePlayersList = function() {
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 13));
+};
+
+
+/**
+ * @param {!Array<number>} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setVisiblePlayersList = function(value) {
+  return jspb.Message.setField(this, 13, value || []);
+};
+
+
+/**
+ * @param {number} value
+ * @param {number=} opt_index
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.addVisiblePlayers = function(value, opt_index) {
+  return jspb.Message.addToRepeatedField(this, 13, value, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearVisiblePlayersList = function() {
+  return this.setVisiblePlayersList([]);
 };
 
 

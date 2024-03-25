@@ -380,6 +380,7 @@ defmodule Arena.Serialization.Player do
   field(:effects, 10, repeated: true, type: Arena.Serialization.Player.EffectsEntry, map: true)
   field(:inventory, 11, type: Arena.Serialization.Item)
   field(:cooldowns, 12, repeated: true, type: Arena.Serialization.Player.CooldownsEntry, map: true)
+  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
 end
 
 defmodule Arena.Serialization.Effect do

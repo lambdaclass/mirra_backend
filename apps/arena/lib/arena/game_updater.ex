@@ -1153,7 +1153,7 @@ defmodule Arena.GameUpdater do
           end
         end)
 
-      put_in(game_state, [:players, player_id, :visible_players], visible_players)
+      put_in(game_state, [:players, player_id, :aditional_info, :visible_players], visible_players)
     end)
   end
 

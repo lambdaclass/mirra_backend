@@ -411,6 +411,8 @@ defmodule ArenaLoadTest.Serialization.Player do
     type: ArenaLoadTest.Serialization.Player.CooldownsEntry,
     map: true
   )
+
+  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

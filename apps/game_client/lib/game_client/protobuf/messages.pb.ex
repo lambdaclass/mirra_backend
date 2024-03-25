@@ -380,6 +380,7 @@ defmodule GameClient.Protobuf.Player do
   field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
   field(:inventory, 11, type: GameClient.Protobuf.Item)
   field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
+  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
 end
 
 defmodule GameClient.Protobuf.Effect do

@@ -40,7 +40,8 @@ defmodule Arena.Entities do
         inventory: nil,
         damage_immunity: false,
         effects: %{},
-        cooldowns: %{}
+        cooldowns: %{},
+        visible_players: []
       }
     }
   end
@@ -240,7 +241,8 @@ defmodule Arena.Entities do
        effects: entity.aditional_info.effects,
        power_ups: entity.aditional_info.power_ups,
        inventory: entity.aditional_info.inventory,
-       cooldowns: entity.aditional_info.cooldowns
+       cooldowns: entity.aditional_info.cooldowns,
+       visible_players: entity.aditional_info.visible_players
      }}
   end
 
