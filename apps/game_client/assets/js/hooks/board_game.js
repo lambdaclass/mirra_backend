@@ -51,13 +51,13 @@ export const BoardGame = function () {
     window.addEventListener("phx:updateEntities", (e) => {
       // Updates every entity's info and position, and creates it if it doesn't exist
       Array.from(e.detail.entities).forEach((backEntity) => {
-        if (!entities.has(backEntity.name)) {
+        if (!entities.has(backEntity.id)) {
           let newEntity = this.createEntity(backEntity);
 
           container.addChild(newEntity.boardObject);
-          entities.set(backEntity.name, newEntity);
+          entities.set(backEntity.id, newEntity);
         }
-        let entity = entities.get(backEntity.name);
+        let entity = entities.get(backEntity.id);
         this.updateEntityColor(entity, backEntity.is_colliding);
 
         this.updateEntityPosition(entity, backEntity.x, backEntity.y);
@@ -116,7 +116,7 @@ export const BoardGame = function () {
         movementKeys[key].state = false;
 
         if (!Object.values(movementKeys).some((keyItem) => keyItem.state)) {
-          _this.pushEvent("move", {x: 0, y: 0});
+          _this.pushEvent("move", { x: 0, y: 0 });
           _this.updateDebug("");
         } else {
           const previousKey = Object.keys(movementKeys).find(
@@ -173,12 +173,12 @@ export const BoardGame = function () {
       newEntity.boardObject.on("pointerover", (event) => {
         this.updateDebug(
           newEntity.name +
-            " - " +
-            "pos: [" +
-            Math.round(newEntity.boardObject.position.x) +
-            "," +
-            Math.round(newEntity.boardObject.position.y) +
-            "]"
+          " - " +
+          "pos: [" +
+          Math.round(newEntity.boardObject.position.x) +
+          "," +
+          Math.round(newEntity.boardObject.position.y) +
+          "]"
         );
       });
       newEntity.boardObject.on("pointerleave", (event) => {
