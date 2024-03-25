@@ -1,6 +1,6 @@
 {
   "map": {
-    "radius": 4800.0,
+    "radius": 5760.0,
     "initial_positions": [
       {
         "x": 4000.0,
@@ -46,17 +46,17 @@
     "obstacles": [
       {
         "position": {
-          "x": -6044.0,
+          "x": -6900.0,
           "y": -1439.0
         },
         "radius": 1567.0
       },
       {
         "position": {
-          "x": -860.0,
-          "y": 5338.0
+          "x": -1200.0,
+          "y": 6500.0
         },
-        "radius": 1090.0
+        "radius": 1500.0
       },
       {
         "position": {
