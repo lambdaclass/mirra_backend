@@ -67,7 +67,7 @@ defmodule GameClientWeb.BoardLive.Show do
 
   defp handle_game_event({:update, game_state}, socket) do
     entities =
-      Enum.concat([game_state.players, game_state.projectiles, game_state.items, game_state.pools])
+      Enum.concat([game_state.players, game_state.projectiles, game_state.items, game_state.pools, game_state.bushes])
       |> Enum.map(&transform_entity_entry/1)
 
     {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
@@ -91,7 +91,7 @@ defmodule GameClientWeb.BoardLive.Show do
       x: entity.position.x / 5 + 1000,
       y: entity.position.y / 5 + 1000,
       radius: entity.radius / 5,
-      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?()
     }
   end
