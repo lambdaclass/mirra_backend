@@ -9,9 +9,6 @@ defmodule GameBackend.Units.Skill do
   schema "skills" do
     field(:name, :string)
     embeds_many(:effects, Effect, on_replace: :delete)
-    field(:targeting_strategy, TargetingStrategy)
-    field(:targets_allies, :boolean)
-    field(:amount_of_targets, :integer)
     field(:cooldown, :integer)
     field(:energy_regen, :integer)
     field(:animation_duration, :integer)
