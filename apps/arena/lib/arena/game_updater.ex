@@ -120,7 +120,7 @@ defmodule Arena.GameUpdater do
       |> explode_projectiles()
       |> handle_pools(state.game_config)
       |> Skill.apply_effect_mechanic()
-      |> update_visible_players()
+      |> update_visible_players(state.game_config)
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -1130,7 +1130,7 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp update_visible_players(%{players: players, bushes: bushes} = game_state) do
+  defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
     Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
       bush_collisions =
         Enum.filter(player.collides_with, fn collided_id ->
@@ -1144,9 +1144,14 @@ defmodule Arena.GameUpdater do
               Map.has_key?(bushes, collided_id)
             end)
 
+          players_in_same_bush? =
+            Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)
+
+          players_close_enough? =
+            Physics.distance_between_entities(player, candidate_player) <= game_config.bushes.field_of_view_inside_bush
+
           if candidate_player.id != player_id and
-               (Enum.empty?(candidate_bush_collisions) or
-                  Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)) do
+               (Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?)) do
             acc ++ [candicandidate_player_id]
           else
             acc

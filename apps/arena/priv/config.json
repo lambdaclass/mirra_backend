@@ -520,5 +520,8 @@
         }
       }
     }
-  ]
+  ],
+  "bushes": {
+    "field_of_view_inside_bush": 500
+  }
 }

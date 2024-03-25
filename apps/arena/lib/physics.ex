@@ -32,4 +32,6 @@ defmodule Physics do
     do: :erlang.nif_error(:nif_not_loaded)
 
   def nearest_entity_direction(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
+
+  def distance_between_entities(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
 end
