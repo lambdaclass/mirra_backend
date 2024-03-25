@@ -312,6 +312,10 @@ defmodule Champions.Test.Battle do
     end
 
     test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
+      # In this test, the basic skill has a modifier that multiplies the attack by 0.1, an energy regen of 500 and a cooldown of 1.
+      # The ultimate skill has an attack ratio of 0.5, so it will deal 1 point of damage (base attack * 0.1 * 0.5) every 2 steps to the target dummy, which has 10 health points.
+      # This way, the battle should end in a victory for the team_1 after 21 steps.
+
       {:ok, user} = GameBackend.Users.register_user(%{username: "ModifiersUser", game_id: 2})
       cooldown = 1
 
