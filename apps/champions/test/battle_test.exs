@@ -101,8 +101,7 @@ defmodule Champions.Test.Battle do
             energy_regen: 0,
             animation_duration: 0,
             animation_trigger: 0,
-            effects: [],
-            cooldown: 9999
+            effects: []
           }
         })
 
@@ -127,7 +126,6 @@ defmodule Champions.Test.Battle do
         Characters.update_character(character, %{basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps - 1)})
 
       {:ok, unit} = Units.get_unit(unit.id)
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
 
@@ -138,7 +136,6 @@ defmodule Champions.Test.Battle do
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
 
@@ -152,7 +149,6 @@ defmodule Champions.Test.Battle do
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
 
@@ -186,7 +182,6 @@ defmodule Champions.Test.Battle do
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
 
@@ -198,11 +193,11 @@ defmodule Champions.Test.Battle do
                )
     end
 
-    test "Execution-DealDamage with components", %{target_dummy: target_dummy} do
+    test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
       {:ok, user} = GameBackend.Users.register_user(%{username: "ComponentsUser", game_id: 2})
       cooldown = 1
 
-      # Configure a basic skill with a component that has no chance to be applied
+      # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params = %{
         name: "Basic",
         energy_regen: 0,
@@ -252,8 +247,7 @@ defmodule Champions.Test.Battle do
             energy_regen: 0,
             animation_duration: 0,
             animation_trigger: 0,
-            effects: [],
-            cooldown: 9999
+            effects: []
           }
         })
 
@@ -305,7 +299,6 @@ defmodule Champions.Test.Battle do
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
       assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
@@ -368,8 +361,7 @@ defmodule Champions.Test.Battle do
             target_allies: false,
             target_attribute: "Health"
           }
-        ],
-        cooldown: 0
+        ]
       }
 
       {:ok, character} =
