@@ -483,10 +483,10 @@ defmodule Gateway.Test.Champions do
 
       # Simulate waiting 2 seconds before claiming the rewards
       seconds_to_wait = 2
-      {:ok, advanced_user_db} = Users.get_user(advanced_user.id)
+      {:ok, advanced_user_with_rewards} = Users.get_user(advanced_user.id)
 
       {:ok, _} =
-        advanced_user_db
+        advanced_user_with_rewards
         |> GameBackend.Users.User.changeset(%{
           last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
         })
