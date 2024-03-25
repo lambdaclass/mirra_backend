@@ -8,6 +8,7 @@ defmodule GameBackend.Units.Skill do
   alias GameBackend.Units.Skills.TargetingStrategy
 
   schema "skills" do
+    field(:name, :string)
     embeds_many(:effects, Effect, on_replace: :delete)
     field(:targeting_strategy, TargetingStrategy)
     field(:targets_allies, :boolean)
@@ -19,7 +20,7 @@ defmodule GameBackend.Units.Skill do
   @doc false
   def changeset(skill, attrs \\ %{}) do
     skill
-    |> cast(attrs, [:targeting_strategy, :amount_of_targets, :cooldown, :targets_allies])
+    |> cast(attrs, [:name, :targeting_strategy, :amount_of_targets, :cooldown, :targets_allies])
     |> cast_embed(:effects)
   end
 end
