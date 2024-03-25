@@ -463,7 +463,6 @@ defmodule Champions.Battle.Simulator do
     do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
 
   defp calculate_unit_stat(unit, attribute) do
-    Logger.info(:calculate_unit_stat)
     overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
 
     if Enum.empty?(overrides) do
