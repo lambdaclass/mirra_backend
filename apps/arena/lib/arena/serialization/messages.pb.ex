@@ -250,6 +250,15 @@ defmodule Arena.Serialization.GameState.PoolsEntry do
   field(:value, 2, type: Arena.Serialization.Entity)
 end
 
+defmodule Arena.Serialization.GameState.BushesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: Arena.Serialization.Entity)
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -300,6 +309,7 @@ defmodule Arena.Serialization.GameState do
   field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
   field(:items, 13, repeated: true, type: Arena.Serialization.GameState.ItemsEntry, map: true)
   field(:pools, 14, repeated: true, type: Arena.Serialization.GameState.PoolsEntry, map: true)
+  field(:bushes, 15, repeated: true, type: Arena.Serialization.GameState.BushesEntry, map: true)
 end
 
 defmodule Arena.Serialization.Entity do
@@ -326,6 +336,7 @@ defmodule Arena.Serialization.Entity do
   field(:power_up, 15, type: Arena.Serialization.PowerUp, json_name: "powerUp", oneof: 0)
   field(:item, 16, type: Arena.Serialization.Item, oneof: 0)
   field(:pool, 17, type: Arena.Serialization.Pool, oneof: 0)
+  field(:bush, 18, type: Arena.Serialization.Bush, oneof: 0)
 end
 
 defmodule Arena.Serialization.Player.EffectsEntry do
@@ -422,6 +433,12 @@ defmodule Arena.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+end
+
+defmodule Arena.Serialization.Bush do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
 defmodule Arena.Serialization.PlayerAction do
