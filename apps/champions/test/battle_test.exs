@@ -1,7 +1,14 @@
 defmodule Champions.Test.Battle do
   @moduledoc """
-  Test for Champions of Mirra messages.
+  Test for Champions of Mirra battles.
+
+  Since we don't have the ability to observe the state of a battle in the middle of it, we're going to work around this
+  by setting our battles up in a way that we know how fights should end. So for example, if we want to check that an
+  attack hits after its cooldown is over, we give its target 1 health point, and we make the maximum steps of the
+  battle that said cooldown plus one. That way, we know that if the battle result is `:team_1` the skill hit, and if
+  it's `:timeout`instead then it did not.
   """
+
   use ExUnit.Case
 
   alias GameBackend.Repo
