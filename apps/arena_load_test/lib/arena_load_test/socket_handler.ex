@@ -18,7 +18,7 @@ defmodule ArenaLoadTest.SocketHandler do
       %{
         client_id: client_id
       }
-    )
+    ) |> IO.inspect(label: :aver_ws_return)
   end
 
   # Callbacks

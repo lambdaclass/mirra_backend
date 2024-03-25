@@ -11,17 +11,21 @@ defmodule ArenaLoadTest.SocketSupervisor do
   end
 
   def add_new_client(client_id) do
-    DynamicSupervisor.start_child(
-      __MODULE__,
-      {SocketHandler, client_id}
-    )
+    SocketHandler.start_link(client_id)
+
+    # DynamicSupervisor.start_child(
+    #   __MODULE__,
+    #   {SocketHandler, client_id}
+    # ) |> IO.inspect(label: :aver_new_client)
   end
 
   def add_new_player(client_id, game_id) do
-    DynamicSupervisor.start_child(
-      __MODULE__,
-      {GameSocketHandler, {client_id, game_id}}
-    )
+    GameSocketHandler.start_link({client_id, game_id})
+
+    # DynamicSupervisor.start_child(
+    #   __MODULE__,
+    #   {GameSocketHandler, {client_id, game_id}}
+    # )
   end
 
   @impl true
@@ -32,6 +36,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   # Creates `num_clients` clients to join a game
   def spawn_players(num_clients) do
     for i <- 1..num_clients do
+      IO.inspect(i, label: :aver_client_number)
       {:ok, _pid} = add_new_client(i)
     end
   end
