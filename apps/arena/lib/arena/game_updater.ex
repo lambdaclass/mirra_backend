@@ -602,7 +602,6 @@ defmodule Arena.GameUpdater do
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
     |> Map.put(:bushes, bushes)
-    |> IO.inspect(label: "aber init")
   end
 
   # Initialize obstacles
