@@ -31,7 +31,7 @@ defmodule Champions.Battle.Simulator do
   [x] Additive & based on stat - The amount is a % of one of the caster's stats
   [ ] Multiplicative & based on stat?
 
-  Two units can attack the same unit at the same time and over-kill them. This is expected behavior that results
+  Two units can attack the same unit at the same time and over-kill it. This is expected behavior that results
   from having the battle be simultaneous.
 
   """
@@ -93,13 +93,56 @@ defmodule Champions.Battle.Simulator do
           process_step_for_effect(effect, current_state)
         end)
 
-      Logger.info("Step #{step} finished: #{format_step_state_for_log(new_state) |> inspect()}")
+      Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
       remove_dead_units(new_state)
       |> check_winner(step)
     end)
   end
 
+  # Removes dead units from the battle state.
+  defp remove_dead_units(state) do
+    new_units =
+      Enum.reduce(state.units, %{}, fn {unit_id, unit}, units ->
+        if unit.health > 0 do
+          Map.put(units, unit_id, unit)
+        else
+          Logger.info("Unit #{format_unit_name(unit)} died.")
+          units
+        end
+      end)
+
+    Map.put(state, :units, new_units)
+  end
+
+  # Check if the battle has ended.
+  # Battle can end if all unit of a team are dead, or if the maximum step amount has been reached.
+  defp check_winner(state, step) do
+    winner =
+      cond do
+        Enum.empty?(state.units) -> :tie
+        Enum.all?(state.units, fn {_id, unit} -> unit.team == 2 end) -> :team_2
+        Enum.all?(state.units, fn {_id, unit} -> unit.team == 1 end) -> :team_1
+        true -> :none
+      end
+
+    case winner do
+      :none ->
+        if step == @maximum_steps do
+          Logger.info("Battle timeout.")
+          {:halt, :timeout}
+        else
+          {:cont, state}
+        end
+
+      result ->
+        Logger.info("Battle ended. Result: #{result}.")
+        {:halt, result}
+    end
+  end
+
+  # Calculate the new state of the battle after a step passes for a unit.
+  # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state) do
     new_state =
       cond do
@@ -136,6 +179,7 @@ defmodule Champions.Battle.Simulator do
       overrides: reduce_modifier_timers(unit.modifiers.overrides, unit)
     }
 
+    # Reduce basic skill cooldown
     new_state
     |> put_in(
       [:units, unit.id, :basic_skill, :remaining_cooldown],
@@ -144,6 +188,8 @@ defmodule Champions.Battle.Simulator do
     |> put_in([:units, unit.id, :modifiers], new_modifiers)
   end
 
+  # Reduces modifier timers and removes expired ones.
+  # Called when processing a step for a unit.
   defp reduce_modifier_timers(modifiers, unit) do
     Enum.reduce(modifiers, [], fn modifier, acc ->
       case modifier.remaining_steps do
@@ -168,10 +214,12 @@ defmodule Champions.Battle.Simulator do
     end)
   end
 
+  # Calculate the new state of the battle after a step passes for a skill being cast.
+  # Reduces the remaining animation and effect trigger, and casts the effects if the latter has ended.
   defp process_step_for_skill(skill, current_state, initial_step_state) do
     # Check if the casting unit has died
     if Enum.any?(current_state.units, fn {unit_id, _unit} -> unit_id == skill.caster_id end) do
-      {new_skill, new_state} = process_effects_trigger(skill, current_state, initial_step_state)
+      {new_skill, new_state} = process_skill_effects_trigger_value(skill, current_state, initial_step_state)
 
       if new_skill.animation_duration == 0 do
         # If the animation has finished, we remove skill from list.
@@ -188,22 +236,27 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  # If the animation is ready, trigger the skill effects
-  defp process_effects_trigger(%{effects_trigger: 0} = skill, current_state, initial_step_state) do
+  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
+  # If the effects_trigger is ready, trigger the skill's effects, adding them to the `pending_effects` in the state.
+  defp process_skill_effects_trigger_value(%{effects_trigger: 0} = skill, current_state, initial_step_state) do
     Logger.info("Animation trigger for skill #{skill.name} ready. Creating #{Enum.count(skill.effects)} effects.")
     current_state = trigger_skill_effects(skill, current_state, initial_step_state)
     {%{skill | effects_trigger: -1}, current_state}
   end
 
-  # If the animation has already triggered, do nothing
-  defp process_effects_trigger(%{effects_trigger: -1} = skill, current_state, _initial_step_state),
+  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
+  # If the effects have already triggered, do nothing.
+  defp process_skill_effects_trigger_value(%{effects_trigger: -1} = skill, current_state, _initial_step_state),
     do: {skill, current_state}
 
-  # If the animation still has not triggered, reduce the remaining counter
-  defp process_effects_trigger(skill, current_state, _initial_step_state) do
+  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
+  # If the effect hasn't triggered yet, reduce the remaining effects_trigger counter.
+  defp process_skill_effects_trigger_value(skill, current_state, _initial_step_state) do
     {%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}
   end
 
+  # Calculate the new state of the battle after a step passes for a pending effect.
+  # If the effect is ready to be processed, we apply it.
   defp process_step_for_effect(%{delay: 0} = effect, current_state) do
     Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
@@ -220,62 +273,30 @@ defmodule Champions.Battle.Simulator do
     Map.put(current_state, :pending_effects, List.delete(current_state.pending_effects, effect))
   end
 
+  # Calculate the new state of the battle after a step passes for a pending effect.
+  # If the effect isn't ready to be processed, we reduce its remaining delay.
   defp process_step_for_effect(effect, current_state) do
     Map.put(current_state, :pending_effects, [
       %{effect | delay: effect.delay - 1} | List.delete(current_state.pending_effects, effect)
     ])
   end
 
-  defp remove_dead_units(state) do
-    new_units =
-      Enum.reduce(state.units, %{}, fn {unit_id, unit}, units ->
-        if unit.health > 0 do
-          Map.put(units, unit_id, unit)
-        else
-          Logger.info("Unit #{format_unit_name(unit)} died.")
-          units
-        end
-      end)
-
-    Map.put(state, :units, new_units)
-  end
-
-  defp check_winner(state, step) do
-    winner =
-      cond do
-        Enum.empty?(state.units) -> :tie
-        Enum.all?(state.units, fn {_id, unit} -> unit.team == 2 end) -> :team_2
-        Enum.all?(state.units, fn {_id, unit} -> unit.team == 1 end) -> :team_1
-        true -> :none
-      end
-
-    case winner do
-      :none ->
-        if step == @maximum_steps do
-          Logger.info("Battle timeout.")
-          {:halt, :timeout}
-        else
-          {:cont, state}
-        end
-
-      result ->
-        Logger.info("Battle ended. Result: #{result}.")
-        {:halt, result}
-    end
-  end
-
-  # Is already casting? Is stunned?
+  # Check if the unit can attack this turn.
+  # For now, attacking capability is only affected by whether the unit is currently casting a skill.
+  # Later on, things like stuns will be handled here.
   defp can_attack(unit, initial_step_state) do
     # Check the unit is not casting anything right now
     not Enum.any?(initial_step_state.skills_being_cast, &(&1.caster_id == unit.id))
   end
 
-  # Has enough energy?
+  # Check if the unit can cast their ultimate skill this step.
   defp can_cast_ultimate_skill(unit), do: unit.energy >= @ultimate_energy_cost
 
-  # Is cooldown ready?
+  # Check if the unit can cast their basic skill this step.
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
+  # Called when a skill being cast reaches effect_trigger 0.
+  # "Queues" the effect to be processed when its delay reaches 0.
   defp trigger_skill_effects(skill, current_state, initial_step_state) do
     caster = current_state.units[skill.caster_id]
 
@@ -288,6 +309,8 @@ defmodule Champions.Battle.Simulator do
     Map.put(current_state, :pending_effects, effects_with_caster ++ current_state.pending_effects)
   end
 
+  # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
+  # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
   defp choose_targets(
          %{team: team} = _caster,
          %{
@@ -303,6 +326,9 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
+  # Apply an effect to its target *if it hits*.
+  # Hit chance is affected by the ChanceToApply component and could be expanded later on.
+  # Returns the new state of the target.
   defp maybe_apply_effect(effect, target, caster, current_step_number) do
     if effect_hits?(effect) do
       apply_effect(effect, target, caster, current_step_number)
@@ -312,6 +338,8 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
+  # Return whether an effect with a ChanceToApply component hits.
+  # Later on, this might also handle similar mechanics like the target's dodge chance.
   defp effect_hits?(effect) do
     chance_to_apply_component =
       Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
@@ -325,6 +353,10 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
+  # Apply an effect to its target. Returns the new state of the target.
+  # For now this applies the executions on the spot.
+  # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
+  # Returns the new state of the target.
   defp apply_effect(effect, target, caster, current_step_number) do
     target_after_modifiers =
       Enum.reduce(effect.modifiers, target, fn modifier, target ->
@@ -354,6 +386,7 @@ defmodule Champions.Battle.Simulator do
     target_after_executions
   end
 
+  # Apply a DealDamage execution to its target. Returns the new state of the target.
   defp process_execution(
          %{
            "type" => "DealDamage",
@@ -376,6 +409,26 @@ defmodule Champions.Battle.Simulator do
     |> Map.put(:energy, min(target.energy + energy_recharge, @ultimate_energy_cost))
   end
 
+  # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
+  defp calculate_unit_stat(unit, attribute) do
+    overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
+
+    if Enum.empty?(overrides) do
+      addition =
+        Enum.filter(unit.modifiers.additives, &(&1.attribute == Atom.to_string(attribute)))
+        |> Enum.reduce(0, fn mod, acc -> mod.float_magnitude + acc end)
+
+      multiplication =
+        Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == Atom.to_string(attribute)))
+        |> Enum.reduce(1, fn mod, acc -> mod.float_magnitude * acc end)
+
+      (unit[attribute] + addition) * multiplication
+    else
+      Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
+    end
+  end
+
+  # Used to create the initial unit maps to be used during simulation.
   defp create_unit_map(%Unit{character: character} = unit, team),
     do:
       {unit.id,
@@ -399,6 +452,7 @@ defmodule Champions.Battle.Simulator do
          }
        }}
 
+  # Used to create the initial skill maps to be used during simulation.
   defp create_skill_map(%Skill{} = skill, caster_id),
     do: %{
       name: skill.name,
@@ -411,6 +465,7 @@ defmodule Champions.Battle.Simulator do
       caster_id: caster_id
     }
 
+  # Used to create the initial effect maps to be used during simulation.
   defp create_effect_map(%Effect{} = effect),
     do: %{
       type: effect.type,
@@ -424,7 +479,8 @@ defmodule Champions.Battle.Simulator do
       executions: effect.executions
     }
 
-  defp format_step_state_for_log(%{
+  # Format step state for logs.
+  defp format_step_state(%{
          units: units,
          skills_being_cast: skl,
          pending_effects: eff,
@@ -457,26 +513,10 @@ defmodule Champions.Battle.Simulator do
     }
   end
 
+  # Format unit name for logs.
   defp format_unit_name(unit), do: "#{unit.character_name}-#{String.slice(unit.id, 0..2)}"
 
+  # Format modifier name for logs.
   defp format_modifier_name(modifier),
     do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
-
-  defp calculate_unit_stat(unit, attribute) do
-    overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
-
-    if Enum.empty?(overrides) do
-      addition =
-        Enum.filter(unit.modifiers.additives, &(&1.attribute == Atom.to_string(attribute)))
-        |> Enum.reduce(0, fn mod, acc -> mod.float_magnitude + acc end)
-
-      multiplication =
-        Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == Atom.to_string(attribute)))
-        |> Enum.reduce(1, fn mod, acc -> mod.float_magnitude * acc end)
-
-      (unit[attribute] + addition) * multiplication
-    else
-      Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
-    end
-  end
 end
