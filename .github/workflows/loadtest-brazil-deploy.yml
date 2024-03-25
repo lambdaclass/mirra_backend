@@ -11,9 +11,9 @@ on:
           - arena_load_test
           - game_client
         required: true
-      target-url:
+      target_server:
         type: choice
-        description: Loadtest target
+        description: Loadtest target server
         options:
           - Brazil
           - Europe
@@ -61,7 +61,7 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
-          SERVER_HOST: ${{ inputs.server_host }}
+          TARGET_SERVER: ${{ inputs.target_server }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -75,7 +75,7 @@ jobs:
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
                 RELEASE=${RELEASE} \
-                SERVER_HOST=${SERVER_HOST} \
+                TARGET_SERVER=${TARGET_SERVER} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \

@@ -35,4 +35,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
       {:ok, _pid} = add_new_client(i)
     end
   end
+
+  def get_server_url("Brazil"), do: "brazil-testing.curseofmirra.com"
+  def get_server_url("Europe"), do: "europe-testing.curseofmirra.com"
 end

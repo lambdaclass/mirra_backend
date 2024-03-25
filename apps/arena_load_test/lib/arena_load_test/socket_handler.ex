@@ -58,18 +58,15 @@ defmodule ArenaLoadTest.SocketHandler do
     character = get_random_active_character()
     player_name = "Player_#{player_id}"
 
-    case System.get_env("SERVER_HOST") do
+    case System.get_env("TARGET_SERVER") do
       nil ->
         "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
-      server_host ->
-        server_url = get_server_url(server_host)
+      target_server ->
+        server_url = SocketSupervisor.get_server_url(target_server)
         "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
     end
   end
-
-  defp get_server_url("Brazil"), do: "brazil-testing.curseofmirra.com"
-  defp get_server_url("Europe"), do: "europe-testing.curseofmirra.com"
 
   # This is enough for now. Will request bots from the bots app in future iterations.
   # https://github.com/lambdaclass/mirra_backend/issues/410
