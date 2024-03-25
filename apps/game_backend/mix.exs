@@ -31,7 +31,8 @@ defmodule GameBackend.MixProject do
       # {:sibling_app_in_umbrella, in_umbrella: true}
       {:ecto, "~> 3.11"},
       {:ecto_sql, "~> 3.6"},
-      {:math, "~> 0.7.0"}
+      {:math, "~> 0.7.0"},
+      {:postgrex, ">= 0.0.0"}
     ]
   end
 end

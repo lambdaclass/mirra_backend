@@ -29,20 +29,6 @@ defmodule Gateway.Test.Champions do
 
   alias Gateway.SocketTester
 
-  setup_all do
-    # Start Phoenix endpoint
-    {:ok, _} =
-      Plug.Cowboy.http(Gateway.Endpoint, [],
-        ip: {127, 0, 0, 1},
-        port: 4001,
-        dispatch: [
-          _: [{"/2", Gateway.ChampionsSocketHandler, []}]
-        ]
-      )
-
-    :ok
-  end
-
   setup do
     {:ok, socket_tester} = SocketTester.start_link()
 
