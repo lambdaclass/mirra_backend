@@ -1,40 +1,55 @@
 [
   {
-    "name": "Muflus hit",
+    "name": "Muflus Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
     "effects": [
       {
         "type": "instant",
-        "stat_affected": "health",
-        "amount": -80,
-        "stat_based_on": "attack",
-        "amount_format": "additive",
-        "targeting_strategy": "random",
-        "amount_of_targets": 2,
-        "targets_allies": false
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
       }
     ],
-    "targeting_strategy": null,
-    "amount_of_targets": null,
-    "targets_allies": null,
-    "cooldown": 5
+    "cooldown": 5      
   },
   {
-    "name": "Muflus SMASH!",
+    "name": "Muflus Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
     "effects": [
       {
         "type": "instant",
-        "stat_affected": "health",
-        "amount": -205,
-        "stat_based_on": "attack",
-        "amount_format": "additive",
-        "targeting_strategy": "random",
-        "amount_of_targets": 2,
-        "targets_allies": false
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 3,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Health"
       }
-    ],
-    "targeting_strategy": null,
-    "amount_of_targets": null,
-    "targets_allies": null,
-    "cooldown": null
+    ]
   }
 ]
