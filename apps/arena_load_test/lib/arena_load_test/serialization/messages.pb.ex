@@ -250,6 +250,15 @@ defmodule ArenaLoadTest.Serialization.GameState.PoolsEntry do
   field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
 end
 
+defmodule ArenaLoadTest.Serialization.GameState.BushesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
+end
+
 defmodule ArenaLoadTest.Serialization.GameState do
   @moduledoc false
 
@@ -315,6 +324,12 @@ defmodule ArenaLoadTest.Serialization.GameState do
     type: ArenaLoadTest.Serialization.GameState.PoolsEntry,
     map: true
   )
+
+  field(:bushes, 15,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.GameState.BushesEntry,
+    map: true
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Entity do
@@ -341,6 +356,7 @@ defmodule ArenaLoadTest.Serialization.Entity do
   field(:power_up, 15, type: ArenaLoadTest.Serialization.PowerUp, json_name: "powerUp", oneof: 0)
   field(:item, 16, type: ArenaLoadTest.Serialization.Item, oneof: 0)
   field(:pool, 17, type: ArenaLoadTest.Serialization.Pool, oneof: 0)
+  field(:bush, 18, type: ArenaLoadTest.Serialization.Bush, oneof: 0)
 end
 
 defmodule ArenaLoadTest.Serialization.Player.EffectsEntry do
@@ -448,6 +464,12 @@ defmodule ArenaLoadTest.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+end
+
+defmodule ArenaLoadTest.Serialization.Bush do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
 defmodule ArenaLoadTest.Serialization.PlayerAction do

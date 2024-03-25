@@ -175,6 +175,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_bush(id, position, radius, shape, vertices \\ []) do
+    %{
+      id: id,
+      category: :bush,
+      shape: get_shape(shape),
+      name: "Bush" <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: vertices,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def make_circular_area(id, position, range) do
     %{
       id: id,
@@ -261,4 +279,10 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(_entity) do
     nil
   end
+
+  defp get_shape("polygon"), do: :polygon
+  defp get_shape("circle"), do: :circle
+  defp get_shape("line"), do: :line
+  defp get_shape("point"), do: :point
+  defp get_shape(_), do: nil
 end

@@ -96,6 +96,7 @@ message GameState {
   int64 start_game_timestamp = 12;
   map<uint64, Entity> items = 13;
   map<uint64, Entity> pools = 14;
+  map<uint64, Entity> bushes = 15;
 }
 
 enum GameStatus {
@@ -137,6 +138,7 @@ message Entity {
     PowerUp power_up = 15;
     Item item = 16;
     Pool pool = 17;
+    Bush bush = 18;
   }
 }
 
@@ -192,6 +194,9 @@ enum  PowerUpstatus {
 
 message Pool {
   uint64 owner_id = 1;
+}
+
+message Bush {
 }
 
 message PlayerAction {
