@@ -120,6 +120,7 @@ defmodule Arena.GameUpdater do
       |> explode_projectiles()
       |> handle_pools(state.game_config)
       |> Skill.apply_effect_mechanic()
+      |> update_visible_players()
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -489,6 +490,7 @@ defmodule Arena.GameUpdater do
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
              pools: complete_entities(state.pools),
+             bushes: complete_entities(state.bushes),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -594,10 +596,13 @@ defmodule Arena.GameUpdater do
       end)
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
+    {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
 
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
+    |> Map.put(:bushes, bushes)
+    |> IO.inspect(label: "aber init")
   end
 
   # Initialize obstacles
@@ -613,6 +618,21 @@ defmodule Arena.GameUpdater do
         )
 
       {obstacles_acc, last_id}
+    end)
+  end
+
+  defp initialize_bushes(bushes, last_id) do
+    Enum.reduce(bushes, {Map.new(), last_id}, fn bush, {bush_acc, last_id} ->
+      last_id = last_id + 1
+
+      bush_acc =
+        Map.put(
+          bush_acc,
+          last_id,
+          Entities.new_bush(last_id, bush.position, bush.radius, bush.shape, bush.vertices)
+        )
+
+      {bush_acc, last_id}
     end)
   end
 
@@ -646,12 +666,13 @@ defmodule Arena.GameUpdater do
            ticks_to_move: ticks_to_move,
            external_wall: external_wall,
            obstacles: obstacles,
+           bushes: bushes,
            power_ups: power_ups,
            pools: pools,
            items: items
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items)
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes)
 
     moved_players =
       players
@@ -1107,6 +1128,33 @@ defmodule Arena.GameUpdater do
       [] -> random_position_in_map(integer_radius * 0.95, external_wall)
       _ -> point.position
     end
+  end
+
+  defp update_visible_players(%{players: players, bushes: bushes} = game_state) do
+    Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
+      bush_collisions =
+        Enum.filter(player.collides_with, fn collided_id ->
+          Map.has_key?(bushes, collided_id)
+        end)
+
+      visible_players =
+        Enum.reduce(players, [], fn {candicandidate_player_id, candidate_player}, acc ->
+          candidate_bush_collisions =
+            Enum.filter(candidate_player.collides_with, fn collided_id ->
+              Map.has_key?(bushes, collided_id)
+            end)
+
+          if candidate_player.id != player_id and
+               (Enum.empty?(candidate_bush_collisions) or
+                  Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)) do
+            acc ++ [candicandidate_player_id]
+          else
+            acc
+          end
+        end)
+
+      put_in(game_state, [:players, player_id, :visible_players], visible_players)
+    end)
   end
 
   ##########################
