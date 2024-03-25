@@ -69,6 +69,7 @@ defmodule ArenaLoadTest.SocketHandler do
   end
 
   # This is enough for now. Will request bots from the bots app in future iterations.
+  # https://github.com/lambdaclass/mirra_backend/issues/410
   defp get_random_active_character() do
     ["muflus", "h4ck", "uma"]
     |> Enum.random()

@@ -107,6 +107,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
   # This is enough for now. We will get the skills from the requested bots
   # from the bots app. This will be done in future iterations.
+  # https://github.com/lambdaclass/mirra_backend/issues/410
   defp get_random_available_skill() do
     ["1", "2", "3"]
     |> Enum.random()
