@@ -55,16 +55,16 @@ defmodule ArenaLoadTest.SocketHandler do
 
   # Private
   defp ws_url(player_id) do
-    host = SocketSupervisor.server_host()
     character = get_random_active_character()
     player_name = "Player_#{player_id}"
 
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{host}/join/#{player_id}/#{character}/#{player_name}"
+    case System.get_env("TARGET_SERVER") do
+      nil ->
+        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
-      _ ->
-        "ws://#{host}/join/#{player_id}/#{character}/#{player_name}"
+      target_server ->
+        server_url = SocketSupervisor.get_server_url(target_server)
+        "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
     end
   end
 

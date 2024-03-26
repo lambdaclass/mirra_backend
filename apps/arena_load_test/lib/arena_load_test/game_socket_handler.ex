@@ -94,14 +94,13 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   defp ws_url(client_id, game_id) do
-    host = SocketSupervisor.server_host()
+    case System.get_env("TARGET_SERVER") do
+      nil ->
+        "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{host}/play/#{game_id}/#{client_id}"
-
-      _ ->
-        "ws://#{host}/play/#{game_id}/#{client_id}"
+      target_server ->
+        server_url = SocketSupervisor.get_server_url(target_server)
+        "wss://#{server_url}/play/#{game_id}/#{client_id}"
     end
   end
 
