@@ -62,6 +62,14 @@ Note you need to have ran `devenv up` earlier.
 
 Each of the applications, as mentioned in the previous paragraph, has a specific responsibility:
 
+## Applications
+
+- [Arena](#arena)
+- [Game Client](#game-client)
+- [Gateway](#gateway)
+- [ChampionsOfMirra](#championsofmirra)
+- [GameBackend](#configurator)
+
 ### Arena
 This app is responsible for handling the game logic and is composed of 2 parts:
 
@@ -110,6 +118,13 @@ Persistance layer and shared logic:
 - Items logic that's general among all games. Defines the schemas for the item templates of every game. These act like templates for Items, which are instances of them that belong to a user and can be equipped to a unit.
 
 What's important to note is that each game's application decides how to use the functionalities these applications have. For example, take a look at how Champions of Mirra implements `Champions.Units.select_unit/3` and `unselect_unit/2`. For the first one, we have some rules on how and when a unit can be selected, so we check they are met before calling the `GameBackend` app. For the second one, we don't care for the context it is called in, so we just call `GameBackend.Units.unselect_unit/2` instantly. Another game might have different requirements for unit selection/unselection, and it would be handled in its own `NewGame.Units` module.
+
+### Configurator
+This app is in charge of the configurations. Think either full game config or feature flags for A/B testing
+
+In it you will be able to create new configurations and decide the default version to be used. Configurations are inmutable to allow rollbacks and easier A/B testing, you can always create a new one based on the default one or one in particular
+
+[Read more](/apps/configurator/README.md)
 
 ### Future iterations
 In future iterations, we will add the following apps:
