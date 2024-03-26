@@ -11,6 +11,7 @@ defmodule MirraBackend.MixProject do
         :gateway,
         :game_backend,
         :arena_load_test,
+        :configurator,
         :bot_manager
       ],
       version: "0.1.0",
