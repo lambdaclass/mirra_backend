@@ -4,6 +4,7 @@ defmodule Arena.Game.Player do
   """
 
   alias Arena.Utils
+  alias Arena.Game.Effect
   alias Arena.Game.Skill
 
   def add_action(player, action_name, duration_ms) do
@@ -262,6 +263,19 @@ defmodule Arena.Game.Player do
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
     |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
+  end
+
+  def reset_effects(player, game_config) do
+    character = Enum.find(game_config.characters, fn %{name: name} -> name == player.character_name end)
+
+    player =
+      player
+      |> put_in([:speed], character.base_speed)
+      |> put_in([:aditional_info, :stamina_interval], character.stamina_interval)
+      |> put_in([:aditional_info, :bonus_damage], 0)
+
+    ## TODO: reapply effects, waiting on PR#389
+    Effect.apply_stat_effects(player)
   end
 
   ####################

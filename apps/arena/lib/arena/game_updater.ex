@@ -109,6 +109,7 @@ defmodule Arena.GameUpdater do
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> reset_players_effects(state.game_config.game)
       |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
@@ -623,6 +624,16 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game flow. Actions executed in every tick.
   ##########################
+
+  defp reset_players_effects(game_state, game_config) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player = Player.reset_effects(player, game_config)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
 
   defp reduce_players_cooldowns(game_state, time_diff) do
     players =
