@@ -35,9 +35,12 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
   # Creates `num_clients` clients to join a game
   def spawn_players(num_clients) do
+    :ets.new(:clients, [:set, :named_table, :public])
+
     for i <- 1..num_clients do
-      IO.inspect(i, label: :aver_client_number)
+      IO.inspect(i, label: "Iteration:")
       {:ok, _pid} = add_new_client(i)
+      IO.inspect(:ets.info(:clients, :size), label: "Clients alive:")
     end
   end
 

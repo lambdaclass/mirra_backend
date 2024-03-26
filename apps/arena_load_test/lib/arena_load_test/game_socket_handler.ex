@@ -12,6 +12,8 @@ defmodule ArenaLoadTest.GameSocketHandler do
     Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
 
+    true = :ets.insert(:clients, {client_id, "1"})
+
     WebSockex.start_link(
       ws_url,
       __MODULE__,
@@ -48,7 +50,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :move, 500, [])
+    Process.send_after(self(), :move, 5000, [])
     {:ok, state}
   end
 
@@ -75,12 +77,18 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :attack, 300, [])
+    Process.send_after(self(), :attack, 3000, [])
     {:ok, state}
   end
 
   def handle_cast({:send, {_type, _msg} = frame}, state) do
     {:reply, frame, state}
+  end
+
+  def terminate({:remote, 1000, ""}, state) do
+    :ets.delete(:clients, state.client_id)
+    Logger.info("Client websocket terminated with {:remote, 1000} status")
+    {:close, {1000, ""}, state}
   end
 
   # Private

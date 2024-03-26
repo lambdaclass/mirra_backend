@@ -12,13 +12,17 @@ defmodule ArenaLoadTest.SocketHandler do
     Logger.info("Client INIT")
     ws_url = ws_url(client_id)
 
+    true = :ets.insert(:clients, {client_id, "1"})
+
     WebSockex.start_link(
       ws_url,
       __MODULE__,
       %{
         client_id: client_id
-      }
-    ) |> IO.inspect(label: :aver_ws_return)
+      },
+      socket_connect_timeout: :infinity,
+      socket_recv_timeout: :infinity
+    )
   end
 
   # Callbacks
@@ -48,9 +52,10 @@ defmodule ArenaLoadTest.SocketHandler do
   end
 
   @impl true
-  def terminate({:remote, 1000, ""}, _state) do
+  def terminate(_falopa, state) do
+    # :ets.delete(:clients, state.client_id)
     Logger.info("Client websocket terminated with {:remote, 1000} status")
-    exit(:normal)
+    {:close, {1000, ""}, state}
   end
 
   # Private
