@@ -12,8 +12,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
     Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
 
-    true = :ets.insert(:clients, {client_id, "1"})
-
     WebSockex.start_link(
       ws_url,
       __MODULE__,
@@ -86,9 +84,16 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def terminate({:remote, 1000, ""}, state) do
-    :ets.delete(:clients, state.client_id)
+    case :ets.lookup(:clients, state.client_id) do
+      [{key, _}] ->
+        :ets.delete(:clients, key)
+
+      [] ->
+        Raise
+    end
+
     Logger.info("Client websocket terminated with {:remote, 1000} status")
-    {:close, {1000, ""}, state}
+    exit(:normal)
   end
 
   # Private

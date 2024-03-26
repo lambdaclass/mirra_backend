@@ -53,9 +53,8 @@ defmodule ArenaLoadTest.SocketHandler do
 
   @impl true
   def terminate(_falopa, state) do
-    # :ets.delete(:clients, state.client_id)
     Logger.info("Client websocket terminated with {:remote, 1000} status")
-    {:close, {1000, ""}, state}
+    exit(:normal)
   end
 
   # Private
