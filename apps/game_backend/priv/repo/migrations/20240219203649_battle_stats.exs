@@ -6,9 +6,9 @@ defmodule GameBackend.Repo.Migrations.BattleStats do
       add :name, :string
       add :effects, :map
       add :cooldown, :integer
-      add :targeting_strategy, :string
-      add :targets_allies, :bool
-      add :amount_of_targets, :integer
+      add :energy_regen, :integer
+      add :animation_duration, :integer
+      add :animation_trigger, :integer
       timestamps()
     end
 
@@ -18,7 +18,7 @@ defmodule GameBackend.Repo.Migrations.BattleStats do
 
       add :base_health, :integer
       add :base_attack, :integer
-      add :base_armor, :integer
+      add :base_defense, :integer
     end
   end
 end
