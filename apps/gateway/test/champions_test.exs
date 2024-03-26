@@ -13,9 +13,12 @@ defmodule Gateway.Test.Champions do
   alias Gateway.Serialization.{
     Box,
     Boxes,
+    Campaign,
+    Campaigns,
     Currency,
     Error,
     Item,
+    Level,
     Unit,
     UnitAndCurrencies,
     User,
@@ -25,20 +28,6 @@ defmodule Gateway.Test.Champions do
   }
 
   alias Gateway.SocketTester
-
-  setup_all do
-    # Start Phoenix endpoint
-    {:ok, _} =
-      Plug.Cowboy.http(Gateway.Endpoint, [],
-        ip: {127, 0, 0, 1},
-        port: 4001,
-        dispatch: [
-          _: [{"/2", Gateway.ChampionsSocketHandler, []}]
-        ]
-      )
-
-    :ok
-  end
 
   setup do
     {:ok, socket_tester} = SocketTester.start_link()
@@ -281,6 +270,143 @@ defmodule Gateway.Test.Champions do
       assert new_scrolls.amount == previous_scrolls.amount - List.first(box.cost).amount
 
       assert GameBackend.Units.get_units(user.id) |> Enum.count() == units + 1
+    end
+  end
+
+  describe "campaigns" do
+    test "get campaigns and levels", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("campaign_user")
+
+      # GetCampaigns
+      SocketTester.get_campaigns(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaigns, %Campaigns{} = campaigns}
+      }
+
+      repo_campaigns = Repo.all(GameBackend.Campaigns.Campaign)
+
+      # Check that each campaign matches a campaign of repo_campaigns
+      assert :ok ==
+               Enum.each(campaigns.campaigns, fn campaign ->
+                 assert Enum.find(repo_campaigns, &(&1.id == campaign.id))
+               end)
+
+      sample_campaign = Enum.random(campaigns.campaigns)
+
+      # GetCampaign
+      SocketTester.get_campaign(socket_tester, user.id, sample_campaign.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaign, %Campaign{} = campaign_to_verify}
+      }
+
+      assert campaign_to_verify.id == sample_campaign.id
+
+      # GetLevel
+      level = Enum.random(sample_campaign.levels)
+
+      SocketTester.get_level(socket_tester, user.id, level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:level, %Level{} = level_to_verify}
+      }
+
+      assert level_to_verify.id == level.id
+    end
+
+    test "fight level", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("battle_user")
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progresses
+
+      # Get the level of the campaign progression
+      level_id = campaign_progression.level_id
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      # Battle result should be either win or loss
+      assert battle_result.result == "win" or battle_result.result == "loss"
+
+      # TODO: check rewards [#CHoM-341]
+    end
+
+    test "fight level advances level in the campaign progression", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("battle_winning_user")
+
+      # Make user units very strong to win the battle
+      Enum.each(user.units, fn unit ->
+        GameBackend.Units.update_unit(unit, %{level: 9999})
+      end)
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progresses
+
+      # Get the level of the campaign progression
+      level_id = campaign_progression.level_id
+      level_number = campaign_progression.level.level_number
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      {:ok, advanced_user} = Users.get_user(user.id)
+
+      [advanced_campaign_progression | _] = advanced_user.campaign_progresses
+
+      assert user.id == advanced_user.id
+      assert advanced_campaign_progression.level_id != level_id
+      assert advanced_campaign_progression.level.level_number == level_number + 1
+    end
+
+    test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("invalid_battle_user")
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progresses
+
+      # Get the level of the campaign progression
+      next_level_id = campaign_progression.level_id
+
+      # Get a level from the user where the id is not the next level in the progression
+      SocketTester.get_campaigns(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaigns, %Campaigns{} = campaigns}
+      }
+
+      levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
+      invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, invalid_level.id)
+      fetch_last_message(socket_tester)
+
+      # Should return an error response with the reason "level_invalid"
+      assert_receive %WebSocketResponse{
+        response_type: {:error, %Error{reason: "level_invalid"}}
+      }
     end
   end
 

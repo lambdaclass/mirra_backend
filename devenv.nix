@@ -43,6 +43,9 @@
       port = 5432;	
       listen_addresses = "127.0.0.1";	
       initialScript = "CREATE USER postgres WITH PASSWORD 'postgres'; ALTER USER postgres WITH SUPERUSER;";
-    };	
+      initialDatabases = [
+        { name = "game_backend_prod"; }
+      ];
+    };
   };
 }
