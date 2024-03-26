@@ -301,7 +301,8 @@ defmodule Champions.Battle.Simulator do
   defp trigger_skill_effects(skill, current_state, initial_step_state) do
     caster = current_state.units[skill.caster_id]
 
-    # We store the caster's state in the effect in case the unit dies before the effect's delay ends
+    # We store the caster's state in the effect in case the unit dies before the effect's delay ends.
+    # Also, we want to calculate numbers like damage done based on the status of the caster when the effect was cast.
     effects_with_caster =
       Enum.map(skill.effects, fn effect ->
         effect |> Map.put(:caster, caster) |> Map.put(:targets, choose_targets(caster, effect, initial_step_state))
