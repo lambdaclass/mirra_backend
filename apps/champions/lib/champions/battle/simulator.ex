@@ -166,7 +166,7 @@ defmodule Champions.Battle.Simulator do
             [:units, unit.id, :basic_skill, :remaining_cooldown],
             unit.basic_skill.base_cooldown + 1
           )
-          |> put_in([:units, unit.id, :energy], current_state.units[unit.id].energy + unit.basic_skill.energy_regen)
+          |> update_in([:units, unit.id, :energy], &(&1 + unit.basic_skill.energy_regen))
 
         true ->
           current_state
