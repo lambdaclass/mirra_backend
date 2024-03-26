@@ -52,7 +52,7 @@ defmodule ArenaLoadTest.SocketHandler do
   end
 
   @impl true
-  def terminate(_falopa, state) do
+  def terminate({:remote, 1000, ""}, _state) do
     Logger.info("Client websocket terminated with {:remote, 1000} status")
     exit(:normal)
   end

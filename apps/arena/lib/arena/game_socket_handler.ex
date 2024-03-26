@@ -117,13 +117,7 @@ defmodule Arena.GameSocketHandler do
   @impl true
   def websocket_info({:game_finished, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME FINISHED")
-    Process.send_after(self(), :close_connection, 1000)
     {:reply, {:binary, game_state}, state}
-  end
-
-  @impl true
-  def websocket_info(:close_connection, state) do
-    {:stop, state}
   end
 
   @impl true
@@ -148,12 +142,6 @@ defmodule Arena.GameSocketHandler do
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
-  end
-
-  @impl true
-  def terminate(_, _, _) do
-    Logger.info("Websocket terminated")
-    :ok
   end
 
   defp to_broadcast_config(config) do

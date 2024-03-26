@@ -23,8 +23,14 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Callbacks
-  def handle_frame({_type, _msg} = _frame, state) do
-    {:ok, state}
+  def handle_frame({:binary, msg} = _frame, state) do
+    {event_type, _state} = Serialization.GameEvent.decode(msg) |> Map.get(:event)
+
+    if event_type == :finished do
+      {:stop, state}
+    else
+      {:ok, state}
+    end
   end
 
   def handle_info(:move, state) do
@@ -83,16 +89,16 @@ defmodule ArenaLoadTest.GameSocketHandler do
     {:reply, frame, state}
   end
 
-  def terminate({:remote, 1000, ""}, state) do
+  def terminate(_, state) do
     case :ets.lookup(:clients, state.client_id) do
-      [{key, _}] ->
-        :ets.delete(:clients, key)
+      [{client_id, _}] ->
+        :ets.delete(:clients, client_id)
 
       [] ->
-        Raise
+        raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
     end
 
-    Logger.info("Client websocket terminated with {:remote, 1000} status")
+    Logger.info("Client websocket terminated. Game Ended.")
     exit(:normal)
   end
 
