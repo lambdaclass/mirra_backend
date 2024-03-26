@@ -81,6 +81,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "claimAfkRewards",
     oneof: 0
   )
+
+  field(:get_user_super_campaign_progresses, 23,
+    type: Gateway.Serialization.GetUserSuperCampaignProgresses,
+    json_name: "getUserSuperCampaignProgresses",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -267,6 +273,14 @@ defmodule Gateway.Serialization.Summon do
   field(:box_id, 2, type: :string, json_name: "boxId")
 end
 
+defmodule Gateway.Serialization.GetUserSuperCampaignProgresses do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -310,6 +324,12 @@ defmodule Gateway.Serialization.WebSocketResponse do
     json_name: "afkRewards",
     oneof: 0
   )
+
+  field(:super_campaign_progresses, 15,
+    type: Gateway.Serialization.SuperCampaignProgresses,
+    json_name: "superCampaignProgresses",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.User do
@@ -321,13 +341,6 @@ defmodule Gateway.Serialization.User do
   field(:username, 2, type: :string)
   field(:level, 3, type: :uint64)
   field(:experience, 4, type: :uint64)
-
-  field(:super_campaign_progresses, 6,
-    repeated: true,
-    type: Gateway.Serialization.SuperCampaignProgress,
-    json_name: "superCampaignProgresses"
-  )
-
   field(:currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency)
   field(:units, 8, repeated: true, type: Gateway.Serialization.Unit)
   field(:items, 9, repeated: true, type: Gateway.Serialization.Item)
@@ -339,14 +352,27 @@ defmodule Gateway.Serialization.User do
   )
 end
 
+defmodule Gateway.Serialization.SuperCampaignProgresses do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:super_campaign_progresses, 1,
+    repeated: true,
+    type: Gateway.Serialization.SuperCampaignProgress,
+    json_name: "superCampaignProgresses"
+  )
+end
+
 defmodule Gateway.Serialization.SuperCampaignProgress do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:super_campaign_id, 2, type: :string, json_name: "superCampaignId")
+  field(:campaign_id, 2, type: :string, json_name: "campaignId")
   field(:level_id, 3, type: :string, json_name: "levelId")
+  field(:super_campaign_id, 4, type: :string, json_name: "superCampaignId")
 end
 
 defmodule Gateway.Serialization.AfkRewardRate do

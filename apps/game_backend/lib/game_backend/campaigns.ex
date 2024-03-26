@@ -86,6 +86,12 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
+  Get all of a User's SuperCampaignProgresses.
+  """
+  def get_user_super_campaign_progresses(user_id),
+    do: Repo.all(from(cp in SuperCampaignProgress, where: cp.user_id == ^user_id, preload: [:level]))
+
+  @doc """
   Get a campaign progress by user id and campaign id.
   Returns `{:error, :not_found}` if no progress is found.
   """
