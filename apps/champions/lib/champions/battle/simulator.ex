@@ -218,7 +218,7 @@ defmodule Champions.Battle.Simulator do
   # Reduces the remaining animation and effect trigger, and casts the effects if the latter has ended.
   defp process_step_for_skill(skill, current_state, initial_step_state) do
     # Check if the casting unit has died
-    if Enum.any?(current_state.units, fn {unit_id, _unit} -> unit_id == skill.caster_id end) do
+    if Map.has_key?(current_state.units, skill.caster_id) do
       {new_skill, new_state} = process_skill_effects_trigger_value(skill, current_state, initial_step_state)
 
       if new_skill.animation_duration == 0 do
