@@ -28,7 +28,7 @@ mkdir -p $HOME/.config/systemd/user/
 
 existing_service=$(ls $HOME/.config/systemd/user/*.service 2>/dev/null)
 
-if [ $(wc -l <<<$existing_service) -ge 1 || $(basename ${existing_service}) != "${RELEASE}.service" ]; then
+if [ $(wc -l <<<$existing_service) >1 || "$(basename ${existing_service})" != "${RELEASE}.service" ]; then
 	echo "The release you are trying to deploy is not the same as the installed"
 	exit 1
 fi
