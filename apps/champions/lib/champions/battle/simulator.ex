@@ -85,13 +85,7 @@ defmodule Champions.Battle.Simulator do
           # We need the initial_step_state to decide effect targets
           process_step_for_skill(skill, current_state, initial_step_state)
         end)
-
-      new_state =
-        Enum.reduce(new_state.pending_effects, new_state, fn effect, current_state ->
-          Logger.info("Process step #{step} for effect cast by #{format_unit_name(effect.caster)}")
-
-          process_step_for_effect(effect, current_state)
-        end)
+        |> process_step_for_effects()
 
       Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
@@ -255,30 +249,37 @@ defmodule Champions.Battle.Simulator do
     {%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}
   end
 
-  # Calculate the new state of the battle after a step passes for a pending effect.
-  # If the effect is ready to be processed, we apply it.
-  defp process_step_for_effect(%{delay: 0} = effect, current_state) do
-    Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
+  # Calculate the new state of the battle after a step passes for all pending effects
+  def process_step_for_effects(state) do
+    {updated_pending_effects, updated_game_state} =
+      Enum.reduce(state.pending_effects, {[], state}, fn effect, {new_pending_effects, current_state} ->
+        # Calculate the new state of the battle after a step passes for a pending effect.
+        case effect do
+          %{delay: 0} ->
+            # If the effect is ready to be processed, we apply it.
+            Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
-    targets_after_effect =
-      Enum.map(effect.targets, fn id ->
-        maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
+            targets_after_effect =
+              Enum.map(effect.targets, fn id ->
+                maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
+              end)
+
+            new_state =
+              Enum.reduce(targets_after_effect, current_state, fn target, acc_state ->
+                put_in(acc_state, [:units, target.id], target)
+              end)
+
+            # We don't add this effect to the new_pending_effects list because it has already been applied
+            {new_pending_effects, new_state}
+
+          effect ->
+            # If the effect isn't ready to be processed, we reduce its remaining delay.
+
+            {[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}
+        end
       end)
 
-    current_state =
-      Enum.reduce(targets_after_effect, current_state, fn target, acc_state ->
-        put_in(acc_state, [:units, target.id], target)
-      end)
-
-    Map.put(current_state, :pending_effects, List.delete(current_state.pending_effects, effect))
-  end
-
-  # Calculate the new state of the battle after a step passes for a pending effect.
-  # If the effect isn't ready to be processed, we reduce its remaining delay.
-  defp process_step_for_effect(effect, current_state) do
-    Map.put(current_state, :pending_effects, [
-      %{effect | delay: effect.delay - 1} | List.delete(current_state.pending_effects, effect)
-    ])
+    Map.put(updated_game_state, :pending_effects, updated_pending_effects)
   end
 
   # Check if the unit can attack this turn.
