@@ -41,6 +41,21 @@ defmodule GameBackend.Units.Skills.Effects.Execution do
          }}
 
   def cast(%{
+        type: "DealDamage",
+        attack_ratio: attack_ratio,
+        energy_recharge: energy_recharge,
+        delay: delay
+      }),
+      do:
+        {:ok,
+         %{
+           "type" => "DealDamage",
+           "attack_ratio" => attack_ratio,
+           "energy_recharge" => energy_recharge,
+           "delay" => delay
+         }}
+
+  def cast(%{
         "type" => "Heal",
         "attack_ratio" => attack_ratio,
         "delay" => delay

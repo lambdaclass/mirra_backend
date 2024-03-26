@@ -13,7 +13,7 @@ alias GameBackend.Campaigns.Rewards.CurrencyReward
 champions_of_mirra_id = 2
 units_per_level = 5
 
-Champions.Config.import_skill_config()
+{:ok, _skills} = Champions.Config.import_skill_config()
 Champions.Config.import_character_config()
 
 muflus = Characters.get_character_by_name("Muflus")
