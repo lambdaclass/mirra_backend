@@ -234,7 +234,7 @@ defmodule Champions.Battle.Simulator do
   # If the effects_trigger is ready, trigger the skill's effects, adding them to the `pending_effects` in the state.
   defp process_skill_effects_trigger_value(%{effects_trigger: 0} = skill, current_state, initial_step_state) do
     Logger.info("Animation trigger for skill #{skill.name} ready. Creating #{Enum.count(skill.effects)} effects.")
-    current_state = trigger_skill_effects(skill, current_state, initial_step_state)
+    current_state = add_skill_effects_to_pending_effects(skill, current_state, initial_step_state)
     {%{skill | effects_trigger: -1}, current_state}
   end
 
@@ -298,7 +298,7 @@ defmodule Champions.Battle.Simulator do
 
   # Called when a skill being cast reaches effect_trigger 0.
   # "Queues" the effect to be processed when its delay reaches 0.
-  defp trigger_skill_effects(skill, current_state, initial_step_state) do
+  defp add_skill_effects_to_pending_effects(skill, current_state, initial_step_state) do
     caster = current_state.units[skill.caster_id]
 
     # We store the caster's state in the effect in case the unit dies before the effect's delay ends.
