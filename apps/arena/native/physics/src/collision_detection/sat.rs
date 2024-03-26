@@ -7,21 +7,21 @@ use crate::map::{Entity, Position};
     are not overlaped, if we found at least one axis that meet this we can ensure that the entities are not
     overlaping
 
-    DISCLAIMER: this algorithm works and only work for collisions with polygons that are CONVEX which means
+    DISCLAIMER: this algorithm works for collisions with polygons that are CONVEX ONLY which means
     that ALL of his internal angles has less than 180° degrees, if we would have a CONCAVE polygon this
-    should be build with the usage of various convex polygons
+    should be built differently. The usage of various convex polygons can be a solution.
 
 */
 
-// Handle the intesection between a circle and a polygon, the return value is a tuple of 3 elements
-// a: bool = true if the entities are colliding
-// b: Position = nomalized line of collision
-// c: f32 = the minimum amount of overlap between the shapes tha would solve the collision
+// Handle the intesection between a circle and a polygon, the return value is a tuple of 3 elements:
+// 1: bool = true if the entities are colliding
+// 2: Position = nomalized line of collision
+// 3: f32 = the minimum amount of overlap between the shapes that would solve the collision
 pub(crate) fn intersect_circle_polygon(
     circle: &mut Entity,
     polygon: &Entity,
 ) -> (bool, Position, f32) {
-    // The normal will be the vector in wich the polygons should move to stop colliding
+    // The normal will be the vector in which the polygons should move to stop colliding
     let mut normal = Position { x: 0.0, y: 0.0 };
     // The depth is the amount of overlapping between both entities
     let mut depth: f32 = f32::MAX;
@@ -104,7 +104,7 @@ pub(crate) fn intersect_circle_polygon(
     (true, normal, depth)
 }
 
-// Uncomment this if we need a polygon with polygon collision detection
+// Uncomment this if we need a polygon-polygon collision detection
 
 // Handle the intesection between two polygons, the return value is a tuple of 3 elements
 // a: bool = true if the entities are colliding
