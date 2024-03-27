@@ -20,12 +20,13 @@ muflus = Characters.get_character_by_name("Muflus")
 {:ok, _muflus} =
   Characters.update_character(muflus, %{
     basic_skill: %{
+      name: "Muflus Basic",
       effects: [
         %{
           type: "instant",
           initial_delay: 0,
           components: [],
-          modifier: [],
+          modifiers: [],
           executions: [
             %{
               type: "DealDamage",
@@ -43,12 +44,13 @@ muflus = Characters.get_character_by_name("Muflus")
       cooldown: 5
     },
     ultimate_skill: %{
+      name: "Muflus Ultimate",
       effects: [
         %{
           type: "instant",
           initial_delay: 0,
           components: [],
-          modifier: [],
+          modifiers: [],
           executions: [
             %{
               type: "DealDamage",
@@ -62,8 +64,7 @@ muflus = Characters.get_character_by_name("Muflus")
           target_allies: false,
           target_attribute: "Health"
         }
-      ],
-      cooldown: 5
+      ]
     }
   })
 
