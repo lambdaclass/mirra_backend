@@ -171,11 +171,9 @@ defmodule Champions.Battle.Simulator do
 
     # Reduce modifier remaining timers & remove expired ones
     new_modifiers =
-      %{
-        additives: reduce_modifier_timers(unit.modifiers.additives, unit),
-        multiplicatives: reduce_modifier_timers(unit.modifiers.multiplicatives, unit),
-        overrides: reduce_modifier_timers(unit.modifiers.overrides, unit)
-      }
+      Map.new(unit.modifiers, fn {modifier_type, modifiers} ->
+        {modifier_type, reduce_modifier_timers(modifiers, unit)}
+      end)
 
     # Reduce basic skill cooldown
     put_in(new_state, [:units, unit.id, :modifiers], new_modifiers)
