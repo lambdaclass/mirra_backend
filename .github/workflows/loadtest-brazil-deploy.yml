@@ -1,10 +1,26 @@
 name: Deploy to Brazil Loadtest
 on:
   workflow_dispatch:
+    inputs:
+      release:
+        type: choice
+        description: What release to deploy
+        options:
+          - game_backend
+          - arena
+          - arena_load_test
+          - game_client
+        required: true
+      target_server:
+        type: choice
+        description: Loadtest target server
+        options:
+          - Brazil
+          - Europe
 
 jobs:
   build-deploy:
-    name: Build and deploy to Brazil loadtest
+    name: Build and deploy to Brazil Loadtest
     runs-on: ubuntu-latest
     environment:
       name: testing
@@ -36,14 +52,18 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_HOST: ${{ vars.TS_LOADTEST_HOST }}
         run: |
-          set -ex 
-          rsync -avz --mkpath apps/arena/devops/deploy_arena.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
+          set -ex
+          rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
           SSH_HOST: ${{ vars.TS_LOADTEST_HOST }}
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
+          RELEASE: ${{ inputs.release }}
+          TARGET_SERVER: ${{ inputs.target_server }}
+          BRAZIL_HOST: ${{ vars.brazil_host }}
+          EUROPE_HOST: ${{ vars.europe_host }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -56,10 +76,14 @@ jobs:
           ssh ${SSH_USERNAME}@${SSH_HOST} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
+                RELEASE=${RELEASE} \
+                TARGET_SERVER=${TARGET_SERVER} \
+                BRAZIL_HOST=${BRAZIL_HOST} \
+                EUROPE_HOST=${EUROPE_HOST} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                /home/${SSH_USERNAME}/deploy-script/deploy_arena.sh
+                /home/${SSH_USERNAME}/deploy-script/deploy.sh
