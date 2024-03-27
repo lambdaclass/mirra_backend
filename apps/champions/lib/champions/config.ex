@@ -27,7 +27,7 @@ defmodule Champions.Config do
         faction: faction,
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
-        base_armor: Integer.parse(defense) |> elem(0),
+        base_defense: Integer.parse(defense) |> elem(0),
         game_id: Utils.game_id(),
         active: true
       }

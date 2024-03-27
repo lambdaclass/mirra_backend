@@ -393,11 +393,11 @@ defmodule Champions.Units do
   end
 
   @doc """
-  Get a unit's armor stat for battle. Buffs from items and similar belong here.
+  Get a unit's defense stat for battle. Buffs from items and similar belong here.
 
   For now, we just return the base character's stat.
   """
-  def get_armor(unit) do
-    unit.character.base_armor
+  def get_defense(unit) do
+    unit.character.base_defense
   end
 end

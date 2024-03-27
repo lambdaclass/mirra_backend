@@ -2,7 +2,7 @@ defmodule Champions.Battle.Simulator do
   @moduledoc """
   Runs battles.
 
-  Units have stats that are calculated on battle start (Attack, Max Health, Armor), as well as two skills. The ultimate
+  Units have stats that are calculated on battle start (Attack, Max Health, Defense), as well as two skills. The ultimate
   has no cooldown and it's cast whenever a unit reaches 500 energy. Energy is gained whenever the target attacks.
   The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
@@ -12,20 +12,17 @@ defmodule Champions.Battle.Simulator do
   [x] Instant - Applied once, irreversible.
   [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
   [ ] Duration - Applied once and reverted once its duration ends.
-  [ ] Periodic - Applied many times every x number of steps for a total duration of y steps
 
   They also have different targeting strategies:
   [x] Random
   [ ] Nearest
   [ ] Furthest
-  [ ] Min Health
-  [ ] Max Health
-  [ ] Min Shield
-  [ ] Max Shield
   [ ] Frontline - Heroes in slots 1 and 2
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
   [ ] Classes
+  [ ] Min (STAT)
+  [ ] Max (STAT)
 
   And different ways in which their amount is interpreted:
   [x] Additive
@@ -219,7 +216,7 @@ defmodule Champions.Battle.Simulator do
          max_health: Units.get_max_health(unit),
          health: Units.get_max_health(unit),
          attack: Units.get_attack(unit),
-         armor: Units.get_armor(unit),
+         defense: Units.get_defense(unit),
          faction: character.faction,
          # class: character.class,
          basic_skill: create_skill_map(character.basic_skill),
