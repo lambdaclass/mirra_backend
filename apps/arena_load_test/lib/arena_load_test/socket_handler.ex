@@ -61,19 +61,15 @@ defmodule ArenaLoadTest.SocketHandler do
   defp ws_url(player_id) do
     character = get_random_active_character()
     player_name = "Player_#{player_id}"
-    server_url = "arm.hetzner-load-test-server.curseofmirra.com"
 
-    "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
+    case System.get_env("TARGET_SERVER") do
+      nil ->
+        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
-
-    # case System.get_env("TARGET_SERVER") do
-    #   nil ->
-    #     "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
-
-    #   target_server ->
-    #     server_url = SocketSupervisor.get_server_url(target_server)
-    #     "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
-    # end
+      target_server ->
+        server_url = SocketSupervisor.get_server_url(target_server)
+        "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
+    end
   end
 
   # This is enough for now. Will request bots from the bots app in future iterations.
