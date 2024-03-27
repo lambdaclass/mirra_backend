@@ -24,20 +24,20 @@ pub(crate) fn intersect_circle_polygon(
     // The normal will be the vector in which the polygons should move to stop colliding
     let mut normal = Position { x: 0.0, y: 0.0 };
     // The depth is the amount of overlapping between both entities
-    let mut depth: f32 = f32::MAX;
+    let mut result_depth: f32 = f32::MAX;
 
     let mut axis: Position;
 
     // Check normal and depth for polygon
-    for current in 0..polygon.vertices.len() {
-        let mut next = current + 1;
-        if next == polygon.vertices.len() {
-            next = 0
+    for current_vertex_index in 0..polygon.vertices.len() {
+        let mut next_vertex_index = current_vertex_index + 1;
+        if next_vertex_index == polygon.vertices.len() {
+            next_vertex_index = 0
         };
-        let va = polygon.vertices[current];
-        let vb = polygon.vertices[next];
+        let current_vertex = polygon.vertices[current_vertex_index];
+        let next_vertex = polygon.vertices[next_vertex_index];
 
-        let current_line = Position::sub(va, vb);
+        let current_line = Position::sub(current_vertex, next_vertex);
         // the axis will be the perpendicular line drawn from the current line of the polygon
         axis = Position {
             x: -current_line.y,
@@ -46,21 +46,26 @@ pub(crate) fn intersect_circle_polygon(
 
         // FIXME normalizing on this loop may be bad
         axis.normalize();
-        let (min_a, max_a) = project_vertices(&polygon.vertices, axis);
-        let (min_b, max_b) = project_circle(circle, axis);
+        let (min_polygon_cast_point, max_polygon_cast_point) =
+            project_vertices(&polygon.vertices, axis);
+        let (min_circle_cast_point, max_circle_cast_point) = project_circle(circle, axis);
 
         // If there's a gap between the polygon it means they do not collide and we can safely return false
-        if min_a >= max_b || min_b >= max_a {
-            return (false, normal, depth);
+        if min_polygon_cast_point >= max_circle_cast_point
+            || min_circle_cast_point >= max_polygon_cast_point
+        {
+            return (false, normal, result_depth);
         }
 
-        let depth_a = max_b - min_a;
-        let depth_b = max_a - min_b;
-        let axis_depth = f32::min(depth_a, depth_b);
+        let circle_overlap_depth = max_circle_cast_point - min_polygon_cast_point;
 
-        if axis_depth < depth {
+        let polygon_overlap_depth = max_polygon_cast_point - min_circle_cast_point;
+
+        let min_depth = f32::min(circle_overlap_depth, polygon_overlap_depth);
+
+        if min_depth < result_depth {
             // If we hit the polygon from the right or top we need to turn around the direction
-            if depth_b > depth_a {
+            if polygon_overlap_depth > circle_overlap_depth {
                 normal = Position {
                     x: -axis.x,
                     y: -axis.y,
@@ -68,7 +73,7 @@ pub(crate) fn intersect_circle_polygon(
             } else {
                 normal = axis;
             }
-            depth = axis_depth;
+            result_depth = min_depth;
         }
     }
 
@@ -77,20 +82,26 @@ pub(crate) fn intersect_circle_polygon(
     axis = Position::sub(closest_vertex, circle.position);
     axis.normalize();
 
-    let (min_a, max_a) = project_vertices(&polygon.vertices, axis);
-    let (min_b, max_b) = project_circle(circle, axis);
+    let (min_polygon_cast_point, max_polygon_cast_point) =
+        project_vertices(&polygon.vertices, axis);
+    let (min_circle_cast_point, max_circle_cast_point) = project_circle(circle, axis);
 
     // If there's a gap between the polygon it means they do not collide and we can safely return false
-    if min_a >= max_b || min_b >= max_a {
-        return (false, normal, depth);
+    if min_polygon_cast_point >= max_circle_cast_point
+        || min_circle_cast_point >= max_polygon_cast_point
+    {
+        return (false, normal, result_depth);
     }
 
-    let depth_a = max_b - min_a;
-    let depth_b = max_a - min_b;
-    let axis_depth = f32::min(depth_a, depth_b);
+    let circle_overlap_depth = max_circle_cast_point - min_polygon_cast_point;
 
-    if axis_depth < depth {
-        if depth_b > depth_a {
+    let polygon_overlap_depth = max_polygon_cast_point - min_circle_cast_point;
+
+    let axis_depth = f32::min(circle_overlap_depth, polygon_overlap_depth);
+
+    if axis_depth < result_depth {
+        // If we hit the polygon from the right or top we need to turn around the direction
+        if polygon_overlap_depth > circle_overlap_depth {
             normal = Position {
                 x: -axis.x,
                 y: -axis.y,
@@ -98,10 +109,10 @@ pub(crate) fn intersect_circle_polygon(
         } else {
             normal = axis;
         }
-        depth = axis_depth;
+        result_depth = axis_depth;
     }
 
-    (true, normal, depth)
+    (true, normal, result_depth)
 }
 
 // Uncomment this if we need a polygon-polygon collision detection
@@ -211,13 +222,13 @@ fn project_vertices(vertices: &Vec<Position>, axis: Position) -> (f32, f32) {
     let mut max = f32::MIN;
 
     for current in vertices {
-        let proj = dot(current, axis);
+        let projection = dot(current, axis);
 
-        if proj < min {
-            min = proj
+        if projection < min {
+            min = projection
         };
-        if proj > max {
-            max = proj
+        if projection > max {
+            max = projection
         };
     }
 
@@ -234,11 +245,11 @@ fn project_circle(circle: &Entity, axis: Position) -> (f32, f32) {
         y: axis.y * circle.radius,
     };
 
-    let p1 = Position::add(circle.position, direction_radius);
-    let p2 = Position::sub(circle.position, direction_radius);
+    let position_plus_radius = Position::add(circle.position, direction_radius);
+    let position_sub_radius = Position::sub(circle.position, direction_radius);
 
-    min = dot(&p1, axis);
-    max = dot(&p2, axis);
+    min = dot(&position_plus_radius, axis);
+    max = dot(&position_sub_radius, axis);
 
     if min > max {
         swap(&mut max, &mut min);
