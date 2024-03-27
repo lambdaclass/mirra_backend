@@ -156,6 +156,7 @@ defmodule Champions.Battle.Simulator do
           |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
           |> put_in(
             [:units, unit.id, :basic_skill, :remaining_cooldown],
+            # We need this + 1 because we're going to reduce the cooldown at the end of the step
             unit.basic_skill.base_cooldown + 1
           )
           |> update_in([:units, unit.id, :energy], &(&1 + unit.basic_skill.energy_regen))
