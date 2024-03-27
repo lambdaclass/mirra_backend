@@ -30,10 +30,10 @@ muflus = Characters.get_character_by_name("Muflus")
           modifiers: [],
           executions: [
             %{
-              "type" => "DealDamage",
-              "attack_ratio" => 0.8,
-              "energy_recharge" => 50,
-              "delay" => 0
+              type: "DealDamage",
+              attack_ratio: 0.8,
+              energy_recharge: 50,
+              delay: 0
             }
           ],
           target_strategy: "random",
@@ -54,10 +54,10 @@ muflus = Characters.get_character_by_name("Muflus")
           modifiers: [],
           executions: [
             %{
-              "type" => "DealDamage",
-              "attack_ratio" => 2.05,
-              "energy_recharge" => 0,
-              "delay" => 0
+              type: "DealDamage",
+              attack_ratio: 2.05,
+              energy_recharge: 50,
+              delay: 0
             }
           ],
           target_strategy: "random",
