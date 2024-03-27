@@ -24,7 +24,7 @@ credo:
 
 check: credo format
 
-generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos format
+generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos generate-bot-manager-protos format
 
 generate-gateway-protos:
 	protoc \
@@ -56,5 +56,12 @@ generate-arena-load-test-protos:
 	protoc \
 		--elixir_out=apps/arena_load_test/lib/arena_load_test/serialization \
 		--elixir_opt=package_prefix=arena_load_test.serialization \
+		--proto_path=apps/serialization \
+		messages.proto
+
+generate-bot-manager-protos:
+	protoc \
+		--elixir_out=apps/bot_manager/lib/protobuf \
+		--elixir_opt=package_prefix=bot_manager.protobuf \
 		--proto_path=apps/serialization \
 		messages.proto

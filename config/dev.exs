@@ -224,3 +224,9 @@ config :configurator, ConfiguratorWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :configurator, dev_routes: true
+
+##################################
+# App configuration: bot_manager #
+##################################
+
+config :bot_manager, :end_point, port: [port: System.get_env("BOT_MANAGER_PORT") || 4003]

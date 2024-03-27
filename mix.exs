@@ -11,7 +11,8 @@ defmodule MirraBackend.MixProject do
         :gateway,
         :game_backend,
         :arena_load_test,
-        :configurator
+        :configurator,
+        :bot_manager
       ],
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
