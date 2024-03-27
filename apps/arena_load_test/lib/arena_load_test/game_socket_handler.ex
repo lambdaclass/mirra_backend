@@ -34,7 +34,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_info(:move, state) do
-    Logger.info("Sending GameAction frame with MOVE payload")
+    # Logger.info("Sending GameAction frame with MOVE payload")
 
     {x, y} = create_random_movement()
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
@@ -54,12 +54,12 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :move, 5000, [])
+    Process.send_after(self(), :move, 500, [])
     {:ok, state}
   end
 
   def handle_info(:attack, state) do
-    Logger.info("Sending GameAction frame with ATTACK payload")
+    # Logger.info("Sending GameAction frame with ATTACK payload")
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     {x, y} = create_random_movement()
 
@@ -81,7 +81,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :attack, 3000, [])
+    Process.send_after(self(), :attack, 300, [])
     {:ok, state}
   end
 
