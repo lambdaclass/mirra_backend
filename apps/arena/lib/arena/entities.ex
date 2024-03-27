@@ -19,7 +19,6 @@ defmodule Arena.Entities do
       direction: direction,
       is_moving: false,
       aditional_info: %{
-        damage_immunity: false,
         health: character.base_health,
         base_health: character.base_health,
         skills: character.skills,
@@ -39,6 +38,7 @@ defmodule Arena.Entities do
         power_ups: 0,
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
+        damage_immunity: false,
         effects: %{},
         cooldowns: %{}
       }
