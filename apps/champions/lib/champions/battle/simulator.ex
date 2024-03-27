@@ -89,7 +89,8 @@ defmodule Champions.Battle.Simulator do
 
       Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
-      remove_dead_units(new_state)
+      new_state
+      |> remove_dead_units()
       |> check_winner(step, maximum_steps)
     end)
   end
