@@ -70,26 +70,17 @@ defmodule Champions.Battle.Simulator do
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
     Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
-      initial_step_state = Map.put(initial_step_state, :step_number, step)
-
       new_state =
-        Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
-          Logger.info("Process step #{step} for unit #{format_unit_name(unit)}")
-          process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state)
-        end)
-
-      new_state =
-        Enum.reduce(new_state.skills_being_cast, new_state, fn skill, current_state ->
-          Logger.info("Process step #{step} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}")
-
-          # We need the initial_step_state to decide effect targets
-          process_step_for_skill(skill, current_state, initial_step_state)
-        end)
+        initial_step_state
+        |> Map.put(:step_number, step)
+        |> process_step_for_units()
+        |> process_step_for_skills(initial_step_state)
         |> process_step_for_effects()
 
       Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
-      remove_dead_units(new_state)
+      new_state
+      |> remove_dead_units()
       |> check_winner(step)
     end)
   end
@@ -133,6 +124,13 @@ defmodule Champions.Battle.Simulator do
         Logger.info("Battle ended. Result: #{result}.")
         {:halt, result}
     end
+  end
+
+  defp process_step_for_units(initial_step_state) do
+    Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
+      Logger.info("Process step #{initial_step_state.step} for unit #{format_unit_name(unit)}")
+      process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state)
+    end)
   end
 
   # Calculate the new state of the battle after a step passes for a unit.
@@ -206,6 +204,17 @@ defmodule Champions.Battle.Simulator do
 
           [Map.put(modifier, :remaining_steps, remaining - 1) | acc]
       end
+    end)
+  end
+
+  defp process_step_for_skills(current_state, initial_step_state) do
+    Enum.reduce(initial_step_state.skills_being_cast, current_state, fn skill, current_state ->
+      Logger.info(
+        "Process step #{initial_step_state.step} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
+      )
+
+      # We need the initial_step_state to decide effect targets
+      process_step_for_skill(skill, current_state, initial_step_state)
     end)
   end
 
