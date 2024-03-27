@@ -203,13 +203,9 @@ impl Entity {
         for entity in collisions {
             match entity.shape {
                 Shape::Circle => {
-                    let x = self.position.x - entity.position.x;
-                    let y = self.position.y - entity.position.y;
-                    let length = (x.powf(2.) + y.powf(2.)).sqrt();
-                    let normalized_direction = Position {
-                        x: x / length,
-                        y: y / length,
-                    };
+                    let mut normalized_direction = Position::sub(self.position, entity.position);
+                    normalized_direction.normalize();
+
                     let new_pos = Position {
                         x: entity.position.x
                             + normalized_direction.x * entity.radius
