@@ -1,0 +1,55 @@
+[
+  {
+    "name": "Muflus Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Muflus Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 3,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  }
+]

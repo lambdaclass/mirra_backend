@@ -6,6 +6,19 @@ defmodule Champions.Config do
   alias Champions.Units
   alias Champions.Utils
   alias GameBackend.Units.Characters
+  alias GameBackend.Units.Skills
+
+  @doc """
+  Imports the skills configuration from 'skills.json' in the app's priv folder.
+  """
+  def import_skill_config() do
+    {:ok, skills_json} =
+      Application.app_dir(:champions, "priv/skills.json")
+      |> File.read()
+
+    Jason.decode!(skills_json, [{:keys, :atoms}])
+    |> Skills.upsert_skills()
+  end
 
   @doc """
   Imports the characters configuration from 'characters.csv' in the app's priv folder.

@@ -206,7 +206,7 @@ defmodule Champions.Test.Battle do
 
       # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params = %{
-        name: "Basic",
+        name: "Basic2",
         energy_regen: 0,
         animation_duration: 0,
         animation_trigger: 0,
@@ -250,7 +250,7 @@ defmodule Champions.Test.Battle do
           base_defense: 100,
           basic_skill: basic_skill_params,
           ultimate_skill: %{
-            name: "None",
+            name: "None2",
             energy_regen: 0,
             animation_duration: 0,
             animation_trigger: 0,
@@ -321,7 +321,7 @@ defmodule Champions.Test.Battle do
 
       # Configure a basic skill with a modifier that increases the attack ratio
       basic_skill_params = %{
-        name: "Basic",
+        name: "Basic3",
         energy_regen: 500,
         animation_duration: 0,
         animation_trigger: 0,

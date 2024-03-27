@@ -20,5 +20,7 @@ defmodule GameBackend.Repo.Migrations.BattleStats do
       add :base_attack, :integer
       add :base_defense, :integer
     end
+
+    create unique_index(:skills, [:name])
   end
 end
