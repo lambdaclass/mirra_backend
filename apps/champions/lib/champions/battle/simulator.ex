@@ -136,34 +136,29 @@ defmodule Champions.Battle.Simulator do
   # Calculate the new state of the battle after a step passes for a unit.
   # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state) do
-    # Reduce skill cooldowns
-    new_unit = update_in(unit, [:basic_skill, :remaining_cooldown], &max(&1 - 1, 0))
-
-    current_state = put_in(current_state, [:units, unit.id], new_unit)
-
     new_state =
       cond do
-        not can_attack(new_unit, initial_step_state) ->
-          Logger.info("Unit #{format_unit_name(new_unit)} cannot attack")
+        not can_attack(unit, initial_step_state) ->
+          Logger.info("Unit #{format_unit_name(unit)} cannot attack")
           current_state
 
-        can_cast_ultimate_skill(new_unit) ->
-          Logger.info("Unit #{format_unit_name(new_unit)} casting Ultimate skill")
+        can_cast_ultimate_skill(unit) ->
+          Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
 
           current_state
-          |> Map.put(:skills_being_cast, [new_unit.ultimate_skill | current_state.skills_being_cast])
-          |> put_in([:units, new_unit.id, :energy], 0)
+          |> Map.put(:skills_being_cast, [unit.ultimate_skill | current_state.skills_being_cast])
+          |> put_in([:units, unit.id, :energy], 0)
 
-        can_cast_basic_skill(new_unit) ->
-          Logger.info("Unit #{format_unit_name(new_unit)} casting basic skill")
+        can_cast_basic_skill(unit) ->
+          Logger.info("Unit #{format_unit_name(unit)} casting basic skill")
 
           current_state
-          |> Map.put(:skills_being_cast, [new_unit.basic_skill | current_state.skills_being_cast])
+          |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
           |> put_in(
-            [:units, new_unit.id, :basic_skill, :remaining_cooldown],
-            new_unit.basic_skill.base_cooldown
+            [:units, unit.id, :basic_skill, :remaining_cooldown],
+            unit.basic_skill.base_cooldown + 1
           )
-          |> update_in([:units, new_unit.id, :energy], &(&1 + new_unit.basic_skill.energy_regen))
+          |> update_in([:units, unit.id, :energy], &(&1 + unit.basic_skill.energy_regen))
 
         true ->
           current_state
@@ -176,7 +171,12 @@ defmodule Champions.Battle.Simulator do
       end)
 
     # Reduce basic skill cooldown
-    put_in(new_state, [:units, unit.id, :modifiers], new_modifiers)
+    new_state
+    |> put_in(
+      [:units, unit.id, :basic_skill, :remaining_cooldown],
+      max(new_state.units[unit.id].basic_skill.remaining_cooldown - 1, 0)
+    )
+    |> put_in([:units, unit.id, :modifiers], new_modifiers)
   end
 
   # Reduces modifier timers and removes expired ones.
