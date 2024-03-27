@@ -57,9 +57,9 @@ pub enum Category {
 
 impl Position {
     pub fn normalize(&mut self) {
-        let len = (self.x.powi(2) + self.y.powi(2)).sqrt();
-        self.x /= len;
-        self.y /= len;
+        let length = (self.x.powi(2) + self.y.powi(2)).sqrt();
+        self.x /= length;
+        self.y /= length;
     }
 
     pub fn add(a: Position, b: Position) -> Position {
