@@ -268,14 +268,12 @@ defmodule Champions.Battle.Simulator do
             Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
             targets_after_effect =
-              Enum.map(effect.targets, fn id ->
-                maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
+              Map.new(effect.targets, fn id ->
+                {id, maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)}
               end)
 
             new_state =
-              Enum.reduce(targets_after_effect, current_state, fn target, acc_state ->
-                put_in(acc_state, [:units, target.id], target)
-              end)
+              update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
 
             # We don't add this effect to the new_pending_effects list because it has already been applied
             {new_pending_effects, new_state}
