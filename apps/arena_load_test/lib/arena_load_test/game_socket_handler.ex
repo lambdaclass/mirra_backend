@@ -113,14 +113,19 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   defp ws_url(client_id, game_id) do
-    case System.get_env("TARGET_SERVER") do
-      nil ->
-        "ws://localhost:4000/play/#{game_id}/#{client_id}"
+    server_url = "arm.hetzner-load-test-server.curseofmirra.com"
 
-      target_server ->
-        server_url = SocketSupervisor.get_server_url(target_server)
-        "wss://#{server_url}/play/#{game_id}/#{client_id}"
-    end
+    "wss://#{server_url}/play/#{game_id}/#{client_id}"
+
+
+    # case System.get_env("TARGET_SERVER") do
+    #   nil ->
+    #     "ws://localhost:4000/play/#{game_id}/#{client_id}"
+
+    #   target_server ->
+    #     server_url = SocketSupervisor.get_server_url(target_server)
+    #     "wss://#{server_url}/play/#{game_id}/#{client_id}"
+    # end
   end
 
   # This is enough for now. We will get the skills from the requested bots
