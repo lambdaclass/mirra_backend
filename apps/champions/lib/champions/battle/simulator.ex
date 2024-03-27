@@ -269,7 +269,14 @@ defmodule Champions.Battle.Simulator do
 
             targets_after_effect =
               Map.new(effect.targets, fn id ->
-                {id, maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)}
+                {id,
+                 maybe_apply_effect(
+                   effect,
+                   current_state.units[id],
+                   effect.caster,
+                   current_state.step_number,
+                   effect_hits?(effect)
+                 )}
               end)
 
             new_state =
@@ -334,38 +341,11 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
-  # Apply an effect to its target *if it hits*.
-  # Hit chance is affected by the ChanceToApply component and could be expanded later on.
-  # Returns the new state of the target.
-  defp maybe_apply_effect(effect, target, caster, current_step_number) do
-    if effect_hits?(effect) do
-      apply_effect(effect, target, caster, current_step_number)
-    else
-      Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
-      target
-    end
-  end
-
-  # Return whether an effect with a ChanceToApply component hits.
-  # Later on, this might also handle similar mechanics like the target's dodge chance.
-  defp effect_hits?(effect) do
-    chance_to_apply_component =
-      Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
-
-    case chance_to_apply_component do
-      nil ->
-        true
-
-      chance_to_apply_component ->
-        chance_to_apply_component["chance"] >= :rand.uniform()
-    end
-  end
-
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
   # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
   # Returns the new state of the target.
-  defp apply_effect(effect, target, caster, current_step_number) do
+  defp maybe_apply_effect(effect, target, caster, current_step_number, true) do
     target_after_modifiers =
       Enum.reduce(effect.modifiers, target, fn modifier, target ->
         # If it's permanent, we set its duration to -1
@@ -386,12 +366,29 @@ defmodule Champions.Battle.Simulator do
         end
       end)
 
-    target_after_executions =
-      Enum.reduce(effect.executions, target_after_modifiers, fn execution, target_acc ->
-        process_execution(execution, target_acc, caster)
-      end)
+    Enum.reduce(effect.executions, target_after_modifiers, fn execution, target_acc ->
+      process_execution(execution, target_acc, caster)
+    end)
+  end
 
-    target_after_executions
+  defp maybe_apply_effect(effect, target, _caster, _current_step_number, false) do
+    Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
+    target
+  end
+
+  # Return whether an effect with a ChanceToApply component hits.
+  # Later on, this might also handle similar mechanics like the target's dodge chance.
+  defp effect_hits?(effect) do
+    chance_to_apply_component =
+      Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
+
+    case chance_to_apply_component do
+      nil ->
+        true
+
+      chance_to_apply_component ->
+        chance_to_apply_component["chance"] >= :rand.uniform()
+    end
   end
 
   # Apply a DealDamage execution to its target. Returns the new state of the target.
