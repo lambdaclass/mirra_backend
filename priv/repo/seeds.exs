@@ -28,10 +28,10 @@ muflus = Characters.get_character_by_name("Muflus")
           modifier: [],
           executions: [
             %{
-              "type" => "DealDamage",
-              "attack_ratio" => 0.8,
-              "energy_recharge" => 50,
-              "delay" => 0
+              type: "DealDamage",
+              attack_ratio: 0.8,
+              energy_recharge: 50,
+              delay: 0
             }
           ],
           target_strategy: "random",
@@ -46,16 +46,22 @@ muflus = Characters.get_character_by_name("Muflus")
       effects: [
         %{
           type: "instant",
-          stat_affected: "health",
-          amount: -205,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
+          initial_delay: 0,
+          components: [],
+          modifier: [],
+          executions: [
+            %{
+              type: "DealDamage",
+              attack_ratio: 2.05,
+              energy_recharge: 50,
+              delay: 0
+            }
+          ],
+          target_strategy: "random",
+          target_count: 2,
+          target_allies: false,
+          target_attribute: "Health"
         }
-        # TODO: Add stun effect
       ],
       cooldown: 5
     }
