@@ -30,4 +30,9 @@ defmodule Champions.Campaigns do
   Get a level by id.
   """
   def get_level(level_id), do: Campaigns.get_level(level_id)
+
+  @doc """
+  Get all of user's SuperCampaignProgress.
+  """
+  def get_user_super_campaign_progresses(user_id), do: Campaigns.get_user_super_campaign_progresses(user_id)
 end

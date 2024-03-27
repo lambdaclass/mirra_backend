@@ -16,7 +16,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Items.Item
   alias GameBackend.Rewards
   alias GameBackend.Users.Currencies
-  alias GameBackend.Campaigns.CampaignProgress
+  alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Campaigns
   alias GameBackend.Repo
   alias GameBackend.Users.User
@@ -92,12 +92,12 @@ defmodule GameBackend.Users do
   Increments a user's level and apply the level's rewards.
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
-  def advance_level(user_id, campaign_id) do
-    with {:campaign_progress, {:ok, campaign_progress}} <-
-           {:campaign_progress, Campaigns.get_campaign_progress(user_id, campaign_id)},
+  def advance_level(user_id, super_campaign_id) do
+    with {:super_campaign_progress, {:ok, super_campaign_progress}} <-
+           {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, super_campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} <-
-           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
-      level = campaign_progress.level
+           {:next_level, Campaigns.get_next_level(super_campaign_progress.level)} do
+      level = super_campaign_progress.level
 
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
@@ -112,12 +112,12 @@ defmodule GameBackend.Users do
       |> Multi.run(:update_campaign_progress, fn _, _ ->
         if next_level_id == level.id,
           do: {:ok, nil},
-          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
+          else: update_super_campaign_progress(super_campaign_progress, next_campaign_id, next_level_id)
       end)
       |> Repo.transaction()
     else
-      {:campaign_progress, _transaction_error} -> {:error, :campaign_progress_not_found}
-      {:next_level, _transaction_error} -> {:campaign_progress_error}
+      {:super_campaign_progress, _transaction_error} -> {:error, :super_campaign_progress_not_found}
+      {:next_level, _transaction_error} -> {:super_campaign_progress_error}
     end
   end
 
@@ -135,16 +135,16 @@ defmodule GameBackend.Users do
         user,
         [
           :afk_reward_rates,
-          campaign_progresses: :level,
+          super_campaign_progresses: :level,
           items: :template,
           units: [:character, :items],
           currencies: :currency
         ]
       )
 
-  defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
-    campaign_progress
-    |> CampaignProgress.advance_level_changeset(%{
+  defp update_super_campaign_progress(super_campaign_progress, next_campaign_id, next_level_id) do
+    super_campaign_progress
+    |> SuperCampaignProgress.advance_level_changeset(%{
       campaign_id: next_campaign_id,
       level_id: next_level_id
     })
