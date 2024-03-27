@@ -177,7 +177,7 @@ defmodule Arena.Game.Player do
 
         Process.send_after(
           self(),
-          {:trigger_mechanic, player.id, skill.mechanics,
+          {:delayed_skill_mechanics, player.id, skill.mechanics,
            Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
            |> Map.merge(skill)},
           skill.activation_delay_ms
@@ -194,7 +194,7 @@ defmodule Arena.Game.Player do
             action: skill_key_execution_action(skill_key),
             duration: skill.execution_duration_ms
           }
-          |> maybe_add_destination(player, game_state, skill_direction, skill)
+          |> maybe_add_destination(player, skill_direction, skill)
 
         player =
           add_action(player, action)
@@ -208,20 +208,19 @@ defmodule Arena.Game.Player do
     end
   end
 
-  defp maybe_add_destination(action, player, game_state, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+  # This is a messy solution to get a mechanic result before actually running the mechanic sinc the client needed the
+  # position in wich the player will spawn when the skill start and not when we actually execute the teleport
+  # this is also optmistic since we asume the destination will be always available
+  defp maybe_add_destination(action, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
       y: player.position.y + skill_direction.y * teleport.range
     }
 
-    moved_entity =
-      player
-      |> Physics.move_entity_to_position(target_position, game_state.external_wall)
-
-    Map.put(action, :destination, moved_entity.position)
+    Map.put(action, :destination, target_position)
   end
 
-  defp maybe_add_destination(action, _, _, _, _), do: action
+  defp maybe_add_destination(action, _, _, _), do: action
 
   @doc """
 
@@ -335,7 +334,7 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
-  def apply_effect({:stamina_faster, stamina_faster}, player) do
+  defp apply_effect({:stamina_faster, stamina_faster}, player) do
     stamina_speedup_by =
       (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
       |> round()
@@ -352,7 +351,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :stamina_interval], new_stamina_interval)
   end
 
-  def apply_effect({:speed_boost, speed_boost}, player) do
+  defp apply_effect({:speed_boost, speed_boost}, player) do
     Process.send_after(
       self(),
       {:remove_speed_boost, player.id, speed_boost.amount},
@@ -362,7 +361,7 @@ defmodule Arena.Game.Player do
     %{player | speed: player.speed + speed_boost.amount}
   end
 
-  def apply_effect({:damage_immunity, damage_immunity}, player) do
+  defp apply_effect({:damage_immunity, damage_immunity}, player) do
     Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
     put_in(player, [:aditional_info, :damage_immunity], true)
   end
