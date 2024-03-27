@@ -76,10 +76,10 @@ defmodule Champions.Test.Battle do
             modifier: [],
             executions: [
               %{
-                "type" => "DealDamage",
-                "attack_ratio" => 0.5,
-                "energy_recharge" => 50,
-                "delay" => 0
+                type: "DealDamage",
+                attack_ratio: 0.5,
+                energy_recharge: 50,
+                delay: 0
               }
             ],
             target_strategy: "random",
@@ -174,10 +174,10 @@ defmodule Champions.Test.Battle do
                 modifier: [],
                 executions: [
                   %{
-                    "type" => "DealDamage",
-                    "attack_ratio" => 0.5,
-                    "energy_recharge" => 50,
-                    "delay" => 0
+                    type: "DealDamage",
+                    attack_ratio: 0.5,
+                    energy_recharge: 50,
+                    delay: 0
                   }
                 ],
                 target_strategy: "random",
@@ -206,7 +206,7 @@ defmodule Champions.Test.Battle do
 
       # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params = %{
-        name: "Basic",
+        name: "Basic2",
         energy_regen: 0,
         animation_duration: 0,
         animation_trigger: 0,
@@ -216,17 +216,17 @@ defmodule Champions.Test.Battle do
             initial_delay: 0,
             components: [
               %{
-                "type" => "ChanceToApply",
-                "chance" => 0
+                type: "ChanceToApply",
+                chance: 0
               }
             ],
             modifier: [],
             executions: [
               %{
-                "type" => "DealDamage",
-                "attack_ratio" => 0.5,
-                "energy_recharge" => 50,
-                "delay" => 0
+                type: "DealDamage",
+                attack_ratio: 0.5,
+                energy_recharge: 50,
+                delay: 0
               }
             ],
             target_strategy: "random",
@@ -250,7 +250,7 @@ defmodule Champions.Test.Battle do
           base_defense: 100,
           basic_skill: basic_skill_params,
           ultimate_skill: %{
-            name: "None",
+            name: "None2",
             energy_regen: 0,
             animation_duration: 0,
             animation_trigger: 0,
@@ -284,17 +284,17 @@ defmodule Champions.Test.Battle do
                 initial_delay: 0,
                 components: [
                   %{
-                    "type" => "ChanceToApply",
-                    "chance" => 1
+                    type: "ChanceToApply",
+                    chance: 1
                   }
                 ],
                 modifier: [],
                 executions: [
                   %{
-                    "type" => "DealDamage",
-                    "attack_ratio" => 0.5,
-                    "energy_recharge" => 50,
-                    "delay" => 0
+                    type: "DealDamage",
+                    attack_ratio: 0.5,
+                    energy_recharge: 50,
+                    delay: 0
                   }
                 ],
                 target_strategy: "random",
@@ -321,7 +321,7 @@ defmodule Champions.Test.Battle do
 
       # Configure a basic skill with a modifier that increases the attack ratio
       basic_skill_params = %{
-        name: "Basic",
+        name: "Basic3",
         energy_regen: 500,
         animation_duration: 0,
         animation_trigger: 0,
@@ -361,10 +361,10 @@ defmodule Champions.Test.Battle do
             modifiers: [],
             executions: [
               %{
-                "type" => "DealDamage",
-                "attack_ratio" => 0.5,
-                "energy_recharge" => 50,
-                "delay" => 0
+                type: "DealDamage",
+                attack_ratio: 0.5,
+                energy_recharge: 50,
+                delay: 0
               }
             ],
             target_strategy: "random",
