@@ -40,7 +40,8 @@ defmodule Arena.Entities do
         inventory: nil,
         damage_immunity: false,
         effects: %{},
-        cooldowns: %{}
+        cooldowns: %{},
+        on_death_effect: character.on_death_effect
       }
     }
   end
