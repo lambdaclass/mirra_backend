@@ -156,6 +156,12 @@ fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> D
 
     direction
 }
+#[rustler::nif()]
+fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
+    distance_between_positions(entity_a.position, entity_b.position)
+        - entity_a.radius
+        - entity_b.radius
+}
 
 fn distance_between_positions(entity_a_postion: Position, entity_b_postion: Position) -> f32 {
     let x = entity_b_postion.x - entity_a_postion.x;
@@ -186,6 +192,7 @@ rustler::init!(
         calculate_triangle_vertices,
         get_direction_from_positions,
         calculate_speed,
-        nearest_entity_direction
+        nearest_entity_direction,
+        distance_between_entities
     ]
 );

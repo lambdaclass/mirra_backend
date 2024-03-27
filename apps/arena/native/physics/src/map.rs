@@ -53,6 +53,7 @@ pub enum Category {
     PowerUp,
     Pool,
     Item,
+    Bush,
 }
 
 impl Entity {
