@@ -23,7 +23,7 @@ defmodule Champions.Battle do
       units = Units.get_selected_units(user_id)
 
       if battle(units, level.units) == :team_1 do
-        case Users.advance_level(user_id, level.campaign_id) do
+        case Champions.Campaigns.advance_level(user_id, level.campaign_id) do
           # TODO: add rewards to response [CHoM-191]
           {:ok, _changes} -> :win
           _error -> {:error, :failed_to_advance}
