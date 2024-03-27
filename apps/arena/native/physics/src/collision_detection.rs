@@ -1,5 +1,5 @@
 use crate::map::{Entity, Position};
-
+pub mod sat;
 /*
  * Determines if a collision has occured between a point and a circle
  * If the distance between the point and the center of the circle is less

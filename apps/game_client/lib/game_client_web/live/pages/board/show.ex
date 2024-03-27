@@ -16,6 +16,8 @@ defmodule GameClientWeb.BoardLive.Show do
 
     mocked_board_width = 2000
     mocked_board_height = 2000
+    backend_board_size = 10_000
+    back_size_to_front_ratio = backend_board_size / mocked_board_width
 
     game_data = %{0 => %{0 => player_name(player_id)}}
 
@@ -28,7 +30,9 @@ defmodule GameClientWeb.BoardLive.Show do
        board_width: mocked_board_width,
        board_height: mocked_board_height,
        game_data: game_data,
-       game_socket_handler_pid: game_socket_handler_pid
+       game_socket_handler_pid: game_socket_handler_pid,
+       backend_board_size: backend_board_size,
+       back_size_to_front_ratio: back_size_to_front_ratio
      )}
   end
 
@@ -67,7 +71,7 @@ defmodule GameClientWeb.BoardLive.Show do
 
   defp handle_game_event({:update, game_state}, socket) do
     entities =
-      Enum.concat([game_state.players, game_state.projectiles, game_state.items, game_state.pools])
+      Enum.concat([game_state.players, game_state.projectiles, game_state.items, game_state.obstacles, game_state.pools])
       |> Enum.map(&transform_entity_entry/1)
 
     {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
@@ -91,7 +95,7 @@ defmodule GameClientWeb.BoardLive.Show do
       x: entity.position.x / 5 + 1000,
       y: entity.position.y / 5 + 1000,
       radius: entity.radius / 5,
-      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5 + 1000, vertex.y / 5 + 1000] end),
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?()
     }
   end
