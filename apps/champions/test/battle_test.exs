@@ -76,10 +76,10 @@ defmodule Champions.Test.Battle do
             modifier: [],
             executions: [
               %{
-                "type" => "DealDamage",
-                "attack_ratio" => 0.5,
-                "energy_recharge" => 50,
-                "delay" => 0
+                type: "DealDamage",
+                attack_ratio: 0.5,
+                energy_recharge: 50,
+                delay: 0
               }
             ],
             target_strategy: "random",
@@ -174,10 +174,10 @@ defmodule Champions.Test.Battle do
                 modifier: [],
                 executions: [
                   %{
-                    "type" => "DealDamage",
-                    "attack_ratio" => 0.5,
-                    "energy_recharge" => 50,
-                    "delay" => 0
+                    type: "DealDamage",
+                    attack_ratio: 0.5,
+                    energy_recharge: 50,
+                    delay: 0
                   }
                 ],
                 target_strategy: "random",
@@ -223,10 +223,10 @@ defmodule Champions.Test.Battle do
             modifier: [],
             executions: [
               %{
-                "type" => "DealDamage",
-                "attack_ratio" => 0.5,
-                "energy_recharge" => 50,
-                "delay" => 0
+                type: "DealDamage",
+                attack_ratio: 0.5,
+                energy_recharge: 50,
+                delay: 0
               }
             ],
             target_strategy: "random",
@@ -291,10 +291,10 @@ defmodule Champions.Test.Battle do
                 modifier: [],
                 executions: [
                   %{
-                    "type" => "DealDamage",
-                    "attack_ratio" => 0.5,
-                    "energy_recharge" => 50,
-                    "delay" => 0
+                    type: "DealDamage",
+                    attack_ratio: 0.5,
+                    energy_recharge: 50,
+                    delay: 0
                   }
                 ],
                 target_strategy: "random",
@@ -361,10 +361,10 @@ defmodule Champions.Test.Battle do
             modifiers: [],
             executions: [
               %{
-                "type" => "DealDamage",
-                "attack_ratio" => 0.5,
-                "energy_recharge" => 50,
-                "delay" => 0
+                type: "DealDamage",
+                attack_ratio: 0.5,
+                energy_recharge: 50,
+                delay: 0
               }
             ],
             target_strategy: "random",
