@@ -216,8 +216,8 @@ defmodule Champions.Test.Battle do
             initial_delay: 0,
             components: [
               %{
-                "type" => "ChanceToApply",
-                "chance" => 0
+                type: "ChanceToApply",
+                chance: 0
               }
             ],
             modifier: [],
@@ -284,8 +284,8 @@ defmodule Champions.Test.Battle do
                 initial_delay: 0,
                 components: [
                   %{
-                    "type" => "ChanceToApply",
-                    "chance" => 1
+                    type: "ChanceToApply",
+                    chance: 1
                   }
                 ],
                 modifier: [],
