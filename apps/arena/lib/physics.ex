@@ -17,6 +17,10 @@ defmodule Physics do
   def move_entity(_entity, _ticks_to_move, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
 
+  def move_entity(_entity, _ticks_to_move, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
+
+  def move_entity_to_position(_entity, _new_position, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
+
   def move_entity_to_direction(_entity, _direction, _amount),
     do: :erlang.nif_error(:nif_not_loaded)
 

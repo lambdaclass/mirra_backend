@@ -526,7 +526,6 @@ defmodule Arena.GameUpdater do
   defp complete_entity(entity) do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:name, entity.name)
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
   end
 
