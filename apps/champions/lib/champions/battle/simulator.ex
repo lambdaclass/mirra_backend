@@ -80,32 +80,17 @@ defmodule Champions.Battle.Simulator do
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
     Enum.reduce_while(1..maximum_steps, initial_state, fn step, initial_step_state ->
-      initial_step_state = Map.put(initial_step_state, :step_number, step)
-
       new_state =
-        Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
-          Logger.info("Process step #{step} for unit #{format_unit_name(unit)}")
-          process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state)
-        end)
-
-      new_state =
-        Enum.reduce(new_state.skills_being_cast, new_state, fn skill, current_state ->
-          Logger.info("Process step #{step} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}")
-
-          # We need the initial_step_state to decide effect targets
-          process_step_for_skill(skill, current_state, initial_step_state)
-        end)
-
-      new_state =
-        Enum.reduce(new_state.pending_effects, new_state, fn effect, current_state ->
-          Logger.info("Process step #{step} for effect cast by #{format_unit_name(effect.caster)}")
-
-          process_step_for_effect(effect, current_state)
-        end)
+        initial_step_state
+        |> Map.put(:step_number, step)
+        |> process_step_for_units()
+        |> process_step_for_skills(initial_step_state)
+        |> process_step_for_effects()
 
       Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
-      remove_dead_units(new_state)
+      new_state
+      |> remove_dead_units()
       |> check_winner(step, maximum_steps)
     end)
   end
@@ -151,51 +136,57 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
+  defp process_step_for_units(initial_step_state) do
+    Enum.reduce(initial_step_state.units, initial_step_state, fn {unit_id, unit}, current_state ->
+      Logger.info("Process step #{initial_step_state.step} for unit #{format_unit_name(unit)}")
+      process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state)
+    end)
+  end
+
   # Calculate the new state of the battle after a step passes for a unit.
   # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state) do
+    # Reduce skill cooldowns
+    new_unit = update_in(unit, [:basic_skill, :remaining_cooldown], &max(&1 - 1, 0))
+
+    current_state = put_in(current_state, [:units, unit.id], new_unit)
+
     new_state =
       cond do
-        not can_attack(unit, initial_step_state) ->
-          Logger.info("Unit #{format_unit_name(unit)} cannot attack")
+        not can_attack(new_unit, initial_step_state) ->
+          Logger.info("Unit #{format_unit_name(new_unit)} cannot attack")
           current_state
 
-        can_cast_ultimate_skill(unit) ->
-          Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
+        can_cast_ultimate_skill(new_unit) ->
+          Logger.info("Unit #{format_unit_name(new_unit)} casting Ultimate skill")
 
           current_state
-          |> Map.put(:skills_being_cast, [unit.ultimate_skill | current_state.skills_being_cast])
-          |> put_in([:units, unit.id, :energy], 0)
+          |> Map.put(:skills_being_cast, [new_unit.ultimate_skill | current_state.skills_being_cast])
+          |> put_in([:units, new_unit.id, :energy], 0)
 
-        can_cast_basic_skill(unit) ->
-          Logger.info("Unit #{format_unit_name(unit)} casting basic skill")
+        can_cast_basic_skill(new_unit) ->
+          Logger.info("Unit #{format_unit_name(new_unit)} casting basic skill")
 
           current_state
-          |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
+          |> Map.put(:skills_being_cast, [new_unit.basic_skill | current_state.skills_being_cast])
           |> put_in(
-            [:units, unit.id, :basic_skill, :remaining_cooldown],
-            unit.basic_skill.base_cooldown + 1
+            [:units, new_unit.id, :basic_skill, :remaining_cooldown],
+            new_unit.basic_skill.base_cooldown
           )
-          |> put_in([:units, unit.id, :energy], current_state.units[unit.id].energy + unit.basic_skill.energy_regen)
+          |> update_in([:units, new_unit.id, :energy], &(&1 + new_unit.basic_skill.energy_regen))
 
         true ->
           current_state
       end
 
     # Reduce modifier remaining timers & remove expired ones
-    new_modifiers = %{
-      additives: reduce_modifier_timers(unit.modifiers.additives, unit),
-      multiplicatives: reduce_modifier_timers(unit.modifiers.multiplicatives, unit),
-      overrides: reduce_modifier_timers(unit.modifiers.overrides, unit)
-    }
+    new_modifiers =
+      Map.new(unit.modifiers, fn {modifier_type, modifiers} ->
+        {modifier_type, reduce_modifier_timers(modifiers, unit)}
+      end)
 
     # Reduce basic skill cooldown
-    new_state
-    |> put_in(
-      [:units, unit.id, :basic_skill, :remaining_cooldown],
-      max(new_state.units[unit.id].basic_skill.remaining_cooldown - 1, 0)
-    )
-    |> put_in([:units, unit.id, :modifiers], new_modifiers)
+    put_in(new_state, [:units, unit.id, :modifiers], new_modifiers)
   end
 
   # Reduces modifier timers and removes expired ones.
@@ -224,11 +215,22 @@ defmodule Champions.Battle.Simulator do
     end)
   end
 
+  defp process_step_for_skills(current_state, initial_step_state) do
+    Enum.reduce(initial_step_state.skills_being_cast, current_state, fn skill, current_state ->
+      Logger.info(
+        "Process step #{initial_step_state.step} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
+      )
+
+      # We need the initial_step_state to decide effect targets
+      process_step_for_skill(skill, current_state, initial_step_state)
+    end)
+  end
+
   # Calculate the new state of the battle after a step passes for a skill being cast.
   # Reduces the remaining animation and effect trigger, and casts the effects if the latter has ended.
   defp process_step_for_skill(skill, current_state, initial_step_state) do
     # Check if the casting unit has died
-    if Enum.any?(current_state.units, fn {unit_id, _unit} -> unit_id == skill.caster_id end) do
+    if Map.has_key?(current_state.units, skill.caster_id) do
       {new_skill, new_state} = process_skill_effects_trigger_value(skill, current_state, initial_step_state)
 
       if new_skill.animation_duration == 0 do
@@ -250,7 +252,7 @@ defmodule Champions.Battle.Simulator do
   # If the effects_trigger is ready, trigger the skill's effects, adding them to the `pending_effects` in the state.
   defp process_skill_effects_trigger_value(%{effects_trigger: 0} = skill, current_state, initial_step_state) do
     Logger.info("Animation trigger for skill #{skill.name} ready. Creating #{Enum.count(skill.effects)} effects.")
-    current_state = trigger_skill_effects(skill, current_state, initial_step_state)
+    current_state = add_skill_effects_to_pending_effects(skill, current_state, initial_step_state)
     {%{skill | effects_trigger: -1}, current_state}
   end
 
@@ -265,30 +267,37 @@ defmodule Champions.Battle.Simulator do
     {%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}
   end
 
-  # Calculate the new state of the battle after a step passes for a pending effect.
-  # If the effect is ready to be processed, we apply it.
-  defp process_step_for_effect(%{delay: 0} = effect, current_state) do
-    Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
+  # Calculate the new state of the battle after a step passes for all pending effects
+  def process_step_for_effects(state) do
+    {updated_pending_effects, updated_game_state} =
+      Enum.reduce(state.pending_effects, {[], state}, fn effect, {new_pending_effects, current_state} ->
+        # Calculate the new state of the battle after a step passes for a pending effect.
+        case effect do
+          %{delay: 0} ->
+            # If the effect is ready to be processed, we apply it.
+            Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
-    targets_after_effect =
-      Enum.map(effect.targets, fn id ->
-        maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
+            targets_after_effect =
+              Enum.map(effect.targets, fn id ->
+                maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)
+              end)
+
+            new_state =
+              Enum.reduce(targets_after_effect, current_state, fn target, acc_state ->
+                put_in(acc_state, [:units, target.id], target)
+              end)
+
+            # We don't add this effect to the new_pending_effects list because it has already been applied
+            {new_pending_effects, new_state}
+
+          effect ->
+            # If the effect isn't ready to be processed, we reduce its remaining delay.
+
+            {[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}
+        end
       end)
 
-    current_state =
-      Enum.reduce(targets_after_effect, current_state, fn target, acc_state ->
-        put_in(acc_state, [:units, target.id], target)
-      end)
-
-    Map.put(current_state, :pending_effects, List.delete(current_state.pending_effects, effect))
-  end
-
-  # Calculate the new state of the battle after a step passes for a pending effect.
-  # If the effect isn't ready to be processed, we reduce its remaining delay.
-  defp process_step_for_effect(effect, current_state) do
-    Map.put(current_state, :pending_effects, [
-      %{effect | delay: effect.delay - 1} | List.delete(current_state.pending_effects, effect)
-    ])
+    Map.put(updated_game_state, :pending_effects, updated_pending_effects)
   end
 
   # Check if the unit can attack this turn.
@@ -307,10 +316,11 @@ defmodule Champions.Battle.Simulator do
 
   # Called when a skill being cast reaches effect_trigger 0.
   # "Queues" the effect to be processed when its delay reaches 0.
-  defp trigger_skill_effects(skill, current_state, initial_step_state) do
+  defp add_skill_effects_to_pending_effects(skill, current_state, initial_step_state) do
     caster = current_state.units[skill.caster_id]
 
-    # We store the caster's state in the effect in case the unit dies before the effect's delay ends
+    # We store the caster's state in the effect in case the unit dies before the effect's delay ends.
+    # Also, we want to calculate numbers like damage done based on the status of the caster when the effect was cast.
     effects_with_caster =
       Enum.map(skill.effects, fn effect ->
         effect |> Map.put(:caster, caster) |> Map.put(:targets, choose_targets(caster, effect, initial_step_state))

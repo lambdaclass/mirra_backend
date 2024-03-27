@@ -4,7 +4,7 @@ defmodule GameBackend.Repo.Migrations.BattleStats do
   def change do
     create table(:skills) do
       add :name, :string
-      add :effects, :map
+      add :effects, {:array, :map}
       add :cooldown, :integer
       add :energy_regen, :integer
       add :animation_duration, :integer
