@@ -1,5 +1,773 @@
 [
   {
+    "name": "Melo Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Melo Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.16,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 3,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Arupe Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Arupe Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.64,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Valcher Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Valcher Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 0.79,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 6,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Byte Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Byte Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 2.51,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Qurin Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Qurin Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.8,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Chekla Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Chekla Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "Heal",
+            "attack_ratio": 1.8,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "min",
+        "target_count": 1,
+        "target_allies": true,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Germund Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Germund Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.13,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 3,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Scratch Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Scratch Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 3.1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "min",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Kel'mut Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "min",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Defence"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Kel'mut Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 3.2,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "min",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Defence"
+      }
+    ]
+  },
+  {
+    "name": "Toburo Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Toburo Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 2.36,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Dafnet Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Dafnet Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "Heal",
+            "attack_ratio": 0.72,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 6,
+        "target_allies": true,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Hash Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Hash Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.45,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 3,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Obure Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Obure Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.79,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Health"
+      },
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "Heal",
+            "attack_ratio": 1.4,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "min",
+        "target_count": 1,
+        "target_allies": true,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Zil'kan Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Zil'kan Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": {"duration": 2, "period": 1},
+        "initial_delay": 0,
+        "components": [
+          {
+            "type": "ApplyTags",
+            "tag": "Burn"
+          }
+        ],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.16,
+            "energy_recharge": 50,
+            "delay": 0
+          },
+          {
+            "type": "DealDamageOverTime",
+            "attack_ratio": 0.24,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 3,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
     "name": "Muflus Basic",
     "energy_regen": 100,
     "animation_duration": 0,
