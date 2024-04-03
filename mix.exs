@@ -47,7 +47,7 @@ defmodule MirraBackend.MixProject do
       # TODO ArenaLoadTest must deploy only arena
       arena_load_test: [applications: [arena_load_test: :permanent, arena: :permanent]],
       game_client: [applications: [game_client: :permanent]],
-      game_backend: [
+      main_server: [
         applications: [
           champions: :permanent,
           game_backend: :permanent,

@@ -6,7 +6,7 @@ on:
         type: choice
         description: What release to deploy
         options:
-          - game_backend
+          - main_server
           - arena
           - arena_load_test
           - game_client
