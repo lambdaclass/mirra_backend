@@ -17,7 +17,7 @@ defmodule GameBackend.Repo.Migrations.BattleStats do
 
       add :base_health, :integer
       add :base_attack, :integer
-      add :base_armor, :integer
+      add :base_defense, :integer
     end
   end
 end
