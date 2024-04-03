@@ -157,7 +157,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_obstacle(id, position, radius, shape, vertices) do
+  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices}) do
     %{
       id: id,
       category: :obstacle,
@@ -165,7 +165,7 @@ defmodule Arena.Entities do
       name: "Obstacle" <> Integer.to_string(id),
       position: position,
       radius: radius,
-      vertices: vertices || [],
+      vertices: vertices,
       speed: 0.0,
       direction: %{
         x: 0.0,

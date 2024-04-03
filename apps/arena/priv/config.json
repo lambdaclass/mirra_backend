@@ -50,7 +50,8 @@
           "y": -1439.0
         },
         "radius": 1567.0,
-        "shape": "circle"
+        "shape": "circle",
+        "vertices": []
       },
       {
         "position": {
@@ -58,7 +59,8 @@
           "y": 5338.0
         },
         "radius": 1090.0,
-        "shape": "circle"
+        "shape": "circle",
+        "vertices": []
       },
       {
         "position": {
@@ -66,7 +68,8 @@
           "y": 4588.0
         },
         "radius": 317.0,
-        "shape": "circle"
+        "shape": "circle",
+        "vertices": []
       }
     ]
   },
