@@ -34,8 +34,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_info(:move, state) do
-    Logger.info("Sending GameAction frame with MOVE payload")
-
     {x, y} = create_random_movement()
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
@@ -59,7 +57,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_info(:attack, state) do
-    Logger.info("Sending GameAction frame with ATTACK payload")
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     {x, y} = create_random_movement()
 
