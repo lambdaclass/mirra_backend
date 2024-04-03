@@ -43,7 +43,7 @@ jobs:
 
       - name: Copy deploy script
         env:
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           SSH_HOST: ${{ vars.TS_HOST }}
         run: |
           set -ex
@@ -52,7 +52,7 @@ jobs:
       - name: Execute deploy script
         env:
           SSH_HOST: ${{ vars.TS_HOST }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
