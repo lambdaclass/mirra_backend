@@ -5,6 +5,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   use DynamicSupervisor
   alias ArenaLoadTest.SocketHandler
   alias ArenaLoadTest.GameSocketHandler
+  require Logger
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__, max_restarts: 1)
@@ -31,9 +32,17 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
   # Creates `num_clients` clients to join a game
   def spawn_players(num_clients) do
-    for i <- 1..num_clients do
-      {:ok, _pid} = add_new_client(i)
+    case :ets.whereis(:clients) do
+      :undefined -> :ets.new(:clients, [:set, :named_table, :public])
+      _table_exists_already -> nil
     end
+
+    Enum.each(1..num_clients, fn client_number ->
+      Logger.info("Iteration: #{client_number}")
+      {:ok, _pid} = add_new_client(client_number)
+      true = :ets.insert(:clients, {client_number, "1"})
+      Logger.info("Clients alive: #{:ets.info(:clients, :size)}")
+    end)
   end
 
   def get_server_url("Brazil"), do: System.get_env("BRAZIL_HOST")
