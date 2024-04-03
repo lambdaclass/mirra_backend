@@ -146,34 +146,30 @@ defmodule Champions.Battle.Simulator do
   # Calculate the new state of the battle after a step passes for a unit.
   # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state) do
-    # Reduce skill cooldowns
-    new_unit = update_in(unit, [:basic_skill, :remaining_cooldown], &max(&1 - 1, 0))
-
-    current_state = put_in(current_state, [:units, unit.id], new_unit)
-
     new_state =
       cond do
-        not can_attack(new_unit, initial_step_state) ->
-          Logger.info("Unit #{format_unit_name(new_unit)} cannot attack")
+        not can_attack(unit, initial_step_state) ->
+          Logger.info("Unit #{format_unit_name(unit)} cannot attack")
           current_state
 
-        can_cast_ultimate_skill(new_unit) ->
-          Logger.info("Unit #{format_unit_name(new_unit)} casting Ultimate skill")
+        can_cast_ultimate_skill(unit) ->
+          Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
 
           current_state
-          |> Map.put(:skills_being_cast, [new_unit.ultimate_skill | current_state.skills_being_cast])
-          |> put_in([:units, new_unit.id, :energy], 0)
+          |> Map.put(:skills_being_cast, [unit.ultimate_skill | current_state.skills_being_cast])
+          |> put_in([:units, unit.id, :energy], 0)
 
-        can_cast_basic_skill(new_unit) ->
-          Logger.info("Unit #{format_unit_name(new_unit)} casting basic skill")
+        can_cast_basic_skill(unit) ->
+          Logger.info("Unit #{format_unit_name(unit)} casting basic skill")
 
           current_state
-          |> Map.put(:skills_being_cast, [new_unit.basic_skill | current_state.skills_being_cast])
+          |> Map.put(:skills_being_cast, [unit.basic_skill | current_state.skills_being_cast])
           |> put_in(
-            [:units, new_unit.id, :basic_skill, :remaining_cooldown],
-            new_unit.basic_skill.base_cooldown
+            [:units, unit.id, :basic_skill, :remaining_cooldown],
+            # We need this + 1 because we're going to reduce the cooldown at the end of the step
+            unit.basic_skill.base_cooldown + 1
           )
-          |> update_in([:units, new_unit.id, :energy], &(&1 + new_unit.basic_skill.energy_regen))
+          |> update_in([:units, unit.id, :energy], &(&1 + unit.basic_skill.energy_regen))
 
         true ->
           current_state
@@ -186,7 +182,12 @@ defmodule Champions.Battle.Simulator do
       end)
 
     # Reduce basic skill cooldown
-    put_in(new_state, [:units, unit.id, :modifiers], new_modifiers)
+    new_state
+    |> put_in(
+      [:units, unit.id, :basic_skill, :remaining_cooldown],
+      max(new_state.units[unit.id].basic_skill.remaining_cooldown - 1, 0)
+    )
+    |> put_in([:units, unit.id, :modifiers], new_modifiers)
   end
 
   # Reduces modifier timers and removes expired ones.
@@ -279,7 +280,14 @@ defmodule Champions.Battle.Simulator do
 
             targets_after_effect =
               Map.new(effect.targets, fn id ->
-                {id, maybe_apply_effect(effect, current_state.units[id], effect.caster, current_state.step_number)}
+                {id,
+                 maybe_apply_effect(
+                   effect,
+                   current_state.units[id],
+                   effect.caster,
+                   current_state.step_number,
+                   effect_hits?(effect)
+                 )}
               end)
 
             new_state =
@@ -344,38 +352,11 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
-  # Apply an effect to its target *if it hits*.
-  # Hit chance is affected by the ChanceToApply component and could be expanded later on.
-  # Returns the new state of the target.
-  defp maybe_apply_effect(effect, target, caster, current_step_number) do
-    if effect_hits?(effect) do
-      apply_effect(effect, target, caster, current_step_number)
-    else
-      Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
-      target
-    end
-  end
-
-  # Return whether an effect with a ChanceToApply component hits.
-  # Later on, this might also handle similar mechanics like the target's dodge chance.
-  defp effect_hits?(effect) do
-    chance_to_apply_component =
-      Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
-
-    case chance_to_apply_component do
-      nil ->
-        true
-
-      chance_to_apply_component ->
-        chance_to_apply_component["chance"] >= :rand.uniform()
-    end
-  end
-
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
   # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
   # Returns the new state of the target.
-  defp apply_effect(effect, target, caster, current_step_number) do
+  defp maybe_apply_effect(effect, target, caster, current_step_number, true) do
     target_after_modifiers =
       Enum.reduce(effect.modifiers, target, fn modifier, target ->
         # If it's permanent, we set its duration to -1
@@ -396,12 +377,29 @@ defmodule Champions.Battle.Simulator do
         end
       end)
 
-    target_after_executions =
-      Enum.reduce(effect.executions, target_after_modifiers, fn execution, target_acc ->
-        process_execution(execution, target_acc, caster)
-      end)
+    Enum.reduce(effect.executions, target_after_modifiers, fn execution, target_acc ->
+      process_execution(execution, target_acc, caster)
+    end)
+  end
 
-    target_after_executions
+  defp maybe_apply_effect(effect, target, _caster, _current_step_number, false) do
+    Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
+    target
+  end
+
+  # Return whether an effect with a ChanceToApply component hits.
+  # Later on, this might also handle similar mechanics like the target's dodge chance.
+  defp effect_hits?(effect) do
+    chance_to_apply_component =
+      Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
+
+    case chance_to_apply_component do
+      nil ->
+        true
+
+      chance_to_apply_component ->
+        chance_to_apply_component["chance"] >= :rand.uniform()
+    end
   end
 
   # Apply a DealDamage execution to its target. Returns the new state of the target.
