@@ -216,8 +216,8 @@ defmodule Champions.Battle.Simulator do
       {unit.id,
        %{
          id: unit.id,
-         max_health: Units.get_max_health(unit),
-         health: Units.get_max_health(unit),
+         max_health: Units.get_health(unit),
+         health: Units.get_health(unit),
          attack: Units.get_attack(unit),
          defense: Units.get_defense(unit),
          faction: character.faction,
