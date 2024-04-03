@@ -23,7 +23,7 @@ jobs:
     name: Build and deploy to Europe Loadtest Server
     runs-on: ubuntu-latest
     environment:
-      name: testing
+      name: testing-europe
       url: https://loadtest-europe-server.curseofmirra.com/
 
     steps:

@@ -23,7 +23,7 @@ jobs:
     name: Build and deploy to Brazil Loadtest Client
     runs-on: ubuntu-latest
     environment:
-      name: testing
+      name: testing-brazil
       url: https://loadtest-brazil-client.curseofmirra.com/
 
     steps:
