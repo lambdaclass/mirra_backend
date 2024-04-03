@@ -248,19 +248,15 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        player =
-          Enum.reduce(item.effects, player, &apply_effect/2)
-          |> put_in([:aditional_info, :inventory], nil)
-
-        put_in(game_state, [:players, player.id], player)
+        Enum.reduce(item.effects, game_state, fn effect, game_state_acc ->
+          Effect.put_effect(game_state_acc, player.id, effect)
+        end)
+        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
   end
 
-  def remove_damage_immunity(player) do
-    put_in(player, [:aditional_info, :damage_immunity], false)
-  end
-
   def invisible?(player) do
+    ## FIXME: replace this with a proper effect
     get_in(player, [:aditional_info, :effects])
     |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
   end
@@ -273,6 +269,7 @@ defmodule Arena.Game.Player do
       |> put_in([:speed], character.base_speed)
       |> put_in([:aditional_info, :stamina_interval], character.stamina_interval)
       |> put_in([:aditional_info, :bonus_damage], 0)
+      |> put_in([:aditional_info, :damage_immunity], false)
 
     ## TODO: reapply effects, waiting on PR#389
     Effect.apply_stat_effects(player)
@@ -326,38 +323,6 @@ defmodule Arena.Game.Player do
       current_actions ++ [%{action: :MOVING, duration: 0}]
     end
     |> Enum.uniq()
-  end
-
-  defp apply_effect({:stamina_faster, stamina_faster}, player) do
-    stamina_speedup_by =
-      (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
-      |> round()
-
-    new_stamina_interval = player.aditional_info.stamina_interval - stamina_speedup_by
-
-    Process.send_after(
-      self(),
-      {:stop_stamina_faster, player.id, stamina_speedup_by},
-      stamina_faster.duration_ms
-    )
-
-    change_stamina(player, 3)
-    |> put_in([:aditional_info, :stamina_interval], new_stamina_interval)
-  end
-
-  defp apply_effect({:speed_boost, speed_boost}, player) do
-    Process.send_after(
-      self(),
-      {:remove_speed_boost, player.id, speed_boost.amount},
-      speed_boost.duration_ms
-    )
-
-    %{player | speed: player.speed + speed_boost.amount}
-  end
-
-  defp apply_effect({:damage_immunity, damage_immunity}, player) do
-    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
-    put_in(player, [:aditional_info, :damage_immunity], true)
   end
 
   defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do

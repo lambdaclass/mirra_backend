@@ -491,6 +491,37 @@
           "effect_delay_ms": 400
         }
       }
+    },
+    {
+      "name": "golden_clock_effect",
+      "duration_ms": 7000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "reduce_stamina_interval": {
+          "decrease_by": 0.3
+        },
+        "refresh_stamina": {
+        }
+      }
+    },
+    {
+      "name": "magic_boots_effect",
+      "duration_ms": 10000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "speed_boost": {
+          "amount": 25
+        }
+      }
+    },
+    {
+      "name": "mirra_blessing_effect",
+      "duration_ms": 10000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "damage_immunity": {
+        }
+      }
     }
   ]
 }

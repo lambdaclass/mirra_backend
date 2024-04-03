@@ -204,17 +204,6 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_info({:stop_stamina_faster, player_id, revert_by}, state) do
-    player = Map.get(state.game_state.players, player_id)
-
-    %{stamina_interval: max_stamina_interval} =
-      Configuration.get_character_config(player.aditional_info.character_name, state.game_config)
-
-    player = Player.revert_stamina_interval(player, revert_by, max_stamina_interval)
-    state = put_in(state, [:game_state, :players, player.id], player)
-    {:noreply, state}
-  end
-
   def handle_info({:trigger_mechanic, player_id, mechanic, skill_params}, state) do
     player = Map.get(state.game_state.players, player_id)
     game_state = Skill.do_mechanic(state.game_state, player, mechanic, skill_params)
@@ -400,24 +389,6 @@ defmodule Arena.GameUpdater do
       put_in(state, [:game_state, :last_id], last_id)
       |> put_in([:game_state, :items, item.id], item)
 
-    {:noreply, state}
-  end
-
-  def handle_info({:remove_speed_boost, player_id, amount}, state) do
-    player =
-      Map.get(state.game_state.players, player_id)
-      |> Player.change_speed(-amount)
-
-    state = put_in(state, [:game_state, :players, player_id], player)
-    {:noreply, state}
-  end
-
-  def handle_info({:remove_damage_immunity, player_id}, state) do
-    player =
-      Map.get(state.game_state.players, player_id)
-      |> Player.remove_damage_immunity()
-
-    state = put_in(state, [:game_state, :players, player_id], player)
     {:noreply, state}
   end
 
