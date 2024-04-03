@@ -36,7 +36,6 @@ defmodule ArenaLoadTest.SocketSupervisor do
     end
   end
 
-  def server_host() do
-    System.get_env("SERVER_HOST", "localhost:4000")
-  end
+  def get_server_url("Brazil"), do: System.get_env("BRAZIL_HOST")
+  def get_server_url("Europe"), do: System.get_env("EUROPE_HOST")
 end

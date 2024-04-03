@@ -269,6 +269,9 @@ defmodule Champions.Units do
       {:unit_not_in_consumed_units, false} ->
         {:error, :consumed_units_invalid}
 
+      {:consumed_units_owned, false} ->
+        {:error, :consumed_units_not_found}
+
       {:consumed_units_count, false} ->
         {:error, :consumed_units_not_found}
 
