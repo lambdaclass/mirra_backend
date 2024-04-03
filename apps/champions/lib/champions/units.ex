@@ -376,18 +376,24 @@ defmodule Champions.Units do
 
   @doc """
   Get a unit's health stat for battle. Buffs from items and similar belong here.
+
+  Character must be preloaded.
   """
-  def get_health(unit), do: calculate_stat(unit.base_health, unit)
+  def get_health(unit), do: calculate_stat(unit.character.base_health, unit)
 
   @doc """
   Get a unit's attack stat for battle. Buffs from items and similar belong here.
+
+  Character must be preloaded.
   """
-  def get_attack(unit), do: calculate_stat(unit.base_attack, unit)
+  def get_attack(unit), do: calculate_stat(unit.character.base_attack, unit)
 
   @doc """
   Get a unit's defense stat for battle. Buffs from items and similar belong here.
+
+  Character must be preloaded.
   """
-  def get_defense(unit), do: calculate_stat(unit.base_defense, unit)
+  def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit)
 
   defp calculate_stat(base_stat, unit),
     do:
@@ -395,10 +401,11 @@ defmodule Champions.Units do
       |> factor_level(unit.level)
       |> factor_tier(unit.tier)
       |> factor_rank(unit.rank)
+      |> trunc()
 
-  defp factor_level(base_stat, level), do: base_stat * (Math.pow(level, 2) / 3000 + level / 30 + 1)
+  defp factor_level(base_stat, level), do: base_stat * (Math.pow(level - 1, 2) / 3000 + (level - 1) / 30 + 1)
 
-  defp factor_tier(stat_after_level, tier), do: stat_after_level * Math.pow(1.05, tier)
+  defp factor_tier(stat_after_level, tier), do: stat_after_level * Math.pow(1.05, tier - 1)
 
-  defp factor_rank(stat_after_tier, rank), do: stat_after_tier * Math.pow(1.1, rank)
+  defp factor_rank(stat_after_tier, rank), do: stat_after_tier * Math.pow(1.1, rank - 1)
 end
