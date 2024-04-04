@@ -101,7 +101,7 @@ defmodule Arena.GameLauncher do
   end
 
   defp get_bot_clients(missing_clients) do
-    Enum.map(0..missing_clients, fn i ->
+    Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
       {client_id, "h4ck", Enum.at(@bot_names, i), nil}
