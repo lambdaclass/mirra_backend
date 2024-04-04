@@ -1,0 +1,77 @@
+name: Deploy to Europe Arena testing
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        type: choice
+        description: What release to deploy
+        options:
+          - main_server
+          - arena
+          - arena_load_test
+          - game_client
+        required: true
+
+jobs:
+  build-deploy:
+    name: Build and deploy to Europe testing
+    runs-on: ubuntu-latest
+    environment:
+      name: testing-europe
+      url: https://arena-europe-testing.curseofmirra.com/
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Create ssh private key file from env var
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          TS_HOST: ${{ vars.TS_EUROPE_HOST }}
+        run: |
+          set -ex
+          mkdir -p ~/.ssh/
+          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
+
+      - name: Copy deploy script
+        env:
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
+        run: |
+          set -ex
+          rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
+
+      - name: Execute deploy script
+        env:
+          SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          MIX_ENV: ${{ vars.MIX_ENV }}
+          RELEASE: ${{ inputs.release }}
+          PHX_SERVER: ${{ vars.PHX_SERVER }}
+          PHX_HOST: ${{ vars.EUROPE_HOST }}
+          PORT: ${{ vars.ARENA_PORT }}
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
+          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_EUROPE }}
+          NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          set -ex
+          ssh ${SSH_USERNAME}@${SSH_HOST} \
+                BRANCH_NAME=${BRANCH_NAME} \
+                MIX_ENV=${MIX_ENV} \
+                RELEASE=${RELEASE} \
+                PHX_SERVER=${PHX_SERVER} \
+                PHX_HOST=${PHX_HOST} \
+                PORT=${PORT} \
+                SECRET_KEY_BASE=${SECRET_KEY_BASE} \
+                NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
+                NEWRELIC_KEY=${NEWRELIC_KEY} \
+                /home/${SSH_USERNAME}/deploy-script/deploy.sh
