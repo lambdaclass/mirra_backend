@@ -613,10 +613,7 @@ defmodule Arena.GameUpdater do
           last_id,
           Entities.new_obstacle(
             last_id,
-            obstacle.position,
-            obstacle.radius,
-            obstacle.shape,
-            obstacle[:vertices]
+            obstacle
           )
         )
 
