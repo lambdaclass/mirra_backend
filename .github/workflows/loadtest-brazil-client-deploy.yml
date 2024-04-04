@@ -1,4 +1,4 @@
-name: Deploy to Brazil Loadtest
+name: Deploy to Brazil Loadtest Client
 on:
   workflow_dispatch:
     inputs:
@@ -20,11 +20,11 @@ on:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Brazil Loadtest
+    name: Build and deploy to Brazil Loadtest Client
     runs-on: ubuntu-latest
     environment:
-      name: testing
-      url: https://loadtest.curseofmirra.com/
+      name: testing-brazil
+      url: https://loadtest-brazil-client.curseofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
@@ -39,7 +39,7 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          TS_HOST: ${{ vars.TS_LOADTEST_HOST }}
+          TS_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -49,23 +49,23 @@ jobs:
 
       - name: Copy deploy script
         env:
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_LOADTEST_HOST }}
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
+          SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_LOADTEST_HOST }}
-          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
+          SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
           TARGET_SERVER: ${{ inputs.target_server }}
           BRAZIL_HOST: ${{ vars.brazil_host }}
           EUROPE_HOST: ${{ vars.europe_host }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.LOADTEST_HOST }}
+          PHX_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_LOADTEST }}
