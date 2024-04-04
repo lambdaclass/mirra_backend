@@ -33,7 +33,7 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          TS_HOST: ${{ vars.TS_EUROPE_HOST }}
+          TS_HOST: ${{ vars.TS_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -44,14 +44,14 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
+          SSH_HOST: ${{ vars.TS_HOST }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_EUROPE_HOST }}
+          SSH_HOST: ${{ vars.TS_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
