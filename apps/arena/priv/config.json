@@ -49,21 +49,27 @@
           "x": -6044.0,
           "y": -1439.0
         },
-        "radius": 1567.0
+        "radius": 1567.0,
+        "shape": "circle",
+        "vertices": []
       },
       {
         "position": {
           "x": -860.0,
           "y": 5338.0
         },
-        "radius": 1090.0
+        "radius": 1090.0,
+        "shape": "circle",
+        "vertices": []
       },
       {
         "position": {
           "x": -1630.0,
           "y": 4588.0
         },
-        "radius": 317.0
+        "radius": 317.0,
+        "shape": "circle",
+        "vertices": []
       }
     ]
   },
@@ -442,7 +448,7 @@
     },
     {
       "name": "valtimer",
-      "active": true,
+      "active": false,
       "base_speed": 30.0,
       "base_size": 100.0,
       "base_health": 400,

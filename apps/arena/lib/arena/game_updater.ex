@@ -497,7 +497,8 @@ defmodule Arena.GameUpdater do
              damage_taken: state.damage_taken,
              damage_done: state.damage_done,
              status: state.status,
-             start_game_timestamp: state.start_game_timestamp
+             start_game_timestamp: state.start_game_timestamp,
+             obstacles: complete_entities(state.obstacles)
            }}
       })
 
@@ -551,6 +552,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, %{})
       |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
+      |> Map.put(:obstacles, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:pools, %{})
@@ -609,7 +611,10 @@ defmodule Arena.GameUpdater do
         Map.put(
           obstacles_acc,
           last_id,
-          Entities.new_circular_obstacle(last_id, obstacle.position, obstacle.radius)
+          Entities.new_obstacle(
+            last_id,
+            obstacle
+          )
         )
 
       {obstacles_acc, last_id}

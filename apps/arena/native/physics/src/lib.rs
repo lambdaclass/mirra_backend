@@ -31,8 +31,11 @@ fn move_entities(
             let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
 
             if entity.category == Category::Player && !collides_with.is_empty() {
-                entity
-                    .move_to_next_valid_position_outside(obstacles.get(&collides_with[0]).unwrap());
+                let collided_with: Vec<&Entity> = collides_with
+                    .iter()
+                    .map(|id| obstacles.get(id).unwrap())
+                    .collect();
+                entity.move_to_next_valid_position_outside(collided_with);
             }
         }
     }
@@ -58,7 +61,11 @@ fn move_entity(
         let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
 
         if entity.category == Category::Player && !collides_with.is_empty() {
-            entity.move_to_next_valid_position_outside(obstacles.get(&collides_with[0]).unwrap());
+            let collided_with: Vec<&Entity> = collides_with
+                .iter()
+                .map(|id| obstacles.get(id).unwrap())
+                .collect();
+            entity.move_to_next_valid_position_outside(collided_with);
         }
     }
 
