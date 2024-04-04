@@ -10,7 +10,6 @@ on:
           - arena
           - arena_load_test
           - game_client
-          - bot_manager
         required: true
 
 jobs:

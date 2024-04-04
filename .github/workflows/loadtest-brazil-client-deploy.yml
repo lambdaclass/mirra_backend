@@ -10,6 +10,7 @@ on:
           - arena
           - arena_load_test
           - game_client
+          - bot_manager
         required: true
       target_server:
         type: choice
