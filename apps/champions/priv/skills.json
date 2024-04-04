@@ -768,6 +768,304 @@
     ]
   },
   {
+    "name": "Fetra Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "min",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Fetra Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": {"duration": 5, "period": 1},
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [
+          {
+            "attribute": "armor",
+            "modifier_operation": "Multiply",
+            "magnitude_calc_type": "Float",
+            "float_magnitude": 0.85
+          }
+        ],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 2.48,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "max",
+        "target_count": 2,
+        "target_allies": false,
+        "target_attribute": "Armor"
+      }
+    ]
+  },
+  {
+    "name": "Kampako Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Kampako Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": {"duration": 5, "period": 1},
+        "initial_delay": 0,
+        "components": [
+          {
+            "type": "ApplyTags",
+            "tag": "Stun"
+          }
+        ],
+        "modifiers": [
+          {
+            "attribute": "attack",
+            "modifier_operation": "Multiply",
+            "magnitude_calc_type": "Float",
+            "float_magnitude": 0
+          }
+        ],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 2.51,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Zanochi Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "backline",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Zanochi Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": {"duration": 5, "period": 1},
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [
+          {
+            "attribute": "attack",
+            "modifier_operation": "Multiply",
+            "magnitude_calc_type": "Float",
+            "float_magnitude": 0.92
+          }
+        ],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.42,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 3,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Kura'bara Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Kura'bara Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 0.96,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "nearest",
+        "target_count": 6,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
+    "name": "Boy Kampf Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": "instant",
+        "initial_delay": 0,
+        "components": [],
+        "modifier": [],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 1,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ],
+    "cooldown": 5      
+  },
+  {
+    "name": "Boy Kampf Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 0,
+    "animation_trigger": 0,
+    "effects": [
+      {
+        "type": {"duration": 4, "period": 1},
+        "initial_delay": 0,
+        "components": [],
+        "modifiers": [
+          {
+            "attribute": "attack",
+            "modifier_operation": "Multiply",
+            "magnitude_calc_type": "Float",
+            "float_magnitude": 0
+          }
+        ],
+        "executions": [
+          {
+            "type": "DealDamage",
+            "attack_ratio": 1.44,
+            "energy_recharge": 50,
+            "delay": 0
+          }
+        ],
+        "target_strategy": "random",
+        "target_count": 3,
+        "target_allies": false,
+        "target_attribute": "Health"
+      }
+    ]
+  },
+  {
     "name": "Muflus Basic",
     "energy_regen": 100,
     "animation_duration": 0,
