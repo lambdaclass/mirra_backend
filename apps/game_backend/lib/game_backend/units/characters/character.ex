@@ -21,10 +21,10 @@ defmodule GameBackend.Units.Characters.Character do
 
     field(:base_health, :integer)
     field(:base_attack, :integer)
-    field(:base_armor, :integer)
+    field(:base_defense, :integer)
 
-    belongs_to(:basic_skill, Skill)
-    belongs_to(:ultimate_skill, Skill)
+    belongs_to(:basic_skill, Skill, on_replace: :update)
+    belongs_to(:ultimate_skill, Skill, on_replace: :update)
 
     timestamps()
   end
@@ -46,7 +46,7 @@ defmodule GameBackend.Units.Characters.Character do
       :ultimate_skill_id,
       :base_health,
       :base_attack,
-      :base_armor
+      :base_defense
     ])
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)

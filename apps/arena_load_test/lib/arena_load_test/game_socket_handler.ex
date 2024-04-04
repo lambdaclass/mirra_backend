@@ -62,7 +62,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         action_type:
           {:attack,
            %Serialization.Attack{
-             skill: "1",
+             skill: get_random_available_skill(),
              parameters: %Serialization.AttackParameters{
                target: %Serialization.Direction{
                  x: x,
@@ -94,14 +94,21 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   defp ws_url(client_id, game_id) do
-    host = SocketSupervisor.server_host()
+    case System.get_env("TARGET_SERVER") do
+      nil ->
+        "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{host}/play/#{game_id}/#{client_id}"
-
-      _ ->
-        "ws://#{host}/play/#{game_id}/#{client_id}"
+      target_server ->
+        server_url = SocketSupervisor.get_server_url(target_server)
+        "wss://#{server_url}/play/#{game_id}/#{client_id}"
     end
+  end
+
+  # This is enough for now. We will get the skills from the requested bots
+  # from the bots app. This will be done in future iterations.
+  # https://github.com/lambdaclass/mirra_backend/issues/410
+  defp get_random_available_skill() do
+    ["1", "2", "3"]
+    |> Enum.random()
   end
 end

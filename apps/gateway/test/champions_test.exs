@@ -2,18 +2,27 @@ defmodule Gateway.Test.Champions do
   @moduledoc """
   Test for Champions of Mirra messages.
   """
+  import Ecto.Query
+
   use ExUnit.Case
 
+  alias GameBackend.Campaigns.Rewards.CurrencyReward
+  alias Gateway.Serialization.AfkRewards
   alias Champions.{Units, Users, Utils}
   alias GameBackend.Repo
+  alias GameBackend.Items
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
 
   alias Gateway.Serialization.{
     Box,
     Boxes,
+    Campaign,
+    Campaigns,
     Currency,
     Error,
+    Item,
+    Level,
     Unit,
     UnitAndCurrencies,
     User,
@@ -23,20 +32,6 @@ defmodule Gateway.Test.Champions do
   }
 
   alias Gateway.SocketTester
-
-  setup_all do
-    # Start Phoenix endpoint
-    {:ok, _} =
-      Plug.Cowboy.http(Gateway.Endpoint, [],
-        ip: {127, 0, 0, 1},
-        port: 4001,
-        dispatch: [
-          _: [{"/2", Gateway.ChampionsSocketHandler, []}]
-        ]
-      )
-
-    :ok
-  end
 
   setup do
     {:ok, socket_tester} = SocketTester.start_link()
@@ -51,7 +46,7 @@ defmodule Gateway.Test.Champions do
       # CreateUser
       :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:user, %User{} = user}} = get_last_message()
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = user}}
 
       assert user.username == username
 
@@ -85,7 +80,7 @@ defmodule Gateway.Test.Champions do
       # Unselect the unit
       :ok = SocketTester.unselect_unit(socket_tester, user.id, unit_to_unselect.id)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:unit, %Unit{} = unselected_unit}} = get_last_message()
+      assert_receive %WebSocketResponse{response_type: {:unit, %Unit{} = unselected_unit}}
 
       assert not unselected_unit.selected
       # Protobuf doesn't support nil values, returns zero instead
@@ -94,7 +89,7 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.select_unit(socket_tester, user.id, unselected_unit.id, slot)
       fetch_last_message(socket_tester)
-      %WebSocketResponse{response_type: {:unit, %Unit{} = selected_unit}} = get_last_message()
+      assert_receive %WebSocketResponse{response_type: {:unit, %Unit{} = selected_unit}}
 
       assert selected_unit.selected
       assert selected_unit.slot == slot
@@ -124,9 +119,9 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: [user_currency]}}
-      } = get_last_message()
+      }
 
       assert unit.level == level + 1
       assert user_currency.currency.name == "Gold"
@@ -152,9 +147,9 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit, user_currency: user_currencies}}
-      } = get_last_message()
+      }
 
       user_currencies =
         Enum.into(user_currencies, %{}, fn %UserCurrency{
@@ -173,9 +168,9 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.level_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit_and_currencies, %UnitAndCurrencies{unit: unit}}
-      } = get_last_message()
+      }
 
       assert unit.level == level + 2
 
@@ -218,17 +213,17 @@ defmodule Gateway.Test.Champions do
       :ok = SocketTester.tier_up_unit(socket_tester, user.id, unit.id)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:error, %Error{reason: "cant_tier_up"}}
-      } = get_last_message()
+      }
 
       # FuseUnit
       :ok = SocketTester.fuse_unit(socket_tester, user.id, unit.id, units_to_consume)
       fetch_last_message(socket_tester)
 
-      %WebSocketResponse{
+      assert_receive %WebSocketResponse{
         response_type: {:unit, %Unit{} = unit}
-      } = get_last_message()
+      }
 
       assert unit.rank == rank + 1
       assert user_units_count == user.id |> GameBackend.Units.get_units() |> Enum.count()
@@ -247,14 +242,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:boxes, %Boxes{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:boxes, %Boxes{boxes: boxes}}
-      } = get_last_message()
+      }
 
       assert box.id in Enum.map(boxes, & &1.id)
 
@@ -264,14 +253,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:box, %Box{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:box, %Box{id: box_id, name: box_name}}
-      } = get_last_message()
+      }
 
       assert box_id == box.id
       assert box_name == box.name
@@ -282,14 +265,8 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:user_and_unit, %UserAndUnit{}}
-      }
-
-      fetch_last_message(socket_tester)
-
-      %WebSocketResponse{
         response_type: {:user_and_unit, %UserAndUnit{user: new_user, unit: new_unit}}
-      } = get_last_message()
+      }
 
       assert new_unit.rank in Enum.map(box.rank_weights, & &1.rank)
 
@@ -300,13 +277,400 @@ defmodule Gateway.Test.Champions do
     end
   end
 
-  defp get_last_message() do
-    receive do
-      message ->
-        message
-    after
-      5000 ->
-        raise "No message"
+  describe "campaigns" do
+    test "get campaigns and levels", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("campaign_user")
+
+      # GetCampaigns
+      SocketTester.get_campaigns(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaigns, %Campaigns{} = campaigns}
+      }
+
+      repo_campaigns = Repo.all(GameBackend.Campaigns.Campaign)
+
+      # Check that each campaign matches a campaign of repo_campaigns
+      assert :ok ==
+               Enum.each(campaigns.campaigns, fn campaign ->
+                 assert Enum.find(repo_campaigns, &(&1.id == campaign.id))
+               end)
+
+      sample_campaign = Enum.random(campaigns.campaigns)
+
+      # GetCampaign
+      SocketTester.get_campaign(socket_tester, user.id, sample_campaign.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaign, %Campaign{} = campaign_to_verify}
+      }
+
+      assert campaign_to_verify.id == sample_campaign.id
+
+      # GetLevel
+      level = Enum.random(sample_campaign.levels)
+
+      SocketTester.get_level(socket_tester, user.id, level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:level, %Level{} = level_to_verify}
+      }
+
+      assert level_to_verify.id == level.id
+    end
+
+    test "fight level", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("battle_user")
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progresses
+
+      # Get the level of the campaign progression
+      level_id = campaign_progression.level_id
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      # Battle result should be either win or loss
+      assert battle_result.result == "win" or battle_result.result == "loss"
+
+      # TODO: check rewards [#CHoM-341]
+    end
+
+    test "fight level advances level in the campaign progression", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("battle_winning_user")
+
+      # Make user units very strong to win the battle
+      Enum.each(user.units, fn unit ->
+        GameBackend.Units.update_unit(unit, %{level: 9999})
+      end)
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progresses
+
+      # Get the level of the campaign progression
+      level_id = campaign_progression.level_id
+      level_number = campaign_progression.level.level_number
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      {:ok, advanced_user} = Users.get_user(user.id)
+
+      [advanced_campaign_progression | _] = advanced_user.campaign_progresses
+
+      assert user.id == advanced_user.id
+      assert advanced_campaign_progression.level_id != level_id
+      assert advanced_campaign_progression.level.level_number == level_number + 1
+    end
+
+    test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("invalid_battle_user")
+
+      # Get user's first campaign progression
+      [campaign_progression | _] = user.campaign_progresses
+
+      # Get the level of the campaign progression
+      next_level_id = campaign_progression.level_id
+
+      # Get a level from the user where the id is not the next level in the progression
+      SocketTester.get_campaigns(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:campaigns, %Campaigns{} = campaigns}
+      }
+
+      levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
+      invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
+
+      # FightLevel
+      SocketTester.fight_level(socket_tester, user.id, invalid_level.id)
+      fetch_last_message(socket_tester)
+
+      # Should return an error response with the reason "level_invalid"
+      assert_receive %WebSocketResponse{
+        response_type: {:error, %Error{reason: "level_invalid"}}
+      }
+    end
+  end
+
+  describe "afk rewards" do
+    test "winning battles increments the afk rewards", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("AfkRewardsUser")
+
+      # Check that the initial afk reward rates are all 0
+      assert Enum.all?(user.afk_reward_rates, fn rate -> rate.rate == 0 end)
+
+      # Get initial afk rewards
+      SocketTester.get_afk_rewards(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: initial_afk_rewards}}}
+
+      # Check that the initial afk rewards are all 0
+      assert Enum.all?(initial_afk_rewards, fn reward -> reward.amount == 0 end)
+
+      # Set up a powerful team to win a level with the user. That should increment the afk rewards rates
+      Enum.each(user.units, fn unit ->
+        GameBackend.Units.update_unit(unit, %{level: 9999})
+      end)
+
+      [campaign_progression | _] = user.campaign_progresses
+      level_id = campaign_progression.level_id
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      # Get advanced user
+      SocketTester.get_user(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = advanced_user}}
+
+      # Check that the gold and gems afk rewards rates are now greater than the initial rewards, and the other rates are still 0
+      rewardable_currencies_ids = ["Gold", "Gems"] |> Enum.map(&Currencies.get_currency_by_name!(&1).id)
+
+      assert Enum.all?(advanced_user.afk_reward_rates, fn rate ->
+               case rate.currency_id in rewardable_currencies_ids do
+                 true ->
+                   rate.rate > 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+
+      # Claim afk rewards
+      currencies_before_claiming = advanced_user.currencies
+
+      # Simulate waiting 2 seconds before claiming the rewards
+      seconds_to_wait = 2
+      {:ok, advanced_user_with_rewards} = Users.get_user(advanced_user.id)
+
+      {:ok, _} =
+        advanced_user_with_rewards
+        |> GameBackend.Users.User.changeset(%{
+          last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+        })
+        |> Repo.update()
+
+      SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
+
+      # Check that the user has received gold and gems.
+      # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
+      # We add 10% to the time waited to account for the time it takes to process the message.
+      assert Enum.all?(claimed_user.currencies, fn currency ->
+               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
+
+               currency_id = Currencies.get_currency_by_name!(currency.currency.name).id
+
+               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == currency_id)) do
+                 nil ->
+                   # If the currency is not in the afk rewards rates, we don't consider it.
+                   true
+
+                 rate ->
+                   reward_rate = rate.rate
+
+                   currency_before_claim =
+                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
+
+                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
+               end
+             end)
+
+      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
+
+      # Play another level to increment the afk rewards rates again
+      [campaign_progression | _] = advanced_user.campaign_progresses
+      next_level_id = campaign_progression.level_id
+      SocketTester.fight_level(socket_tester, advanced_user.id, next_level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      # Get new user
+      SocketTester.get_user(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
+
+      # Check that the rewardable currencies afk rewards rates are now greater than the rewards before the second battle, and the other rates are still 0
+      # Get the current level number and check that the afk rewards rates have increased proportionally
+      current_level_id = hd(more_advanced_user.campaign_progresses).level_id
+
+      current_level_afk_rewards_increments =
+        Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
+
+      assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->
+               case rate.currency_id in rewardable_currencies_ids do
+                 true ->
+                   previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == rate.currency_id)).rate
+
+                   afk_reward_increment =
+                     Enum.find(current_level_afk_rewards_increments, &(&1.currency_id == rate.currency_id)).amount
+
+                   new_rate = previous_rate + afk_reward_increment
+                   rate.rate > previous_rate
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+    end
+  end
+
+  describe "items" do
+    test "get item", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("GetItemUser")
+
+      {:ok, epic_bow} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Bow of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_bow.id, level: 1})
+
+      :ok = SocketTester.get_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = fetched_item}
+      }
+
+      assert fetched_item.id == item.id
+      assert fetched_item.user_id == user.id
+      assert fetched_item.level == 1
+      assert fetched_item.template.id == epic_bow.id
+
+      # We expect the item to be unequipped after creation. Since protobuf can't handle null messages, we get an empty string.
+      assert fetched_item.unit_id == ""
+    end
+
+    test "equip and unequip item", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("EquipItemUser")
+
+      [unit | _] = user.units
+
+      {:ok, epic_sword} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Sword of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+
+      # EquipItem
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = equipped_item}
+      }
+
+      # The item is now equipped to the unit
+      assert equipped_item.user_id == user.id
+      assert equipped_item.unit_id == unit.id
+
+      # EquipItem again, to another unit
+      another_unit = user.units |> Enum.at(1)
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, another_unit.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = equipped_item}
+      }
+
+      # The item is now equipped to the second unit
+      assert equipped_item.user_id == user.id
+      assert equipped_item.unit_id != unit.id
+      assert equipped_item.unit_id == another_unit.id
+
+      # UnequipItem
+      :ok = SocketTester.unequip_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = unequipped_item}
+      }
+
+      # The item is now unequipped
+      assert unequipped_item.user_id == user.id
+      assert unequipped_item.unit_id == ""
+    end
+
+    test "level up item", %{socket_tester: socket_tester} do
+      # Register user
+      {:ok, user} = Users.register("LevelUpItemUser")
+
+      {:ok, epic_axe} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Axe of Testness",
+          type: "weapon"
+        })
+
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
+
+      # Set user gold to the minimum amount required to level up the item
+      Currencies.add_currency(
+        user.id,
+        Currencies.get_currency_by_name!("Gold").id,
+        1 - Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      )
+
+      gold_amount_before_level_up = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+
+      # LevelUpItem
+      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:item, %Item{} = leveled_up_item}
+      }
+
+      assert leveled_up_item.level == item.level + 1
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") < gold_amount_before_level_up
+
+      # LevelUpItem once again to check that we can't afford it
+      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
     end
   end
 
