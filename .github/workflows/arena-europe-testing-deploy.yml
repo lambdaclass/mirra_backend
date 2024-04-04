@@ -58,7 +58,7 @@ jobs:
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.EUROPE_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
-          DATABASE_URL: ${secrets.DATABASE_URL}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_EUROPE }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
