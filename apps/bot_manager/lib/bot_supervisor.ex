@@ -13,6 +13,8 @@ defmodule BotManager.BotSupervisor do
   end
 
   def add_bot_to_game(bot_config) do
-    DynamicSupervisor.start_child(__MODULE__, {BotManager.GameSocketHandler, bot_config})
+    if System.get_env("BOTS_ACTIVE") == "true" do
+      DynamicSupervisor.start_child(__MODULE__, {BotManager.GameSocketHandler, bot_config})
+    end
   end
 end
