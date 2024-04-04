@@ -55,18 +55,23 @@ defmodule ArenaLoadTest.SocketHandler do
 
   # Private
   defp ws_url(player_id) do
-    host = SocketSupervisor.server_host()
-    # TODO must replace character with a random available one.
-    # TODO this will be done as part of https://github.com/lambdaclass/mirra_backend/issues/361
-    character = "h4ck"
+    character = get_random_active_character()
     player_name = "Player_#{player_id}"
 
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{host}/join/#{player_id}/#{character}/#{player_name}"
+    case System.get_env("TARGET_SERVER") do
+      nil ->
+        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
-      _ ->
-        "ws://#{host}/join/#{player_id}/#{character}/#{player_name}"
+      target_server ->
+        server_url = SocketSupervisor.get_server_url(target_server)
+        "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
     end
+  end
+
+  # This is enough for now. Will request bots from the bots app in future iterations.
+  # https://github.com/lambdaclass/mirra_backend/issues/410
+  defp get_random_active_character() do
+    ["muflus", "h4ck", "uma"]
+    |> Enum.random()
   end
 end

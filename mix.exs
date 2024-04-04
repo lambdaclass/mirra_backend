@@ -4,7 +4,16 @@ defmodule MirraBackend.MixProject do
   def project do
     [
       apps_path: "apps",
-      apps: [:arena, :champions, :game_client, :gateway, :game_backend, :arena_load_test],
+      apps: [
+        :arena,
+        :champions,
+        :game_client,
+        :gateway,
+        :game_backend,
+        :arena_load_test,
+        :configurator,
+        :bot_manager
+      ],
       version: "0.1.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -34,14 +43,15 @@ defmodule MirraBackend.MixProject do
 
   defp releases() do
     [
-      all: [
+      arena: [applications: [arena: :permanent]],
+      # TODO ArenaLoadTest must deploy only arena
+      arena_load_test: [applications: [arena_load_test: :permanent, arena: :permanent]],
+      game_client: [applications: [game_client: :permanent]],
+      game_backend: [
         applications: [
-          arena: :permanent,
           champions: :permanent,
           game_backend: :permanent,
-          game_client: :permanent,
-          gateway: :permanent,
-          arena_load_test: :permanent
+          gateway: :permanent
         ]
       ]
     ]
