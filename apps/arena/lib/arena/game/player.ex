@@ -208,9 +208,9 @@ defmodule Arena.Game.Player do
     end
   end
 
-  # This is a messy solution to get a mechanic result before actually running the mechanic sinc the client needed the
+  # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
   # position in wich the player will spawn when the skill start and not when we actually execute the teleport
-  # this is also optmistic since we asume the destination will be always available
+  # this is also optimistic since we asume the destination will be always available
   defp maybe_add_destination(action, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
