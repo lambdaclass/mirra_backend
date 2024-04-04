@@ -11,7 +11,7 @@ defmodule Champions.Battle.Simulator do
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
-  [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
+  [x] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
   [x] Duration - Applied once and reverted once its duration ends.
 
   They also have different targeting strategies:
@@ -217,7 +217,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_step_for_skills(current_state, initial_step_state) do
-    Enum.reduce(initial_step_state.skills_being_cast, current_state, fn skill, current_state ->
+    Enum.reduce(current_state.skills_being_cast, current_state, fn skill, current_state ->
       Logger.info(
         "Process step #{initial_step_state.step_number} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
       )
