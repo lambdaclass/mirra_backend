@@ -202,7 +202,7 @@ defmodule Arena.Game.Player do
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
-          |> maybe_make_invinsible(skill)
+          |> maybe_make_invincible(skill)
 
         put_in(game_state, [:players, player.id], player)
     end
@@ -383,7 +383,7 @@ defmodule Arena.Game.Player do
     end
   end
 
-  defp maybe_make_invinsible(
+  defp maybe_make_invincible(
          player,
          %{inmune_while_executing: true, execution_duration_ms: execution_duration_ms} = _skill
        ) do
@@ -391,7 +391,7 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :damage_immunity], true)
   end
 
-  defp maybe_make_invinsible(player, _) do
+  defp maybe_make_invincible(player, _) do
     player
   end
 end
