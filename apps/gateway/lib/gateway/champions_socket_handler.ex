@@ -4,6 +4,12 @@ defmodule Gateway.ChampionsSocketHandler do
   """
 
   require Logger
+  alias Gateway.Serialization.StatAffected
+  alias Gateway.Serialization.Death
+  alias Gateway.Serialization.TagReceived
+  alias Gateway.Serialization.ModifierExpired
+  alias Gateway.Serialization.ModifierReceived
+  alias Gateway.Serialization.SkillAction
   alias Gateway.Serialization.WebSocketResponse
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
@@ -29,7 +35,8 @@ defmodule Gateway.ChampionsSocketHandler do
     ClaimAfkRewards,
     GetBoxes,
     GetBox,
-    Summon
+    Summon,
+    BattleTest
   }
 
   @behaviour :cowboy_websocket
@@ -181,8 +188,81 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
+  # Temporary endpoint to test the sending of battle replays to the client
+  defp handle(%BattleTest{user_id: _user_id}) do
+    team1 =
+      Enum.map(1..6, fn slot ->
+        GameBackend.Units.insert_unit(%{
+          character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id,
+          level: 1,
+          tier: 1,
+          rank: 1,
+          selected: true,
+          user_id: nil,
+          slot: slot
+        })
+        |> elem(1)
+        |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill])
+      end)
+
+    team2 =
+      Enum.map(1..6, fn slot ->
+        GameBackend.Units.insert_unit(%{
+          character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id,
+          level: 1,
+          tier: 1,
+          rank: 1,
+          selected: true,
+          user_id: nil,
+          slot: slot
+        })
+        |> elem(1)
+        |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill])
+      end)
+
+    Champions.Battle.Simulator.run_battle(team1, team2)
+    |> update_in([:steps], fn steps ->
+      Enum.map(steps, &prepare_step/1)
+    end)
+    |> prepare_response(:battle_replay)
+  end
+
   defp handle(unknown_request),
     do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
+
+  defp prepare_step(step) do
+    update_in(step, [:actions], fn actions ->
+      Enum.map(actions, &prepare_action/1)
+    end)
+  end
+
+  defp prepare_action(%{action_type: {type, action}}) do
+    %{
+      action_type:
+        case type do
+          :skill_action ->
+            {type,
+             Kernel.struct(
+               SkillAction,
+               update_in(action, [:stats_affected], fn stats_affected ->
+                 Enum.map(stats_affected, &Kernel.struct(StatAffected, &1))
+               end)
+             )}
+
+          :modifier_received ->
+            {type, Kernel.struct(ModifierReceived, action)}
+
+          :tag_received ->
+            {type, Kernel.struct(TagReceived, action)}
+
+          :modifier_expired ->
+            {type, Kernel.struct(ModifierExpired, action)}
+
+          :death ->
+            {type, Kernel.struct(Death, action)}
+        end
+    }
+  end
 
   defp prepare_response({:error, reason}, _response_type) when is_atom(reason),
     do: prepare_response({:error, Atom.to_string(reason)}, nil)

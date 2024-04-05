@@ -49,14 +49,14 @@ defmodule Champions.Battle.Simulator do
   Runs a battle between two teams.
   Teams are expected to be lists of units with their character and their skills preloaded.
 
-  Returns `:team_1`, `:team_2`, `:tie` or `:timeout`.
+  Returns a map with the the initial state of the battle, the development of the battle for animation, and the result of the battle.
 
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
       iex> team_2 = Enum.map(user2.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
       iex> run_battle(team_1, team_2)
-      :team_1
+      %{initial_state: %{}, steps: [%{actions: [], step_number: 1}, ...], result: :team_1}
   """
   def run_battle(team_1, team_2, seed \\ 1) do
     :rand.seed(:default, seed)
@@ -70,22 +70,25 @@ defmodule Champions.Battle.Simulator do
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
 
-    Enum.reduce_while(1..@maximum_steps, {initial_state, [%{step_number: 1, actions: []}]}, fn step,
-                                                                                               {initial_step_state,
-                                                                                                history} ->
-      {new_state, new_history} =
-        {Map.put(initial_step_state, :step_number, step), history}
-        |> process_step_for_units()
-        |> process_step_for_skills(initial_step_state)
-        |> process_step_for_effects()
+    {history, result} =
+      Enum.reduce_while(1..@maximum_steps, {initial_state, [%{step_number: 1, actions: []}]}, fn step,
+                                                                                                 {initial_step_state,
+                                                                                                  history} ->
+        {new_state, new_history} =
+          {Map.put(initial_step_state, :step_number, step), history}
+          |> process_step_for_units()
+          |> process_step_for_skills(initial_step_state)
+          |> process_step_for_effects()
 
-      Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
+        Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
-      {new_state, new_history}
-      |> remove_dead_units()
-      |> advance_history_step()
-      |> check_winner(step)
-    end)
+        {new_state, new_history}
+        |> remove_dead_units()
+        |> advance_history_step()
+        |> check_winner(step)
+      end)
+
+    %{initial_state: transform_initial_state_for_replay(initial_state), steps: Enum.reverse(history), result: result}
   end
 
   # Removes dead units from the battle state.
@@ -97,14 +100,7 @@ defmodule Champions.Battle.Simulator do
         else
           Logger.info("Unit #{format_unit_name(unit)} died.")
 
-          new_history =
-            add_to_history(history_acc, %{
-              action: %{
-                death: %{
-                  unit_id: unit_id
-                }
-              }
-            })
+          new_history = add_to_history(history_acc, %{unit_id: unit_id}, :death)
 
           {units, new_history}
         end
@@ -122,24 +118,25 @@ defmodule Champions.Battle.Simulator do
   defp check_winner({state, history}, step) do
     winner =
       cond do
-        Enum.empty?(state.units) -> :tie
-        Enum.all?(state.units, fn {_id, unit} -> unit.team == 2 end) -> :team_2
-        Enum.all?(state.units, fn {_id, unit} -> unit.team == 1 end) -> :team_1
-        true -> :none
+        Enum.empty?(state.units) -> "tie"
+        Enum.all?(state.units, fn {_id, unit} -> unit.team == 2 end) -> "team_2"
+        Enum.all?(state.units, fn {_id, unit} -> unit.team == 1 end) -> "team_1"
+        true -> "none"
       end
 
     case winner do
-      :none ->
+      "none" ->
         if step == @maximum_steps do
           Logger.info("Battle timeout.")
-          {:halt, :timeout}
+          {:halt, "timeout"}
         else
           {:cont, {state, history}}
         end
 
       result ->
         Logger.info("Battle ended. Result: #{result}.")
-        {:halt, result}
+
+        {:halt, {history, result}}
     end
   end
 
@@ -168,17 +165,17 @@ defmodule Champions.Battle.Simulator do
             |> put_in([:units, unit.id, :energy], 0)
 
           new_history =
-            add_to_history(history, %{
-              action: %{
-                skill_action: %{
-                  caster_id: unit.id,
-                  target_id: nil,
-                  skill_id: unit.ultimate_skill.id,
-                  skill_action_type: :animation_start,
-                  stats_affected: []
-                }
-              }
-            })
+            add_to_history(
+              history,
+              %{
+                caster_id: unit.id,
+                target_id: nil,
+                skill_id: unit.ultimate_skill.id,
+                skill_action_type: "animation_start",
+                stats_affected: []
+              },
+              :skill_action
+            )
 
           {new_state, new_history}
 
@@ -196,17 +193,17 @@ defmodule Champions.Battle.Simulator do
             |> update_in([:units, unit.id, :energy], &(&1 + unit.basic_skill.energy_regen))
 
           new_history =
-            add_to_history(history, %{
-              action: %{
-                skill_action: %{
-                  caster_id: unit.id,
-                  target_id: nil,
-                  skill_id: unit.basic_skill.id,
-                  skill_action_type: :animation_start,
-                  stats_affected: []
-                }
-              }
-            })
+            add_to_history(
+              history,
+              %{
+                caster_id: unit.id,
+                target_id: nil,
+                skill_id: unit.basic_skill.id,
+                skill_action_type: "animation_start",
+                stats_affected: []
+              },
+              :skill_action
+            )
 
           {new_state, new_history}
 
@@ -252,16 +249,16 @@ defmodule Champions.Battle.Simulator do
           Logger.info("Modifier [#{format_modifier_name(modifier)}] expired for #{format_unit_name(unit)}.")
 
           {acc,
-           add_to_history(history, %{
-             action: %{
-               modifier_expired: %{
-                 skill_id: modifier.skill_id,
-                 target_id: unit.id,
-                 stat_affected: modifier.attribute,
-                 amount: modifier.float_magnitude
-               }
-             }
-           })}
+           add_to_history(
+             history,
+             %{
+               skill_id: modifier.skill_id,
+               target_id: unit.id,
+               stat_affected: modifier.attribute,
+               amount: modifier.float_magnitude
+             },
+             :modifier_expired
+           )}
 
         # Modifier still going, reduce its timer by one
         remaining ->
@@ -405,17 +402,17 @@ defmodule Champions.Battle.Simulator do
           |> Map.put(:skill_id, skill.id)
 
         new_history =
-          add_to_history(history, %{
-            action: %{
-              skill_action: %{
-                caster_id: caster.id,
-                target_id: new_effect.targets,
-                skill_id: skill.id,
-                skill_action_type: :effect_trigger,
-                stats_affected: []
-              }
-            }
-          })
+          add_to_history(
+            history,
+            %{
+              caster_id: caster.id,
+              target_id: new_effect.targets,
+              skill_id: skill.id,
+              skill_action_type: "effect_trigger",
+              stats_affected: []
+            },
+            :skill_action
+          )
 
         {[new_effect | effects_list], new_history}
       end)
@@ -456,16 +453,16 @@ defmodule Champions.Battle.Simulator do
           |> Map.put(:step_applied_at, current_step_number)
 
         new_history =
-          add_to_history(history, %{
-            action: %{
-              modifier_received: %{
-                skill_id: modifier.skill_id,
-                target_id: target.id,
-                stat_affected: modifier.attribute,
-                amount: modifier.float_magnitude
-              }
-            }
-          })
+          add_to_history(
+            history,
+            %{
+              skill_id: modifier.skill_id,
+              target_id: target.id,
+              stat_affected: modifier.attribute,
+              amount: modifier.float_magnitude
+            },
+            :modifier_received
+          )
 
         new_target =
           case modifier.modifier_operation do
@@ -491,16 +488,16 @@ defmodule Champions.Battle.Simulator do
     Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
 
     new_history =
-      add_to_history(history,
-        action: %{
-          skill_action: %{
-            caster_id: caster.id,
-            target_id: target.id,
-            skill_id: effect.skill_id,
-            skill_action_type: :effect_miss,
-            stats_affected: []
-          }
-        }
+      add_to_history(
+        history,
+        %{
+          caster_id: caster.id,
+          target_id: target.id,
+          skill_id: effect.skill_id,
+          skill_action_type: "effect_miss",
+          stats_affected: []
+        },
+        :skill_action
       )
 
     {target, new_history}
@@ -545,16 +542,13 @@ defmodule Champions.Battle.Simulator do
       add_to_history(
         history,
         %{
-          action: %{
-            skill_action: %{
-              caster_id: caster.id,
-              target_id: target.id,
-              skill_id: skill_id,
-              skill_action_type: :effect_hit,
-              stats_affected: [%{stat: "health", amount: -damage}]
-            }
-          }
-        }
+          caster_id: caster.id,
+          target_id: target.id,
+          skill_id: skill_id,
+          skill_action_type: "effect_hit",
+          stats_affected: [%{stat: "health", amount: -damage}]
+        },
+        :skill_action
       )
 
     new_target =
@@ -590,8 +584,10 @@ defmodule Champions.Battle.Simulator do
       {unit.id,
        %{
          id: unit.id,
-         character_name: character.name,
          team: team,
+         slot: unit.slot,
+         character_id: character.id,
+         character_name: character.name,
          class: character.class,
          faction: character.faction,
          ultimate_skill: create_skill_map(character.ultimate_skill, unit.id),
@@ -677,6 +673,15 @@ defmodule Champions.Battle.Simulator do
   defp format_modifier_name(modifier),
     do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
 
-  defp add_to_history([%{step_number: step_number, actions: actions} | history], entry_to_add),
-    do: [%{step_number: step_number, actions: [entry_to_add | actions]} | history]
+  defp add_to_history([%{step_number: step_number, actions: actions} | history], entry_to_add, type),
+    do: [%{step_number: step_number, actions: [%{action_type: {type, entry_to_add}} | actions]} | history]
+
+  defp transform_initial_state_for_replay(%{units: units}) do
+    %{
+      units:
+        Enum.into(units, [], fn {_id, unit} ->
+          Map.take(unit, [:id, :health, :slot, :character_id, :team])
+        end)
+    }
+  end
 end

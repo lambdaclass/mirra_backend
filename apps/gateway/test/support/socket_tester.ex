@@ -38,7 +38,8 @@ defmodule Gateway.SocketTester do
     ClaimAfkRewards,
     GetBox,
     GetBoxes,
-    Summon
+    Summon,
+    BattleTest
   }
 
   def start_link() do
@@ -258,6 +259,16 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def battle_test(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:battle_test, %BattleTest{user_id: user_id}}
          })}
       )
 
