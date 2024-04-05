@@ -55,6 +55,14 @@ defmodule GameBackend.Units.Skills.Effect do
               true
 
             %{
+              type: "DealDamageOverTime",
+              attack_ratio: _attack_ratio,
+              energy_recharge: _energy_recharge,
+              delay: _delay
+            } ->
+              true
+
+            %{
               type: "Heal",
               attack_ratio: _attack_ratio,
               delay: _delay
@@ -81,6 +89,12 @@ defmodule GameBackend.Units.Skills.Effect do
             %{
               type: "ChanceToApply",
               chance: _chance
+            } ->
+              true
+
+            %{
+              type: "ApplyTags",
+              tag: _effect
             } ->
               true
 

@@ -1285,6 +1285,7 @@
           {
             "type": "DealDamage",
             "attack_ratio": 2.57,
+            "energy_recharge": 50,
             "delay": 0
           }
         ],
@@ -1344,6 +1345,7 @@
           {
             "type": "DealDamage",
             "attack_ratio": 1.98,
+            "energy_recharge": 50,
             "delay": 0
           }
         ],
@@ -1611,6 +1613,7 @@
           {
             "type": "DealDamage",
             "attack_ratio": 0.78,
+            "energy_recharge": 50,
             "delay": 0
           }
         ],

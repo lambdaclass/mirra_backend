@@ -7,11 +7,15 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   def type(), do: :string
 
+  def cast("all"), do: {:ok, "all"}
+  def cast("self"), do: {:ok, "self"}
   def cast("random"), do: {:ok, "random"}
   def cast("nearest"), do: {:ok, "nearest"}
   def cast("furthest"), do: {:ok, "furthest"}
   def cast("frontline"), do: {:ok, "frontline"}
   def cast("backline"), do: {:ok, "backline"}
+  def cast("min"), do: {:ok, "min"}
+  def cast("max"), do: {:ok, "max"}
   def cast(%{"factions" => factions}), do: {:ok, {"factions", factions}}
   def cast(%{"classes" => classes}), do: {:ok, {"classes", classes}}
   def cast(%{"lowest" => attribute}), do: {:ok, {"lowest", attribute}}
