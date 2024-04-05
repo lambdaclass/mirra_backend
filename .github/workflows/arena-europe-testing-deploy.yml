@@ -59,6 +59,7 @@ jobs:
           PHX_HOST: ${{ vars.HOST }}
           PORT: ${{ vars.ARENA_PORT }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
+          BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
@@ -74,6 +75,7 @@ jobs:
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
+                BOT_MANAGER_HOST=${BOT_MANAGER_HOST} \
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
