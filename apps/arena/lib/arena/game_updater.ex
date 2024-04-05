@@ -40,6 +40,7 @@ defmodule Arena.GameUpdater do
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    Process.send_after(self(), {:check_clients_connection, DateTime.utc_now() |> DateTime.to_unix(:millisecond)}, game_config.game.start_game_time_ms)
 
     {:ok, %{game_config: game_config, game_state: game_state}}
   end
@@ -49,17 +50,21 @@ defmodule Arena.GameUpdater do
   ##########################
 
   def handle_call({:move, player_id, direction, timestamp}, _from, state) do
+    game_state = move_player(player_id, direction, timestamp, state)
+
+    {:reply, :ok, %{state | game_state: game_state}}
+  end
+
+  defp move_player(player_id, direction, timestamp, state) do
     player =
       state.game_state.players
       |> Map.get(player_id)
       |> Player.move(direction)
 
-    game_state =
-      state.game_state
+    state.game_state
       |> put_in([:players, player_id], player)
       |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
+      |> put_in([:player_last_message_received, player_id], DateTime.utc_now() |> DateTime.to_unix(:millisecond))
   end
 
   def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
@@ -136,6 +141,21 @@ defmodule Arena.GameUpdater do
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
     {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
+  end
+
+  def handle_info({:check_clients_connection, last_timestamp}, state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    Process.send_after(self(), {:check_clients_connection, now}, 1000)
+
+    game_state = Enum.reduce(state.game_state.player_last_message_received, state.game_state, fn {player_id, last}, game_state ->
+      if last_timestamp > last do
+        move_player(player_id, {0.0, 0.0}, now, state)
+      else
+        game_state
+      end
+    end)
+
+    {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
@@ -552,6 +572,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:projectiles, %{})
       |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
+      |> Map.put(:player_last_message_received, %{})
       |> Map.put(:obstacles, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
