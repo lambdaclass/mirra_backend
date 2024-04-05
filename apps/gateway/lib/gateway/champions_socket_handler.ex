@@ -4,13 +4,17 @@ defmodule Gateway.ChampionsSocketHandler do
   """
 
   require Logger
-  alias Gateway.Serialization.StatAffected
-  alias Gateway.Serialization.Death
-  alias Gateway.Serialization.TagReceived
-  alias Gateway.Serialization.ModifierExpired
-  alias Gateway.Serialization.ModifierReceived
-  alias Gateway.Serialization.SkillAction
-  alias Gateway.Serialization.WebSocketResponse
+
+  alias Gateway.Serialization.{
+    StatAffected,
+    Death,
+    TagReceived,
+    ModifierExpired,
+    ModifierReceived,
+    SkillAction,
+    WebSocketResponse
+  }
+
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
   alias Gateway.Serialization.{
