@@ -87,7 +87,7 @@ defmodule Arena.GameUpdater do
   def handle_call({:use_item, player_id, _timestamp}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
+      |> Player.use_item(state.game_state, state.game_config)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -109,7 +109,7 @@ defmodule Arena.GameUpdater do
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
-      |> reset_players_effects(state.game_config.game)
+      |> reset_players_effects(state.game_config)
       |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
@@ -224,6 +224,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  ## FIXME: Can we remove this? Why delayed application?
+  ##  Technically putting the effect is inmediate, but applying it will be delayed until next tick
   def handle_info(
         {:delayed_effect_application, player_id, effects_to_apply},
         %{
@@ -397,6 +399,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  ## FIXME: remove this, we need to make a change so effects are put with a end timestamp
+  ##    and thus cleaned up on game tick
   def handle_info({:remove_effect, player_id, effect_id}, state) do
     case Map.get(state.game_state.players, player_id) do
       %{aditional_info: %{effects: %{^effect_id => _effect} = effects}} ->

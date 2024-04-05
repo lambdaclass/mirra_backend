@@ -350,33 +350,19 @@
     {
       "name": "golden_clock",
       "effects": [
-        {
-          "stamina_faster": {
-            "interval_decrease_by": 0.3,
-            "duration_ms": 7000
-          }
-        }
+        "golden_clock_effect"
       ]
     },
     {
       "name": "magic_boots",
       "effects": [
-        {
-          "speed_boost": {
-            "amount": 25,
-            "duration_ms": 10000
-          }
-        }
+        "magic_boots_effect"
       ]
     },
     {
       "name": "mirra_blessing",
       "effects": [
-        {
-          "damage_immunity": {
-            "duration_ms": 5000
-          }
-        }
+        "mirra_blessing_effect"
       ]
     }
   ],

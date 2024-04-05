@@ -2,6 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
+  alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
   alias Arena.Game.Player
 
@@ -246,24 +247,17 @@ defmodule Arena.Game.Skill do
         Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
       end)
 
+    ## FIXME: This `remove_on_action` effects should be removed in game tick, yes it could cause the
+    ## effect to be applied for a little longer than expected but it's better to have a simpler logic
     effects =
       get_in(game_state, [:players, player.id, :aditional_info, :effects])
       |> Map.reject(fn {_, effect} -> effect.remove_on_action end)
-
     game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      last_id = game_state.last_id + 1
-
+      last_id = game_state.last_id + 1 ## Hack while we still need it for next part of code
       Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
-
-      put_in(
-        game_state,
-        [:players, player.id, :aditional_info, :effects, last_id],
-        Map.put(effect, :id, last_id)
-        |> Map.put(:owner_id, player.id)
-      )
-      |> put_in([:last_id], last_id)
+      Effect.put_effect(game_state, player.id, player.id, effect)
     end)
   end
 
@@ -288,8 +282,8 @@ defmodule Arena.Game.Skill do
     Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
       should_re_apply? =
         is_nil(Map.get(mechanic_params, :last_application_time)) or
-          now - Map.get(mechanic_params, :last_application_time) >=
-            mechanic_params.effect_delay_ms
+          (not is_nil(Map.get(mechanic_params, :effect_delay_ms)) and
+             now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms)
 
       if should_re_apply? do
         do_effect_mechanics(game_state, player, effect, mechanic)
@@ -350,6 +344,13 @@ defmodule Arena.Game.Skill do
         player
     end
   end
+
+  ## FIXME: maybe this is just a sink with a list of mechanics for which their is no action to do
+  defp do_effect_mechanics(_game_state, player, _effect, mechanic) do
+    IO.inspect("Mechanic not implemented yet: #{inspect(mechanic)}")
+    player
+  end
+
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
     base_direction_normalized = Utils.normalize(base_direction)

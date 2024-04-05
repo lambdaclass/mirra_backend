@@ -3,11 +3,17 @@ defmodule Arena.Game.Effect do
   This module contains all the functionality related to effects
   """
 
-  def put_effect(game_state, player_id, effect) do
+  def put_effect(game_state, player_id, owner_id, effect) do
+    last_id = game_state.last_id + 1
+    ## TODO: add end_at timestamp so we can remove it later on
+    effect = Map.merge(effect, %{id: last_id, owner_id: owner_id})
     update_in(game_state, [:players, player_id, :aditional_info, :effects], fn
-      nil -> [effect]
-      effects -> effects ++ [effect]
+      # FIXME: change effects map to a list
+      # nil -> [effect]
+      # effects -> effects ++ [effect]
+      effects -> Map.put(effects, last_id, effect)
     end)
+    |> Map.put(:last_id, last_id)
   end
 
   @doc """
@@ -18,13 +24,13 @@ defmodule Arena.Game.Effect do
       assumes the effects are already in the player's effects list
   """
   def apply_stat_effects(player) do
-    Enum.reduce(player.effects, player, fn {_effect_id, effect}, player_acc ->
+    Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player_acc ->
       apply_stat_effect(player_acc, effect)
     end)
   end
 
   defp apply_stat_effect(player, effect) do
-    Enum.reduce(effect.mechanics, player, fn mechanic, player_acc ->
+    Enum.reduce(effect.effect_mechanics, player, fn mechanic, player_acc ->
       apply_stat_modifier(player_acc, mechanic)
     end)
   end
@@ -35,7 +41,7 @@ defmodule Arena.Game.Effect do
 
   defp apply_stat_modifier(player, {:reduce_stamina_interval, reduce_stamina_interval}) do
     stamina_speedup_by =
-      (player.aditional_info.stamina_interval * reduce_stamina_interval.interval_decrease_by)
+      (player.aditional_info.stamina_interval * reduce_stamina_interval.decrease_by)
       |> round()
 
     new_stamina_interval = player.aditional_info.stamina_interval - stamina_speedup_by

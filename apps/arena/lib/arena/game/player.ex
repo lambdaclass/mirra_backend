@@ -242,14 +242,15 @@ defmodule Arena.Game.Player do
     player.aditional_info.inventory != nil
   end
 
-  def use_item(player, game_state) do
+  def use_item(player, game_state, game_config) do
     case player.aditional_info.inventory do
       nil ->
         game_state
 
       item ->
-        Enum.reduce(item.effects, game_state, fn effect, game_state_acc ->
-          Effect.put_effect(game_state_acc, player.id, effect)
+        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+          Effect.put_effect(game_state_acc, player.id, player.id, effect)
         end)
         |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
@@ -262,7 +263,7 @@ defmodule Arena.Game.Player do
   end
 
   def reset_effects(player, game_config) do
-    character = Enum.find(game_config.characters, fn %{name: name} -> name == player.character_name end)
+    character = Enum.find(game_config.characters, fn %{name: name} -> name == player.aditional_info.character_name end)
 
     player =
       player
