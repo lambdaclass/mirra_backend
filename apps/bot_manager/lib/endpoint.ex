@@ -25,7 +25,7 @@ defmodule BotManager.Endpoint do
   # responsible for dispatching responses
   plug(:dispatch)
 
-  get "/join/:game_id/:bot_client" do
+  get "/join/:arena_url/:arena_port/:game_id/:bot_client/" do
     bot_pid = BotManager.BotSupervisor.add_bot_to_game(conn.params) || ""
 
     conn

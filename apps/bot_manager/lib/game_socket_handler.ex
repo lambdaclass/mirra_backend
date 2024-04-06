@@ -9,9 +9,8 @@ defmodule BotManager.GameSocketHandler do
 
   @message_delay_ms 300
 
-  def start_link(%{"bot_client" => bot_client, "game_id" => game_id}) do
-    Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id}")
-    ws_url = ws_url(bot_client, game_id)
+  def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
+    ws_url = ws_url(params)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
       client_id: bot_client,
@@ -88,15 +87,22 @@ defmodule BotManager.GameSocketHandler do
     :ok
   end
 
-  defp ws_url(player_id, game_id) do
-    host = System.get_env("SERVER_HOST", "localhost:4000")
+  defp ws_url(%{
+         "bot_client" => bot_client,
+         "game_id" => game_id,
+         "arena_url" => arena_url,
+         "arena_port" => arena_port
+       }) do
+    Logger.info(
+      "Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_url}:#{arena_port}"
+    )
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
-        "wss://#{host}/play/#{game_id}/#{player_id}"
+        "wss://#{arena_url}:#{arena_port}/play/#{game_id}/#{bot_client}"
 
       _ ->
-        "ws://#{host}/play/#{game_id}/#{player_id}"
+        "ws://#{arena_url}:#{arena_port}/play/#{game_id}/#{bot_client}"
     end
   end
 

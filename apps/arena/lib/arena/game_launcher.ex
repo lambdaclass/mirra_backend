@@ -116,9 +116,11 @@ defmodule Arena.GameLauncher do
 
   defp build_bot_url(game_pid, bot_client) do
     encoded_game_pid = game_pid |> :erlang.term_to_binary() |> Base58.encode()
+    server_url = System.get_env("PHX_HOST") || "localhost"
+    server_port = System.get_env("PORT") || "4000"
     # TODO remove this hardcode url when servers are implemented
-    host = System.get_env("BOT_MANAGER_HOST", "localhost")
-    port = System.get_env("BOT_MANAGER_PORT", "4003")
-    "http://#{host}:#{port}/join/#{encoded_game_pid}/#{bot_client}"
+    bot_manager_host = System.get_env("BOT_MANAGER_HOST", "localhost")
+    bot_manager_port = System.get_env("BOT_MANAGER_PORT", "4003")
+    "http://#{bot_manager_host}:#{bot_manager_port}/join/#{server_url}/#{server_port}/#{encoded_game_pid}/#{bot_client}"
   end
 end
