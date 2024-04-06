@@ -87,9 +87,3 @@ config :configurator, ConfiguratorWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "VD24DNfwxloA29uofA2lhyx0yMQ48/uwJJsoUHksnksuEk5AcV4C+jNmxkQeP7f8",
   server: false
-
-##################################
-# App configuration: bot_manager #
-##################################
-
-config :bot_manager, :end_point, port: [port: System.get_env("BOT_MANAGER_PORT") || 4003]
