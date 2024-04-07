@@ -63,8 +63,7 @@ defmodule ArenaLoadTest.SocketHandler do
         "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
       target_server ->
-        server_url = SocketSupervisor.get_server_url(target_server)
-        "wss://#{server_url}/join/#{player_id}/#{character}/#{player_name}"
+        "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
     end
   end
 

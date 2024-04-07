@@ -115,8 +115,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
       target_server ->
-        server_url = SocketSupervisor.get_server_url(target_server)
-        "wss://#{server_url}/play/#{game_id}/#{client_id}"
+        "wss://#{target_server}/play/#{game_id}/#{client_id}"
     end
   end
 
