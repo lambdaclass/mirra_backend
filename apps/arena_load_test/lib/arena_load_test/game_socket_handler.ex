@@ -95,6 +95,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         raise KeyError, message: "Player with ID #{client_id} doesn't exist."
     end
 
+    SocketSupervisor.add_new_client(client_id)
     Logger.info("Player websocket terminated. Game Ended.")
     exit(:normal)
   end
