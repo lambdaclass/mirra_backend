@@ -5,7 +5,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   use DynamicSupervisor
   alias ArenaLoadTest.SocketHandler
   alias ArenaLoadTest.GameSocketHandler
-  alias ArenaLoadTest.ClientsLogger
+  alias ArenaLoadTest.LoadtestManager
   require Logger
 
   def start_link(args) do
@@ -34,7 +34,9 @@ defmodule ArenaLoadTest.SocketSupervisor do
   end
 
   # Creates `num_clients` clients to join a game
-  def spawn_players(num_clients) do
+  def spawn_players(num_clients, playtime_duration_ms \\ 999999) do
+    Process.send_after(LoadtestManager, :loadtest_finished, playtime_duration_ms)
+
     create_ets_table(:clients)
     create_ets_table(:players)
 
@@ -44,10 +46,14 @@ defmodule ArenaLoadTest.SocketSupervisor do
       Logger.info("Clients alive: #{:ets.info(:clients, :size)}")
     end)
 
-    DynamicSupervisor.start_child(
-      __MODULE__,
-      {ClientsLogger, %{}}
-    )
+    send(LoadtestManager, :clients_log)
+  end
+
+  def terminate_children() do
+    children = DynamicSupervisor.which_children(__MODULE__)
+    Enum.each(children, fn {_, child_pid, _, _} ->
+      DynamicSupervisor.terminate_child(__MODULE__, child_pid)
+    end)
   end
 
   # Create a public ets table by given name.
