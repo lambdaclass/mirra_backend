@@ -12,6 +12,8 @@ defmodule ArenaLoadTest.SocketSupervisor do
   end
 
   def add_new_client(client_id) do
+    true = :ets.insert(:clients, {client_id, client_id})
+
     DynamicSupervisor.start_child(
       __MODULE__,
       {SocketHandler, client_id}
@@ -32,17 +34,22 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
   # Creates `num_clients` clients to join a game
   def spawn_players(num_clients) do
-    case :ets.whereis(:clients) do
-      :undefined -> :ets.new(:clients, [:set, :named_table, :public])
-      _table_exists_already -> nil
-    end
+    create_ets_table(:clients)
+    create_ets_table(:players)
 
     Enum.each(1..num_clients, fn client_number ->
       Logger.info("Iteration: #{client_number}")
       {:ok, _pid} = add_new_client(client_number)
-      true = :ets.insert(:clients, {client_number, "1"})
       Logger.info("Clients alive: #{:ets.info(:clients, :size)}")
     end)
   end
 
+  # Create a public ets table by given name.
+  # Table is not created if it exists already.
+  defp create_ets_table(table_name) do
+    case :ets.whereis(table_name) do
+      :undefined -> :ets.new(table_name, [:set, :named_table, :public])
+      _table_exists_already -> nil
+    end
+  end
 end

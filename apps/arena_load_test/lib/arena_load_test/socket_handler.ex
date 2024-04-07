@@ -35,11 +35,21 @@ defmodule ArenaLoadTest.SocketHandler do
     game_id = Serialization.GameState.decode(game_state).game_id
     Logger.info("Client joining game with id: #{game_id}")
 
+    case :ets.lookup(:clients, state.client_id) do
+      [{client_id, _}] ->
+        :ets.delete(:clients, client_id)
+
+      [] ->
+        raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
+    end
+
     {:ok, pid} =
       SocketSupervisor.add_new_player(
         state.client_id,
         game_id
       )
+
+    true = :ets.insert(:players, {state.client_id, game_id})
 
     Process.send(pid, :move, [])
     Process.send(pid, :attack, [])
