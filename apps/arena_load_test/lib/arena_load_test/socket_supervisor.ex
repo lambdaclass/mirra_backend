@@ -5,6 +5,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   use DynamicSupervisor
   alias ArenaLoadTest.SocketHandler
   alias ArenaLoadTest.GameSocketHandler
+  alias ArenaLoadTest.ClientsLogger
   require Logger
 
   def start_link(args) do
@@ -42,6 +43,11 @@ defmodule ArenaLoadTest.SocketSupervisor do
       {:ok, _pid} = add_new_client(client_number)
       Logger.info("Clients alive: #{:ets.info(:clients, :size)}")
     end)
+
+    DynamicSupervisor.start_child(
+      __MODULE__,
+      {ClientsLogger, %{}}
+    )
   end
 
   # Create a public ets table by given name.
