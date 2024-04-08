@@ -276,7 +276,10 @@ defmodule Arena.Game.Player do
   def remove_effects_on_action(player) do
     effects =
       player.aditional_info.effects
-      |> Enum.reject(fn effect -> effect.remove_on_action and Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end) end)
+      |> Enum.reject(fn effect ->
+        effect.remove_on_action and
+          Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end)
+      end)
 
     put_in(player, [:aditional_info, :effects], effects)
   end

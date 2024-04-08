@@ -333,7 +333,6 @@ defmodule Arena.Game.Skill do
     player
   end
 
-
   defp calculate_angle_directions(amount, angle_between, base_direction) do
     base_direction_normalized = Utils.normalize(base_direction)
     middle = if rem(amount, 2) == 1, do: [base_direction_normalized], else: []

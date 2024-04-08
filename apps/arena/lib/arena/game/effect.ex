@@ -9,6 +9,7 @@ defmodule Arena.Game.Effect do
     ## TODO: remove `id` from effect, unless it is really necessary
     effect_extra_attributes = %{id: last_id, owner_id: owner_id, expires_at: expires_at}
     effect = Map.merge(effect, effect_extra_attributes)
+
     update_in(game_state, [:players, player_id, :aditional_info, :effects], fn
       nil -> [effect]
       effects -> effects ++ [effect]
@@ -21,6 +22,7 @@ defmodule Arena.Game.Effect do
   ##  owner is not precise enough
   def put_non_owner_stackable_effect(game_state, player_id, owner_id, effect) do
     player = game_state.players[player_id]
+
     contain_effects? =
       Enum.any?(player.aditional_info.effects, fn player_effect ->
         player_effect.owner_id == owner_id and player_effect.name == effect.name
