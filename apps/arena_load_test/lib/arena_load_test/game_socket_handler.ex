@@ -23,13 +23,17 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Callbacks
-  def handle_frame({_type, _msg} = _frame, state) do
-    {:ok, state}
+  def handle_frame({:binary, msg} = _frame, state) do
+    {event_type, _state} = Serialization.GameEvent.decode(msg) |> Map.get(:event)
+
+    if event_type == :finished do
+      {:stop, state}
+    else
+      {:ok, state}
+    end
   end
 
   def handle_info(:move, state) do
-    Logger.info("Sending GameAction frame with MOVE payload")
-
     {x, y} = create_random_movement()
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
@@ -53,7 +57,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_info(:attack, state) do
-    Logger.info("Sending GameAction frame with ATTACK payload")
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     {x, y} = create_random_movement()
 
@@ -81,6 +84,19 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
   def handle_cast({:send, {_type, _msg} = frame}, state) do
     {:reply, frame, state}
+  end
+
+  def terminate(_, state) do
+    case :ets.lookup(:clients, state.client_id) do
+      [{client_id, _}] ->
+        :ets.delete(:clients, client_id)
+
+      [] ->
+        raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
+    end
+
+    Logger.info("Player websocket terminated. Game Ended.")
+    exit(:normal)
   end
 
   # Private

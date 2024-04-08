@@ -13,7 +13,8 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
-    circular_damage_area = Entities.make_circular_area(entity.id, entity.position, circle_hit.range)
+    circle_center_position = get_position_with_offset(entity.position, entity.direction, circle_hit.offset)
+    circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -40,6 +41,7 @@ defmodule Arena.Game.Skill do
       end)
 
     %{game_state | players: players}
+    |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
   def do_mechanic(game_state, entity, {:cone_hit, cone_hit}, _skill_params) do
@@ -92,6 +94,20 @@ defmodule Arena.Game.Skill do
     do_mechanic(game_state, entity, {:cone_hit, multi_cone_hit}, skill_params)
   end
 
+  def do_mechanic(game_state, entity, {:multi_circle_hit, multi_circle_hit}, skill_params) do
+    Enum.each(1..(multi_circle_hit.amount - 1), fn i ->
+      mechanic = {:circle_hit, multi_circle_hit}
+
+      Process.send_after(
+        self(),
+        {:trigger_mechanic, entity.id, mechanic, skill_params},
+        i * multi_circle_hit.interval_ms
+      )
+    end)
+
+    do_mechanic(game_state, entity, {:circle_hit, multi_circle_hit}, skill_params)
+  end
+
   def do_mechanic(
         game_state,
         entity,
@@ -100,13 +116,13 @@ defmodule Arena.Game.Skill do
       ) do
     Process.send_after(self(), {:stop_dash, entity.id, entity.speed}, duration)
 
-    player =
+    entity =
       entity
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    players = Map.put(game_state.players, entity.id, player)
+    players = Map.put(game_state.players, entity.id, entity)
 
     %{game_state | players: players}
   end
@@ -131,7 +147,11 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(entity_player_owner, repeated_shot),
+        get_position_with_offset(
+          entity_player_owner.position,
+          entity_player_owner.direction,
+          repeated_shot.projectile_offset
+        ),
         randomize_direction_in_angle(entity.direction, repeated_shot.angle),
         entity_player_owner.id,
         skill_params.skill_key,
@@ -155,7 +175,11 @@ defmodule Arena.Game.Skill do
       projectile =
         Entities.new_projectile(
           last_id,
-          get_real_projectile_spawn_position(entity_player_owner, multishot),
+          get_position_with_offset(
+            entity_player_owner.position,
+            entity_player_owner.direction,
+            multishot.projectile_offset
+          ),
           direction,
           entity_player_owner.id,
           skill_params.skill_key,
@@ -177,7 +201,11 @@ defmodule Arena.Game.Skill do
     projectile =
       Entities.new_projectile(
         last_id,
-        get_real_projectile_spawn_position(entity_player_owner, simple_shoot),
+        get_position_with_offset(
+          entity_player_owner.position,
+          entity_player_owner.direction,
+          simple_shoot.projectile_offset
+        ),
         entity.direction,
         entity_player_owner.id,
         skill_params.skill_key,
@@ -213,7 +241,21 @@ defmodule Arena.Game.Skill do
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    put_in(game_state, [:players, entity.id], player)
+    put_in(game_state, [:players, player.id], player)
+  end
+
+  def do_mechanic(game_state, entity, {:teleport, teleport}, %{skill_direction: skill_target}) do
+    target_position = %{
+      x: entity.position.x + skill_target.x * teleport.range,
+      y: entity.position.y + skill_target.y * teleport.range
+    }
+
+    entity =
+      entity
+      |> Physics.move_entity_to_position(target_position, game_state.external_wall)
+      |> Map.put(:aditional_info, entity.aditional_info)
+
+    put_in(game_state, [:players, entity.id], entity)
   end
 
   def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
@@ -296,11 +338,15 @@ defmodule Arena.Game.Skill do
         player
 
       pool ->
-        direction = Physics.get_direction_from_positions(player.position, pool.position)
+        if player.aditional_info.damage_immunity do
+          player
+        else
+          direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-        Physics.move_entity_to_direction(player, direction, pull_params.force)
-        |> Map.put(:aditional_info, player.aditional_info)
-        |> Map.put(:collides_with, player.collides_with)
+          Physics.move_entity_to_direction(player, direction, pull_params.force)
+          |> Map.put(:aditional_info, player.aditional_info)
+          |> Map.put(:collides_with, player.collides_with)
+        end
     end
   end
 
@@ -355,9 +401,9 @@ defmodule Arena.Game.Skill do
     Enum.concat([add_side, middle, sub_side])
   end
 
-  defp get_real_projectile_spawn_position(spawner, specs) do
-    real_position_x = spawner.position.x + specs.projectile_offset * spawner.direction.x
-    real_position_y = spawner.position.y + specs.projectile_offset * spawner.direction.y
+  defp get_position_with_offset(position, direction, offset) do
+    real_position_x = position.x + offset * direction.x
+    real_position_y = position.y + offset * direction.y
 
     %{x: real_position_x, y: real_position_y}
   end
