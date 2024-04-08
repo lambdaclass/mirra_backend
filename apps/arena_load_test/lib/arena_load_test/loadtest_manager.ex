@@ -17,9 +17,6 @@ defmodule ArenaLoadTest.LoadtestManager do
     {:ok, %{}}
   end
 
-  @doc """
-  Periodically prints in terminal the amount of websockets (in-game and in-queue).
-  """
   @impl true
   def handle_info(:clients_log, state) do
     Logger.info("Clients waiting for a game: #{:ets.info(:clients, :size)}")
@@ -28,9 +25,6 @@ defmodule ArenaLoadTest.LoadtestManager do
     {:noreply, state}
   end
 
-  @doc """
-  Finishes the running loadtest.
-  """
   @impl true
   def handle_info(:loadtest_finished, state) do
     SocketSupervisor.terminate_children()
