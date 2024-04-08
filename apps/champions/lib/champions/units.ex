@@ -380,7 +380,6 @@ defmodule Champions.Units do
   For now, we just return the base character's stat.
   """
   def get_max_health(unit) do
-    # Additive modifiers
     health_modifiers = Enum.filter(unit.items.modifiers, &(&1.attribute == "health"))
     additive_modifiers = Enum.filter(health_modifiers, &(&1.modifier_operation == "Add"))
     multiplicative_modifiers = Enum.filter(health_modifiers, &(&1.modifier_operation == "Multiply"))
@@ -397,7 +396,14 @@ defmodule Champions.Units do
   For now, we just return the base character's stat.
   """
   def get_attack(unit) do
-    unit.character.base_attack
+    attack_modifiers = Enum.filter(unit.items.modifiers, &(&1.attribute == "attack"))
+    additive_modifiers = Enum.filter(attack_modifiers, &(&1.modifier_operation == "Add"))
+    multiplicative_modifiers = Enum.filter(attack_modifiers, &(&1.modifier_operation == "Multiply"))
+
+    base_attack = unit.character.base_attack
+    additive_bonus = Enum.reduce(additive_modifiers, 0, fn mod, acc -> acc + mod.float_magnitude end)
+    multiplicative_bonus = Enum.reduce(multiplicative_modifiers, 1, fn mod, acc -> acc * mod.float_magnitude end)
+    (base_attack + additive_bonus) * multiplicative_bonus
   end
 
   @doc """
@@ -406,6 +412,13 @@ defmodule Champions.Units do
   For now, we just return the base character's stat.
   """
   def get_defense(unit) do
-    unit.character.base_defense
+    defense_modifiers = Enum.filter(unit.items.modifiers, &(&1.attribute == "defense"))
+    additive_modifiers = Enum.filter(defense_modifiers, &(&1.modifier_operation == "Add"))
+    multiplicative_modifiers = Enum.filter(defense_modifiers, &(&1.modifier_operation == "Multiply"))
+
+    base_defense = unit.character.base_defense
+    additive_bonus = Enum.reduce(additive_modifiers, 0, fn mod, acc -> acc + mod.float_magnitude end)
+    multiplicative_bonus = Enum.reduce(multiplicative_modifiers, 1, fn mod, acc -> acc * mod.float_magnitude end)
+    (base_defense + additive_bonus) * multiplicative_bonus
   end
 end
