@@ -10,6 +10,7 @@ on:
           - arena
           - arena_load_test
           - game_client
+          - bot_manager
         required: true
       target_server:
         type: choice
@@ -62,12 +63,11 @@ jobs:
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
           TARGET_SERVER: ${{ inputs.target_server }}
-          BRAZIL_HOST: ${{ vars.brazil_host }}
-          EUROPE_HOST: ${{ vars.europe_host }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
-          DATABASE_URL: ${secrets.DATABASE_URL}
+          BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_LOADTEST }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
@@ -79,11 +79,10 @@ jobs:
                 MIX_ENV=${MIX_ENV} \
                 RELEASE=${RELEASE} \
                 TARGET_SERVER=${TARGET_SERVER} \
-                BRAZIL_HOST=${BRAZIL_HOST} \
-                EUROPE_HOST=${EUROPE_HOST} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
+                BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
