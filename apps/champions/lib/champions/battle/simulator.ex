@@ -11,8 +11,8 @@ defmodule Champions.Battle.Simulator do
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
-  [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
-  [ ] Duration - Applied once and reverted once its duration ends.
+  [x] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
+  [x] Duration - Applied once and reverted once its duration ends.
 
   They also have different targeting strategies:
   [x] Random
@@ -42,7 +42,8 @@ defmodule Champions.Battle.Simulator do
 
   require Logger
 
-  @maximum_steps 500
+  @default_seed 1
+  @default_maximum_steps 500
   @ultimate_energy_cost 500
 
   @doc """
@@ -51,6 +52,11 @@ defmodule Champions.Battle.Simulator do
 
   Returns a map with the the initial state of the battle, the development of the battle for animation, and the result of the battle.
 
+  Options allowed are:
+
+  - `maximum_steps`
+  - `seed`
+
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
@@ -58,8 +64,12 @@ defmodule Champions.Battle.Simulator do
       iex> run_battle(team_1, team_2)
       %{initial_state: %{}, steps: [%{actions: [], step_number: 1}, ...], result: :team_1}
   """
-  def run_battle(team_1, team_2, seed \\ 1) do
+  def run_battle(team_1, team_2, options \\ []) do
+    maximum_steps = options[:maximum_steps] || @default_maximum_steps
+    seed = options[:seed] || @default_seed
+
     :rand.seed(:default, seed)
+
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
     units = Map.merge(team_1, team_2)
@@ -71,9 +81,9 @@ defmodule Champions.Battle.Simulator do
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
 
     {history, result} =
-      Enum.reduce_while(1..@maximum_steps, {initial_state, [%{step_number: 1, actions: []}]}, fn step,
-                                                                                                 {initial_step_state,
-                                                                                                  history} ->
+      Enum.reduce_while(1..maximum_steps, {initial_state, [%{step_number: 1, actions: []}]}, fn step,
+                                                                                                {initial_step_state,
+                                                                                                 history} ->
         {new_state, new_history} =
           {Map.put(initial_step_state, :step_number, step), history}
           |> process_step_for_units()
@@ -85,7 +95,7 @@ defmodule Champions.Battle.Simulator do
         {new_state, new_history}
         |> remove_dead_units()
         |> advance_history_step()
-        |> check_winner(step)
+        |> check_winner(step, maximum_steps)
       end)
 
     %{initial_state: transform_initial_state_for_replay(initial_state), steps: Enum.reverse(history), result: result}
@@ -115,7 +125,7 @@ defmodule Champions.Battle.Simulator do
 
   # Check if the battle has ended.
   # Battle can end if all unit of a team are dead, or if the maximum step amount has been reached.
-  defp check_winner({state, history}, step) do
+  defp check_winner({state, history}, step, maximum_steps) do
     winner =
       cond do
         Enum.empty?(state.units) -> "tie"
@@ -126,7 +136,7 @@ defmodule Champions.Battle.Simulator do
 
     case winner do
       "none" ->
-        if step == @maximum_steps do
+        if step == maximum_steps do
           Logger.info("Battle timeout.")
           {:halt, "timeout"}
         else
