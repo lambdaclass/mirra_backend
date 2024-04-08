@@ -126,7 +126,8 @@ defmodule Champions.Test.Battle do
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       # Check that the battle ends in timeout when the steps are not enough
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       # Decrease the cooldown and check that the battle ends in victory when the steps are enough
       {:ok, character} =
@@ -134,7 +135,8 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       # Add animation duration delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
@@ -144,10 +146,12 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+               |> IO.inspect()
 
-      assert :team_1 ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps_to_win)
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps_to_win).result
 
       # Add animation trigger delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
@@ -157,9 +161,11 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
-      # assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps + 4)
+      # assert "team_1" ==
+      #          Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps + 4).result
 
       # Add initial delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, _character} =
@@ -190,14 +196,15 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       required_steps_to_win_with_initial_delay = required_steps_to_win + 1
 
-      assert :team_1 ==
+      assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy],
                  maximum_steps: required_steps_to_win_with_initial_delay
-               )
+               ).result
     end
 
     test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
@@ -272,7 +279,8 @@ defmodule Champions.Test.Battle do
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
       # Check that the battle ends in timeout even though the maximum steps is a big number
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1000)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1000).result |> IO.inspect()
 
       # Change the component to have 100% chance to be applied
       {:ok, _character} =
@@ -308,7 +316,8 @@ defmodule Champions.Test.Battle do
       {:ok, unit} = Units.get_unit(unit.id)
 
       # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
     end
 
     test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
@@ -402,8 +411,10 @@ defmodule Champions.Test.Battle do
 
       unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
+
+      assert "team_1" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21).result
     end
   end
 end
