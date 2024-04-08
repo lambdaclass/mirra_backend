@@ -252,7 +252,8 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  #FIXME: refactor into Effect, take a closer look at how the recurring effects are re-applied
+  ## TODO: refactor into Effect module, take a closer look at how the recurring effects are re-applied
+  ##    specifically the mess around apply_effect_mechanic/3 and do-effect_mechanics/4
   def apply_effect_mechanic(%{players: players} = game_state) do
     Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
       if Player.alive?(player) do
@@ -327,9 +328,8 @@ defmodule Arena.Game.Skill do
     end
   end
 
-  ## FIXME: maybe this is just a sink with a list of mechanics for which their is no action to do
-  defp do_effect_mechanics(_game_state, player, _effect, mechanic) do
-    IO.inspect("Mechanic not implemented yet: #{inspect(mechanic)}")
+  ## Sink for mechanics that don't do anything
+  defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
     player
   end
 
