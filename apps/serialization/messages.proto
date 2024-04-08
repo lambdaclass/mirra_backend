@@ -150,7 +150,7 @@ message Player {
   bool recharging_stamina = 7;
   string character_name = 8;
   uint64 power_ups = 9;
-  map<uint64, Effect> effects = 10;
+  repeated Effect effects = 10;
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
 }

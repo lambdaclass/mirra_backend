@@ -328,15 +328,6 @@ defmodule GameClient.Protobuf.Entity do
   field(:pool, 17, type: GameClient.Protobuf.Pool, oneof: 0)
 end
 
-defmodule GameClient.Protobuf.Player.EffectsEntry do
-  @moduledoc false
-
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.Effect)
-end
-
 defmodule GameClient.Protobuf.Player.CooldownsEntry do
   @moduledoc false
 
@@ -366,7 +357,7 @@ defmodule GameClient.Protobuf.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
-  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
+  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Effect)
   field(:inventory, 11, type: GameClient.Protobuf.Item)
   field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
 end

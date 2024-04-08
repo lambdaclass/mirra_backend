@@ -256,10 +256,9 @@ defmodule Arena.Game.Player do
     end
   end
 
-  ## FIXME: effects map to list
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
-    |> Enum.any?(fn {_, effect} ->
+    |> Enum.any?(fn effect ->
       Enum.any?(effect.effect_mechanics, fn {mechanic, _} -> mechanic == :invisible end)
     end)
   end
@@ -269,7 +268,7 @@ defmodule Arena.Game.Player do
 
     effects =
       player.aditional_info.effects
-      |> Map.filter(fn {_id, effect} -> effect.expires_at > now end)
+      |> Enum.filter(fn effect -> effect.expires_at > now end)
 
     put_in(player, [:aditional_info, :effects], effects)
   end
@@ -277,7 +276,7 @@ defmodule Arena.Game.Player do
   def remove_effects_on_action(player) do
     effects =
       player.aditional_info.effects
-      |> Map.reject(fn {_id, effect} -> effect.remove_on_action and Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end) end)
+      |> Enum.reject(fn effect -> effect.remove_on_action and Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end) end)
 
     put_in(player, [:aditional_info, :effects], effects)
   end

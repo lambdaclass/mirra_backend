@@ -252,11 +252,12 @@ defmodule Arena.Game.Skill do
     end)
   end
 
+  #FIXME: refactor into Effect, take a closer look at how the recurring effects are re-applied
   def apply_effect_mechanic(%{players: players} = game_state) do
     Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
       if Player.alive?(player) do
         player =
-          Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
+          Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
             apply_effect_mechanic(player, effect, game_state)
           end)
 
@@ -278,17 +279,7 @@ defmodule Arena.Game.Skill do
 
       if should_re_apply? do
         do_effect_mechanics(game_state, player, effect, mechanic)
-        |> put_in(
-          [
-            :aditional_info,
-            :effects,
-            effect.id,
-            :effect_mechanics,
-            mechanic_name,
-            :last_application_time
-          ],
-          now
-        )
+        |> Effect.put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
       else
         player
       end

@@ -6,13 +6,12 @@ defmodule Arena.Game.Effect do
   def put_effect(game_state, player_id, owner_id, effect) do
     last_id = game_state.last_id + 1
     expires_at = System.monotonic_time(:millisecond) + effect.duration_ms
+    ## TODO: remove `id` from effect, unless it is really necessary
     effect_extra_attributes = %{id: last_id, owner_id: owner_id, expires_at: expires_at}
     effect = Map.merge(effect, effect_extra_attributes)
     update_in(game_state, [:players, player_id, :aditional_info, :effects], fn
-      # FIXME: change effects map to a list
-      # nil -> [effect]
-      # effects -> effects ++ [effect]
-      effects -> Map.put(effects, last_id, effect)
+      nil -> [effect]
+      effects -> effects ++ [effect]
     end)
     |> Map.put(:last_id, last_id)
   end
@@ -23,7 +22,7 @@ defmodule Arena.Game.Effect do
   def put_non_owner_stackable_effect(game_state, player_id, owner_id, effect) do
     player = game_state.players[player_id]
     contain_effects? =
-      Enum.any?(player.aditional_info.effects, fn {_effect_id, player_effect} ->
+      Enum.any?(player.aditional_info.effects, fn player_effect ->
         player_effect.owner_id == owner_id and player_effect.name == effect.name
       end)
 
@@ -36,7 +35,7 @@ defmodule Arena.Game.Effect do
 
   def remove_owner_effects(game_state, player_id, owner_id) do
     update_in(game_state, [:players, player_id, :aditional_info, :effects], fn current_effects ->
-      Map.reject(current_effects, fn {_effect_id, effect} -> effect.owner_id == owner_id end)
+      Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
     end)
   end
 
@@ -48,7 +47,7 @@ defmodule Arena.Game.Effect do
       assumes the effects are already in the player's effects list
   """
   def apply_stat_effects(player) do
-    Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player_acc ->
+    Enum.reduce(player.aditional_info.effects, player, fn effect, player_acc ->
       apply_stat_effect(player_acc, effect)
     end)
   end
@@ -83,5 +82,20 @@ defmodule Arena.Game.Effect do
 
   defp apply_stat_modifier(player, _) do
     player
+  end
+
+  @doc """
+  This function finds an updates the given attributes of an effect in a player list of effects
+  """
+  def put_in_effect(player, effect, keys, value) do
+    update_in(player, [:aditional_info, :effects], fn effects ->
+      Enum.map(effects, fn current_effect ->
+        if current_effect.id == effect.id do
+          put_in(current_effect, keys, value)
+        else
+          current_effect
+        end
+      end)
+    end)
   end
 end

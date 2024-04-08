@@ -39,7 +39,7 @@ defmodule Arena.Entities do
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
-        effects: %{},
+        effects: [],
         cooldowns: %{},
         bonus_damage: 0
       }
