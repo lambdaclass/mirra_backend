@@ -81,22 +81,24 @@ defmodule Champions.Battle.Simulator do
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
 
     {history, result} =
-      Enum.reduce_while(1..maximum_steps, {initial_state, [%{step_number: 1, actions: []}]}, fn step,
-                                                                                                {initial_step_state,
-                                                                                                 history} ->
-        {new_state, new_history} =
-          {Map.put(initial_step_state, :step_number, step), history}
-          |> process_step_for_units()
-          |> process_step_for_skills(initial_step_state)
-          |> process_step_for_effects()
+      Enum.reduce_while(
+        1..maximum_steps,
+        {initial_state, []},
+        fn step, {initial_step_state, history} ->
+          {new_state, new_history} =
+            {Map.put(initial_step_state, :step_number, step), history}
+            |> advance_history_step()
+            |> process_step_for_units()
+            |> process_step_for_skills(initial_step_state)
+            |> process_step_for_effects()
 
-        Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
+          Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
-        {new_state, new_history}
-        |> remove_dead_units()
-        |> advance_history_step()
-        |> check_winner(step, maximum_steps)
-      end)
+          {new_state, new_history}
+          |> remove_dead_units()
+          |> check_winner(step, maximum_steps)
+        end
+      )
 
     %{initial_state: transform_initial_state_for_replay(initial_state), steps: Enum.reverse(history), result: result}
   end
@@ -117,6 +119,10 @@ defmodule Champions.Battle.Simulator do
       end)
 
     {Map.put(state, :units, new_units), new_history}
+  end
+
+  defp advance_history_step({state, []}) do
+    {state, [%{step_number: 1, actions: []}]}
   end
 
   defp advance_history_step({state, [%{step_number: step_number} | _tail] = history}) do
