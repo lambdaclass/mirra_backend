@@ -70,15 +70,16 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   defp handle_game_event({:update, game_state}, socket) do
-    Enum.concat([
-      game_state.players,
-      game_state.projectiles,
-      game_state.items,
-      game_state.obstacles,
-      game_state.pools,
-      game_state.bushes
-    ])
-    |> Enum.map(&transform_entity_entry/1)
+    entities =
+      Enum.concat([
+        game_state.players,
+        game_state.projectiles,
+        game_state.items,
+        game_state.obstacles,
+        game_state.pools,
+        game_state.bushes
+      ])
+      |> Enum.map(&transform_entity_entry/1)
 
     {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
   end
