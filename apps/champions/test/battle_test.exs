@@ -17,39 +17,7 @@ defmodule Champions.Test.BattleTest do
   alias GameBackend.Units
 
   setup_all do
-    {:ok, target_dummy_user} = Users.register("BattleUser")
-
-    # Create a character that won't ever get to attack because of its long cooldown. His health will be 10.
-    {:ok, target_dummy_char} =
-      Characters.insert_character(%{
-        game_id: 2,
-        name: "Target Dummy",
-        active: true,
-        faction: "Kaline",
-        class: "Warrior",
-        base_health: 10,
-        base_attack: 0,
-        base_defense: 0,
-        basic_skill: %{
-          effects: [],
-          cooldown: 9999
-        },
-        ultimate_skill: %{
-          effects: []
-        }
-      })
-
-    {:ok, target_dummy} =
-      Units.insert_unit(%{
-        user_id: target_dummy_user.id,
-        character_id: target_dummy_char.id,
-        selected: true,
-        level: 1,
-        tier: 1
-      })
-
-    target_dummy = Repo.preload(target_dummy, character: [:basic_skill, :ultimate_skill])
-
+    target_dummy = create_target_dummy()
     {:ok, %{target_dummy: target_dummy}}
   end
 
@@ -63,67 +31,9 @@ defmodule Champions.Test.BattleTest do
 
       # Create a character with a basic skill that has a cooldown too long to execute
       # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
-      basic_skill_params = %{
-        name: "Basic",
-        energy_regen: 0,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
-          %{
-            type: "instant",
-            initial_delay: 0,
-            components: [],
-            modifier: [],
-            executions: [
-              %{
-                type: "DealDamage",
-                attack_ratio: 0.5,
-                energy_recharge: 50,
-                delay: 0
-              }
-            ],
-            target_strategy: "random",
-            target_count: 1,
-            target_allies: false,
-            target_attribute: "Health"
-          }
-        ],
-        cooldown: too_long_cooldown
-      }
-
-      {:ok, character} =
-        GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
-          name: "Execution-DealDamage Character",
-          active: true,
-          faction: "Kaline",
-          class: "Assassin",
-          # Multiplied by the attack ratio of the basic skill, we get 10
-          base_attack: 20,
-          base_health: 100,
-          base_defense: 100,
-          basic_skill: basic_skill_params,
-          ultimate_skill: %{
-            name: "None",
-            energy_regen: 0,
-            animation_duration: 0,
-            animation_trigger: 0,
-            effects: []
-          }
-        })
-
-      {:ok, unit} =
-        Units.insert_unit(%{
-          character_id: character.id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: user.id,
-          slot: 1
-        })
-
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+      basic_skill_params = basic_skill_params_with_cooldown(too_long_cooldown)
+      character = create_character("Execution-DealDamage Character", basic_skill_params, dummy_ultimate_skill_params())
+      unit = create_unit(character.id, user.id)
 
       # Check that the battle ends in timeout when the steps are not enough
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
@@ -211,12 +121,9 @@ defmodule Champions.Test.BattleTest do
       cooldown = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
-      basic_skill_params = %{
-        name: "Basic",
-        energy_regen: 0,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
+      basic_skill_params =
+        basic_skill_params_with_cooldown(cooldown)
+        |> Map.put(:effects, [
           %{
             type: "instant",
             initial_delay: 0,
@@ -240,42 +147,10 @@ defmodule Champions.Test.BattleTest do
             target_allies: false,
             target_attribute: "Health"
           }
-        ],
-        cooldown: cooldown
-      }
+        ])
 
-      {:ok, character} =
-        GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
-          name: "ComponentsCharacter",
-          active: true,
-          faction: "Kaline",
-          class: "Assassin",
-          base_attack: 20,
-          base_health: 100,
-          base_defense: 100,
-          basic_skill: basic_skill_params,
-          ultimate_skill: %{
-            name: "None",
-            energy_regen: 0,
-            animation_duration: 0,
-            animation_trigger: 0,
-            effects: []
-          }
-        })
-
-      {:ok, unit} =
-        Units.insert_unit(%{
-          character_id: character.id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: user.id,
-          slot: 1
-        })
-
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+      character = create_character("ComponentsCharacter", basic_skill_params, dummy_ultimate_skill_params())
+      unit = create_unit(character.id, user.id)
 
       # Check that the battle ends in timeout even though the maximum steps is a big number
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1000)
@@ -326,12 +201,9 @@ defmodule Champions.Test.BattleTest do
       cooldown = 1
 
       # Configure a basic skill with a modifier that increases the attack ratio
-      basic_skill_params = %{
-        name: "Basic",
-        energy_regen: 500,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
+      basic_skill_params =
+        basic_skill_params_with_cooldown(cooldown)
+        |> Map.put(:effects, [
           %{
             type: %{"duration" => 1, "period" => 0},
             initial_delay: 0,
@@ -350,66 +222,144 @@ defmodule Champions.Test.BattleTest do
             target_allies: true,
             target_attribute: "Health"
           }
-        ],
-        cooldown: cooldown
-      }
+        ])
 
-      ultimate_skill_params = %{
-        name: "Ultimate",
-        energy_regen: 0,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
-          %{
-            type: "instant",
-            initial_delay: 0,
-            components: [],
-            modifiers: [],
-            executions: [
-              %{
-                type: "DealDamage",
-                attack_ratio: 0.5,
-                energy_recharge: 50,
-                delay: 0
-              }
-            ],
-            target_strategy: "random",
-            target_count: 1,
-            target_allies: false,
-            target_attribute: "Health"
-          }
-        ]
-      }
+      ultimate_skill_params = ultimate_skill_params()
 
-      {:ok, character} =
-        GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
-          name: "ModifiersCharacter",
-          active: true,
-          faction: "Kaline",
-          class: "Assassin",
-          base_attack: 20,
-          base_health: 100,
-          base_defense: 100,
-          basic_skill: basic_skill_params,
-          ultimate_skill: ultimate_skill_params
-        })
-
-      {:ok, unit} =
-        Units.insert_unit(%{
-          character_id: character.id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: user.id,
-          slot: 1
-        })
-
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+      character = create_character("ModifiersCharacter", basic_skill_params, ultimate_skill_params)
+      unit = create_unit(character.id, user.id)
 
       assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
       assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21)
     end
+  end
+
+  defp create_target_dummy() do
+    {:ok, target_dummy_user} = Users.register("BattleUser")
+
+    # Create a character that won't ever get to attack because of its long cooldown. His health will be 10.
+    {:ok, target_dummy_char} =
+      Characters.insert_character(%{
+        game_id: 2,
+        name: "Target Dummy",
+        active: true,
+        faction: "Kaline",
+        class: "Warrior",
+        base_health: 10,
+        base_attack: 0,
+        base_defense: 0,
+        basic_skill: %{
+          effects: [],
+          cooldown: 9999
+        },
+        ultimate_skill: %{
+          effects: []
+        }
+      })
+
+    create_unit(target_dummy_char.id, target_dummy_user.id)
+  end
+
+  defp create_character(name, basic_skill_params, ultimate_skill_params) do
+    {:ok, character} =
+      GameBackend.Units.Characters.insert_character(%{
+        game_id: 2,
+        name: name,
+        active: true,
+        faction: "Kaline",
+        class: "Assassin",
+        # Multiplied by the attack ratio of the basic skill, we get 10
+        base_attack: 20,
+        base_health: 100,
+        base_defense: 100,
+        basic_skill: basic_skill_params,
+        ultimate_skill: ultimate_skill_params
+      })
+
+    character
+  end
+
+  defp create_unit(character_id, user_id) do
+    {:ok, unit} =
+      Units.insert_unit(%{
+        character_id: character_id,
+        level: 1,
+        tier: 1,
+        rank: 1,
+        selected: true,
+        user_id: user_id,
+        slot: 1
+      })
+
+    Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+  end
+
+  defp basic_skill_params_with_cooldown(cooldown) do
+    %{
+      name: "Basic",
+      energy_regen: 500,
+      animation_duration: 0,
+      animation_trigger: 0,
+      effects: [
+        %{
+          type: "instant",
+          initial_delay: 0,
+          components: [],
+          modifier: [],
+          executions: [
+            %{
+              type: "DealDamage",
+              attack_ratio: 0.5,
+              energy_recharge: 50,
+              delay: 0
+            }
+          ],
+          target_strategy: "random",
+          target_count: 1,
+          target_allies: false,
+          target_attribute: "Health"
+        }
+      ],
+      cooldown: cooldown
+    }
+  end
+
+  defp ultimate_skill_params() do
+    %{
+      name: "Ultimate",
+      energy_regen: 0,
+      animation_duration: 0,
+      animation_trigger: 0,
+      effects: [
+        %{
+          type: "instant",
+          initial_delay: 0,
+          components: [],
+          modifiers: [],
+          executions: [
+            %{
+              type: "DealDamage",
+              attack_ratio: 0.5,
+              energy_recharge: 50,
+              delay: 0
+            }
+          ],
+          target_strategy: "random",
+          target_count: 1,
+          target_allies: false,
+          target_attribute: "Health"
+        }
+      ]
+    }
+  end
+
+  defp dummy_ultimate_skill_params() do
+    %{
+      name: "None",
+      energy_regen: 0,
+      animation_duration: 0,
+      animation_trigger: 0,
+      effects: []
+    }
   end
 end
