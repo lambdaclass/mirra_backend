@@ -152,14 +152,20 @@ defmodule Champions.Test.Battle do
       # Add animation trigger delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
         Characters.update_character(character, %{
-          basic_skill: Map.put(basic_skill_params, :animation_duration, 0) |> Map.put(:animation_trigger, 2)
+          basic_skill: Map.put(basic_skill_params, :animation_duration, 2) |> Map.put(:animation_trigger, 2)
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      required_steps_to_win_with_trigger_delay = required_steps_to_win + 2
 
-      # assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps + 4)
+      assert :timeout ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+
+      assert :team_1 ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy],
+                 maximum_steps: required_steps_to_win_with_trigger_delay
+               )
 
       # Add initial delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, _character} =
