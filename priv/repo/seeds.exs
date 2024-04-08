@@ -71,25 +71,57 @@ muflus = Characters.get_character_by_name("Muflus")
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
-  type: "weapon"
+  type: "weapon",
+  modifiers: [
+    %{
+      attribute: "attack",
+      modifier_operation: "Multiply",
+      magnitude_calc_type: "Float",
+      float_magnitude: 1.6
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Mythical Helmet of Mythicness",
-  type: "helmet"
+  type: "helmet",
+  modifiers: [
+    %{
+      attribute: "defense",
+      modifier_operation: "Multiply",
+      magnitude_calc_type: "Float",
+      float_magnitude: 1.15
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Legendary Chestplate of Legendaryness",
-  type: "chest"
+  type: "chest",
+  modifiers: [
+    %{
+      attribute: "defense",
+      modifier_operation: "Multiply",
+      magnitude_calc_type: "Float",
+      float_magnitude: 1.2
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Magical Boots of Magicness",
-  type: "boots"
+  type: "boots",
+  modifiers: [
+    %{
+      attribute: "speed",
+      modifier_operation: "Multiply",
+      magnitude_calc_type: "Float",
+      float_magnitude: 1.3
+    }
+  ]
 })
 
 {:ok, gold_currency} =

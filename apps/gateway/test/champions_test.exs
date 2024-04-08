@@ -558,7 +558,15 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Bow of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              magnitude_calc_type: "Float",
+              float_magnitude: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_bow.id, level: 1})
@@ -589,7 +597,15 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Sword of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              magnitude_calc_type: "Float",
+              float_magnitude: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
@@ -641,7 +657,15 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Axe of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              magnitude_calc_type: "Float",
+              float_magnitude: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
