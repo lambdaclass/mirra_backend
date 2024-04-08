@@ -256,6 +256,7 @@ defmodule Arena.Game.Player do
     end
   end
 
+  ## FIXME: effects map to list
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
     |> Enum.any?(fn {_, effect} ->

@@ -17,6 +17,29 @@ defmodule Arena.Game.Effect do
     |> Map.put(:last_id, last_id)
   end
 
+  ## TODO: This should be an attribute of the effect (stackable, stackable by same owner or not), not something to be decided by function callers
+  ##  In addition, we should have a `caused_by` type of field so we can track the source of the effect cause
+  ##  owner is not precise enough
+  def put_non_owner_stackable_effect(game_state, player_id, owner_id, effect) do
+    player = game_state.players[player_id]
+    contain_effects? =
+      Enum.any?(player.aditional_info.effects, fn {_effect_id, player_effect} ->
+        player_effect.owner_id == owner_id and player_effect.name == effect.name
+      end)
+
+    if contain_effects? do
+      game_state
+    else
+      put_effect(game_state, player_id, owner_id, effect)
+    end
+  end
+
+  def remove_owner_effects(game_state, player_id, owner_id) do
+    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn current_effects ->
+      Map.reject(current_effects, fn {_effect_id, effect} -> effect.owner_id == owner_id end)
+    end)
+  end
+
   @doc """
   This function applies the mechanics considered "stat modifiers", this means the effect mechanics
   modify the player stats/attributes

@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
@@ -396,7 +397,7 @@ defmodule Arena.GameUpdater do
   def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
     game_state =
       Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
-        remove_pool_effects(game_state, player, pool_id)
+        Effect.remove_owner_effects(game_state, player.id, pool_id)
       end)
       |> update_in(
         [:pools],
@@ -1021,41 +1022,23 @@ defmodule Arena.GameUpdater do
         if pool_id in player.collides_with do
           add_pool_effects(acc, game_config, player, pool)
         else
-          remove_pool_effects(acc, player, pool_id)
+          Effect.remove_owner_effects(acc, player.id, pool_id)
         end
       end)
     end)
   end
 
   defp add_pool_effects(game_state, game_config, player, pool) do
-    player_contain_pool_effects? =
-      Enum.any?(player.aditional_info.effects, fn {_effect_id, effect} ->
-        effect.owner_id == pool.id
-      end)
-
-    if player_contain_pool_effects? or player.id == pool.aditional_info.owner_id do
+    if player.id == pool.aditional_info.owner_id do
       game_state
     else
+      ## TODO: Effect.put_non_owner_stackable_effect/4 is doing essentially the same check multiple times
+      ##   we should try to refactor this to avoid it
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
-        last_id = game_state.last_id + 1
-
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-
-        game_state
-        |> put_in(
-          [:players, player.id, :aditional_info, :effects, last_id],
-          Map.put(effect, :owner_id, pool.id)
-          |> Map.put(:id, last_id)
-        )
-        |> put_in([:last_id], last_id)
+        Effect.put_non_owner_stackable_effect(game_state, player.id, pool.aditional_info.owner_id, effect)
       end)
     end
-  end
-
-  defp remove_pool_effects(game_state, player, pool_id) do
-    update_in(game_state, [:players, player.id, :aditional_info, :effects], fn current_effects ->
-      Map.reject(current_effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end)
-    end)
   end
 
   defp process_item(player, item, players_acc, items_acc) do
