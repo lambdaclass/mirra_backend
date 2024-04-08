@@ -1,16 +1,6 @@
 name: Deploy to Brazil Arena testing
 on:
   workflow_dispatch:
-    inputs:
-      release:
-        type: choice
-        description: What release to deploy
-        options:
-          - main_server
-          - arena
-          - arena_load_test
-          - game_client
-        required: true
 
 jobs:
   build-deploy:
@@ -54,7 +44,7 @@ jobs:
           SSH_HOST: ${{ vars.TS_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: ${{ inputs.release }}
+          RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.HOST }}
           PORT: ${{ vars.ARENA_PORT }}
