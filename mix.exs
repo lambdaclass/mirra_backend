@@ -44,10 +44,7 @@ defmodule MirraBackend.MixProject do
   defp releases() do
     [
       arena: [applications: [arena: :permanent]],
-      # TODO ArenaLoadTest must deploy only arena
-      arena_load_test: [
-        applications: [arena_load_test: :permanent, bot_manager: :permanent]
-      ],
+      arena_load_test: [applications: [arena_load_test: :permanent]],
       game_client: [applications: [game_client: :permanent]],
       game_backend: [
         applications: [

@@ -16,8 +16,8 @@ on:
         type: choice
         description: Loadtest target server
         options:
-          - Brazil
-          - Europe
+          - loadtest-europe-server.curseofmirra.com
+          - loadtest-brazil-server.curseofmirra.com
       activate_bots:
         type: choice
         description: Create bots for matches
