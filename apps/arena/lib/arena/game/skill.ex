@@ -247,13 +247,6 @@ defmodule Arena.Game.Skill do
         Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
       end)
 
-    ## FIXME: This `remove_on_action` effects should be removed in game tick, yes it could cause the
-    ## effect to be applied for a little longer than expected but it's better to have a simpler logic
-    effects =
-      get_in(game_state, [:players, player.id, :aditional_info, :effects])
-      |> Map.reject(fn {_, effect} -> effect.remove_on_action end)
-    game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
-
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
       Effect.put_effect(game_state, player.id, player.id, effect)
     end)

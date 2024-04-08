@@ -273,6 +273,14 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :effects], effects)
   end
 
+  def remove_effects_on_action(player) do
+    effects =
+      player.aditional_info.effects
+      |> Map.reject(fn {_id, effect} -> effect.remove_on_action and Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end) end)
+
+    put_in(player, [:aditional_info, :effects], effects)
+  end
+
   def reset_effects(player, game_config) do
     character = Enum.find(game_config.characters, fn %{name: name} -> name == player.aditional_info.character_name end)
 

@@ -110,6 +110,7 @@ defmodule Arena.GameUpdater do
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
       |> remove_expired_effects()
+      |> remove_effects_on_action()
       |> reset_players_effects(state.game_config)
       |> reduce_players_cooldowns(time_diff)
       |> move_players()
@@ -587,6 +588,16 @@ defmodule Arena.GameUpdater do
     players =
       Map.new(game_state.players, fn {player_id, player} ->
         player = Player.remove_expired_effects(player)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
+
+  defp remove_effects_on_action(game_state) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player = Player.remove_effects_on_action(player)
         {player_id, player}
       end)
 
