@@ -1,6 +1,6 @@
 defmodule ArenaLoadTest.SocketSupervisor do
   @moduledoc """
-  Socket Supervisor
+  Dynamic Supervisor for the websockets connections.
   """
   use DynamicSupervisor
   alias ArenaLoadTest.SocketHandler
@@ -12,6 +12,14 @@ defmodule ArenaLoadTest.SocketSupervisor do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__, max_restarts: 1)
   end
 
+  @impl true
+  def init(_opts) do
+    DynamicSupervisor.init(strategy: :one_for_one)
+  end
+
+  @doc """
+  Initializes a websocket that handles the client connection in the game waiting queue.
+  """
   def add_new_client(client_id) do
     true = :ets.insert(:clients, {client_id, client_id})
 
@@ -21,6 +29,9 @@ defmodule ArenaLoadTest.SocketSupervisor do
     )
   end
 
+  @doc """
+  Initializes a websocket that handles the client connection in-game.
+  """
   def add_new_player(client_id, game_id) do
     DynamicSupervisor.start_child(
       __MODULE__,
@@ -28,12 +39,10 @@ defmodule ArenaLoadTest.SocketSupervisor do
     )
   end
 
-  @impl true
-  def init(_opts) do
-    DynamicSupervisor.init(strategy: :one_for_one)
-  end
-
-  # Creates `num_clients` clients to join a game
+  @doc """
+  Loadtests entrypoint.
+  Creates given amount of clients that will join and play a game for the given duration.
+  """
   def spawn_players(num_clients, playtime_duration_ms \\ 999_999) do
     send(LoadtestManager, :clients_log)
     Process.send_after(LoadtestManager, :loadtest_finished, playtime_duration_ms)
@@ -47,6 +56,9 @@ defmodule ArenaLoadTest.SocketSupervisor do
     end)
   end
 
+  @doc """
+  Terminates all the websocket connections.
+  """
   def terminate_children() do
     children = DynamicSupervisor.which_children(__MODULE__)
 
