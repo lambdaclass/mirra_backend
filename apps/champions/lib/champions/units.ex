@@ -380,7 +380,15 @@ defmodule Champions.Units do
   For now, we just return the base character's stat.
   """
   def get_max_health(unit) do
-    unit.character.base_health
+    # Additive modifiers
+    health_modifiers = Enum.filter(unit.items.modifiers, &(&1.attribute == "health"))
+    additive_modifiers = Enum.filter(health_modifiers, &(&1.modifier_operation == "Add"))
+    multiplicative_modifiers = Enum.filter(health_modifiers, &(&1.modifier_operation == "Multiply"))
+
+    base_health = unit.character.base_health
+    additive_bonus = Enum.reduce(additive_modifiers, 0, fn mod, acc -> acc + mod.float_magnitude end)
+    multiplicative_bonus = Enum.reduce(multiplicative_modifiers, 1, fn mod, acc -> acc * mod.float_magnitude end)
+    (base_health + additive_bonus) * multiplicative_bonus
   end
 
   @doc """
