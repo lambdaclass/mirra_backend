@@ -35,6 +35,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
   # Creates `num_clients` clients to join a game
   def spawn_players(num_clients, playtime_duration_ms \\ 999_999) do
+    send(LoadtestManager, :clients_log)
     Process.send_after(LoadtestManager, :loadtest_finished, playtime_duration_ms)
 
     create_ets_table(:clients)
@@ -43,10 +44,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
     Enum.each(1..num_clients, fn client_number ->
       Logger.info("Iteration: #{client_number}")
       {:ok, _pid} = add_new_client(client_number)
-      Logger.info("Clients alive: #{:ets.info(:clients, :size)}")
     end)
-
-    send(LoadtestManager, :clients_log)
   end
 
   def terminate_children() do
