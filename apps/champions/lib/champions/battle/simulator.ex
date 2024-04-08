@@ -144,7 +144,7 @@ defmodule Champions.Battle.Simulator do
       "none" ->
         if step == maximum_steps - 1 do
           Logger.info("Battle timeout.")
-          {:halt, "timeout"}
+          {:halt, {history, "timeout"}}
         else
           {:cont, {state, history}}
         end
@@ -335,14 +335,14 @@ defmodule Champions.Battle.Simulator do
          %{effects_trigger: -1} = skill,
          current_state,
          _initial_step_state,
-         _history
+         history
        ),
-       do: {skill, current_state}
+       do: {{skill, current_state}, history}
 
   # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
   # If the effect hasn't triggered yet, reduce the remaining effects_trigger counter.
-  defp process_skill_effects_trigger_value(skill, current_state, _initial_step_state, _history) do
-    {%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}
+  defp process_skill_effects_trigger_value(skill, current_state, _initial_step_state, history) do
+    {{%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}, history}
   end
 
   # Calculate the new state of the battle after a step passes for all pending effects
