@@ -39,6 +39,7 @@ defmodule Gateway.SocketTester do
     GetBox,
     GetBoxes,
     Summon,
+    GetUserSuperCampaignProgresses,
     BattleTest
   }
 
@@ -259,6 +260,16 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def get_user_super_campaign_progresses(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_user_super_campaign_progresses, %GetUserSuperCampaignProgresses{user_id: user_id}}
          })}
       )
 
