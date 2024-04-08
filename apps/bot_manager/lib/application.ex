@@ -7,23 +7,14 @@ defmodule BotManager.Application do
 
   @impl true
   def start(_type, _args) do
-    options = [port: get_bot_manager_port()]
-
     children = [
       BotManager.BotSupervisor,
-      {Plug.Cowboy, scheme: :http, plug: BotManager.Endpoint, options: options}
+      {Plug.Cowboy, Application.get_env(:bot_manager, :end_point_configuration)}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: BotManager.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  defp get_bot_manager_port() do
-    case System.get_env("BOT_MANAGER_PORT") do
-      nil -> 4003
-      port -> String.to_integer(port)
-    end
   end
 end
