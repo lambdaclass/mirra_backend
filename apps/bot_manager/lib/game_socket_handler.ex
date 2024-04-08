@@ -90,19 +90,14 @@ defmodule BotManager.GameSocketHandler do
   defp ws_url(%{
          "bot_client" => bot_client,
          "game_id" => game_id,
-         "arena_url" => arena_url,
-         "arena_port" => arena_port
+         "arena_host" => arena_host
        }) do
-    Logger.info(
-      "Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_url}:#{arena_port}"
-    )
+    Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_host}")
 
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{arena_url}:#{arena_port}/play/#{game_id}/#{bot_client}"
-
-      _ ->
-        "ws://#{arena_url}:#{arena_port}/play/#{game_id}/#{bot_client}"
+    if arena_host == "localhost" do
+      "ws://localhost:4000/play/#{game_id}/#{bot_client}"
+    else
+      "wss://#{arena_host}/play/#{game_id}/#{bot_client}"
     end
   end
 
