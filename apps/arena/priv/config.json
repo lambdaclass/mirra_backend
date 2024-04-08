@@ -348,9 +348,21 @@
   ],
   "items": [
     {
+      "name": "golden_clock",
+      "effects": [
+        "golden_clock_effect"
+      ]
+    },
+    {
       "name": "magic_boots",
       "effects": [
         "magic_boots_effect"
+      ]
+    },
+    {
+      "name": "mirra_blessing",
+      "effects": [
+        "mirra_blessing_effect"
       ]
     }
   ],
