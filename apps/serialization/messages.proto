@@ -198,6 +198,7 @@ message Pool {
 message PlayerAction {
     PlayerActionType action = 1;
     uint64 duration = 2;
+    Position destination = 3;
 }
 
 enum PlayerActionType {
