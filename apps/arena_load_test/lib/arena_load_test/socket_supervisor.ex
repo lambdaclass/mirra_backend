@@ -14,6 +14,8 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
   @impl true
   def init(_opts) do
+    create_ets_table(:clients)
+    create_ets_table(:players)
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
@@ -46,9 +48,6 @@ defmodule ArenaLoadTest.SocketSupervisor do
   def spawn_players(num_clients, playtime_duration_ms \\ 999_999) do
     send(LoadtestManager, :clients_log)
     Process.send_after(LoadtestManager, :loadtest_finished, playtime_duration_ms)
-
-    create_ets_table(:clients)
-    create_ets_table(:players)
 
     Enum.each(1..num_clients, fn client_number ->
       Logger.info("Iteration: #{client_number}")
