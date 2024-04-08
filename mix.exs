@@ -45,6 +45,7 @@ defmodule MirraBackend.MixProject do
     [
       arena: [applications: [arena: :permanent]],
       arena_load_test: [applications: [arena_load_test: :permanent]],
+      bot_manager: [applications: [bot_manager: :permanent]],
       game_client: [applications: [game_client: :permanent]],
       main_server: [
         applications: [

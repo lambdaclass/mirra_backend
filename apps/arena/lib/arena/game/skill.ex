@@ -115,13 +115,13 @@ defmodule Arena.Game.Skill do
       ) do
     Process.send_after(self(), {:stop_dash, entity.id, entity.speed}, duration)
 
-    player =
+    entity =
       entity
       |> Map.put(:is_moving, true)
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    players = Map.put(game_state.players, entity.id, player)
+    players = Map.put(game_state.players, entity.id, entity)
 
     %{game_state | players: players}
   end
@@ -202,7 +202,7 @@ defmodule Arena.Game.Skill do
         last_id,
         get_position_with_offset(
           entity_player_owner.position,
-          entity_player_owner.directio,
+          entity_player_owner.direction,
           simple_shoot.projectile_offset
         ),
         entity.direction,
@@ -240,7 +240,21 @@ defmodule Arena.Game.Skill do
       |> Map.put(:speed, speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
-    put_in(game_state, [:players, entity.id], player)
+    put_in(game_state, [:players, player.id], player)
+  end
+
+  def do_mechanic(game_state, entity, {:teleport, teleport}, %{skill_direction: skill_target}) do
+    target_position = %{
+      x: entity.position.x + skill_target.x * teleport.range,
+      y: entity.position.y + skill_target.y * teleport.range
+    }
+
+    entity =
+      entity
+      |> Physics.move_entity_to_position(target_position, game_state.external_wall)
+      |> Map.put(:aditional_info, entity.aditional_info)
+
+    put_in(game_state, [:players, entity.id], entity)
   end
 
   def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
@@ -347,11 +361,15 @@ defmodule Arena.Game.Skill do
         player
 
       pool ->
-        direction = Physics.get_direction_from_positions(player.position, pool.position)
+        if player.aditional_info.damage_immunity do
+          player
+        else
+          direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-        Physics.move_entity_to_direction(player, direction, pull_params.force)
-        |> Map.put(:aditional_info, player.aditional_info)
-        |> Map.put(:collides_with, player.collides_with)
+          Physics.move_entity_to_direction(player, direction, pull_params.force)
+          |> Map.put(:aditional_info, player.aditional_info)
+          |> Map.put(:collides_with, player.collides_with)
+        end
     end
   end
 
