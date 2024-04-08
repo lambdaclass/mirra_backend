@@ -1,4 +1,7 @@
 defmodule Champions.TestUtils do
+  @moduledoc """
+  Utility functions for tests.
+  """
   alias GameBackend.Repo
   alias Champions.Users
   alias GameBackend.Units.Characters
