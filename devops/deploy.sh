@@ -38,9 +38,6 @@ ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env
 LimitNOFILE=4000
-
-[Install]
-WantedBy=multi-user.target
 EOF
 
 systemctl --user enable $RELEASE
