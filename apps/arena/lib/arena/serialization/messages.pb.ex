@@ -447,6 +447,7 @@ defmodule Arena.Serialization.PlayerAction do
 
   field(:action, 1, type: Arena.Serialization.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
+  field(:destination, 3, type: Arena.Serialization.Position)
 end
 
 defmodule Arena.Serialization.Move do
