@@ -109,6 +109,7 @@ defmodule Arena.GameUpdater do
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> remove_expired_effects()
       |> reset_players_effects(state.game_config)
       |> reduce_players_cooldowns(time_diff)
       |> move_players()
@@ -226,6 +227,7 @@ defmodule Arena.GameUpdater do
 
   ## FIXME: Can we remove this? Why delayed application?
   ##  Technically putting the effect is inmediate, but applying it will be delayed until next tick
+  ## Answer, seems this is part of the skil execution, same as doing the skill mechanics
   def handle_info(
         {:delayed_effect_application, player_id, effects_to_apply},
         %{
@@ -397,25 +399,6 @@ defmodule Arena.GameUpdater do
   def handle_info({:block_actions, player_id}, state) do
     broadcast_player_block_actions(state.game_state.game_id, player_id, false)
     {:noreply, state}
-  end
-
-  ## FIXME: remove this, we need to make a change so effects are put with a end timestamp
-  ##    and thus cleaned up on game tick
-  def handle_info({:remove_effect, player_id, effect_id}, state) do
-    case Map.get(state.game_state.players, player_id) do
-      %{aditional_info: %{effects: %{^effect_id => _effect} = effects}} ->
-        state =
-          put_in(
-            state,
-            [:game_state, :players, player_id, :aditional_info, :effects],
-            Map.delete(effects, effect_id)
-          )
-
-        {:noreply, state}
-
-      _ ->
-        {:noreply, state}
-    end
   end
 
   def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
@@ -599,6 +582,16 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game flow. Actions executed in every tick.
   ##########################
+
+  defp remove_expired_effects(game_state) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player = Player.remove_expired_effects(player)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
 
   defp reset_players_effects(game_state, game_config) do
     players =

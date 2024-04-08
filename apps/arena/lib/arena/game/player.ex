@@ -262,6 +262,16 @@ defmodule Arena.Game.Player do
     |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
   end
 
+  def remove_expired_effects(player) do
+    now = System.monotonic_time(:millisecond)
+
+    effects =
+      player.aditional_info.effects
+      |> Map.filter(fn {_id, effect} -> effect.expires_at > now end)
+
+    put_in(player, [:aditional_info, :effects], effects)
+  end
+
   def reset_effects(player, game_config) do
     character = Enum.find(game_config.characters, fn %{name: name} -> name == player.aditional_info.character_name end)
 

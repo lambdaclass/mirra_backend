@@ -255,8 +255,6 @@ defmodule Arena.Game.Skill do
     game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      last_id = game_state.last_id + 1 ## Hack while we still need it for next part of code
-      Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
       Effect.put_effect(game_state, player.id, player.id, effect)
     end)
   end

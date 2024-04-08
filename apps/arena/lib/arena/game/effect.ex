@@ -5,8 +5,9 @@ defmodule Arena.Game.Effect do
 
   def put_effect(game_state, player_id, owner_id, effect) do
     last_id = game_state.last_id + 1
-    ## TODO: add end_at timestamp so we can remove it later on
-    effect = Map.merge(effect, %{id: last_id, owner_id: owner_id})
+    expires_at = System.monotonic_time(:millisecond) + effect.duration_ms
+    effect_extra_attributes = %{id: last_id, owner_id: owner_id, expires_at: expires_at}
+    effect = Map.merge(effect, effect_extra_attributes)
     update_in(game_state, [:players, player_id, :aditional_info, :effects], fn
       # FIXME: change effects map to a list
       # nil -> [effect]
