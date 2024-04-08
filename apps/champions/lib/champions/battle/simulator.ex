@@ -171,7 +171,7 @@ defmodule Champions.Battle.Simulator do
                 caster_id: unit.id,
                 target_id: nil,
                 skill_id: unit.ultimate_skill.id,
-                skill_action_type: "animation_start",
+                skill_action_type: :ANIMATION_START,
                 stats_affected: []
               },
               :skill_action
@@ -199,7 +199,7 @@ defmodule Champions.Battle.Simulator do
                 caster_id: unit.id,
                 target_id: nil,
                 skill_id: unit.basic_skill.id,
-                skill_action_type: "animation_start",
+                skill_action_type: :ANIMATION_START,
                 stats_affected: []
               },
               :skill_action
@@ -254,8 +254,7 @@ defmodule Champions.Battle.Simulator do
              %{
                skill_id: modifier.skill_id,
                target_id: unit.id,
-               stat_affected: modifier.attribute,
-               amount: modifier.float_magnitude
+               stat_affected: %{stat: String.to_atom(modifier.attribute), amount: modifier.float_magnitude}
              },
              :modifier_expired
            )}
@@ -408,7 +407,7 @@ defmodule Champions.Battle.Simulator do
               caster_id: caster.id,
               target_id: new_effect.targets,
               skill_id: skill.id,
-              skill_action_type: "effect_trigger",
+              skill_action_type: :EFFECT_TRIGGER,
               stats_affected: []
             },
             :skill_action
@@ -458,8 +457,7 @@ defmodule Champions.Battle.Simulator do
             %{
               skill_id: modifier.skill_id,
               target_id: target.id,
-              stat_affected: modifier.attribute,
-              amount: modifier.float_magnitude
+              stat_affected: %{stat: String.to_atom(modifier.attribute), amount: modifier.float_magnitude}
             },
             :modifier_received
           )
@@ -494,7 +492,7 @@ defmodule Champions.Battle.Simulator do
           caster_id: caster.id,
           target_id: target.id,
           skill_id: effect.skill_id,
-          skill_action_type: "effect_miss",
+          skill_action_type: :EFFECT_MISS,
           stats_affected: []
         },
         :skill_action
@@ -545,8 +543,8 @@ defmodule Champions.Battle.Simulator do
           caster_id: caster.id,
           target_id: target.id,
           skill_id: skill_id,
-          skill_action_type: "effect_hit",
-          stats_affected: [%{stat: "health", amount: -damage}]
+          skill_action_type: :EFFECT_HIT,
+          stats_affected: [%{stat: :health, amount: -damage}]
         },
         :skill_action
       )
@@ -609,7 +607,7 @@ defmodule Champions.Battle.Simulator do
     do: %{
       id: skill.id,
       name: skill.name,
-      effects: Enum.map(skill.effects, &create_effect_map/1),
+      effects: Enum.map(skill.effects, &create_effect_map(&1, skill.id)),
       base_cooldown: skill.cooldown,
       remaining_cooldown: skill.cooldown,
       energy_regen: skill.energy_regen || 0,
@@ -619,7 +617,7 @@ defmodule Champions.Battle.Simulator do
     }
 
   # Used to create the initial effect maps to be used during simulation.
-  defp create_effect_map(%Effect{} = effect),
+  defp create_effect_map(%Effect{} = effect, skill_id),
     do: %{
       type: effect.type,
       delay: effect.initial_delay,
@@ -628,7 +626,7 @@ defmodule Champions.Battle.Simulator do
       target_allies: effect.target_allies,
       target_attribute: effect.target_attribute,
       components: effect.components,
-      modifiers: effect.modifiers,
+      modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions
     }
 

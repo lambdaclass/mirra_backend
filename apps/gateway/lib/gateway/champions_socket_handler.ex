@@ -254,13 +254,21 @@ defmodule Gateway.ChampionsSocketHandler do
              )}
 
           :modifier_received ->
-            {type, Kernel.struct(ModifierReceived, action)}
+            {type,
+             Kernel.struct(
+               ModifierReceived,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
 
           :tag_received ->
             {type, Kernel.struct(TagReceived, action)}
 
           :modifier_expired ->
-            {type, Kernel.struct(ModifierExpired, action)}
+            {type,
+             Kernel.struct(
+               ModifierExpired,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
 
           :death ->
             {type, Kernel.struct(Death, action)}
