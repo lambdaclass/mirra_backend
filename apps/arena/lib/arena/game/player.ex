@@ -6,11 +6,11 @@ defmodule Arena.Game.Player do
   alias Arena.Utils
   alias Arena.Game.Skill
 
-  def add_action(player, action_name, duration_ms) do
-    Process.send_after(self(), {:remove_skill_action, player.id, action_name}, duration_ms)
+  def add_action(player, action) do
+    Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
 
     update_in(player, [:aditional_info, :current_actions], fn current_actions ->
-      current_actions ++ [%{action: action_name, duration: duration_ms}]
+      current_actions ++ [action]
     end)
   end
 
@@ -189,18 +189,38 @@ defmodule Arena.Game.Player do
           skill.activation_delay_ms
         )
 
-        action_name = skill_key_execution_action(skill_key)
+        action =
+          %{
+            action: skill_key_execution_action(skill_key),
+            duration: skill.execution_duration_ms
+          }
+          |> maybe_add_destination(player, skill_direction, skill)
 
         player =
-          add_action(player, action_name, skill.execution_duration_ms)
+          add_action(player, action)
           |> apply_skill_cooldown(skill_key, skill)
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
+          |> maybe_make_invincible(skill)
 
         put_in(game_state, [:players, player.id], player)
     end
   end
+
+  # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
+  # position in wich the player will spawn when the skill start and not when we actually execute the teleport
+  # this is also optimistic since we asume the destination will be always available
+  defp maybe_add_destination(action, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+    target_position = %{
+      x: player.position.x + skill_direction.x * teleport.range,
+      y: player.position.y + skill_direction.y * teleport.range
+    }
+
+    Map.put(action, :destination, target_position)
+  end
+
+  defp maybe_add_destination(action, _, _, _), do: action
 
   @doc """
 
@@ -361,5 +381,17 @@ defmodule Arena.Game.Player do
       _ ->
         player
     end
+  end
+
+  defp maybe_make_invincible(
+         player,
+         %{inmune_while_executing: true, execution_duration_ms: execution_duration_ms} = _skill
+       ) do
+    Process.send_after(self(), {:remove_damage_immunity, player.id}, execution_duration_ms)
+    put_in(player, [:aditional_info, :damage_immunity], true)
+  end
+
+  defp maybe_make_invincible(player, _) do
+    player
   end
 end

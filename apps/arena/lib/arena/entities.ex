@@ -158,15 +158,15 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_circular_obstacle(id, position, radius) do
+  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices}) do
     %{
       id: id,
       category: :obstacle,
-      shape: :circle,
+      shape: get_shape(shape),
       name: "Obstacle" <> Integer.to_string(id),
       position: position,
       radius: radius,
-      vertices: [],
+      vertices: vertices,
       speed: 0.0,
       direction: %{
         x: 0.0,
@@ -261,6 +261,13 @@ defmodule Arena.Entities do
      %Arena.Serialization.PowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :obstacle do
+    {:obstacle,
+     %Arena.Serialization.Obstacle{
+       color: "red"
      }}
   end
 
