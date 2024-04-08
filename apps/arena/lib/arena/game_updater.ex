@@ -226,18 +226,9 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  ## FIXME: Can we remove this? Why delayed application?
-  ##  Technically putting the effect is inmediate, but applying it will be delayed until next tick
-  ## Answer, seems this is part of the skill execution, same as doing the skill mechanics
-  def handle_info(
-        {:delayed_effect_application, player_id, effects_to_apply},
-        %{
-          game_state: game_state,
-          game_config: game_config
-        } = state
-      ) do
-    player = Map.get(game_state.players, player_id)
-    game_state = Skill.handle_skill_effects(game_state, player, effects_to_apply, game_config)
+  def handle_info({:delayed_effect_application, player_id, effects_to_apply}, state) do
+    player = Map.get(state.game_state.players, player_id)
+    game_state = Skill.handle_skill_effects(state.game_state, player, effects_to_apply, state.game_config)
     {:noreply, %{state | game_state: game_state}}
   end
 
