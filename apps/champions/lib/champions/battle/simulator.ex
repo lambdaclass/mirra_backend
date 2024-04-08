@@ -82,7 +82,7 @@ defmodule Champions.Battle.Simulator do
 
     {history, result} =
       Enum.reduce_while(
-        1..maximum_steps,
+        0..(maximum_steps - 1),
         {initial_state, []},
         fn step, {initial_step_state, history} ->
           {new_state, new_history} =
@@ -122,7 +122,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp advance_history_step({state, []}) do
-    {state, [%{step_number: 1, actions: []}]}
+    {state, [%{step_number: 0, actions: []}]}
   end
 
   defp advance_history_step({state, [%{step_number: step_number} | _tail] = history}) do
@@ -142,7 +142,7 @@ defmodule Champions.Battle.Simulator do
 
     case winner do
       "none" ->
-        if step == maximum_steps do
+        if step == maximum_steps - 1 do
           Logger.info("Battle timeout.")
           {:halt, "timeout"}
         else
