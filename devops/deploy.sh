@@ -26,8 +26,11 @@ mv /tmp/mirra_backend $HOME/
 
 mkdir -p $HOME/.config/systemd/user/
 
-if [ "$(ls ~/.config/systemd/user/*.service 2>/dev/null | wc -l)" -ge 1 ]; then
-    exit 1
+existing_service=$(ls $HOME/.config/systemd/user/*.service 2>/dev/null)
+
+if [[ $(wc -l <<<$existing_service) > 1 || "$(basename ${existing_service})" != "${RELEASE}.service" ]]; then
+	echo "The release you are trying to deploy is not the same as the installed"
+	exit 1
 fi
 
 cat <<EOF >$HOME/.config/systemd/user/${RELEASE}.service
@@ -55,7 +58,12 @@ DATABASE_URL=${DATABASE_URL}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
 PORT=${PORT}
+BOT_MANAGER_PORT=${BOT_MANAGER_PORT}
+BOT_MANAGER_HOST=${BOT_MANAGER_HOST}
 RELEASE=${RELEASE}
+TARGET_SERVER=${TARGET_SERVER}
+EUROPE_HOST=${EUROPE_HOST}
+BRAZIL_HOST=${BRAZIL_HOST}
 EOF
 
 systemctl --user stop $RELEASE

@@ -3,7 +3,16 @@ defmodule Champions.Campaigns do
   Campaigns logic for Champions of Mirra.
   """
 
+  alias Champions.Users
   alias GameBackend.Campaigns
+  alias GameBackend.Campaigns.CampaignProgress
+  alias GameBackend.Items.Item
+  alias GameBackend.Repo
+  alias GameBackend.Rewards
+  alias GameBackend.Transaction
+  alias GameBackend.Units.Unit
+  alias GameBackend.Users.Currencies
+  alias Ecto.Multi
 
   @doc """
   Gets all campaigns, and sorted ascendingly by campaign number.
