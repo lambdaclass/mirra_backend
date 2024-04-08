@@ -257,9 +257,10 @@ defmodule Arena.Game.Player do
   end
 
   def invisible?(player) do
-    ## FIXME: replace this with a proper effect
     get_in(player, [:aditional_info, :effects])
-    |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
+    |> Enum.any?(fn {_, effect} ->
+      Enum.any?(effect.effect_mechanics, fn {mechanic, _} -> mechanic == :invisible end)
+    end)
   end
 
   def remove_expired_effects(player) do
@@ -282,7 +283,6 @@ defmodule Arena.Game.Player do
       |> put_in([:aditional_info, :bonus_damage], 0)
       |> put_in([:aditional_info, :damage_immunity], false)
 
-    ## TODO: reapply effects, waiting on PR#389
     Effect.apply_stat_effects(player)
   end
 

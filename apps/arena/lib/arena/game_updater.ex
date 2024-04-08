@@ -227,7 +227,7 @@ defmodule Arena.GameUpdater do
 
   ## FIXME: Can we remove this? Why delayed application?
   ##  Technically putting the effect is inmediate, but applying it will be delayed until next tick
-  ## Answer, seems this is part of the skil execution, same as doing the skill mechanics
+  ## Answer, seems this is part of the skill execution, same as doing the skill mechanics
   def handle_info(
         {:delayed_effect_application, player_id, effects_to_apply},
         %{
