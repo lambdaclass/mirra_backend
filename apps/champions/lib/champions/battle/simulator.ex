@@ -11,8 +11,8 @@ defmodule Champions.Battle.Simulator do
 
   They have different application types (checked are implemented):
   [x] Instant - Applied once, irreversible.
-  [ ] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
-  [ ] Duration - Applied once and reverted once its duration ends.
+  [x] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
+  [x] Duration - Applied once and reverted once its duration ends.
 
   They also have different targeting strategies:
   [x] Random
@@ -42,7 +42,8 @@ defmodule Champions.Battle.Simulator do
 
   require Logger
 
-  @maximum_steps 500
+  @default_seed 1
+  @default_maximum_steps 500
   @ultimate_energy_cost 500
 
   @doc """
@@ -51,6 +52,11 @@ defmodule Champions.Battle.Simulator do
 
   Returns `:team_1`, `:team_2`, `:tie` or `:timeout`.
 
+  Options allowed are:
+
+  - `maximum_steps`
+  - `seed`
+
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
@@ -58,8 +64,12 @@ defmodule Champions.Battle.Simulator do
       iex> run_battle(team_1, team_2)
       :team_1
   """
-  def run_battle(team_1, team_2, seed \\ 1) do
+  def run_battle(team_1, team_2, options \\ []) do
+    maximum_steps = options[:maximum_steps] || @default_maximum_steps
+    seed = options[:seed] || @default_seed
+
     :rand.seed(:default, seed)
+
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
     units = Map.merge(team_1, team_2)
@@ -69,7 +79,7 @@ defmodule Champions.Battle.Simulator do
     # The initial_step_state is what allows the battle to be simultaneous. If we refreshed the accum on every action,
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
     # of the step regardless of the changes that happened "before" (execution-wise) in this step.
-    Enum.reduce_while(1..@maximum_steps, initial_state, fn step, initial_step_state ->
+    Enum.reduce_while(1..maximum_steps, initial_state, fn step, initial_step_state ->
       new_state =
         initial_step_state
         |> Map.put(:step_number, step)
@@ -81,7 +91,7 @@ defmodule Champions.Battle.Simulator do
 
       new_state
       |> remove_dead_units()
-      |> check_winner(step)
+      |> check_winner(step, maximum_steps)
     end)
   end
 
@@ -102,7 +112,7 @@ defmodule Champions.Battle.Simulator do
 
   # Check if the battle has ended.
   # Battle can end if all unit of a team are dead, or if the maximum step amount has been reached.
-  defp check_winner(state, step) do
+  defp check_winner(state, step, maximum_steps) do
     winner =
       cond do
         Enum.empty?(state.units) -> :tie
@@ -113,7 +123,7 @@ defmodule Champions.Battle.Simulator do
 
     case winner do
       :none ->
-        if step == @maximum_steps do
+        if step == maximum_steps do
           Logger.info("Battle timeout.")
           {:halt, :timeout}
         else
@@ -207,7 +217,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_step_for_skills(current_state, initial_step_state) do
-    Enum.reduce(initial_step_state.skills_being_cast, current_state, fn skill, current_state ->
+    Enum.reduce(current_state.skills_being_cast, current_state, fn skill, current_state ->
       Logger.info(
         "Process step #{initial_step_state.step_number} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
       )
@@ -446,8 +456,8 @@ defmodule Champions.Battle.Simulator do
          faction: character.faction,
          ultimate_skill: create_skill_map(character.ultimate_skill, unit.id),
          basic_skill: create_skill_map(character.basic_skill, unit.id),
-         max_health: Units.get_max_health(unit),
-         health: Units.get_max_health(unit),
+         max_health: Units.get_health(unit),
+         health: Units.get_health(unit),
          attack: Units.get_attack(unit),
          defense: Units.get_defense(unit),
          energy: 0,
