@@ -17,7 +17,7 @@ mix deps.get --only $MIX_ENV
 mix deps.compile
 mix compile
 mix release ${RELEASE} --overwrite
-if [ ${RELEASE} == "main_server" ]; then
+if [ ${RELEASE} == "central_backend" ]; then
 	mix ecto.migrate
 fi
 
