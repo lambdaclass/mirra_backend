@@ -41,7 +41,6 @@ defmodule Champions.TestUtils do
         active: true,
         faction: "Kaline",
         class: "Assassin",
-        # Multiplied by the attack ratio of the basic skill, we get 10
         base_attack: 20,
         base_health: 100,
         base_defense: 100,
@@ -69,7 +68,8 @@ defmodule Champions.TestUtils do
 
   def basic_skill_params_with_cooldown(cooldown) do
     %{
-      name: "Basic",
+      # Add a random number to the name to avoid conflicts
+      name: "Basic" <> Integer.to_string(Enum.random(1..1000)),
       energy_regen: 500,
       animation_duration: 0,
       animation_trigger: 0,
@@ -99,7 +99,8 @@ defmodule Champions.TestUtils do
 
   def ultimate_skill_params() do
     %{
-      name: "Ultimate",
+      # Add a random number to the name to avoid conflicts
+      name: "Ultimate" <> Integer.to_string(Enum.random(1..1000)),
       energy_regen: 0,
       animation_duration: 0,
       animation_trigger: 0,
@@ -128,7 +129,8 @@ defmodule Champions.TestUtils do
 
   def dummy_ultimate_skill_params() do
     %{
-      name: "None",
+      # Add a random number to the name to avoid conflicts
+      name: "None" <> Integer.to_string(Enum.random(1..1000)),
       energy_regen: 0,
       animation_duration: 0,
       animation_trigger: 0,
