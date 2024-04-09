@@ -3,6 +3,7 @@ defmodule MirraBackend.MixProject do
 
   def project do
     [
+      name: "mirra_backend",
       apps_path: "apps",
       apps: [
         :arena,
@@ -29,7 +30,7 @@ defmodule MirraBackend.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    []
+    [{:ex_doc, "~> 0.21", only: :dev, runtime: false}]
   end
 
   defp aliases() do

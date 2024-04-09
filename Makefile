@@ -24,6 +24,9 @@ credo:
 
 check: credo format
 
+docs:
+	mix docs
+
 generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos generate-bot-manager-protos format
 
 generate-gateway-protos:
