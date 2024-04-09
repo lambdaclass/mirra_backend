@@ -251,7 +251,7 @@ defmodule Arena.Game.Skill do
 
     entity =
       entity
-      |> Physics.move_entity_to_position(target_position, game_state.external_wall)
+      |> Physics.move_entity_to_position(target_position, game_state.external_wall, game_state.obstacles)
       |> Map.put(:aditional_info, entity.aditional_info)
 
     put_in(game_state, [:players, entity.id], entity)
