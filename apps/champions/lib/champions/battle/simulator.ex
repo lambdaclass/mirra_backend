@@ -185,7 +185,7 @@ defmodule Champions.Battle.Simulator do
               history,
               %{
                 caster_id: unit.id,
-                target_id: nil,
+                target_ids: [],
                 skill_id: unit.ultimate_skill.id,
                 skill_action_type: :ANIMATION_START,
                 stats_affected: []
@@ -213,7 +213,7 @@ defmodule Champions.Battle.Simulator do
               history,
               %{
                 caster_id: unit.id,
-                target_id: nil,
+                target_ids: [],
                 skill_id: unit.basic_skill.id,
                 skill_action_type: :ANIMATION_START,
                 stats_affected: []
@@ -269,7 +269,7 @@ defmodule Champions.Battle.Simulator do
              history,
              %{
                skill_id: modifier.skill_id,
-               target_id: unit.id,
+               target_ids: [unit.id],
                stat_affected: %{stat: String.to_atom(modifier.attribute), amount: modifier.float_magnitude}
              },
              :modifier_expired
@@ -421,7 +421,7 @@ defmodule Champions.Battle.Simulator do
             history,
             %{
               caster_id: caster.id,
-              target_id: new_effect.targets,
+              target_ids: new_effect.targets,
               skill_id: skill.id,
               skill_action_type: :EFFECT_TRIGGER,
               stats_affected: []
@@ -472,7 +472,7 @@ defmodule Champions.Battle.Simulator do
             history,
             %{
               skill_id: modifier.skill_id,
-              target_id: target.id,
+              target_ids: [target.id],
               stat_affected: %{stat: String.to_atom(modifier.attribute), amount: modifier.float_magnitude}
             },
             :modifier_received
@@ -506,7 +506,7 @@ defmodule Champions.Battle.Simulator do
         history,
         %{
           caster_id: caster.id,
-          target_id: target.id,
+          target_ids: [target.id],
           skill_id: effect.skill_id,
           skill_action_type: :EFFECT_MISS,
           stats_affected: []
@@ -557,7 +557,7 @@ defmodule Champions.Battle.Simulator do
         history,
         %{
           caster_id: caster.id,
-          target_id: target.id,
+          target_ids: [target.id],
           skill_id: skill_id,
           skill_action_type: :EFFECT_HIT,
           stats_affected: [%{stat: :health, amount: -damage}]
