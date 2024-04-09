@@ -44,7 +44,7 @@ jobs:
           SSH_HOST: ${{ vars.TS_CENTRAL_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: game_backend # Change to central_backend in the future.
+          RELEASE: central_backend
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.HOST }}
           PORT: ${{ vars.ARENA_PORT }}
