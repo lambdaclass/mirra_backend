@@ -378,6 +378,12 @@ defmodule Champions.Units do
   Get a unit's health stat for battle. Buffs from items and similar belong here.
 
   Character must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_health(unit)
+      100
   """
   def get_health(unit), do: calculate_stat(unit.character.base_health, unit)
 
@@ -385,6 +391,12 @@ defmodule Champions.Units do
   Get a unit's attack stat for battle. Buffs from items and similar belong here.
 
   Character must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_attack(unit)
+      100
   """
   def get_attack(unit), do: calculate_stat(unit.character.base_attack, unit)
 
@@ -392,6 +404,12 @@ defmodule Champions.Units do
   Get a unit's defense stat for battle. Buffs from items and similar belong here.
 
   Character must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_defense(unit)
+      100
   """
   def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit)
 
