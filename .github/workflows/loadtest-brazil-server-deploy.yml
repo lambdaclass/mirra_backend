@@ -58,6 +58,7 @@ jobs:
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
+                XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
                 RELEASE=${RELEASE} \
