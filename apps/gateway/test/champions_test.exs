@@ -593,17 +593,33 @@ defmodule Gateway.Test.Champions do
 
       [unit | _] = user.units
 
+      attack_multiplier = 1.6
+      defense_multiplier = 1.2
+      health_adder = 100
+
       {:ok, epic_sword} =
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
-          name: "Epic Sword of Testness",
+          name: "Epic Upgrader of All Stats",
           type: "weapon",
           modifiers: [
             %{
               attribute: "attack",
               modifier_operation: "Multiply",
               magnitude_calc_type: "Float",
-              float_magnitude: 1.6
+              float_magnitude: attack_multiplier
+            },
+            %{
+              attribute: "defense",
+              modifier_operation: "Multiply",
+              magnitude_calc_type: "Float",
+              float_magnitude: defense_multiplier
+            },
+            %{
+              attribute: "health",
+              modifier_operation: "Add",
+              magnitude_calc_type: "Float",
+              float_magnitude: health_adder
             }
           ]
         })
@@ -611,6 +627,10 @@ defmodule Gateway.Test.Champions do
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
 
       # EquipItem
+      attack_before_equip = Units.get_attack(unit)
+      defense_before_equip = Units.get_defense(unit)
+      health_before_equip = Units.get_max_health(unit)
+
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
       fetch_last_message(socket_tester)
 
@@ -621,6 +641,19 @@ defmodule Gateway.Test.Champions do
       # The item is now equipped to the unit
       assert equipped_item.user_id == user.id
       assert equipped_item.unit_id == unit.id
+
+      # The item affected the unit stats
+      {:ok, updated_user} = Users.get_user(user.id)
+
+      unit_with_item =
+        updated_user.units
+        |> Enum.filter(&(&1.id == unit.id))
+        |> hd()
+        |> Repo.preload(items: :template)
+
+      assert Units.get_attack(unit_with_item) == attack_multiplier * attack_before_equip
+      assert Units.get_defense(unit_with_item) == defense_multiplier * defense_before_equip
+      assert Units.get_max_health(unit_with_item) == health_adder + health_before_equip
 
       # EquipItem again, to another unit
       another_unit = user.units |> Enum.at(1)
@@ -647,6 +680,19 @@ defmodule Gateway.Test.Champions do
       # The item is now unequipped
       assert unequipped_item.user_id == user.id
       assert unequipped_item.unit_id == ""
+
+      # The unit stats are back to normal
+      {:ok, updated_user} = Users.get_user(user.id)
+
+      unit_without_item =
+        updated_user.units
+        |> Enum.filter(&(&1.id == unit.id))
+        |> hd()
+        |> Repo.preload(items: :template)
+
+      assert Units.get_attack(unit_without_item) == attack_before_equip
+      assert Units.get_defense(unit_without_item) == defense_before_equip
+      assert Units.get_max_health(unit_without_item) == health_before_equip
     end
 
     test "level up item", %{socket_tester: socket_tester} do

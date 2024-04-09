@@ -20,6 +20,7 @@ defmodule GameBackend.Items.ItemTemplate do
   def changeset(item, attrs) do
     item
     |> cast(attrs, [:game_id, :name, :type])
+    |> cast_embed(:modifiers)
     |> validate_required([:game_id, :name, :type])
   end
 end
