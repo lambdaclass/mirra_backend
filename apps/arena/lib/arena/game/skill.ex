@@ -366,7 +366,13 @@ defmodule Arena.Game.Skill do
         else
           direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-          Physics.move_entity_to_direction(player, direction, pull_params.force)
+          Physics.move_entity_to_direction(
+            player,
+            direction,
+            pull_params.force,
+            game_state.external_wall,
+            game_state.obstacles
+          )
           |> Map.put(:aditional_info, player.aditional_info)
           |> Map.put(:collides_with, player.collides_with)
         end
