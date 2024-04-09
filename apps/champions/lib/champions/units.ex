@@ -383,10 +383,7 @@ defmodule Champions.Units do
         unit.character.base_health
 
       items ->
-        {additive_modifiers, multiplicative_modifiers} =
-          get_additive_and_multiplicative_modifiers(items, "health")
-
-        calculate_attribute(unit.character.base_health, additive_modifiers, multiplicative_modifiers)
+        calculate_attribute(unit.character.base_health, items, "health")
     end
   end
 
@@ -399,10 +396,7 @@ defmodule Champions.Units do
         unit.character.base_attack
 
       items ->
-        {additive_modifiers, multiplicative_modifiers} =
-          get_additive_and_multiplicative_modifiers(items, "attack")
-
-        calculate_attribute(unit.character.base_attack, additive_modifiers, multiplicative_modifiers)
+        calculate_attribute(unit.character.base_attack, items, "attack")
     end
   end
 
@@ -415,10 +409,7 @@ defmodule Champions.Units do
         unit.character.base_defense
 
       items ->
-        {additive_modifiers, multiplicative_modifiers} =
-          get_additive_and_multiplicative_modifiers(items, "defense")
-
-        calculate_attribute(unit.character.base_defense, additive_modifiers, multiplicative_modifiers)
+        calculate_attribute(unit.character.base_defense, items, "defense")
     end
   end
 
@@ -442,7 +433,10 @@ defmodule Champions.Units do
     {additive_modifiers, multiplicative_modifiers}
   end
 
-  defp calculate_attribute(base_attribute, additive_modifiers, multiplicative_modifiers) do
+  defp calculate_attribute(base_attribute, items, attribute_name) do
+    {additive_modifiers, multiplicative_modifiers} =
+      get_additive_and_multiplicative_modifiers(items, attribute_name)
+
     additive_bonus = Enum.reduce(additive_modifiers, 0, fn mod, acc -> acc + mod.float_magnitude end)
     multiplicative_bonus = Enum.reduce(multiplicative_modifiers, 1, fn mod, acc -> acc * mod.float_magnitude end)
     (base_attribute + additive_bonus) * multiplicative_bonus
