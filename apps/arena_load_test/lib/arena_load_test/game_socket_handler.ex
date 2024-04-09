@@ -86,15 +86,16 @@ defmodule ArenaLoadTest.GameSocketHandler do
     {:reply, frame, state}
   end
 
-  def terminate(_, state) do
-    case :ets.lookup(:clients, state.client_id) do
+  def terminate(_, %{client_id: client_id} = _state) do
+    case :ets.lookup(:players, client_id) do
       [{client_id, _}] ->
-        :ets.delete(:clients, client_id)
+        :ets.delete(:players, client_id)
 
       [] ->
-        raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
+        raise KeyError, message: "Player with ID #{client_id} doesn't exist."
     end
 
+    SocketSupervisor.add_new_client(client_id)
     Logger.info("Player websocket terminated. Game Ended.")
     exit(:normal)
   end
@@ -115,8 +116,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
       target_server ->
-        server_url = SocketSupervisor.get_server_url(target_server)
-        "wss://#{server_url}/play/#{game_id}/#{client_id}"
+        "wss://#{target_server}/play/#{game_id}/#{client_id}"
     end
   end
 
