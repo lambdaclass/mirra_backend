@@ -95,7 +95,8 @@ message GameState {
   GameStatus status = 11;
   int64 start_game_timestamp = 12;
   map<uint64, Entity> items = 13;
-  map<uint64, Entity> pools = 14;
+  map<uint64, Entity> obstacles = 14;
+  map<uint64, Entity> pools = 15;
 }
 
 enum GameStatus {
@@ -197,6 +198,7 @@ message Pool {
 message PlayerAction {
     PlayerActionType action = 1;
     uint64 duration = 2;
+    Position destination = 3;
 }
 
 enum PlayerActionType {

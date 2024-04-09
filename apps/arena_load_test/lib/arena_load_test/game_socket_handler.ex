@@ -23,13 +23,17 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Callbacks
-  def handle_frame({_type, _msg} = _frame, state) do
-    {:ok, state}
+  def handle_frame({:binary, msg} = _frame, state) do
+    {event_type, _state} = Serialization.GameEvent.decode(msg) |> Map.get(:event)
+
+    if event_type == :finished do
+      {:stop, state}
+    else
+      {:ok, state}
+    end
   end
 
   def handle_info(:move, state) do
-    Logger.info("Sending GameAction frame with MOVE payload")
-
     {x, y} = create_random_movement()
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
@@ -53,7 +57,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   def handle_info(:attack, state) do
-    Logger.info("Sending GameAction frame with ATTACK payload")
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     {x, y} = create_random_movement()
 
@@ -83,6 +86,20 @@ defmodule ArenaLoadTest.GameSocketHandler do
     {:reply, frame, state}
   end
 
+  def terminate(_, %{client_id: client_id} = _state) do
+    case :ets.lookup(:players, client_id) do
+      [{client_id, _}] ->
+        :ets.delete(:players, client_id)
+
+      [] ->
+        raise KeyError, message: "Player with ID #{client_id} doesn't exist."
+    end
+
+    SocketSupervisor.add_new_client(client_id)
+    Logger.info("Player websocket terminated. Game Ended.")
+    exit(:normal)
+  end
+
   # Private
   defp create_random_movement() do
     Enum.random([
@@ -94,14 +111,12 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   defp ws_url(client_id, game_id) do
-    host = SocketSupervisor.server_host()
+    case System.get_env("TARGET_SERVER") do
+      nil ->
+        "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{host}/play/#{game_id}/#{client_id}"
-
-      _ ->
-        "ws://#{host}/play/#{game_id}/#{client_id}"
+      target_server ->
+        "wss://#{target_server}/play/#{game_id}/#{client_id}"
     end
   end
 
