@@ -6,13 +6,14 @@ defmodule Gateway.Test.Champions do
 
   use ExUnit.Case
 
-  alias GameBackend.Campaigns.Rewards.CurrencyReward
-  alias Gateway.Serialization.AfkRewards
   alias Champions.{Units, Users, Utils}
+  alias GameBackend.Campaigns.Rewards.CurrencyReward
   alias GameBackend.Repo
   alias GameBackend.Items
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
+  alias Gateway.Serialization.AfkRewards
+  alias Gateway.Serialization.SuperCampaignProgresses
 
   alias Gateway.Serialization.{
     Box,
@@ -437,8 +438,8 @@ defmodule Gateway.Test.Champions do
         GameBackend.Units.update_unit(unit, %{level: 9999})
       end)
 
-      [campaign_progression | _] = user.campaign_progresses
-      level_id = campaign_progression.level_id
+      [super_campaign_progress | _] = user.super_campaign_progresses
+      level_id = super_campaign_progress.level_id
       SocketTester.fight_level(socket_tester, user.id, level_id)
       fetch_last_message(socket_tester)
 
@@ -511,8 +512,15 @@ defmodule Gateway.Test.Champions do
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Play another level to increment the afk rewards rates again
-      [campaign_progression | _] = advanced_user.campaign_progresses
-      next_level_id = campaign_progression.level_id
+      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
+      }
+
+      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
+      next_level_id = super_campaign_progress.level_id
       SocketTester.fight_level(socket_tester, advanced_user.id, next_level_id)
       fetch_last_message(socket_tester)
 
@@ -529,7 +537,15 @@ defmodule Gateway.Test.Champions do
 
       # Check that the rewardable currencies afk rewards rates are now greater than the rewards before the second battle, and the other rates are still 0
       # Get the current level number and check that the afk rewards rates have increased proportionally
-      current_level_id = hd(more_advanced_user.campaign_progresses).level_id
+      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
+      }
+
+      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
+      current_level_id = super_campaign_progress.level_id
 
       current_level_afk_rewards_increments =
         Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
