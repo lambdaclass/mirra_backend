@@ -7,7 +7,6 @@ defmodule Champions.Users do
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
-  alias GameBackend.Rewards
   alias GameBackend.Transaction
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
