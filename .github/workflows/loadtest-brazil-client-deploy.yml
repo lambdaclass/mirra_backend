@@ -6,10 +6,7 @@ on:
         type: choice
         description: What release to deploy
         options:
-          - game_backend
-          - arena
           - arena_load_test
-          - game_client
           - bot_manager
         required: true
       target_server:
@@ -46,13 +43,13 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          TS_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
+          SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
           sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 400 ~/.ssh/id_ed25519
-          retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
+          retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
       - name: Copy deploy script
         env:
