@@ -57,6 +57,11 @@ defmodule Champions.Battle.Simulator do
   - `maximum_steps`
   - `seed`
 
+  Options allowed are:
+
+  - `maximum_steps`
+  - `seed`
+
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
@@ -606,8 +611,8 @@ defmodule Champions.Battle.Simulator do
          faction: character.faction,
          ultimate_skill: create_skill_map(character.ultimate_skill, unit.id),
          basic_skill: create_skill_map(character.basic_skill, unit.id),
-         max_health: Units.get_max_health(unit),
-         health: Units.get_max_health(unit),
+         max_health: Units.get_health(unit),
+         health: Units.get_health(unit),
          attack: Units.get_attack(unit),
          defense: Units.get_defense(unit),
          energy: 0,
