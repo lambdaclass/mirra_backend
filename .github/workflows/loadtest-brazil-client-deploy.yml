@@ -14,7 +14,7 @@ on:
         description: Loadtest target server
         options:
           - loadtest-brazil-server.curseofmirra.com
-          - loadtest-europe-client.curseofmirra.com
+          - loadtest-europe-server.curseofmirra.com
 
 jobs:
   build-deploy:
