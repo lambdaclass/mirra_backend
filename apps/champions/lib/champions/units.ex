@@ -375,9 +375,7 @@ defmodule Champions.Units do
   ##########
 
   @doc """
-  Get a unit's max health stat for battle. Buffs from items and similar belong here.
-
-  For now, we just return the base character's stat.
+  Get a unit's max health stat for battle, including modifiers from items.
   """
   def get_max_health(unit) do
     case unit.items do
@@ -393,9 +391,7 @@ defmodule Champions.Units do
   end
 
   @doc """
-  Get a unit's attack stat for battle. Buffs from items and similar belong here.
-
-  For now, we just return the base character's stat.
+  Get a unit's attack stat for battle, including modifiers from items.
   """
   def get_attack(unit) do
     case unit.items do
@@ -411,9 +407,7 @@ defmodule Champions.Units do
   end
 
   @doc """
-  Get a unit's defense stat for battle. Buffs from items and similar belong here.
-
-  For now, we just return the base character's stat.
+  Get a unit's defense stat for battle, including modifiers from items.
   """
   def get_defense(unit) do
     case unit.items do
