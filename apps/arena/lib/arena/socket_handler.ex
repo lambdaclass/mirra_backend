@@ -32,6 +32,11 @@ defmodule Arena.SocketHandler do
   end
 
   @impl true
+  def websocket_handle({:text, "leave_lobby"}, state) do
+    GameLauncher.leave(state.client_id)
+    {:stop, state}
+  end
+
   def websocket_handle(:ping, state) do
     Logger.info("Websocket PING handler")
     {:reply, {:pong, ""}, state}
