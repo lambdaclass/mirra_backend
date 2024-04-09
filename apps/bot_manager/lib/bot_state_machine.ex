@@ -49,8 +49,7 @@ defmodule BotManager.BotStateMachine do
   end
 
   defp get_ditance_and_direction_to_positions(base_position, end_position) do
-    x = end_position.x - base_position.x
-    y = end_position.y - base_position.y
+    %{x: x, y: y} = Vector.sub(end_position, base_position)
     distance = :math.sqrt(:math.pow(x, 2) + :math.pow(y, 2))
     direction = %{x: x / distance, y: y / distance}
 
