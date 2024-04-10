@@ -51,6 +51,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
 
     Enum.each(1..num_clients, fn client_number ->
       Logger.info("Iteration: #{client_number}")
+      IO.inspect("AVER CLIENT NUMBER #{client_number}")
       {:ok, _pid} = add_new_client(client_number)
     end)
   end
