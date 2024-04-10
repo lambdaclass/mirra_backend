@@ -108,18 +108,15 @@ defmodule Arena.Game.Skill do
     do_mechanic(game_state, entity, {:circle_hit, multi_circle_hit}, skill_params)
   end
 
-  def do_mechanic(
-        game_state,
-        entity,
-        {:dash, %{speed: speed, duration: duration}},
-        _skill_params
-      ) do
-    Process.send_after(self(), {:stop_dash, entity.id, entity.speed}, duration)
+  def do_mechanic(game_state, entity, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
+    Process.send_after(self(), {:stop_dash, entity.id, entity.aditional_info.base_speed}, duration)
 
+    ## Modifying base_speed rather than speed because effects will reset the speed on game tick
+    ## by modifying base_speed we ensure that the dash speed is kept as expected
     entity =
       entity
       |> Map.put(:is_moving, true)
-      |> Map.put(:speed, speed)
+      |> put_in([:aditional_info, :base_speed], speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     players = Map.put(game_state.players, entity.id, entity)
@@ -222,7 +219,7 @@ defmodule Arena.Game.Skill do
   def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction}) do
     Process.send_after(
       self(),
-      {:stop_leap, entity.id, entity.speed, leap.on_arrival_mechanic},
+      {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
       leap.duration_ms
     )
 
@@ -235,10 +232,12 @@ defmodule Arena.Game.Skill do
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
     speed = Physics.calculate_speed(entity.position, target_position, leap.duration_ms) * 30
 
+    ## Modifying base_speed rather than speed because effects will reset the speed on game tick
+    ## by modifying base_speed we ensure that the dash speed is kept as expected
     player =
       entity
       |> Map.put(:is_moving, true)
-      |> Map.put(:speed, speed)
+      |> put_in([:aditional_info, :base_speed], speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)

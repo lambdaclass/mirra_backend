@@ -145,7 +145,7 @@ defmodule Arena.Game.Player do
   def reset_forced_movement(player, reset_speed) do
     player
     |> Map.put(:is_moving, false)
-    |> Map.put(:speed, reset_speed)
+    |> put_in([:aditional_info, :base_speed], reset_speed)
     |> put_in([:aditional_info, :forced_movement], false)
   end
 
