@@ -112,15 +112,15 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   defp ws_url(client_id, game_id) do
-    # "ws://162.55.80.110:4000/play/#{game_id}/#{client_id}"
+    "ws://162.55.80.110:4000/play/#{game_id}/#{client_id}"
 
-    case System.get_env("TARGET_SERVER") do
-      nil ->
-        "ws://localhost:4000/play/#{game_id}/#{client_id}"
+    # case System.get_env("TARGET_SERVER") do
+    #   nil ->
+    #     "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
-      target_server ->
-        "wss://#{target_server}/play/#{game_id}/#{client_id}"
-    end
+    #   target_server ->
+    #     "wss://#{target_server}/play/#{game_id}/#{client_id}"
+    # end
   end
 
   # This is enough for now. We will get the skills from the requested bots
