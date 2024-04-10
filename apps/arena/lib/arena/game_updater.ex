@@ -511,6 +511,14 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
+    case :ets.lookup(:games, state.client_id) do
+      [{client_id, _}] ->
+        :ets.delete(:games, client_id)
+
+      [] ->
+        raise KeyError, message: "FALOPA"
+    end
+
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end

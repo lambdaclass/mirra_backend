@@ -3,6 +3,7 @@ defmodule Arena.GameLauncher do
   alias Ecto.UUID
 
   use GenServer
+  require Logger
 
   # Amount of clients needed to start a game
   @clients_needed 10
@@ -36,6 +37,7 @@ defmodule Arena.GameLauncher do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
+    create_ets_table(:games)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
@@ -54,8 +56,11 @@ defmodule Arena.GameLauncher do
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
-    send(self(), :start_game)
-    Logger.info("NEW GAME CREATED")
+    if length(clients) > @clients_needed do
+      send(self(), :start_game)
+    end
+
+    Logger.info("Games playing: #{:ets.info(:games, :size)}")
 
 
 
@@ -125,5 +130,12 @@ defmodule Arena.GameLauncher do
     bot_manager_host = System.get_env("BOT_MANAGER_HOST", "localhost")
     bot_manager_port = System.get_env("BOT_MANAGER_PORT", "4003")
     "http://#{bot_manager_host}:#{bot_manager_port}/join/#{server_url}/#{encoded_game_pid}/#{bot_client}"
+  end
+
+  defp create_ets_table(table_name) do
+    case :ets.whereis(table_name) do
+      :undefined -> :ets.new(table_name, [:set, :named_table, :public])
+      _table_exists_already -> nil
+    end
   end
 end
