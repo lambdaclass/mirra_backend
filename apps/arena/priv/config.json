@@ -1,6 +1,6 @@
 {
   "map": {
-    "radius": 5760.0,
+    "radius": 4800.0,
     "initial_positions": [
       {
         "x": 4000.0,
@@ -46,24 +46,30 @@
     "obstacles": [
       {
         "position": {
-          "x": -6900.0,
+          "x": -6044.0,
           "y": -1439.0
         },
-        "radius": 1567.0
+        "radius": 1567.0,
+        "shape": "circle",
+        "vertices": []
       },
       {
         "position": {
-          "x": -1200.0,
-          "y": 6500.0
+          "x": -860.0,
+          "y": 5338.0
         },
-        "radius": 1500.0
+        "radius": 1090.0,
+        "shape": "circle",
+        "vertices": []
       },
       {
         "position": {
           "x": -1630.0,
           "y": 4588.0
         },
-        "radius": 317.0
+        "radius": 317.0,
+        "shape": "circle",
+        "vertices": []
       }
     ]
   },
@@ -79,40 +85,38 @@
     "zone_stop_interval_ms": 13000,
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
-    "zone_damage": 9,
+    "zone_damage": 40,
     "item_spawn_interval_ms": 15000
   },
   "skills": [
     {
-      "name": "hit",
+      "name": "muflus_crush",
       "cooldown_mechanism": "stamina",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 300,
+      "execution_duration_ms": 450,
+      "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
-          "cone_hit": {
-            "damage": 16,
-            "range": 1100.0,
-            "angle": 50.0
+          "circle_hit": {
+            "damage": 64,
+            "range": 380.0,
+            "offset": 400
           }
         }
       ],
       "effects_to_apply": []
     },
     {
-      "name": "singularity",
+      "name": "valt_singularity",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 9000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
-      "stamina_cost": 2,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -130,25 +134,25 @@
       "effects_to_apply": []
     },
     {
-      "name": "leap",
+      "name": "muflus_leap",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 8000,
       "execution_duration_ms": 800,
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
-      "stamina_cost": 2,
       "can_pick_destination": true,
       "mechanics": [
         {
           "leap": {
-            "range": 1000.0,
+            "range": 1200.0,
             "duration_ms": 600,
-            "radius": 600,
+            "radius": 650,
             "on_arrival_mechanic": {
               "circle_hit": {
-                "damage": 22,
-                "range": 600.0
+                "damage": 92,
+                "range": 650.0,
+                "offset": 0
               }
             }
           }
@@ -156,59 +160,33 @@
       ]
     },
     {
-      "name": "shot",
-      "cooldown_mechanism": "stamina",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 0,
-      "is_passive": false,
-      "autoaim": true,
-      "stamina_cost": 1,
-      "can_pick_destination": false,
-      "mechanics": [
-        {
-          "simple_shoot": {
-            "duration_ms": 1000,
-            "projectile_offset": 100,
-            "damage": 10,
-            "radius": 10.0
-          }
-        }
-      ],
-      "effects_to_apply": []
-    },
-    {
-      "name": "denial_of_service",
+      "name": "h4ck_denial_of_service",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 1000,
-      "activation_delay_ms": 0,
+      "cooldown_ms": 9000,
+      "execution_duration_ms": 500,
+      "activation_delay_ms": 500,
       "is_passive": false,
       "autoaim": true,
-      "stamina_cost": 2,
-      "can_pick_destination": false,
+      "can_pick_destination": true,
       "mechanics": [
         {
-          "repeated_shot": {
-            "interval_ms": 100,
-            "amount": 10,
-            "speed": 65.0,
-            "duration_ms": 1000,
-            "remove_on_collision": true,
-            "projectile_offset": 100,
-            "angle": 80.0,
-            "damage": 9,
-            "radius": 12.0
+          "spawn_pool": {
+            "name": "denial_of_service",
+            "duration_ms": 2500,
+            "radius": 500.0,
+            "range": 1500.0,
+            "effects_to_apply": [
+              "denial_of_service"
+            ]
           }
         }
       ],
       "effects_to_apply": []
     },
     {
-      "name": "slingshot",
+      "name": "h4ck_slingshot",
       "cooldown_mechanism": "stamina",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
+      "execution_duration_ms": 400,
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
@@ -217,28 +195,27 @@
       "mechanics": [
         {
           "multi_shoot": {
-            "angle_between": 14.0,
+            "angle_between": 22.0,
             "amount": 3,
-            "speed": 58.0,
+            "speed": 65.0,
             "duration_ms": 1000,
             "remove_on_collision": true,
             "projectile_offset": 100,
-            "damage": 9,
-            "radius": 12.0
+            "damage": 44,
+            "radius": 40.0
           }
         }
       ],
       "effects_to_apply": []
     },
     {
-      "name": "dash",
+      "name": "h4ck_dash",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 5000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
-      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -250,10 +227,27 @@
       ]
     },
     {
-      "name": "avenge",
+      "name": "muflus_dash",
+      "cooldown_mechanism": "time",
+      "cooldown_ms": 4000,
+      "execution_duration_ms": 450,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "autoaim": false,
+      "can_pick_destination": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 65.0,
+            "duration": 450
+          }
+        }
+      ]
+    },
+    {
+      "name": "uma_avenge",
       "cooldown_mechanism": "stamina",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 1000,
+      "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
@@ -261,33 +255,33 @@
       "can_pick_destination": false,
       "mechanics": [
         {
-          "multi_cone_hit": {
-            "damage": 7,
-            "range": 800.0,
-            "angle": 45.0,
-            "interval_ms": 250,
+          "multi_circle_hit": {
+            "damage": 22,
+            "range": 300.0,
+            "interval_ms": 200,
             "amount": 3,
-            "move_by": 150.0
+            "move_by": 200.0,
+            "offset": 200.0
           }
         }
       ],
       "effects_to_apply": []
     },
     {
-      "name": "veil_radiance",
+      "name": "uma_veil_radiance",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 200,
+      "cooldown_ms": 9000,
+      "execution_duration_ms": 400,
+      "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
-      "stamina_cost": 2,
       "can_pick_destination": false,
       "mechanics": [
         {
           "circle_hit": {
-            "damage": 14,
-            "range": 800.0
+            "damage": 68,
+            "range": 800.0,
+            "offset": 0
           }
         }
       ],
@@ -296,14 +290,13 @@
       ]
     },
     {
-      "name": "sneak",
+      "name": "valt_sneak",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 2000,
+      "cooldown_ms": 5000,
       "execution_duration_ms": 500,
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
-      "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -316,9 +309,48 @@
       "effects_to_apply": []
     },
     {
-      "name": "antimatter",
-      "cooldown_mechanism": "stamina",
+      "name": "valt_warp",
+      "cooldown_mechanism": "time",
       "cooldown_ms": 2000,
+      "execution_duration_ms": 800,
+      "inmune_while_executing": true,
+      "activation_delay_ms": 600,
+      "is_passive": false,
+      "autoaim": false,
+      "can_pick_destination": true,
+      "stamina_cost": 1,
+      "mechanics": [
+        {
+          "teleport": {
+            "range": 1000,
+            "duration_ms": 300
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "uma_sneak",
+      "cooldown_mechanism": "time",
+      "cooldown_ms": 5000,
+      "execution_duration_ms": 500,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "autoaim": false,
+      "can_pick_destination": false,
+      "mechanics": [
+        {
+          "dash": {
+            "speed": 60.0,
+            "duration": 500
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "valt_antimatter",
+      "cooldown_mechanism": "stamina",
       "execution_duration_ms": 800,
       "activation_delay_ms": 500,
       "is_passive": false,
@@ -328,7 +360,7 @@
       "mechanics": [
         {
           "simple_shoot": {
-            "speed": 60.0,
+            "speed": 51.0,
             "duration_ms": 1000,
             "remove_on_collision": true,
             "projectile_offset": 100,
@@ -336,8 +368,9 @@
             "damage": 0,
             "on_explode_mechanics": {
               "circle_hit": {
-                "damage": 15,
-                "range": 500.0
+                "damage": 60,
+                "range": 500.0,
+                "offset": 0
               }
             }
           }
@@ -363,7 +396,7 @@
       "effects": [
         {
           "speed_boost": {
-            "amount": 25,
+            "amount": 9,
             "duration_ms": 10000
           }
         }
@@ -374,7 +407,7 @@
       "effects": [
         {
           "damage_immunity": {
-            "duration_ms": 5000
+            "duration_ms": 1
           }
         }
       ]
@@ -384,69 +417,69 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 30.0,
-      "base_size": 100.0,
-      "base_health": 138,
+      "base_speed": 28.0,
+      "base_size": 110.0,
+      "base_health": 440,
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
       "skills": {
-        "1": "hit",
-        "2": "leap",
-        "3": "dash"
+        "1": "muflus_crush",
+        "2": "muflus_leap",
+        "3": "muflus_dash"
       }
     },
     {
       "name": "h4ck",
       "active": true,
-      "base_speed": 30.0,
-      "base_size": 80.0,
-      "base_health": 125,
+      "base_speed": 31.0,
+      "base_size": 90.0,
+      "base_health": 400,
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
       "skills": {
-        "1": "slingshot",
-        "2": "denial_of_service",
-        "3": "dash"
+        "1": "h4ck_slingshot",
+        "2": "h4ck_denial_of_service",
+        "3": "h4ck_dash"
       }
     },
     {
       "name": "uma",
       "active": true,
-      "base_speed": 30.0,
-      "base_size": 85.0,
-      "base_health": 125,
+      "base_speed": 29.0,
+      "base_size": 95.0,
+      "base_health": 400,
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
       "skills": {
-        "1": "avenge",
-        "2": "veil_radiance",
-        "3": "sneak"
+        "1": "uma_avenge",
+        "2": "uma_veil_radiance",
+        "3": "uma_sneak"
       }
     },
     {
       "name": "valtimer",
-      "active": true,
+      "active": false,
       "base_speed": 30.0,
-      "base_size": 90.0,
-      "base_health": 125,
+      "base_size": 100.0,
+      "base_health": 400,
       "base_stamina": 3,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
       "natural_healing_damage_interval": 5000,
       "skills": {
-        "1": "antimatter",
-        "2": "singularity",
-        "3": "sneak"
+        "1": "valt_antimatter",
+        "2": "valt_singularity",
+        "3": "valt_warp"
       }
     }
   ],
@@ -474,7 +507,7 @@
   "effects": [
     {
       "name": "invisible",
-      "duration_ms": 4000,
+      "duration_ms": 3500,
       "remove_on_action": true,
       "effect_mechanics": {}
     },
@@ -487,8 +520,18 @@
           "effect_delay_ms": 0
         },
         "damage": {
-          "damage": 4,
+          "damage": 14,
           "effect_delay_ms": 400
+        }
+      }
+    },
+    {
+      "name": "denial_of_service",
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "damage": {
+          "damage": 17,
+          "effect_delay_ms": 220
         }
       }
     }

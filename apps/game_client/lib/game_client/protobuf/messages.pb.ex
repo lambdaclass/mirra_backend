@@ -241,6 +241,15 @@ defmodule GameClient.Protobuf.GameState.ItemsEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.ObstaclesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState.PoolsEntry do
   @moduledoc false
 
@@ -299,7 +308,14 @@ defmodule GameClient.Protobuf.GameState do
   field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
   field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
   field(:items, 13, repeated: true, type: GameClient.Protobuf.GameState.ItemsEntry, map: true)
-  field(:pools, 14, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
+
+  field(:obstacles, 14,
+    repeated: true,
+    type: GameClient.Protobuf.GameState.ObstaclesEntry,
+    map: true
+  )
+
+  field(:pools, 15, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -431,6 +447,7 @@ defmodule GameClient.Protobuf.PlayerAction do
 
   field(:action, 1, type: GameClient.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
+  field(:destination, 3, type: GameClient.Protobuf.Position)
 end
 
 defmodule GameClient.Protobuf.Move do
