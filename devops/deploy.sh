@@ -17,7 +17,7 @@ mix deps.get --only $MIX_ENV
 mix deps.compile
 mix compile
 mix release ${RELEASE} --overwrite
-if [ ${RELEASE} == "game_backend" ]; then
+if [ ${RELEASE} == "central_backend" ]; then
 	mix ecto.migrate
 fi
 
@@ -25,13 +25,6 @@ rm -rf $HOME/mirra_backend
 mv /tmp/mirra_backend $HOME/
 
 mkdir -p $HOME/.config/systemd/user/
-
-existing_service=$(ls $HOME/.config/systemd/user/*.service 2>/dev/null)
-
-if [[ $(wc -l <<<$existing_service) > 1 || "$(basename ${existing_service})" != "${RELEASE}.service" ]]; then
-	echo "The release you are trying to deploy is not the same as the installed"
-	exit 1
-fi
 
 cat <<EOF >$HOME/.config/systemd/user/${RELEASE}.service
 [Unit]
@@ -44,10 +37,10 @@ ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env
-LimitNOFILE=4000
+LimitNOFILE=100000
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
 EOF
 
 systemctl --user enable $RELEASE
@@ -60,6 +53,7 @@ SECRET_KEY_BASE=${SECRET_KEY_BASE}
 PORT=${PORT}
 BOT_MANAGER_PORT=${BOT_MANAGER_PORT}
 BOT_MANAGER_HOST=${BOT_MANAGER_HOST}
+BOTS_ACTIVE=${BOTS_ACTIVE}
 RELEASE=${RELEASE}
 TARGET_SERVER=${TARGET_SERVER}
 EUROPE_HOST=${EUROPE_HOST}
