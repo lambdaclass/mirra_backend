@@ -17,7 +17,8 @@ defmodule ArenaLoadTest.SocketHandler do
       __MODULE__,
       %{
         client_id: client_id
-      }
+      },
+      debug: [:trace]
     )
   end
 
