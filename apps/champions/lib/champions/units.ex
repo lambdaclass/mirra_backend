@@ -375,70 +375,55 @@ defmodule Champions.Units do
   ##########
 
   @doc """
-  Get a unit's max health stat for battle, including modifiers from items.
-  """
-  def get_max_health(unit) do
-    case unit.items do
-      [] ->
-        unit.character.base_health
+  Get a unit's health stat for battle, including modifiers from items.
 
-      items ->
-        calculate_attribute(unit.character.base_health, items, "health")
-    end
-  end
+  Character and ItemTemplate must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_health(unit)
+      100
+  """
+  def get_health(unit), do: calculate_stat(unit.character.base_health, unit)
 
   @doc """
   Get a unit's attack stat for battle, including modifiers from items.
-  """
-  def get_attack(unit) do
-    case unit.items do
-      [] ->
-        unit.character.base_attack
 
-      items ->
-        calculate_attribute(unit.character.base_attack, items, "attack")
-    end
-  end
+  Character and ItemTemplate must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_attack(unit)
+      100
+  """
+  def get_attack(unit), do: calculate_stat(unit.character.base_attack, unit)
 
   @doc """
   Get a unit's defense stat for battle, including modifiers from items.
+
+  Character and ItemTemplate must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_defense(unit)
+      100
   """
-  def get_defense(unit) do
-    case unit.items do
-      [] ->
-        unit.character.base_defense
+  def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit)
 
-      items ->
-        calculate_attribute(unit.character.base_defense, items, "defense")
-    end
-  end
+  defp calculate_stat(base_stat, unit),
+    do:
+      base_stat
+      |> factor_level(unit.level)
+      |> factor_tier(unit.tier)
+      |> factor_rank(unit.rank)
+      |> trunc()
 
-  defp get_additive_and_multiplicative_modifiers([], _) do
-    {[], []}
-  end
+  defp factor_level(base_stat, level), do: base_stat * (Math.pow(level - 1, 2) / 3000 + (level - 1) / 30 + 1)
 
-  defp get_additive_and_multiplicative_modifiers(items, attribute) do
-    item_modifiers =
-      Enum.flat_map(items, & &1.template.modifiers)
+  defp factor_tier(stat_after_level, tier), do: stat_after_level * Math.pow(1.05, tier - 1)
 
-    attribute_modifiers =
-      Enum.filter(item_modifiers, &(&1.attribute == attribute))
-
-    additive_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Add"))
-
-    multiplicative_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Multiply"))
-
-    {additive_modifiers, multiplicative_modifiers}
-  end
-
-  defp calculate_attribute(base_attribute, items, attribute_name) do
-    {additive_modifiers, multiplicative_modifiers} =
-      get_additive_and_multiplicative_modifiers(items, attribute_name)
-
-    additive_bonus = Enum.reduce(additive_modifiers, 0, fn mod, acc -> acc + mod.float_magnitude end)
-    multiplicative_bonus = Enum.reduce(multiplicative_modifiers, 1, fn mod, acc -> acc * mod.float_magnitude end)
-    (base_attribute + additive_bonus) * multiplicative_bonus
-  end
+  defp factor_rank(stat_after_tier, rank), do: stat_after_tier * Math.pow(1.1, rank - 1)
 end
