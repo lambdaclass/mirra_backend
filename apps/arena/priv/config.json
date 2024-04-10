@@ -354,7 +354,7 @@
       "name": "valt_antimatter",
       "cooldown_mechanism": "stamina",
       "execution_duration_ms": 450,
-      "activation_delay_ms": 50,
+      "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
       "stamina_cost": 1,
