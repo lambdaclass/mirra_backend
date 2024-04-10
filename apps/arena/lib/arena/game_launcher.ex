@@ -82,6 +82,8 @@ defmodule Arena.GameLauncher do
         clients: game_clients ++ bot_clients
       })
 
+    true = :ets.insert(:games, {game_pid, game_pid})
+
     spawn_bot_for_player(bot_clients, game_pid)
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
