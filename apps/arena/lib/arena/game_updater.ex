@@ -511,7 +511,7 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
-    case :ets.lookup(:games, state.game_id) do
+    case :ets.lookup(:games, self()) do
       [{game_id, _}] ->
         :ets.delete(:games, game_id)
 
