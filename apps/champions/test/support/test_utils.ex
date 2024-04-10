@@ -66,10 +66,10 @@ defmodule Champions.TestUtils do
     Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
   end
 
-  def basic_skill_params_with_cooldown(cooldown) do
+  def basic_skill_params_with_cooldown(cooldown, skill_name) do
     %{
       # Add a random number to the name to avoid conflicts
-      name: "Basic" <> Integer.to_string(Enum.random(1..1000)),
+      name: skill_name,
       energy_regen: 500,
       animation_duration: 0,
       animation_trigger: 0,
@@ -97,10 +97,10 @@ defmodule Champions.TestUtils do
     }
   end
 
-  def ultimate_skill_params() do
+  def ultimate_skill_params(skill_name) do
     %{
       # Add a random number to the name to avoid conflicts
-      name: "Ultimate" <> Integer.to_string(Enum.random(1..1000)),
+      name: skill_name,
       energy_regen: 0,
       animation_duration: 0,
       animation_trigger: 0,
@@ -127,10 +127,10 @@ defmodule Champions.TestUtils do
     }
   end
 
-  def dummy_ultimate_skill_params() do
+  def dummy_ultimate_skill_params(skill_name) do
     %{
       # Add a random number to the name to avoid conflicts
-      name: "None" <> Integer.to_string(Enum.random(1..1000)),
+      name: skill_name,
       energy_regen: 0,
       animation_duration: 0,
       animation_trigger: 0,

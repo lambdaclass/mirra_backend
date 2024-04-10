@@ -30,13 +30,13 @@ defmodule Champions.Test.BattleTest do
 
       # Create a character with a basic skill that has a cooldown too long to execute
       # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
-      basic_skill_params = TestUtils.basic_skill_params_with_cooldown(too_long_cooldown)
+      basic_skill_params = TestUtils.basic_skill_params_with_cooldown(too_long_cooldown, "BasicSkill1")
 
       character =
         TestUtils.create_character(
           "Execution-DealDamage Character",
           basic_skill_params,
-          TestUtils.dummy_ultimate_skill_params()
+          TestUtils.dummy_ultimate_skill_params("DummyUltimate1")
         )
 
       unit = TestUtils.create_unit(character.id, user.id)
@@ -128,7 +128,7 @@ defmodule Champions.Test.BattleTest do
 
       # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params =
-        TestUtils.basic_skill_params_with_cooldown(cooldown)
+        TestUtils.basic_skill_params_with_cooldown(cooldown, "BasicSkill2")
         |> Map.put(:effects, [
           %{
             type: "instant",
@@ -156,7 +156,11 @@ defmodule Champions.Test.BattleTest do
         ])
 
       character =
-        TestUtils.create_character("ComponentsCharacter", basic_skill_params, TestUtils.dummy_ultimate_skill_params())
+        TestUtils.create_character(
+          "ComponentsCharacter",
+          basic_skill_params,
+          TestUtils.dummy_ultimate_skill_params("DummyUltimate2")
+        )
 
       unit = TestUtils.create_unit(character.id, user.id)
 
@@ -210,7 +214,7 @@ defmodule Champions.Test.BattleTest do
 
       # Configure a basic skill with a modifier that increases the attack ratio
       basic_skill_params =
-        TestUtils.basic_skill_params_with_cooldown(cooldown)
+        TestUtils.basic_skill_params_with_cooldown(cooldown, "BasicSkill3")
         |> Map.put(:effects, [
           %{
             type: %{"duration" => 1, "period" => 0},
@@ -232,7 +236,7 @@ defmodule Champions.Test.BattleTest do
           }
         ])
 
-      ultimate_skill_params = TestUtils.ultimate_skill_params()
+      ultimate_skill_params = TestUtils.ultimate_skill_params("Ultimate1")
 
       character = TestUtils.create_character("ModifiersCharacter", basic_skill_params, ultimate_skill_params)
       unit = TestUtils.create_unit(character.id, user.id)
