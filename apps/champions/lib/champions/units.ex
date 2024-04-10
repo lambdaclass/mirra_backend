@@ -190,9 +190,8 @@ defmodule Champions.Units do
   @doc """
   Returns whether a unit can tier up. tier is blocked by rank.
   """
-  def can_tier_up(unit), do: can_tier_up(unit.rank, unit.tier)
+  def can_tier_up(unit), do: can_tier_up(unit.rank, unit.tier) and not can_level_up(unit)
 
-  # TODO: Don't allow units with a level lower than the tier's max to tier up [#CHoM-227]
   defp can_tier_up(@star1, tier) when tier < 1, do: true
   defp can_tier_up(@star2, tier) when tier < 2, do: true
   defp can_tier_up(@star3, tier) when tier < 3, do: true

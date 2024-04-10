@@ -3,13 +3,11 @@ defmodule Champions.Campaigns do
   Campaigns logic for Champions of Mirra.
   """
 
-  alias Champions.Users
   alias GameBackend.Campaigns
-  alias GameBackend.Campaigns.CampaignProgress
+  alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Repo
   alias GameBackend.Rewards
-  alias GameBackend.Transaction
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
@@ -41,18 +39,23 @@ defmodule Champions.Campaigns do
   def get_level(level_id), do: Campaigns.get_level(level_id)
 
   @doc """
+  Get all of user's SuperCampaignProgress.
+  """
+  def get_user_super_campaign_progresses(user_id), do: Campaigns.get_user_super_campaign_progresses(user_id)
+
+  @doc """
   Increments a user's level and apply the level's rewards.
   If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
   """
-  def advance_level(user_id, campaign_id) do
-    with {:campaign_progress, {:ok, campaign_progress}} <-
-           {:campaign_progress, Campaigns.get_campaign_progress(user_id, campaign_id)},
+  def advance_level(user_id, super_campaign_id) do
+    with {:super_campaign_progress, {:ok, super_campaign_progress}} <-
+           {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, super_campaign_id)},
          {:next_level, {next_campaign_id, next_level_id}} <-
-           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
-      level = campaign_progress.level
+           {:next_level, Campaigns.get_next_level(super_campaign_progress.level)} do
+      level = super_campaign_progress.level
 
+      # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
-      |> apply_experience_reward(user_id, level.experience_reward)
       |> apply_currency_rewards(user_id, level.currency_rewards)
       |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
@@ -64,18 +67,18 @@ defmodule Champions.Campaigns do
       |> Multi.run(:update_campaign_progress, fn _, _ ->
         if next_level_id == level.id,
           do: {:ok, nil},
-          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
+          else: update_super_campaign_progress(super_campaign_progress, next_campaign_id, next_level_id)
       end)
-      |> Transaction.run()
+      |> Repo.transaction()
     else
-      {:campaign_progress, _transaction_error} -> {:error, :campaign_progress_not_found}
-      {:next_level, _transaction_error} -> {:campaign_progress_error}
+      {:super_campaign_progress, _transaction_error} -> {:error, :super_campaign_progress_not_found}
+      {:next_level, _transaction_error} -> {:super_campaign_progress_error}
     end
   end
 
-  defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
-    campaign_progress
-    |> CampaignProgress.advance_level_changeset(%{
+  defp update_super_campaign_progress(super_campaign_progress, next_campaign_id, next_level_id) do
+    super_campaign_progress
+    |> SuperCampaignProgress.advance_level_changeset(%{
       campaign_id: next_campaign_id,
       level_id: next_level_id
     })
@@ -130,7 +133,4 @@ defmodule Champions.Campaigns do
       end)
     end)
   end
-
-  def apply_experience_reward(multi, user_id, experience_reward),
-    do: Multi.run(multi, :add_experience, fn _, _ -> Users.add_experience(user_id, experience_reward) end)
 end

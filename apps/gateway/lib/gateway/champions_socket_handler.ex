@@ -40,6 +40,7 @@ defmodule Gateway.ChampionsSocketHandler do
     GetBoxes,
     GetBox,
     Summon,
+    GetUserSuperCampaignProgresses,
     BattleTest
   }
 
@@ -190,6 +191,21 @@ defmodule Gateway.ChampionsSocketHandler do
       {:ok, user_and_unit} -> prepare_response(user_and_unit, :user_and_unit)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
+  end
+
+  defp handle(%GetUserSuperCampaignProgresses{user_id: user_id}) do
+    super_campaign_progresses =
+      Campaigns.get_user_super_campaign_progresses(user_id)
+      |> Enum.map(fn super_campaign_progress ->
+        %{
+          level_id: super_campaign_progress.level_id,
+          user_id: super_campaign_progress.user_id,
+          campaign_id: super_campaign_progress.level.campaign_id,
+          super_campaign_id: super_campaign_progress.super_campaign_id
+        }
+      end)
+
+    prepare_response(%{super_campaign_progresses: super_campaign_progresses}, :super_campaign_progresses)
   end
 
   # Temporary endpoint to test the sending of battle replays to the client
