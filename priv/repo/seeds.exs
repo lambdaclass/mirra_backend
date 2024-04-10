@@ -5,7 +5,6 @@ alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
