@@ -14,10 +14,10 @@ defmodule Gateway.Serialization.Stat do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:health, 0)
-  field(:energy, 1)
-  field(:damage, 2)
-  field(:defense, 3)
+  field(:HEALTH, 0)
+  field(:ENERGY, 1)
+  field(:DAMAGE, 2)
+  field(:DEFENSE, 3)
 end
 
 defmodule Gateway.Serialization.WebSocketRequest do

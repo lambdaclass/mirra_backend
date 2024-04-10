@@ -308,10 +308,10 @@ syntax = "proto3";
   }
 
   enum Stat {
-    health = 0;
-    energy = 1;
-    damage = 2;
-    defense = 3;
+    HEALTH = 0;
+    ENERGY = 1;
+    DAMAGE = 2;
+    DEFENSE = 3;
   }
 
   message BattleReplay {

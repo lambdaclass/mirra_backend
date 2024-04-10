@@ -275,7 +275,10 @@ defmodule Champions.Battle.Simulator do
              %{
                skill_id: modifier.skill_id,
                target_ids: [unit.id],
-               stat_affected: %{stat: String.to_atom(modifier.attribute), amount: modifier.float_magnitude}
+               stat_affected: %{
+                 stat: modifier.attribute |> String.upcase() |> String.to_atom(),
+                 amount: modifier.float_magnitude
+               }
              },
              :modifier_expired
            )}
@@ -478,7 +481,10 @@ defmodule Champions.Battle.Simulator do
             %{
               skill_id: modifier.skill_id,
               target_ids: [target.id],
-              stat_affected: %{stat: String.to_atom(modifier.attribute), amount: modifier.float_magnitude}
+              stat_affected: %{
+                stat: modifier.attribute |> String.upcase() |> String.to_atom(),
+                amount: modifier.float_magnitude
+              }
             },
             :modifier_received
           )
@@ -565,7 +571,7 @@ defmodule Champions.Battle.Simulator do
           target_ids: [target.id],
           skill_id: skill_id,
           skill_action_type: :EFFECT_HIT,
-          stats_affected: [%{stat: :health, amount: -damage}]
+          stats_affected: [%{stat: :HEALTH, amount: -damage}]
         },
         :skill_action
       )
