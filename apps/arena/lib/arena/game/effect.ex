@@ -7,10 +7,10 @@ defmodule Arena.Game.Effect do
     put_effect(game_state, player_id, owner_id, 0, effect)
   end
 
-  def put_effect(game_state, player_id, owner_id, execution_duration_ms, effect) do
+  def put_effect(game_state, player_id, owner_id, start_action_removal_in_ms, effect) do
     last_id = game_state.last_id + 1
     now = System.monotonic_time(:millisecond)
-    action_removal_at = now + execution_duration_ms
+    action_removal_at = now + start_action_removal_in_ms
 
     expires_at =
       case effect[:duration_ms] do
@@ -28,10 +28,7 @@ defmodule Arena.Game.Effect do
 
     effect = Map.merge(effect, effect_extra_attributes)
 
-    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn
-      nil -> [effect]
-      effects -> effects ++ [effect]
-    end)
+    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn effects -> effects ++ [effect] end)
     |> Map.put(:last_id, last_id)
   end
 
