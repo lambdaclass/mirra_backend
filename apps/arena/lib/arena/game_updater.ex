@@ -1040,7 +1040,7 @@ defmodule Arena.GameUpdater do
       ##   we should try to refactor this to avoid it
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        Effect.put_non_owner_stackable_effect(game_state, player.id, pool.aditional_info.owner_id, effect)
+        Effect.put_non_owner_stackable_effect(game_state, player.id, pool.id, effect)
       end)
     end
   end
