@@ -186,7 +186,7 @@ defmodule Arena.Game.Player do
 
         Process.send_after(
           self(),
-          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply)},
+          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply), skill.execution_duration_ms},
           skill.activation_delay_ms
         )
 
@@ -294,10 +294,13 @@ defmodule Arena.Game.Player do
   end
 
   def remove_effects_on_action(player) do
+    now = System.monotonic_time(:millisecond)
+
     effects =
       player.aditional_info.effects
       |> Enum.reject(fn effect ->
         effect.remove_on_action and
+          effect.action_removal_at <= now and
           Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end)
       end)
 

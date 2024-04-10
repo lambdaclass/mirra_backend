@@ -283,14 +283,14 @@ defmodule Arena.Game.Skill do
     |> put_in([:last_id], last_id)
   end
 
-  def handle_skill_effects(game_state, player, effects, game_config) do
+  def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
       Enum.map(effects, fn effect_name ->
         Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
       end)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      Effect.put_effect(game_state, player.id, player.id, effect)
+      Effect.put_effect(game_state, player.id, player.id, execution_duration_ms, effect)
     end)
   end
 
