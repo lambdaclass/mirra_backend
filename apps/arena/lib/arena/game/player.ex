@@ -304,17 +304,13 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :effects], effects)
   end
 
-  def reset_effects(player, game_config) do
-    character = Enum.find(game_config.characters, fn %{name: name} -> name == player.aditional_info.character_name end)
-
-    player =
-      player
-      |> put_in([:speed], character.base_speed)
-      |> put_in([:aditional_info, :stamina_interval], character.stamina_interval)
-      |> put_in([:aditional_info, :bonus_damage], 0)
-      |> put_in([:aditional_info, :damage_immunity], false)
-
-    Effect.apply_stat_effects(player)
+  def reset_effects(player) do
+    player
+    |> put_in([:speed], player.aditional_info.base_speed)
+    |> put_in([:aditional_info, :stamina_interval], player.aditional_info.base_stamina_interval)
+    |> put_in([:aditional_info, :bonus_damage], 0)
+    |> put_in([:aditional_info, :damage_immunity], false)
+    |> Effect.apply_stat_effects()
   end
 
   ####################

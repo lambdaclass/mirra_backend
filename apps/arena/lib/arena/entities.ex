@@ -21,6 +21,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: character.base_health,
         base_health: character.base_health,
+        base_speed: character.base_speed,
+        base_stamina_interval: character.stamina_interval,
         skills: character.skills,
         current_actions: [],
         kill_count: 0,

@@ -5,6 +5,7 @@ defmodule Arena.Game.Effect do
 
   def put_effect(game_state, player_id, owner_id, effect) do
     last_id = game_state.last_id + 1
+
     expires_at =
       case effect[:duration_ms] do
         nil -> nil
