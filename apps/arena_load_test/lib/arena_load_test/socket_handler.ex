@@ -69,7 +69,7 @@ defmodule ArenaLoadTest.SocketHandler do
     character = get_random_active_character()
     player_name = "Player_#{player_id}"
 
-    "ws://176.9.26.172:4000/join/#{player_id}/#{character}/#{player_name}"
+    "ws://162.55.80.110:4000/join/#{player_id}/#{character}/#{player_name}"
 
 
     # case System.get_env("TARGET_SERVER") do
