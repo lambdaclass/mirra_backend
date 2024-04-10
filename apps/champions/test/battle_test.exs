@@ -1,4 +1,4 @@
-defmodule Champions.Test.Battle do
+defmodule Champions.Test.BattleTest do
   @moduledoc """
   Test for Champions of Mirra battles.
 
