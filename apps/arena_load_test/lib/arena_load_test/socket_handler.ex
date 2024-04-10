@@ -68,13 +68,16 @@ defmodule ArenaLoadTest.SocketHandler do
     character = get_random_active_character()
     player_name = "Player_#{player_id}"
 
-    case System.get_env("TARGET_SERVER") do
-      nil ->
-        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
+    "ws://176.9.26.172:4000/join/#{player_id}/#{character}/#{player_name}"
 
-      target_server ->
-        "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
-    end
+
+    # case System.get_env("TARGET_SERVER") do
+    #   nil ->
+    #     "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
+
+    #   target_server ->
+    #     "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
+    # end
   end
 
   # This is enough for now. Will request bots from the bots app in future iterations.
