@@ -24,7 +24,12 @@ syntax = "proto3";
       GetAfkRewards get_afk_rewards = 21;
       ClaimAfkRewards claim_afk_rewards = 22;
       GetUserSuperCampaignProgresses get_user_super_campaign_progresses = 23;
+      BattleTest battle_test = 24;
     }
+  }
+
+  message BattleTest {
+    string user_id = 1;
   }
 
  message GetUser {
@@ -150,6 +155,7 @@ syntax = "proto3";
       UserAndUnit user_and_unit = 13;
       AfkRewards afk_rewards = 14;
       SuperCampaignProgresses super_campaign_progresses = 15;
+      BattleReplay battle_replay = 16;
     }
   }
   
@@ -300,4 +306,96 @@ syntax = "proto3";
   message UserAndUnit {
     User user = 1;
     Unit unit = 2;
+  }
+
+// BATTLE REPLAY
+
+  enum SkillActionType {
+    ANIMATION_START = 0;
+    EFFECT_TRIGGER = 1;
+    EFFECT_HIT = 2;
+    EFFECT_MISS = 3;
+  }
+
+  enum Stat {
+    HEALTH = 0;
+    ENERGY = 1;
+    DAMAGE = 2;
+    DEFENSE = 3;
+  }
+
+  message BattleReplay {
+    State initial_state = 1;
+    repeated Step steps = 2;
+    string result = 3;
+  }
+
+  message State {
+    repeated BattleUnit units = 1;
+  }
+
+  message BattleUnit {
+    string id = 1;
+    int32 health = 2;
+    int32 slot = 3;
+    string character_id = 4;
+    int32 team = 5;
+  }
+
+  message Step {
+    int32 step_number = 1;
+    repeated Action actions = 2;
+  }
+
+  message Action {
+    oneof action_type {
+      SkillAction skill_action = 1;
+      ModifierReceived modifier_received = 2;
+      TagReceived tag_received = 3;
+      ModifierExpired modifier_expired = 4;
+      TagExpired tag_expired = 5;
+      Death death = 6;
+    }
+  }
+
+  message StatAffected {
+    Stat stat = 1;
+    float amount = 2;
+  }
+
+  message SkillAction {
+    string caster_id = 1;
+    repeated string target_ids = 2;
+    string skill_id = 3;
+    SkillActionType skill_action_type = 4;
+    // Stat should only be "health" or "energy" when in SkillAction
+    repeated StatAffected stats_affected = 5;
+  }
+
+  message ModifierReceived {
+    string skill_id = 1;
+    string target_id = 2;
+    StatAffected stat_affected = 3;
+  }
+
+  message TagReceived {
+    string skill_id = 1;
+    string target_id = 2;
+    string tag_name = 3;
+  }
+
+  message ModifierExpired {
+    string skill_id = 1;
+    string target_id = 2;
+    StatAffected stat_affected = 3;
+  }
+
+  message TagExpired {
+    string skill_id = 1;
+    string target_id = 2;
+    string tag_name = 3;
+  }
+
+  message Death {
+    string unit_id = 1;
   }
