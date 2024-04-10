@@ -374,6 +374,16 @@
                 "range": 500.0,
                 "offset": 0
               }
+            },
+            "on_collide_effects": {
+              "apply_to_owned": false,
+              "apply_to_not_owned": false,
+              "apply_effect_to_entity_type": [
+                "pool"
+              ],
+              "effects": [
+                "buff_singularity"
+              ]
             }
           }
         }
@@ -511,11 +521,13 @@
       "name": "invisible",
       "duration_ms": 3500,
       "remove_on_action": true,
+      "one_time_application": false,
       "effect_mechanics": {}
     },
     {
       "name": "singularity",
       "remove_on_action": false,
+      "one_time_application": false,
       "effect_mechanics": {
         "pull": {
           "force": 15.0,
@@ -524,6 +536,17 @@
         "damage": {
           "damage": 14,
           "effect_delay_ms": 400
+        }
+      }
+    },
+    {
+      "name": "buff_singularity",
+      "one_time_application": true,
+      "effect_mechanics": {
+        "buff_pool": {
+          "damage_multiplier": 0.10,
+          "pull_multiplier": 3.0,
+          "effect_delay_ms": 0
         }
       }
     }

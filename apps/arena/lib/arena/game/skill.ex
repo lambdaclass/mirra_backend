@@ -309,7 +309,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def apply_effect_mechanic(%{players: players} = game_state) do
+  def apply_effect_mechanic(%{players: players, pools: pools} = game_state) do
     Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
       if Player.alive?(player) do
         player =
@@ -322,6 +322,15 @@ defmodule Arena.Game.Skill do
         game_state
       end
     end)
+
+    Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
+      pool =
+        Enum.reduce(pool.aditional_info.effects, pool, fn {_effect_id, effect}, pool ->
+          apply_effect_mechanic(pool, effect, game_state)
+        end)
+
+      put_in(game_state, [:pools, pool.id], pool)
+    end)
   end
 
   def apply_effect_mechanic(player, effect, game_state) do
@@ -329,9 +338,10 @@ defmodule Arena.Game.Skill do
 
     Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
       should_re_apply? =
-        is_nil(Map.get(mechanic_params, :last_application_time)) or
-          now - Map.get(mechanic_params, :last_application_time) >=
-            mechanic_params.effect_delay_ms
+        (is_nil(Map.get(mechanic_params, :last_application_time)) or
+           now - Map.get(mechanic_params, :last_application_time) >=
+             mechanic_params.effect_delay_ms) and
+          (not effect.one_time_application or is_nil(Map.get(mechanic_params, :last_application_time)))
 
       if should_re_apply? do
         do_effect_mechanics(game_state, player, effect, mechanic)
@@ -394,6 +404,19 @@ defmodule Arena.Game.Skill do
         end
 
         player
+    end
+  end
+
+  defp do_effect_mechanics(game_state, player, _effect, {:buff_pool, buff_attributes}) do
+    Map.get(game_state.pools, player.id)
+    |> case do
+      nil ->
+        player
+
+      pool ->
+        update_in(pool, [:aditional_info, :damage_multiplier], fn current_multiplier ->
+          current_multiplier + current_multiplier * buff_attributes.damage_multiplier
+        end)
     end
   end
 

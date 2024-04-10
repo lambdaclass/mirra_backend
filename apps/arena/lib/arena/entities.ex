@@ -70,7 +70,8 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
-        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics)
+        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
+        on_collide_effects: Map.get(config_params, :on_collide_effects)
       }
     }
   end
@@ -133,7 +134,9 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         effects_to_apply: effects_to_apply,
-        owner_id: owner_id
+        owner_id: owner_id,
+        effects: %{},
+        damage_multiplier: 0
       }
     }
   end

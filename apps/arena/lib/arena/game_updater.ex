@@ -115,12 +115,15 @@ defmodule Arena.GameUpdater do
       |> move_projectiles()
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
+      |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> resolve_projectiles_collisions_with_players()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> explode_projectiles()
       |> handle_pools(state.game_config)
       |> Skill.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
+
+    IO.inspect(game_state.pools)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -695,7 +698,8 @@ defmodule Arena.GameUpdater do
            players: players,
            obstacles: obstacles,
            external_wall: external_wall,
-           ticks_to_move: ticks_to_move
+           ticks_to_move: ticks_to_move,
+           pools: pools
          } = game_state
        ) do
     # We don't want to move recently exploded projectiles
@@ -708,6 +712,7 @@ defmodule Arena.GameUpdater do
     entities_to_collide_with =
       Player.alive_players(players)
       |> Map.merge(obstacles)
+      |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
 
     moved_projectiles =
@@ -795,6 +800,36 @@ defmodule Arena.GameUpdater do
     game_state
     |> Map.put(:projectiles, updated_projectiles)
     |> Map.put(:players, updated_players)
+  end
+
+  defp resolve_projectiles_effects_on_collisions(
+         %{
+           projectiles: projectiles,
+           players: players,
+           obstacles: obstacles,
+           pools: pools
+         } = game_state,
+         game_config
+       ) do
+    Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
+      entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
+
+      modified_entities =
+        entities_map
+        |> Map.take(projectile.collides_with)
+        |> maybe_apply_effect_to_entities(projectile, game_config)
+
+      modified_players = Map.merge(game_state.players, Map.intersect(game_state.players, modified_entities))
+      modified_pools = Map.merge(game_state.pools, Map.intersect(game_state.pools, modified_entities))
+
+      modified_projectiles =
+        Map.merge(game_state.projectiles, Map.intersect(game_state.projectiles, modified_entities))
+
+      Map.put(game_state, :pools, modified_pools)
+      |> Map.put(:pools, modified_pools)
+      |> Map.put(:players, modified_players)
+      |> Map.put(:projectiles, modified_projectiles)
+    end)
   end
 
   defp explode_projectiles(%{projectiles: projectiles} = game_state) do
@@ -1111,6 +1146,35 @@ defmodule Arena.GameUpdater do
       [] -> random_position_in_map(integer_radius * 0.95, external_wall)
       _ -> point.position
     end
+  end
+
+  defp maybe_apply_effect_to_entities(collided_entities, projectile, game_config) do
+    effects_to_apply =
+      Enum.map(projectile.aditional_info.on_collide_effects.effects, fn effect_name ->
+        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+      end)
+
+    Map.reject(collided_entities, fn {_entity_id, entity} ->
+      (projectile.aditional_info.on_collide_effects.apply_to_owned and
+         projectile.aditional_info.owner_id != entity.aditional_info.owner_id) or
+        (projectile.aditional_info.on_collide_effects.apply_to_not_owned and
+           projectile.aditional_info.owner_id == entity.aditional_info.owner_id) or
+        Atom.to_string(entity.category) not in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
+    end)
+    |> Map.new(fn {entity_id, entity} ->
+      {entity_id,
+       Enum.reduce(effects_to_apply, entity, fn effect, entity ->
+         apply_effect_to_entity(entity, effect)
+       end)}
+    end)
+  end
+
+  defp apply_effect_to_entity(entity, effect) do
+    put_in(
+      entity,
+      [:aditional_info, :effects, 4444],
+      Map.put(effect, :id, 4444)
+    )
   end
 
   ##########################
