@@ -512,8 +512,8 @@ defmodule Arena.GameUpdater do
     }
 
     case :ets.lookup(:games, state.game_id) do
-      [{client_id, _}] ->
-        :ets.delete(:games, state.game_id)
+      [{game_id, _}] ->
+        :ets.delete(:games, game_id)
 
       [] ->
         raise KeyError, message: "FALOPA"
