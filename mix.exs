@@ -20,7 +20,19 @@ defmodule MirraBackend.MixProject do
       deps: deps(),
       aliases: aliases(),
       releases: releases(),
-      default_release: :all
+      default_release: :all,
+      docs: [
+        groups_for_modules: [
+          Arena: [~r"Arena", Physics],
+          "Arena Load Test": ~r"ArenaLoadTest",
+          Champions: ~r"Champions",
+          Configurator: ~r"Configurator",
+          "Bot Manager": ~r"BotManager",
+          "Game Backend": ~r"GameBackend",
+          GameClient: ~r"GameClient",
+          Gateway: ~r"Gateway"
+        ]
+      ]
     ]
   end
 
