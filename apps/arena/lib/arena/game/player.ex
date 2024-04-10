@@ -288,7 +288,7 @@ defmodule Arena.Game.Player do
 
     effects =
       player.aditional_info.effects
-      |> Enum.filter(fn effect -> effect.expires_at > now end)
+      |> Enum.filter(fn effect -> is_nil(effect.expires_at) or effect.expires_at > now end)
 
     put_in(player, [:aditional_info, :effects], effects)
   end

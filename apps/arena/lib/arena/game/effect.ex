@@ -5,7 +5,12 @@ defmodule Arena.Game.Effect do
 
   def put_effect(game_state, player_id, owner_id, effect) do
     last_id = game_state.last_id + 1
-    expires_at = System.monotonic_time(:millisecond) + effect.duration_ms
+    expires_at =
+      case effect[:duration_ms] do
+        nil -> nil
+        duration_ms -> System.monotonic_time(:millisecond) + duration_ms
+      end
+
     ## TODO: remove `id` from effect, unless it is really necessary
     effect_extra_attributes = %{id: last_id, owner_id: owner_id, expires_at: expires_at}
     effect = Map.merge(effect, effect_extra_attributes)
