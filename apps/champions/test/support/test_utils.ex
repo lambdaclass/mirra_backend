@@ -64,7 +64,7 @@ defmodule Champions.TestUtils do
         slot: 1
       })
 
-    Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+    Repo.preload(unit, items: :template, character: [:basic_skill, :ultimate_skill])
   end
 
   def basic_skill_params_with_cooldown(cooldown) do

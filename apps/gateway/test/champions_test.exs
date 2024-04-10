@@ -629,7 +629,7 @@ defmodule Gateway.Test.Champions do
       # EquipItem
       attack_before_equip = Units.get_attack(unit)
       defense_before_equip = Units.get_defense(unit)
-      health_before_equip = Units.get_max_health(unit)
+      health_before_equip = Units.get_health(unit)
 
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
       fetch_last_message(socket_tester)
@@ -651,9 +651,19 @@ defmodule Gateway.Test.Champions do
         |> hd()
         |> Repo.preload(items: :template)
 
-      assert Units.get_attack(unit_with_item) == attack_multiplier * attack_before_equip
-      assert Units.get_defense(unit_with_item) == defense_multiplier * defense_before_equip
-      assert Units.get_max_health(unit_with_item) == health_adder + health_before_equip
+      # We use a range to avoid floating point rounding/truncating errors
+      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip)..trunc(
+               attack_multiplier *
+                 attack_before_equip + 1
+             )
+
+      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip)..trunc(
+               defense_multiplier *
+                 defense_before_equip +
+                 1
+             )
+
+      assert Units.get_health(unit_with_item) == health_before_equip + health_adder
 
       # EquipItem again, to another unit
       another_unit = user.units |> Enum.at(1)
@@ -692,7 +702,7 @@ defmodule Gateway.Test.Champions do
 
       assert Units.get_attack(unit_without_item) == attack_before_equip
       assert Units.get_defense(unit_without_item) == defense_before_equip
-      assert Units.get_max_health(unit_without_item) == health_before_equip
+      assert Units.get_health(unit_without_item) == health_before_equip
     end
 
     test "level up item", %{socket_tester: socket_tester} do
