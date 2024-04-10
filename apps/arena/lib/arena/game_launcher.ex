@@ -54,11 +54,15 @@ defmodule Arena.GameLauncher do
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
-    diff = System.monotonic_time(:millisecond) - state.batch_start_at
+    send(self(), :start_game)
+    Logger.info("NEW GAME CREATED")
 
-    if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
-      send(self(), :start_game)
-    end
+
+
+    # diff = System.monotonic_time(:millisecond) - state.batch_start_at
+
+    # if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
+    # end
 
     {:noreply, state}
   end
