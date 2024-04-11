@@ -93,7 +93,7 @@ defmodule Champions.Test.BattleTest do
             Map.put(basic_skill_params, :animation_trigger, 0)
             |> Map.put(:effects, [
               %{
-                type: "instant",
+                type: %{type: "instant"},
                 initial_delay: 1,
                 components: [],
                 modifiers: [],
@@ -135,7 +135,7 @@ defmodule Champions.Test.BattleTest do
         TestUtils.basic_skill_params_with_cooldown(cooldown, "BasicSkill2")
         |> Map.put(:effects, [
           %{
-            type: "instant",
+            type: %{type: "instant"},
             initial_delay: 0,
             components: [
               %{
@@ -177,7 +177,7 @@ defmodule Champions.Test.BattleTest do
           basic_skill:
             Map.put(basic_skill_params, :effects, [
               %{
-                type: "instant",
+                type: %{type: "instant"},
                 initial_delay: 0,
                 components: [
                   %{

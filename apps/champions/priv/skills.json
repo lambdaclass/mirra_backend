@@ -6,7 +6,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -33,7 +35,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "duration": 0,
+   "period": 0
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -59,7 +64,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -86,7 +93,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -112,7 +121,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -139,7 +150,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -165,7 +178,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -192,7 +207,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -218,7 +235,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -245,7 +264,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -271,7 +292,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -298,7 +321,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -323,7 +348,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -350,7 +377,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -376,7 +405,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -403,7 +434,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -429,7 +462,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -456,7 +491,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -482,7 +519,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -509,7 +548,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -535,7 +576,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -562,7 +605,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -587,7 +632,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -614,7 +661,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -640,7 +689,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -667,7 +718,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -685,7 +738,9 @@
         "target_attribute": "Health"
       },
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -710,7 +765,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -774,7 +831,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -834,7 +893,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -899,7 +960,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -959,7 +1022,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -986,7 +1051,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1012,7 +1079,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1072,7 +1141,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1132,7 +1203,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1191,7 +1264,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1243,7 +1318,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1303,7 +1380,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1363,7 +1442,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1421,7 +1502,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1485,7 +1568,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1512,7 +1597,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1556,7 +1643,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1583,7 +1672,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1630,7 +1721,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1690,7 +1783,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1747,7 +1842,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1807,7 +1904,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1840,7 +1939,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": "instant",
+        "type": {
+   "type": "instant"
+},
         "initial_delay": 0,
         "components": [],
         "modifiers": [],

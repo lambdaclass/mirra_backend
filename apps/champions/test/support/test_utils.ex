@@ -75,7 +75,7 @@ defmodule Champions.TestUtils do
       animation_trigger: 0,
       effects: [
         %{
-          type: "instant",
+          type: %{type: "instant"},
           initial_delay: 0,
           components: [],
           modifiers: [],
@@ -106,7 +106,7 @@ defmodule Champions.TestUtils do
       animation_trigger: 0,
       effects: [
         %{
-          type: "instant",
+          type: %{type: "instant"},
           initial_delay: 0,
           components: [],
           modifiers: [],

@@ -4,11 +4,11 @@ defmodule GameBackend.Units.Skills.Effect do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Skills.Effects.{Modifier, TargetStrategy, Type}
+  alias GameBackend.Units.Skills.Effects.{Modifier, TargetStrategy}
 
   @primary_key false
   embedded_schema do
-    field(:type, Type)
+    field(:type, :map)
     field(:initial_delay, :integer)
 
     field(:components, {:array, :map})
