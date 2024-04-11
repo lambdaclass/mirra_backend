@@ -29,7 +29,12 @@ defmodule Arena.GameLauncher do
   end
 
   def join(client_id, character_name, player_name) do
-    GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
+    try do
+      GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
+    rescue
+      _anything ->
+        Process.whereis(__MODULE__) |> Process.info() |> IO.inspect()
+    end
   end
 
   # Callbacks
