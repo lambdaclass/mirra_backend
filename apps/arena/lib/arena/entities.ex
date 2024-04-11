@@ -139,7 +139,7 @@ defmodule Arena.Entities do
         effects_to_apply: effects_to_apply,
         owner_id: owner_id,
         effects: [],
-        damage_multiplier: 0
+        stat_multiplier: 0
       }
     }
   end

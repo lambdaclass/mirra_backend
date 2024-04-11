@@ -531,8 +531,7 @@
       "one_time_application": true,
       "effect_mechanics": {
         "buff_pool": {
-          "damage_multiplier": 0.10,
-          "pull_multiplier": 3.0,
+          "stat_multiplier": 4.0,
           "effect_delay_ms": 0
         }
       }
