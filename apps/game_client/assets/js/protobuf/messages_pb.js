@@ -2991,6 +2991,7 @@ proto.GameState.toObject = function(includeInstance, msg) {
     status: jspb.Message.getFieldWithDefault(msg, 11, 0),
     startGameTimestamp: jspb.Message.getFieldWithDefault(msg, 12, 0),
     itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    obstaclesMap: (f = msg.getObstaclesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
@@ -3097,6 +3098,12 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
          });
       break;
     case 14:
+      var value = msg.getObstaclesMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+         });
+      break;
+    case 15:
       var value = msg.getPoolsMap();
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
@@ -3203,9 +3210,13 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   if (f && f.getLength() > 0) {
     f.serializeBinary(13, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
-  f = message.getPoolsMap(true);
+  f = message.getObstaclesMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(14, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getPoolsMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(15, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
 };
 
@@ -3519,14 +3530,37 @@ proto.GameState.prototype.clearItemsMap = function() {
 
 
 /**
- * map<uint64, Entity> pools = 14;
+ * map<uint64, Entity> obstacles = 14;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!proto.Entity>}
+ */
+proto.GameState.prototype.getObstaclesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+      jspb.Message.getMapField(this, 14, opt_noLazyCreate,
+      proto.Entity));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearObstaclesMap = function() {
+  this.getObstaclesMap().clear();
+  return this;
+};
+
+
+/**
+ * map<uint64, Entity> pools = 15;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
  */
 proto.GameState.prototype.getPoolsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,!proto.Entity>} */ (
-      jspb.Message.getMapField(this, 14, opt_noLazyCreate,
+      jspb.Message.getMapField(this, 15, opt_noLazyCreate,
       proto.Entity));
 };
 
@@ -5882,7 +5916,8 @@ proto.PlayerAction.prototype.toObject = function(opt_includeInstance) {
 proto.PlayerAction.toObject = function(includeInstance, msg) {
   var f, obj = {
     action: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    duration: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5927,6 +5962,11 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint64());
       msg.setDuration(value);
       break;
+    case 3:
+      var value = new proto.Position;
+      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      msg.setDestination(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5970,6 +6010,14 @@ proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getDestination();
+  if (f != null) {
+    writer.writeMessage(
+      3,
+      f,
+      proto.Position.serializeBinaryToWriter
+    );
+  }
 };
 
 
@@ -6006,6 +6054,43 @@ proto.PlayerAction.prototype.getDuration = function() {
  */
 proto.PlayerAction.prototype.setDuration = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional Position destination = 3;
+ * @return {?proto.Position}
+ */
+proto.PlayerAction.prototype.getDestination = function() {
+  return /** @type{?proto.Position} */ (
+    jspb.Message.getWrapperField(this, proto.Position, 3));
+};
+
+
+/**
+ * @param {?proto.Position|undefined} value
+ * @return {!proto.PlayerAction} returns this
+*/
+proto.PlayerAction.prototype.setDestination = function(value) {
+  return jspb.Message.setWrapperField(this, 3, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.PlayerAction} returns this
+ */
+proto.PlayerAction.prototype.clearDestination = function() {
+  return this.setDestination(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.PlayerAction.prototype.hasDestination = function() {
+  return jspb.Message.getField(this, 3) != null;
 };
 
 

@@ -26,6 +26,8 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   def dump(strategy), do: {:ok, target_strategy_to_string(strategy)}
 
+  defp target_strategy_to_string("all"), do: "all"
+  defp target_strategy_to_string("self"), do: "self"
   defp target_strategy_to_string("random"), do: "random"
   defp target_strategy_to_string("nearest"), do: "nearest"
   defp target_strategy_to_string("furthest"), do: "furthest"
@@ -46,6 +48,8 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   defp target_strategy_to_string(_), do: nil
 
+  defp target_strategy_from_string("all"), do: "all"
+  defp target_strategy_from_string("self"), do: "self"
   defp target_strategy_from_string("random"), do: "random"
   defp target_strategy_from_string("nearest"), do: "nearest"
   defp target_strategy_from_string("furthest"), do: "furthest"

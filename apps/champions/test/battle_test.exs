@@ -1,4 +1,4 @@
-defmodule Champions.Test.Battle do
+defmodule Champions.Test.BattleTest do
   @moduledoc """
   Test for Champions of Mirra battles.
 
@@ -11,45 +11,12 @@ defmodule Champions.Test.Battle do
 
   use ExUnit.Case
 
-  alias GameBackend.Repo
-  alias Champions.Users
   alias GameBackend.Units.Characters
   alias GameBackend.Units
+  alias Champions.TestUtils
 
   setup_all do
-    {:ok, target_dummy_user} = Users.register("BattleUser")
-
-    # Create a character that won't ever get to attack because of its long cooldown. His health will be 10.
-    {:ok, target_dummy_char} =
-      Characters.insert_character(%{
-        game_id: 2,
-        name: "Target Dummy",
-        active: true,
-        faction: "Kaline",
-        class: "Warrior",
-        base_health: 10,
-        base_attack: 0,
-        base_defense: 0,
-        basic_skill: %{
-          effects: [],
-          cooldown: 9999
-        },
-        ultimate_skill: %{
-          effects: []
-        }
-      })
-
-    {:ok, target_dummy} =
-      Units.insert_unit(%{
-        user_id: target_dummy_user.id,
-        character_id: target_dummy_char.id,
-        selected: true,
-        level: 1,
-        tier: 1
-      })
-
-    target_dummy = Repo.preload(target_dummy, character: [:basic_skill, :ultimate_skill])
-
+    target_dummy = TestUtils.create_target_dummy()
     {:ok, %{target_dummy: target_dummy}}
   end
 
@@ -63,70 +30,20 @@ defmodule Champions.Test.Battle do
 
       # Create a character with a basic skill that has a cooldown too long to execute
       # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
-      basic_skill_params = %{
-        name: "Basic",
-        energy_regen: 0,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
-          %{
-            type: "instant",
-            initial_delay: 0,
-            components: [],
-            modifier: [],
-            executions: [
-              %{
-                type: "DealDamage",
-                attack_ratio: 0.5,
-                energy_recharge: 50,
-                delay: 0
-              }
-            ],
-            target_strategy: "random",
-            target_count: 1,
-            target_allies: false,
-            target_attribute: "Health"
-          }
-        ],
-        cooldown: too_long_cooldown
-      }
+      basic_skill_params = TestUtils.basic_skill_params_with_cooldown(too_long_cooldown, "BasicSkill1")
 
-      {:ok, character} =
-        GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
-          name: "Execution-DealDamage Character",
-          active: true,
-          faction: "Kaline",
-          class: "Assassin",
-          # Multiplied by the attack ratio of the basic skill, we get 10
-          base_attack: 20,
-          base_health: 100,
-          base_defense: 100,
-          basic_skill: basic_skill_params,
-          ultimate_skill: %{
-            name: "None",
-            energy_regen: 0,
-            animation_duration: 0,
-            animation_trigger: 0,
-            effects: []
-          }
-        })
+      character =
+        TestUtils.create_character(
+          "Execution-DealDamage Character",
+          basic_skill_params,
+          TestUtils.dummy_ultimate_skill_params("DummyUltimate1")
+        )
 
-      {:ok, unit} =
-        Units.insert_unit(%{
-          character_id: character.id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: user.id,
-          slot: 1
-        })
-
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+      unit = TestUtils.create_unit(character.id, user.id)
 
       # Check that the battle ends in timeout when the steps are not enough
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       # Decrease the cooldown and check that the battle ends in victory when the steps are enough
       {:ok, character} =
@@ -134,7 +51,8 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       # Add animation duration delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
@@ -144,22 +62,29 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
-      assert :team_1 ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps_to_win)
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps_to_win).result
 
       # Add animation trigger delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
         Characters.update_character(character, %{
-          basic_skill: Map.put(basic_skill_params, :animation_duration, 0) |> Map.put(:animation_trigger, 2)
+          basic_skill: Map.put(basic_skill_params, :animation_duration, 2) |> Map.put(:animation_trigger, 2)
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      required_steps_to_win_with_trigger_delay = required_steps_to_win + 2
 
-      # assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps + 4)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy],
+                 maximum_steps: required_steps_to_win_with_trigger_delay
+               ).result
 
       # Add initial delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, _character} =
@@ -190,14 +115,15 @@ defmodule Champions.Test.Battle do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps)
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       required_steps_to_win_with_initial_delay = required_steps_to_win + 1
 
-      assert :team_1 ==
+      assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy],
                  maximum_steps: required_steps_to_win_with_initial_delay
-               )
+               ).result
     end
 
     test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
@@ -205,12 +131,9 @@ defmodule Champions.Test.Battle do
       cooldown = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
-      basic_skill_params = %{
-        name: "Basic2",
-        energy_regen: 0,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
+      basic_skill_params =
+        TestUtils.basic_skill_params_with_cooldown(cooldown, "BasicSkill2")
+        |> Map.put(:effects, [
           %{
             type: "instant",
             initial_delay: 0,
@@ -234,45 +157,19 @@ defmodule Champions.Test.Battle do
             target_allies: false,
             target_attribute: "Health"
           }
-        ],
-        cooldown: cooldown
-      }
+        ])
 
-      {:ok, character} =
-        GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
-          name: "ComponentsCharacter",
-          active: true,
-          faction: "Kaline",
-          class: "Assassin",
-          base_attack: 20,
-          base_health: 100,
-          base_defense: 100,
-          basic_skill: basic_skill_params,
-          ultimate_skill: %{
-            name: "None2",
-            energy_regen: 0,
-            animation_duration: 0,
-            animation_trigger: 0,
-            effects: []
-          }
-        })
+      character =
+        TestUtils.create_character(
+          "ComponentsCharacter",
+          basic_skill_params,
+          TestUtils.dummy_ultimate_skill_params("DummyUltimate2")
+        )
 
-      {:ok, unit} =
-        Units.insert_unit(%{
-          character_id: character.id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: user.id,
-          slot: 1
-        })
-
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
+      unit = TestUtils.create_unit(character.id, user.id)
 
       # Check that the battle ends in timeout even though the maximum steps is a big number
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1000)
+      assert "timeout" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1000).result
 
       # Change the component to have 100% chance to be applied
       {:ok, _character} =
@@ -308,7 +205,8 @@ defmodule Champions.Test.Battle do
       {:ok, unit} = Units.get_unit(unit.id)
 
       # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
     end
 
     test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
@@ -320,12 +218,9 @@ defmodule Champions.Test.Battle do
       cooldown = 1
 
       # Configure a basic skill with a modifier that increases the attack ratio
-      basic_skill_params = %{
-        name: "Basic3",
-        energy_regen: 500,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
+      basic_skill_params =
+        TestUtils.basic_skill_params_with_cooldown(cooldown, "BasicSkill3")
+        |> Map.put(:effects, [
           %{
             type: %{"duration" => 1, "period" => 0},
             initial_delay: 0,
@@ -344,66 +239,17 @@ defmodule Champions.Test.Battle do
             target_allies: true,
             target_attribute: "Health"
           }
-        ],
-        cooldown: cooldown
-      }
+        ])
 
-      ultimate_skill_params = %{
-        name: "Ultimate",
-        energy_regen: 0,
-        animation_duration: 0,
-        animation_trigger: 0,
-        effects: [
-          %{
-            type: "instant",
-            initial_delay: 0,
-            components: [],
-            modifiers: [],
-            executions: [
-              %{
-                type: "DealDamage",
-                attack_ratio: 0.5,
-                energy_recharge: 50,
-                delay: 0
-              }
-            ],
-            target_strategy: "random",
-            target_count: 1,
-            target_allies: false,
-            target_attribute: "Health"
-          }
-        ]
-      }
+      ultimate_skill_params = TestUtils.ultimate_skill_params("Ultimate1")
 
-      {:ok, character} =
-        GameBackend.Units.Characters.insert_character(%{
-          game_id: 2,
-          name: "ModifiersCharacter",
-          active: true,
-          faction: "Kaline",
-          class: "Assassin",
-          base_attack: 20,
-          base_health: 100,
-          base_defense: 100,
-          basic_skill: basic_skill_params,
-          ultimate_skill: ultimate_skill_params
-        })
+      character = TestUtils.create_character("ModifiersCharacter", basic_skill_params, ultimate_skill_params)
+      unit = TestUtils.create_unit(character.id, user.id)
 
-      {:ok, unit} =
-        Units.insert_unit(%{
-          character_id: character.id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: user.id,
-          slot: 1
-        })
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
 
-      unit = Repo.preload(unit, character: [:basic_skill, :ultimate_skill])
-
-      assert :timeout == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1)
-      assert :team_1 == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21)
+      assert "team_1" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21).result
     end
   end
 end

@@ -1,4 +1,4 @@
-defmodule GameBackend.Repo.Migrations.AddCurrentCampaignAndLevelToUser do
+defmodule GameBackend.Repo.Migrations.AddCampaigns do
   use Ecto.Migration
 
   def change do
@@ -15,11 +15,11 @@ defmodule GameBackend.Repo.Migrations.AddCurrentCampaignAndLevelToUser do
       timestamps()
     end
 
-    create table(:campaign_progresss) do
+    create table(:super_campaign_progresses) do
       add :game_id, :integer, null: false
       add :user_id, references(:users, on_delete: :delete_all)
       add :level_id, references(:levels, on_delete: :delete_all)
-      add :campaign_id, references(:campaigns, on_delete: :delete_all)
+      add :super_campaign_id, references(:super_campaigns, on_delete: :delete_all)
       timestamps()
     end
 

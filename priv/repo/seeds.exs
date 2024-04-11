@@ -5,7 +5,6 @@ alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
@@ -15,8 +14,6 @@ units_per_level = 5
 
 {:ok, _skills} = Champions.Config.import_skill_config()
 Champions.Config.import_character_config()
-
-muflus = Characters.get_character_by_name("Muflus")
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,

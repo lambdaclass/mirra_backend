@@ -2,13 +2,18 @@ defmodule Gateway.Test.Champions do
   @moduledoc """
   Test for Champions of Mirra messages.
   """
+  import Ecto.Query
+
   use ExUnit.Case
 
   alias Champions.{Units, Users, Utils}
+  alias GameBackend.Campaigns.Rewards.CurrencyReward
   alias GameBackend.Repo
   alias GameBackend.Items
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
+  alias Gateway.Serialization.AfkRewards
+  alias Gateway.Serialization.SuperCampaignProgresses
 
   alias Gateway.Serialization.{
     Box,
@@ -323,11 +328,11 @@ defmodule Gateway.Test.Champions do
       # Register user
       {:ok, user} = Users.register("battle_user")
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      level_id = campaign_progression.level_id
+      # Get the SuperCampaignProgress' Level
+      level_id = super_campaign_progress.level_id
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
@@ -343,7 +348,7 @@ defmodule Gateway.Test.Champions do
       # TODO: check rewards [#CHoM-341]
     end
 
-    test "fight level advances level in the campaign progression", %{socket_tester: socket_tester} do
+    test "fight level advances level in the SuperCampaignProgress", %{socket_tester: socket_tester} do
       # Register user
       {:ok, user} = Users.register("battle_winning_user")
 
@@ -352,12 +357,12 @@ defmodule Gateway.Test.Champions do
         GameBackend.Units.update_unit(unit, %{level: 9999})
       end)
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      level_id = campaign_progression.level_id
-      level_number = campaign_progression.level.level_number
+      # Get the SuperCampaignProgress' Level
+      level_id = super_campaign_progress.level_id
+      level_number = super_campaign_progress.level.level_number
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
@@ -371,24 +376,26 @@ defmodule Gateway.Test.Champions do
 
       {:ok, advanced_user} = Users.get_user(user.id)
 
-      [advanced_campaign_progression | _] = advanced_user.campaign_progresses
+      [advanced_super_campaign_progress | _] = advanced_user.super_campaign_progresses
 
       assert user.id == advanced_user.id
-      assert advanced_campaign_progression.level_id != level_id
-      assert advanced_campaign_progression.level.level_number == level_number + 1
+      assert advanced_super_campaign_progress.level_id != level_id
+      assert advanced_super_campaign_progress.level.level_number == level_number + 1
     end
 
-    test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
+    test "can not fight a Level that is not the next one in the SuperCampaignProgress", %{
+      socket_tester: socket_tester
+    } do
       # Register user
       {:ok, user} = Users.register("invalid_battle_user")
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      next_level_id = campaign_progression.level_id
+      # Get the level of the SuperCampaignProgress
+      next_level_id = super_campaign_progress.level_id
 
-      # Get a level from the user where the id is not the next level in the progression
+      # Get a Level that is not the next one in the SuperCampaignProgress
       SocketTester.get_campaigns(socket_tester, user.id)
       fetch_last_message(socket_tester)
 
@@ -407,6 +414,157 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{
         response_type: {:error, %Error{reason: "level_invalid"}}
       }
+    end
+  end
+
+  describe "afk rewards" do
+    test "winning battles increments the afk rewards", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("AfkRewardsUser")
+
+      # Check that the initial afk reward rates are all 0
+      assert Enum.all?(user.afk_reward_rates, fn rate -> rate.rate == 0 end)
+
+      # Get initial afk rewards
+      SocketTester.get_afk_rewards(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: initial_afk_rewards}}}
+
+      # Check that the initial afk rewards are all 0
+      assert Enum.all?(initial_afk_rewards, fn reward -> reward.amount == 0 end)
+
+      # Set up a powerful team to win a level with the user. That should increment the afk rewards rates
+      Enum.each(user.units, fn unit ->
+        GameBackend.Units.update_unit(unit, %{level: 9999})
+      end)
+
+      [super_campaign_progress | _] = user.super_campaign_progresses
+      level_id = super_campaign_progress.level_id
+      SocketTester.fight_level(socket_tester, user.id, level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      # Get advanced user
+      SocketTester.get_user(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = advanced_user}}
+
+      # Check that the gold and gems afk rewards rates are now greater than the initial rewards, and the other rates are still 0
+      rewardable_currencies_ids = ["Gold", "Gems"] |> Enum.map(&Currencies.get_currency_by_name!(&1).id)
+
+      assert Enum.all?(advanced_user.afk_reward_rates, fn rate ->
+               case rate.currency_id in rewardable_currencies_ids do
+                 true ->
+                   rate.rate > 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+
+      # Claim afk rewards
+      currencies_before_claiming = advanced_user.currencies
+
+      # Simulate waiting 2 seconds before claiming the rewards
+      seconds_to_wait = 2
+      {:ok, advanced_user_with_rewards} = Users.get_user(advanced_user.id)
+
+      {:ok, _} =
+        advanced_user_with_rewards
+        |> GameBackend.Users.User.changeset(%{
+          last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+        })
+        |> Repo.update()
+
+      SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
+
+      # Check that the user has received gold and gems.
+      # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
+      # We add 10% to the time waited to account for the time it takes to process the message.
+      assert Enum.all?(claimed_user.currencies, fn currency ->
+               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
+
+               currency_id = Currencies.get_currency_by_name!(currency.currency.name).id
+
+               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == currency_id)) do
+                 nil ->
+                   # If the currency is not in the afk rewards rates, we don't consider it.
+                   true
+
+                 rate ->
+                   reward_rate = rate.rate
+
+                   currency_before_claim =
+                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
+
+                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
+               end
+             end)
+
+      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
+
+      # Play another level to increment the afk rewards rates again
+      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
+      }
+
+      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
+      next_level_id = super_campaign_progress.level_id
+      SocketTester.fight_level(socket_tester, advanced_user.id, next_level_id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:battle_result, _ = battle_result}
+      }
+
+      assert battle_result.result == "win"
+
+      # Get new user
+      SocketTester.get_user(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
+
+      # Check that the rewardable currencies afk rewards rates are now greater than the rewards before the second battle, and the other rates are still 0
+      # Get the current level number and check that the afk rewards rates have increased proportionally
+      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
+      }
+
+      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
+      current_level_id = super_campaign_progress.level_id
+
+      current_level_afk_rewards_increments =
+        Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
+
+      assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->
+               case rate.currency_id in rewardable_currencies_ids do
+                 true ->
+                   previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == rate.currency_id)).rate
+
+                   afk_reward_increment =
+                     Enum.find(current_level_afk_rewards_increments, &(&1.currency_id == rate.currency_id)).amount
+
+                   new_rate = previous_rate + afk_reward_increment
+                   rate.rate > previous_rate
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
     end
   end
 
