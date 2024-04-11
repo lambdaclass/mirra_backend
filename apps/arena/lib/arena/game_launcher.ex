@@ -3,6 +3,7 @@ defmodule Arena.GameLauncher do
   alias Ecto.UUID
 
   use GenServer
+  require Logger
 
   # Amount of clients needed to start a game
   @clients_needed 10
@@ -33,7 +34,7 @@ defmodule Arena.GameLauncher do
       GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
     rescue
       _anything ->
-        Process.whereis(__MODULE__) |> Process.info() |> IO.inspect()
+        Process.whereis(__MODULE__) |> Process.info() |> Logger.info()
     end
   end
 
