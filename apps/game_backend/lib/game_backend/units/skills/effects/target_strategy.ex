@@ -7,16 +7,15 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   def type(), do: :string
 
-  # TODO: replace random for the corresponding target strategy name (CHoM #325)
-  def cast("all"), do: {:ok, "random"}
-  def cast("self"), do: {:ok, "random"}
+  def cast("all"), do: {:ok, "all"}
+  def cast("self"), do: {:ok, "self"}
   def cast("random"), do: {:ok, "random"}
-  def cast("nearest"), do: {:ok, "random"}
-  def cast("furthest"), do: {:ok, "random"}
-  def cast("frontline"), do: {:ok, "random"}
-  def cast("backline"), do: {:ok, "random"}
-  def cast("min"), do: {:ok, "random"}
-  def cast("max"), do: {:ok, "random"}
+  def cast("nearest"), do: {:ok, "nearest"}
+  def cast("furthest"), do: {:ok, "furthest"}
+  def cast("frontline"), do: {:ok, "frontline"}
+  def cast("backline"), do: {:ok, "backline"}
+  def cast("min"), do: {:ok, "min"}
+  def cast("max"), do: {:ok, "max"}
   def cast(%{"factions" => factions}), do: {:ok, {"factions", factions}}
   def cast(%{"classes" => classes}), do: {:ok, {"classes", classes}}
   def cast(%{"lowest" => attribute}), do: {:ok, {"lowest", attribute}}
@@ -27,13 +26,13 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   def dump(strategy), do: {:ok, target_strategy_to_string(strategy)}
 
-  defp target_strategy_to_string("all"), do: "random"
-  defp target_strategy_to_string("self"), do: "random"
+  defp target_strategy_to_string("all"), do: "all"
+  defp target_strategy_to_string("self"), do: "self"
   defp target_strategy_to_string("random"), do: "random"
-  defp target_strategy_to_string("nearest"), do: "random"
-  defp target_strategy_to_string("furthest"), do: "random"
-  defp target_strategy_to_string("frontline"), do: "random"
-  defp target_strategy_to_string("backline"), do: "random"
+  defp target_strategy_to_string("nearest"), do: "nearest"
+  defp target_strategy_to_string("furthest"), do: "furthest"
+  defp target_strategy_to_string("frontline"), do: "frontline"
+  defp target_strategy_to_string("backline"), do: "backline"
 
   defp target_strategy_to_string({"factions", factions}),
     do: "factions,#{Enum.join(factions, ",")}"
@@ -49,13 +48,13 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   defp target_strategy_to_string(_), do: nil
 
-  defp target_strategy_from_string("all"), do: "random"
-  defp target_strategy_from_string("self"), do: "random"
+  defp target_strategy_from_string("all"), do: "all"
+  defp target_strategy_from_string("self"), do: "self"
   defp target_strategy_from_string("random"), do: "random"
-  defp target_strategy_from_string("nearest"), do: "random"
-  defp target_strategy_from_string("furthest"), do: "random"
-  defp target_strategy_from_string("frontline"), do: "random"
-  defp target_strategy_from_string("backline"), do: "random"
+  defp target_strategy_from_string("nearest"), do: "nearest"
+  defp target_strategy_from_string("furthest"), do: "furthest"
+  defp target_strategy_from_string("frontline"), do: "frontline"
+  defp target_strategy_from_string("backline"), do: "backline"
 
   defp target_strategy_from_string(string) when is_binary(string) do
     case String.split(string, ",") do
