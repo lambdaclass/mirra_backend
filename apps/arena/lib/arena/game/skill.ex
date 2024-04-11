@@ -2,6 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
+  alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
   alias Arena.Game.Player
 
@@ -107,18 +108,15 @@ defmodule Arena.Game.Skill do
     do_mechanic(game_state, entity, {:circle_hit, multi_circle_hit}, skill_params)
   end
 
-  def do_mechanic(
-        game_state,
-        entity,
-        {:dash, %{speed: speed, duration: duration}},
-        _skill_params
-      ) do
-    Process.send_after(self(), {:stop_dash, entity.id, entity.speed}, duration)
+  def do_mechanic(game_state, entity, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
+    Process.send_after(self(), {:stop_dash, entity.id, entity.aditional_info.base_speed}, duration)
 
+    ## Modifying base_speed rather than speed because effects will reset the speed on game tick
+    ## by modifying base_speed we ensure that the dash speed is kept as expected
     entity =
       entity
       |> Map.put(:is_moving, true)
-      |> Map.put(:speed, speed)
+      |> put_in([:aditional_info, :base_speed], speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     players = Map.put(game_state.players, entity.id, entity)
@@ -221,7 +219,7 @@ defmodule Arena.Game.Skill do
   def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction}) do
     Process.send_after(
       self(),
-      {:stop_leap, entity.id, entity.speed, leap.on_arrival_mechanic},
+      {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
       leap.duration_ms
     )
 
@@ -234,10 +232,12 @@ defmodule Arena.Game.Skill do
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
     speed = Physics.calculate_speed(entity.position, target_position, leap.duration_ms) * 30
 
+    ## Modifying base_speed rather than speed because effects will reset the speed on game tick
+    ## by modifying base_speed we ensure that the dash speed is kept as expected
     player =
       entity
       |> Map.put(:is_moving, true)
-      |> Map.put(:speed, speed)
+      |> put_in([:aditional_info, :base_speed], speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)
@@ -282,38 +282,24 @@ defmodule Arena.Game.Skill do
     |> put_in([:last_id], last_id)
   end
 
-  def handle_skill_effects(game_state, player, effects, game_config) do
+  def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
       Enum.map(effects, fn effect_name ->
         Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
       end)
 
-    effects =
-      get_in(game_state, [:players, player.id, :aditional_info, :effects])
-      |> Map.reject(fn {_, effect} -> effect.remove_on_action end)
-
-    game_state = put_in(game_state, [:players, player.id, :aditional_info, :effects], effects)
-
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      last_id = game_state.last_id + 1
-
-      Process.send_after(self(), {:remove_effect, player.id, last_id}, effect.duration_ms)
-
-      put_in(
-        game_state,
-        [:players, player.id, :aditional_info, :effects, last_id],
-        Map.put(effect, :id, last_id)
-        |> Map.put(:owner_id, player.id)
-      )
-      |> put_in([:last_id], last_id)
+      Effect.put_effect(game_state, player.id, player.id, execution_duration_ms, effect)
     end)
   end
 
+  ## TODO: refactor into Effect module, take a closer look at how the recurring effects are re-applied
+  ##    specifically the mess around apply_effect_mechanic/3 and do-effect_mechanics/4
   def apply_effect_mechanic(%{players: players, pools: pools} = game_state) do
     Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
       if Player.alive?(player) do
         player =
-          Enum.reduce(player.aditional_info.effects, player, fn {_effect_id, effect}, player ->
+          Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
             apply_effect_mechanic(player, effect, game_state)
           end)
 
@@ -339,23 +325,13 @@ defmodule Arena.Game.Skill do
     Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
       should_re_apply? =
         (is_nil(Map.get(mechanic_params, :last_application_time)) or
-           now - Map.get(mechanic_params, :last_application_time) >=
-             mechanic_params.effect_delay_ms) and
+           (not is_nil(Map.get(mechanic_params, :effect_delay_ms)) and
+              now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms)) and
           (not effect.one_time_application or is_nil(Map.get(mechanic_params, :last_application_time)))
 
       if should_re_apply? do
         do_effect_mechanics(game_state, player, effect, mechanic)
-        |> put_in(
-          [
-            :aditional_info,
-            :effects,
-            effect.id,
-            :effect_mechanics,
-            mechanic_name,
-            :last_application_time
-          ],
-          now
-        )
+        |> Effect.put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
       else
         player
       end
@@ -418,6 +394,11 @@ defmodule Arena.Game.Skill do
           current_multiplier + current_multiplier * buff_attributes.damage_multiplier
         end)
     end
+  end
+
+  ## Sink for mechanics that don't do anything
+  defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
+    player
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do

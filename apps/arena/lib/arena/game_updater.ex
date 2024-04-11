@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
@@ -87,7 +88,7 @@ defmodule Arena.GameUpdater do
   def handle_call({:use_item, player_id, _timestamp}, _from, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
+      |> Player.use_item(state.game_state, state.game_config)
 
     {:reply, :ok, %{state | game_state: game_state}}
   end
@@ -109,6 +110,9 @@ defmodule Arena.GameUpdater do
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      |> remove_expired_effects()
+      |> remove_effects_on_action()
+      |> reset_players_effects()
       |> reduce_players_cooldowns(time_diff)
       |> move_players()
       |> update_projectiles_status()
@@ -122,8 +126,6 @@ defmodule Arena.GameUpdater do
       |> handle_pools(state.game_config)
       |> Skill.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
-
-    IO.inspect(game_state.pools)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -206,17 +208,6 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_info({:stop_stamina_faster, player_id, revert_by}, state) do
-    player = Map.get(state.game_state.players, player_id)
-
-    %{stamina_interval: max_stamina_interval} =
-      Configuration.get_character_config(player.aditional_info.character_name, state.game_config)
-
-    player = Player.revert_stamina_interval(player, revert_by, max_stamina_interval)
-    state = put_in(state, [:game_state, :players, player.id], player)
-    {:noreply, state}
-  end
-
   def handle_info({:trigger_mechanic, player_id, mechanic, skill_params}, state) do
     player = Map.get(state.game_state.players, player_id)
     game_state = Skill.do_mechanic(state.game_state, player, mechanic, skill_params)
@@ -231,21 +222,18 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(
-        {:delayed_effect_application, _player_id, nil},
+        {:delayed_effect_application, _player_id, nil, _execution_duration_ms},
         state
       ) do
     {:noreply, state}
   end
 
-  def handle_info(
-        {:delayed_effect_application, player_id, effects_to_apply},
-        %{
-          game_state: game_state,
-          game_config: game_config
-        } = state
-      ) do
-    player = Map.get(game_state.players, player_id)
-    game_state = Skill.handle_skill_effects(game_state, player, effects_to_apply, game_config)
+  def handle_info({:delayed_effect_application, player_id, effects_to_apply, execution_duration_ms}, state) do
+    player = Map.get(state.game_state.players, player_id)
+
+    game_state =
+      Skill.handle_skill_effects(state.game_state, player, effects_to_apply, execution_duration_ms, state.game_config)
+
     {:noreply, %{state | game_state: game_state}}
   end
 
@@ -405,50 +393,15 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:remove_speed_boost, player_id, amount}, state) do
-    player =
-      Map.get(state.game_state.players, player_id)
-      |> Player.change_speed(-amount)
-
-    state = put_in(state, [:game_state, :players, player_id], player)
-    {:noreply, state}
-  end
-
-  def handle_info({:remove_damage_immunity, player_id}, state) do
-    player =
-      Map.get(state.game_state.players, player_id)
-      |> Player.remove_damage_immunity()
-
-    state = put_in(state, [:game_state, :players, player_id], player)
-    {:noreply, state}
-  end
-
   def handle_info({:block_actions, player_id}, state) do
     broadcast_player_block_actions(state.game_state.game_id, player_id, false)
     {:noreply, state}
   end
 
-  def handle_info({:remove_effect, player_id, effect_id}, state) do
-    case Map.get(state.game_state.players, player_id) do
-      %{aditional_info: %{effects: %{^effect_id => _effect} = effects}} ->
-        state =
-          put_in(
-            state,
-            [:game_state, :players, player_id, :aditional_info, :effects],
-            Map.delete(effects, effect_id)
-          )
-
-        {:noreply, state}
-
-      _ ->
-        {:noreply, state}
-    end
-  end
-
   def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
     game_state =
       Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
-        remove_pool_effects(game_state, player, pool_id)
+        Effect.remove_owner_effects(game_state, player.id, pool_id)
       end)
       |> update_in(
         [:pools],
@@ -630,6 +583,36 @@ defmodule Arena.GameUpdater do
   ##########################
   # Game flow. Actions executed in every tick.
   ##########################
+
+  defp remove_expired_effects(game_state) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player = Player.remove_expired_effects(player)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
+
+  defp remove_effects_on_action(game_state) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player = Player.remove_effects_on_action(player)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
+
+  defp reset_players_effects(game_state) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player = Player.reset_effects(player)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
 
   defp reduce_players_cooldowns(game_state, time_diff) do
     players =
@@ -1079,41 +1062,23 @@ defmodule Arena.GameUpdater do
         if pool_id in player.collides_with do
           add_pool_effects(acc, game_config, player, pool)
         else
-          remove_pool_effects(acc, player, pool_id)
+          Effect.remove_owner_effects(acc, player.id, pool_id)
         end
       end)
     end)
   end
 
   defp add_pool_effects(game_state, game_config, player, pool) do
-    player_contain_pool_effects? =
-      Enum.any?(player.aditional_info.effects, fn {_effect_id, effect} ->
-        effect.owner_id == pool.id
-      end)
-
-    if player_contain_pool_effects? or player.id == pool.aditional_info.owner_id do
+    if player.id == pool.aditional_info.owner_id do
       game_state
     else
+      ## TODO: Effect.put_non_owner_stackable_effect/4 is doing essentially the same check multiple times
+      ##   we should try to refactor this to avoid it
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
-        last_id = game_state.last_id + 1
-
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-
-        game_state
-        |> put_in(
-          [:players, player.id, :aditional_info, :effects, last_id],
-          Map.put(effect, :owner_id, pool.id)
-          |> Map.put(:id, last_id)
-        )
-        |> put_in([:last_id], last_id)
+        Effect.put_non_owner_stackable_effect(game_state, player.id, pool.id, effect)
       end)
     end
-  end
-
-  defp remove_pool_effects(game_state, player, pool_id) do
-    update_in(game_state, [:players, player.id, :aditional_info, :effects], fn current_effects ->
-      Map.reject(current_effects, fn {_effect_id, effect} -> effect.owner_id == pool_id end)
-    end)
   end
 
   defp process_item(player, item, players_acc, items_acc) do
