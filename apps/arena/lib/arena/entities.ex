@@ -41,7 +41,8 @@ defmodule Arena.Entities do
         damage_immunity: false,
         effects: %{},
         cooldowns: %{},
-        visible_players: []
+        visible_players: [],
+        on_bush: false
       }
     }
   end
@@ -242,7 +243,8 @@ defmodule Arena.Entities do
        power_ups: entity.aditional_info.power_ups,
        inventory: entity.aditional_info.inventory,
        cooldowns: entity.aditional_info.cooldowns,
-       visible_players: entity.aditional_info.visible_players
+       visible_players: entity.aditional_info.visible_players,
+       on_bush: entity.aditional_info.on_bush
      }}
   end
 

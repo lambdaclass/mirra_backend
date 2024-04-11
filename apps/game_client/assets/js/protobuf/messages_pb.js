@@ -4594,7 +4594,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     effectsMap: (f = msg.getEffectsMap()) ? f.toObject(includeInstance, proto.Effect.toObject) : [],
     inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
-    visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f
+    visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
+    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false)
   };
 
   if (includeInstance) {
@@ -4690,6 +4691,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       for (var i = 0; i < values.length; i++) {
         msg.addVisiblePlayers(values[i]);
       }
+      break;
+    case 14:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setOnBush(value);
       break;
     default:
       reader.skipField();
@@ -4804,6 +4809,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writePackedUint64(
       13,
+      f
+    );
+  }
+  f = message.getOnBush();
+  if (f) {
+    writer.writeBool(
+      14,
       f
     );
   }
@@ -5109,6 +5121,24 @@ proto.Player.prototype.addVisiblePlayers = function(value, opt_index) {
  */
 proto.Player.prototype.clearVisiblePlayersList = function() {
   return this.setVisiblePlayersList([]);
+};
+
+
+/**
+ * optional bool on_bush = 14;
+ * @return {boolean}
+ */
+proto.Player.prototype.getOnBush = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setOnBush = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 14, value);
 };
 
 

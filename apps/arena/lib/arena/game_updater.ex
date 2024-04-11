@@ -1161,7 +1161,10 @@ defmodule Arena.GameUpdater do
           end
         end)
 
-      put_in(game_state, [:players, player_id, :aditional_info, :visible_players], visible_players)
+      update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+        Map.put(aditional_info, :visible_players, visible_players)
+        |> Map.put(:on_bush, not Enum.empty?(bush_collisions))
+      end)
     end)
   end
 

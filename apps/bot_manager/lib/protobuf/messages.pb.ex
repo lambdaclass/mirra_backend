@@ -397,6 +397,7 @@ defmodule BotManager.Protobuf.Player do
   field(:inventory, 11, type: BotManager.Protobuf.Item)
   field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
+  field(:on_bush, 14, type: :bool, json_name: "onBush")
 end
 
 defmodule BotManager.Protobuf.Effect do
