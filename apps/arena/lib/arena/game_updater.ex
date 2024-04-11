@@ -516,7 +516,7 @@ defmodule Arena.GameUpdater do
         :ets.delete(:games, game_id)
 
       [] ->
-        raise KeyError, message: "Game with ID #{game_id} doesn't exists"
+        raise KeyError, message: "Game with ID #{self()} doesn't exists"
     end
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
