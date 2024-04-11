@@ -87,7 +87,7 @@ defmodule Arena.GameLauncher do
 
   def handle_info({:spawn_bot_for_player, bot_client, game_pid}, state) do
     Finch.build(:get, build_bot_url(game_pid, bot_client))
-    |> Finch.request(Arena.Finch)
+    |> Finch.async_request(Arena.Finch)
 
     {:noreply, state}
   end
