@@ -44,67 +44,71 @@ defmodule GameBackend.Units.Skills.Effect do
     ])
     |> validate_change(:executions, fn :executions, executions ->
       valid? =
-        Enum.all?(executions, fn execution ->
-          case execution do
-            %{
-              type: "DealDamage",
-              attack_ratio: _attack_ratio,
-              energy_recharge: _energy_recharge,
-              delay: _delay
-            } ->
-              true
-
-            %{
-              type: "DealDamageOverTime",
-              attack_ratio: _attack_ratio,
-              energy_recharge: _energy_recharge,
-              delay: _delay
-            } ->
-              true
-
-            %{
-              type: "Heal",
-              attack_ratio: _attack_ratio,
-              delay: _delay
-            } ->
-              true
-
-            %{
-              type: "AddEnergy",
-              amount: _amount
-            } ->
-              true
-
-            _ ->
-              false
-          end
-        end)
+        Enum.all?(executions, fn execution -> is_valid_execution?(execution) end)
 
       if valid?, do: [], else: [executions: "An execution is invalid"]
     end)
     |> validate_change(:components, fn :components, components ->
       valid? =
-        Enum.all?(components, fn component ->
-          case component do
-            %{
-              type: "ChanceToApply",
-              chance: _chance
-            } ->
-              true
-
-            %{
-              type: "ApplyTags",
-              tag: _effect
-            } ->
-              true
-
-            _ ->
-              false
-          end
-        end)
+        Enum.all?(components, fn component -> is_valid_component?(component) end)
 
       if valid?, do: [], else: [components: "A component is invalid"]
     end)
     |> cast_embed(:modifiers)
+  end
+
+  defp is_valid_execution?(execution) do
+    case execution do
+      %{
+        type: "DealDamage",
+        attack_ratio: _attack_ratio,
+        energy_recharge: _energy_recharge,
+        delay: _delay
+      } ->
+        true
+
+      %{
+        type: "DealDamageOverTime",
+        attack_ratio: _attack_ratio,
+        energy_recharge: _energy_recharge,
+        delay: _delay
+      } ->
+        true
+
+      %{
+        type: "Heal",
+        attack_ratio: _attack_ratio,
+        delay: _delay
+      } ->
+        true
+
+      %{
+        type: "AddEnergy",
+        amount: _amount
+      } ->
+        true
+
+      _ ->
+        false
+    end
+  end
+
+  defp is_valid_component?(component) do
+    case component do
+      %{
+        type: "ChanceToApply",
+        chance: _chance
+      } ->
+        true
+
+      %{
+        type: "ApplyTags",
+        tag: _effect
+      } ->
+        true
+
+      _ ->
+        false
+    end
   end
 end
