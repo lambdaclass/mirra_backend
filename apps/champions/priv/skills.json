@@ -7,8 +7,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -26,7 +26,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Melo Ultimate",
@@ -36,9 +36,9 @@
     "effects": [
       {
         "type": {
-   "duration": 0,
-   "period": 0
-},
+          "duration": 0,
+          "period": 0
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -65,8 +65,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -84,7 +84,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Arupe Ultimate",
@@ -94,8 +94,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -122,8 +122,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -141,7 +141,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Valcher Ultimate",
@@ -151,8 +151,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -179,8 +179,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -198,7 +198,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Byte Ultimate",
@@ -208,8 +208,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -236,8 +236,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -255,7 +255,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Qurin Ultimate",
@@ -265,8 +265,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -293,8 +293,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -312,7 +312,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Chekla Ultimate",
@@ -322,8 +322,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -349,8 +349,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -368,7 +368,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Germund Ultimate",
@@ -378,8 +378,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -406,8 +406,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -425,7 +425,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Scratch Ultimate",
@@ -435,8 +435,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -463,8 +463,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -482,7 +482,7 @@
         "target_attribute": "Defense"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Kel'mut Ultimate",
@@ -492,8 +492,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -520,8 +520,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -539,7 +539,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Toburo Ultimate",
@@ -549,8 +549,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -577,8 +577,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -596,7 +596,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Dafnet Ultimate",
@@ -606,8 +606,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -633,8 +633,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -652,7 +652,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Hash Ultimate",
@@ -662,8 +662,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -690,8 +690,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -709,7 +709,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Obure Ultimate",
@@ -719,8 +719,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -739,8 +739,8 @@
       },
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -766,8 +766,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -785,7 +785,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Zil'kan Ultimate",
@@ -794,7 +794,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 2, "period": 1},
+        "type": {
+          "duration": 2,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [
           {
@@ -832,8 +835,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -851,7 +854,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Fetra Ultimate",
@@ -860,7 +863,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 5, "period": 1},
+        "type": {
+          "duration": 5,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -894,8 +900,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -913,7 +919,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Kampako Ultimate",
@@ -922,7 +928,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 5, "period": 1},
+        "type": {
+          "duration": 5,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [
           {
@@ -961,8 +970,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -980,7 +989,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Zanochi Ultimate",
@@ -989,7 +998,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 5, "period": 1},
+        "type": {
+          "duration": 5,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1023,8 +1035,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1042,7 +1054,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Kura'bara Ultimate",
@@ -1052,8 +1064,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1080,8 +1092,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1099,7 +1111,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Boy Kampf Ultimate",
@@ -1108,7 +1120,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 4, "period": 1},
+        "type": {
+          "duration": 4,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1142,8 +1157,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1161,7 +1176,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Romulo Ultimate",
@@ -1170,7 +1185,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 6, "period": 1},
+        "type": {
+          "duration": 6,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1204,8 +1222,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1223,7 +1241,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Grimstein Ultimate",
@@ -1232,7 +1250,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 6, "period": 1},
+        "type": {
+          "duration": 6,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1265,8 +1286,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1284,7 +1305,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Elix1r Ultimate",
@@ -1293,7 +1314,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 7, "period": 1},
+        "type": {
+          "duration": 7,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1319,8 +1343,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1338,7 +1362,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Rust Ultimate",
@@ -1347,7 +1371,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 8, "period": 1},
+        "type": {
+          "duration": 8,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1381,8 +1408,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1400,7 +1427,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Jayson Ultimate",
@@ -1409,7 +1436,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 6, "period": 1},
+        "type": {
+          "duration": 6,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1443,8 +1473,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1462,7 +1492,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Muflus Ultimate",
@@ -1471,7 +1501,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 5, "period": 1},
+        "type": {
+          "duration": 5,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [
           {
@@ -1503,8 +1536,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1522,7 +1555,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Otix Ultimate",
@@ -1531,7 +1564,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 10, "period": 1},
+        "type": {
+          "duration": 10,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [
           {
@@ -1569,8 +1605,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1588,7 +1624,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Uma Ultimate",
@@ -1598,8 +1634,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1617,7 +1653,9 @@
         "target_attribute": "Health"
       },
       {
-        "type": {"period": 1},
+        "type": {
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1644,8 +1682,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1663,7 +1701,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Uren Ultimate",
@@ -1673,8 +1711,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1691,7 +1729,10 @@
         "target_attribute": "Health"
       },
       {
-        "type": {"duration": 4.5, "period": 1},
+        "type": {
+          "duration": 4.5,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [
           {
@@ -1714,7 +1755,8 @@
         "target_attribute": "Health"
       }
     ]
-  },{
+  },
+  {
     "name": "D'agna Basic",
     "energy_regen": 100,
     "animation_duration": 0,
@@ -1722,8 +1764,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1741,7 +1783,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "D'agna Ultimate",
@@ -1750,7 +1792,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 5, "period": 1},
+        "type": {
+          "duration": 5,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1784,8 +1829,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1803,7 +1848,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Valtimer Ultimate",
@@ -1812,7 +1857,9 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"period": 1},
+        "type": {
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1843,8 +1890,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1862,7 +1909,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "H4ck Ultimate",
@@ -1871,7 +1918,10 @@
     "animation_trigger": 0,
     "effects": [
       {
-        "type": {"duration": 2, "period": 1},
+        "type": {
+          "duration": 2,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
@@ -1905,8 +1955,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifier": [],
@@ -1930,7 +1980,7 @@
         "target_attribute": "Health"
       }
     ],
-    "cooldown": 5      
+    "cooldown": 5
   },
   {
     "name": "Kenzu Ultimate",
@@ -1940,8 +1990,8 @@
     "effects": [
       {
         "type": {
-   "type": "instant"
-},
+          "type": "instant"
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [],
@@ -1971,7 +2021,10 @@
         "target_attribute": "Health"
       },
       {
-        "type": {"duration": 6, "period": 1},
+        "type": {
+          "duration": 6,
+          "period": 1
+        },
         "initial_delay": 0,
         "components": [],
         "modifiers": [
