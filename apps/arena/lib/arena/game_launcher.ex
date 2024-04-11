@@ -1,6 +1,6 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
-  alias Ecto.UUID
+  # alias Ecto.UUID
 
   use GenServer
   require Logger
@@ -8,21 +8,21 @@ defmodule Arena.GameLauncher do
   # Amount of clients needed to start a game
   @clients_needed 10
   # Time to wait to start game with any amount of clients
-  @start_timeout_ms 10_000
+  # @start_timeout_ms 10_000
   # The available names for bots to enter a match, we should change this in the future
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Thomas",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Messi"
-  ]
+  # @bot_names [
+  #   "TheBlackSwordman",
+  #   "SlashJava",
+  #   "SteelBallRun",
+  #   "Jeff",
+  #   "Thomas",
+  #   "Stone Ocean",
+  #   "Jeepers Creepers",
+  #   "Bob",
+  #   "El javo",
+  #   "Alberso",
+  #   "Messi"
+  # ]
 
   # API
   def start_link(_) do
@@ -75,16 +75,16 @@ defmodule Arena.GameLauncher do
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
 
-    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
+    # bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients ++ bot_clients
+        clients: game_clients
       })
 
     true = :ets.insert(:games, {game_pid, game_pid})
 
-    spawn_bot_for_player(bot_clients, game_pid)
+    # spawn_bot_for_player(bot_clients, game_pid)
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
@@ -111,19 +111,19 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  defp get_bot_clients(missing_clients) do
-    Enum.map(1..missing_clients//1, fn i ->
-      client_id = UUID.generate()
+  # defp get_bot_clients(missing_clients) do
+  #   Enum.map(1..missing_clients//1, fn i ->
+  #     client_id = UUID.generate()
 
-      {client_id, "h4ck", Enum.at(@bot_names, i), nil}
-    end)
-  end
+  #     {client_id, "h4ck", Enum.at(@bot_names, i), nil}
+  #   end)
+  # end
 
-  defp spawn_bot_for_player(bot_clients, game_pid) do
-    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-      send(self(), {:spawn_bot_for_player, bot_client, game_pid})
-    end)
-  end
+  # defp spawn_bot_for_player(bot_clients, game_pid) do
+  #   Enum.each(bot_clients, fn {bot_client, _, _, _} ->
+  #     send(self(), {:spawn_bot_for_player, bot_client, game_pid})
+  #   end)
+  # end
 
   defp build_bot_url(game_pid, bot_client) do
     encoded_game_pid = game_pid |> :erlang.term_to_binary() |> Base58.encode()
