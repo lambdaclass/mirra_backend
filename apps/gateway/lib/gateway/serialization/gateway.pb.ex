@@ -1,3 +1,25 @@
+defmodule Gateway.Serialization.SkillActionType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ANIMATION_START, 0)
+  field(:EFFECT_TRIGGER, 1)
+  field(:EFFECT_HIT, 2)
+  field(:EFFECT_MISS, 3)
+end
+
+defmodule Gateway.Serialization.Stat do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:HEALTH, 0)
+  field(:ENERGY, 1)
+  field(:DAMAGE, 2)
+  field(:DEFENSE, 3)
+end
+
 defmodule Gateway.Serialization.WebSocketRequest do
   @moduledoc false
 
@@ -87,6 +109,20 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "getUserSuperCampaignProgresses",
     oneof: 0
   )
+
+  field(:battle_test, 24,
+    type: Gateway.Serialization.BattleTest,
+    json_name: "battleTest",
+    oneof: 0
+  )
+end
+
+defmodule Gateway.Serialization.BattleTest do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -328,6 +364,12 @@ defmodule Gateway.Serialization.WebSocketResponse do
   field(:super_campaign_progresses, 15,
     type: Gateway.Serialization.SuperCampaignProgresses,
     json_name: "superCampaignProgresses",
+    oneof: 0
+  )
+
+  field(:battle_replay, 16,
+    type: Gateway.Serialization.BattleReplay,
+    json_name: "battleReplay",
     oneof: 0
   )
 end
@@ -608,4 +650,157 @@ defmodule Gateway.Serialization.UserAndUnit do
 
   field(:user, 1, type: Gateway.Serialization.User)
   field(:unit, 2, type: Gateway.Serialization.Unit)
+end
+
+defmodule Gateway.Serialization.BattleReplay do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:initial_state, 1, type: Gateway.Serialization.State, json_name: "initialState")
+  field(:steps, 2, repeated: true, type: Gateway.Serialization.Step)
+  field(:result, 3, type: :string)
+end
+
+defmodule Gateway.Serialization.State do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:units, 1, repeated: true, type: Gateway.Serialization.BattleUnit)
+end
+
+defmodule Gateway.Serialization.BattleUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:health, 2, type: :int32)
+  field(:slot, 3, type: :int32)
+  field(:character_id, 4, type: :string, json_name: "characterId")
+  field(:team, 5, type: :int32)
+end
+
+defmodule Gateway.Serialization.Step do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:step_number, 1, type: :int32, json_name: "stepNumber")
+  field(:actions, 2, repeated: true, type: Gateway.Serialization.Action)
+end
+
+defmodule Gateway.Serialization.Action do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:action_type, 0)
+
+  field(:skill_action, 1,
+    type: Gateway.Serialization.SkillAction,
+    json_name: "skillAction",
+    oneof: 0
+  )
+
+  field(:modifier_received, 2,
+    type: Gateway.Serialization.ModifierReceived,
+    json_name: "modifierReceived",
+    oneof: 0
+  )
+
+  field(:tag_received, 3,
+    type: Gateway.Serialization.TagReceived,
+    json_name: "tagReceived",
+    oneof: 0
+  )
+
+  field(:modifier_expired, 4,
+    type: Gateway.Serialization.ModifierExpired,
+    json_name: "modifierExpired",
+    oneof: 0
+  )
+
+  field(:tag_expired, 5, type: Gateway.Serialization.TagExpired, json_name: "tagExpired", oneof: 0)
+  field(:death, 6, type: Gateway.Serialization.Death, oneof: 0)
+end
+
+defmodule Gateway.Serialization.StatAffected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:stat, 1, type: Gateway.Serialization.Stat, enum: true)
+  field(:amount, 2, type: :float)
+end
+
+defmodule Gateway.Serialization.SkillAction do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:caster_id, 1, type: :string, json_name: "casterId")
+  field(:target_ids, 2, repeated: true, type: :string, json_name: "targetIds")
+  field(:skill_id, 3, type: :string, json_name: "skillId")
+
+  field(:skill_action_type, 4,
+    type: Gateway.Serialization.SkillActionType,
+    json_name: "skillActionType",
+    enum: true
+  )
+
+  field(:stats_affected, 5,
+    repeated: true,
+    type: Gateway.Serialization.StatAffected,
+    json_name: "statsAffected"
+  )
+end
+
+defmodule Gateway.Serialization.ModifierReceived do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:stat_affected, 3, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
+end
+
+defmodule Gateway.Serialization.TagReceived do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:tag_name, 3, type: :string, json_name: "tagName")
+end
+
+defmodule Gateway.Serialization.ModifierExpired do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:stat_affected, 3, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
+end
+
+defmodule Gateway.Serialization.TagExpired do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:tag_name, 3, type: :string, json_name: "tagName")
+end
+
+defmodule Gateway.Serialization.Death do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:unit_id, 1, type: :string, json_name: "unitId")
 end
