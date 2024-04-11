@@ -1,5 +1,6 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
+  require Logger
   alias Ecto.UUID
 
   use GenServer
@@ -89,6 +90,12 @@ defmodule Arena.GameLauncher do
     Finch.build(:get, build_bot_url(game_pid, bot_client))
     |> Finch.async_request(Arena.Finch)
 
+    {:noreply, state}
+  end
+
+  # This is a handler to the async bot request
+  def handle_info({{Finch.HTTP1.Pool, _}, result}, state) do
+    Logger.info("Bot request result #{result}")
     {:noreply, state}
   end
 
