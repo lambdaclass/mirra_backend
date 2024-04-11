@@ -94,8 +94,7 @@ defmodule Arena.GameLauncher do
   end
 
   # This is a handler to the async bot request
-  def handle_info({{Finch.HTTP1.Pool, _}, result}, state) do
-    Logger.info("Bot request result #{result}")
+  def handle_info({{Finch.HTTP1.Pool, _}, _}, state) do
     {:noreply, state}
   end
 
