@@ -32,6 +32,8 @@ defmodule Champions.Config do
 
     characters
     |> Enum.map(fn [name, quality, ranks_dropped_in, class, faction, attack, health, defense] ->
+      {basic_skill, ultimate_skill} = get_character_skills(name)
+
       %{
         name: name,
         quality: String.downcase(quality) |> String.to_atom() |> Units.get_quality(),
@@ -42,9 +44,18 @@ defmodule Champions.Config do
         base_health: Integer.parse(health) |> elem(0),
         base_defense: Integer.parse(defense) |> elem(0),
         game_id: Utils.game_id(),
+        basic_skill_id: basic_skill.id,
+        ultimate_skill_id: ultimate_skill.id,
         active: true
       }
     end)
     |> Characters.upsert_characters()
+  end
+
+  defp get_character_skills(name) do
+    with {:basic_skill, basic_skill} <- {:basic_skill, Skills.get_skill_by_name(name <> " Basic")},
+         {:ultimate_skill, ultimate_skill} <- {:ultimate_skill, Skills.get_skill_by_name(name <> " Ultimate")} do
+      {basic_skill, ultimate_skill}
+    end
   end
 end
