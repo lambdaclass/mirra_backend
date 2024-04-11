@@ -511,6 +511,14 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
+    case :ets.lookup(:games, self()) do
+      [{game_id, _}] ->
+        :ets.delete(:games, game_id)
+
+      [] ->
+        raise KeyError, message: "Game with ID #{game_id} doesn't exists"
+    end
+
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
