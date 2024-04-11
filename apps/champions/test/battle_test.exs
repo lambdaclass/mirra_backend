@@ -96,7 +96,7 @@ defmodule Champions.Test.BattleTest do
                 type: "instant",
                 initial_delay: 1,
                 components: [],
-                modifier: [],
+                modifiers: [],
                 executions: [
                   %{
                     type: "DealDamage",
@@ -143,7 +143,7 @@ defmodule Champions.Test.BattleTest do
                 chance: 0
               }
             ],
-            modifier: [],
+            modifiers: [],
             executions: [
               %{
                 type: "DealDamage",
@@ -185,7 +185,7 @@ defmodule Champions.Test.BattleTest do
                     chance: 1
                   }
                 ],
-                modifier: [],
+                modifiers: [],
                 executions: [
                   %{
                     type: "DealDamage",
@@ -222,7 +222,7 @@ defmodule Champions.Test.BattleTest do
         TestUtils.basic_skill_params_with_cooldown(cooldown, "BasicSkill3")
         |> Map.put(:effects, [
           %{
-            type: %{"duration" => 1, "period" => 0},
+            type: %{duration: 1, period: 0},
             initial_delay: 0,
             components: [],
             modifiers: [
