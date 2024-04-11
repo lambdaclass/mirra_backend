@@ -138,7 +138,7 @@ defmodule Arena.Entities do
       aditional_info: %{
         effects_to_apply: effects_to_apply,
         owner_id: owner_id,
-        effects: %{},
+        effects: [],
         damage_multiplier: 0
       }
     }

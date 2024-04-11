@@ -296,22 +296,23 @@ defmodule Arena.Game.Skill do
   ## TODO: refactor into Effect module, take a closer look at how the recurring effects are re-applied
   ##    specifically the mess around apply_effect_mechanic/3 and do-effect_mechanics/4
   def apply_effect_mechanic(%{players: players, pools: pools} = game_state) do
-    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-      if Player.alive?(player) do
-        player =
-          Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
-            apply_effect_mechanic(player, effect, game_state)
-          end)
+    game_state =
+      Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
+        if Player.alive?(player) do
+          player =
+            Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
+              apply_effect_mechanic(player, effect, game_state)
+            end)
 
-        put_in(game_state, [:players, player.id], player)
-      else
-        game_state
-      end
-    end)
+          put_in(game_state, [:players, player.id], player)
+        else
+          game_state
+        end
+      end)
 
     Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
       pool =
-        Enum.reduce(pool.aditional_info.effects, pool, fn {_effect_id, effect}, pool ->
+        Enum.reduce(pool.aditional_info.effects, pool, fn effect, pool ->
           apply_effect_mechanic(pool, effect, game_state)
         end)
 
@@ -369,7 +370,14 @@ defmodule Arena.Game.Skill do
 
       pool ->
         pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
-        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
+
+        real_damage =
+          if pool.aditional_info.damage_multiplier <= 0 do
+            Player.calculate_real_damage(pool_owner, damage_params.damage)
+          else
+            damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
+            damage + damage * pool.aditional_info.damage_multiplier
+          end
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 

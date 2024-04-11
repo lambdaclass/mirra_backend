@@ -1135,10 +1135,10 @@ defmodule Arena.GameUpdater do
   end
 
   defp apply_effect_to_entity(entity, effect) do
-    put_in(
+    update_in(
       entity,
-      [:aditional_info, :effects, 4444],
-      Map.put(effect, :id, 4444)
+      [:aditional_info, :effects],
+      fn effects -> effects ++ [Map.put(effect, :id, 4444)] end
     )
   end
 
