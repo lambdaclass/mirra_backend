@@ -32,6 +32,8 @@ defmodule ArenaLoadTest.SocketHandler do
 
   @impl true
   def handle_frame({:binary, game_state}, state) do
+    Logger.info(Serialization.GameState.decode(game_state))
+
     game_id = Serialization.GameState.decode(game_state).game_id
     # Logger.info("Client joining game with id: #{game_id}")
 
@@ -58,8 +60,8 @@ defmodule ArenaLoadTest.SocketHandler do
   end
 
   @impl true
-  def terminate({:remote, 1000, ""}, _state) do
-    # Logger.info("Client websocket terminated with {:remote, 1000} status")
+  def terminate({:remote, 1000, ""}, state) do
+    Logger.info("ME MORI #{state.client_id}")
     exit(:normal)
   end
 

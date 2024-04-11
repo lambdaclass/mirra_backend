@@ -29,6 +29,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
       __MODULE__,
       {SocketHandler, client_id}
     )
+    |> IO.inspect()
   end
 
   @doc """
@@ -39,6 +40,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
       __MODULE__,
       {GameSocketHandler, {client_id, game_id}}
     )
+    |> IO.inspect()
   end
 
   @doc """

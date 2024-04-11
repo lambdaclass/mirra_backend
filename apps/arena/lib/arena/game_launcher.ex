@@ -56,7 +56,7 @@ defmodule Arena.GameLauncher do
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
     Process.send_after(self(), :launch_game?, 300)
-    if length(clients) > @clients_needed do
+    if length(clients) >= @clients_needed do
       send(self(), :start_game)
     end
 
