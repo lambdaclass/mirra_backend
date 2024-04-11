@@ -797,21 +797,15 @@ defmodule Arena.GameUpdater do
     Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
       entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
 
-      modified_entities =
-        entities_map
-        |> Map.take(projectile.collides_with)
-        |> maybe_apply_effect_to_entities(projectile, game_config)
+      effects_to_apply =
+        Enum.map(projectile.aditional_info.on_collide_effects.effects, fn effect_name ->
+          Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+        end)
 
-      modified_players = Map.merge(game_state.players, Map.intersect(game_state.players, modified_entities))
-      modified_pools = Map.merge(game_state.pools, Map.intersect(game_state.pools, modified_entities))
-
-      modified_projectiles =
-        Map.merge(game_state.projectiles, Map.intersect(game_state.projectiles, modified_entities))
-
-      Map.put(game_state, :pools, modified_pools)
-      |> Map.put(:pools, modified_pools)
-      |> Map.put(:players, modified_players)
-      |> Map.put(:projectiles, modified_projectiles)
+      entities_map
+      |> Map.take(projectile.collides_with)
+      |> get_entities_to_apply(projectile)
+      |> apply_effect_to_entities(effects_to_apply, game_state, projectile)
     end)
   end
 
@@ -1113,33 +1107,59 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp maybe_apply_effect_to_entities(collided_entities, projectile, game_config) do
-    effects_to_apply =
-      Enum.map(projectile.aditional_info.on_collide_effects.effects, fn effect_name ->
-        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-      end)
-
+  defp get_entities_to_apply(collided_entities, projectile) do
     Map.reject(collided_entities, fn {_entity_id, entity} ->
-      (projectile.aditional_info.on_collide_effects.apply_to_owned and
-         projectile.aditional_info.owner_id != entity.aditional_info.owner_id) or
-        (projectile.aditional_info.on_collide_effects.apply_to_not_owned and
-           projectile.aditional_info.owner_id == entity.aditional_info.owner_id) or
+      apply_to_owned? =
+        projectile.aditional_info.on_collide_effects.apply_to_owned and
+          projectile.aditional_info.owner_id != entity.aditional_info.owner_id
+
+      apply_to_not_owned? =
+        projectile.aditional_info.on_collide_effects.apply_to_not_owned and
+          projectile.aditional_info.owner_id == entity.aditional_info.owner_id
+
+      apply_to_entity_type? =
         Atom.to_string(entity.category) not in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
-    end)
-    |> Map.new(fn {entity_id, entity} ->
-      {entity_id,
-       Enum.reduce(effects_to_apply, entity, fn effect, entity ->
-         apply_effect_to_entity(entity, effect)
-       end)}
+
+      apply_to_entity_type? or apply_to_not_owned? or apply_to_owned?
     end)
   end
 
-  defp apply_effect_to_entity(entity, effect) do
-    update_in(
-      entity,
-      [:aditional_info, :effects],
-      fn effects -> effects ++ [Map.put(effect, :id, 4444)] end
-    )
+  defp apply_effect_to_entities(entities, effects, game_state, projectile) do
+    {last_id, modified_entities} =
+      Enum.reduce(entities, {game_state.last_id, %{}}, fn {entity_id, entity}, {last_id, modified_entities} ->
+        modified_entity =
+          Enum.reduce(effects, entity, fn effect, entity ->
+            entity_contain_effect? =
+              Enum.any?(entity.aditional_info.effects, fn entity_effect ->
+                entity_effect.owner_id == projectile.id
+              end)
+
+            if entity_contain_effect? and effect.one_time_application do
+              entity
+            else
+              effect_params = %{id: last_id + 1, owner_id: projectile.id}
+
+              update_in(
+                entity,
+                [:aditional_info, :effects],
+                fn effects -> effects ++ [Map.merge(effect, effect_params)] end
+              )
+            end
+          end)
+
+        {last_id + 1, Map.put(modified_entities, entity_id, modified_entity)}
+      end)
+
+    modified_players = Map.merge(game_state.players, Map.intersect(game_state.players, modified_entities))
+    modified_pools = Map.merge(game_state.pools, Map.intersect(game_state.pools, modified_entities))
+
+    modified_projectiles =
+      Map.merge(game_state.projectiles, Map.intersect(game_state.projectiles, modified_entities))
+
+    Map.put(game_state, :pools, modified_pools)
+    |> Map.put(:players, modified_players)
+    |> Map.put(:projectiles, modified_projectiles)
+    |> Map.put(:last_id, last_id)
   end
 
   ##########################
