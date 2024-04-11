@@ -44,20 +44,20 @@ defmodule GameBackend.Units.Skills.Effect do
     ])
     |> validate_change(:executions, fn :executions, executions ->
       valid? =
-        Enum.all?(executions, fn execution -> is_valid_execution?(execution) end)
+        Enum.all?(executions, fn execution -> valid_execution?(execution) end)
 
       if valid?, do: [], else: [executions: "An execution is invalid"]
     end)
     |> validate_change(:components, fn :components, components ->
       valid? =
-        Enum.all?(components, fn component -> is_valid_component?(component) end)
+        Enum.all?(components, fn component -> valid_component?(component) end)
 
       if valid?, do: [], else: [components: "A component is invalid"]
     end)
     |> cast_embed(:modifiers)
   end
 
-  defp is_valid_execution?(execution) do
+  defp valid_execution?(execution) do
     case execution do
       %{
         type: "DealDamage",
@@ -93,7 +93,7 @@ defmodule GameBackend.Units.Skills.Effect do
     end
   end
 
-  defp is_valid_component?(component) do
+  defp valid_component?(component) do
     case component do
       %{
         type: "ChanceToApply",
