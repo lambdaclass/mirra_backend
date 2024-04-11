@@ -10,6 +10,8 @@ defmodule GameBackend.Units.Skills.Effects.Type do
   def cast("instant"), do: {:ok, "instant"}
   def cast(%{duration: duration, period: period}), do: {:ok, %{"duration" => duration, "period" => period}}
   def cast(%{period: period}), do: {:ok, %{"period" => period}}
+  def cast(%{"duration" => duration, "period" => period}), do: {:ok, %{"duration" => duration, "period" => period}}
+  def cast(%{"period" => period}), do: {:ok, %{"period" => period}}
   def cast(_), do: :error
 
   def load(string), do: {:ok, time_type_from_string(string)}
