@@ -244,7 +244,7 @@ end
 defmodule Arena.Serialization.GameState.ObstaclesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: Arena.Serialization.Entity)
