@@ -353,7 +353,10 @@ defmodule Arena.Game.Skill do
         else
           direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-          Physics.move_entity_to_direction(player, direction, pull_params.force)
+          pull_foce =
+            pull_params.force + pull_params.force * pool.aditional_info.stat_multiplier
+
+          Physics.move_entity_to_direction(player, direction, pull_foce)
           |> Map.put(:aditional_info, player.aditional_info)
           |> Map.put(:collides_with, player.collides_with)
         end
@@ -372,12 +375,9 @@ defmodule Arena.Game.Skill do
         pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
 
         real_damage =
-          if pool.aditional_info.damage_multiplier <= 0 do
-            Player.calculate_real_damage(pool_owner, damage_params.damage)
-          else
-            damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
-            damage + damage * pool.aditional_info.damage_multiplier
-          end
+          (Player.calculate_real_damage(pool_owner, damage_params.damage) +
+             Player.calculate_real_damage(pool_owner, damage_params.damage) * pool.aditional_info.stat_multiplier)
+          |> round()
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
@@ -398,8 +398,12 @@ defmodule Arena.Game.Skill do
         player
 
       pool ->
-        update_in(pool, [:aditional_info, :damage_multiplier], fn current_multiplier ->
-          current_multiplier + current_multiplier * buff_attributes.damage_multiplier
+        update_in(pool, [:aditional_info, :stat_multiplier], fn
+          current_multiplier when current_multiplier > 0 ->
+            current_multiplier + current_multiplier * buff_attributes.stat_multiplier
+
+          _current_multiplier ->
+            buff_attributes.stat_multiplier
         end)
     end
   end
