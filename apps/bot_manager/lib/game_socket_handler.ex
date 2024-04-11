@@ -83,7 +83,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   def terminate(_, _, _) do
-    Logger.info("Websocket terminated")
+    # Logger.info("Websocket terminated")
     :ok
   end
 
@@ -92,7 +92,7 @@ defmodule BotManager.GameSocketHandler do
          "game_id" => game_id,
          "arena_host" => arena_host
        }) do
-    Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_host}")
+    # Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_host}")
 
     if arena_host == "localhost" do
       "ws://localhost:4000/play/#{game_id}/#{bot_client}"

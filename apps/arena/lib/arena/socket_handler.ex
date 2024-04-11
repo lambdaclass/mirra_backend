@@ -18,7 +18,7 @@ defmodule Arena.SocketHandler do
 
   @impl true
   def websocket_init(state) do
-    Logger.info("Websocket INIT called")
+    # Logger.info("Websocket INIT called")
     GameLauncher.join(state.client_id, state.character_name, state.player_name)
 
     game_state =
@@ -33,19 +33,19 @@ defmodule Arena.SocketHandler do
 
   @impl true
   def websocket_handle(:ping, state) do
-    Logger.info("Websocket PING handler")
+    # Logger.info("Websocket PING handler")
     {:reply, {:pong, ""}, state}
   end
 
   @impl true
   def websocket_info(:leave_waiting_game, state) do
-    Logger.info("Websocket info, Message: left waiting game")
+    # Logger.info("Websocket info, Message: left waiting game")
     {:stop, state}
   end
 
   @impl true
   def websocket_info({:join_game, game_id}, state) do
-    Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
+    # Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
 
     game_state =
       GameState.encode(%GameState{
@@ -59,13 +59,13 @@ defmodule Arena.SocketHandler do
 
   @impl true
   def websocket_info(message, state) do
-    Logger.info("Websocket info, Message: #{inspect(message)}")
+    # Logger.info("Websocket info, Message: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 
   @impl true
   def terminate(_, _, _) do
-    Logger.info("Websocket terminated")
+    # Logger.info("Websocket terminated")
     :ok
   end
 end

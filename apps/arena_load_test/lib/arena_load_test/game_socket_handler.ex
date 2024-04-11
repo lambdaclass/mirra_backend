@@ -9,7 +9,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   require Logger
 
   def start_link({client_id, game_id}) do
-    Logger.info("Player INIT")
+    # Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
 
     WebSockex.start_link(
@@ -97,7 +97,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     IO.inspect("AVER EL CLIENT ID #{client_id}")
     {:ok, _pid} = SocketSupervisor.add_new_client(client_id)
-    Logger.info("Player websocket terminated. Game Ended.")
+    # Logger.info("Player websocket terminated. Game Ended.")
     exit(:normal)
   end
 

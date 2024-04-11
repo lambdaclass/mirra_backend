@@ -22,7 +22,7 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_init(state) do
-    Logger.info("Websocket INIT called")
+    # Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
     {:ok, %{player_id: player_id, game_config: config}} = GameUpdater.join(state.game_pid, state.client_id)
@@ -140,7 +140,7 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_info(message, state) do
-    Logger.info("You should not be here: #{inspect(message)}")
+    # Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 
