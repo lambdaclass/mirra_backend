@@ -5,21 +5,10 @@ defmodule GameBackend.Units.Skills.Effect do
   import Ecto.Changeset
 
   alias GameBackend.Units.Skills.Effects.{Modifier, TargetStrategy, Type}
-  alias GameBackend.Units.Skills.Effects.{Modifier, TargetStrategy, Type}
 
   @primary_key false
   embedded_schema do
     field(:type, Type)
-    field(:initial_delay, :integer)
-
-    field(:components, {:array, :map})
-    embeds_many(:modifiers, Modifier)
-    field(:executions, {:array, :map})
-
-    field(:target_count, :integer)
-    field(:target_strategy, TargetStrategy)
-    field(:target_allies, :boolean)
-    field(:target_attribute, :string)
     field(:initial_delay, :integer)
 
     field(:components, {:array, :map})
@@ -37,14 +26,6 @@ defmodule GameBackend.Units.Skills.Effect do
     effect
     |> cast(attrs, [
       :type,
-      :initial_delay,
-      :components,
-      :executions,
-      :target_count,
-      :target_strategy,
-      :target_allies,
-      :target_attribute
-    ])
       :initial_delay,
       :components,
       :executions,
