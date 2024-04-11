@@ -1,4 +1,4 @@
-.PHONY: deps db run start format credo check generate-protos generate-arena-protos generate-game-client-protos
+.PHONY: deps db run start format docs credo check generate-protos generate-arena-protos generate-game-client-protos
 
 deps:
 	cd apps/game_client/assets && npm install
@@ -23,6 +23,9 @@ credo:
 	mix credo
 
 check: credo format
+
+docs:
+	mix docs
 
 generate-protos: generate-gateway-protos generate-arena-protos generate-game-client-protos generate-arena-load-test-protos generate-bot-manager-protos format
 
