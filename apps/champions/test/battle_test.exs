@@ -96,7 +96,7 @@ defmodule Champions.Test.BattleTest do
                 type: %{type: "instant"},
                 initial_delay: 1,
                 components: [],
-                modifiers: [],
+                modifier: [],
                 executions: [
                   %{
                     type: "DealDamage",
@@ -143,7 +143,7 @@ defmodule Champions.Test.BattleTest do
                 chance: 0
               }
             ],
-            modifiers: [],
+            modifier: [],
             executions: [
               %{
                 type: "DealDamage",
@@ -185,7 +185,7 @@ defmodule Champions.Test.BattleTest do
                     chance: 1
                   }
                 ],
-                modifiers: [],
+                modifier: [],
                 executions: [
                   %{
                     type: "DealDamage",

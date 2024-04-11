@@ -78,7 +78,7 @@ defmodule Champions.TestUtils do
           type: %{type: "instant"},
           initial_delay: 0,
           components: [],
-          modifiers: [],
+          modifier: [],
           executions: [
             %{
               type: "DealDamage",
