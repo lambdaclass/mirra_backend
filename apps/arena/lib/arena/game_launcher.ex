@@ -1,6 +1,5 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
-  require Logger
   alias Ecto.UUID
 
   use GenServer
