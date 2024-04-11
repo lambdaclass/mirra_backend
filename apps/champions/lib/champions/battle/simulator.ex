@@ -557,10 +557,16 @@ defmodule Champions.Battle.Simulator do
          history,
          skill_id
        ) do
-    damage = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+
+    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
+    damage_after_defense =
+      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
+      |> Decimal.round()
+      |> Decimal.to_integer()
 
     Logger.info(
-      "Dealing #{damage} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage})"
+      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense})"
     )
 
     new_history =
@@ -571,14 +577,14 @@ defmodule Champions.Battle.Simulator do
           target_ids: [target.id],
           skill_id: skill_id,
           skill_action_type: :EFFECT_HIT,
-          stats_affected: [%{stat: :HEALTH, amount: -damage}]
+          stats_affected: [%{stat: :HEALTH, amount: -damage_after_defense}]
         },
         :skill_action
       )
 
     new_target =
       target
-      |> Map.put(:health, target.health - damage)
+      |> Map.put(:health, target.health - damage_after_defense)
       |> Map.put(:energy, min(target.energy + energy_recharge, @ultimate_energy_cost))
 
     {new_target, new_history}
