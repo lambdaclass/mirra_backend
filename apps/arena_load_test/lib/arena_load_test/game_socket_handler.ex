@@ -52,35 +52,35 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :move, 500, [])
+    Process.send_after(self(), :move, 5_000, [])
     {:ok, state}
   end
 
-  def handle_info(:attack, state) do
-    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    {x, y} = create_random_movement()
+  # def handle_info(:attack, state) do
+  #   timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+  #   {x, y} = create_random_movement()
 
-    game_action =
-      Serialization.GameAction.encode(%Serialization.GameAction{
-        action_type:
-          {:attack,
-           %Serialization.Attack{
-             skill: get_random_available_skill(),
-             parameters: %Serialization.AttackParameters{
-               target: %Serialization.Direction{
-                 x: x,
-                 y: y
-               }
-             }
-           }},
-        timestamp: timestamp
-      })
+  #   game_action =
+  #     Serialization.GameAction.encode(%Serialization.GameAction{
+  #       action_type:
+  #         {:attack,
+  #          %Serialization.Attack{
+  #            skill: get_random_available_skill(),
+  #            parameters: %Serialization.AttackParameters{
+  #              target: %Serialization.Direction{
+  #                x: x,
+  #                y: y
+  #              }
+  #            }
+  #          }},
+  #       timestamp: timestamp
+  #     })
 
-    WebSockex.cast(self(), {:send, {:binary, game_action}})
+  #   WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :attack, 300, [])
-    {:ok, state}
-  end
+  #   Process.send_after(self(), :attack, 300, [])
+  #   {:ok, state}
+  # end
 
   def handle_cast({:send, {_type, _msg} = frame}, state) do
     {:reply, frame, state}
@@ -123,8 +123,8 @@ defmodule ArenaLoadTest.GameSocketHandler do
   # This is enough for now. We will get the skills from the requested bots
   # from the bots app. This will be done in future iterations.
   # https://github.com/lambdaclass/mirra_backend/issues/410
-  defp get_random_available_skill() do
-    ["1", "2", "3"]
-    |> Enum.random()
-  end
+  # defp get_random_available_skill() do
+  #   ["1", "2", "3"]
+  #   |> Enum.random()
+  # end
 end
