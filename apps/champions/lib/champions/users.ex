@@ -7,7 +7,6 @@ defmodule Champions.Users do
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
-  alias GameBackend.Rewards
   alias GameBackend.Transaction
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
@@ -29,8 +28,7 @@ defmodule Champions.Users do
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
-        add_campaign_progresses(user)
-        add_afk_reward_rates(user)
+        add_super_campaign_progresses(user)
 
         Users.get_user(user.id)
 
@@ -93,29 +91,17 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
   end
 
-  defp add_campaign_progresses(user) do
+  defp add_super_campaign_progresses(user) do
     {:ok, campaigns} = GameBackend.Campaigns.get_campaigns()
+    campaigns = Enum.group_by(campaigns, & &1.super_campaign_id)
 
-    Enum.each(campaigns, fn campaign ->
-      # Only add campaign progress to the first ones of each SuperCampaign
-      if campaign.campaign_number == 1,
-        do:
-          GameBackend.Campaigns.insert_campaign_progress(%{
-            game_id: Utils.game_id(),
-            user_id: user.id,
-            campaign_id: campaign.id,
-            level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
-          })
-    end)
-  end
-
-  defp add_afk_reward_rates(user) do
-    ["Gold", "Gems", "Summon Scrolls"]
-    |> Enum.each(fn currency_name ->
-      Rewards.insert_afk_reward_rate(%{
+    # Add SuperCampaignProgress for each SuperCampaign
+    Enum.each(campaigns, fn {super_campaign_id, [first_campaign | _campaigns]} ->
+      GameBackend.Campaigns.insert_super_campaign_progress(%{
+        game_id: Utils.game_id(),
         user_id: user.id,
-        currency_id: Currencies.get_currency_by_name!(currency_name).id,
-        rate: 0
+        super_campaign_id: super_campaign_id,
+        level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
       })
     end)
   end

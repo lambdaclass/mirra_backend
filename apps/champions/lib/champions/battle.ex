@@ -6,7 +6,7 @@ defmodule Champions.Battle do
   """
 
   alias GameBackend.Campaigns
-  alias GameBackend.Campaigns.CampaignProgress
+  alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Units
   alias GameBackend.Users
 
@@ -17,13 +17,13 @@ defmodule Champions.Battle do
   def fight_level(user_id, level_id) do
     with {:user_exists, true} <- {:user_exists, Users.exists?(user_id)},
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)},
-         {:campaign_progress, {:ok, %CampaignProgress{level_id: current_level_id}}} <-
-           {:campaign_progress, Campaigns.get_campaign_progress(user_id, level.campaign_id)},
+         {:super_campaign_progress, {:ok, %SuperCampaignProgress{level_id: current_level_id}}} <-
+           {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, level.campaign.super_campaign_id)},
          {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
       units = Units.get_selected_units(user_id)
 
       if battle(units, level.units) == :team_1 do
-        case Champions.Campaigns.advance_level(user_id, level.campaign_id) do
+        case Champions.Campaigns.advance_level(user_id, level.campaign.super_campaign_id) do
           # TODO: add rewards to response [CHoM-191]
           {:ok, _changes} -> :win
           _error -> {:error, :failed_to_advance}
@@ -34,7 +34,7 @@ defmodule Champions.Battle do
     else
       {:user_exists, false} -> {:error, :user_not_found}
       {:level, {:error, :not_found}} -> {:error, :level_not_found}
-      {:campaign_progress, {:error, :not_found}} -> {:error, :campaign_progress_not_found}
+      {:super_campaign_progress, {:error, :not_found}} -> {:error, :super_campaign_progress_not_found}
       {:level_valid, false} -> {:error, :level_invalid}
     end
   end
