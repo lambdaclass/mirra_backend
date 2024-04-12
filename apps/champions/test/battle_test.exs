@@ -283,5 +283,82 @@ defmodule Champions.Test.BattleTest do
 
       assert "team_1" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21).result
     end
+
+    test "Execution-DealDamage with defense" do
+      maximum_steps = 5
+      cooldown_to_hit_once = maximum_steps - 1
+
+      {:ok, target_dummy_character} =
+        TestUtils.build_character(%{
+          base_health: 10,
+          base_attack: 0,
+          base_defense: 0,
+          name: "Defense Target Dummy",
+          basic_skill: TestUtils.build_skill(%{name: "Defense Target Dummy Basic"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "Defense Target Dummy Ultimate"})
+        })
+        |> Characters.insert_character()
+
+      {:ok, target_dummy} = %{character_id: target_dummy_character.id} |> TestUtils.build_unit() |> Units.insert_unit()
+      {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+
+      # Create a character with a basic skill that would deal 10 damage against no armor
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage Defense",
+          effects: [
+            TestUtils.build_effect(%{
+              executions: [
+                %{
+                  type: "DealDamage",
+                  attack_ratio: 1,
+                  energy_recharge: 0,
+                  delay: 0
+                }
+              ]
+            })
+          ],
+          cooldown: cooldown_to_hit_once
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "Execution-DealDamage Defense Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "DealDamage Defense Empty Skill"}),
+          base_attack: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      # Battle is won if target_dummy has no defense
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+
+      # Give target_dummy some defense
+      {:ok, target_dummy_character} = Characters.update_character(target_dummy_character, %{base_defense: 50})
+      {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+
+      # Now we don't win, as we don't deal enough damage
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+
+      # Use the defense formula to find the amount of damage we're actually doing
+      new_target_dummy_health =
+        Decimal.mult(character.base_attack, Decimal.div(100, 100 + target_dummy_character.base_defense))
+        |> Decimal.round()
+        |> Decimal.to_integer()
+
+      {:ok, _target_dummy_character} =
+        Characters.update_character(target_dummy_character, %{base_health: new_target_dummy_health})
+
+      {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+
+      # After reducing target_dummy health, we win again
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
   end
 end
