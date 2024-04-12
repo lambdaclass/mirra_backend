@@ -1094,19 +1094,21 @@ defmodule Arena.GameUpdater do
   end
 
   defp get_entities_to_apply(collided_entities, projectile) do
-    Map.reject(collided_entities, fn {_entity_id, entity} ->
+    Map.filter(collided_entities, fn {_entity_id, entity} ->
       apply_to_owned? =
-        projectile.aditional_info.on_collide_effects.apply_to_owned and
-          projectile.aditional_info.owner_id != entity.aditional_info.owner_id
+        projectile.aditional_info.on_collide_effects.apply_to_owned ==
+          (not is_nil(entity.aditional_info[:owner_id]) and
+             projectile.aditional_info.owner_id == entity.aditional_info.owner_id)
 
       apply_to_not_owned? =
-        projectile.aditional_info.on_collide_effects.apply_to_not_owned and
-          projectile.aditional_info.owner_id == entity.aditional_info.owner_id
+        projectile.aditional_info.on_collide_effects.apply_to_not_owned ==
+          (not is_nil(entity.aditional_info[:owner_id]) and
+             projectile.aditional_info.owner_id != entity.aditional_info.owner_id)
 
       apply_to_entity_type? =
-        Atom.to_string(entity.category) not in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
+        Atom.to_string(entity.category) in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
 
-      apply_to_entity_type? or apply_to_not_owned? or apply_to_owned?
+      apply_to_entity_type? and apply_to_not_owned? and apply_to_owned?
     end)
   end
 
