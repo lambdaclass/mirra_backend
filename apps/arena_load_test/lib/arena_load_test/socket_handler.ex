@@ -51,7 +51,7 @@ defmodule ArenaLoadTest.SocketHandler do
 
     true = :ets.insert(:players, {state.client_id, game_id})
 
-    Process.send(pid, :move, [])
+    Process.send(pid, :send_action, [])
     # Process.send(pid, :attack, [])
 
     {:ok, state}
