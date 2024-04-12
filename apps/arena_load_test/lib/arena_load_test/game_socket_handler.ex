@@ -23,7 +23,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Callbacks
-  def handle_frame({:binary, msg} = _frame, state) do
+  def handle_frame({:binary, _msg} = _frame, state) do
     # {event_type, _state} = Serialization.GameEvent.decode(msg) |> Map.get(:event)
 
     # if event_type == :finished do
