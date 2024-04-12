@@ -61,6 +61,7 @@ defmodule Arena.GameLauncher do
     if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
       send(self(), :start_game)
     end
+
     Logger.info("Games playing: #{:ets.info(:games, :size)}")
 
     {:noreply, state}
