@@ -15,6 +15,7 @@ defmodule GameClient.Protobuf.ProjectileStatus do
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
+  field(:CONSUMED, 2)
 end
 
 defmodule GameClient.Protobuf.PowerUpstatus do
@@ -244,7 +245,7 @@ end
 defmodule GameClient.Protobuf.GameState.ObstaclesEntry do
   @moduledoc false
 
-  use Protobuf, map: true, protoc_gen_elixir_version: "0.12.0", syntax: :proto3
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
   field(:value, 2, type: GameClient.Protobuf.Entity)

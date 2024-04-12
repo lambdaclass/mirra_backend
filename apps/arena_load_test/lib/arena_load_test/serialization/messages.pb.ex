@@ -15,6 +15,7 @@ defmodule ArenaLoadTest.Serialization.ProjectileStatus do
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
+  field(:CONSUMED, 2)
 end
 
 defmodule ArenaLoadTest.Serialization.PowerUpstatus do
@@ -241,6 +242,15 @@ defmodule ArenaLoadTest.Serialization.GameState.ItemsEntry do
   field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
 end
 
+defmodule ArenaLoadTest.Serialization.GameState.ObstaclesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
+end
+
 defmodule ArenaLoadTest.Serialization.GameState.PoolsEntry do
   @moduledoc false
 
@@ -310,7 +320,13 @@ defmodule ArenaLoadTest.Serialization.GameState do
     map: true
   )
 
-  field(:pools, 14,
+  field(:obstacles, 14,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.GameState.ObstaclesEntry,
+    map: true
+  )
+
+  field(:pools, 15,
     repeated: true,
     type: ArenaLoadTest.Serialization.GameState.PoolsEntry,
     map: true

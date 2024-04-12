@@ -15,6 +15,7 @@ defmodule BotManager.Protobuf.ProjectileStatus do
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
+  field(:CONSUMED, 2)
 end
 
 defmodule BotManager.Protobuf.PowerUpstatus do
@@ -241,6 +242,15 @@ defmodule BotManager.Protobuf.GameState.ItemsEntry do
   field(:value, 2, type: BotManager.Protobuf.Entity)
 end
 
+defmodule BotManager.Protobuf.GameState.ObstaclesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: BotManager.Protobuf.Entity)
+end
+
 defmodule BotManager.Protobuf.GameState.PoolsEntry do
   @moduledoc false
 
@@ -299,7 +309,14 @@ defmodule BotManager.Protobuf.GameState do
   field(:status, 11, type: BotManager.Protobuf.GameStatus, enum: true)
   field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
   field(:items, 13, repeated: true, type: BotManager.Protobuf.GameState.ItemsEntry, map: true)
-  field(:pools, 14, repeated: true, type: BotManager.Protobuf.GameState.PoolsEntry, map: true)
+
+  field(:obstacles, 14,
+    repeated: true,
+    type: BotManager.Protobuf.GameState.ObstaclesEntry,
+    map: true
+  )
+
+  field(:pools, 15, repeated: true, type: BotManager.Protobuf.GameState.PoolsEntry, map: true)
 end
 
 defmodule BotManager.Protobuf.Entity do
@@ -328,13 +345,13 @@ defmodule BotManager.Protobuf.Entity do
   field(:pool, 17, type: BotManager.Protobuf.Pool, oneof: 0)
 end
 
-defmodule BotManager.Protobuf.Player.EffectsEntry do
+defmodule BotManager.Protobuf.Player.CooldownsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:key, 1, type: :uint64)
-  field(:value, 2, type: BotManager.Protobuf.Effect)
+  field(:key, 1, type: :string)
+  field(:value, 2, type: :uint64)
 end
 
 defmodule BotManager.Protobuf.Player do
@@ -357,8 +374,9 @@ defmodule BotManager.Protobuf.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
-  field(:effects, 10, repeated: true, type: BotManager.Protobuf.Player.EffectsEntry, map: true)
+  field(:effects, 10, repeated: true, type: BotManager.Protobuf.Effect)
   field(:inventory, 11, type: BotManager.Protobuf.Item)
+  field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
 end
 
 defmodule BotManager.Protobuf.Effect do
@@ -421,6 +439,7 @@ defmodule BotManager.Protobuf.PlayerAction do
 
   field(:action, 1, type: BotManager.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
+  field(:destination, 3, type: BotManager.Protobuf.Position)
 end
 
 defmodule BotManager.Protobuf.Move do

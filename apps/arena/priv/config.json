@@ -529,6 +529,7 @@
       "name": "buff_singularity",
       "remove_on_action": false,
       "one_time_application": true,
+      "remove_on_collision": true,
       "effect_mechanics": {
         "buff_pool": {
           "stat_multiplier": 4.0,

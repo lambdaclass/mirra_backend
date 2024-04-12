@@ -647,7 +647,7 @@ defmodule Arena.GameUpdater do
     updated_projectiles =
       Enum.reduce(projectiles, projectiles, fn {projectile_id, projectile}, acc ->
         case projectile.aditional_info.status do
-          :EXPLODED ->
+          status when status in [:EXPLODED, :CONSUMED] ->
             Map.delete(acc, projectile_id)
 
           :EXPIRED ->
@@ -1111,8 +1111,9 @@ defmodule Arena.GameUpdater do
   end
 
   defp apply_effect_to_entities(entities, effects, game_state, projectile) do
-    {last_id, modified_entities} =
-      Enum.reduce(entities, {game_state.last_id, %{}}, fn {entity_id, entity}, {last_id, modified_entities} ->
+    {last_id, modified_entities, remove_projectile?} =
+      Enum.reduce(entities, {game_state.last_id, %{}, false}, fn {entity_id, entity},
+                                                                 {last_id, modified_entities, remove_projectile?} ->
         modified_entity =
           Enum.reduce(effects, entity, fn effect, entity ->
             entity_contain_effect? =
@@ -1133,14 +1134,25 @@ defmodule Arena.GameUpdater do
             end
           end)
 
-        {last_id + 1, Map.put(modified_entities, entity_id, modified_entity)}
+        remove_projectile_on_collision? = Enum.any?(effects, fn effect -> effect.remove_on_collision end)
+
+        {last_id + 1, Map.put(modified_entities, entity_id, modified_entity),
+         remove_projectile? or remove_projectile_on_collision?}
       end)
 
     modified_players = Map.merge(game_state.players, Map.intersect(game_state.players, modified_entities))
     modified_pools = Map.merge(game_state.pools, Map.intersect(game_state.pools, modified_entities))
 
+    projectile =
+      if remove_projectile? do
+        put_in(projectile, [:aditional_info, :status], :CONSUMED)
+      else
+        projectile
+      end
+
     modified_projectiles =
       Map.merge(game_state.projectiles, Map.intersect(game_state.projectiles, modified_entities))
+      |> Map.put(projectile.id, projectile)
 
     Map.put(game_state, :pools, modified_pools)
     |> Map.put(:players, modified_players)
