@@ -649,9 +649,10 @@ defmodule Champions.Battle.Simulator do
       type: effect.type,
       delay: effect.initial_delay,
       target_count: effect.target_count,
-      target_strategy: effect.target_strategy,
+      # TODO: replace random for the corresponding target strategy name (CHoM #325)
+      # target_strategy: effect.target_strategy,
+      target_strategy: "random",
       target_allies: effect.target_allies,
-      target_attribute: effect.target_attribute,
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions
