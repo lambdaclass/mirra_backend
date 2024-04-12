@@ -43,7 +43,7 @@ defmodule ArenaLoadTest.SocketHandler do
         raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
     end
 
-    {:ok, _pid} =
+    {:ok, pid} =
       SocketSupervisor.add_new_player(
         state.client_id,
         game_id
