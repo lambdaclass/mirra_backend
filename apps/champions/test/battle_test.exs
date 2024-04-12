@@ -233,7 +233,7 @@ defmodule Champions.Test.BattleTest do
           cooldown: cooldown,
           effects: [
             TestUtils.build_effect(%{
-              type: %{"duration" => 1, "period" => 0},
+              type: %{"type" => "duration", "duration" => 1, "period" => 0},
               modifiers: [
                 %{
                   attribute: "attack",

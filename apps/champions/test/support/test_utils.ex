@@ -51,7 +51,7 @@ defmodule Champions.TestUtils do
   def build_effect(params \\ %{}) do
     Map.merge(
       %{
-        type: "instant",
+        type: %{"type" => "instant"},
         initial_delay: 0,
         components: [],
         modifiers: [],
