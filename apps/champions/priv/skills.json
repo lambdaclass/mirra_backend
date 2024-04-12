@@ -1928,7 +1928,7 @@
             "type": "DealDamage",
             "attack_ratio": 0.8,
             "energy_recharge": 50,
-            "delay": 0
+            "delay": 1
           }
         ],
         "target_strategy": "nearest",
@@ -1962,13 +1962,13 @@
             "type": "DealDamage",
             "attack_ratio": 0.59,
             "energy_recharge": 50,
-            "delay": 0
+            "delay": 1
           },
           {
             "type": "DealDamage",
             "attack_ratio": 0.83,
             "energy_recharge": 50,
-            "delay": 0
+            "delay": 2
           }
         ],
         "target_strategy": "nearest",
