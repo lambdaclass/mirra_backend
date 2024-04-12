@@ -101,14 +101,14 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Private
-  # defp create_random_movement() do
-  #   Enum.random([
-  #     {1, 0},
-  #     {0, -1},
-  #     {-1, 0},
-  #     {0, 1}
-  #   ])
-  # end
+  defp create_random_movement() do
+    Enum.random([
+      {1, 0},
+      {0, -1},
+      {-1, 0},
+      {0, 1}
+    ])
+  end
 
   defp ws_url(client_id, game_id) do
     case System.get_env("TARGET_SERVER") do
