@@ -17,6 +17,7 @@ defmodule Arena.Game.Skill do
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
+    # Players
     alive_players =
       Player.alive_players(game_state.players)
       |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
@@ -38,6 +39,27 @@ defmodule Arena.Game.Skill do
 
         Map.put(players_acc, player_id, target_player)
       end)
+
+    # Crates
+
+    # crates =
+    #   Crate.interactable_crates(game_state.players)
+
+    # players =
+    #   Physics.check_collisions(circular_damage_area, crates)
+    #   |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
+    #     real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
+
+    #     target_player =
+    #       Map.get(crates_acc, crate_id)
+    #       |> Crate.take_damage(real_damage)
+
+    #     unless Player.alive?(target_player) do
+    #       send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
+    #     end
+
+    #     Map.put(crates_acc, crate_id, target_player)
+    #   end)
 
     %{game_state | players: players}
     |> maybe_move_player(entity, circle_hit[:move_by])
