@@ -584,6 +584,17 @@ defmodule Champions.Battle.Simulator do
     {new_target, new_history}
   end
 
+  defp process_execution(
+         _,
+         target,
+         caster,
+         history,
+         _skill_id
+       ) do
+    Logger.warning("#{format_unit_name(caster)} tried to apply an unknown execution to #{format_unit_name(caster)}")
+    {target, history}
+  end
+
   # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
   defp calculate_unit_stat(unit, attribute) do
     overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))

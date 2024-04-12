@@ -40,8 +40,7 @@ defmodule Gateway.ChampionsSocketHandler do
     GetBoxes,
     GetBox,
     Summon,
-    GetUserSuperCampaignProgresses,
-    BattleTest
+    GetUserSuperCampaignProgresses
   }
 
   @behaviour :cowboy_websocket
@@ -115,8 +114,15 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%FightLevel{user_id: user_id, level_id: level_id}) do
     case Battle.fight_level(user_id, level_id) do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      battle_result -> prepare_response(%{result: Atom.to_string(battle_result)}, :battle_result)
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      battle_result ->
+        battle_result
+        |> update_in([:steps], fn steps ->
+          Enum.map(steps, &prepare_step/1)
+        end)
+        |> prepare_response(:battle_result)
     end
   end
 
@@ -206,45 +212,6 @@ defmodule Gateway.ChampionsSocketHandler do
       end)
 
     prepare_response(%{super_campaign_progresses: super_campaign_progresses}, :super_campaign_progresses)
-  end
-
-  # Temporary endpoint to test the sending of battle replays to the client
-  defp handle(%BattleTest{user_id: _user_id}) do
-    team1 =
-      Enum.map(1..6, fn slot ->
-        GameBackend.Units.insert_unit(%{
-          character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: nil,
-          slot: slot
-        })
-        |> elem(1)
-        |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill])
-      end)
-
-    team2 =
-      Enum.map(1..6, fn slot ->
-        GameBackend.Units.insert_unit(%{
-          character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id,
-          level: 1,
-          tier: 1,
-          rank: 1,
-          selected: true,
-          user_id: nil,
-          slot: slot
-        })
-        |> elem(1)
-        |> GameBackend.Repo.preload(character: [:basic_skill, :ultimate_skill])
-      end)
-
-    Champions.Battle.Simulator.run_battle(team1, team2)
-    |> update_in([:steps], fn steps ->
-      Enum.map(steps, &prepare_step/1)
-    end)
-    |> prepare_response(:battle_replay)
   end
 
   defp handle(unknown_request),
