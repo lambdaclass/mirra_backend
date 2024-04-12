@@ -16,7 +16,7 @@ defmodule Gateway.Serialization.Stat do
 
   field(:HEALTH, 0)
   field(:ENERGY, 1)
-  field(:DAMAGE, 2)
+  field(:ATTACK, 2)
   field(:DEFENSE, 3)
   field(:DAMAGE_REDUCTION, 4)
   field(:SPEED, 5)

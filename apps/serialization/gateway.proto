@@ -310,7 +310,7 @@ syntax = "proto3";
   enum Stat {
     HEALTH = 0;
     ENERGY = 1;
-    DAMAGE = 2;
+    ATTACK = 2;
     DEFENSE = 3;
     DAMAGE_REDUCTION = 4;
     SPEED = 5;
