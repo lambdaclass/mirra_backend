@@ -53,11 +53,18 @@ defmodule Champions.Config do
         base_health: Integer.parse(health) |> elem(0),
         base_defense: Integer.parse(defense) |> elem(0),
         game_id: Utils.game_id(),
-        basic_skill_id: Skills.get_skill_by_name(basic_skill).id,
-        ultimate_skill_id: Skills.get_skill_by_name(ultimate_skill).id,
+        basic_skill_id: get_skill_id(basic_skill),
+        ultimate_skill_id: get_skill_id(ultimate_skill),
         active: true
       }
     end)
     |> Characters.upsert_characters()
+  end
+
+  defp get_skill_id(skill) do
+    case Skills.get_skill_by_name(skill) do
+      nil -> nil
+      skill -> skill.id
+    end
   end
 end
