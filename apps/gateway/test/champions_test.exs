@@ -563,8 +563,7 @@ defmodule Gateway.Test.Champions do
             %{
               attribute: "attack",
               modifier_operation: "Multiply",
-              magnitude_calc_type: "Float",
-              float_magnitude: 1.6
+              base_value: 1.6
             }
           ]
         })
@@ -715,8 +714,7 @@ defmodule Gateway.Test.Champions do
             %{
               attribute: "attack",
               modifier_operation: "Multiply",
-              magnitude_calc_type: "Float",
-              float_magnitude: 1.6
+              base_value: 1.6
             }
           ]
         })
