@@ -18,7 +18,6 @@ defmodule GameBackend.Units.Skills.Effect do
     field(:target_count, :integer)
     field(:target_strategy, TargetStrategy)
     field(:target_allies, :boolean)
-    field(:target_attribute, :string)
   end
 
   @doc false
@@ -31,16 +30,14 @@ defmodule GameBackend.Units.Skills.Effect do
       :executions,
       :target_count,
       :target_strategy,
-      :target_allies,
-      :target_attribute
+      :target_allies
     ])
     |> validate_required([
       :type,
       :initial_delay,
       :target_count,
       :target_strategy,
-      :target_allies,
-      :target_attribute
+      :target_allies
     ])
     |> validate_change(:executions, fn :executions, executions ->
       valid? =

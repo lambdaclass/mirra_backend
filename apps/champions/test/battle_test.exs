@@ -107,8 +107,7 @@ defmodule Champions.Test.BattleTest do
                 ],
                 target_strategy: "random",
                 target_count: 1,
-                target_allies: false,
-                target_attribute: "Health"
+                target_allies: false
               }
             ])
         })
@@ -154,8 +153,7 @@ defmodule Champions.Test.BattleTest do
             ],
             target_strategy: "random",
             target_count: 1,
-            target_allies: false,
-            target_attribute: "Health"
+            target_allies: false
           }
         ])
 
@@ -196,8 +194,7 @@ defmodule Champions.Test.BattleTest do
                 ],
                 target_strategy: "random",
                 target_count: 1,
-                target_allies: false,
-                target_attribute: "Health"
+                target_allies: false
               }
             ])
         })
@@ -236,8 +233,7 @@ defmodule Champions.Test.BattleTest do
             executions: [],
             target_strategy: "random",
             target_count: 1,
-            target_allies: true,
-            target_attribute: "Health"
+            target_allies: true
           }
         ])
 

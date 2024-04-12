@@ -22,8 +22,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -52,8 +51,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -80,8 +78,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -109,8 +106,7 @@
         ],
         "target_strategy": "random",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -137,8 +133,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -166,8 +161,7 @@
         ],
         "target_strategy": "all",
         "target_count": 6,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -194,8 +188,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -223,8 +216,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -251,8 +243,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -280,8 +271,7 @@
         ],
         "target_strategy": "random",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -308,8 +298,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -334,10 +323,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   },
@@ -364,8 +354,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -393,8 +382,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -421,8 +409,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -448,10 +435,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -476,10 +464,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Defense"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Defense"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -505,10 +494,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Defense"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Defense"
+        "target_allies": false
       }
     ]
   },
@@ -535,8 +525,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -564,8 +553,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -592,8 +580,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -620,8 +607,7 @@
         ],
         "target_strategy": "all",
         "target_count": 6,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   },
@@ -648,8 +634,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -677,8 +662,7 @@
         ],
         "target_strategy": "random",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -705,8 +689,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -734,8 +717,7 @@
         ],
         "target_strategy": "random",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       },
       {
         "type": {
@@ -751,10 +733,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   },
@@ -781,8 +764,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -822,8 +804,7 @@
         ],
         "target_strategy": "random",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -848,10 +829,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -885,10 +867,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "max",
+        "target_strategy": {
+          "highest": "Armor"
+        },
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Armor"
+        "target_allies": false
       }
     ]
   },
@@ -915,8 +898,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -957,8 +939,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -985,8 +966,7 @@
         ],
         "target_strategy": "backline",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1022,8 +1002,7 @@
         ],
         "target_strategy": "random",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1050,8 +1029,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1079,8 +1057,7 @@
         ],
         "target_strategy": "all",
         "target_count": 6,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1107,8 +1084,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1144,8 +1120,7 @@
         ],
         "target_strategy": "random",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1172,8 +1147,7 @@
         ],
         "target_strategy": "backline",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1209,8 +1183,7 @@
         ],
         "target_strategy": "backline",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1237,8 +1210,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1273,8 +1245,7 @@
         ],
         "target_strategy": "self",
         "target_count": 1,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   },
@@ -1301,8 +1272,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1328,10 +1298,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1358,8 +1329,7 @@
         ],
         "target_strategy": "backline",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1393,10 +1363,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "max",
+        "target_strategy": {
+          "highest": "Health"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1423,8 +1394,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1460,8 +1430,7 @@
         ],
         "target_strategy": "backline",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1488,8 +1457,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1523,8 +1491,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1551,8 +1518,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1592,8 +1558,7 @@
         ],
         "target_strategy": "random",
         "target_count": 4,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1618,10 +1583,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1647,10 +1613,11 @@
             "delay": 0
           }
         ],
-        "target_strategy": "min",
+        "target_strategy": {
+          "lowest": "Health"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       },
       {
         "type": {
@@ -1669,8 +1636,7 @@
         "executions": [],
         "target_strategy": "self",
         "target_count": 1,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   },
@@ -1697,8 +1663,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1725,8 +1690,7 @@
         ],
         "target_strategy": "random",
         "target_count": 3,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       },
       {
         "type": {
@@ -1751,8 +1715,7 @@
         ],
         "target_strategy": "random",
         "target_count": 3,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1779,8 +1742,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1816,8 +1778,7 @@
         ],
         "target_strategy": "all",
         "target_count": 6,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   },
@@ -1844,8 +1805,7 @@
         ],
         "target_strategy": "random",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1875,10 +1835,11 @@
             "amount": -200
           }
         ],
-        "target_strategy": "max",
+        "target_strategy": {
+          "highest": "Attack"
+        },
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Attack"
+        "target_allies": false
       }
     ]
   },
@@ -1905,8 +1866,7 @@
         ],
         "target_strategy": "backline",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -1942,8 +1902,7 @@
         ],
         "target_strategy": "all",
         "target_count": 6,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ]
   },
@@ -1976,8 +1935,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 1,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       }
     ],
     "cooldown": 5
@@ -2017,8 +1975,7 @@
         ],
         "target_strategy": "nearest",
         "target_count": 2,
-        "target_allies": false,
-        "target_attribute": "Health"
+        "target_allies": false
       },
       {
         "type": {
@@ -2038,8 +1995,7 @@
         "executions": [],
         "target_strategy": "self",
         "target_count": 1,
-        "target_allies": true,
-        "target_attribute": "Health"
+        "target_allies": true
       }
     ]
   }

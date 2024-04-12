@@ -89,8 +89,7 @@ defmodule Champions.TestUtils do
           ],
           target_strategy: "random",
           target_count: 1,
-          target_allies: false,
-          target_attribute: "Health"
+          target_allies: false
         }
       ],
       cooldown: cooldown
@@ -120,8 +119,7 @@ defmodule Champions.TestUtils do
           ],
           target_strategy: "random",
           target_count: 1,
-          target_allies: false,
-          target_attribute: "Health"
+          target_allies: false
         }
       ]
     }
