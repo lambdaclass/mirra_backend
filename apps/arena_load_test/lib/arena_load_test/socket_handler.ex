@@ -70,7 +70,7 @@ defmodule ArenaLoadTest.SocketHandler do
 
     case System.get_env("TARGET_SERVER") do
       nil ->
-        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
+        "ws://162.55.80.110:4000/join/#{player_id}/#{character}/#{player_name}"
 
       target_server ->
         "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
