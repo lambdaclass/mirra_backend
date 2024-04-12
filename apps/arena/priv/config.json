@@ -532,6 +532,7 @@
       "effect_mechanics": {
         "buff_pool": {
           "stat_multiplier": 4.0,
+          "additive_duration_add_ms": 1000,
           "effect_delay_ms": 0
         }
       }

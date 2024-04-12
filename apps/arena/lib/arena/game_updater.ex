@@ -124,6 +124,7 @@ defmodule Arena.GameUpdater do
       |> apply_zone_damage_to_players(state.game_config.game)
       |> explode_projectiles()
       |> handle_pools(state.game_config)
+      |> remove_expired_pools(now)
       |> Skill.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
@@ -396,21 +397,6 @@ defmodule Arena.GameUpdater do
   def handle_info({:block_actions, player_id}, state) do
     broadcast_player_block_actions(state.game_state.game_id, player_id, false)
     {:noreply, state}
-  end
-
-  def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
-    game_state =
-      Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
-        Effect.remove_owner_effects(game_state, player.id, pool_id)
-      end)
-      |> update_in(
-        [:pools],
-        fn current_pools ->
-          Map.delete(current_pools, pool_id)
-        end
-      )
-
-    {:noreply, %{state | game_state: game_state}}
   end
 
   ##########################
@@ -1160,6 +1146,22 @@ defmodule Arena.GameUpdater do
     |> Map.put(:players, modified_players)
     |> Map.put(:projectiles, modified_projectiles)
     |> Map.put(:last_id, last_id)
+  end
+
+  defp remove_expired_pools(%{pools: pools} = game_state, now) do
+    pools =
+      Enum.reduce(pools, %{}, fn {pool_id, pool}, acc ->
+        time_passed_since_spawn =
+          now - pool.aditional_info.spawn_at
+
+        if(time_passed_since_spawn >= pool.aditional_info.duration_ms) do
+          acc
+        else
+          Map.put(acc, pool_id, pool)
+        end
+      end)
+
+    Map.put(game_state, :pools, pools)
   end
 
   ##########################

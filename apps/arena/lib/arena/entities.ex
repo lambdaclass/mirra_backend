@@ -120,7 +120,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, owner_id) do
+  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, spawn_at) do
     %{
       id: id,
       category: :pool,
@@ -139,7 +139,9 @@ defmodule Arena.Entities do
         effects_to_apply: effects_to_apply,
         owner_id: owner_id,
         effects: [],
-        stat_multiplier: 0
+        stat_multiplier: 0,
+        duration_ms: duration_ms,
+        spawn_at: spawn_at
       }
     }
   end

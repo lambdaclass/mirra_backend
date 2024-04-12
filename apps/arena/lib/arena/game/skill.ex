@@ -267,16 +267,18 @@ defmodule Arena.Game.Skill do
       y: player.position.y + skill_direction.y * pool_params.range
     }
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     pool =
       Entities.new_pool(
         last_id,
         target_position,
         pool_params.effects_to_apply,
         pool_params.radius,
-        player.id
+        pool_params.duration_ms,
+        player.id,
+        now
       )
-
-    Process.send_after(self(), {:remove_pool, last_id}, pool_params.duration_ms)
 
     put_in(game_state, [:pools, last_id], pool)
     |> put_in([:last_id], last_id)
@@ -373,11 +375,7 @@ defmodule Arena.Game.Skill do
 
       pool ->
         pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
-
-        real_damage =
-          (Player.calculate_real_damage(pool_owner, damage_params.damage) +
-             Player.calculate_real_damage(pool_owner, damage_params.damage) * pool.aditional_info.stat_multiplier)
-          |> round()
+        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
@@ -404,6 +402,9 @@ defmodule Arena.Game.Skill do
 
           _current_multiplier ->
             buff_attributes.stat_multiplier
+        end)
+        |> update_in([:aditional_info, :duration_ms], fn current_duration ->
+          current_duration + buff_attributes.additive_duration_add_ms
         end)
     end
   end
