@@ -5,6 +5,7 @@ defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
 
   use Ecto.Type
 
+  # This function is unused, but needs to be implemented to avoid a warning. (Further explanation in: https://hexdocs.pm/ecto/Ecto.Schema.html#embeds_one/3-encoding-and-decoding)
   def type(), do: :string
 
   def cast("all"), do: {:ok, "all"}
