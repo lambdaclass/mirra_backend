@@ -2,7 +2,7 @@ defmodule GameBackend.Items.ItemTemplate do
   @moduledoc """
   ItemTemplates are the template on which items are based.
   """
-  alias GameBackend.Units.Skills.Effects.Modifier
+  alias GameBackend.Items.BaseModifier
 
   use GameBackend.Schema
   import Ecto.Changeset
@@ -11,7 +11,7 @@ defmodule GameBackend.Items.ItemTemplate do
     field(:game_id, :integer)
     field(:name, :string)
     field(:type, :string)
-    embeds_many(:modifiers, Modifier)
+    embeds_many(:base_modifiers, BaseModifier)
 
     timestamps()
   end
@@ -20,7 +20,7 @@ defmodule GameBackend.Items.ItemTemplate do
   def changeset(item, attrs) do
     item
     |> cast(attrs, [:game_id, :name, :type])
-    |> cast_embed(:modifiers)
+    |> cast_embed(:base_modifiers)
     |> validate_required([:game_id, :name, :type])
   end
 end

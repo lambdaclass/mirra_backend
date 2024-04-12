@@ -597,34 +597,31 @@ defmodule Gateway.Test.Champions do
       defense_multiplier = 1.2
       health_adder = 100
 
-      {:ok, epic_sword} =
+      {:ok, epic_item} =
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Upgrader of All Stats",
           type: "weapon",
-          modifiers: [
+          base_modifiers: [
             %{
               attribute: "attack",
               modifier_operation: "Multiply",
-              magnitude_calc_type: "Float",
-              float_magnitude: attack_multiplier
+              base_value: attack_multiplier
             },
             %{
               attribute: "defense",
               modifier_operation: "Multiply",
-              magnitude_calc_type: "Float",
-              float_magnitude: defense_multiplier
+              base_value: defense_multiplier
             },
             %{
               attribute: "health",
               modifier_operation: "Add",
-              magnitude_calc_type: "Float",
-              float_magnitude: health_adder
+              base_value: health_adder
             }
           ]
         })
 
-      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_item.id, level: 1})
 
       # EquipItem
       attack_before_equip = Units.get_attack(unit)

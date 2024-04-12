@@ -3,7 +3,7 @@ defmodule GameBackend.Repo.Migrations.AddModifiersToItemTemplate do
 
   def change do
     alter table(:item_templates) do
-      add :modifiers, {:array, :map}
+      add :base_modifiers, {:array, :map}
     end
   end
 end

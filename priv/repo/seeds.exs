@@ -72,12 +72,11 @@ Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
   type: "weapon",
-  modifiers: [
+  base_modifiers: [
     %{
       attribute: "attack",
       modifier_operation: "Multiply",
-      magnitude_calc_type: "Float",
-      float_magnitude: 1.6
+      base_value: 1.6
     }
   ]
 })
@@ -86,12 +85,11 @@ Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Mythical Helmet of Mythicness",
   type: "helmet",
-  modifiers: [
+  base_modifiers: [
     %{
       attribute: "defense",
       modifier_operation: "Multiply",
-      magnitude_calc_type: "Float",
-      float_magnitude: 1.15
+      base_value: 1.15
     }
   ]
 })
@@ -100,12 +98,11 @@ Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Legendary Chestplate of Legendaryness",
   type: "chest",
-  modifiers: [
+  base_modifiers: [
     %{
       attribute: "defense",
       modifier_operation: "Multiply",
-      magnitude_calc_type: "Float",
-      float_magnitude: 1.2
+      base_value: 1.2
     }
   ]
 })
@@ -114,12 +111,11 @@ Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Magical Boots of Magicness",
   type: "boots",
-  modifiers: [
+  base_modifiers: [
     %{
       attribute: "speed",
       modifier_operation: "Multiply",
-      magnitude_calc_type: "Float",
-      float_magnitude: 1.3
+      base_value: 1.3
     }
   ]
 })
