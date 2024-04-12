@@ -4,7 +4,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   It handles the communication with the server as a player.
   """
   alias ArenaLoadTest.SocketSupervisor
-  # alias ArenaLoadTest.Serialization
+  alias ArenaLoadTest.Serialization
   use WebSockex, restart: :transient
   require Logger
 
