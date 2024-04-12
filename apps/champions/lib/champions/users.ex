@@ -7,7 +7,6 @@ defmodule Champions.Users do
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
-  alias GameBackend.Rewards
   alias GameBackend.Transaction
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
@@ -30,7 +29,6 @@ defmodule Champions.Users do
         add_sample_items(user)
         add_sample_currencies(user)
         add_super_campaign_progresses(user)
-        add_afk_reward_rates(user)
 
         Users.get_user(user.id)
 
@@ -104,17 +102,6 @@ defmodule Champions.Users do
         user_id: user.id,
         super_campaign_id: super_campaign_id,
         level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
-      })
-    end)
-  end
-
-  defp add_afk_reward_rates(user) do
-    ["Gold", "Gems", "Summon Scrolls"]
-    |> Enum.each(fn currency_name ->
-      Rewards.insert_afk_reward_rate(%{
-        user_id: user.id,
-        currency_id: Currencies.get_currency_by_name!(currency_name).id,
-        rate: 0
       })
     end)
   end
