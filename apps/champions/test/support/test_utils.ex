@@ -41,7 +41,6 @@ defmodule Champions.TestUtils do
         active: true,
         faction: "Kaline",
         class: "Assassin",
-        # Multiplied by the attack ratio of the basic skill, we get 10
         base_attack: 20,
         base_health: 100,
         base_defense: 100,
@@ -67,15 +66,16 @@ defmodule Champions.TestUtils do
     Repo.preload(unit, items: :template, character: [:basic_skill, :ultimate_skill])
   end
 
-  def basic_skill_params_with_cooldown(cooldown) do
+  def basic_skill_params_with_cooldown(cooldown, skill_name) do
     %{
-      name: "Basic",
+      # Add a random number to the name to avoid conflicts
+      name: skill_name,
       energy_regen: 500,
       animation_duration: 0,
       animation_trigger: 0,
       effects: [
         %{
-          type: "instant",
+          type: %{type: "instant"},
           initial_delay: 0,
           components: [],
           modifier: [],
@@ -89,23 +89,23 @@ defmodule Champions.TestUtils do
           ],
           target_strategy: "random",
           target_count: 1,
-          target_allies: false,
-          target_attribute: "Health"
+          target_allies: false
         }
       ],
       cooldown: cooldown
     }
   end
 
-  def ultimate_skill_params() do
+  def ultimate_skill_params(skill_name) do
     %{
-      name: "Ultimate",
+      # Add a random number to the name to avoid conflicts
+      name: skill_name,
       energy_regen: 0,
       animation_duration: 0,
       animation_trigger: 0,
       effects: [
         %{
-          type: "instant",
+          type: %{type: "instant"},
           initial_delay: 0,
           components: [],
           modifiers: [],
@@ -119,16 +119,16 @@ defmodule Champions.TestUtils do
           ],
           target_strategy: "random",
           target_count: 1,
-          target_allies: false,
-          target_attribute: "Health"
+          target_allies: false
         }
       ]
     }
   end
 
-  def dummy_ultimate_skill_params() do
+  def dummy_ultimate_skill_params(skill_name) do
     %{
-      name: "None",
+      # Add a random number to the name to avoid conflicts
+      name: skill_name,
       energy_regen: 0,
       animation_duration: 0,
       animation_trigger: 0,

@@ -41,7 +41,6 @@ jobs:
 
       - name: Execute deploy script
         env:
-          XDG_RUNTIME_DIR: /run/user/1001 # Temporary fix for systemd commands.
           SSH_HOST: ${{ vars.TS_LOADTEST_SERVER_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
@@ -58,7 +57,6 @@ jobs:
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
-                XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
                 RELEASE=${RELEASE} \
