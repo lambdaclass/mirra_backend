@@ -27,8 +27,6 @@ defmodule Champions.Test.BattleTest do
 
   describe "Battle" do
     test "Execution-DealDamage with delays", %{target_dummy: target_dummy} do
-      {:ok, user} = GameBackend.Users.register_user(%{username: "Execution-DealDamage User", game_id: 2})
-
       maximum_steps = 5
       required_steps_to_win = maximum_steps + 1
       too_long_cooldown = maximum_steps
@@ -63,7 +61,7 @@ defmodule Champions.Test.BattleTest do
         })
         |> Characters.insert_character()
 
-      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id, user: user.id}) |> Units.insert_unit()
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
       {:ok, unit} = Units.get_unit(unit.id)
 
       # Check that the battle ends in timeout when the steps are not enough
@@ -145,7 +143,6 @@ defmodule Champions.Test.BattleTest do
     end
 
     test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
-      {:ok, user} = GameBackend.Users.register_user(%{username: "ComponentsUser", game_id: 2})
       cooldown = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
@@ -184,7 +181,7 @@ defmodule Champions.Test.BattleTest do
         |> Characters.insert_character()
 
       {:ok, unit} =
-        TestUtils.build_unit(%{character_id: character.id, user_id: user.id}) |> Units.insert_unit()
+        TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
 
       {:ok, unit} = Units.get_unit(unit.id)
 
@@ -227,7 +224,6 @@ defmodule Champions.Test.BattleTest do
       # The ultimate skill has an attack ratio of 0.5, so it will deal 1 point of damage (base attack * 0.1 * 0.5) every 2 steps to the target dummy, which has 10 health points.
       # This way, the battle should end in a victory for the team_1 after 21 steps.
 
-      {:ok, user} = GameBackend.Users.register_user(%{username: "ModifiersUser", game_id: 2})
       cooldown = 1
 
       # Configure a basic skill with a modifier that increases the attack ratio
@@ -279,7 +275,7 @@ defmodule Champions.Test.BattleTest do
         })
         |> Characters.insert_character()
 
-      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id, user_id: user.id}) |> Units.insert_unit()
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
       {:ok, unit} = Units.get_unit(unit.id)
 
       # assert "timeout" ==
