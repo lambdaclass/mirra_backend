@@ -74,6 +74,7 @@ defmodule Champions.Battle.Simulator do
     seed = options[:seed] || @default_seed
 
     :rand.seed(:default, seed)
+    Logger.info("Running battle with seed: #{seed}")
 
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
