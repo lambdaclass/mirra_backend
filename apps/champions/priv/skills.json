@@ -853,7 +853,7 @@
         "components": [],
         "modifiers": [
           {
-            "attribute": "armor",
+            "attribute": "defense",
             "modifier_operation": "Multiply",
             "magnitude_calc_type": "Float",
             "float_magnitude": 0.85
@@ -868,7 +868,7 @@
           }
         ],
         "target_strategy": {
-          "highest": "Armor"
+          "highest": "defense"
         },
         "target_count": 2,
         "target_allies": false

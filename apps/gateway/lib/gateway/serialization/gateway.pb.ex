@@ -18,6 +18,8 @@ defmodule Gateway.Serialization.Stat do
   field(:ENERGY, 1)
   field(:DAMAGE, 2)
   field(:DEFENSE, 3)
+  field(:DAMAGE_REDUCTION, 4)
+  field(:SPEED, 5)
 end
 
 defmodule Gateway.Serialization.WebSocketRequest do

@@ -312,6 +312,8 @@ syntax = "proto3";
     ENERGY = 1;
     DAMAGE = 2;
     DEFENSE = 3;
+    DAMAGE_REDUCTION = 4;
+    SPEED = 5;
   }
 
   message BattleResult {
