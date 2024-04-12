@@ -1230,7 +1230,7 @@
         "components": [],
         "modifiers": [
           {
-            "attribute": "damage reduction",
+            "attribute": "damage_reduction",
             "modifier_operation": "Multiply",
             "magnitude_calc_type": "Float",
             "float_magnitude": 1.2
@@ -1883,15 +1883,13 @@
           "period": 1
         },
         "initial_delay": 0,
-        "components": [],
-        "modifiers": [
+        "components": [
           {
-            "attribute": "speed",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0
+            "type": "ApplyTags",
+            "tag": "Paralyzed"
           }
         ],
+        "modifiers": [],
         "executions": [
           {
             "type": "DealDamage",
