@@ -4,7 +4,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   It handles the communication with the server as a player.
   """
   alias ArenaLoadTest.SocketSupervisor
-  alias ArenaLoadTest.Serialization
+  # alias ArenaLoadTest.Serialization
   use WebSockex, restart: :transient
   require Logger
 
@@ -33,28 +33,28 @@ defmodule ArenaLoadTest.GameSocketHandler do
     # end
   end
 
-  def handle_info(:move, state) do
-    {x, y} = create_random_movement()
-    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+  # def handle_info(:move, state) do
+  #   {x, y} = create_random_movement()
+  #   timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    game_action =
-      Serialization.GameAction.encode(%Serialization.GameAction{
-        action_type:
-          {:move,
-           %Serialization.Move{
-             direction: %Serialization.Direction{
-               x: x,
-               y: y
-             }
-           }},
-        timestamp: timestamp
-      })
+  #   game_action =
+  #     Serialization.GameAction.encode(%Serialization.GameAction{
+  #       action_type:
+  #         {:move,
+  #          %Serialization.Move{
+  #            direction: %Serialization.Direction{
+  #              x: x,
+  #              y: y
+  #            }
+  #          }},
+  #       timestamp: timestamp
+  #     })
 
-    WebSockex.cast(self(), {:send, {:binary, game_action}})
+  #   WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :move, 5_000, [])
-    {:ok, state}
-  end
+  #   Process.send_after(self(), :move, 5_000, [])
+  #   {:ok, state}
+  # end
 
   # def handle_info(:attack, state) do
   #   timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
@@ -101,14 +101,14 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Private
-  defp create_random_movement() do
-    Enum.random([
-      {1, 0},
-      {0, -1},
-      {-1, 0},
-      {0, 1}
-    ])
-  end
+  # defp create_random_movement() do
+  #   Enum.random([
+  #     {1, 0},
+  #     {0, -1},
+  #     {-1, 0},
+  #     {0, 1}
+  #   ])
+  # end
 
   defp ws_url(client_id, game_id) do
     case System.get_env("TARGET_SERVER") do

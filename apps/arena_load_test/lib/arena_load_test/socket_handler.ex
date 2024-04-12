@@ -43,7 +43,7 @@ defmodule ArenaLoadTest.SocketHandler do
         raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
     end
 
-    {:ok, pid} =
+    {:ok, _pid} =
       SocketSupervisor.add_new_player(
         state.client_id,
         game_id
@@ -51,7 +51,7 @@ defmodule ArenaLoadTest.SocketHandler do
 
     true = :ets.insert(:players, {state.client_id, game_id})
 
-    Process.send(pid, :move, [])
+    # Process.send(pid, :move, [])
     # Process.send(pid, :attack, [])
 
     {:ok, state}
