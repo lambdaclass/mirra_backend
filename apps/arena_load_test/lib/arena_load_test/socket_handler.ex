@@ -5,8 +5,8 @@ defmodule ArenaLoadTest.SocketHandler do
   """
   use WebSockex, restart: :transient
   require Logger
-  alias ArenaLoadTest.Serialization
-  alias ArenaLoadTest.SocketSupervisor
+  # alias ArenaLoadTest.Serialization
+  # alias ArenaLoadTest.SocketSupervisor
 
   def start_link(client_id) do
     Logger.info("Client INIT")
@@ -25,37 +25,37 @@ defmodule ArenaLoadTest.SocketHandler do
 
   # Game hasn't started yet
   @impl true
-  def handle_frame({:binary, ""}, state) do
-    Logger.info("Client waiting for game to join")
+  def handle_frame(_, state) do
+    # Logger.info("Client waiting for game to join")
     {:ok, state}
   end
 
-  @impl true
-  def handle_frame({:binary, game_state}, state) do
-    game_id = Serialization.GameState.decode(game_state).game_id
-    Logger.info("Client joining game with id: #{game_id}")
+  # @impl true
+  # def handle_frame({:binary, _}, state) do
+    # game_id = Serialization.GameState.decode(game_state).game_id
+    # Logger.info("Client joining game with id: #{game_id}")
 
-    case :ets.lookup(:clients, state.client_id) do
-      [{client_id, _}] ->
-        :ets.delete(:clients, client_id)
+    # case :ets.lookup(:clients, state.client_id) do
+    #   [{client_id, _}] ->
+    #     :ets.delete(:clients, client_id)
 
-      [] ->
-        raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
-    end
+    #   [] ->
+    #     raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
+    # end
 
-    {:ok, pid} =
-      SocketSupervisor.add_new_player(
-        state.client_id,
-        game_id
-      )
+    # {:ok, pid} =
+    #   SocketSupervisor.add_new_player(
+    #     state.client_id,
+    #     game_id
+    #   )
 
-    true = :ets.insert(:players, {state.client_id, game_id})
+    # true = :ets.insert(:players, {state.client_id, game_id})
 
-    Process.send(pid, :send_action, [])
-    # Process.send(pid, :attack, [])
+    # Process.send(pid, :send_action, [])
+    # # Process.send(pid, :attack, [])
 
-    {:ok, state}
-  end
+    # {:ok, state}
+  # end
 
   @impl true
   def terminate({:remote, 1000, ""}, _state) do
@@ -65,22 +65,27 @@ defmodule ArenaLoadTest.SocketHandler do
 
   # Private
   defp ws_url(player_id) do
-    character = get_random_active_character()
-    player_name = "Player_#{player_id}"
+    "ws://162.55.80.110:4000/dev/dashboard"
 
-    case System.get_env("TARGET_SERVER") do
-      nil ->
-        "ws://162.55.80.110:4000/join/#{player_id}/#{character}/#{player_name}"
 
-      target_server ->
-        "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
-    end
+
+
+    # character = get_random_active_character()
+    # player_name = "Player_#{player_id}"
+
+    # case System.get_env("TARGET_SERVER") do
+    #   nil ->
+    #     "ws://162.55.80.110:4000/join/#{player_id}/#{character}/#{player_name}"
+
+    #   target_server ->
+    #     "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
+    # end
   end
 
   # This is enough for now. Will request bots from the bots app in future iterations.
   # https://github.com/lambdaclass/mirra_backend/issues/410
-  defp get_random_active_character() do
-    ["muflus", "h4ck", "uma"]
-    |> Enum.random()
-  end
+  # defp get_random_active_character() do
+  #   ["muflus", "h4ck", "uma"]
+  #   |> Enum.random()
+  # end
 end
