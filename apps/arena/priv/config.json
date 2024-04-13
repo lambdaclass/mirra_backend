@@ -507,7 +507,10 @@
       "remove_on_action": true,
       "one_time_application": false,
       "effect_mechanics": {
-        "invisible": {}
+        "invisible": {
+          "execute_multiple_times": true,
+          "effect_delay_ms": 0
+        }
       }
     },
     {
@@ -517,11 +520,13 @@
       "effect_mechanics": {
         "pull": {
           "force": 15.0,
-          "effect_delay_ms": 0
+          "effect_delay_ms": 0,
+          "execute_multiple_times": true
         },
         "damage": {
           "damage": 14,
-          "effect_delay_ms": 400
+          "effect_delay_ms": 400,
+          "execute_multiple_times": true
         }
       }
     },
@@ -534,7 +539,8 @@
         "buff_pool": {
           "stat_multiplier": 4.0,
           "additive_duration_add_ms": 1000,
-          "effect_delay_ms": 0
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
         }
       }
     },
@@ -545,7 +551,8 @@
       "one_time_application": true,
       "effect_mechanics": {
         "reduce_stamina_interval": {
-          "decrease_by": 0.3
+          "decrease_by": 0.3,
+          "execute_multiple_times": false
         },
         "refresh_stamina": {}
       }
@@ -557,7 +564,8 @@
       "one_time_application": true,
       "effect_mechanics": {
         "speed_boost": {
-          "amount": 25
+          "amount": 25,
+          "execute_multiple_times": false
         }
       }
     },
@@ -567,7 +575,8 @@
       "remove_on_action": false,
       "one_time_application": true,
       "effect_mechanics": {
-        "damage_immunity": {}
+        "damage_immunity": {},
+        "execute_multiple_times": false
       }
     },
     {
@@ -577,7 +586,8 @@
       "effect_mechanics": {
         "damage": {
           "damage": 17,
-          "effect_delay_ms": 220
+          "effect_delay_ms": 220,
+          "execute_multiple_times": true
         }
       }
     }
