@@ -125,7 +125,7 @@ defmodule Arena.GameUpdater do
       |> explode_projectiles()
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
-      |> Skill.apply_effect_mechanic()
+      |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -1113,53 +1113,24 @@ defmodule Arena.GameUpdater do
   end
 
   defp apply_effect_to_entities(entities, effects, game_state, projectile) do
-    {last_id, modified_entities, remove_projectile?} =
-      Enum.reduce(entities, {game_state.last_id, %{}, false}, fn {entity_id, entity},
-                                                                 {last_id, modified_entities, remove_projectile?} ->
-        modified_entity =
-          Enum.reduce(effects, entity, fn effect, entity ->
-            entity_contain_effect? =
-              Enum.any?(entity.aditional_info.effects, fn entity_effect ->
-                entity_effect.owner_id == projectile.id
-              end)
+    Enum.reduce(entities, game_state, fn {_entity_id, entity}, game_state ->
+      game_state =
+        Enum.reduce(effects, game_state, fn effect, game_state ->
+          Effect.add_effect_to_entity(game_state, entity, projectile.id, effect)
+        end)
 
-            if entity_contain_effect? and effect.one_time_application do
-              entity
-            else
-              effect_params = %{id: last_id + 1, owner_id: projectile.id}
+      remove_projectile_on_collision? =
+        Enum.any?(effects, fn effect -> effect.remove_on_collision end) or
+          projectile.aditional_info.status == :CONSUMED
 
-              update_in(
-                entity,
-                [:aditional_info, :effects],
-                fn effects -> effects ++ [Map.merge(effect, effect_params)] end
-              )
-            end
-          end)
+      if remove_projectile_on_collision? do
+        consumed_projectile = put_in(projectile, [:aditional_info, :status], :CONSUMED)
 
-        remove_projectile_on_collision? = Enum.any?(effects, fn effect -> effect.remove_on_collision end)
-
-        {last_id + 1, Map.put(modified_entities, entity_id, modified_entity),
-         remove_projectile? or remove_projectile_on_collision?}
-      end)
-
-    modified_players = Map.merge(game_state.players, Map.intersect(game_state.players, modified_entities))
-    modified_pools = Map.merge(game_state.pools, Map.intersect(game_state.pools, modified_entities))
-
-    projectile =
-      if remove_projectile? do
-        put_in(projectile, [:aditional_info, :status], :CONSUMED)
+        update_entity_in_game_state(game_state, consumed_projectile)
       else
-        projectile
+        game_state
       end
-
-    modified_projectiles =
-      Map.merge(game_state.projectiles, Map.intersect(game_state.projectiles, modified_entities))
-      |> Map.put(projectile.id, projectile)
-
-    Map.put(game_state, :pools, modified_pools)
-    |> Map.put(:players, modified_players)
-    |> Map.put(:projectiles, modified_projectiles)
-    |> Map.put(:last_id, last_id)
+    end)
   end
 
   defp remove_expired_pools(%{pools: pools} = game_state, now) do
@@ -1177,6 +1148,16 @@ defmodule Arena.GameUpdater do
 
     Map.put(game_state, :pools, pools)
   end
+
+  def update_entity_in_game_state(game_state, entity) do
+    put_in(game_state, [get_entity_path(entity), entity.id], entity)
+  end
+
+  defp get_entity_path(%{category: :pool}), do: :pools
+  defp get_entity_path(%{category: :player}), do: :players
+  defp get_entity_path(%{category: :power_up}), do: :power_ups
+  defp get_entity_path(%{category: :projectile}), do: :projectiles
+  defp get_entity_path(%{category: :obstacle}), do: :obstacles
 
   ##########################
   # End Helpers
