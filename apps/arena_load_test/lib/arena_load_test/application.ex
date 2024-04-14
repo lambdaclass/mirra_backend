@@ -8,8 +8,8 @@ defmodule ArenaLoadTest.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      ArenaLoadTest.SocketSupervisor,
-      ArenaLoadTest.LoadtestManager
+      ArenaLoadTest.SocketSupervisor
+      # ArenaLoadTest.LoadtestManager
       # Starts a worker by calling: ArenaLoadTest.Worker.start_link(arg)
       # {ArenaLoadTest.Worker, arg}
     ]

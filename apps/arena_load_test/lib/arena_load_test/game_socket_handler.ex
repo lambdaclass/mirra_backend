@@ -3,13 +3,13 @@ defmodule ArenaLoadTest.GameSocketHandler do
   ArenaLoadTest in-game websocket handler.
   It handles the communication with the server as a player.
   """
-  alias ArenaLoadTest.SocketSupervisor
+  # alias ArenaLoadTest.SocketSupervisor
   alias ArenaLoadTest.Serialization
   use WebSockex, restart: :transient
-  require Logger
+  # require Logger
 
   def start_link({client_id, game_id}) do
-    Logger.info("Player INIT")
+    # Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
 
     WebSockex.start_link(
@@ -93,17 +93,17 @@ defmodule ArenaLoadTest.GameSocketHandler do
     {:reply, frame, state}
   end
 
-  def terminate(_, %{client_id: client_id} = _state) do
-    case :ets.lookup(:players, client_id) do
-      [{client_id, _}] ->
-        :ets.delete(:players, client_id)
+  def terminate(_, %{client_id: _client_id} = _state) do
+    # case :ets.lookup(:players, client_id) do
+    #   [{client_id, _}] ->
+    #     :ets.delete(:players, client_id)
 
-      [] ->
-        raise KeyError, message: "Player with ID #{client_id} doesn't exist."
-    end
+    #   [] ->
+    #     raise KeyError, message: "Player with ID #{client_id} doesn't exist."
+    # end
 
-    {:ok, _pid} = SocketSupervisor.add_new_client(client_id)
-    Logger.info("Player websocket terminated. Game Ended.")
+    # {:ok, _pid} = SocketSupervisor.add_new_client(client_id)
+    # Logger.info("Player websocket terminated. Game Ended.")
     exit(:normal)
   end
 
@@ -118,13 +118,13 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   defp ws_url(client_id, game_id) do
-    case System.get_env("TARGET_SERVER") do
-      nil ->
-        "ws://162.55.80.110:4000/play/#{game_id}/#{client_id}"
+    # case System.get_env("TARGET_SERVER") do
+    #   nil ->
+    "ws://162.55.80.110:4000/play/#{game_id}/#{client_id}"
 
-      target_server ->
-        "wss://#{target_server}/play/#{game_id}/#{client_id}"
-    end
+    #   target_server ->
+    #     "wss://#{target_server}/play/#{game_id}/#{client_id}"
+    # end
   end
 
   # This is enough for now. We will get the skills from the requested bots
