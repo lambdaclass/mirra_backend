@@ -343,7 +343,7 @@ defmodule Arena.GameUpdater do
           |> spawn_power_ups(crate, amount_of_power_ups)
 
         game_state =
-          put_in(state.game_state, [:crates, crate_id, :aditional_info], :DESTROYED)
+          put_in(state.game_state, [:crates, crate_id, :aditional_info, :status], :DESTROYED)
 
         {:noreply, %{state | game_state: game_state}}
     end
