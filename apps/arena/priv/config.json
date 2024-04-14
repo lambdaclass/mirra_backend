@@ -521,8 +521,7 @@
         "reduce_stamina_interval": {
           "decrease_by": 0.3
         },
-        "refresh_stamina": {
-        }
+        "refresh_stamina": {}
       }
     },
     {
@@ -540,7 +539,7 @@
       "duration_ms": 10000,
       "remove_on_action": false,
       "effect_mechanics": {
-        "damage_immunity": { }
+        "damage_immunity": {}
       }
     },
     {
@@ -556,10 +555,22 @@
   ],
   "crates": [
     {
-      "id": 1,
+      "id": "1",
       "position": {
         "x": 0.0,
         "y": 0.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 5
+    },
+    {
+      "id": "2",
+      "position": {
+        "x": -2000.0,
+        "y": -2000.0
       },
       "shape": "circle",
       "radius": 250.0,
