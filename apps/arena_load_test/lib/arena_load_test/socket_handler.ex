@@ -4,12 +4,12 @@ defmodule ArenaLoadTest.SocketHandler do
   It handles the communication with the server as a new client.
   """
   use WebSockex, restart: :transient
-  require Logger
+  # require Logger
   # alias ArenaLoadTest.Serialization
   # alias ArenaLoadTest.SocketSupervisor
 
   def start_link(client_id) do
-    Logger.info("Client INIT")
+    # Logger.info("Client INIT")
     ws_url = ws_url(client_id)
 
     WebSockex.start_link(
@@ -17,7 +17,8 @@ defmodule ArenaLoadTest.SocketHandler do
       __MODULE__,
       %{
         client_id: client_id
-      }
+      },
+      debug: [:trace]
     )
   end
 
@@ -58,14 +59,15 @@ defmodule ArenaLoadTest.SocketHandler do
   # end
 
   @impl true
-  def terminate({:remote, 1000, ""}, _state) do
-    Logger.info("Client websocket terminated with {:remote, 1000} status")
+  def terminate({:remote, 1002, ""}, state) do
+    # Logger.info("Client websocket terminated with {:remote, 1000} status")
+    ArenaLoadTest.SocketSupervisor.add_new_client(state.client_id)
     exit(:normal)
   end
 
   # Private
-  defp ws_url(player_id) do
-    "ws://162.55.80.110:4000/dev/dashboard"
+  defp ws_url(_) do
+    "ws://162.55.80.110:4000/live/websocket"
 
 
 

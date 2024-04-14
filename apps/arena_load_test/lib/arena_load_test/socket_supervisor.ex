@@ -6,7 +6,7 @@ defmodule ArenaLoadTest.SocketSupervisor do
   alias ArenaLoadTest.SocketHandler
   alias ArenaLoadTest.GameSocketHandler
   # alias ArenaLoadTest.LoadtestManager
-  require Logger
+  # require Logger
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__, max_restarts: 1)
@@ -51,7 +51,8 @@ defmodule ArenaLoadTest.SocketSupervisor do
     # Process.send_after(LoadtestManager, :loadtest_finished, playtime_duration_ms)
 
     Enum.each(1..num_clients, fn client_number ->
-      Logger.info("Iteration: #{client_number}")
+      # Logger.info("Iteration: #{client_number}")
+      IO.inspect(client_number)
       {:ok, _pid} = ArenaLoadTest.SocketSupervisor.add_new_client(client_number)
     end)
   end
