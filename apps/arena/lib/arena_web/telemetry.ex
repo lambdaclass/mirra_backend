@@ -14,6 +14,7 @@ defmodule ArenaWeb.Telemetry do
       {:telemetry_poller, measurements: periodic_measurements(), period: 10_000},
       # Add reporters as children of your supervision tree.
       # {Telemetry.Metrics.ConsoleReporter, metrics: metrics()},
+      ## TODO: default port 9568, we probably need to make this dynamic to accomodate multiple apps
       {TelemetryMetricsPrometheus, [metrics: metrics()]}
     ]
 
@@ -36,7 +37,12 @@ defmodule ArenaWeb.Telemetry do
       last_value("vm.memory.total", unit: {:byte, :kilobyte}),
       last_value("vm.total_run_queue_lengths.total"),
       last_value("vm.total_run_queue_lengths.cpu"),
-      last_value("vm.total_run_queue_lengths.io")
+      last_value("vm.total_run_queue_lengths.io"),
+
+      ## Arena (game) metrics
+      sum("arena.game.count", description: "Number of games in progress"),
+      ## TODO: Buckets probably need to be redefined, currently they all fall under the first bucket
+      distribution("arena.game.tick.duration", description: "Time spent on running a game tick", unit: {:native, :nanosecond}, reporter_options: [buckets: [7_500_000.0, 15_000_000.0, 22_500_000.0]])
     ]
   end
 

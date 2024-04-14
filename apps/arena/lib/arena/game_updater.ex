@@ -42,7 +42,13 @@ defmodule Arena.GameUpdater do
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
+    :telemetry.execute([:arena, :game], %{count: 1})
     {:ok, %{game_config: game_config, game_state: game_state}}
+  end
+
+  def terminate(_, _state) do
+    :telemetry.execute([:arena, :game], %{count: -1})
+    :ok
   end
 
   ##########################
@@ -102,6 +108,7 @@ defmodule Arena.GameUpdater do
   ##########################
 
   def handle_info(:update_game, %{game_state: game_state} = state) do
+    tick_duration_start_at = System.monotonic_time()
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     time_diff = now - game_state.server_timestamp
@@ -129,6 +136,8 @@ defmodule Arena.GameUpdater do
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
+    tick_duration = System.monotonic_time() - tick_duration_start_at
+    :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration})
     {:noreply, %{state | game_state: game_state}}
   end
 
