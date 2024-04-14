@@ -52,7 +52,8 @@ defmodule Arena.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:plug_cowboy, "~> 2.5"},
       {:toxiproxy_ex, "~> 1.1.1"},
-      {:etop, "~> 0.7"}
+      {:etop, "~> 0.7"},
+      {:observer_cli, "~> 1.7"}
     ]
   end
 
