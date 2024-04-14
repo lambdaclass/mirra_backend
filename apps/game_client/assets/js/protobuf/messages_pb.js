@@ -4549,7 +4549,7 @@ proto.Entity.prototype.hasCrate = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Player.repeatedFields_ = [3];
+proto.Player.repeatedFields_ = [3,10];
 
 
 
@@ -4592,7 +4592,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     rechargingStamina: jspb.Message.getBooleanFieldWithDefault(msg, 7, false),
     characterName: jspb.Message.getFieldWithDefault(msg, 8, ""),
     powerUps: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    effectsMap: (f = msg.getEffectsMap()) ? f.toObject(includeInstance, proto.Effect.toObject) : [],
+    effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
+    proto.Effect.toObject, includeInstance),
     inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : []
   };
@@ -4669,10 +4670,9 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPowerUps(value);
       break;
     case 10:
-      var value = msg.getEffectsMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Effect.deserializeBinaryFromReader, 0, new proto.Effect());
-         });
+      var value = new proto.Effect;
+      reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
+      msg.addEffects(value);
       break;
     case 11:
       var value = new proto.Item;
@@ -4778,9 +4778,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getEffectsMap(true);
-  if (f && f.getLength() > 0) {
-    f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Effect.serializeBinaryToWriter);
+  f = message.getEffectsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      10,
+      f,
+      proto.Effect.serializeBinaryToWriter
+    );
   }
   f = message.getInventory();
   if (f != null) {
@@ -4980,25 +4984,40 @@ proto.Player.prototype.setPowerUps = function(value) {
 
 
 /**
- * map<uint64, Effect> effects = 10;
- * @param {boolean=} opt_noLazyCreate Do not create the map if
- * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Effect>}
+ * repeated Effect effects = 10;
+ * @return {!Array<!proto.Effect>}
  */
-proto.Player.prototype.getEffectsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Effect>} */ (
-      jspb.Message.getMapField(this, 10, opt_noLazyCreate,
-      proto.Effect));
+proto.Player.prototype.getEffectsList = function() {
+  return /** @type{!Array<!proto.Effect>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 10));
 };
 
 
 /**
- * Clears values from the map. The map will be non-null.
+ * @param {!Array<!proto.Effect>} value
+ * @return {!proto.Player} returns this
+*/
+proto.Player.prototype.setEffectsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 10, value);
+};
+
+
+/**
+ * @param {!proto.Effect=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.Effect}
+ */
+proto.Player.prototype.addEffects = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.Effect, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.clearEffectsMap = function() {
-  this.getEffectsMap().clear();
-  return this;
+proto.Player.prototype.clearEffectsList = function() {
+  return this.setEffectsList([]);
 };
 
 
