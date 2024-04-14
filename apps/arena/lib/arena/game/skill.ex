@@ -4,7 +4,7 @@ defmodule Arena.Game.Skill do
   """
   alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
-  alias Arena.Game.Player
+  alias Arena.Game.{Player, Crate}
 
   def do_mechanic(game_state, entity, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
@@ -43,26 +43,26 @@ defmodule Arena.Game.Skill do
 
     # Crates
 
-    # crates =
-    #   Crate.interactable_crates(game_state.players)
+    interactable_crates =
+      Crate.interactable_crates(game_state.crates)
 
-    # players =
-    #   Physics.check_collisions(circular_damage_area, crates)
-    #   |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
-    #     real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
+    crates =
+      Physics.check_collisions(circular_damage_area, interactable_crates)
+      |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
+        real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
 
-    #     target_player =
-    #       Map.get(crates_acc, crate_id)
-    #       |> Crate.take_damage(real_damage)
+        crate =
+          Map.get(crates_acc, crate_id)
+          |> Crate.take_damage(real_damage)
 
-    #     unless Player.alive?(target_player) do
-    #       send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
-    #     end
+        unless Crate.alive?(crate) do
+          send(self(), {:destroy_crate, crate_id})
+        end
 
-    #     Map.put(crates_acc, crate_id, target_player)
-    #   end)
+        Map.put(crates_acc, crate_id, crate)
+      end)
 
-    %{game_state | players: players}
+    %{game_state | players: players, crates: crates}
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
@@ -98,7 +98,29 @@ defmodule Arena.Game.Skill do
         Map.put(players_acc, player_id, target_player)
       end)
 
-    %{game_state | players: players}
+    # Crates
+
+    interactable_crates =
+      Crate.interactable_crates(game_state.crates)
+
+    crates =
+      Physics.check_collisions(cone_area, interactable_crates)
+      |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
+        entity_player_owner = get_entity_player_owner(game_state, entity)
+        real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
+
+        crate =
+          Map.get(crates_acc, crate_id)
+          |> Crate.take_damage(real_damage)
+
+        unless Crate.alive?(crate) do
+          send(self(), {:destroy_crate, crate_id})
+        end
+
+        Map.put(crates_acc, crate_id, crate)
+      end)
+
+    %{game_state | players: players, crates: crates}
     |> maybe_move_player(entity, cone_hit[:move_by])
   end
 
