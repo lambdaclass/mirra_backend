@@ -327,7 +327,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(
-        {:destroy_crate, _killer_id, crate_id},
+        {:destroy_crate, crate_id},
         %{game_state: game_state} = state
       ) do
     Map.get(game_state.crates, crate_id)
@@ -343,7 +343,7 @@ defmodule Arena.GameUpdater do
           |> spawn_power_ups(crate, amount_of_power_ups)
 
         game_state =
-          update_in(state.game_state, [:crates, crate_id], fn crate -> Map.put(crate, :status, :DESTROYED) end)
+          put_in(state.game_state, [:crates, crate_id, :aditional_info], :DESTROYED)
 
         {:noreply, %{state | game_state: game_state}}
     end
@@ -1006,7 +1006,7 @@ defmodule Arena.GameUpdater do
     projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
     unless Crate.alive?(crate) do
-      send(self(), {:destroy_crate, projectile.aditional_info.owner_id, crate.id})
+      send(self(), {:destroy_crate, crate.id})
     end
 
     {
