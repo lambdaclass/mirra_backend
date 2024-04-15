@@ -95,7 +95,7 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
-            name: String::from(format!("{}{}", "Point ", id)),
+            name: format!("{}{}", "Point ", id),
         }
     }
 
@@ -110,7 +110,7 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
-            name: String::from(format!("{}{}", "Line ", id)),
+            name: format!("{}{}", "Line ", id),
         }
     }
 
