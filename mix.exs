@@ -56,7 +56,7 @@ defmodule MirraBackend.MixProject do
 
   defp releases() do
     [
-      arena: [applications: [arena: :permanent]],
+      arena: [applications: [arena: :permanent, game_client: :permanent]],
       arena_load_test: [applications: [arena_load_test: :permanent]],
       bot_manager: [applications: [bot_manager: :permanent]],
       game_client: [applications: [game_client: :permanent]],
