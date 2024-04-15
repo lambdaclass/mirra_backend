@@ -73,12 +73,12 @@ fn move_entity(
 }
 
 #[rustler::nif()]
-fn move_entity_to_position(
-    entity: Entity,
+fn get_closest_available_position(
     new_position: Position,
+    entity: Entity,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
-) -> Entity {
+) -> Position {
     let mut entity: Entity = entity;
     entity.position = new_position;
 
@@ -95,7 +95,7 @@ fn move_entity_to_position(
             .collect();
         entity.move_to_next_valid_position_outside(collided_with);
     }
-    entity
+    entity.position
 }
 
 #[rustler::nif()]
@@ -239,6 +239,6 @@ rustler::init!(
         get_direction_from_positions,
         calculate_speed,
         nearest_entity_direction,
-        move_entity_to_position
+        get_closest_available_position
     ]
 );

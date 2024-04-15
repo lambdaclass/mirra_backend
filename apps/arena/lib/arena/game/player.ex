@@ -175,10 +175,21 @@ defmodule Arena.Game.Player do
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
+        action =
+          %{
+            action: skill_key_execution_action(skill_key),
+            duration: skill.execution_duration_ms
+          }
+          |> maybe_add_destination(game_state, player, skill_direction, skill)
+
         Process.send_after(
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
-           Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
+           Map.merge(skill_params, %{
+             skill_direction: skill_direction,
+             skill_key: skill_key,
+             skill_destination: action[:destination]
+           })
            |> Map.merge(skill)},
           skill.activation_delay_ms
         )
@@ -188,13 +199,6 @@ defmodule Arena.Game.Player do
           {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply)},
           skill.activation_delay_ms
         )
-
-        action =
-          %{
-            action: skill_key_execution_action(skill_key),
-            duration: skill.execution_duration_ms
-          }
-          |> maybe_add_destination(player, skill_direction, skill)
 
         player =
           add_action(player, action)
@@ -211,16 +215,19 @@ defmodule Arena.Game.Player do
   # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
   # position in wich the player will spawn when the skill start and not when we actually execute the teleport
   # this is also optimistic since we asume the destination will be always available
-  defp maybe_add_destination(action, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+  defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
       y: player.position.y + skill_direction.y * teleport.range
     }
 
-    Map.put(action, :destination, target_position)
+    final_position =
+      Physics.get_closest_available_position(target_position, player, game_state.external_wall, game_state.obstacles)
+
+    Map.put(action, :destination, final_position)
   end
 
-  defp maybe_add_destination(action, _, _, _), do: action
+  defp maybe_add_destination(action, _, _, _, _), do: action
 
   @doc """
 
