@@ -100,7 +100,7 @@ defmodule GameBackend.Units.Skills.Effect do
 
       %{
         type: "ApplyTags",
-        tag: _effect
+        tags: _effect
       } ->
         true
 
