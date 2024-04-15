@@ -72,24 +72,24 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    case Serialization.GameAction.decode(message) do
-      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
-        GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+    # case Serialization.GameAction.decode(message) do
+    #   %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
+    #     GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
 
-      %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+    #   %{action_type: {:use_item, _}, timestamp: timestamp} ->
+    #     GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
 
-      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        GameUpdater.move(
-          state.game_pid,
-          state.player_id,
-          {direction.x, direction.y},
-          timestamp
-        )
+    #   %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
+    #     GameUpdater.move(
+    #       state.game_pid,
+    #       state.player_id,
+    #       {direction.x, direction.y},
+    #       timestamp
+    #     )
 
-      _ ->
-        {}
-    end
+    #   _ ->
+    #     {}
+    # end
 
     {:ok, state}
   end
