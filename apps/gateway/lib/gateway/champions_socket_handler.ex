@@ -12,7 +12,8 @@ defmodule Gateway.ChampionsSocketHandler do
     ModifierExpired,
     ModifierReceived,
     SkillAction,
-    WebSocketResponse
+    WebSocketResponse,
+    ExecutionReceived
   }
 
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
@@ -231,9 +232,7 @@ defmodule Gateway.ChampionsSocketHandler do
             {type,
              Kernel.struct(
                SkillAction,
-               update_in(action, [:stats_affected], fn stats_affected ->
-                 Enum.map(stats_affected, &Kernel.struct(StatAffected, &1))
-               end)
+               action
              )}
 
           :modifier_received ->
@@ -255,6 +254,13 @@ defmodule Gateway.ChampionsSocketHandler do
 
           :death ->
             {type, Kernel.struct(Death, action)}
+
+          :execution_received ->
+            {type,
+             Kernel.struct(
+               ExecutionReceived,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
         end
     }
   end
