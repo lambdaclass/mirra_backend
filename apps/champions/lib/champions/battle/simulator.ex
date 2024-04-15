@@ -401,18 +401,20 @@ defmodule Champions.Battle.Simulator do
             Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
             {targets_after_effect, new_history} =
-              Enum.reduce(effect.targets, {%{}, new_history}, fn id, {new_targets, new_history} ->
+              Enum.reduce(effect.targets, {%{}, new_history}, fn target_id, {targets, new_history} ->
+                target = current_state.units[target_id]
+
                 {new_target, new_history} =
                   maybe_apply_effect(
                     effect,
-                    current_state.units[id],
+                    target,
                     effect.caster,
                     current_state.step_number,
-                    effect_hits?(effect),
+                    effect_hits?(effect, target),
                     new_history
                   )
 
-                {Map.put(new_targets, id, new_target), new_history}
+                {Map.put(targets, target_id, new_target), new_history}
               end)
 
             new_state =
@@ -582,9 +584,30 @@ defmodule Champions.Battle.Simulator do
     {target, new_history}
   end
 
-  # Return whether an effect with a ChanceToApply component hits.
-  # Later on, this might also handle similar mechanics like the target's dodge chance.
-  defp effect_hits?(effect) do
+  # Return whether an effect hits.
+  defp effect_hits?(effect, target) do
+    cond do
+      !target_tag_requirements_met?(effect, target) -> false
+      !chance_to_apply_hits?(effect) -> false
+      true -> true
+    end
+  end
+
+  defp target_tag_requirements_met?(effect, target) do
+    requirements_component =
+      Enum.find(effect.components, fn comp -> comp["type"] == "TargetTagRequirements" end)
+
+    case requirements_component do
+      nil ->
+        true
+
+      requirements_component ->
+        target_tags = Enum.map(target.tags, fn %{tag: tag} -> tag end)
+        Enum.all?(requirements_component["tags"], &(&1 in target_tags))
+    end
+  end
+
+  defp chance_to_apply_hits?(effect) do
     chance_to_apply_component =
       Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
 

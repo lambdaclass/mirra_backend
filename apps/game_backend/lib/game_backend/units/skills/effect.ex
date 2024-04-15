@@ -100,7 +100,13 @@ defmodule GameBackend.Units.Skills.Effect do
 
       %{
         type: "ApplyTags",
-        tags: _effect
+        tags: [_some_tag | _other_tags]
+      } ->
+        true
+
+      %{
+        type: "TargetTagRequirements",
+        tags: [_some_tag | _other_tags]
       } ->
         true
 
