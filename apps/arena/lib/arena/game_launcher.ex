@@ -37,7 +37,7 @@ defmodule Arena.GameLauncher do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
-    create_ets_table(:games)
+    # create_ets_table(:games)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
@@ -62,7 +62,7 @@ defmodule Arena.GameLauncher do
       send(self(), :start_game)
     end
 
-    Logger.info("Games playing: #{:ets.info(:games, :size)}")
+    # Logger.info("Games playing: #{:ets.info(:games, :size)}")
 
     {:noreply, state}
   end
@@ -78,7 +78,7 @@ defmodule Arena.GameLauncher do
         # ++ bot_clients
       })
 
-    true = :ets.insert(:games, {game_pid, game_pid})
+    # true = :ets.insert(:games, {game_pid, game_pid})
 
     # spawn_bot_for_player(bot_clients, game_pid)
 
@@ -135,10 +135,10 @@ defmodule Arena.GameLauncher do
     "http://#{bot_manager_host}:#{bot_manager_port}/join/#{server_url}/#{encoded_game_pid}/#{bot_client}"
   end
 
-  defp create_ets_table(table_name) do
-    case :ets.whereis(table_name) do
-      :undefined -> :ets.new(table_name, [:set, :named_table, :public])
-      _table_exists_already -> nil
-    end
-  end
+  # defp create_ets_table(table_name) do
+  #   case :ets.whereis(table_name) do
+  #     :undefined -> :ets.new(table_name, [:set, :named_table, :public])
+  #     _table_exists_already -> nil
+  #   end
+  # end
 end
