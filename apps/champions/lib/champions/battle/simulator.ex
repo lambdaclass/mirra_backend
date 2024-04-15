@@ -243,6 +243,9 @@ defmodule Champions.Battle.Simulator do
         overrides: overrides
       }
 
+    # Reduce tags remaining timers & remove expired ones
+    {new_tags, new_history} = reduce_tag_timers(unit, new_history)
+
     # Reduce basic skill cooldown
     new_state =
       new_state
@@ -251,6 +254,7 @@ defmodule Champions.Battle.Simulator do
         max(new_state.units[unit.id].basic_skill.remaining_cooldown - 1, 0)
       )
       |> put_in([:units, unit.id, :modifiers], new_modifiers)
+      |> put_in([:units, unit.id, :tags], new_tags)
 
     {new_state, new_history}
   end
@@ -289,6 +293,39 @@ defmodule Champions.Battle.Simulator do
           )
 
           {[Map.put(modifier, :remaining_steps, remaining - 1) | acc], history}
+      end
+    end)
+  end
+
+  # Reduces tag timers and removes expired ones.
+  # Called when processing a step for a unit.
+  defp reduce_tag_timers(unit, history) do
+    Enum.reduce(unit.tags, {[], history}, fn tag, {acc, history} ->
+      case tag.remaining_steps do
+        # Tag is permanent
+        -1 ->
+          {[tag | acc], history}
+
+        # Tag expired
+        0 ->
+          Logger.info(~c"Tag \"#{tag.tag}\" expired for #{format_unit_name(unit)}.")
+
+          {acc,
+           add_to_history(
+             history,
+             %{
+               skill_id: tag.skill_id,
+               unit_id: unit.id,
+               tag: tag.tag
+             },
+             :TAG_EXPIRED
+           )}
+
+        # Tag still going, reduce its timer by one
+        remaining ->
+          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)}.")
+
+          {[Map.put(tag, :remaining_steps, remaining - 1) | acc], history}
       end
     end)
   end
@@ -514,11 +551,11 @@ defmodule Champions.Battle.Simulator do
         {new_target, new_history}
       end)
 
-    target_after_tags =
-      Enum.reduce(effect.components, target_after_modifiers, fn component, target ->
+    {target_after_tags, new_history} =
+      Enum.reduce(effect.components, {target_after_modifiers, new_history}, fn component, {target, history} ->
         if component["type"] == "ApplyTags",
-          do: apply_tags(target, component["tags"], Map.get(effect.type, "duration", -1)),
-          else: target
+          do: apply_tags(target, component["tags"], effect, history),
+          else: {target, history}
       end)
 
     Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
@@ -560,14 +597,32 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  defp apply_tags(target, tags_to_apply, duration) do
-    update_in(target, [:tags], fn tags ->
-      tags ++
-        Enum.reduce(tags_to_apply, [], fn tag, acc ->
-          Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
-          [%{tag: tag, remaining_steps: duration} | acc]
-        end)
-    end)
+  defp apply_tags(target, tags_to_apply, effect, history) do
+    {new_tags, new_history} =
+      Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
+        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
+
+        new_history =
+          add_to_history(
+            history,
+            %{
+              skill_id: effect.skill_id,
+              unit_id: target.id,
+              tag: tag
+            },
+            :TAG_RECEIVED
+          )
+
+        {[%{tag: tag, remaining_steps: Map.get(effect.type, "duration", -1) - 1, skill_id: effect.skill_id} | acc],
+         new_history}
+      end)
+
+    new_target =
+      update_in(target, [:tags], fn tags ->
+        tags ++ new_tags
+      end)
+
+    {new_target, new_history}
   end
 
   # Apply a DealDamage execution to its target. Returns the new state of the target.
@@ -683,7 +738,8 @@ defmodule Champions.Battle.Simulator do
       target_allies: effect.target_allies,
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
-      executions: effect.executions
+      executions: effect.executions,
+      skill_id: skill_id
     }
 
   # Format step state for logs.
