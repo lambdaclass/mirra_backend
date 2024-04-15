@@ -165,8 +165,8 @@ fn move_entity_to_closest_available_position(
     external_wall: &Entity,
     obstacles: &HashMap<u64, Entity>,
 ) {
-    if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-        entity.move_to_next_valid_position_inside(&external_wall);
+    if entity.category == Category::Player && !entity.is_inside_map(external_wall) {
+        entity.move_to_next_valid_position_inside(external_wall);
     }
 
     let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
