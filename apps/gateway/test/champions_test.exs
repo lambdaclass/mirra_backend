@@ -342,7 +342,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, battle_result}
       }
 
-      # Battle result should be either win or loss
+      # Battle result should be either team_1, team_2, draw or timeout
       assert battle_result.result in ["team_1", "team_2", "draw", "timeout"]
 
       # TODO: check rewards [#CHoM-341]
