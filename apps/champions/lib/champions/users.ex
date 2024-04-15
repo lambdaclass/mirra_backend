@@ -164,7 +164,7 @@ defmodule Champions.Users do
 
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
     seconds_since_last_claim = DateTime.diff(now, last_claim, :second)
-    afk_reward_rate.rate * min(seconds_since_last_claim, @max_afk_reward_seconds)
+    (afk_reward_rate.rate * min(seconds_since_last_claim, @max_afk_reward_seconds)) |> round()
   end
 
   @doc """
