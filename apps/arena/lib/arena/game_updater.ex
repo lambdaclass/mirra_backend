@@ -1139,7 +1139,7 @@ defmodule Arena.GameUpdater do
         time_passed_since_spawn =
           now - pool.aditional_info.spawn_at
 
-        if(time_passed_since_spawn >= pool.aditional_info.duration_ms) do
+        if time_passed_since_spawn >= pool.aditional_info.duration_ms do
           acc
         else
           Map.put(acc, pool_id, pool)
