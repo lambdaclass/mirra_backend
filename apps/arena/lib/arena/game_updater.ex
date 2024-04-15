@@ -511,13 +511,13 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
-    case :ets.lookup(:games, self()) do
-      [{game_id, _}] ->
-        :ets.delete(:games, game_id)
+    # case :ets.lookup(:games, self()) do
+    #   [{game_id, _}] ->
+    #     :ets.delete(:games, game_id)
 
-      [] ->
-        raise KeyError, message: "Game with ID #{self() |> :erlang.term_to_binary()} doesn't exists"
-    end
+    #   [] ->
+    #     raise KeyError, message: "Game with ID #{self() |> :erlang.term_to_binary()} doesn't exists"
+    # end
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
