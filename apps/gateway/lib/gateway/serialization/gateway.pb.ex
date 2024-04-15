@@ -423,7 +423,7 @@ defmodule Gateway.Serialization.AfkRewardRate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:currency_id, 2, type: :string, json_name: "currencyId")
+  field(:currency, 2, type: Gateway.Serialization.Currency)
   field(:rate, 3, type: :float)
 end
 

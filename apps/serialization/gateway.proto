@@ -183,7 +183,7 @@ syntax = "proto3";
 
   message AfkRewardRate {
     string user_id = 1;
-    string currency_id = 2;
+    Currency currency = 2;
     float rate = 3;
   }
 
