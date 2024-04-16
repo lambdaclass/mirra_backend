@@ -319,7 +319,7 @@ defmodule Champions.Battle.Simulator do
                unit_id: unit.id,
                tag: tag.tag
              },
-             :TAG_EXPIRED
+             :tag_expired
            )}
 
         # Tag still going, reduce its timer by one
@@ -634,7 +634,7 @@ defmodule Champions.Battle.Simulator do
               unit_id: target.id,
               tag: tag
             },
-            :TAG_RECEIVED
+            :tag_received
           )
 
         {[%{tag: tag, remaining_steps: Map.get(effect.type, "duration", -1) - 1, skill_id: effect.skill_id} | acc],

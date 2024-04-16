@@ -9,6 +9,7 @@ defmodule Gateway.ChampionsSocketHandler do
     StatAffected,
     Death,
     TagReceived,
+    TagExpired,
     ModifierExpired,
     ModifierReceived,
     SkillAction,
@@ -245,6 +246,9 @@ defmodule Gateway.ChampionsSocketHandler do
 
           :tag_received ->
             {type, Kernel.struct(TagReceived, action)}
+
+          :tag_expired ->
+            {type, Kernel.struct(TagExpired, action)}
 
           :modifier_expired ->
             {type,
