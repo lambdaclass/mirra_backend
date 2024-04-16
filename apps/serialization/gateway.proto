@@ -347,6 +347,7 @@ syntax = "proto3";
       ModifierExpired modifier_expired = 4;
       TagExpired tag_expired = 5;
       Death death = 6;
+      ExecutionReceived execution_received = 7;
     }
   }
 
@@ -360,7 +361,11 @@ syntax = "proto3";
     repeated string target_ids = 2;
     string skill_id = 3;
     SkillActionType skill_action_type = 4;
-    repeated StatAffected stats_affected = 5;
+  }
+
+  message ExecutionReceived {
+    string target_id = 1;
+    StatAffected stat_affected = 2;
   }
 
   message ModifierReceived {
