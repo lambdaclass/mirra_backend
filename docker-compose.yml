@@ -23,11 +23,13 @@ services:
       - '--storage.tsdb.path=/prometheus'
     ports:
       - 9090:9090
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   grafana:
     image: grafana/grafana-oss
     container_name: grafana
     ports:
-     - 9100:3000
+     - 0.0.0.0:9100:3000
 
 volumes:
   game_backend_data:
