@@ -106,6 +106,7 @@ defmodule Champions.Battle.Simulator do
         end
       )
 
+    IO.inspect(Enum.reverse(history), limit: :infinity)
     %{initial_state: transform_initial_state_for_replay(initial_state), steps: Enum.reverse(history), result: result}
   end
 
@@ -370,14 +371,15 @@ defmodule Champions.Battle.Simulator do
                 {new_target, new_history} =
                   maybe_apply_effect(
                     effect,
-                    current_state.units[id],
+                    Map.get(current_state.units, id, id),
                     effect.caster,
                     current_state.step_number,
                     effect_hits?(effect),
                     new_history
                   )
-
-                {Map.put(new_targets, id, new_target), new_history}
+                if is_nil(new_target),
+                  do: {new_targets, new_history},
+                  else: {Map.put(new_targets, id, new_target), new_history}
               end)
 
             new_state =
@@ -463,6 +465,26 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
+
+  # If we receive the target's id, it means that the unit has died before the effect hits.
+  # We send it as an EFFECT_MISS action
+  defp maybe_apply_effect(effect, id, caster, _current_step_number, _hits, history) when is_binary(id) do
+    new_history =
+      add_to_history(
+        history,
+        %{
+          caster_id: caster.id,
+          target_ids: [id],
+          skill_id: effect.skill_id,
+          skill_action_type: :EFFECT_MISS
+        },
+        :skill_action
+      ) |> IO.inspect(label: :diego_forlan)
+
+
+    {nil, new_history}
+  end
+
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
   # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
@@ -521,6 +543,7 @@ defmodule Champions.Battle.Simulator do
       process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
     end)
   end
+
 
   defp maybe_apply_effect(effect, target, caster, _current_step_number, false, history) do
     Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
