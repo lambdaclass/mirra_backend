@@ -37,7 +37,7 @@ ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env
-LimitNOFILE=4000
+LimitNOFILE=100000
 
 [Install]
 WantedBy=default.target

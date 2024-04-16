@@ -863,33 +863,19 @@
     {
       "name": "golden_clock",
       "effects": [
-        {
-          "stamina_faster": {
-            "interval_decrease_by": 0.3,
-            "duration_ms": 7000
-          }
-        }
+        "golden_clock_effect"
       ]
     },
     {
       "name": "magic_boots",
       "effects": [
-        {
-          "speed_boost": {
-            "amount": 9,
-            "duration_ms": 10000
-          }
-        }
+        "magic_boots_effect"
       ]
     },
     {
       "name": "mirra_blessing",
       "effects": [
-        {
-          "damage_immunity": {
-            "duration_ms": 1
-          }
-        }
+        "mirra_blessing_effect"
       ]
     }
   ],
@@ -989,7 +975,9 @@
       "name": "invisible",
       "duration_ms": 3500,
       "remove_on_action": true,
-      "effect_mechanics": {}
+      "effect_mechanics": {
+        "invisible": {}
+      }
     },
     {
       "name": "singularity",
@@ -1003,6 +991,35 @@
           "damage": 14,
           "effect_delay_ms": 400
         }
+      }
+    },
+    {
+      "name": "golden_clock_effect",
+      "duration_ms": 7000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "reduce_stamina_interval": {
+          "decrease_by": 0.3
+        },
+        "refresh_stamina": {}
+      }
+    },
+    {
+      "name": "magic_boots_effect",
+      "duration_ms": 10000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "speed_boost": {
+          "amount": 25
+        }
+      }
+    },
+    {
+      "name": "mirra_blessing_effect",
+      "duration_ms": 10000,
+      "remove_on_action": false,
+      "effect_mechanics": {
+        "damage_immunity": {}
       }
     },
     {

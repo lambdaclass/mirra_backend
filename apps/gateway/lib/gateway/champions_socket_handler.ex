@@ -4,7 +4,17 @@ defmodule Gateway.ChampionsSocketHandler do
   """
 
   require Logger
-  alias Gateway.Serialization.WebSocketResponse
+
+  alias Gateway.Serialization.{
+    StatAffected,
+    Death,
+    TagReceived,
+    ModifierExpired,
+    ModifierReceived,
+    SkillAction,
+    WebSocketResponse
+  }
+
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
   alias Gateway.Serialization.{
@@ -29,7 +39,8 @@ defmodule Gateway.ChampionsSocketHandler do
     ClaimAfkRewards,
     GetBoxes,
     GetBox,
-    Summon
+    Summon,
+    GetUserSuperCampaignProgresses
   }
 
   @behaviour :cowboy_websocket
@@ -103,8 +114,15 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%FightLevel{user_id: user_id, level_id: level_id}) do
     case Battle.fight_level(user_id, level_id) do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      battle_result -> prepare_response(%{result: Atom.to_string(battle_result)}, :battle_result)
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      battle_result ->
+        battle_result
+        |> update_in([:steps], fn steps ->
+          Enum.map(steps, &prepare_step/1)
+        end)
+        |> prepare_response(:battle_result)
     end
   end
 
@@ -181,8 +199,65 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
+  defp handle(%GetUserSuperCampaignProgresses{user_id: user_id}) do
+    super_campaign_progresses =
+      Campaigns.get_user_super_campaign_progresses(user_id)
+      |> Enum.map(fn super_campaign_progress ->
+        %{
+          level_id: super_campaign_progress.level_id,
+          user_id: super_campaign_progress.user_id,
+          campaign_id: super_campaign_progress.level.campaign_id,
+          super_campaign_id: super_campaign_progress.super_campaign_id
+        }
+      end)
+
+    prepare_response(%{super_campaign_progresses: super_campaign_progresses}, :super_campaign_progresses)
+  end
+
   defp handle(unknown_request),
     do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
+
+  defp prepare_step(step) do
+    update_in(step, [:actions], fn actions ->
+      Enum.map(actions, &prepare_action/1)
+    end)
+  end
+
+  defp prepare_action(%{action_type: {type, action}}) do
+    %{
+      action_type:
+        case type do
+          :skill_action ->
+            {type,
+             Kernel.struct(
+               SkillAction,
+               update_in(action, [:stats_affected], fn stats_affected ->
+                 Enum.map(stats_affected, &Kernel.struct(StatAffected, &1))
+               end)
+             )}
+
+          :modifier_received ->
+            {type,
+             Kernel.struct(
+               ModifierReceived,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
+
+          :tag_received ->
+            {type, Kernel.struct(TagReceived, action)}
+
+          :modifier_expired ->
+            {type,
+             Kernel.struct(
+               ModifierExpired,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
+
+          :death ->
+            {type, Kernel.struct(Death, action)}
+        end
+    }
+  end
 
   defp prepare_response({:error, reason}, _response_type) when is_atom(reason),
     do: prepare_response({:error, Atom.to_string(reason)}, nil)

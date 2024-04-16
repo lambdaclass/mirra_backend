@@ -6,13 +6,14 @@ defmodule Gateway.Test.Champions do
 
   use ExUnit.Case
 
-  alias GameBackend.Campaigns.Rewards.CurrencyReward
-  alias Gateway.Serialization.AfkRewards
   alias Champions.{Units, Users, Utils}
+  alias GameBackend.Campaigns.Rewards.CurrencyReward
   alias GameBackend.Repo
   alias GameBackend.Items
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
+  alias Gateway.Serialization.AfkRewards
+  alias Gateway.Serialization.SuperCampaignProgresses
 
   alias Gateway.Serialization.{
     Box,
@@ -327,27 +328,27 @@ defmodule Gateway.Test.Champions do
       # Register user
       {:ok, user} = Users.register("battle_user")
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      level_id = campaign_progression.level_id
+      # Get the SuperCampaignProgress' Level
+      level_id = super_campaign_progress.level_id
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:battle_result, _ = battle_result}
+        response_type: {:battle_result, battle_result}
       }
 
-      # Battle result should be either win or loss
-      assert battle_result.result == "win" or battle_result.result == "loss"
+      # Battle result should be either team_1, team_2, draw or timeout
+      assert battle_result.result in ["team_1", "team_2", "draw", "timeout"]
 
       # TODO: check rewards [#CHoM-341]
     end
 
-    test "fight level advances level in the campaign progression", %{socket_tester: socket_tester} do
+    test "fight level advances level in the SuperCampaignProgress", %{socket_tester: socket_tester} do
       # Register user
       {:ok, user} = Users.register("battle_winning_user")
 
@@ -356,12 +357,12 @@ defmodule Gateway.Test.Champions do
         GameBackend.Units.update_unit(unit, %{level: 9999})
       end)
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      level_id = campaign_progression.level_id
-      level_number = campaign_progression.level.level_number
+      # Get the SuperCampaignProgress' Level
+      level_id = super_campaign_progress.level_id
+      level_number = super_campaign_progress.level.level_number
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, level_id)
@@ -371,28 +372,30 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, _ = battle_result}
       }
 
-      assert battle_result.result == "win"
+      assert battle_result.result == "team_1"
 
       {:ok, advanced_user} = Users.get_user(user.id)
 
-      [advanced_campaign_progression | _] = advanced_user.campaign_progresses
+      [advanced_super_campaign_progress | _] = advanced_user.super_campaign_progresses
 
       assert user.id == advanced_user.id
-      assert advanced_campaign_progression.level_id != level_id
-      assert advanced_campaign_progression.level.level_number == level_number + 1
+      assert advanced_super_campaign_progress.level_id != level_id
+      assert advanced_super_campaign_progress.level.level_number == level_number + 1
     end
 
-    test "can not fight a level that is not the next level in the progression", %{socket_tester: socket_tester} do
+    test "can not fight a Level that is not the next one in the SuperCampaignProgress", %{
+      socket_tester: socket_tester
+    } do
       # Register user
       {:ok, user} = Users.register("invalid_battle_user")
 
-      # Get user's first campaign progression
-      [campaign_progression | _] = user.campaign_progresses
+      # Get user's first SuperCampaignProgress
+      [super_campaign_progress | _] = user.super_campaign_progresses
 
-      # Get the level of the campaign progression
-      next_level_id = campaign_progression.level_id
+      # Get the level of the SuperCampaignProgress
+      next_level_id = super_campaign_progress.level_id
 
-      # Get a level from the user where the id is not the next level in the progression
+      # Get a Level that is not the next one in the SuperCampaignProgress
       SocketTester.get_campaigns(socket_tester, user.id)
       fetch_last_message(socket_tester)
 
@@ -435,8 +438,8 @@ defmodule Gateway.Test.Champions do
         GameBackend.Units.update_unit(unit, %{level: 9999})
       end)
 
-      [campaign_progression | _] = user.campaign_progresses
-      level_id = campaign_progression.level_id
+      [super_campaign_progress | _] = user.super_campaign_progresses
+      level_id = super_campaign_progress.level_id
       SocketTester.fight_level(socket_tester, user.id, level_id)
       fetch_last_message(socket_tester)
 
@@ -444,7 +447,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, _ = battle_result}
       }
 
-      assert battle_result.result == "win"
+      assert battle_result.result == "team_1"
 
       # Get advanced user
       SocketTester.get_user(socket_tester, user.id)
@@ -509,8 +512,15 @@ defmodule Gateway.Test.Champions do
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Play another level to increment the afk rewards rates again
-      [campaign_progression | _] = advanced_user.campaign_progresses
-      next_level_id = campaign_progression.level_id
+      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
+      }
+
+      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
+      next_level_id = super_campaign_progress.level_id
       SocketTester.fight_level(socket_tester, advanced_user.id, next_level_id)
       fetch_last_message(socket_tester)
 
@@ -518,7 +528,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, _ = battle_result}
       }
 
-      assert battle_result.result == "win"
+      assert battle_result.result == "team_1"
 
       # Get new user
       SocketTester.get_user(socket_tester, user.id)
@@ -527,7 +537,15 @@ defmodule Gateway.Test.Champions do
 
       # Check that the rewardable currencies afk rewards rates are now greater than the rewards before the second battle, and the other rates are still 0
       # Get the current level number and check that the afk rewards rates have increased proportionally
-      current_level_id = hd(more_advanced_user.campaign_progresses).level_id
+      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{
+        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
+      }
+
+      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
+      current_level_id = super_campaign_progress.level_id
 
       current_level_afk_rewards_increments =
         Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
