@@ -111,32 +111,32 @@ defmodule Arena.GameUpdater do
       |> Map.put(:ticks_to_move, ticks_to_move)
 
     {time, game_state} = :timer.tc(&reduce_players_cooldowns/2, [game_state, time_diff])
-    IO.inspect("Function reduce_players_cooldowns elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function reduce_players_cooldowns elapsed time: #{time}")
     {time, game_state} = :timer.tc(&move_players/1, [game_state])
-    IO.inspect("Function move_players elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function move_players elapsed time: #{time}")
     {time, game_state} = :timer.tc(&update_projectiles_status/1, [game_state])
-    IO.inspect("Function update_projectiles_status elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function update_projectiles_status elapsed time: #{time}")
     {time, game_state} = :timer.tc(&move_projectiles/1, [game_state])
-    IO.inspect("Function move_projectiles elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function move_projectiles elapsed time: #{time}")
     {time, game_state} = :timer.tc(&resolve_players_collisions_with_power_ups/1, [game_state])
-    IO.inspect("Function resolve_players_collisions_with_power_ups elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function resolve_players_collisions_with_power_ups elapsed time: #{time}")
     {time, game_state} = :timer.tc(&resolve_players_collisions_with_items/1, [game_state])
-    IO.inspect("Function resolve_players_collisions_with_items elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function resolve_players_collisions_with_items elapsed time: #{time}")
     {time, game_state} = :timer.tc(&resolve_projectiles_collisions_with_players/1, [game_state])
-    IO.inspect("Function resolve_projectiles_collisions_with_players elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function resolve_projectiles_collisions_with_players elapsed time: #{time}")
     {time, game_state} = :timer.tc(&apply_zone_damage_to_players/2, [game_state, state.game_config.game])
-    IO.inspect("Function apply_zone_damage_to_players elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function apply_zone_damage_to_players elapsed time: #{time}")
     {time, game_state} = :timer.tc(&explode_projectiles/1, [game_state])
-    IO.inspect("Function explode_projectiles elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function explode_projectiles elapsed time: #{time}")
     {time, game_state} = :timer.tc(&handle_pools/2, [game_state, state.game_config])
-    IO.inspect("Function handle_pools elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function handle_pools elapsed time: #{time}")
     {time, game_state} = :timer.tc(&Skill.apply_effect_mechanic/1, [game_state])
-    IO.inspect("Function Skill.apply_effect_mechanic elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function Skill.apply_effect_mechanic elapsed time: #{time}")
 
     game_state = Map.put(game_state, :server_timestamp, now)
 
     {time, _} = :timer.tc(&broadcast_game_update/1, [game_state])
-    IO.inspect("Function broadcast_game_update elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function broadcast_game_update elapsed time: #{time}")
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
@@ -494,17 +494,17 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_game_update(state) do
     {time, players} = :timer.tc(&complete_entities/1, [state.players])
-    IO.inspect("Function complete_entities_players elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function complete_entities_players elapsed time: #{time}")
     {time, projectiles} = :timer.tc(&complete_entities/1, [state.projectiles])
-    IO.inspect("Function complete_entities_projectiles elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function complete_entities_projectiles elapsed time: #{time}")
     {time, power_ups} = :timer.tc(&complete_entities/1, [state.power_ups])
-    IO.inspect("Function complete_entities_power_ups elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function complete_entities_power_ups elapsed time: #{time}")
     {time, pools} = :timer.tc(&complete_entities/1, [state.pools])
-    IO.inspect("Function complete_entities_pools elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function complete_entities_pools elapsed time: #{time}")
     {time, items} = :timer.tc(&complete_entities/1, [state.items])
-    IO.inspect("Function complete_entities_items elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function complete_entities_items elapsed time: #{time}")
     {time, obstacles} = :timer.tc(&complete_entities/1, [state.obstacles])
-    IO.inspect("Function complete_entities_obstacles elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function complete_entities_obstacles elapsed time: #{time}")
 
     {time, encoded_state} = :timer.tc(&GameEvent.encode/1, [%GameEvent{
       event:
@@ -528,12 +528,12 @@ defmodule Arena.GameUpdater do
          }}
     }])
 
-    IO.inspect("Function GameEvent.encode elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function GameEvent.encode elapsed time: #{time}")
 
 
     {time, _} = :timer.tc(&PubSub.broadcast/3, [Arena.PubSub, state.game_id, {:game_update, encoded_state}])
 
-    IO.inspect("Function PubSub.broadcast elapsed time: #{time}")
+    IO.inspect("#{inspect(self())} Function PubSub.broadcast elapsed time: #{time}")
   end
 
   defp broadcast_game_ended(winner, state) do
