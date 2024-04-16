@@ -493,30 +493,34 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_update(state) do
-    encoded_state =
-      GameEvent.encode(%GameEvent{
-        event:
-          {:update,
-           %GameState{
-             game_id: state.game_id,
-             players: complete_entities(state.players),
-             projectiles: complete_entities(state.projectiles),
-             power_ups: complete_entities(state.power_ups),
-             pools: complete_entities(state.pools),
-             items: complete_entities(state.items),
-             server_timestamp: state.server_timestamp,
-             player_timestamps: state.player_timestamps,
-             zone: state.zone,
-             killfeed: state.killfeed,
-             damage_taken: state.damage_taken,
-             damage_done: state.damage_done,
-             status: state.status,
-             start_game_timestamp: state.start_game_timestamp,
-             obstacles: complete_entities(state.obstacles)
-           }}
-      })
+    {time, encoded_state} = :timer.tc(&GameEvent.encode/1, [%GameEvent{
+      event:
+        {:update,
+         %GameState{
+           game_id: state.game_id,
+           players: complete_entities(state.players),
+           projectiles: complete_entities(state.projectiles),
+           power_ups: complete_entities(state.power_ups),
+           pools: complete_entities(state.pools),
+           items: complete_entities(state.items),
+           server_timestamp: state.server_timestamp,
+           player_timestamps: state.player_timestamps,
+           zone: state.zone,
+           killfeed: state.killfeed,
+           damage_taken: state.damage_taken,
+           damage_done: state.damage_done,
+           status: state.status,
+           start_game_timestamp: state.start_game_timestamp,
+           obstacles: complete_entities(state.obstacles)
+         }}
+    }])
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    IO.inspect("Function GameEvent.encode elapsed time: #{time}")
+
+
+    {time, _} = :timer.tc(&PubSub.broadcast/3, [Arena.PubSub, state.game_id, {:game_update, encoded_state}])
+
+    IO.inspect("Function PubSub.broadcast elapsed time: #{time}")
   end
 
   defp broadcast_game_ended(winner, state) do
