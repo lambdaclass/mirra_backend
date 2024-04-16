@@ -75,8 +75,66 @@ message ConfigSkill {
   float targetting_angle = 5;
   float targetting_range = 6;
   uint64 stamina_cost = 7;
+  uint64 activation_delay_ms = 8;
+  bool is_passive = 9;
+  bool autoaim = 10;
+  bool can_pick_destination = 11;
+  repeated ConfigMechanic mechanics = 12;
 }
 
+message ConfigMechanic {
+  oneof mechanic {
+    CircleHit circle_hit = 1;
+    MultiCircleHit multi_circle_hit = 2;
+    SpawnPool spawn_pool = 3;
+    Leap leap = 4;
+    RepeatedShot repeated_shot = 5;
+    MultiShot multi_shot = 6;
+    SimpleShot simple_shot = 7;
+    Dash dash = 8;
+    Teleport teleport = 9;
+  }
+}
+
+message CircleHit {
+  uint64 damage = 1;
+  float range = 2;
+  uint64 offset = 3;
+}
+
+message MultiCircleHit {
+  uint64 damage = 1;
+  float range = 2;
+  uint64 interval_ms = 3;
+  uint64 amount = 4;
+  float move_by = 5;
+  float offset = 6;
+}
+
+message SpawnPool {
+  uint64 damage = 1;
+  float range = 2;
+  uint64 offset = 3;
+}
+
+message Leap {
+  float range = 1;
+  uint64 duration_ms = 2;
+  uint64 radius = 3;
+  map<String, ConfigMechanic> on_arrival_mechanic = 4;
+}
+
+message RepeatedShot {
+  uint64 interval_ms": 100,
+  uint64 amount = 10,
+  float speed": 70.0,
+  float duration_ms": 1000,
+  float remove_on_collision": true,
+  float projectile_offset": 100,
+  float angle": 80.0,
+  float damage": 29,
+  float radius": 40.0
+}
 
 /*
  * Game State
