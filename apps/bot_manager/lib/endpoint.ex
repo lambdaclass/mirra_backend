@@ -26,6 +26,7 @@ defmodule BotManager.Endpoint do
   plug(:dispatch)
 
   get "/join/:arena_host/:game_id/:bot_client/" do
+    IO.inspect("llega request")
     bot_pid = BotManager.BotSupervisor.add_bot_to_game(conn.params) || ""
 
     conn
