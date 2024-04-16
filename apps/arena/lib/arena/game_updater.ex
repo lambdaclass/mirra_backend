@@ -493,7 +493,7 @@ defmodule Arena.GameUpdater do
     pid = self()
 
     spawn_pid = spawn(fn ->
-      result = :timer.tc(&GameEvent.encode/1, [game_event])
+      result = :timer.tc(&:erlang.term_to_binary/1, [game_event])
       send(pid, {self(), result})
     end)
 
