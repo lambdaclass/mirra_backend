@@ -468,7 +468,7 @@ defmodule Arena.GameUpdater do
     {time, obstacles} = :timer.tc(&complete_entities/1, [state.obstacles])
     IO.inspect("#{inspect(self())} Function complete_entities_obstacles elapsed time: #{time}")
 
-    {time, encoded_state} = :timer.tc(&GameEvent.encode/1, [%GameEvent{
+    game_event = %GameEvent{
       event:
         {:update,
          %GameState{
@@ -488,7 +488,19 @@ defmodule Arena.GameUpdater do
            start_game_timestamp: state.start_game_timestamp,
            obstacles: obstacles
          }}
-    }])
+    }
+
+    pid = self()
+
+    spawn_pid = spawn(fn ->
+      result = :timer.tc(&GameEvent.encode/1, [game_event])
+      send(pid, {self(), result})
+    end)
+
+    {time, encoded_state} =
+      receive do
+        {spawn_pid, {time, encoded_state}} -> {time, encoded_state}
+      end
 
     # binary_size of each update?
     # test send a really small binary
