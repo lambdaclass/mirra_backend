@@ -143,7 +143,7 @@ defmodule Arena.GameUpdater do
 
     game_state = Map.put(game_state, :server_timestamp, now)
 
-    # {time, _} = :timer.tc(&broadcast_game_update/1, [game_state])
+    {time, _} = :timer.tc(&broadcast_game_update/1, [game_state])
     IO.inspect("#{inspect(self())} Function broadcast_game_update elapsed time: #{time}")
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -490,7 +490,11 @@ defmodule Arena.GameUpdater do
          }}
     }])
 
-    IO.inspect("#{inspect(self())} Function GameEvent.encode elapsed time: #{time}")
+    # binary_size of each update?
+    # test send a really small binary
+    size = byte_size(encoded_state)
+
+    IO.inspect("#{inspect(self())} Function GameEvent.encode elapsed time: #{time} with size #{size}")
 
 
     {time, _} = :timer.tc(&PubSub.broadcast/3, [Arena.PubSub, state.game_id, {:game_update, encoded_state}])
