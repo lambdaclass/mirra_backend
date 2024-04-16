@@ -455,38 +455,38 @@ defmodule Arena.GameUpdater do
 
 
   defp broadcast_game_update(state) do
-    {time, players} = :timer.tc(&complete_entities/1, [state.players])
-    IO.inspect("#{inspect(self())} Function complete_entities_players elapsed time: #{time}")
-    {time, projectiles} = :timer.tc(&complete_entities/1, [state.projectiles])
-    IO.inspect("#{inspect(self())} Function complete_entities_projectiles elapsed time: #{time}")
-    {time, power_ups} = :timer.tc(&complete_entities/1, [state.power_ups])
-    IO.inspect("#{inspect(self())} Function complete_entities_power_ups elapsed time: #{time}")
-    {time, pools} = :timer.tc(&complete_entities/1, [state.pools])
-    IO.inspect("#{inspect(self())} Function complete_entities_pools elapsed time: #{time}")
-    {time, items} = :timer.tc(&complete_entities/1, [state.items])
-    IO.inspect("#{inspect(self())} Function complete_entities_items elapsed time: #{time}")
-    {time, obstacles} = :timer.tc(&complete_entities/1, [state.obstacles])
-    IO.inspect("#{inspect(self())} Function complete_entities_obstacles elapsed time: #{time}")
+    # {time, players} = :timer.tc(&complete_entities/1, [state.players])
+    # IO.inspect("#{inspect(self())} Function complete_entities_players elapsed time: #{time}")
+    # {time, projectiles} = :timer.tc(&complete_entities/1, [state.projectiles])
+    # IO.inspect("#{inspect(self())} Function complete_entities_projectiles elapsed time: #{time}")
+    # {time, power_ups} = :timer.tc(&complete_entities/1, [state.power_ups])
+    # IO.inspect("#{inspect(self())} Function complete_entities_power_ups elapsed time: #{time}")
+    # {time, pools} = :timer.tc(&complete_entities/1, [state.pools])
+    # IO.inspect("#{inspect(self())} Function complete_entities_pools elapsed time: #{time}")
+    # {time, items} = :timer.tc(&complete_entities/1, [state.items])
+    # IO.inspect("#{inspect(self())} Function complete_entities_items elapsed time: #{time}")
+    # {time, obstacles} = :timer.tc(&complete_entities/1, [state.obstacles])
+    # IO.inspect("#{inspect(self())} Function complete_entities_obstacles elapsed time: #{time}")
 
     game_event = %GameEvent{
       event:
         {:update,
          %GameState{
-           game_id: state.game_id,
-           players: players,
-           projectiles: projectiles,
-           power_ups: power_ups,
-           pools: pools,
-           items: items,
-           server_timestamp: state.server_timestamp,
-           player_timestamps: state.player_timestamps,
-           zone: state.zone,
-           killfeed: state.killfeed,
-           damage_taken: state.damage_taken,
-           damage_done: state.damage_done,
-           status: state.status,
-           start_game_timestamp: state.start_game_timestamp,
-           obstacles: obstacles
+           game_id: state.game_id
+          #  players: players,
+          #  projectiles: projectiles,
+          #  power_ups: power_ups,
+          #  pools: pools,
+          #  items: items,
+          #  server_timestamp: state.server_timestamp,
+          #  player_timestamps: state.player_timestamps,
+          #  zone: state.zone,
+          #  killfeed: state.killfeed,
+          #  damage_taken: state.damage_taken,
+          #  damage_done: state.damage_done,
+          #  status: state.status,
+          #  start_game_timestamp: state.start_game_timestamp,
+          #  obstacles: obstacles
          }}
     }
 
