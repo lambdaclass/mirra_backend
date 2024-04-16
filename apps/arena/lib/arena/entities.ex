@@ -141,14 +141,14 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_item(id, position, config) do
+  def new_item(id, position, config, %{radius: radius}) do
     %{
       id: id,
       category: :item,
       shape: :circle,
       name: "Item" <> Integer.to_string(id),
       position: position,
-      radius: 30.0,
+      radius: radius,
       vertices: [],
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},

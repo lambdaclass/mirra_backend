@@ -399,6 +399,9 @@
       ]
     }
   ],
+  "items_params": {
+    "radius": 200.0
+  },
   "characters": [
     {
       "name": "muflus",
@@ -521,8 +524,7 @@
         "reduce_stamina_interval": {
           "decrease_by": 0.3
         },
-        "refresh_stamina": {
-        }
+        "refresh_stamina": {}
       }
     },
     {
@@ -540,7 +542,7 @@
       "duration_ms": 10000,
       "remove_on_action": false,
       "effect_mechanics": {
-        "damage_immunity": { }
+        "damage_immunity": {}
       }
     },
     {

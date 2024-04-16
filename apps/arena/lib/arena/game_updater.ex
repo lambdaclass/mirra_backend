@@ -371,7 +371,7 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_info(:spawn_item, state) do
+  def handle_info(:spawn_item, %{game_config: game_config} = state) do
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
 
     last_id = state.game_state.last_id + 1
@@ -383,7 +383,7 @@ defmodule Arena.GameUpdater do
       )
 
     item_config = Enum.random(state.game_config.items)
-    item = Entities.new_item(last_id, position, item_config)
+    item = Entities.new_item(last_id, position, item_config, game_config.items_params)
 
     state =
       put_in(state, [:game_state, :last_id], last_id)
