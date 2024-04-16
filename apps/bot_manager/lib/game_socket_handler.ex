@@ -13,7 +13,8 @@ defmodule BotManager.GameSocketHandler do
   @action_delay_ms 30
 
   def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
-    ws_url = ws_url(params) |> IO.inspect(label: "conectarse a ")
+    ws_url = ws_url(params)
+    Logger.info("Conectarse a game")
 
     WebSockex.start_link(ws_url, __MODULE__, %{
       client_id: bot_client,

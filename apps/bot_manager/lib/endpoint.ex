@@ -3,6 +3,7 @@ defmodule BotManager.Endpoint do
   endpoints :
   - /join/:game_pid/:player_id/:character_name (GET)
   """
+  require Logger
 
   use Plug.Router
   # This module is a Plug, that also implements it's own plug pipeline, below:
@@ -26,7 +27,7 @@ defmodule BotManager.Endpoint do
   plug(:dispatch)
 
   get "/join/:arena_host/:game_id/:bot_client/" do
-    IO.inspect("llega request")
+    Logger.info("Llegó mensaje")
     bot_pid = BotManager.BotSupervisor.add_bot_to_game(conn.params) || ""
 
     conn
