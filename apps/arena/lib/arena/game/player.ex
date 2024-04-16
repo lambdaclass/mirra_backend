@@ -4,6 +4,7 @@ defmodule Arena.Game.Player do
   """
 
   alias Arena.Utils
+  alias Arena.Game.Effect
   alias Arena.Game.Skill
 
   def add_action(player, action) do
@@ -144,7 +145,7 @@ defmodule Arena.Game.Player do
   def reset_forced_movement(player, reset_speed) do
     player
     |> Map.put(:is_moving, false)
-    |> Map.put(:speed, reset_speed)
+    |> put_in([:aditional_info, :base_speed], reset_speed)
     |> put_in([:aditional_info, :forced_movement], false)
   end
 
@@ -185,7 +186,7 @@ defmodule Arena.Game.Player do
 
         Process.send_after(
           self(),
-          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply)},
+          {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply), skill.execution_duration_ms},
           skill.activation_delay_ms
         )
 
@@ -202,9 +203,9 @@ defmodule Arena.Game.Player do
           |> put_in([:direction], skill_direction |> Utils.normalize())
           |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
-          |> maybe_make_invincible(skill)
 
         put_in(game_state, [:players, player.id], player)
+        |> maybe_make_player_invincible(player.id, skill)
     end
   end
 
@@ -261,27 +262,58 @@ defmodule Arena.Game.Player do
     player.aditional_info.inventory != nil
   end
 
-  def use_item(player, game_state) do
+  def use_item(player, game_state, game_config) do
     case player.aditional_info.inventory do
       nil ->
         game_state
 
       item ->
-        player =
-          Enum.reduce(item.effects, player, &apply_effect/2)
-          |> put_in([:aditional_info, :inventory], nil)
-
-        put_in(game_state, [:players, player.id], player)
+        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+          Effect.put_effect(game_state_acc, player.id, player.id, effect)
+        end)
+        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
-  end
-
-  def remove_damage_immunity(player) do
-    put_in(player, [:aditional_info, :damage_immunity], false)
   end
 
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
-    |> Enum.any?(fn {_, effect} -> effect.name == "invisible" end)
+    |> Enum.any?(fn effect ->
+      Enum.any?(effect.effect_mechanics, fn {mechanic, _} -> mechanic == :invisible end)
+    end)
+  end
+
+  def remove_expired_effects(player) do
+    now = System.monotonic_time(:millisecond)
+
+    effects =
+      player.aditional_info.effects
+      |> Enum.filter(fn effect -> is_nil(effect.expires_at) or effect.expires_at > now end)
+
+    put_in(player, [:aditional_info, :effects], effects)
+  end
+
+  def remove_effects_on_action(player) do
+    now = System.monotonic_time(:millisecond)
+
+    effects =
+      player.aditional_info.effects
+      |> Enum.reject(fn effect ->
+        effect.remove_on_action and
+          effect.action_removal_at <= now and
+          Enum.any?(player.aditional_info.current_actions, fn action -> action.action != :MOVING end)
+      end)
+
+    put_in(player, [:aditional_info, :effects], effects)
+  end
+
+  def reset_effects(player) do
+    player
+    |> put_in([:speed], player.aditional_info.base_speed)
+    |> put_in([:aditional_info, :stamina_interval], player.aditional_info.base_stamina_interval)
+    |> put_in([:aditional_info, :bonus_damage], 0)
+    |> put_in([:aditional_info, :damage_immunity], false)
+    |> Effect.apply_stat_effects()
   end
 
   ####################
@@ -334,38 +366,6 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
-  defp apply_effect({:stamina_faster, stamina_faster}, player) do
-    stamina_speedup_by =
-      (player.aditional_info.stamina_interval * stamina_faster.interval_decrease_by)
-      |> round()
-
-    new_stamina_interval = player.aditional_info.stamina_interval - stamina_speedup_by
-
-    Process.send_after(
-      self(),
-      {:stop_stamina_faster, player.id, stamina_speedup_by},
-      stamina_faster.duration_ms
-    )
-
-    change_stamina(player, 3)
-    |> put_in([:aditional_info, :stamina_interval], new_stamina_interval)
-  end
-
-  defp apply_effect({:speed_boost, speed_boost}, player) do
-    Process.send_after(
-      self(),
-      {:remove_speed_boost, player.id, speed_boost.amount},
-      speed_boost.duration_ms
-    )
-
-    %{player | speed: player.speed + speed_boost.amount}
-  end
-
-  defp apply_effect({:damage_immunity, damage_immunity}, player) do
-    Process.send_after(self(), {:remove_damage_immunity, player.id}, damage_immunity.duration_ms)
-    put_in(player, [:aditional_info, :damage_immunity], true)
-  end
-
   defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
     put_in(player, [:aditional_info, :cooldowns, skill_key], cooldown_ms)
   end
@@ -383,15 +383,20 @@ defmodule Arena.Game.Player do
     end
   end
 
-  defp maybe_make_invincible(
-         player,
-         %{inmune_while_executing: true, execution_duration_ms: execution_duration_ms} = _skill
-       ) do
-    Process.send_after(self(), {:remove_damage_immunity, player.id}, execution_duration_ms)
-    put_in(player, [:aditional_info, :damage_immunity], true)
+  defp maybe_make_player_invincible(game_state, player_id, %{inmune_while_executing: true} = skill) do
+    effect = %{
+      name: "in_game_inmunity",
+      duration_ms: skill.execution_duration_ms,
+      remove_on_action: false,
+      effect_mechanics: %{
+        damage_immunity: %{}
+      }
+    }
+
+    Effect.put_effect(game_state, player_id, player_id, effect)
   end
 
-  defp maybe_make_invincible(player, _) do
-    player
+  defp maybe_make_player_invincible(game_state, _, _) do
+    game_state
   end
 end

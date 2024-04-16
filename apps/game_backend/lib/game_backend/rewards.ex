@@ -35,14 +35,12 @@ defmodule GameBackend.Rewards do
   def increment_afk_reward_rate(user_id, currency_id, rate_increment) do
     case get_afk_reward_rate(user_id, currency_id) do
       {:ok, afk_reward_rate} ->
-        AfkRewardRate.changeset(afk_reward_rate, %{
-          rate: afk_reward_rate.rate + rate_increment
-        })
+        afk_reward_rate
+        |> AfkRewardRate.changeset(%{rate: afk_reward_rate.rate + rate_increment})
         |> Repo.update()
 
       {:error, :not_found} ->
-        # TODO: Should create it if there is none, like we do with currencies [#CHoM-223]
-        {:error, :not_found}
+        insert_afk_reward_rate(%{user_id: user_id, currency_id: currency_id, rate: rate_increment})
     end
   end
 end

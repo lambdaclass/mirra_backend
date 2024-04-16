@@ -75,7 +75,7 @@ defmodule Champions.TestUtils do
       animation_trigger: 0,
       effects: [
         %{
-          type: "instant",
+          type: %{type: "instant"},
           initial_delay: 0,
           components: [],
           modifier: [],
@@ -89,8 +89,7 @@ defmodule Champions.TestUtils do
           ],
           target_strategy: "random",
           target_count: 1,
-          target_allies: false,
-          target_attribute: "Health"
+          target_allies: false
         }
       ],
       cooldown: cooldown
@@ -106,7 +105,7 @@ defmodule Champions.TestUtils do
       animation_trigger: 0,
       effects: [
         %{
-          type: "instant",
+          type: %{type: "instant"},
           initial_delay: 0,
           components: [],
           modifiers: [],
@@ -120,8 +119,7 @@ defmodule Champions.TestUtils do
           ],
           target_strategy: "random",
           target_count: 1,
-          target_allies: false,
-          target_attribute: "Health"
+          target_allies: false
         }
       ]
     }
