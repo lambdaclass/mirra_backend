@@ -143,7 +143,7 @@ defmodule Arena.GameUpdater do
 
     game_state = Map.put(game_state, :server_timestamp, now)
 
-    {time, _} = :timer.tc(&broadcast_game_update/1, [game_state])
+    # {time, _} = :timer.tc(&broadcast_game_update/1, [game_state])
     IO.inspect("#{inspect(self())} Function broadcast_game_update elapsed time: #{time}")
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -452,6 +452,7 @@ defmodule Arena.GameUpdater do
   defp broadcast_enable_incomming_messages(game_id) do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
   end
+
 
   defp broadcast_game_update(state) do
     {time, players} = :timer.tc(&complete_entities/1, [state.players])
