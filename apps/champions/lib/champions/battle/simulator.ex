@@ -74,6 +74,7 @@ defmodule Champions.Battle.Simulator do
     seed = options[:seed] || @default_seed
 
     :rand.seed(:default, seed)
+    Logger.info("Running battle with seed: #{seed}")
 
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
@@ -582,6 +583,17 @@ defmodule Champions.Battle.Simulator do
       |> Map.put(:energy, min(target.energy + energy_recharge, @ultimate_energy_cost))
 
     {new_target, new_history}
+  end
+
+  defp process_execution(
+         _,
+         target,
+         caster,
+         history,
+         _skill_id
+       ) do
+    Logger.warning("#{format_unit_name(caster)} tried to apply an unknown execution to #{format_unit_name(caster)}")
+    {target, history}
   end
 
   # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
