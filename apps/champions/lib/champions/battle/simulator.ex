@@ -106,7 +106,6 @@ defmodule Champions.Battle.Simulator do
         end
       )
 
-    IO.inspect(Enum.reverse(history), limit: :infinity)
     %{initial_state: transform_initial_state_for_replay(initial_state), steps: Enum.reverse(history), result: result}
   end
 
@@ -367,36 +366,36 @@ defmodule Champions.Battle.Simulator do
             Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
             {targets_after_effect, new_history} =
-              Enum.reduce(effect.targets, {%{}, new_history}, fn id, {new_targets, new_history} ->
+              Enum.reduce(effect.targets, {%{}, new_history}, fn target_id, {new_targets, new_history} ->
                 {new_target, new_history} =
                   maybe_apply_effect(
                     effect,
-                    Map.get(current_state.units, id, id),
+                    Map.get(current_state.units, target_id, target_id),
                     effect.caster,
                     current_state.step_number,
                     effect_hits?(effect),
                     new_history
                   )
-                if is_nil(new_target),
-                  do: {new_targets, new_history},
-                  else: {Map.put(new_targets, id, new_target), new_history}
+
+                {maybe_put_new_target(new_targets, new_target), new_history}
               end)
 
-            new_state =
-              update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
+            new_state = update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
 
             # We don't add this effect to the new_pending_effects list because it has already been applied
             {{new_pending_effects, new_state}, new_history}
 
           effect ->
             # If the effect isn't ready to be processed, we reduce its remaining delay.
-
             {{[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}, history}
         end
       end)
 
     {Map.put(updated_game_state, :pending_effects, updated_pending_effects), new_history}
   end
+
+  defp maybe_put_new_target(targets, nil), do: targets
+  defp maybe_put_new_target(targets, target), do: Map.put(targets, target.id, target)
 
   # Check if the unit can attack this turn.
   # For now, attacking capability is only affected by whether the unit is currently casting a skill.
@@ -465,9 +464,8 @@ defmodule Champions.Battle.Simulator do
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
 
-
   # If we receive the target's id, it means that the unit has died before the effect hits.
-  # We send it as an EFFECT_MISS action
+  # We send it as an EFFECT_MISS action.
   defp maybe_apply_effect(effect, id, caster, _current_step_number, _hits, history) when is_binary(id) do
     new_history =
       add_to_history(
@@ -479,8 +477,7 @@ defmodule Champions.Battle.Simulator do
           skill_action_type: :EFFECT_MISS
         },
         :skill_action
-      ) |> IO.inspect(label: :diego_forlan)
-
+      )
 
     {nil, new_history}
   end
@@ -531,7 +528,6 @@ defmodule Champions.Battle.Simulator do
       process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
     end)
   end
-
 
   defp maybe_apply_effect(effect, target, caster, _current_step_number, false, history) do
     Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
