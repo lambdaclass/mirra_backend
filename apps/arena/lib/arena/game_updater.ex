@@ -43,7 +43,7 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
     :telemetry.execute([:arena, :game], %{count: 1})
-    {:ok, %{game_config: game_config, game_state: game_state}}
+    {:ok, %{game_config: game_config, game_state: game_state, player_pids: []}}
   end
 
   def terminate(_, _state) do
@@ -80,12 +80,14 @@ defmodule Arena.GameUpdater do
     {:reply, :ok, %{state | game_state: game_state}}
   end
 
-  def handle_call({:join, client_id}, _from, state) do
+  def handle_call({:join, client_id}, from_pid, state) do
     case get_in(state.game_state, [:client_to_player_map, client_id]) do
       nil ->
         {:reply, :not_a_client, state}
 
       player_id ->
+        Map.put(state, :player_pids, state.player_pids ++ [from_pid])
+
         response = %{player_id: player_id, game_config: state.game_config}
         {:reply, {:ok, response}, state}
     end
@@ -143,7 +145,7 @@ defmodule Arena.GameUpdater do
 
     game_state = Map.put(game_state, :server_timestamp, now)
 
-    {time, _} = :timer.tc(&broadcast_game_update/1, [game_state])
+    {time, _} = :timer.tc(&broadcast_game_update/2, [game_state, state])
     IO.inspect("#{inspect(self())} Function broadcast_game_update elapsed time: #{time}")
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -454,7 +456,7 @@ defmodule Arena.GameUpdater do
   end
 
 
-  defp broadcast_game_update(state) do
+  defp broadcast_game_update(state, state_2) do
     # {time, players} = :timer.tc(&complete_entities/1, [state.players])
     # IO.inspect("#{inspect(self())} Function complete_entities_players elapsed time: #{time}")
     # {time, projectiles} = :timer.tc(&complete_entities/1, [state.projectiles])
@@ -509,7 +511,13 @@ defmodule Arena.GameUpdater do
     IO.inspect("#{inspect(self())} Function GameEvent.encode elapsed time: #{time} with size #{size}")
 
 
-    {time, _} = :timer.tc(&PubSub.broadcast/3, [Arena.PubSub, state.game_id, {:game_update, encoded_state}])
+
+    Enum.each(state_2.player_pids, fn player_pid ->
+      send(player_pid, {:game_update, encoded_state})
+    end)
+
+
+    # {time, _} = :timer.tc(&PubSub.broadcast/3, [Arena.PubSub, state.game_id, {:game_update, encoded_state}])
 
     IO.inspect("#{inspect(self())} Function PubSub.broadcast elapsed time: #{time}")
   end
