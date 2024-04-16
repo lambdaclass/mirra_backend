@@ -319,7 +319,7 @@ defmodule Champions.Battle.Simulator do
                unit_id: unit.id,
                tag: tag.tag
              },
-             :TAG_EXPIRED
+             :tag_expired
            )}
 
         # Tag still going, reduce its timer by one
