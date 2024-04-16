@@ -135,7 +135,8 @@ defmodule Arena.GameUpdater do
 
     game_state = Map.put(game_state, :server_timestamp, now)
 
-    broadcast_game_update(game_state)
+    {time, game_state} = :timer.tc(&broadcast_game_update/1, [game_state])
+    IO.inspect("Function broadcast_game_update elapsed time: #{time}")
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
