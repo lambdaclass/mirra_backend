@@ -42,13 +42,13 @@ defmodule BotManager.BotStateMachine do
     |> Map.filter(fn {_player_id, player} -> Utils.player_alive?(player) end)
     |> Enum.map(fn {_player_id, player} ->
       player_info =
-        get_ditance_and_direction_to_positions(bot_player.position, player.position)
+        get_distance_and_direction_to_positions(bot_player.position, player.position)
 
       Map.merge(player, player_info)
     end)
   end
 
-  defp get_ditance_and_direction_to_positions(base_position, end_position) do
+  defp get_distance_and_direction_to_positions(base_position, end_position) do
     %{x: x, y: y} = Vector.sub(end_position, base_position)
     distance = :math.sqrt(:math.pow(x, 2) + :math.pow(y, 2))
     direction = %{x: x / distance, y: y / distance}

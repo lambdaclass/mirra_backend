@@ -27,7 +27,7 @@ defmodule BotManager.GameSocketHandler do
 
   def handle_connect(_conn, state) do
     send(self(), :decide_action)
-    send(self(), :perfom_action)
+    send(self(), :perform_action)
     {:ok, state}
   end
 
@@ -62,8 +62,8 @@ defmodule BotManager.GameSocketHandler do
     {:ok, Map.put(state, :current_action, action)}
   end
 
-  def handle_info(:perfom_action, state) do
-    Process.send_after(self(), :perfom_action, @action_delay_ms)
+  def handle_info(:perform_action, state) do
+    Process.send_after(self(), :perform_action, @action_delay_ms)
 
     send_current_action(state)
 
