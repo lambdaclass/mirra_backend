@@ -372,7 +372,7 @@ syntax = "proto3";
   message TagReceived {
     string skill_id = 1;
     string target_id = 2;
-    string tag_name = 3;
+    string tag = 3;
   }
 
   message ModifierExpired {

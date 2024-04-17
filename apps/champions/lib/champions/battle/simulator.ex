@@ -278,7 +278,7 @@ defmodule Champions.Battle.Simulator do
              history,
              %{
                skill_id: modifier.skill_id,
-               target_ids: [unit.id],
+               target_id: unit.id,
                stat_affected: %{
                  stat: modifier.attribute |> String.upcase() |> String.to_atom(),
                  amount: modifier.float_magnitude
@@ -316,7 +316,7 @@ defmodule Champions.Battle.Simulator do
              history,
              %{
                skill_id: tag.skill_id,
-               unit_id: unit.id,
+               target_id: unit.id,
                tag: tag.tag
              },
              :tag_expired
@@ -530,7 +530,7 @@ defmodule Champions.Battle.Simulator do
             history,
             %{
               skill_id: modifier.skill_id,
-              target_ids: [target.id],
+              target_id: target.id,
               stat_affected: %{
                 stat: modifier.attribute |> String.upcase() |> String.to_atom(),
                 amount: modifier.float_magnitude
@@ -631,7 +631,7 @@ defmodule Champions.Battle.Simulator do
             history,
             %{
               skill_id: effect.skill_id,
-              unit_id: target.id,
+              target_id: target.id,
               tag: tag
             },
             :tag_received
