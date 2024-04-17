@@ -111,20 +111,26 @@ defmodule Arena.GameUpdater do
     game_state =
       game_state
       |> Map.put(:ticks_to_move, ticks_to_move)
+      # Effects
       |> remove_expired_effects()
       |> remove_effects_on_action()
       |> reset_players_effects()
-      |> reduce_players_cooldowns(time_diff)
+      |> Skill.apply_effect_mechanic()
+      # Players
       |> move_players()
-      |> update_projectiles_status()
-      |> move_projectiles()
+      |> reduce_players_cooldowns(time_diff)
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
-      |> resolve_projectiles_collisions()
       |> apply_zone_damage_to_players(state.game_config.game)
+      # Projectiles
+      |> update_projectiles_status()
+      |> move_projectiles()
+      |> resolve_projectiles_collisions()
       |> explode_projectiles()
+      # Pools
       |> handle_pools(state.game_config)
-      |> Skill.apply_effect_mechanic()
+      # Crates
+      |> handle_destroyed_crates(state.game_config)
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -314,39 +320,17 @@ defmodule Arena.GameUpdater do
 
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
-    state =
-      update_in(state, [:game_state, :killfeed], fn killfeed -> [entry | killfeed] end)
-      |> update_in([:game_state, :players, killer_id, :aditional_info, :kill_count], fn count ->
+    game_state =
+      game_state
+      |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
+      |> update_in([:players, killer_id, :aditional_info, :kill_count], fn count ->
         count + 1
       end)
-      |> spawn_power_ups(victim, amount_of_power_ups)
+      |> spawn_power_ups(game_config, victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
-    {:noreply, state}
-  end
-
-  def handle_info(
-        {:destroy_crate, crate_id},
-        %{game_state: game_state} = state
-      ) do
-    Map.get(game_state.crates, crate_id)
-    |> case do
-      nil ->
-        {:noreply, state}
-
-      crate ->
-        amount_of_power_ups = crate.aditional_info.amount_of_power_ups
-
-        state =
-          state
-          |> spawn_power_ups(crate, amount_of_power_ups)
-
-        game_state =
-          put_in(state.game_state, [:crates, crate_id, :aditional_info, :status], :DESTROYED)
-
-        {:noreply, %{state | game_state: game_state}}
-    end
+    {:noreply, %{state | game_state: game_state}}
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
@@ -875,6 +859,20 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
+  defp handle_destroyed_crates(%{crates: crates} = game_state, game_config) do
+    Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
+      if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
+        game_state
+      else
+        amount_of_power_ups = crate.aditional_info.amount_of_power_ups
+
+        game_state
+        |> spawn_power_ups(game_config, crate, amount_of_power_ups)
+        |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
+      end
+    end)
+  end
+
   ##########################
   # End Game Flow
   ##########################
@@ -1003,10 +1001,6 @@ defmodule Arena.GameUpdater do
 
     projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
 
-    unless Crate.alive?(crate) do
-      send(self(), {:destroy_crate, crate.id})
-    end
-
     {
       Map.put(projectiles_acc, projectile.id, projectile),
       players_acc,
@@ -1052,13 +1046,14 @@ defmodule Arena.GameUpdater do
   end
 
   defp spawn_power_ups(
-         %{game_config: game_config} = state,
+         game_state,
+         game_config,
          victim,
          amount
        ) do
     distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
 
-    Enum.reduce(1..amount//1, state, fn _, state ->
+    Enum.reduce(1..amount//1, game_state, fn _, game_state ->
       random_x =
         victim.position.x +
           Enum.random(-distance_to_power_up..distance_to_power_up)
@@ -1068,7 +1063,7 @@ defmodule Arena.GameUpdater do
           Enum.random(-distance_to_power_up..distance_to_power_up)
 
       random_position = %{x: random_x, y: random_y}
-      last_id = state.game_state.last_id + 1
+      last_id = game_state.last_id + 1
 
       power_up =
         Entities.new_power_up(
@@ -1079,8 +1074,9 @@ defmodule Arena.GameUpdater do
           game_config.power_ups.power_up
         )
 
-      put_in(state, [:game_state, :power_ups, last_id], power_up)
-      |> put_in([:game_state, :last_id], last_id)
+      game_state
+      |> put_in([:power_ups, last_id], power_up)
+      |> put_in([:last_id], last_id)
     end)
   end
 
