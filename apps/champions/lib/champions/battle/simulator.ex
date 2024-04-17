@@ -106,7 +106,6 @@ defmodule Champions.Battle.Simulator do
         end
       )
 
-    IO.inspect(Enum.reverse(history), limit: :infinity)
     %{initial_state: transform_initial_state_for_replay(initial_state), steps: Enum.reverse(history), result: result}
   end
 
