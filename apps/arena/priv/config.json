@@ -382,26 +382,26 @@
   "items": [
     {
       "name": "golden_clock",
+      "radius": 200.0,
       "effects": [
         "golden_clock_effect"
       ]
     },
     {
       "name": "magic_boots",
+      "radius": 200.0,
       "effects": [
         "magic_boots_effect"
       ]
     },
     {
       "name": "mirra_blessing",
+      "radius": 200.0,
       "effects": [
         "mirra_blessing_effect"
       ]
     }
   ],
-  "items_params": {
-    "radius": 200.0
-  },
   "characters": [
     {
       "name": "muflus",
