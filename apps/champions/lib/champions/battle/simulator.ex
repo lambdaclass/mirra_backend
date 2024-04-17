@@ -770,7 +770,7 @@ defmodule Champions.Battle.Simulator do
   defp create_effect_map(%Effect{} = effect, skill_id),
     do: %{
       type: effect.type,
-      delay: effect.delay,
+      delay: effect.initial_delay,
       target_count: effect.target_count,
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
       # target_strategy: effect.target_strategy,
