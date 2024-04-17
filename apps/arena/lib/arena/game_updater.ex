@@ -1084,7 +1084,8 @@ defmodule Arena.GameUpdater do
       speed: 0.0,
       category: :obstacle,
       direction: %{x: 0.0, y: 0.0},
-      is_moving: false
+      is_moving: false,
+      name: "Point 1"
     }
 
     case Physics.check_collisions(point, %{0 => external_wall}) do

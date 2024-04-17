@@ -16,8 +16,10 @@ defmodule Gateway.Serialization.Stat do
 
   field(:HEALTH, 0)
   field(:ENERGY, 1)
-  field(:DAMAGE, 2)
+  field(:ATTACK, 2)
   field(:DEFENSE, 3)
+  field(:DAMAGE_REDUCTION, 4)
+  field(:SPEED, 5)
 end
 
 defmodule Gateway.Serialization.WebSocketRequest do
@@ -109,20 +111,6 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "getUserSuperCampaignProgresses",
     oneof: 0
   )
-
-  field(:battle_test, 24,
-    type: Gateway.Serialization.BattleTest,
-    json_name: "battleTest",
-    oneof: 0
-  )
-end
-
-defmodule Gateway.Serialization.BattleTest do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:user_id, 1, type: :string, json_name: "userId")
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -366,12 +354,6 @@ defmodule Gateway.Serialization.WebSocketResponse do
     json_name: "superCampaignProgresses",
     oneof: 0
   )
-
-  field(:battle_replay, 16,
-    type: Gateway.Serialization.BattleReplay,
-    json_name: "battleReplay",
-    oneof: 0
-  )
 end
 
 defmodule Gateway.Serialization.User do
@@ -561,14 +543,6 @@ defmodule Gateway.Serialization.CurrencyReward do
   field(:amount, 3, type: :uint64)
 end
 
-defmodule Gateway.Serialization.BattleResult do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:result, 1, type: :string)
-end
-
 defmodule Gateway.Serialization.AfkRewards do
   @moduledoc false
 
@@ -652,7 +626,7 @@ defmodule Gateway.Serialization.UserAndUnit do
   field(:unit, 2, type: Gateway.Serialization.Unit)
 end
 
-defmodule Gateway.Serialization.BattleReplay do
+defmodule Gateway.Serialization.BattleResult do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
