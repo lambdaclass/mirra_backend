@@ -46,9 +46,6 @@ defmodule BotManager.GameSocketHandler do
       %{event: {:joined, joined}} ->
         {:ok, Map.merge(state, joined)}
 
-      %{event: {:finished, _}} ->
-        {:stop, state}
-
       _ ->
         {:ok, state}
     end

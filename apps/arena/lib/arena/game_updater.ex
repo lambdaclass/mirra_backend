@@ -80,7 +80,7 @@ defmodule Arena.GameUpdater do
         {:reply, :not_a_client, state}
 
       player_id ->
-        response = %{player_id: player_id, game_config: state.game_config}
+        response = %{player_id: player_id, game_config: state.game_config, game_status: state.game_state.status}
         {:reply, {:ok, response}, state}
     end
   end
