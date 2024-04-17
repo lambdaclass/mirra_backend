@@ -5,7 +5,6 @@ alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Campaigns.Rewards.CurrencyReward
@@ -13,60 +12,8 @@ alias GameBackend.Campaigns.Rewards.CurrencyReward
 champions_of_mirra_id = 2
 units_per_level = 5
 
+{:ok, _skills} = Champions.Config.import_skill_config()
 Champions.Config.import_character_config()
-
-muflus = Characters.get_character_by_name("Muflus")
-
-{:ok, _muflus} =
-  Characters.update_character(muflus, %{
-    basic_skill: %{
-      name: "Muflus Basic",
-      effects: [
-        %{
-          type: "instant",
-          initial_delay: 0,
-          components: [],
-          modifiers: [],
-          executions: [
-            %{
-              type: "DealDamage",
-              attack_ratio: 0.8,
-              energy_recharge: 50,
-              delay: 0
-            }
-          ],
-          target_strategy: "random",
-          target_count: 2,
-          target_allies: false,
-          target_attribute: "Health"
-        }
-      ],
-      cooldown: 5
-    },
-    ultimate_skill: %{
-      name: "Muflus Ultimate",
-      effects: [
-        %{
-          type: "instant",
-          initial_delay: 0,
-          components: [],
-          modifiers: [],
-          executions: [
-            %{
-              type: "DealDamage",
-              attack_ratio: 2.05,
-              energy_recharge: 50,
-              delay: 0
-            }
-          ],
-          target_strategy: "random",
-          target_count: 2,
-          target_allies: false,
-          target_attribute: "Health"
-        }
-      ]
-    }
-  })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
