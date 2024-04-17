@@ -44,7 +44,7 @@ defmodule GameBackend.Units.Characters do
   end
 
   @doc """
-  Inserts all characters into the database. If another one already exists with
+  Inserts all Characters into the database. If another one already exists with
   the same name and game_id, it updates it instead.
   """
   def upsert_characters(attrs_list) do
@@ -75,7 +75,7 @@ defmodule GameBackend.Units.Characters do
   def get_character(id), do: Repo.get(Character, id) |> Repo.preload([:basic_skill, :ultimate_skill])
 
   @doc """
-  Get all characters.
+  Get all Characters.
 
   ## Examples
       iex> get_characters()
@@ -98,12 +98,12 @@ defmodule GameBackend.Units.Characters do
     do: Repo.one(from(c in Character, where: c.name == ^name)) |> Repo.preload([:basic_skill, :ultimate_skill])
 
   @doc """
-  Delete all characters from the database.
+  Delete all Characters from the database.
   """
   def delete_all_characters(), do: Repo.delete_all(Character)
 
   @doc """
-  Get all characters with given quality.
+  Get all Characters with given quality.
 
   ## Examples
 
@@ -113,7 +113,7 @@ defmodule GameBackend.Units.Characters do
   def get_characters_by_quality(quality), do: Repo.all(from(c in Character, where: ^quality == c.quality))
 
   @doc """
-  Get all characters with given rank_dropped_in.
+  Get all Characters with given rank_dropped_in.
 
   ## Examples
 
@@ -123,7 +123,7 @@ defmodule GameBackend.Units.Characters do
   def get_characters_by_rank(rank), do: Repo.all(from(c in Character, where: ^rank in c.ranks_dropped_in))
 
   @doc """
-  Get all characters with given rank_dropped_in.
+  Get all Characters with given rank_dropped_in.
 
   ## Examples
 
