@@ -1,6 +1,23 @@
 defmodule GameBackend.Items.ItemTemplate do
   @moduledoc """
   ItemTemplates are the template on which items are based.
+  Type is the category of the item, such as "weapon", "helmet", "boots", etc.
+  BaseModifiers are the modifiers that are applied to the character when the item is equipped.
+
+  ## Examples
+      # ItemTemplate to create a sword that increments attack by 30%:
+      %ItemTemplate{
+        game_id: 2,
+        name: "Sword",
+        type: "weapon",
+        base_modifiers: [
+          %BaseModifier{
+            attribute: "attack",
+            modifier_operation: "Multiply",
+            base_value: 1.3
+          }
+        ]
+      }
   """
   alias GameBackend.Items.BaseModifier
 
