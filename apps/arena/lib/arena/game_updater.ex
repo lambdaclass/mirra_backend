@@ -966,8 +966,7 @@ defmodule Arena.GameUpdater do
          _,
          _,
          {projectiles_acc, players_acc, crate_acc}
-       )
-       when not is_nil(player) do
+       ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
     player = Player.take_damage(player, real_damage)
@@ -997,8 +996,7 @@ defmodule Arena.GameUpdater do
          _,
          _,
          {projectiles_acc, players_acc, crates_acc}
-       )
-       when not is_nil(crate) do
+       ) do
     attacking_player = Map.get(players_acc, projectile.aditional_info.owner_id)
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
     crate = Crate.take_damage(crate, real_damage)
