@@ -250,6 +250,7 @@ syntax = "proto3";
     uint32 level_number = 3;
     repeated Unit units = 4;
     repeated CurrencyReward currency_rewards = 5;
+    uint32 experience_reward = 6;
   }
 
   message CurrencyReward {
