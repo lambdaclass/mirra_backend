@@ -11,6 +11,6 @@ defmodule Arena.Game.Crate do
   end
 
   def interactable_crates(crates) do
-    Map.filter(crates, fn {_crate_id, crate} -> crate.aditional_info.status != :DESTROYED end)
+    Map.filter(crates, fn {_crate_id, crate} -> alive?(crate) end)
   end
 end
