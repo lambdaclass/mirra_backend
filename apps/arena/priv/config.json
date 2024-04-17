@@ -553,28 +553,5 @@
       }
     }
   ],
-  "crates": [
-    {
-      "position": {
-        "x": 0.0,
-        "y": 0.0
-      },
-      "shape": "circle",
-      "radius": 250.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 5
-    },
-    {
-      "position": {
-        "x": -2000.0,
-        "y": -2000.0
-      },
-      "shape": "circle",
-      "radius": 250.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 5
-    }
-  ]
+  "crates": []
 }
