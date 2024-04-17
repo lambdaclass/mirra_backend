@@ -1,6 +1,6 @@
 defmodule GameBackend.Units.Characters do
   @moduledoc """
-  Operations done to the Configuration storage related to Characters.
+  Operations related to Characters.
   """
 
   import Ecto.Query
