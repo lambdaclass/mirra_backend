@@ -35,6 +35,7 @@ pub struct Entity {
     pub category: Category,
     pub direction: Direction,
     pub is_moving: bool,
+    pub name: String,
 }
 
 #[derive(Deserialize, NifTaggedEnum, Clone, PartialEq)]
@@ -95,6 +96,7 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
+            name: format!("{}{}", "Point ", id),
         }
     }
 
@@ -109,6 +111,7 @@ impl Entity {
             category: Category::Obstacle,
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
+            name: format!("{}{}", "Line ", id),
         }
     }
 

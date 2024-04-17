@@ -784,7 +784,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Burn"
+            "tags": [
+              "Burn"
+            ]
           }
         ],
         "modifiers": [],
@@ -853,7 +855,7 @@
         "components": [],
         "modifiers": [
           {
-            "attribute": "armor",
+            "attribute": "defense",
             "modifier_operation": "Multiply",
             "magnitude_calc_type": "Float",
             "float_magnitude": 0.85
@@ -868,7 +870,7 @@
           }
         ],
         "target_strategy": {
-          "highest": "Armor"
+          "highest": "defense"
         },
         "target_count": 2,
         "target_allies": false
@@ -918,7 +920,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Stun"
+            "tags": [
+              "Stun"
+            ]
           }
         ],
         "modifiers": [
@@ -1477,7 +1481,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Stun"
+            "tags": [
+              "Stun"
+            ]
           }
         ],
         "modifiers": [],
@@ -1538,7 +1544,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Burn"
+            "tags": [
+              "Burn"
+            ]
           }
         ],
         "modifiers": [],
@@ -1701,7 +1709,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Silence"
+            "tags": [
+              "Silence"
+            ]
           }
         ],
         "modifiers": [],
@@ -1886,7 +1896,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Paralyzed"
+            "tags": [
+              "Paralyzed"
+            ]
           }
         ],
         "modifiers": [],
