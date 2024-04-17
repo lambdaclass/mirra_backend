@@ -1,6 +1,6 @@
 defmodule GameBackend.Items.BaseModifier do
   @moduledoc """
-  Item Base Modifiers change attributes of a character once the Item is equipped.
+  Item BaseModifiers change attributes of a character while the Item is equipped.
 
   Operation descriptions
   - `"Add"`: Adds the result to the Base Modifier's specified Attribute. Use a negative value for subtraction.
@@ -13,7 +13,7 @@ defmodule GameBackend.Items.BaseModifier do
   (InlineBaseValue + Additive) * Multiplicative
   ```
 
-  Examples:
+  ## Examples
       # Base Modifier to increment attack by 5%:
       %BaseModifier{
         attribute: "attack",
@@ -38,6 +38,9 @@ defmodule GameBackend.Items.BaseModifier do
     field(:base_value, :float)
   end
 
+  @doc """
+  Builds a changeset based on the `modifier` and `attrs`.
+  """
   def changeset(modifier, attrs) do
     modifier
     |> cast(attrs, [:attribute, :modifier_operation, :base_value])
