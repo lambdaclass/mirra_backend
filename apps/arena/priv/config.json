@@ -79,7 +79,7 @@
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,
     "natural_healing_interval_ms": 300,
-    "zone_shrink_start_ms": 999999999,
+    "zone_shrink_start_ms": 35000,
     "zone_shrink_radius_by": 10,
     "zone_shrink_interval": 100,
     "zone_stop_interval_ms": 13000,
