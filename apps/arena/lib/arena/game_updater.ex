@@ -1027,8 +1027,6 @@ defmodule Arena.GameUpdater do
           end)
         end)
 
-      update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
-
       {Map.put(players_acc, player.id, updated_player), Map.put(power_ups_acc, power_up.id, updated_power_up)}
     else
       {players_acc, power_ups_acc}
