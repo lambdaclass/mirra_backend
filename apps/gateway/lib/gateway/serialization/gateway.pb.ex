@@ -532,6 +532,8 @@ defmodule Gateway.Serialization.Level do
     type: Gateway.Serialization.CurrencyReward,
     json_name: "currencyRewards"
   )
+
+  field(:experience_reward, 6, type: :uint32, json_name: "experienceReward")
 end
 
 defmodule Gateway.Serialization.CurrencyReward do
