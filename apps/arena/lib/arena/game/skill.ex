@@ -225,7 +225,6 @@ defmodule Arena.Game.Skill do
 
     skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, leap.range)
 
-    ## TODO: Cap target_position to leap.range
     target_position = %{
       x: entity.position.x + skill_direction.x,
       y: entity.position.y + skill_direction.y
