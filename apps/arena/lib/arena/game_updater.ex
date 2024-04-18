@@ -10,6 +10,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.{Player, Skill}
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
+  alias Arena.Utils
 
   ##########################
   # API
@@ -1019,11 +1020,18 @@ defmodule Arena.GameUpdater do
         update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
         |> update_in([:aditional_info], fn additional_info ->
           Map.update(additional_info, :health, additional_info.health, fn current_health ->
-            (current_health + additional_info.base_health * power_up.aditional_info.power_up_health_modifier)
-            |> round()
+            Utils.increase_value_by_base_percentage(
+              current_health,
+              additional_info.base_health,
+              power_up.aditional_info.power_up_health_modifier
+            )
           end)
           |> Map.update(:max_health, additional_info.max_health, fn max_health ->
-            (max_health + additional_info.base_health * power_up.aditional_info.power_up_health_modifier) |> round()
+            Utils.increase_value_by_base_percentage(
+              max_health,
+              additional_info.base_health,
+              power_up.aditional_info.power_up_health_modifier
+            )
           end)
         end)
 
