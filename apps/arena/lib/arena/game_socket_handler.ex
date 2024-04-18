@@ -36,6 +36,12 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
+  def terminate(_, _, _) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
+    :ok
+  end
+
+  @impl true
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
@@ -58,6 +64,7 @@ defmodule Arena.GameSocketHandler do
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 
+    :telemetry.execute([:arena, :clients], %{count: 1})
     {:reply, {:binary, encoded_msg}, state}
   end
 
