@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Skills.Effects.Modifier do
+defmodule GameBackend.Units.Skills.Mechanics.Effects.Modifier do
   @moduledoc """
   Modifiers change attributes of characters. Only used for non-Instant effects.
 

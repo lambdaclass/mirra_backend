@@ -1,10 +1,10 @@
-defmodule GameBackend.Units.Skills.Effect do
+defmodule GameBackend.Units.Skills.Mechanics.Effect do
   @moduledoc false
 
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Skills.Effects.{Modifier, TargetStrategy}
+  alias GameBackend.Units.Skills.Mechanics.Effects.Modifier
 
   @primary_key false
   embedded_schema do
@@ -14,10 +14,6 @@ defmodule GameBackend.Units.Skills.Effect do
     field(:components, {:array, :map})
     embeds_many(:modifiers, Modifier)
     field(:executions, {:array, :map})
-
-    field(:target_count, :integer)
-    field(:target_strategy, TargetStrategy)
-    field(:target_allies, :boolean)
   end
 
   @doc false
@@ -27,17 +23,11 @@ defmodule GameBackend.Units.Skills.Effect do
       :type,
       :initial_delay,
       :components,
-      :executions,
-      :target_count,
-      :target_strategy,
-      :target_allies
+      :executions
     ])
     |> validate_required([
       :type,
-      :initial_delay,
-      :target_count,
-      :target_strategy,
-      :target_allies
+      :initial_delay
     ])
     |> validate_change(:executions, fn :executions, executions ->
       valid? =
@@ -59,23 +49,20 @@ defmodule GameBackend.Units.Skills.Effect do
       %{
         type: "DealDamage",
         attack_ratio: _attack_ratio,
-        energy_recharge: _energy_recharge,
-        delay: _delay
+        energy_recharge: _energy_recharge
       } ->
         true
 
       %{
         type: "DealDamageOverTime",
         attack_ratio: _attack_ratio,
-        energy_recharge: _energy_recharge,
-        delay: _delay
+        energy_recharge: _energy_recharge
       } ->
         true
 
       %{
         type: "Heal",
-        attack_ratio: _attack_ratio,
-        delay: _delay
+        attack_ratio: _attack_ratio
       } ->
         true
 

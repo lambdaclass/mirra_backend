@@ -35,9 +35,9 @@ defmodule Champions.Battle.Simulator do
   from having the battle be simultaneous.
 
   """
-  alias GameBackend.Units.Skills.Effect
-  alias GameBackend.Units.Skill
   alias Champions.Units
+  alias GameBackend.Units.Skills.Skill
+  alias GameBackend.Units.Skills.Mechanics.Effect
   alias GameBackend.Units.Unit
 
   require Logger

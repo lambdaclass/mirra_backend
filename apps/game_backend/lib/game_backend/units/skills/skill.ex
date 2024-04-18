@@ -1,14 +1,14 @@
-defmodule GameBackend.Units.Skill do
+defmodule GameBackend.Units.Skills.Skill do
   @moduledoc false
 
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Skills.Effect
+  alias GameBackend.Units.Skills.Mechanic
 
   schema "skills" do
     field(:name, :string)
-    embeds_many(:effects, Effect, on_replace: :delete)
+    has_many(:mechanics, Mechanic)
     field(:cooldown, :integer)
     field(:energy_regen, :integer)
     field(:animation_duration, :integer)
@@ -21,6 +21,6 @@ defmodule GameBackend.Units.Skill do
   def changeset(skill, attrs \\ %{}) do
     skill
     |> cast(attrs, [:name, :cooldown, :energy_regen, :animation_duration, :animation_trigger])
-    |> cast_embed(:effects)
+    |> cast_assoc(:mechanics)
   end
 end
