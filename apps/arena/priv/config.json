@@ -374,8 +374,6 @@
               }
             },
             "on_collide_effects": {
-              "apply_to_owned": true,
-              "apply_to_not_owned": false,
               "apply_effect_to_entity_type": [
                 "pool"
               ],

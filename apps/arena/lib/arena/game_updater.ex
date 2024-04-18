@@ -1096,22 +1096,18 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  # You'll only apply effect to owned entities or
+  # entities without an owner, implement behavior if needed
   defp get_entities_to_apply(collided_entities, projectile) do
     Map.filter(collided_entities, fn {_entity_id, entity} ->
-      apply_to_owned? =
-        projectile.aditional_info.on_collide_effects.apply_to_owned ==
-          (not is_nil(entity.aditional_info[:owner_id]) and
-             projectile.aditional_info.owner_id == entity.aditional_info.owner_id)
-
-      apply_to_not_owned? =
-        projectile.aditional_info.on_collide_effects.apply_to_not_owned ==
-          (not is_nil(entity.aditional_info[:owner_id]) and
-             projectile.aditional_info.owner_id != entity.aditional_info.owner_id)
+      entity_owned_or_player? =
+        not is_nil(entity.aditional_info[:owner_id]) and
+          projectile.aditional_info.owner_id == entity.aditional_info.owner_id
 
       apply_to_entity_type? =
         Atom.to_string(entity.category) in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
 
-      apply_to_entity_type? and apply_to_not_owned? and apply_to_owned?
+      apply_to_entity_type? and entity_owned_or_player?
     end)
   end
 
