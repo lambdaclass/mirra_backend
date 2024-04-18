@@ -517,8 +517,20 @@ defmodule Champions.Battle.Simulator do
   # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
   # Returns the new state of the target.
   defp maybe_apply_effect(effect, target, caster, current_step_number, true, history) do
+    new_history =
+      add_to_history(
+        history,
+        %{
+          caster_id: caster.id,
+          target_ids: [target.id],
+          skill_id: effect.skill_id,
+          skill_action_type: :EFFECT_HIT
+        },
+        :skill_action
+      )
+
     {target_after_modifiers, new_history} =
-      Enum.reduce(effect.modifiers, {target, history}, fn modifier, {target, history} ->
+      Enum.reduce(effect.modifiers, {target, new_history}, fn modifier, {target, history} ->
         # If it's permanent, we set its duration to -1
         new_modifier =
           modifier
@@ -576,8 +588,7 @@ defmodule Champions.Battle.Simulator do
           caster_id: caster.id,
           target_ids: [target.id],
           skill_id: effect.skill_id,
-          skill_action_type: :EFFECT_MISS,
-          stats_affected: []
+          skill_action_type: :EFFECT_MISS
         },
         :skill_action
       )
@@ -679,13 +690,11 @@ defmodule Champions.Battle.Simulator do
       add_to_history(
         history,
         %{
-          caster_id: caster.id,
-          target_ids: [target.id],
+          target_id: target.id,
           skill_id: skill_id,
-          skill_action_type: :EFFECT_HIT,
-          stats_affected: [%{stat: :HEALTH, amount: -damage_after_defense}]
+          stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
         },
-        :skill_action
+        :execution_received
       )
 
     new_target =
