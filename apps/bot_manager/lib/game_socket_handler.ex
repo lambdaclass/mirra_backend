@@ -114,10 +114,6 @@ defmodule BotManager.GameSocketHandler do
 
   defp send_current_action(_), do: nil
 
-  def terminate(_, _, _) do
-    exit(:normal)
-  end
-
   defp ws_url(%{
          "bot_client" => bot_client,
          "game_id" => game_id,
