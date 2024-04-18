@@ -789,9 +789,7 @@ defmodule Arena.GameUpdater do
           entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
 
           effects_to_apply =
-            Enum.map(on_collide_effects.effects, fn effect_name ->
-              Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-            end)
+            get_effects_from_config(on_collide_effects.effects, game_config)
 
           entities_map
           |> Map.take(projectile.collides_with)
@@ -1163,6 +1161,14 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :power_up}), do: :power_ups
   defp get_entity_path(%{category: :projectile}), do: :projectiles
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
+
+  def get_effects_from_config([], _game_config), do: []
+
+  def get_effects_from_config(effect_list, game_config) do
+    Enum.map(effect_list, fn effect_name ->
+      Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+    end)
+  end
 
   ##########################
   # End Helpers

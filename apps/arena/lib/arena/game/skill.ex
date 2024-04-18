@@ -2,6 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
+  alias Arena.GameUpdater
   alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
   alias Arena.Game.Player
@@ -281,9 +282,7 @@ defmodule Arena.Game.Skill do
 
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
-      Enum.map(effects, fn effect_name ->
-        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-      end)
+      GameUpdater.get_effects_from_config(effects, game_config)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
       Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
