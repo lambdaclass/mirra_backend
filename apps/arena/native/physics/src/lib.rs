@@ -24,19 +24,7 @@ fn move_entities(
         if entity.is_moving {
             entity.move_entity(ticks_to_move);
 
-            if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-                entity.move_to_next_valid_position_inside(&external_wall);
-            }
-
-            let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
-
-            if entity.category == Category::Player && !collides_with.is_empty() {
-                let collided_with: Vec<&Entity> = collides_with
-                    .iter()
-                    .map(|id| obstacles.get(id).unwrap())
-                    .collect();
-                entity.move_to_next_valid_position_outside(collided_with);
-            }
+            move_entity_to_closest_available_position(entity, &external_wall, &obstacles);
         }
     }
 
@@ -53,49 +41,24 @@ fn move_entity(
     let mut entity: Entity = entity;
     if entity.is_moving {
         entity.move_entity(ticks_to_move);
-
-        if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-            entity.move_to_next_valid_position_inside(&external_wall);
-        }
-
-        let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
-
-        if entity.category == Category::Player && !collides_with.is_empty() {
-            let collided_with: Vec<&Entity> = collides_with
-                .iter()
-                .map(|id| obstacles.get(id).unwrap())
-                .collect();
-            entity.move_to_next_valid_position_outside(collided_with);
-        }
+        move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
     }
 
     entity
 }
 
 #[rustler::nif()]
-fn move_entity_to_position(
-    entity: Entity,
+fn get_closest_available_position(
     new_position: Position,
+    entity: Entity,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
-) -> Entity {
+) -> Position {
     let mut entity: Entity = entity;
     entity.position = new_position;
 
-    if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-        entity.move_to_next_valid_position_inside(&external_wall);
-    }
-
-    let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
-
-    if entity.category == Category::Player && !collides_with.is_empty() {
-        let collided_with: Vec<&Entity> = collides_with
-            .iter()
-            .map(|id| obstacles.get(id).unwrap())
-            .collect();
-        entity.move_to_next_valid_position_outside(collided_with);
-    }
-    entity
+    move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
+    entity.position
 }
 
 #[rustler::nif()]
@@ -108,19 +71,7 @@ fn move_entity_to_direction(
 ) -> Entity {
     let mut entity: Entity = entity;
     entity.move_entity_to_direction(direction, amount);
-    if entity.category == Category::Player && !entity.is_inside_map(&external_wall) {
-        entity.move_to_next_valid_position_inside(&external_wall);
-    }
-
-    let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
-
-    if entity.category == Category::Player && !collides_with.is_empty() {
-        let collided_with: Vec<&Entity> = collides_with
-            .iter()
-            .map(|id| obstacles.get(id).unwrap())
-            .collect();
-        entity.move_to_next_valid_position_outside(collided_with);
-    }
+    move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
 
     entity
 }
@@ -209,6 +160,26 @@ fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> D
     direction
 }
 
+fn move_entity_to_closest_available_position(
+    entity: &mut Entity,
+    external_wall: &Entity,
+    obstacles: &HashMap<u64, Entity>,
+) {
+    if entity.category == Category::Player && !entity.is_inside_map(external_wall) {
+        entity.move_to_next_valid_position_inside(external_wall);
+    }
+
+    let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
+
+    if entity.category == Category::Player && !collides_with.is_empty() {
+        let collided_with: Vec<&Entity> = collides_with
+            .iter()
+            .map(|id| obstacles.get(id).unwrap())
+            .collect();
+        entity.move_to_next_valid_position_outside(collided_with);
+    }
+}
+
 fn distance_between_positions(entity_a_postion: Position, entity_b_postion: Position) -> f32 {
     let x = entity_b_postion.x - entity_a_postion.x;
     let y = entity_b_postion.y - entity_a_postion.y;
@@ -239,6 +210,6 @@ rustler::init!(
         get_direction_from_positions,
         calculate_speed,
         nearest_entity_direction,
-        move_entity_to_position
+        get_closest_available_position
     ]
 );
