@@ -260,7 +260,8 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
-        skill_direction: skill_direction, auto_aim?: auto_aim?
+        skill_direction: skill_direction,
+        auto_aim?: auto_aim?
       }) do
     last_id = game_state.last_id + 1
 
@@ -431,10 +432,13 @@ defmodule Arena.Game.Skill do
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
       true ->
-        nearest_entity_direction_in_range = Physics.nearest_entity_direction_in_range(player, entities, skill.max_autoaim_range)
+        nearest_entity_direction_in_range =
+          Physics.nearest_entity_direction_in_range(player, entities, skill.max_autoaim_range)
 
         {nearest_entity_direction_in_range != player.direction, nearest_entity_direction_in_range}
-      false -> {false, player.direction |> maybe_normalize(not skill.can_pick_destination)}
+
+      false ->
+        {false, player.direction |> maybe_normalize(not skill.can_pick_destination)}
     end
   end
 
