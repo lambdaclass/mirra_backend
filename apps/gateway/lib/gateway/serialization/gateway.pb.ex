@@ -750,7 +750,7 @@ defmodule Gateway.Serialization.TagReceived do
 
   field(:skill_id, 1, type: :string, json_name: "skillId")
   field(:target_id, 2, type: :string, json_name: "targetId")
-  field(:tag_name, 3, type: :string, json_name: "tagName")
+  field(:tag, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.ModifierExpired do
@@ -770,7 +770,7 @@ defmodule Gateway.Serialization.TagExpired do
 
   field(:skill_id, 1, type: :string, json_name: "skillId")
   field(:target_id, 2, type: :string, json_name: "targetId")
-  field(:tag_name, 3, type: :string, json_name: "tagName")
+  field(:tag, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.Death do
