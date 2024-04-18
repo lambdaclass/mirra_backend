@@ -172,14 +172,14 @@ defmodule Arena.Game.Player do
           skill.execution_duration_ms
         )
 
-        skill_direction =
+        {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
         Process.send_after(
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
-           Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
+           Map.merge(skill_params, %{skill_direction: skill_direction, auto_aim?: auto_aim?, skill_key: skill_key})
            |> Map.merge(skill)},
           skill.activation_delay_ms
         )

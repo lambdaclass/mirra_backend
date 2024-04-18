@@ -412,15 +412,30 @@ defmodule Arena.Game.Skill do
     Physics.add_angle_to_direction(direction, angle)
   end
 
+  @doc """
+  Receives player's skill input direction, the skill, the player and a list of entities.
+  Returns a tuple containing {boolean, direction}:
+  - boolean indicates if the skill can trigger the auto aim behavior. All of the following must be met:
+    - skill's direction is (0, 0).
+    - skill.autoaim is true.
+    - nearest entity direction isn't the player's.
+  - direction can be one of the following:
+    - Direction from player to closest entity, if auto aim can be triggered.
+    - Direction where the player is moving, normalized if skill can't pick destination.
+    - Direction received by parameter, normalized if skill can't pick destination.
+  """
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
-      true -> Physics.nearest_entity_direction(player, entities)
-      false -> player.direction |> maybe_normalize(not skill.can_pick_destination)
+      true ->
+        nearest_entity_direction_in_range = Physics.nearest_entity_direction_in_range(player, entities, skill.max_autoaim_range)
+
+        {nearest_entity_direction_in_range != player.direction, nearest_entity_direction_in_range}
+      false -> {false, player.direction |> maybe_normalize(not skill.can_pick_destination)}
     end
   end
 
   def maybe_auto_aim(skill_direction, skill, _player, _entities) do
-    skill_direction |> maybe_normalize(not skill.can_pick_destination)
+    {false, skill_direction |> maybe_normalize(not skill.can_pick_destination)}
   end
 
   defp maybe_normalize(direction, true) do
