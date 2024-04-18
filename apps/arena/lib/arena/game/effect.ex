@@ -6,60 +6,23 @@ defmodule Arena.Game.Effect do
   alias Arena.GameUpdater
   alias Arena.Game.Player
 
-  def put_effect(game_state, player_id, owner_id, effect) do
-    put_effect(game_state, player_id, owner_id, 0, effect)
+  @doc """
+  Add an effect to any kind of entity
+  if the entity already has that effect from with the same owner_id and the effect
+  param has the flag one_time_application in true it won't be re applied
+
+  ## Examples
+
+    iex> put_effect_to_entity(game_state, entity, owner_id, effect)
+    %{aditional_info: effects: [effect]}
+
+  """
+
+  def put_effect_to_entity(game_state, entity, owner_id, effect) do
+    put_effect_to_entity(game_state, entity, owner_id, 0, effect)
   end
 
-  def put_effect(game_state, player_id, owner_id, start_action_removal_in_ms, effect) do
-    last_id = game_state.last_id + 1
-    now = System.monotonic_time(:millisecond)
-    action_removal_at = now + start_action_removal_in_ms
-
-    expires_at =
-      case effect[:duration_ms] do
-        nil -> nil
-        duration_ms -> now + duration_ms
-      end
-
-    ## TODO: remove `id` from effect, unless it is really necessary
-    effect_extra_attributes = %{
-      id: last_id,
-      owner_id: owner_id,
-      expires_at: expires_at,
-      action_removal_at: action_removal_at
-    }
-
-    effect = Map.merge(effect, effect_extra_attributes)
-
-    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn effects -> effects ++ [effect] end)
-    |> Map.put(:last_id, last_id)
-  end
-
-  ## TODO: This should be an attribute of the effect (stackable, stackable by same owner or not), not something to be decided by function callers
-  ##  In addition, we should have a `caused_by` type of field so we can track the source of the effect cause
-  ##  owner is not precise enough
-  def put_non_owner_stackable_effect(game_state, player_id, owner_id, effect) do
-    player = game_state.players[player_id]
-
-    contain_effects? =
-      Enum.any?(player.aditional_info.effects, fn player_effect ->
-        player_effect.owner_id == owner_id and player_effect.name == effect.name
-      end)
-
-    if contain_effects? do
-      game_state
-    else
-      put_effect(game_state, player_id, owner_id, effect)
-    end
-  end
-
-  def remove_owner_effects(game_state, player_id, owner_id) do
-    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn current_effects ->
-      Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
-    end)
-  end
-
-  def add_effect_to_entity(game_state, entity, owner_id, effect) do
+  def put_effect_to_entity(game_state, entity, owner_id, start_action_removal_in_ms, effect) do
     last_id = game_state.last_id + 1
 
     entity_contain_effect? =
@@ -71,17 +34,38 @@ defmodule Arena.Game.Effect do
       if entity_contain_effect? and effect.one_time_application do
         entity
       else
-        effect_params = %{id: last_id, owner_id: owner_id}
+        now = System.monotonic_time(:millisecond)
+        action_removal_at = now + start_action_removal_in_ms
+
+        expires_at =
+          case effect[:duration_ms] do
+            nil -> nil
+            duration_ms -> now + duration_ms
+          end
+
+        ## TODO: remove `id` from effect, unless it is really necessary
+        effect_extra_attributes = %{
+          id: last_id,
+          owner_id: owner_id,
+          expires_at: expires_at,
+          action_removal_at: action_removal_at
+        }
 
         update_in(
           entity,
           [:aditional_info, :effects],
-          fn effects -> effects ++ [Map.merge(effect, effect_params)] end
+          fn effects -> effects ++ [Map.merge(effect, effect_extra_attributes)] end
         )
       end
 
     GameUpdater.update_entity_in_game_state(game_state, updated_entity)
     |> Map.put(:last_id, last_id)
+  end
+
+  def remove_owner_effects(game_state, player_id, owner_id) do
+    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn current_effects ->
+      Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
+    end)
   end
 
   @doc """
@@ -144,8 +128,6 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  ## TODO: refactor into Effect module, take a closer look at how the recurring effects are re-applied
-  ##    specifically the mess around apply_effect_mechanic/3 and do-effect_mechanics/4
   def apply_effect_mechanic(%{players: players, pools: pools} = game_state) do
     game_state =
       Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
@@ -208,7 +190,7 @@ defmodule Arena.Game.Effect do
           pull_foce =
             pull_params.force + pull_params.force * pool.aditional_info.stat_multiplier
 
-          Physics.move_entity_to_direction(player, direction, pull_foce)
+          Physics.move_entity_to_direction(player, direction, pull_foce, game_state.external_wall, game_state.obstacles)
           |> Map.put(:aditional_info, player.aditional_info)
           |> Map.put(:collides_with, player.collides_with)
         end

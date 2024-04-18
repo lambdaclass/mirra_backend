@@ -286,7 +286,7 @@ defmodule Arena.Game.Skill do
       end)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      Effect.put_effect(game_state, player.id, player.id, execution_duration_ms, effect)
+      Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
     end)
   end
 

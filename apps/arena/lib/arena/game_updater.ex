@@ -781,17 +781,23 @@ defmodule Arena.GameUpdater do
          game_config
        ) do
     Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
-      entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
+      case get_in(projectile, [:aditional_info, :on_collide_effects]) do
+        nil ->
+          game_state
 
-      effects_to_apply =
-        Enum.map(projectile.aditional_info.on_collide_effects.effects, fn effect_name ->
-          Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        end)
+        on_collide_effects ->
+          entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
 
-      entities_map
-      |> Map.take(projectile.collides_with)
-      |> get_entities_to_apply(projectile)
-      |> apply_effect_to_entities(effects_to_apply, game_state, projectile)
+          effects_to_apply =
+            Enum.map(on_collide_effects.effects, fn effect_name ->
+              Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+            end)
+
+          entities_map
+          |> Map.take(projectile.collides_with)
+          |> get_entities_to_apply(projectile)
+          |> apply_effect_to_entities(effects_to_apply, game_state, projectile)
+      end
     end)
   end
 
@@ -1052,11 +1058,9 @@ defmodule Arena.GameUpdater do
     if player.id == pool.aditional_info.owner_id do
       game_state
     else
-      ## TODO: Effect.put_non_owner_stackable_effect/4 is doing essentially the same check multiple times
-      ##   we should try to refactor this to avoid it
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        Effect.put_non_owner_stackable_effect(game_state, player.id, pool.id, effect)
+        Effect.put_effect_to_entity(game_state, player, pool.id, effect)
       end)
     end
   end
@@ -1117,11 +1121,11 @@ defmodule Arena.GameUpdater do
     Enum.reduce(entities, game_state, fn {_entity_id, entity}, game_state ->
       game_state =
         Enum.reduce(effects, game_state, fn effect, game_state ->
-          Effect.add_effect_to_entity(game_state, entity, projectile.id, effect)
+          Effect.put_effect_to_entity(game_state, entity, projectile.id, effect)
         end)
 
       remove_projectile_on_collision? =
-        Enum.any?(effects, fn effect -> effect.remove_on_collision end) or
+        Enum.any?(effects, fn effect -> effect.consume_projectile end) or
           projectile.aditional_info.status == :CONSUMED
 
       if remove_projectile_on_collision? do

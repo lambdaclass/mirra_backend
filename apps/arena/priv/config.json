@@ -79,7 +79,7 @@
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,
     "natural_healing_interval_ms": 300,
-    "zone_shrink_start_ms": 35000,
+    "zone_shrink_start_ms": 999999999,
     "zone_shrink_radius_by": 10,
     "zone_shrink_interval": 100,
     "zone_stop_interval_ms": 13000,
@@ -516,7 +516,7 @@
     {
       "name": "singularity",
       "remove_on_action": false,
-      "one_time_application": false,
+      "one_time_application": true,
       "effect_mechanics": {
         "pull": {
           "force": 15.0,
@@ -534,10 +534,10 @@
       "name": "buff_singularity",
       "remove_on_action": false,
       "one_time_application": true,
-      "remove_on_collision": true,
+      "consume_projectile": true,
       "effect_mechanics": {
         "buff_pool": {
-          "stat_multiplier": 4.0,
+          "stat_multiplier": 0.10,
           "additive_duration_add_ms": 1000,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
@@ -552,9 +552,13 @@
       "effect_mechanics": {
         "reduce_stamina_interval": {
           "decrease_by": 0.3,
-          "execute_multiple_times": false
+          "execute_multiple_times": false,
+          "effect_delay_ms": 0
         },
-        "refresh_stamina": {}
+        "refresh_stamina": {
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
       }
     },
     {
@@ -565,6 +569,7 @@
       "effect_mechanics": {
         "speed_boost": {
           "amount": 25,
+          "effect_delay_ms": 0,
           "execute_multiple_times": false
         }
       }
@@ -575,8 +580,10 @@
       "remove_on_action": false,
       "one_time_application": true,
       "effect_mechanics": {
-        "damage_immunity": {},
-        "execute_multiple_times": false
+        "damage_immunity": {
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
       }
     },
     {
