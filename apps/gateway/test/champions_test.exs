@@ -455,10 +455,10 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = advanced_user}}
 
       # Check that the gold and gems afk rewards rates are now greater than the initial rewards, and the other rates are still 0
-      rewardable_currencies_ids = ["Gold", "Gems"] |> Enum.map(&Currencies.get_currency_by_name!(&1).id)
+      rewardable_currencies = ["Gold", "Gems"]
 
       assert Enum.all?(advanced_user.afk_reward_rates, fn rate ->
-               case rate.currency_id in rewardable_currencies_ids do
+               case rate.currency.name in rewardable_currencies do
                  true ->
                    rate.rate > 0
 
@@ -491,9 +491,7 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(claimed_user.currencies, fn currency ->
                user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
 
-               currency_id = Currencies.get_currency_by_name!(currency.currency.name).id
-
-               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == currency_id)) do
+               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency.name == currency.currency.name)) do
                  nil ->
                    # If the currency is not in the afk rewards rates, we don't consider it.
                    true
@@ -549,14 +547,16 @@ defmodule Gateway.Test.Champions do
 
       current_level_afk_rewards_increments =
         Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
+        |> Repo.preload(:currency)
 
       assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->
-               case rate.currency_id in rewardable_currencies_ids do
+               case rate.currency.name in rewardable_currencies do
                  true ->
-                   previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == rate.currency_id)).rate
+                   previous_rate =
+                     Enum.find(advanced_user.afk_reward_rates, &(&1.currency.name == rate.currency.name)).rate
 
                    afk_reward_increment =
-                     Enum.find(current_level_afk_rewards_increments, &(&1.currency_id == rate.currency_id)).amount
+                     Enum.find(current_level_afk_rewards_increments, &(&1.currency.name == rate.currency.name)).amount
 
                    new_rate = previous_rate + afk_reward_increment
                    rate.rate > previous_rate
