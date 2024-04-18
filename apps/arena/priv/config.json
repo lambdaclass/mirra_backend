@@ -96,6 +96,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1000,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -117,6 +118,7 @@
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1500,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -141,6 +143,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1200,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -167,6 +170,7 @@
       "activation_delay_ms": 500,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1500,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -190,6 +194,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 2200,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -216,6 +221,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -234,6 +240,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -251,6 +258,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1000,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -275,6 +283,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -297,6 +306,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -317,6 +327,7 @@
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": true,
       "stamina_cost": 1,
       "mechanics": [
@@ -337,6 +348,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -355,6 +367,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 2100,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
