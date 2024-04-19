@@ -15,6 +15,7 @@ defmodule GameBackend.Users.User do
     field(:game_id, :integer)
     field(:username, :string)
     field(:level, :integer)
+    field(:kaline_tree_level, :integer)
     field(:experience, :integer)
     field(:last_afk_reward_claim, :utc_datetime)
 
@@ -32,6 +33,7 @@ defmodule GameBackend.Users.User do
     user
     |> cast(attrs, [:game_id, :username, :last_afk_reward_claim])
     |> put_change(:level, 1)
+    |> put_change(:kaline_tree_level, 1)
     |> put_change(:experience, 0)
     |> unique_constraint([:game_id, :username])
     |> validate_required([:game_id, :username])
