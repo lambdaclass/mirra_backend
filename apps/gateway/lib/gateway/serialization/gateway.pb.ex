@@ -405,7 +405,7 @@ defmodule Gateway.Serialization.AfkRewardRate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:currency_id, 2, type: :string, json_name: "currencyId")
+  field(:currency, 2, type: Gateway.Serialization.Currency)
   field(:rate, 3, type: :float)
 end
 
@@ -532,6 +532,8 @@ defmodule Gateway.Serialization.Level do
     type: Gateway.Serialization.CurrencyReward,
     json_name: "currencyRewards"
   )
+
+  field(:experience_reward, 6, type: :uint32, json_name: "experienceReward")
 end
 
 defmodule Gateway.Serialization.CurrencyReward do
@@ -698,6 +700,12 @@ defmodule Gateway.Serialization.Action do
 
   field(:tag_expired, 5, type: Gateway.Serialization.TagExpired, json_name: "tagExpired", oneof: 0)
   field(:death, 6, type: Gateway.Serialization.Death, oneof: 0)
+
+  field(:execution_received, 7,
+    type: Gateway.Serialization.ExecutionReceived,
+    json_name: "executionReceived",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.StatAffected do
@@ -723,12 +731,15 @@ defmodule Gateway.Serialization.SkillAction do
     json_name: "skillActionType",
     enum: true
   )
+end
 
-  field(:stats_affected, 5,
-    repeated: true,
-    type: Gateway.Serialization.StatAffected,
-    json_name: "statsAffected"
-  )
+defmodule Gateway.Serialization.ExecutionReceived do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:target_id, 1, type: :string, json_name: "targetId")
+  field(:stat_affected, 2, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
 end
 
 defmodule Gateway.Serialization.ModifierReceived do
@@ -748,7 +759,7 @@ defmodule Gateway.Serialization.TagReceived do
 
   field(:skill_id, 1, type: :string, json_name: "skillId")
   field(:target_id, 2, type: :string, json_name: "targetId")
-  field(:tag_name, 3, type: :string, json_name: "tagName")
+  field(:tag, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.ModifierExpired do
@@ -768,7 +779,7 @@ defmodule Gateway.Serialization.TagExpired do
 
   field(:skill_id, 1, type: :string, json_name: "skillId")
   field(:target_id, 2, type: :string, json_name: "targetId")
-  field(:tag_name, 3, type: :string, json_name: "tagName")
+  field(:tag, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.Death do

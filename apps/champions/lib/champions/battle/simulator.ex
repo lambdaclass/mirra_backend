@@ -278,7 +278,7 @@ defmodule Champions.Battle.Simulator do
              history_acc,
              %{
                skill_id: modifier.skill_id,
-               target_ids: [unit.id],
+               target_id: unit.id,
                stat_affected: %{
                  stat: modifier.attribute |> String.upcase() |> String.to_atom(),
                  amount: modifier.float_magnitude
@@ -316,7 +316,7 @@ defmodule Champions.Battle.Simulator do
              history,
              %{
                skill_id: tag.skill_id,
-               unit_id: unit.id,
+               target_id: unit.id,
                tag: tag.tag
              },
              :tag_expired
@@ -516,8 +516,20 @@ defmodule Champions.Battle.Simulator do
   # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
   # Returns the new state of the target.
   defp maybe_apply_effect(effect, target, caster, current_step_number, true, history) do
+    new_history =
+      add_to_history(
+        history,
+        %{
+          caster_id: caster.id,
+          target_ids: [target.id],
+          skill_id: effect.skill_id,
+          skill_action_type: :EFFECT_HIT
+        },
+        :skill_action
+      )
+
     {target_after_modifiers, new_history} =
-      Enum.reduce(effect.modifiers, {target, history}, fn modifier, {target, history_acc} ->
+      Enum.reduce(effect.modifiers, {target, new_history}, fn modifier, {target, history_acc} ->
         # If it's permanent, we set its duration to -1
         new_modifier =
           modifier
@@ -529,7 +541,7 @@ defmodule Champions.Battle.Simulator do
             history_acc,
             %{
               skill_id: modifier.skill_id,
-              target_ids: [target.id],
+              target_id: target.id,
               stat_affected: %{
                 stat: modifier.attribute |> String.upcase() |> String.to_atom(),
                 amount: modifier.float_magnitude
@@ -575,8 +587,7 @@ defmodule Champions.Battle.Simulator do
           caster_id: caster.id,
           target_ids: [target.id],
           skill_id: effect.skill_id,
-          skill_action_type: :EFFECT_MISS,
-          stats_affected: []
+          skill_action_type: :EFFECT_MISS
         },
         :skill_action
       )
@@ -630,7 +641,7 @@ defmodule Champions.Battle.Simulator do
             history,
             %{
               skill_id: effect.skill_id,
-              unit_id: target.id,
+              target_id: target.id,
               tag: tag
             },
             :tag_received
@@ -678,13 +689,11 @@ defmodule Champions.Battle.Simulator do
       add_to_history(
         history,
         %{
-          caster_id: caster.id,
-          target_ids: [target.id],
+          target_id: target.id,
           skill_id: skill_id,
-          skill_action_type: :EFFECT_HIT,
-          stats_affected: [%{stat: :HEALTH, amount: -damage_after_defense}]
+          stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
         },
-        :skill_action
+        :execution_received
       )
 
     new_target =
