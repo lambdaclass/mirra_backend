@@ -21,6 +21,7 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: character.base_health,
         base_health: character.base_health,
+        max_health: character.base_health,
         base_speed: character.base_speed,
         base_stamina_interval: character.stamina_interval,
         skills: character.skills,
@@ -93,7 +94,9 @@ defmodule Arena.Entities do
       aditional_info: %{
         owner_id: owner_id,
         status: :AVAILABLE,
-        remove_on_collision: true
+        remove_on_collision: true,
+        power_up_damage_modifier: power_up.power_up_damage_modifier,
+        power_up_health_modifier: power_up.power_up_health_modifier
       }
     }
   end
