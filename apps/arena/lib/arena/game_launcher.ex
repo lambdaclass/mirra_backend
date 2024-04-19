@@ -1,5 +1,6 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
+  alias Arena.Utils
   alias Ecto.UUID
 
   use GenServer
@@ -73,9 +74,9 @@ defmodule Arena.GameLauncher do
         clients: game_clients ++ bot_clients
       })
 
-    spawn_bot_for_player(bot_clients, game_pid)
-
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
+
+    spawn_bot_for_player(bot_clients, game_id)
 
     Enum.each(game_clients, fn {_client_id, _character_name, _player_name, from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])
@@ -85,15 +86,12 @@ defmodule Arena.GameLauncher do
     {:noreply, %{state | clients: remaining_clients}}
   end
 
-  def handle_info({:spawn_bot_for_player, bot_client, game_pid}, state) do
-    Finch.build(:get, build_bot_url(game_pid, bot_client))
-    |> Finch.async_request(Arena.Finch)
+  def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
+    spawn(fn ->
+      Finch.build(:get, Utils.get_bot_connection_url(game_id, bot_client))
+      |> Finch.request(Arena.Finch)
+    end)
 
-    {:noreply, state}
-  end
-
-  # This is a handler to the async bot request
-  def handle_info({{Finch.HTTP1.Pool, _}, _}, state) do
     {:noreply, state}
   end
 
@@ -113,18 +111,9 @@ defmodule Arena.GameLauncher do
     end)
   end
 
-  defp spawn_bot_for_player(bot_clients, game_pid) do
+  defp spawn_bot_for_player(bot_clients, game_id) do
     Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-      send(self(), {:spawn_bot_for_player, bot_client, game_pid})
+      send(self(), {:spawn_bot_for_player, bot_client, game_id})
     end)
-  end
-
-  defp build_bot_url(game_pid, bot_client) do
-    encoded_game_pid = game_pid |> :erlang.term_to_binary() |> Base58.encode()
-    server_url = System.get_env("PHX_HOST") || "localhost"
-    # TODO remove this hardcode url when servers are implemented
-    bot_manager_host = System.get_env("BOT_MANAGER_HOST", "localhost")
-    bot_manager_port = System.get_env("BOT_MANAGER_PORT", "4003")
-    "http://#{bot_manager_host}:#{bot_manager_port}/join/#{server_url}/#{encoded_game_pid}/#{bot_client}"
   end
 end
