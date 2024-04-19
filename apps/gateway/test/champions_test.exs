@@ -576,7 +576,14 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Bow of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              base_value: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_bow.id, level: 1})
@@ -603,16 +610,41 @@ defmodule Gateway.Test.Champions do
 
       [unit | _] = user.units
 
-      {:ok, epic_sword} =
+      attack_multiplier = 1.6
+      defense_multiplier = 1.2
+      health_adder = 100
+
+      {:ok, epic_item} =
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
-          name: "Epic Sword of Testness",
-          type: "weapon"
+          name: "Epic Upgrader of All Stats",
+          type: "weapon",
+          base_modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              base_value: attack_multiplier
+            },
+            %{
+              attribute: "defense",
+              modifier_operation: "Multiply",
+              base_value: defense_multiplier
+            },
+            %{
+              attribute: "health",
+              modifier_operation: "Add",
+              base_value: health_adder
+            }
+          ]
         })
 
-      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_item.id, level: 1})
 
       # EquipItem
+      attack_before_equip = Units.get_attack(unit)
+      defense_before_equip = Units.get_defense(unit)
+      health_before_equip = Units.get_health(unit)
+
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
       fetch_last_message(socket_tester)
 
@@ -623,6 +655,29 @@ defmodule Gateway.Test.Champions do
       # The item is now equipped to the unit
       assert equipped_item.user_id == user.id
       assert equipped_item.unit_id == unit.id
+
+      # The item affected the unit stats
+      {:ok, updated_user} = Users.get_user(user.id)
+
+      unit_with_item =
+        updated_user.units
+        |> Enum.filter(&(&1.id == unit.id))
+        |> hd()
+        |> Repo.preload(items: :template)
+
+      # We use a range to avoid floating point rounding/truncating errors
+      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip)..trunc(
+               attack_multiplier *
+                 attack_before_equip + 1
+             )
+
+      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip)..trunc(
+               defense_multiplier *
+                 defense_before_equip +
+                 1
+             )
+
+      assert Units.get_health(unit_with_item) == health_before_equip + health_adder
 
       # EquipItem again, to another unit
       another_unit = user.units |> Enum.at(1)
@@ -649,6 +704,19 @@ defmodule Gateway.Test.Champions do
       # The item is now unequipped
       assert unequipped_item.user_id == user.id
       assert unequipped_item.unit_id == ""
+
+      # The unit stats are back to normal
+      {:ok, updated_user} = Users.get_user(user.id)
+
+      unit_without_item =
+        updated_user.units
+        |> Enum.filter(&(&1.id == unit.id))
+        |> hd()
+        |> Repo.preload(items: :template)
+
+      assert Units.get_attack(unit_without_item) == attack_before_equip
+      assert Units.get_defense(unit_without_item) == defense_before_equip
+      assert Units.get_health(unit_without_item) == health_before_equip
     end
 
     test "level up item", %{socket_tester: socket_tester} do
@@ -659,7 +727,14 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Axe of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              base_value: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
