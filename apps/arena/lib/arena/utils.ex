@@ -13,6 +13,15 @@ defmodule Arena.Utils do
     %{x: x / length, y: y / length}
   end
 
+  def increase_value_by_base_percentage(current_value, base_value, amount) when is_integer(current_value) do
+    (current_value + base_value * amount)
+    |> round()
+  end
+
+  def increase_value_by_base_percentage(current_value, base_value, amount) do
+    current_value + base_value * amount
+  end
+
   def get_bot_connection_url(game_id, bot_client) do
     server_url = System.get_env("PHX_HOST") || "localhost"
     bot_manager_host = System.get_env("BOT_MANAGER_HOST", "localhost")

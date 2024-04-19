@@ -18,25 +18,53 @@ Champions.Config.import_character_config()
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
-  type: "weapon"
+  type: "weapon",
+  base_modifiers: [
+    %{
+      attribute: "attack",
+      modifier_operation: "Multiply",
+      base_value: 1.6
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Mythical Helmet of Mythicness",
-  type: "helmet"
+  type: "helmet",
+  base_modifiers: [
+    %{
+      attribute: "defense",
+      modifier_operation: "Multiply",
+      base_value: 1.15
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Legendary Chestplate of Legendaryness",
-  type: "chest"
+  type: "chest",
+  base_modifiers: [
+    %{
+      attribute: "defense",
+      modifier_operation: "Multiply",
+      base_value: 1.2
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Magical Boots of Magicness",
-  type: "boots"
+  type: "boots",
+  base_modifiers: [
+    %{
+      attribute: "speed",
+      modifier_operation: "Multiply",
+      base_value: 1.3
+    }
+  ]
 })
 
 {:ok, gold_currency} =

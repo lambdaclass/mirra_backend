@@ -1,73 +1,73 @@
 {
   "map": {
-    "radius": 4800.0,
+    "radius": 5520.0,
     "initial_positions": [
       {
-        "x": 4000.0,
+        "x": 4600.0,
         "y": 0.0
       },
       {
-        "x": -4000.0,
+        "x": -4600.0,
         "y": 0.0
       },
       {
-        "x": -1500.0,
-        "y": 3500.0
+        "x": -1725.0,
+        "y": 4025.0
       },
       {
-        "x": 1500.0,
-        "y": -3500.0
+        "x": 1725.0,
+        "y": -4025.0
       },
       {
-        "x": 1500.0,
-        "y": 3500.0
+        "x": 1725.0,
+        "y": 4025.0
       },
       {
-        "x": -1500.0,
-        "y": -3500.0
+        "x": -1725.0,
+        "y": -4025.0
       },
       {
-        "x": 3000.0,
-        "y": 2000.0
+        "x": 3450.0,
+        "y": 2300.0
       },
       {
-        "x": -3000.0,
-        "y": -2000.0
+        "x": -3450.0,
+        "y": -2300.0
       },
       {
-        "x": -3000.0,
-        "y": 2000.0
+        "x": -3450.0,
+        "y": 2300.0
       },
       {
-        "x": 3000.0,
-        "y": -2000.0
+        "x": 3450.0,
+        "y": -2300.0
       }
     ],
     "obstacles": [
       {
         "position": {
-          "x": -6044.0,
-          "y": -1439.0
+          "x": -6957.6,
+          "y": -1657.85
         },
-        "radius": 1567.0,
+        "radius": 1800.05,
         "shape": "circle",
         "vertices": []
       },
       {
         "position": {
-          "x": -860.0,
-          "y": 5338.0
+          "x": -989.0,
+          "y": 6134.7
         },
-        "radius": 1090.0,
+        "radius": 1253.5,
         "shape": "circle",
         "vertices": []
       },
       {
         "position": {
-          "x": -1630.0,
-          "y": 4588.0
+          "x": -1874.5,
+          "y": 5286.2
         },
-        "radius": 317.0,
+        "radius": 365.55,
         "shape": "circle",
         "vertices": []
       }
@@ -487,6 +487,7 @@
     "power_up": {
       "distance_to_power_up": 500,
       "power_up_damage_modifier": 0.10,
+      "power_up_health_modifier": 0.10,
       "radius": 200.0
     }
   },
@@ -521,8 +522,7 @@
         "reduce_stamina_interval": {
           "decrease_by": 0.3
         },
-        "refresh_stamina": {
-        }
+        "refresh_stamina": {}
       }
     },
     {
@@ -540,7 +540,7 @@
       "duration_ms": 10000,
       "remove_on_action": false,
       "effect_mechanics": {
-        "damage_immunity": { }
+        "damage_immunity": {}
       }
     },
     {
