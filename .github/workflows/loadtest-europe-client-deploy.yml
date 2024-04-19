@@ -15,12 +15,6 @@ on:
         options:
           - loadtest-europe-server.curseofmirra.com
           - loadtest-brazil-server.curseofmirra.com
-      activate_bots:
-        type: choice
-        description: Create bots for matches
-        options:
-          - true
-          - false
 
 jobs:
   build-deploy:
