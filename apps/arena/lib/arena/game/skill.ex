@@ -476,11 +476,11 @@ defmodule Arena.Game.Skill do
     game_state
   end
 
-  defp maybe_multiply_by_range(%{x: x, y: y}, _auto_aim? = false, range) do
+  defp maybe_multiply_by_range(%{x: x, y: y}, false = _auto_aim?, range) do
     %{x: x * range, y: y * range}
   end
 
-  defp maybe_multiply_by_range(direction, _auto_aim? = true, _range) do
+  defp maybe_multiply_by_range(direction, true = _auto_aim?, _range) do
     direction
   end
 end
