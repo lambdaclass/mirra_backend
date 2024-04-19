@@ -244,16 +244,11 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, player.id], player)
   end
 
-  def do_mechanic(game_state, entity, {:teleport, teleport}, %{skill_direction: skill_target}) do
-    target_position = %{
-      x: entity.position.x + skill_target.x * teleport.range,
-      y: entity.position.y + skill_target.y * teleport.range
-    }
-
+  def do_mechanic(game_state, entity, {:teleport, _teleport}, %{skill_destination: skill_destination}) do
     entity =
       entity
-      |> Physics.move_entity_to_position(target_position, game_state.external_wall)
       |> Map.put(:aditional_info, entity.aditional_info)
+      |> Map.put(:position, skill_destination)
 
     put_in(game_state, [:players, entity.id], entity)
   end
@@ -346,7 +341,13 @@ defmodule Arena.Game.Skill do
         else
           direction = Physics.get_direction_from_positions(player.position, pool.position)
 
-          Physics.move_entity_to_direction(player, direction, pull_params.force)
+          Physics.move_entity_to_direction(
+            player,
+            direction,
+            pull_params.force,
+            game_state.external_wall,
+            game_state.obstacles
+          )
           |> Map.put(:aditional_info, player.aditional_info)
           |> Map.put(:collides_with, player.collides_with)
         end
