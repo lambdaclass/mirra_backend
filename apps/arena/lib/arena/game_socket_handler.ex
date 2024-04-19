@@ -118,10 +118,17 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
+  def websocket_info(:end_game_state, state) do
+    # Logger.info("Websocket info, Message: GAME FINISHED")
+
+    {:ok, Map.put(state, :game_finished, true)}
+  end
+
+  @impl true
   def websocket_info({:game_finished, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME FINISHED")
 
-    {:reply, {:binary, game_state}, Map.put(state, :game_finished, true)}
+    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
@@ -149,7 +156,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate({:error, :closed}, _req, %{game_finished: false} = state) do
+  def terminate(_reason, _req, %{game_finished: false} = state) do
     spawn(fn ->
       Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
       |> Finch.request(Arena.Finch)

@@ -154,6 +154,7 @@ defmodule Arena.GameUpdater do
 
       {:ended, winner} ->
         state = put_in(state, [:game_state, :status], :ENDED)
+        PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
 
         ## The idea of having this waiting period is in case websocket processes keep
