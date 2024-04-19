@@ -33,7 +33,7 @@ defmodule Arena.GameSocketHandler do
       Map.put(state, :player_id, player_id)
       |> Map.put(:enable, game_status == :RUNNING)
       |> Map.put(:block_actions, false)
-      |> Map.put(:game_finished, false)
+      |> Map.put(:game_finished, game_status == :ENDED)
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
@@ -149,7 +149,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate(_reason, _req, %{game_finished: false} = state) do
+  def terminate({:error, :closed}, _req, %{game_finished: false} = state) do
     spawn(fn ->
       Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
       |> Finch.request(Arena.Finch)

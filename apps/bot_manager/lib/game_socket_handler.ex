@@ -46,6 +46,9 @@ defmodule BotManager.GameSocketHandler do
       %{event: {:joined, joined}} ->
         {:ok, Map.merge(state, joined)}
 
+      %{event: {:finished, _}} ->
+        {:stop, state}
+
       _ ->
         {:ok, state}
     end
@@ -113,6 +116,10 @@ defmodule BotManager.GameSocketHandler do
   end
 
   defp send_current_action(_), do: nil
+
+  def terminate(_, _, _) do
+    exit(:normal)
+  end
 
   defp ws_url(%{
          "bot_client" => bot_client,
