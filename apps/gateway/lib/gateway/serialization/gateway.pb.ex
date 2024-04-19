@@ -111,6 +111,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "getUserSuperCampaignProgresses",
     oneof: 0
   )
+
+  field(:level_up_kaline_tree, 24,
+    type: Gateway.Serialization.LevelUpKalineTree,
+    json_name: "levelUpKalineTree",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -298,6 +304,14 @@ defmodule Gateway.Serialization.Summon do
 end
 
 defmodule Gateway.Serialization.GetUserSuperCampaignProgresses do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
+defmodule Gateway.Serialization.LevelUpKalineTree do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

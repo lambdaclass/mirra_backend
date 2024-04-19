@@ -11,7 +11,9 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias Ecto.Multi
   alias GameBackend.Repo
+  alias GameBackend.Users.Currencies
   alias GameBackend.Users.User
 
   @doc """
@@ -87,6 +89,27 @@ defmodule GameBackend.Users do
     user
     |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
     |> Repo.update()
+  end
+
+  def level_up_kaline_tree(user_id, currency_id, level_up_cost) do
+    Multi.new()
+    |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
+    |> Multi.run(:user_currency, fn _, _ ->
+      Currencies.add_currency(user_id, currency_id, -level_up_cost)
+    end)
+    |> Repo.transaction()
+  end
+
+  defp increment_tree_level(user_id) do
+    case get_user(user_id) do
+      {:ok, user} ->
+        user
+        |> User.changeset(%{kaline_tree_level: user.kaline_tree_level + 1})
+        |> Repo.update()
+
+      error ->
+        error
+    end
   end
 
   defp preload(user),

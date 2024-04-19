@@ -195,4 +195,26 @@ defmodule Champions.Users do
       {:error, _, reason, _} -> {:error, reason}
     end
   end
+
+  @doc """
+  Level up the Kaline Tree of a user.
+  """
+  def level_up_kaline_tree(user_id) do
+    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+         [{level_up_currency_id, level_up_cost}] = calculate_cost_to_level_up_kaline_tree(user),
+         {:can_afford, true} <-
+           {:can_afford,
+            Currencies.can_afford(
+              user_id,
+              level_up_currency_id,
+              level_up_cost
+            )} do
+      Users.level_up_kaline_tree(user_id, level_up_currency_id, level_up_cost)
+    else
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  defp calculate_cost_to_level_up_kaline_tree(user),
+    do: [{Currencies.get_currency_by_name!("Fertilizer").id, (user.kaline_tree_level + 1) * 100}]
 end

@@ -767,6 +767,21 @@ defmodule Gateway.Test.Champions do
     end
   end
 
+  describe "kaline tree" do
+    test "kaline tree", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("KalineTreeUser")
+
+      # Kaline tree level is 1 when the user is created.
+      assert user.kaline_tree_level == 1
+
+      # Level up Kaline Tree without enough fertilizer should return an error.
+      SocketTester.level_up_kaline_tree(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+    end
+  end
+
   defp fetch_last_message(socket_tester) do
     :timer.sleep(100)
     send(socket_tester, {:last_message, self()})
