@@ -12,4 +12,13 @@ defmodule Arena.Utils do
     length = :math.sqrt(x * x + y * y)
     %{x: x / length, y: y / length}
   end
+
+  def increase_value_by_base_percentage(current_value, base_value, amount) when is_integer(current_value) do
+    (current_value + base_value * amount)
+    |> round()
+  end
+
+  def increase_value_by_base_percentage(current_value, base_value, amount) do
+    current_value + base_value * amount
+  end
 end

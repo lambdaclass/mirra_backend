@@ -347,12 +347,12 @@ defmodule Arena.Game.Player do
 
     case heal_interval? and damage_interval? and use_skill_interval? do
       true ->
-        heal_amount = floor(player.aditional_info.base_health * 0.1)
+        heal_amount = floor(player.aditional_info.max_health * 0.1)
 
         Map.update!(player, :aditional_info, fn info ->
           %{
             info
-            | health: min(info.health + heal_amount, info.base_health),
+            | health: min(info.health + heal_amount, info.max_health),
               last_natural_healing_update: now
           }
         end)
