@@ -80,7 +80,7 @@ defmodule Champions.Battle.Simulator do
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
     units = Map.merge(team_1, team_2)
 
-    initial_state = %{units: units, skills_being_cast: [], pending_effects: [], pending_executions: []}
+    initial_state = %{units: units, skills_being_cast: [], pending_effects: []}
 
     # The initial_step_state is what allows the battle to be simultaneous. If we refreshed the accum on every action,
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
@@ -514,7 +514,6 @@ defmodule Champions.Battle.Simulator do
 
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
-  # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
   # Returns the new state of the target.
   defp maybe_apply_effect(effect, target, caster, current_step_number, true, history) do
     new_history =
@@ -796,8 +795,7 @@ defmodule Champions.Battle.Simulator do
   defp format_step_state(%{
          units: units,
          skills_being_cast: skl,
-         pending_effects: eff,
-         pending_executions: exec
+         pending_effects: eff
        }) do
     units = Enum.map(units, fn {_unit_id, unit} -> unit end)
 
@@ -821,8 +819,7 @@ defmodule Champions.Battle.Simulator do
             caster_id: &1.caster_id
           }
         ),
-      pending_effects: eff,
-      pending_executions: exec
+      pending_effects: eff
     }
   end
 
