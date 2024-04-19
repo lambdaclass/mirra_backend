@@ -784,7 +784,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Burn"
+            "tags": [
+              "Burn"
+            ]
           }
         ],
         "modifiers": [],
@@ -918,7 +920,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Stun"
+            "tags": [
+              "Stun"
+            ]
           }
         ],
         "modifiers": [
@@ -1477,7 +1481,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Stun"
+            "tags": [
+              "Stun"
+            ]
           }
         ],
         "modifiers": [],
@@ -1538,7 +1544,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Burn"
+            "tags": [
+              "Burn"
+            ]
           }
         ],
         "modifiers": [],
@@ -1701,7 +1709,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Silence"
+            "tags": [
+              "Silence"
+            ]
           }
         ],
         "modifiers": [],
@@ -1886,7 +1896,9 @@
         "components": [
           {
             "type": "ApplyTags",
-            "tag": "Paralyzed"
+            "tags": [
+              "Paralyzed"
+            ]
           }
         ],
         "modifiers": [],
