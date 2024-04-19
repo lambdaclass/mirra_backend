@@ -210,8 +210,7 @@ rustler::init!(
         calculate_triangle_vertices,
         get_direction_from_positions,
         calculate_speed,
-        move_entity_to_position,
-        get_closest_available_position,
-        nearest_entity_direction_in_range
+        nearest_entity_direction_in_range,
+        get_closest_available_position
     ]
 );
