@@ -119,15 +119,12 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_info(:end_game_state, state) do
-    # Logger.info("Websocket info, Message: GAME FINISHED")
-
     {:ok, Map.put(state, :game_finished, true)}
   end
 
   @impl true
   def websocket_info({:game_finished, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME FINISHED")
-
     {:reply, {:binary, game_state}, state}
   end
 
