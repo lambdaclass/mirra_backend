@@ -13,6 +13,7 @@ defmodule GameBackend.Repo.Migrations.CreateMechanics do
 
     alter table(:skills) do
       remove(:effects)
+      remove(:animation_trigger)
     end
 
     create table(:mechanics) do

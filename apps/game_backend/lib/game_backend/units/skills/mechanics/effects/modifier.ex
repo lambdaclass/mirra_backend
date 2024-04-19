@@ -35,6 +35,7 @@ defmodule GameBackend.Units.Skills.Mechanics.Effects.Modifier do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  @primary_key false
   embedded_schema do
     field(:attribute, :string)
     field(:modifier_operation, :string)

@@ -12,7 +12,6 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:cooldown, :integer)
     field(:energy_regen, :integer)
     field(:animation_duration, :integer)
-    field(:animation_trigger, :integer)
 
     timestamps()
   end
@@ -20,7 +19,7 @@ defmodule GameBackend.Units.Skills.Skill do
   @doc false
   def changeset(skill, attrs \\ %{}) do
     skill
-    |> cast(attrs, [:name, :cooldown, :energy_regen, :animation_duration, :animation_trigger])
+    |> cast(attrs, [:name, :cooldown, :energy_regen, :animation_duration])
     |> cast_assoc(:mechanics)
   end
 end
