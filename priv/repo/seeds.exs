@@ -88,6 +88,9 @@ Items.insert_item_template(%{
     name: "Mystic Summon Scrolls"
   })
 
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
 {:ok, _} =
   Gacha.insert_box(%{
     name: "Basic Summon",
