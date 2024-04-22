@@ -455,8 +455,8 @@ defmodule Champions.Battle.Simulator do
             Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
             {targets_after_effect, new_history} =
-              Enum.reduce(effect.targets, {%{}, new_history}, fn target_id, {targets, new_history} ->
-                target = current_state.units[target_id]
+              Enum.reduce(effect.targets, {%{}, new_history}, fn target_id, {new_targets, new_history} ->
+                target = Map.get(current_state.units, target_id, target_id)
 
                 {new_target, new_history} =
                   maybe_apply_effect(
@@ -468,24 +468,25 @@ defmodule Champions.Battle.Simulator do
                     new_history
                   )
 
-                {Map.put(targets, target_id, new_target), new_history}
+                {maybe_put_new_target(new_targets, new_target), new_history}
               end)
 
-            new_state =
-              update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
+            new_state = update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
 
             # We don't add this effect to the new_pending_effects list because it has already been applied
             {{new_pending_effects, new_state}, new_history}
 
           effect ->
             # If the effect isn't ready to be processed, we reduce its remaining delay.
-
             {{[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}, history}
         end
       end)
 
     {Map.put(updated_game_state, :pending_effects, updated_pending_effects), new_history}
   end
+
+  defp maybe_put_new_target(targets, nil), do: targets
+  defp maybe_put_new_target(targets, target), do: Map.put(targets, target.id, target)
 
   # Check if the unit can attack this turn.
   # For now, attacking capability is only affected by whether the unit is currently casting a skill.
@@ -528,6 +529,24 @@ defmodule Champions.Battle.Simulator do
          |> Enum.filter(fn {_id, unit} -> unit.team == team == target_allies end)
          |> Enum.take_random(count)
          |> Enum.map(fn {id, _unit} -> id end)
+
+  # If we receive the target's id, it means that the unit has died before the effect hits.
+  # We send it as an EFFECT_MISS action.
+  defp maybe_apply_effect(effect, id, caster, _current_step_number, _hits, history) when is_binary(id) do
+    new_history =
+      add_to_history(
+        history,
+        %{
+          caster_id: caster.id,
+          target_ids: [id],
+          skill_id: effect.skill_id,
+          skill_action_type: :EFFECT_MISS
+        },
+        :skill_action
+      )
+
+    {nil, new_history}
+  end
 
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
@@ -613,6 +632,8 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Return whether an effect hits.
+  defp effect_hits?(effect, target_id) when is_bitstring(target_id), do: !chance_to_apply_hits?(effect)
+
   defp effect_hits?(effect, target) do
     cond do
       !target_tag_requirements_met?(effect, target) -> false
