@@ -95,6 +95,7 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 200)
   end
 
   defp add_super_campaign_progresses(user) do
