@@ -55,7 +55,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: too_long_cooldown
+          cooldown: too_long_cooldown * 100
         })
 
       {:ok, character} =
@@ -308,7 +308,6 @@ defmodule Champions.Test.BattleTest do
 
     test "Execution-DealDamage with defense" do
       maximum_steps = 5
-      cooldown_to_hit_once = maximum_steps - 1
 
       {:ok, target_dummy_character} =
         TestUtils.build_character(%{
@@ -347,7 +346,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: cooldown_to_hit_once
+          cooldown: maximum_steps * 100 - 1
         })
 
       {:ok, character} =
