@@ -1241,6 +1241,188 @@
     ]
   },
   {
+    "name": "Otix Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "cooldown": 5,
+    "mechanics": [
+      {
+        "trigger_delay": 0,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": "random"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "Otix Ultimate",
+    "animation_duration": 0,
+    "mechanics": [
+      {
+        "trigger_delay": 0,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "duration",
+                "duration": 100,
+                "period": 10
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.73,
+                  "energy_recharge": 50,
+                  "delay": 0
+                },
+                {
+                  "type": "DealDamageOverTime",
+                  "attack_ratio": 0.32,
+                  "energy_recharge": 50,
+                  "dot_type": "Burn"
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 4,
+            "target_allies": false,
+            "type": "random"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "Uma Basic",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "cooldown": 5,
+    "mechanics": [
+      {
+        "trigger_delay": 0,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": {
+              "lowest": "Health"
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "name": "Uma Ultimate",
+    "energy_regen": 100,
+    "animation_duration": 0,
+    "cooldown": 5,
+    "mechanics": [
+      {
+        "trigger_delay": 0,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 3.48,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": {
+              "lowest": "Health"
+            }
+          }
+        }
+      },
+      {
+        "trigger_delay": 0,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": -1
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "attack",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "Float",
+                  "float_magnitude": 1.08
+                }
+              ],
+              "executions": []
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": true,
+            "type": "self"
+          }
+        }
+      }
+    ]
+  },
+  {
     "name": "Uren Basic",
     "energy_regen": 100,
     "animation_duration": 0,
