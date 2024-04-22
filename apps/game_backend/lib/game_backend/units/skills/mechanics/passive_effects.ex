@@ -1,4 +1,7 @@
 defmodule GameBackend.Units.Skills.Mechanics.PassiveEffects do
+  @moduledoc false
+  # This module is unimplemented. It is intended to be used to define the effects that are applied passively to a unit.
+
   use GameBackend.Schema
   import Ecto.Changeset
 
