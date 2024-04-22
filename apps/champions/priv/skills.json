@@ -3,7 +3,7 @@
     "name": "Melo Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -73,7 +73,7 @@
     "name": "Arupe Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -142,7 +142,7 @@
     "name": "Valcher Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -211,7 +211,7 @@
     "name": "Byte Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -280,7 +280,7 @@
     "name": "Qurin Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -349,7 +349,7 @@
     "name": "Chekla Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -419,7 +419,7 @@
     "name": "Germund Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -488,7 +488,7 @@
     "name": "Scratch Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -559,7 +559,7 @@
     "name": "Kel'mut Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -632,7 +632,7 @@
     "name": "Toburo Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -701,7 +701,7 @@
     "name": "Dafnet Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -769,7 +769,7 @@
     "name": "Hash Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -838,7 +838,7 @@
     "name": "Obure Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -936,7 +936,7 @@
     "name": "Zil'Kan Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1011,7 +1011,7 @@
     "name": "Fetra Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1091,7 +1091,7 @@
     "name": "Kampako Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1167,7 +1167,7 @@
     "name": "Zanochi Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1244,7 +1244,7 @@
     "name": "Kura'Bara Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1313,7 +1313,7 @@
     "name": "Boy Kampf Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1389,7 +1389,7 @@
     "name": "Romulo Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1465,7 +1465,7 @@
     "name": "Grimstein Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1548,7 +1548,7 @@
     "name": "Elix1r Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1619,7 +1619,7 @@
     "name": "Rust Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1697,7 +1697,7 @@
     "name": "Jayson Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1773,7 +1773,7 @@
     "name": "Muflus Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1849,7 +1849,7 @@
     "name": "Otix Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1927,7 +1927,7 @@
     "name": "Uma Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -1965,7 +1965,7 @@
     "name": "Uma Ultimate",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -2031,7 +2031,7 @@
     "name": "Uren Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -2134,7 +2134,7 @@
     "name": "D'Agna Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -2209,7 +2209,7 @@
     "name": "Valtimer Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -2244,7 +2244,7 @@
     "name": "Valtimer Ultimate",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -2285,7 +2285,7 @@
     "name": "H4ck Basic",
     "energy_regen": 100,
     "animation_duration": 500,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 250,
@@ -2361,7 +2361,7 @@
     "name": "Kenzu Basic",
     "energy_regen": 100,
     "animation_duration": 700,
-    "cooldown": 5000,
+    "cooldown": 3000,
     "mechanics": [
       {
         "trigger_delay": 200,
