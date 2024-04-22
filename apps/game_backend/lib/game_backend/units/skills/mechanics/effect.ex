@@ -27,7 +27,9 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
     ])
     |> validate_required([
       :type,
-      :initial_delay
+      :initial_delay,
+      :components,
+      :executions
     ])
     |> validate_change(:executions, fn :executions, executions ->
       valid? =
