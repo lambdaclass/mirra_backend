@@ -46,30 +46,93 @@
     "obstacles": [
       {
         "position": {
-          "x": -6957.6,
-          "y": -1657.85
+          "x": 0.0,
+          "y": 0.0
         },
-        "radius": 1800.05,
-        "shape": "circle",
-        "vertices": []
+        "vertices": [
+          {
+            "x": -3284.0,
+            "y": 650.0
+          },
+          {
+            "x": -4149.0,
+            "y": 650.0
+          },
+          {
+            "x": -3723.0,
+            "y": 1188.0
+          },
+          {
+            "x": -2900.0,
+            "y": 1474.0
+          },
+          {
+            "x": -2850.0,
+            "y": 1250.0
+          }
+        ],
+        "radius": 0.0,
+        "shape": "polygon"
       },
       {
         "position": {
-          "x": -989.0,
-          "y": 6134.7
+          "x": 0.0,
+          "y": 0.0
         },
-        "radius": 1253.5,
-        "shape": "circle",
-        "vertices": []
+        "vertices": [
+          {
+            "x": -4149.0,
+            "y": 650.0
+          },
+          {
+            "x": -3284.0,
+            "y": 650.0
+          },
+          {
+            "x": -3516.0,
+            "y": -369.0
+          },
+          {
+            "x": -3784.0,
+            "y": -771.0
+          },
+          {
+            "x": -4220.0,
+            "y": -421.0
+          },
+          {
+            "x": -4398.0,
+            "y": 54.0
+          }
+        ],
+        "radius": 0.0,
+        "shape": "polygon"
       },
       {
         "position": {
-          "x": -1874.5,
-          "y": 5286.2
+          "x": 0.0,
+          "y": 0.0
         },
-        "radius": 365.55,
-        "shape": "circle",
-        "vertices": []
+        "vertices": [
+          {
+            "x": -3516.0,
+            "y": -369.0
+          },
+          {
+            "x": -3784.0,
+            "y": -771.0
+          },
+          {
+            "x": -3051.0,
+            "y": -1050.0
+          },
+          {
+            "x": -2751.0,
+            "y": -950.0
+          }
+        ],
+        "radius": 0.0,
+        "shape": "polygon"
       }
     ]
   },
@@ -127,9 +190,7 @@
             "duration_ms": 5000,
             "radius": 500.0,
             "range": 1875.0,
-            "effects_to_apply": [
-              "singularity"
-            ]
+            "effects_to_apply": ["singularity"]
           }
         }
       ],
@@ -179,9 +240,7 @@
             "duration_ms": 2500,
             "radius": 500.0,
             "range": 1875.0,
-            "effects_to_apply": [
-              "denial_of_service"
-            ]
+            "effects_to_apply": ["denial_of_service"]
           }
         }
       ],
@@ -294,9 +353,7 @@
           }
         }
       ],
-      "effects_to_apply": [
-        "invisible"
-      ]
+      "effects_to_apply": ["invisible"]
     },
     {
       "name": "valt_sneak",
@@ -396,23 +453,17 @@
     {
       "name": "golden_clock",
       "radius": 200.0,
-      "effects": [
-        "golden_clock_effect"
-      ]
+      "effects": ["golden_clock_effect"]
     },
     {
       "name": "magic_boots",
       "radius": 200.0,
-      "effects": [
-        "magic_boots_effect"
-      ]
+      "effects": ["magic_boots_effect"]
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
-      "effects": [
-        "mirra_blessing_effect"
-      ]
+      "effects": ["mirra_blessing_effect"]
     }
   ],
   "characters": [
@@ -502,8 +553,8 @@
     ],
     "power_up": {
       "distance_to_power_up": 500,
-      "power_up_damage_modifier": 0.10,
-      "power_up_health_modifier": 0.10,
+      "power_up_damage_modifier": 0.1,
+      "power_up_health_modifier": 0.1,
       "radius": 200.0
     }
   },
