@@ -44,9 +44,9 @@ defmodule Champions.Battle.Simulator do
   require Logger
 
   @default_seed 1
-  @default_maximum_steps 12_000
+  @default_maximum_steps 24_000
   @ultimate_energy_cost 500
-  @miliseconds_per_step 100
+  @miliseconds_per_step 50
 
   @doc """
   Runs a battle between two teams.

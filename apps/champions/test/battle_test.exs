@@ -15,6 +15,8 @@ defmodule Champions.Test.BattleTest do
   alias GameBackend.Units
   alias Champions.TestUtils
 
+  @miliseconds_per_step 50
+
   setup_all do
     {:ok, target_dummy_character} =
       TestUtils.build_character(%{base_health: 10, base_attack: 0, base_defense: 0, name: "Target Dummy"})
@@ -55,7 +57,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: too_long_cooldown * 100
+          cooldown: too_long_cooldown * @miliseconds_per_step
         })
 
       {:ok, character} =
@@ -346,7 +348,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: maximum_steps * 100 - 1
+          cooldown: maximum_steps * @miliseconds_per_step - 1
         })
 
       {:ok, character} =
