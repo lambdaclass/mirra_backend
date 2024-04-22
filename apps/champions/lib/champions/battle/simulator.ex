@@ -46,6 +46,7 @@ defmodule Champions.Battle.Simulator do
   @default_seed 1
   @default_maximum_steps 500
   @ultimate_energy_cost 500
+  @miliseconds_per_step 100
 
   @doc """
   Runs a battle between two teams.
@@ -803,10 +804,10 @@ defmodule Champions.Battle.Simulator do
       id: skill.id,
       name: skill.name,
       mechanics: Enum.map(skill.mechanics, &create_mechanics_map(&1, skill.id, caster_id)),
-      base_cooldown: skill.cooldown,
-      remaining_cooldown: skill.cooldown,
+      base_cooldown: div(skill.cooldown, @miliseconds_per_step),
+      remaining_cooldown: div(skill.cooldown, @miliseconds_per_step),
       energy_regen: skill.energy_regen || 0,
-      animation_duration: skill.animation_duration || 0,
+      animation_duration: div(skill.animation_duration, @miliseconds_per_step),
       caster_id: caster_id
     }
 
@@ -826,7 +827,7 @@ defmodule Champions.Battle.Simulator do
       id: mechanic.id,
       skill_id: skill_id,
       caster_id: caster_id,
-      trigger_delay: mechanic.trigger_delay,
+      trigger_delay: div(mechanic.trigger_delay, @miliseconds_per_step),
       apply_effects_to: apply_effects_to,
       passive_effects: mechanic.passive_effects
     }
@@ -843,7 +844,7 @@ defmodule Champions.Battle.Simulator do
           {key, value} ->
             {String.to_atom(key), value}
         end),
-      delay: effect.initial_delay,
+      delay: div(effect.initial_delay, @miliseconds_per_step),
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
       # target_strategy: effect.target_strategy,
       components: effect.components,
