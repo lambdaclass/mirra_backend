@@ -130,9 +130,9 @@ defmodule Arena.GameUpdater do
       |> explode_projectiles()
       # Pools
       |> handle_pools(state.game_config)
+      |> remove_expired_pools(now)
       # Crates
       |> handle_destroyed_crates(state.game_config)
-      |> remove_expired_pools(now)
       |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
