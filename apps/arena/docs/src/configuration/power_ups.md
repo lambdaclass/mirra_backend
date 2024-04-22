@@ -10,6 +10,7 @@ The power ups are entities droped when a player dies that can be picked up for p
 - `power_up`: Determines the specs of the power up that will be dropped
 - `distance_to_power_up`: Distance from the position where the player dies to where the power up will be, it'll spawn in a random direction
 - `power_up_damage_modifier`: How much additional damage the power up will provide
+- `power_up_health_modifier`: How much additional health the power up will provide
 - `radius`: The radius of pickup of the power up
 
 
@@ -25,6 +26,7 @@ The power ups are entities droped when a player dies that can be picked up for p
     "power_up": {
       "distance_to_power_up": 500,
       "power_up_damage_modifier": 0.10,
+      "power_up_health_modifier": 0.10,
       "radius": 10.0
     }
   }

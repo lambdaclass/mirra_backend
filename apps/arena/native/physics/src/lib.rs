@@ -140,8 +140,12 @@ fn calculate_speed(position_a: Position, position_b: Position, duration: u64) ->
 }
 
 #[rustler::nif()]
-fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> Direction {
-    let mut max_distance = 2000.0;
+fn nearest_entity_direction_in_range(
+    entity: Entity,
+    entities: HashMap<u64, Entity>,
+    range: i64,
+) -> Direction {
+    let mut max_distance = range as f32;
     let mut direction = Direction {
         x: entity.direction.x,
         y: entity.direction.y,
@@ -152,7 +156,12 @@ fn nearest_entity_direction(entity: Entity, entities: HashMap<u64, Entity>) -> D
             let distance = distance_between_positions(entity.position, other_entity.position);
             if distance < max_distance {
                 max_distance = distance;
-                direction = direction_from_positions(entity.position, other_entity.position);
+                let difference_between_positions =
+                    Position::sub(other_entity.position, entity.position);
+                direction = Direction {
+                    x: difference_between_positions.x,
+                    y: difference_between_positions.y,
+                };
             }
         }
     }
@@ -209,7 +218,7 @@ rustler::init!(
         calculate_triangle_vertices,
         get_direction_from_positions,
         calculate_speed,
-        nearest_entity_direction,
+        nearest_entity_direction_in_range,
         get_closest_available_position
     ]
 );

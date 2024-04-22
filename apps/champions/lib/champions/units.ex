@@ -374,9 +374,9 @@ defmodule Champions.Units do
   ##########
 
   @doc """
-  Get a unit's health stat for battle. Buffs from items and similar belong here.
+  Get a unit's health stat for battle, including modifiers from items.
 
-  Character must be preloaded.
+  Character and ItemTemplate must be preloaded.
 
   ## Examples
 
@@ -384,12 +384,12 @@ defmodule Champions.Units do
       iex> Champions.Units.get_health(unit)
       100
   """
-  def get_health(unit), do: calculate_stat(unit.character.base_health, unit)
+  def get_health(unit), do: calculate_stat(unit.character.base_health, unit, "health")
 
   @doc """
-  Get a unit's attack stat for battle. Buffs from items and similar belong here.
+  Get a unit's attack stat for battle, including modifiers from items.
 
-  Character must be preloaded.
+  Character and ItemTemplate must be preloaded.
 
   ## Examples
 
@@ -397,12 +397,12 @@ defmodule Champions.Units do
       iex> Champions.Units.get_attack(unit)
       100
   """
-  def get_attack(unit), do: calculate_stat(unit.character.base_attack, unit)
+  def get_attack(unit), do: calculate_stat(unit.character.base_attack, unit, "attack")
 
   @doc """
-  Get a unit's defense stat for battle. Buffs from items and similar belong here.
+  Get a unit's defense stat for battle, including modifiers from items.
 
-  Character must be preloaded.
+  Character and ItemTemplate must be preloaded.
 
   ## Examples
 
@@ -410,19 +410,76 @@ defmodule Champions.Units do
       iex> Champions.Units.get_defense(unit)
       100
   """
-  def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit)
+  def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit, "defense")
 
-  defp calculate_stat(base_stat, unit),
+  defp calculate_stat(base_stat, unit, stat_name),
     do:
       base_stat
+      |> Decimal.new()
       |> factor_level(unit.level)
       |> factor_tier(unit.tier)
       |> factor_rank(unit.rank)
+      |> factor_items(unit.items, stat_name)
       |> trunc()
 
-  defp factor_level(base_stat, level), do: base_stat * (Math.pow(level - 1, 2) / 3000 + (level - 1) / 30 + 1)
+  defp factor_level(base_stat, level) do
+    level_modifier =
+      Math.pow(level - 1, 2)
+      |> Decimal.new()
+      |> Decimal.div(3000)
+      |> Decimal.add(Decimal.from_float((level - 1) / 30 + 1))
 
-  defp factor_tier(stat_after_level, tier), do: stat_after_level * Math.pow(1.05, tier - 1)
+    Decimal.mult(
+      base_stat,
+      level_modifier
+    )
+  end
 
-  defp factor_rank(stat_after_tier, rank), do: stat_after_tier * Math.pow(1.1, rank - 1)
+  defp factor_tier(stat_after_level, tier),
+    do: Decimal.mult(stat_after_level, Decimal.from_float(Math.pow(1.05, tier - 1)))
+
+  defp factor_rank(stat_after_tier, rank),
+    do: Decimal.mult(stat_after_tier, Decimal.from_float(Math.pow(1.1, rank - 1)))
+
+  defp factor_items(stat_after_rank, items, attribute_name) do
+    {additive_modifiers, multiplicative_modifiers} =
+      get_additive_and_multiplicative_modifiers(items, attribute_name)
+
+    additive_bonus =
+      Enum.reduce(additive_modifiers, 0, fn mod, acc ->
+        Decimal.from_float(mod.base_value)
+        |> Decimal.add(acc)
+      end)
+
+    multiplicative_bonus =
+      Enum.reduce(multiplicative_modifiers, 1, fn mod, acc ->
+        Decimal.from_float(mod.base_value)
+        |> Decimal.mult(acc)
+      end)
+
+    stat_after_rank
+    |> Decimal.add(additive_bonus)
+    |> Decimal.mult(multiplicative_bonus)
+    |> Decimal.to_float()
+  end
+
+  defp get_additive_and_multiplicative_modifiers([], _) do
+    {[], []}
+  end
+
+  defp get_additive_and_multiplicative_modifiers(items, attribute) do
+    item_modifiers =
+      Enum.flat_map(items, & &1.template.base_modifiers)
+
+    attribute_modifiers =
+      Enum.filter(item_modifiers, &(&1.attribute == attribute))
+
+    additive_modifiers =
+      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Add"))
+
+    multiplicative_modifiers =
+      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Multiply"))
+
+    {additive_modifiers, multiplicative_modifiers}
+  end
 end
