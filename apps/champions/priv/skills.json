@@ -933,7 +933,7 @@
     ]
   },
   {
-    "name": "Zil'kan Basic",
+    "name": "Zil'Kan Basic",
     "energy_regen": 100,
     "animation_duration": 500,
     "cooldown": 5000,
@@ -968,7 +968,7 @@
     ]
   },
   {
-    "name": "Zil'kan Ultimate",
+    "name": "Zil'Kan Ultimate",
     "energy_regen": 0,
     "animation_duration": 500,
     "mechanics": [
@@ -1241,7 +1241,7 @@
     ]
   },
   {
-    "name": "Kura'bara Basic",
+    "name": "Kura'Bara Basic",
     "energy_regen": 100,
     "animation_duration": 500,
     "cooldown": 5000,
@@ -1276,7 +1276,7 @@
     ]
   },
   {
-    "name": "Kura'bara Ultimate",
+    "name": "Kura'Bara Ultimate",
     "energy_regen": 0,
     "animation_duration": 500,
     "mechanics": [
