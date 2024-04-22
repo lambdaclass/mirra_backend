@@ -116,7 +116,6 @@ defmodule Arena.GameUpdater do
       |> remove_expired_effects()
       |> remove_effects_on_action()
       |> reset_players_effects()
-      |> Skill.apply_effect_mechanic()
       # Players
       |> move_players()
       |> reduce_players_cooldowns(time_diff)
