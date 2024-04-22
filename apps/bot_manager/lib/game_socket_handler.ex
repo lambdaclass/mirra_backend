@@ -6,7 +6,7 @@ defmodule BotManager.GameSocketHandler do
 
   alias BotManager.BotStateMachine
 
-  use WebSockex, restart: :transient
+  use WebSockex, restart: :temporary
   require Logger
 
   @decision_delay_ms 200
@@ -47,7 +47,7 @@ defmodule BotManager.GameSocketHandler do
         {:ok, Map.merge(state, joined)}
 
       %{event: {:finished, _}} ->
-        {:stop, state}
+        exit(:shutdown)
 
       _ ->
         {:ok, state}
@@ -116,10 +116,6 @@ defmodule BotManager.GameSocketHandler do
   end
 
   defp send_current_action(_), do: nil
-
-  def terminate(_, _, _) do
-    exit(:normal)
-  end
 
   defp ws_url(%{
          "bot_client" => bot_client,
