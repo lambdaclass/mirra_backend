@@ -58,19 +58,7 @@ defmodule Arena.GameLauncher do
 
   @impl true
   def handle_call({:join_quick_game, client_id, character_name, player_name}, {from_pid, _}, state) do
-    bot_clients = get_bot_clients(@clients_needed - 1)
-
-    {:ok, game_pid} =
-      GenServer.start(Arena.GameUpdater, %{
-        clients: [{client_id, character_name, player_name, from_pid} | bot_clients]
-      })
-
-    game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
-
-    spawn_bot_for_player(bot_clients, game_id)
-
-    Process.send(from_pid, {:join_game, game_id}, [])
-    Process.send(from_pid, :leave_waiting_game, [])
+    create_game_for_clients([{client_id, character_name, player_name, from_pid}])
 
     {:reply, :ok, state}
   end
@@ -89,22 +77,7 @@ defmodule Arena.GameLauncher do
 
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
-
-    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
-
-    {:ok, game_pid} =
-      GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients ++ bot_clients
-      })
-
-    game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
-
-    spawn_bot_for_player(bot_clients, game_id)
-
-    Enum.each(game_clients, fn {_client_id, _character_name, _player_name, from_pid} ->
-      Process.send(from_pid, {:join_game, game_id}, [])
-      Process.send(from_pid, :leave_waiting_game, [])
-    end)
+    create_game_for_clients(game_clients)
 
     {:noreply, %{state | clients: remaining_clients}}
   end
@@ -137,6 +110,26 @@ defmodule Arena.GameLauncher do
   defp spawn_bot_for_player(bot_clients, game_id) do
     Enum.each(bot_clients, fn {bot_client, _, _, _} ->
       send(self(), {:spawn_bot_for_player, bot_client, game_id})
+    end)
+  end
+
+  # Receives a list of clients.
+  # Fills the given list with bots clients, creates a game and tells every client to join that game.
+  defp create_game_for_clients(clients) do
+    bot_clients = get_bot_clients(@clients_needed - Enum.count(clients))
+
+    {:ok, game_pid} =
+      GenServer.start(Arena.GameUpdater, %{
+        clients: [clients | bot_clients]
+      })
+
+    game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
+
+    spawn_bot_for_player(bot_clients, game_id)
+
+    Enum.each(clients, fn {_client_id, _character_name, _player_name, from_pid} ->
+      Process.send(from_pid, {:join_game, game_id}, [])
+      Process.send(from_pid, :leave_waiting_game, [])
     end)
   end
 end
