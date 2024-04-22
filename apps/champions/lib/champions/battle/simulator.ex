@@ -616,7 +616,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Return whether an effect hits.
-  defp effect_hits?(effect, target_id) when is_bitstring(target_id), do: !chance_to_apply_hits?(effect)
+  defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
 
   defp effect_hits?(effect, target) do
     cond do
