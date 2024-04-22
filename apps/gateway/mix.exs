@@ -52,7 +52,8 @@ defmodule Gateway.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
       {:websockex, "~> 0.4.3"},
-      {:protobuf, "~> 0.12.0"}
+      {:protobuf, "~> 0.12.0"},
+      {:ueberauth_google, "~> 0.10"}
     ]
   end
 
