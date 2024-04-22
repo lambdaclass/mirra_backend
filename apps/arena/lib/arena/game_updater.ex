@@ -123,7 +123,6 @@ defmodule Arena.GameUpdater do
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
-      |> resolve_projectiles_collisions_with_players()
       |> apply_zone_damage_to_players(state.game_config.game)
       # Projectiles
       |> update_projectiles_status()
