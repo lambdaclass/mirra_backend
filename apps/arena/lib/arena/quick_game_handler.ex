@@ -45,4 +45,9 @@ defmodule Arena.QuickGameHandler do
 
     {:reply, {:binary, game_state}, state}
   end
+
+  @impl true
+  def websocket_handle(:ping, state) do
+    {:reply, {:pong, ""}, state}
+  end
 end
