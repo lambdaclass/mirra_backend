@@ -425,7 +425,7 @@ defmodule Champions.Battle.Simulator do
 
           effect ->
             # If the effect isn't ready to be processed, we reduce its remaining delay.
-            {{[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}, history}
+            {{[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}, new_history}
         end
       end)
 
