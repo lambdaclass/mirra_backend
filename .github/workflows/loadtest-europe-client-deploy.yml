@@ -15,12 +15,6 @@ on:
         options:
           - loadtest-europe-server.curseofmirra.com
           - loadtest-brazil-server.curseofmirra.com
-      activate_bots:
-        type: choice
-        description: Create bots for matches
-        options:
-          - true
-          - false
 
 jobs:
   build-deploy:
@@ -66,7 +60,6 @@ jobs:
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
           TARGET_SERVER: ${{ inputs.target_server }}
-          BOTS_ACTIVE: ${{ inputs.activate_bots }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -86,7 +79,6 @@ jobs:
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
-                BOTS_ACTIVE=${BOTS_ACTIVE} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \

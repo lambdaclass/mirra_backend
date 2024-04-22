@@ -15,6 +15,7 @@ defmodule GameClient.Protobuf.ProjectileStatus do
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
+  field(:CONSUMED, 2)
 end
 
 defmodule GameClient.Protobuf.CrateStatus do

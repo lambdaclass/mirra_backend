@@ -21,6 +21,7 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: character.base_health,
         base_health: character.base_health,
+        max_health: character.base_health,
         base_speed: character.base_speed,
         base_stamina_interval: character.stamina_interval,
         skills: character.skills,
@@ -73,7 +74,8 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
-        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics)
+        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
+        on_collide_effects: Map.get(config_params, :on_collide_effects)
       }
     }
   end
@@ -93,7 +95,9 @@ defmodule Arena.Entities do
       aditional_info: %{
         owner_id: owner_id,
         status: :AVAILABLE,
-        remove_on_collision: true
+        remove_on_collision: true,
+        power_up_damage_modifier: power_up.power_up_damage_modifier,
+        power_up_health_modifier: power_up.power_up_health_modifier
       }
     }
   end
@@ -119,7 +123,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, owner_id) do
+  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, spawn_at) do
     %{
       id: id,
       category: :pool,
@@ -136,7 +140,11 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         effects_to_apply: effects_to_apply,
-        owner_id: owner_id
+        owner_id: owner_id,
+        effects: [],
+        stat_multiplier: 0,
+        duration_ms: duration_ms,
+        spawn_at: spawn_at
       }
     }
   end
@@ -148,7 +156,7 @@ defmodule Arena.Entities do
       shape: :circle,
       name: "Item" <> Integer.to_string(id),
       position: position,
-      radius: 30.0,
+      radius: config.radius,
       vertices: [],
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},

@@ -1,73 +1,73 @@
 {
   "map": {
-    "radius": 4800.0,
+    "radius": 5520.0,
     "initial_positions": [
       {
-        "x": 4000.0,
+        "x": 4600.0,
         "y": 0.0
       },
       {
-        "x": -4000.0,
+        "x": -4600.0,
         "y": 0.0
       },
       {
-        "x": -1500.0,
-        "y": 3500.0
+        "x": -1725.0,
+        "y": 4025.0
       },
       {
-        "x": 1500.0,
-        "y": -3500.0
+        "x": 1725.0,
+        "y": -4025.0
       },
       {
-        "x": 1500.0,
-        "y": 3500.0
+        "x": 1725.0,
+        "y": 4025.0
       },
       {
-        "x": -1500.0,
-        "y": -3500.0
+        "x": -1725.0,
+        "y": -4025.0
       },
       {
-        "x": 3000.0,
-        "y": 2000.0
+        "x": 3450.0,
+        "y": 2300.0
       },
       {
-        "x": -3000.0,
-        "y": -2000.0
+        "x": -3450.0,
+        "y": -2300.0
       },
       {
-        "x": -3000.0,
-        "y": 2000.0
+        "x": -3450.0,
+        "y": 2300.0
       },
       {
-        "x": 3000.0,
-        "y": -2000.0
+        "x": 3450.0,
+        "y": -2300.0
       }
     ],
     "obstacles": [
       {
         "position": {
-          "x": -6044.0,
-          "y": -1439.0
+          "x": -6957.6,
+          "y": -1657.85
         },
-        "radius": 1567.0,
+        "radius": 1800.05,
         "shape": "circle",
         "vertices": []
       },
       {
         "position": {
-          "x": -860.0,
-          "y": 5338.0
+          "x": -989.0,
+          "y": 6134.7
         },
-        "radius": 1090.0,
+        "radius": 1253.5,
         "shape": "circle",
         "vertices": []
       },
       {
         "position": {
-          "x": -1630.0,
-          "y": 4588.0
+          "x": -1874.5,
+          "y": 5286.2
         },
-        "radius": 317.0,
+        "radius": 365.55,
         "shape": "circle",
         "vertices": []
       }
@@ -96,6 +96,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1000,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -117,6 +118,7 @@
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1500,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -141,6 +143,7 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1200,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -167,6 +170,7 @@
       "activation_delay_ms": 500,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1500,
       "can_pick_destination": true,
       "mechanics": [
         {
@@ -190,6 +194,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 2200,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -216,6 +221,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -234,6 +240,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -251,6 +258,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 1000,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -275,6 +283,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -297,6 +306,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -317,6 +327,7 @@
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": true,
       "stamina_cost": 1,
       "mechanics": [
@@ -337,6 +348,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": false,
+      "max_autoaim_range": 0,
       "can_pick_destination": false,
       "mechanics": [
         {
@@ -355,6 +367,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
+      "max_autoaim_range": 2100,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "mechanics": [
@@ -382,18 +395,21 @@
   "items": [
     {
       "name": "golden_clock",
+      "radius": 200.0,
       "effects": [
         "golden_clock_effect"
       ]
     },
     {
       "name": "magic_boots",
+      "radius": 200.0,
       "effects": [
         "magic_boots_effect"
       ]
     },
     {
       "name": "mirra_blessing",
+      "radius": 200.0,
       "effects": [
         "mirra_blessing_effect"
       ]
@@ -487,6 +503,7 @@
     "power_up": {
       "distance_to_power_up": 500,
       "power_up_damage_modifier": 0.10,
+      "power_up_health_modifier": 0.10,
       "radius": 200.0
     }
   },
@@ -495,21 +512,42 @@
       "name": "invisible",
       "duration_ms": 3500,
       "remove_on_action": true,
+      "one_time_application": false,
       "effect_mechanics": {
-        "invisible": {}
+        "invisible": {
+          "execute_multiple_times": true,
+          "effect_delay_ms": 0
+        }
       }
     },
     {
       "name": "singularity",
       "remove_on_action": false,
+      "one_time_application": true,
       "effect_mechanics": {
         "pull": {
           "force": 15.0,
-          "effect_delay_ms": 0
+          "effect_delay_ms": 0,
+          "execute_multiple_times": true
         },
         "damage": {
           "damage": 13,
-          "effect_delay_ms": 400
+          "effect_delay_ms": 400,
+          "execute_multiple_times": true
+        }
+      }
+    },
+    {
+      "name": "buff_singularity",
+      "remove_on_action": false,
+      "one_time_application": true,
+      "consume_projectile": true,
+      "effect_mechanics": {
+        "buff_pool": {
+          "stat_multiplier": 0.10,
+          "additive_duration_add_ms": 1000,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
         }
       }
     },
@@ -517,20 +555,29 @@
       "name": "golden_clock_effect",
       "duration_ms": 7000,
       "remove_on_action": false,
+      "one_time_application": true,
       "effect_mechanics": {
         "reduce_stamina_interval": {
-          "decrease_by": 0.3
+          "decrease_by": 0.3,
+          "execute_multiple_times": false,
+          "effect_delay_ms": 0
         },
-        "refresh_stamina": {}
+        "refresh_stamina": {
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
       }
     },
     {
       "name": "magic_boots_effect",
       "duration_ms": 10000,
       "remove_on_action": false,
+      "one_time_application": true,
       "effect_mechanics": {
         "speed_boost": {
-          "amount": 25
+          "amount": 25,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
         }
       }
     },
@@ -538,17 +585,23 @@
       "name": "mirra_blessing_effect",
       "duration_ms": 10000,
       "remove_on_action": false,
+      "one_time_application": true,
       "effect_mechanics": {
-        "damage_immunity": {}
+        "damage_immunity": {
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
       }
     },
     {
       "name": "denial_of_service",
       "remove_on_action": false,
+      "one_time_application": true,
       "effect_mechanics": {
         "damage": {
           "damage": 17,
-          "effect_delay_ms": 220
+          "effect_delay_ms": 220,
+          "execute_multiple_times": true
         }
       }
     }
