@@ -361,14 +361,12 @@ defmodule Champions.Battle.Simulator do
           end
         )
 
-      new_skill = Map.put(skill, :mechanics, new_mechanics)
-
-      if new_skill.animation_duration == 0 do
+      if skill.animation_duration == 0 do
         # If the animation has finished, we remove skill from list.
         {Map.put(new_state, :skills_being_cast, List.delete(new_state.skills_being_cast, skill)), new_history}
       else
         # Otherwise, we update it with its new state.
-        new_skill = %{new_skill | animation_duration: skill.animation_duration - 1}
+        new_skill = %{skill | animation_duration: skill.animation_duration - 1, mechanics: new_mechanics}
 
         {Map.put(new_state, :skills_being_cast, [new_skill | List.delete(new_state.skills_being_cast, skill)]),
          new_history}
