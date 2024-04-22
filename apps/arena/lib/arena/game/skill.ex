@@ -2,6 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
+  alias Arena.GameUpdater
   alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
   alias Arena.Game.Player
@@ -266,16 +267,18 @@ defmodule Arena.Game.Skill do
       y: player.position.y + skill_direction.y
     }
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     pool =
       Entities.new_pool(
         last_id,
         target_position,
         pool_params.effects_to_apply,
         pool_params.radius,
-        player.id
+        pool_params.duration_ms,
+        player.id,
+        now
       )
-
-    Process.send_after(self(), {:remove_pool, last_id}, pool_params.duration_ms)
 
     put_in(game_state, [:pools, last_id], pool)
     |> put_in([:last_id], last_id)
@@ -283,104 +286,11 @@ defmodule Arena.Game.Skill do
 
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
-      Enum.map(effects, fn effect_name ->
-        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-      end)
+      GameUpdater.get_effects_from_config(effects, game_config)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      Effect.put_effect(game_state, player.id, player.id, execution_duration_ms, effect)
+      Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
     end)
-  end
-
-  ## TODO: refactor into Effect module, take a closer look at how the recurring effects are re-applied
-  ##    specifically the mess around apply_effect_mechanic/3 and do-effect_mechanics/4
-  def apply_effect_mechanic(%{players: players} = game_state) do
-    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-      if Player.alive?(player) do
-        player =
-          Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
-            apply_effect_mechanic(player, effect, game_state)
-          end)
-
-        put_in(game_state, [:players, player.id], player)
-      else
-        game_state
-      end
-    end)
-  end
-
-  def apply_effect_mechanic(player, effect, game_state) do
-    now = System.monotonic_time(:millisecond)
-
-    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
-      should_re_apply? =
-        is_nil(Map.get(mechanic_params, :last_application_time)) or
-          (not is_nil(Map.get(mechanic_params, :effect_delay_ms)) and
-             now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms)
-
-      if should_re_apply? do
-        do_effect_mechanics(game_state, player, effect, mechanic)
-        |> Effect.put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
-      else
-        player
-      end
-    end)
-  end
-
-  defp do_effect_mechanics(game_state, player, effect, {:pull, pull_params}) do
-    case Map.get(game_state.pools, effect.owner_id) do
-      nil ->
-        player
-
-      %{position: pool_position} when pool_position == player.position ->
-        player
-
-      pool ->
-        if player.aditional_info.damage_immunity do
-          player
-        else
-          direction = Physics.get_direction_from_positions(player.position, pool.position)
-
-          Physics.move_entity_to_direction(
-            player,
-            direction,
-            pull_params.force,
-            game_state.external_wall,
-            game_state.obstacles
-          )
-          |> Map.put(:aditional_info, player.aditional_info)
-          |> Map.put(:collides_with, player.collides_with)
-        end
-    end
-  end
-
-  defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
-    # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
-    # applies this effect
-    Map.get(game_state.pools, effect.owner_id)
-    |> case do
-      nil ->
-        player
-
-      pool ->
-        pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
-        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
-
-        send(self(), {:damage_done, pool_owner.id, real_damage})
-
-        player = Player.take_damage(player, real_damage)
-
-        unless Player.alive?(player) do
-          send(self(), {:to_killfeed, pool_owner.id, player.id})
-        end
-
-        player
-    end
-  end
-
-  ## Sink for mechanics that don't do anything
-  defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
-    player
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do

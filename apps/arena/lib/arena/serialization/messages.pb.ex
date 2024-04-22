@@ -15,6 +15,7 @@ defmodule Arena.Serialization.ProjectileStatus do
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
+  field(:CONSUMED, 2)
 end
 
 defmodule Arena.Serialization.PowerUpstatus do
