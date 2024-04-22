@@ -352,7 +352,7 @@ defmodule Champions.Battle.Simulator do
       {{new_mechanics, new_state}, new_history} =
         Enum.reduce(
           skill.mechanics,
-          {{skill, current_state}, history},
+          {{[], current_state}, history},
           fn mechanic, {{mechanics_acc, state_acc}, history_acc} ->
             {{new_mechanic, new_state}, new_history} =
               process_mechanic_trigger_delay(mechanic, state_acc, initial_step_state, history_acc)
@@ -380,8 +380,8 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `trigger_delay` value.
-  # If the trigger_delay is ready, trigger the skill's effects, adding them to the `pending_effects` in the state.
+  # Calculate the new state of the battle after a step passes for a mechanic.
+  # If the trigger_delay is ready, process the mechanic.
   defp process_mechanic_trigger_delay(
          %{trigger_delay: 0} = mechanic,
          current_state,
@@ -392,7 +392,6 @@ defmodule Champions.Battle.Simulator do
     process_mechanic(mechanic, current_state, initial_step_state, history)
   end
 
-  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `trigger_delay` value.
   # If the effects have already triggered, do nothing.
   defp process_mechanic_trigger_delay(
          %{trigger_delay: -1} = mechanic,
@@ -402,12 +401,12 @@ defmodule Champions.Battle.Simulator do
        ),
        do: {{mechanic, current_state}, history}
 
-  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `trigger_delay` value.
   # If the effect hasn't triggered yet, reduce the remaining trigger_delay counter.
   defp process_mechanic_trigger_delay(mechanic, current_state, _initial_step_state, history) do
     {{%{mechanic | trigger_delay: mechanic.trigger_delay - 1}, current_state}, history}
   end
 
+  # Process an ApplyEffectsTo mechanic, adding the mechanic's effects to the pending_effects list.
   defp process_mechanic(%{apply_effects_to: apply_effects_to} = mechanic, current_state, initial_step_state, history)
        when not is_nil(apply_effects_to) do
     caster = current_state.units[mechanic.caster_id]
@@ -817,6 +816,14 @@ defmodule Champions.Battle.Simulator do
   # Used to create the initial effect maps to be used during simulation.
   defp create_effect_map(%Effect{} = effect, skill_id),
     do: %{
+      type:
+        Enum.into(effect.type, %{}, fn
+          {key, value} when is_binary(value) ->
+            {String.to_atom(key), String.to_atom(value)}
+
+          {key, value} ->
+            {String.to_atom(key), value}
+        end),
       delay: effect.initial_delay,
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
       # target_strategy: effect.target_strategy,
@@ -850,7 +857,6 @@ defmodule Champions.Battle.Simulator do
           &%{
             name: &1.name,
             animation_duration: &1.animation_duration,
-            trigger_delay: &1.trigger_delay,
             caster_id: &1.caster_id
           }
         ),

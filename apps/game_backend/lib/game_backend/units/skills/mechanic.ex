@@ -23,6 +23,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)
     |> validate_only_one_type()
+    |> validate_required([:trigger_delay])
   end
 
   defp validate_only_one_type(changeset) do

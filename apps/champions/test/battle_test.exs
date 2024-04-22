@@ -36,17 +36,24 @@ defmodule Champions.Test.BattleTest do
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "DealDamage Delay",
-          effects: [
-            TestUtils.build_effect(%{
-              executions: [
-                %{
-                  type: "DealDamage",
-                  attack_ratio: 0.5,
-                  energy_recharge: 50,
-                  delay: 0
-                }
-              ]
-            })
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 0.5,
+                          energy_recharge: 50
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
           ],
           cooldown: too_long_cooldown
         })
@@ -70,31 +77,21 @@ defmodule Champions.Test.BattleTest do
 
       # Decrease the cooldown and check that the battle ends in victory when the steps are enough
       {:ok, character} =
-        Characters.update_character(character, %{basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps - 1)})
-
-      {:ok, unit} = Units.get_unit(unit.id)
-
-      assert "team_1" ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
-
-      # Add animation duration delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
-      {:ok, character} =
         Characters.update_character(character, %{
-          basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps) |> Map.put(:animation_duration, 2)
+          basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps - 2)
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      assert "timeout" ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
-
       assert "team_1" ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps_to_win).result
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       # Add animation trigger delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
         Characters.update_character(character, %{
-          basic_skill: Map.put(basic_skill_params, :animation_duration, 2) |> Map.put(:animation_trigger, 2)
+          basic_skill:
+            Map.put(basic_skill_params, :animation_duration, 2)
+            |> update_in([:mechanics], fn [mechanic] -> [Map.put(mechanic, :trigger_delay, 2)] end)
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
@@ -117,12 +114,12 @@ defmodule Champions.Test.BattleTest do
             |> Map.put(:animation_trigger, 0)
             |> Map.put(:effects, [
               TestUtils.build_effect(%{
+                initial_delay: 1,
                 executions: [
                   %{
                     type: "DealDamage",
                     attack_ratio: 0.5,
-                    energy_recharge: 50,
-                    delay: 0
+                    energy_recharge: 50
                   }
                 ]
               })
@@ -150,23 +147,31 @@ defmodule Champions.Test.BattleTest do
         TestUtils.build_skill(%{
           name: "DealDamage ChanceToApply",
           cooldown: cooldown,
-          effects: [
-            TestUtils.build_effect(%{
-              components: [
-                %{
-                  type: "ChanceToApply",
-                  chance: 0
-                }
-              ],
-              executions: [
-                %{
-                  type: "DealDamage",
-                  attack_ratio: 0.5,
-                  energy_recharge: 50,
-                  delay: 0
-                }
-              ]
-            })
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      components: [
+                        %{
+                          type: "ChanceToApply",
+                          chance: 0
+                        }
+                      ],
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 0.5,
+                          energy_recharge: 50,
+                          delay: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
           ]
         })
 
@@ -192,23 +197,30 @@ defmodule Champions.Test.BattleTest do
       {:ok, _character} =
         Characters.update_character(character, %{
           basic_skill:
-            Map.put(basic_skill_params, :effects, [
-              TestUtils.build_effect(%{
-                components: [
-                  %{
-                    type: "ChanceToApply",
-                    chance: 1
-                  }
-                ],
-                executions: [
-                  %{
-                    type: "DealDamage",
-                    attack_ratio: 0.5,
-                    energy_recharge: 50,
-                    delay: 0
-                  }
-                ]
-              })
+            Map.put(basic_skill_params, :mechanics, [
+              %{
+                trigger_delay: 0,
+                apply_effects_to:
+                  TestUtils.build_apply_effects_to_mechanic(%{
+                    effects: [
+                      TestUtils.build_effect(%{
+                        components: [
+                          %{
+                            type: "ChanceToApply",
+                            chance: 1
+                          }
+                        ],
+                        executions: [
+                          %{
+                            type: "DealDamage",
+                            attack_ratio: 0.5,
+                            energy_recharge: 50
+                          }
+                        ]
+                      })
+                    ]
+                  })
+              }
             ])
         })
 
@@ -224,26 +236,32 @@ defmodule Champions.Test.BattleTest do
       # The ultimate skill has an attack ratio of 0.5, so it will deal 1 point of damage (base attack * 0.1 * 0.5) every 2 steps to the target dummy, which has 10 health points.
       # This way, the battle should end in a victory for the team_1 after 21 steps.
 
-      cooldown = 1
-
       # Configure a basic skill with a modifier that increases the attack ratio
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "BasicSkill3",
-          cooldown: cooldown,
-          effects: [
-            TestUtils.build_effect(%{
-              type: %{"type" => "duration", "duration" => 1, "period" => 0},
-              modifiers: [
-                %{
-                  attribute: "attack",
-                  modifier_operation: "Multiply",
-                  magnitude_calc_type: "Float",
-                  float_magnitude: 0.1
-                }
-              ],
-              target_allies: true
-            })
+          cooldown: 1,
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{"type" => "duration", "duration" => 1, "period" => 0},
+                      modifiers: [
+                        %{
+                          attribute: "attack",
+                          modifier_operation: "Multiply",
+                          magnitude_calc_type: "Float",
+                          float_magnitude: 0.1
+                        }
+                      ],
+                      target_allies: true
+                    })
+                  ]
+                })
+            }
           ],
           energy_regen: 500
         })
@@ -251,17 +269,24 @@ defmodule Champions.Test.BattleTest do
       ultimate_skill_params =
         TestUtils.build_skill(%{
           name: "Modifiers Ultimate",
-          effects: [
-            TestUtils.build_effect(%{
-              executions: [
-                %{
-                  type: "DealDamage",
-                  attack_ratio: 0.5,
-                  energy_recharge: 50,
-                  delay: 0
-                }
-              ]
-            })
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 0.5,
+                          energy_recharge: 50
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
           ]
         })
 
@@ -277,9 +302,6 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
       {:ok, unit} = Units.get_unit(unit.id)
-
-      # assert "timeout" ==
-      #          Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
 
       assert "team_1" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21).result
     end
@@ -306,17 +328,24 @@ defmodule Champions.Test.BattleTest do
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "DealDamage Defense",
-          effects: [
-            TestUtils.build_effect(%{
-              executions: [
-                %{
-                  type: "DealDamage",
-                  attack_ratio: 1,
-                  energy_recharge: 0,
-                  delay: 0
-                }
-              ]
-            })
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
           ],
           cooldown: cooldown_to_hit_once
         })
