@@ -10,6 +10,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.{Player, Skill}
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
+  alias Arena.Utils
 
   ##########################
   # API
@@ -80,7 +81,7 @@ defmodule Arena.GameUpdater do
         {:reply, :not_a_client, state}
 
       player_id ->
-        response = %{player_id: player_id, game_config: state.game_config}
+        response = %{player_id: player_id, game_config: state.game_config, game_status: state.game_state.status}
         {:reply, {:ok, response}, state}
     end
   end
@@ -153,6 +154,7 @@ defmodule Arena.GameUpdater do
 
       {:ended, winner} ->
         state = put_in(state, [:game_state, :status], :ENDED)
+        PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
 
         ## The idea of having this waiting period is in case websocket processes keep
@@ -1015,7 +1017,24 @@ defmodule Arena.GameUpdater do
     if power_up.aditional_info.status == :AVAILABLE && Player.alive?(player) do
       updated_power_up = put_in(power_up, [:aditional_info, :status], :TAKEN)
 
-      updated_player = update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
+      updated_player =
+        update_in(player, [:aditional_info, :power_ups], fn amount -> amount + 1 end)
+        |> update_in([:aditional_info], fn additional_info ->
+          Map.update(additional_info, :health, additional_info.health, fn current_health ->
+            Utils.increase_value_by_base_percentage(
+              current_health,
+              additional_info.base_health,
+              power_up.aditional_info.power_up_health_modifier
+            )
+          end)
+          |> Map.update(:max_health, additional_info.max_health, fn max_health ->
+            Utils.increase_value_by_base_percentage(
+              max_health,
+              additional_info.base_health,
+              power_up.aditional_info.power_up_health_modifier
+            )
+          end)
+        end)
 
       {Map.put(players_acc, player.id, updated_player), Map.put(power_ups_acc, power_up.id, updated_power_up)}
     else

@@ -729,7 +729,7 @@ defmodule Champions.Battle.Simulator do
          history,
          _skill_id
        ) do
-    Logger.warning("#{format_unit_name(caster)} tried to apply an unknown execution to #{format_unit_name(caster)}")
+    Logger.warning("#{format_unit_name(caster)} tried to apply an unknown execution to #{format_unit_name(target)}")
     {target, history}
   end
 
