@@ -67,6 +67,12 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
         true
 
       %{
+        type: "HealOverTime",
+        attack_ratio: _attack_ratio
+      } ->
+        true
+
+      %{
         type: "AddEnergy",
         amount: _amount
       } ->
