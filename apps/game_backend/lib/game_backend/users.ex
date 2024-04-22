@@ -83,6 +83,12 @@ defmodule GameBackend.Users do
       |> User.experience_changeset(params)
       |> Repo.update()
 
+  def update_kaline_tree_level(user, params),
+    do:
+      user
+      |> User.kaline_tree_level_changeset(params)
+      |> Repo.update()
+
   def reset_afk_rewards_claim(user_id) do
     {:ok, user} = get_user(user_id)
 
@@ -92,12 +98,15 @@ defmodule GameBackend.Users do
   end
 
   def level_up_kaline_tree(user_id, currency_id, level_up_cost) do
-    Multi.new()
-    |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
-    |> Multi.run(:user_currency, fn _, _ ->
-      Currencies.add_currency(user_id, currency_id, -level_up_cost)
-    end)
-    |> Repo.transaction()
+    {:ok, result} =
+      Multi.new()
+      |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        Currencies.add_currency(user_id, currency_id, -level_up_cost)
+      end)
+      |> Repo.transaction()
+
+    {:ok, result.user}
   end
 
   defp increment_tree_level(user_id) do

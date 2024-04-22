@@ -772,13 +772,23 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("KalineTreeUser")
 
       # Kaline tree level is 1 when the user is created.
-      assert user.kaline_tree_level == 1
+      initial_kaline_tree_level = user.kaline_tree_level
+      assert initial_kaline_tree_level == 1
 
       # Level up Kaline Tree without enough fertilizer should return an error.
       SocketTester.level_up_kaline_tree(socket_tester, user.id)
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+
+      Currencies.add_currency_by_name!(user.id, "Fertilizer", 9999)
+
+      # Level up Kaline Tree with enough fertilizer should return an updated user.
+      SocketTester.level_up_kaline_tree(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
+      assert leveled_up_user.kaline_tree_level == initial_kaline_tree_level + 1
     end
   end
 

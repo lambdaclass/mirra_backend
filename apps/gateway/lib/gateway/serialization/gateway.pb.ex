@@ -388,6 +388,8 @@ defmodule Gateway.Serialization.User do
     type: Gateway.Serialization.AfkRewardRate,
     json_name: "afkRewardRates"
   )
+
+  field(:kaline_tree_level, 11, type: :uint64, json_name: "kalineTreeLevel")
 end
 
 defmodule Gateway.Serialization.SuperCampaignProgresses do

@@ -22,7 +22,13 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
-    case Users.register_user(%{username: username, game_id: Utils.game_id()}) do
+    case Users.register_user(%{
+           username: username,
+           game_id: Utils.game_id(),
+           level: 1,
+           kaline_tree_level: 1,
+           experience: 0
+         }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
         add_sample_units(user)

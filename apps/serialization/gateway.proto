@@ -167,6 +167,7 @@ syntax = "proto3";
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
+    uint64 kaline_tree_level = 11;
   }
 
   message SuperCampaignProgresses {

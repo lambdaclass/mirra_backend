@@ -31,13 +31,15 @@ defmodule GameBackend.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:game_id, :username, :last_afk_reward_claim])
-    |> put_change(:level, 1)
-    |> put_change(:kaline_tree_level, 1)
-    |> put_change(:experience, 0)
+    |> cast(attrs, [:game_id, :username, :last_afk_reward_claim, :kaline_tree_level, :level, :experience])
     |> unique_constraint([:game_id, :username])
     |> validate_required([:game_id, :username])
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
+
+  def kaline_tree_level_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:kaline_tree_level])
+  end
 end
