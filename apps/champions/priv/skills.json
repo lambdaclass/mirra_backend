@@ -986,6 +986,7 @@
                 "type": "instant"
               },
               "initial_delay": 0,
+              "components": [],
               "modifiers": [],
               "executions": [
                 {
