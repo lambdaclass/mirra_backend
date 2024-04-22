@@ -70,7 +70,11 @@ defmodule Arena.Configuration do
   end
 
   defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
-    {name, %{attrs | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)}}
+    {name,
+     %{
+       attrs
+       | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)
+     }}
   end
 
   defp parse_mechanic_fields(mechanic) do
