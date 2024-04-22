@@ -11,6 +11,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Users.Currencies
@@ -68,6 +69,23 @@ defmodule GameBackend.Users do
   def get_user_by_username(username) do
     user = Repo.get_by(User, username: username) |> preload()
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
+  Gets a Kaline Tree level by its number.
+
+  Returns {:error, :not_found} if no level is found.
+
+  ## Examples
+
+      iex> get_kaline_tree_level(1)
+      %KalineTreeLevel{}
+
+      iex> get_kaline_tree_level(-1)
+      nil
+  """
+  def get_kaline_tree_level(level_number) do
+    Repo.get_by(KalineTreeLevel, level: level_number)
   end
 
   @doc """

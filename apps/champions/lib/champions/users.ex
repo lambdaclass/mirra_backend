@@ -3,6 +3,7 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias Champions.Users
   alias Champions.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
@@ -22,12 +23,14 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
+    kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
+
     case Users.register_user(%{
            username: username,
            game_id: Utils.game_id(),
            level: 1,
-           kaline_tree_level: 1,
-           experience: 0
+           experience: 0,
+           kaline_tree_level_id: kaline_tree_level.id
          }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
