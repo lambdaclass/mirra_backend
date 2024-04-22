@@ -44,7 +44,7 @@ defmodule Champions.Battle.Simulator do
   require Logger
 
   @default_seed 1
-  @default_maximum_steps 500
+  @default_maximum_steps 12_000
   @ultimate_energy_cost 500
   @miliseconds_per_step 100
 
@@ -804,8 +804,14 @@ defmodule Champions.Battle.Simulator do
       id: skill.id,
       name: skill.name,
       mechanics: Enum.map(skill.mechanics, &create_mechanics_map(&1, skill.id, caster_id)),
-      base_cooldown: div(skill.cooldown, @miliseconds_per_step),
-      remaining_cooldown: div(skill.cooldown, @miliseconds_per_step),
+      base_cooldown:
+        if skill.cooldown do
+          div(skill.cooldown, @miliseconds_per_step)
+        end,
+      remaining_cooldown:
+        if skill.cooldown do
+          div(skill.cooldown, @miliseconds_per_step)
+        end,
       energy_regen: skill.energy_regen || 0,
       animation_duration: div(skill.animation_duration, @miliseconds_per_step),
       caster_id: caster_id
