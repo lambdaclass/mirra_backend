@@ -16,6 +16,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Users.Currencies
   alias GameBackend.Users.User
+  alias GameBackend.Users.GoogleUser
 
   @doc """
   Registers a user.
@@ -69,6 +70,18 @@ defmodule GameBackend.Users do
   def get_user_by_username(username) do
     user = Repo.get_by(User, username: username) |> preload()
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  def find_or_create_google_user_by_email(email) do
+    case Repo.get_by(GoogleUser, email: email) do
+      nil -> create_google_user_by_email(email)
+      user -> {:ok, user}
+    end
+  end
+
+  defp create_google_user_by_email(email) do
+    GoogleUser.changeset(%GoogleUser{}, %{email: email})
+    |> Repo.insert()
   end
 
   @doc """
