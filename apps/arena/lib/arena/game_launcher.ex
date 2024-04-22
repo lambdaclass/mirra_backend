@@ -33,6 +33,10 @@ defmodule Arena.GameLauncher do
     GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
   end
 
+  def join_quick_game(client_id, character_name, player_name) do
+    GenServer.call(__MODULE__, {:join_quick_game, client_id, character_name, player_name})
+  end
+
   # Callbacks
   @impl true
   def init(_) do
@@ -50,6 +54,25 @@ defmodule Arena.GameLauncher do
        | batch_start_at: batch_start_at,
          clients: clients ++ [{client_id, character_name, player_name, from_pid}]
      }}
+  end
+
+  @impl true
+  def handle_call({:join_quick_game, client_id, character_name, player_name}, {from_pid, _}, state) do
+    bot_clients = get_bot_clients(@clients_needed - 1)
+
+    {:ok, game_pid} =
+      GenServer.start(Arena.GameUpdater, %{
+        clients: [{client_id, character_name, player_name, from_pid} | bot_clients]
+      })
+
+    game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
+
+    spawn_bot_for_player(bot_clients, game_id)
+
+    Process.send(from_pid, {:join_game, game_id}, [])
+    Process.send(from_pid, :leave_waiting_game, [])
+
+    {:reply, :ok, state}
   end
 
   @impl true
