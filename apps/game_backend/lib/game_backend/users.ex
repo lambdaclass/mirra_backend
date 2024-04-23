@@ -124,14 +124,16 @@ defmodule GameBackend.Users do
       end)
       |> Repo.transaction()
 
-    {:ok, result.user}
+    {:ok, result.user |> preload()}
   end
 
   defp increment_tree_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
+        next_level = get_kaline_tree_level(user.kaline_tree_level.level + 1)
+
         user
-        |> User.changeset(%{kaline_tree_level: user.kaline_tree_level + 1})
+        |> User.changeset(%{kaline_tree_level_id: next_level.id})
         |> Repo.update()
 
       error ->

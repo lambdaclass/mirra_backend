@@ -98,7 +98,7 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 200)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
   end
 
   defp add_super_campaign_progresses(user) do
@@ -226,5 +226,5 @@ defmodule Champions.Users do
   end
 
   defp calculate_cost_to_level_up_kaline_tree(user),
-    do: [{Currencies.get_currency_by_name!("Fertilizer").id, (user.kaline_tree_level + 1) * 100}]
+    do: [{Currencies.get_currency_by_name!("Fertilizer").id, (user.kaline_tree_level.level + 1) * 100}]
 end
