@@ -167,7 +167,16 @@ syntax = "proto3";
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
-    uint64 kaline_tree_level = 11;
+    KalineTreeLevel kaline_tree_level = 11;
+  }
+
+  message KalineTreeLevel {
+    string id = 1;
+    uint64 level = 2;
+    uint64 fertilizer_cost = 3;
+    uint64 gold_cost = 4;
+    repeated string unlock_features = 5;
+
   }
 
   message SuperCampaignProgresses {

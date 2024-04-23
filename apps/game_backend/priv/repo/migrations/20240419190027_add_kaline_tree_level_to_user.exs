@@ -10,5 +10,9 @@ defmodule GameBackend.Repo.Migrations.AddKalineTreeLevelToUser do
       add :user_id, references(:users, on_delete: :nothing)
       timestamps()
     end
+
+    alter table(:users) do
+      add :kaline_tree_level_id, references(:kaline_tree_levels, on_delete: :nothing)
+    end
   end
 end
