@@ -25,6 +25,12 @@ defmodule Gateway.Router do
     get "/:provider/callback", Controllers.AuthController, :callback
   end
 
+  scope "/users", Gateway do
+    pipe_through :api
+
+    get "/:user_id", Controllers.UserController, :get_email
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Gateway do
   #   pipe_through :api

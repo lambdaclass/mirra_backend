@@ -94,6 +94,10 @@ defmodule GameBackend.Users do
     |> Repo.insert()
   end
 
+  def get_google_user(google_user_id) do
+    Repo.get(GoogleUser, google_user_id)
+  end
+
   @doc """
   Checks whether a user exists with the given id.
 
