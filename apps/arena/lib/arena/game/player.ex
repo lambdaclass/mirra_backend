@@ -172,7 +172,7 @@ defmodule Arena.Game.Player do
           skill.execution_duration_ms
         )
 
-        skill_direction =
+        {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
@@ -189,7 +189,8 @@ defmodule Arena.Game.Player do
            Map.merge(skill_params, %{
              skill_direction: skill_direction,
              skill_key: skill_key,
-             skill_destination: action[:destination]
+             skill_destination: action[:destination],
+             auto_aim?: auto_aim?
            })
            |> Map.merge(skill)},
           skill.activation_delay_ms
@@ -277,7 +278,7 @@ defmodule Arena.Game.Player do
       item ->
         Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
           effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-          Effect.put_effect(game_state_acc, player.id, player.id, effect)
+          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
         end)
         |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
@@ -395,12 +396,17 @@ defmodule Arena.Game.Player do
       name: "in_game_inmunity",
       duration_ms: skill.execution_duration_ms,
       remove_on_action: false,
+      one_time_application: true,
       effect_mechanics: %{
-        damage_immunity: %{}
+        damage_immunity: %{
+          execute_multiple_times: false,
+          effect_delay_ms: 0
+        }
       }
     }
 
-    Effect.put_effect(game_state, player_id, player_id, effect)
+    player = Map.get(game_state.players, player_id)
+    Effect.put_effect_to_entity(game_state, player, player_id, effect)
   end
 
   defp maybe_make_player_invincible(game_state, _, _) do

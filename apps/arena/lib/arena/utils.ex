@@ -21,4 +21,12 @@ defmodule Arena.Utils do
   def increase_value_by_base_percentage(current_value, base_value, amount) do
     current_value + base_value * amount
   end
+
+  def get_bot_connection_url(game_id, bot_client) do
+    server_url = System.get_env("PHX_HOST") || "localhost"
+    bot_manager_host = System.get_env("BOT_MANAGER_HOST", "localhost")
+    bot_manager_port = System.get_env("BOT_MANAGER_PORT", "4003")
+
+    "http://#{bot_manager_host}:#{bot_manager_port}/join/#{server_url}/#{game_id}/#{bot_client}"
+  end
 end

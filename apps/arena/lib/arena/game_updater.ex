@@ -81,7 +81,7 @@ defmodule Arena.GameUpdater do
         {:reply, :not_a_client, state}
 
       player_id ->
-        response = %{player_id: player_id, game_config: state.game_config}
+        response = %{player_id: player_id, game_config: state.game_config, game_status: state.game_state.status}
         {:reply, {:ok, response}, state}
     end
   end
@@ -120,11 +120,13 @@ defmodule Arena.GameUpdater do
       |> move_projectiles()
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
+      |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> resolve_projectiles_collisions_with_players()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> explode_projectiles()
       |> handle_pools(state.game_config)
-      |> Skill.apply_effect_mechanic()
+      |> remove_expired_pools(now)
+      |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -154,6 +156,7 @@ defmodule Arena.GameUpdater do
 
       {:ended, winner} ->
         state = put_in(state, [:game_state, :status], :ENDED)
+        PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
 
         ## The idea of having this waiting period is in case websocket processes keep
@@ -396,21 +399,6 @@ defmodule Arena.GameUpdater do
   def handle_info({:block_actions, player_id}, state) do
     broadcast_player_block_actions(state.game_state.game_id, player_id, false)
     {:noreply, state}
-  end
-
-  def handle_info({:remove_pool, pool_id}, %{game_state: game_state} = state) do
-    game_state =
-      Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
-        Effect.remove_owner_effects(game_state, player.id, pool_id)
-      end)
-      |> update_in(
-        [:pools],
-        fn current_pools ->
-          Map.delete(current_pools, pool_id)
-        end
-      )
-
-    {:noreply, %{state | game_state: game_state}}
   end
 
   ##########################
@@ -661,7 +649,7 @@ defmodule Arena.GameUpdater do
     updated_projectiles =
       Enum.reduce(projectiles, projectiles, fn {projectile_id, projectile}, acc ->
         case projectile.aditional_info.status do
-          :EXPLODED ->
+          status when status in [:EXPLODED, :CONSUMED] ->
             Map.delete(acc, projectile_id)
 
           :EXPIRED ->
@@ -681,7 +669,8 @@ defmodule Arena.GameUpdater do
            players: players,
            obstacles: obstacles,
            external_wall: external_wall,
-           ticks_to_move: ticks_to_move
+           ticks_to_move: ticks_to_move,
+           pools: pools
          } = game_state
        ) do
     # We don't want to move recently exploded projectiles
@@ -694,6 +683,7 @@ defmodule Arena.GameUpdater do
     entities_to_collide_with =
       Player.alive_players(players)
       |> Map.merge(obstacles)
+      |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
 
     moved_projectiles =
@@ -781,6 +771,34 @@ defmodule Arena.GameUpdater do
     game_state
     |> Map.put(:projectiles, updated_projectiles)
     |> Map.put(:players, updated_players)
+  end
+
+  defp resolve_projectiles_effects_on_collisions(
+         %{
+           projectiles: projectiles,
+           players: players,
+           obstacles: obstacles,
+           pools: pools
+         } = game_state,
+         game_config
+       ) do
+    Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
+      case get_in(projectile, [:aditional_info, :on_collide_effects]) do
+        nil ->
+          game_state
+
+        on_collide_effects ->
+          entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
+
+          effects_to_apply =
+            get_effects_from_config(on_collide_effects.effects, game_config)
+
+          entities_map
+          |> Map.take(projectile.collides_with)
+          |> get_entities_to_apply(projectile)
+          |> apply_effect_to_entities(effects_to_apply, game_state, projectile)
+      end
+    end)
   end
 
   defp explode_projectiles(%{projectiles: projectiles} = game_state) do
@@ -1057,11 +1075,9 @@ defmodule Arena.GameUpdater do
     if player.id == pool.aditional_info.owner_id do
       game_state
     else
-      ## TODO: Effect.put_non_owner_stackable_effect/4 is doing essentially the same check multiple times
-      ##   we should try to refactor this to avoid it
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        Effect.put_non_owner_stackable_effect(game_state, player.id, pool.id, effect)
+        Effect.put_effect_to_entity(game_state, player, pool.id, effect)
       end)
     end
   end
@@ -1097,6 +1113,76 @@ defmodule Arena.GameUpdater do
       [] -> random_position_in_map(integer_radius * 0.95, external_wall)
       _ -> point.position
     end
+  end
+
+  # You'll only apply effect to owned entities or
+  # entities without an owner, implement behavior if needed
+  defp get_entities_to_apply(collided_entities, projectile) do
+    Map.filter(collided_entities, fn {_entity_id, entity} ->
+      entity_owned_or_player? =
+        not is_nil(entity.aditional_info[:owner_id]) and
+          projectile.aditional_info.owner_id == entity.aditional_info.owner_id
+
+      apply_to_entity_type? =
+        Atom.to_string(entity.category) in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
+
+      apply_to_entity_type? and entity_owned_or_player?
+    end)
+  end
+
+  defp apply_effect_to_entities(entities, effects, game_state, projectile) do
+    Enum.reduce(entities, game_state, fn {_entity_id, entity}, game_state ->
+      game_state =
+        Enum.reduce(effects, game_state, fn effect, game_state ->
+          Effect.put_effect_to_entity(game_state, entity, projectile.id, effect)
+        end)
+
+      remove_projectile_on_collision? =
+        Enum.any?(effects, fn effect -> effect.consume_projectile end) or
+          projectile.aditional_info.status == :CONSUMED
+
+      if remove_projectile_on_collision? do
+        consumed_projectile = put_in(projectile, [:aditional_info, :status], :CONSUMED)
+
+        update_entity_in_game_state(game_state, consumed_projectile)
+      else
+        game_state
+      end
+    end)
+  end
+
+  defp remove_expired_pools(%{pools: pools} = game_state, now) do
+    pools =
+      Enum.reduce(pools, %{}, fn {pool_id, pool}, acc ->
+        time_passed_since_spawn =
+          now - pool.aditional_info.spawn_at
+
+        if time_passed_since_spawn >= pool.aditional_info.duration_ms do
+          acc
+        else
+          Map.put(acc, pool_id, pool)
+        end
+      end)
+
+    Map.put(game_state, :pools, pools)
+  end
+
+  def update_entity_in_game_state(game_state, entity) do
+    put_in(game_state, [get_entity_path(entity), entity.id], entity)
+  end
+
+  defp get_entity_path(%{category: :pool}), do: :pools
+  defp get_entity_path(%{category: :player}), do: :players
+  defp get_entity_path(%{category: :power_up}), do: :power_ups
+  defp get_entity_path(%{category: :projectile}), do: :projectiles
+  defp get_entity_path(%{category: :obstacle}), do: :obstacles
+
+  def get_effects_from_config([], _game_config), do: []
+
+  def get_effects_from_config(effect_list, game_config) do
+    Enum.map(effect_list, fn effect_name ->
+      Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
+    end)
   end
 
   ##########################

@@ -3,6 +3,7 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
   alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
@@ -25,12 +26,14 @@ defmodule Arena.GameSocketHandler do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
-    {:ok, %{player_id: player_id, game_config: config}} = GameUpdater.join(state.game_pid, state.client_id)
+    {:ok, %{player_id: player_id, game_config: config, game_status: game_status}} =
+      GameUpdater.join(state.game_pid, state.client_id)
 
     state =
       Map.put(state, :player_id, player_id)
-      |> Map.put(:enable, false)
+      |> Map.put(:enable, game_status == :RUNNING)
       |> Map.put(:block_actions, false)
+      |> Map.put(:game_finished, game_status == :ENDED)
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
@@ -115,6 +118,11 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
+  def websocket_info(:end_game_state, state) do
+    {:ok, Map.put(state, :game_finished, true)}
+  end
+
+  @impl true
   def websocket_info({:game_finished, game_state}, state) do
     # Logger.info("Websocket info, Message: GAME FINISHED")
     {:reply, {:binary, game_state}, state}
@@ -142,6 +150,21 @@ defmodule Arena.GameSocketHandler do
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
+  end
+
+  @impl true
+  def terminate(_reason, _req, %{game_finished: false} = state) do
+    spawn(fn ->
+      Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
+      |> Finch.request(Arena.Finch)
+    end)
+
+    :ok
+  end
+
+  @impl true
+  def terminate(_reason, _req, _state) do
+    :ok
   end
 
   defp to_broadcast_config(config) do

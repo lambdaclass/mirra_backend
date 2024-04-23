@@ -2,6 +2,7 @@ defmodule Arena.Game.Skill do
   @moduledoc """
   Module for handling skills
   """
+  alias Arena.GameUpdater
   alias Arena.Game.Effect
   alias Arena.{Entities, Utils}
   alias Arena.Game.Player
@@ -216,17 +217,18 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction}) do
+  def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction, auto_aim?: auto_aim?}) do
     Process.send_after(
       self(),
       {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
       leap.duration_ms
     )
 
-    ## TODO: Cap target_position to leap.range
+    skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, leap.range)
+
     target_position = %{
-      x: entity.position.x + skill_direction.x * leap.range,
-      y: entity.position.y + skill_direction.y * leap.range
+      x: entity.position.x + skill_direction.x,
+      y: entity.position.y + skill_direction.y
     }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
@@ -253,14 +255,19 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
-        skill_direction: skill_direction
+        skill_direction: skill_direction,
+        auto_aim?: auto_aim?
       }) do
     last_id = game_state.last_id + 1
 
+    skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, pool_params.range)
+
     target_position = %{
-      x: player.position.x + skill_direction.x * pool_params.range,
-      y: player.position.y + skill_direction.y * pool_params.range
+      x: player.position.x + skill_direction.x,
+      y: player.position.y + skill_direction.y
     }
+
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     pool =
       Entities.new_pool(
@@ -268,10 +275,10 @@ defmodule Arena.Game.Skill do
         target_position,
         pool_params.effects_to_apply,
         pool_params.radius,
-        player.id
+        pool_params.duration_ms,
+        player.id,
+        now
       )
-
-    Process.send_after(self(), {:remove_pool, last_id}, pool_params.duration_ms)
 
     put_in(game_state, [:pools, last_id], pool)
     |> put_in([:last_id], last_id)
@@ -279,104 +286,11 @@ defmodule Arena.Game.Skill do
 
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
-      Enum.map(effects, fn effect_name ->
-        Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-      end)
+      GameUpdater.get_effects_from_config(effects, game_config)
 
     Enum.reduce(effects_to_apply, game_state, fn effect, game_state ->
-      Effect.put_effect(game_state, player.id, player.id, execution_duration_ms, effect)
+      Effect.put_effect_to_entity(game_state, player, player.id, execution_duration_ms, effect)
     end)
-  end
-
-  ## TODO: refactor into Effect module, take a closer look at how the recurring effects are re-applied
-  ##    specifically the mess around apply_effect_mechanic/3 and do-effect_mechanics/4
-  def apply_effect_mechanic(%{players: players} = game_state) do
-    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-      if Player.alive?(player) do
-        player =
-          Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
-            apply_effect_mechanic(player, effect, game_state)
-          end)
-
-        put_in(game_state, [:players, player.id], player)
-      else
-        game_state
-      end
-    end)
-  end
-
-  def apply_effect_mechanic(player, effect, game_state) do
-    now = System.monotonic_time(:millisecond)
-
-    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
-      should_re_apply? =
-        is_nil(Map.get(mechanic_params, :last_application_time)) or
-          (not is_nil(Map.get(mechanic_params, :effect_delay_ms)) and
-             now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms)
-
-      if should_re_apply? do
-        do_effect_mechanics(game_state, player, effect, mechanic)
-        |> Effect.put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
-      else
-        player
-      end
-    end)
-  end
-
-  defp do_effect_mechanics(game_state, player, effect, {:pull, pull_params}) do
-    case Map.get(game_state.pools, effect.owner_id) do
-      nil ->
-        player
-
-      %{position: pool_position} when pool_position == player.position ->
-        player
-
-      pool ->
-        if player.aditional_info.damage_immunity do
-          player
-        else
-          direction = Physics.get_direction_from_positions(player.position, pool.position)
-
-          Physics.move_entity_to_direction(
-            player,
-            direction,
-            pull_params.force,
-            game_state.external_wall,
-            game_state.obstacles
-          )
-          |> Map.put(:aditional_info, player.aditional_info)
-          |> Map.put(:collides_with, player.collides_with)
-        end
-    end
-  end
-
-  defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
-    # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
-    # applies this effect
-    Map.get(game_state.pools, effect.owner_id)
-    |> case do
-      nil ->
-        player
-
-      pool ->
-        pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
-        real_damage = Player.calculate_real_damage(pool_owner, damage_params.damage)
-
-        send(self(), {:damage_done, pool_owner.id, real_damage})
-
-        player = Player.take_damage(player, real_damage)
-
-        unless Player.alive?(player) do
-          send(self(), {:to_killfeed, pool_owner.id, player.id})
-        end
-
-        player
-    end
-  end
-
-  ## Sink for mechanics that don't do anything
-  defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
-    player
   end
 
   defp calculate_angle_directions(amount, angle_between, base_direction) do
@@ -413,15 +327,33 @@ defmodule Arena.Game.Skill do
     Physics.add_angle_to_direction(direction, angle)
   end
 
+  @doc """
+  Receives player's skill input direction, the skill, the player and a list of entities.
+  Returns a tuple containing {boolean, direction}:
+  - boolean indicates if the skill can trigger the auto aim behavior. All of the following must be met:
+    - skill's direction is (0, 0).
+    - skill.autoaim is true.
+    - nearest entity direction isn't the player's.
+  - direction can be one of the following:
+    - Direction from player to closest entity, if auto aim can be triggered.
+    - Direction where the player is moving, normalized if skill can't pick destination.
+    - Direction received by parameter, normalized if skill can't pick destination.
+  """
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
-      true -> Physics.nearest_entity_direction(player, entities)
-      false -> player.direction |> maybe_normalize(not skill.can_pick_destination)
+      true ->
+        nearest_entity_direction_in_range =
+          Physics.nearest_entity_direction_in_range(player, entities, skill.max_autoaim_range)
+
+        {nearest_entity_direction_in_range != player.direction, nearest_entity_direction_in_range}
+
+      false ->
+        {false, player.direction |> maybe_normalize(not skill.can_pick_destination)}
     end
   end
 
   def maybe_auto_aim(skill_direction, skill, _player, _entities) do
-    skill_direction |> maybe_normalize(not skill.can_pick_destination)
+    {false, skill_direction |> maybe_normalize(not skill.can_pick_destination)}
   end
 
   defp maybe_normalize(direction, true) do
@@ -452,5 +384,13 @@ defmodule Arena.Game.Skill do
 
   defp maybe_move_player(game_state, _, _) do
     game_state
+  end
+
+  defp maybe_multiply_by_range(%{x: x, y: y}, false = _auto_aim?, range) do
+    %{x: x * range, y: y * range}
+  end
+
+  defp maybe_multiply_by_range(direction, true = _auto_aim?, _range) do
+    direction
   end
 end

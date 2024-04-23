@@ -7430,7 +7430,8 @@ proto.GameStatus = {
  */
 proto.ProjectileStatus = {
   ACTIVE: 0,
-  EXPLODED: 1
+  EXPLODED: 1,
+  CONSUMED: 2
 };
 
 /**
