@@ -1,15 +1,5 @@
-<ul>
-  <li> 
-  Mocked Muflus: <a href={"/board/#{Ecto.UUID.generate()}/muflus/player_name"} class="text-yellow-400">link</a>
-  </li>
-  <li> 
-  Mocked Uma: <a href={"/board/#{Ecto.UUID.generate()}/uma/player_name"} class="text-yellow-400">link</a>
-  </li>
-  <li> 
-  Mocked H4ck: <a href={"/board/#{Ecto.UUID.generate()}/h4ck/player_name"} class="text-yellow-400">link</a>
-  </li>
-  <li> 
-  Mocked Valtimer: <a href={"/board/#{Ecto.UUID.generate()}/valtimer/player_name"} class="text-yellow-400">link</a>
-  </li>
-</ul>
-
+<.form :let={f} for={%{}} action={~p"/"}>
+  <.input field={f[:character]} name="character" label="Select a Character" type="select" options={["muflus", "h4ck", "uma", "valtimer"]} value=""/>
+  <.button type="submit" name="game_mode" value="join">Play</.button>
+  <.button type="submit" name="game_mode" value="quick_game">Quick Game</.button>
+</.form>
