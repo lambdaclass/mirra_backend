@@ -18,6 +18,7 @@ defmodule GameClientWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/:user_id", PageController, :home_user
     post "/", PageController, :select_character
     live "/board/play/:game_id/:player_id", BoardLive.Show
     live "/board/:player_id/:character/:player_name/:game_mode", BoardLive.GameQueue

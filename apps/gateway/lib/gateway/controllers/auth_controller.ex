@@ -23,7 +23,7 @@ defmodule Gateway.Controllers.AuthController do
         |> put_flash(:info, "Successfully authenticated.")
         |> put_session(:current_user, user)
         |> configure_session(renew: true)
-        |> redirect(to: "/")
+        |> redirect(external: "http://localhost:3000/#{user.id}")
 
       {:error, _changeset} ->
         conn
