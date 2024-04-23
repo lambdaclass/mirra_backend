@@ -2,7 +2,11 @@ defmodule GameClientWeb.BoardLive.GameQueue do
   require Logger
   use GameClientWeb, :live_view
 
-  def mount(%{"player_id" => player_id, "character" => character, "player_name" => player_name, "game_mode" => game_mode}, _session, socket) do
+  def mount(
+        %{"player_id" => player_id, "character" => character, "player_name" => player_name, "game_mode" => game_mode},
+        _session,
+        socket
+      ) do
     {:ok, assign(socket, player_id: player_id, character: character, player_name: player_name, game_mode: game_mode)}
   end
 
