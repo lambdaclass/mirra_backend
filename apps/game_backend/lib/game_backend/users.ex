@@ -72,6 +72,19 @@ defmodule GameBackend.Users do
     if user, do: {:ok, user}, else: {:error, :not_found}
   end
 
+  @doc """
+  Gets a GoogleUser by their email.
+  Creates a GoogleUser if none is found.
+  Returns {:error, changeset} if the creation failed.
+
+  ## Examples
+
+      iex> find_or_create_google_user_by_email("some_email")
+      {:ok, %GoogleUser{}}
+
+      iex> find_or_create_google_user_by_email("non_existing_email")
+      {:ok, %GoogleUser{}}
+  """
   def find_or_create_google_user_by_email(email) do
     case Repo.get_by(GoogleUser, email: email) do
       nil -> create_google_user_by_email(email)
