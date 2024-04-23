@@ -86,7 +86,7 @@
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
     "zone_damage": 40,
-    "item_spawn_interval_ms": 15000
+    "item_spawn_interval_ms": 7500
   },
   "skills": [
     {
