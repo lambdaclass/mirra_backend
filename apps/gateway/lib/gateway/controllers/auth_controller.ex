@@ -1,5 +1,7 @@
 defmodule Gateway.Controllers.AuthController do
-  @moduledoc false
+  @moduledoc """
+  Controller for users authentication.
+  """
   use Gateway, :controller
   plug Ueberauth
   alias Ueberauth.Strategy.Helpers
@@ -11,7 +13,7 @@ defmodule Gateway.Controllers.AuthController do
   def callback(%{assigns: %{ueberauth_failure: _fails}} = conn, _params) do
     conn
     |> put_flash(:error, "Failed to authenticate.")
-    |> redirect(to: "/")
+    |> redirect(to: "/auth/google")
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
@@ -23,10 +25,10 @@ defmodule Gateway.Controllers.AuthController do
         |> configure_session(renew: true)
         |> redirect(to: "/")
 
-      {:error, reason} ->
+      {:error, _changeset} ->
         conn
-        |> put_flash(:error, reason)
-        |> redirect(to: "/")
+        |> put_flash(:error, "Something went wrong. Try again.")
+        |> redirect(to: "/auth/google")
     end
   end
 end
