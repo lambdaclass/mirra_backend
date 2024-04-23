@@ -46,6 +46,33 @@
     "obstacles": [
       {
         "position": {
+          "x": -6950.6,
+          "y": -1655.85
+        },
+        "radius": 1801.05,
+        "shape": "circle",
+        "vertices": []
+      },
+      {
+        "position": {
+          "x": -989.0,
+          "y": 6143.7
+        },
+        "radius": 1253.5,
+        "shape": "circle",
+        "vertices": []
+      },
+      {
+        "position": {
+          "x": -1874.5,
+          "y": 5276.2
+        },
+        "radius": 364.55,
+        "shape": "circle",
+        "vertices": []
+      },
+      {
+        "position": {
           "x": 0.0,
           "y": 0.0
         },
