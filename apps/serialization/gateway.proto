@@ -176,7 +176,6 @@ syntax = "proto3";
     uint64 fertilizer_cost = 3;
     uint64 gold_cost = 4;
     repeated string unlock_features = 5;
-
   }
 
   message SuperCampaignProgresses {
