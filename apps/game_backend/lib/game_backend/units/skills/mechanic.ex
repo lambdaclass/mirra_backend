@@ -5,7 +5,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
   import Ecto.Changeset
 
   alias GameBackend.Units.Skills.Skill
-  alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffects}
+  alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffect}
 
   schema "mechanics" do
     field(:trigger_delay, :integer)
@@ -13,7 +13,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
 
     belongs_to(:apply_effects_to, ApplyEffectsTo)
     # Not yet implemented, added to define how different Mechanic types will be handled
-    belongs_to(:passive_effects, PassiveEffects)
+    belongs_to(:passive_effects, PassiveEffect)
   end
 
   @doc false

@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Skills.Mechanics.PassiveEffects do
+defmodule GameBackend.Units.Skills.Mechanics.PassiveEffect do
   @moduledoc false
   # This module is unimplemented. It is intended to be used to define the effects that are applied passively to a unit.
 
