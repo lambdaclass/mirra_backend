@@ -7,7 +7,6 @@ defmodule GameBackend.Repo.Migrations.AddKalineTreeLevelToUser do
       add :fertilizer_level_up_cost, :integer
       add :gold_level_up_cost, :integer
       add :unlock_features, {:array, :string}
-      add :user_id, references(:users, on_delete: :nothing)
       timestamps()
     end
 
