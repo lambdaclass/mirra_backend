@@ -142,7 +142,7 @@ Slot must be an unoccupied slot identified by number, between 1 and 6.
 #### Create Item Template
 
 ```
-{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: Champions.Utils.game_id(), name: name, type: item_type})
+{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: Champions.Utils.game_id(), name: name, type: item_type, base_modifiers: base_modifiers})
 ```
 
 #### Create Item

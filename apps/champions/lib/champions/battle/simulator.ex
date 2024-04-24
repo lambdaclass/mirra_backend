@@ -170,7 +170,6 @@ defmodule Champions.Battle.Simulator do
     {new_state, new_history} =
       cond do
         not can_attack(unit, initial_step_state) ->
-          Logger.info("Unit #{format_unit_name(unit)} cannot attack")
           {current_state, history}
 
         can_cast_ultimate_skill(unit) ->
@@ -240,6 +239,9 @@ defmodule Champions.Battle.Simulator do
         overrides: overrides
       }
 
+    # Reduce tags remaining timers & remove expired ones
+    {new_tags, new_history} = reduce_tag_timers(unit, new_history)
+
     # Reduce basic skill cooldown
     new_state =
       new_state
@@ -248,6 +250,7 @@ defmodule Champions.Battle.Simulator do
         max(new_state.units[unit.id].basic_skill.remaining_cooldown - 1, 0)
       )
       |> put_in([:units, unit.id, :modifiers], new_modifiers)
+      |> put_in([:units, unit.id, :tags], new_tags)
 
     {new_state, new_history}
   end
@@ -255,11 +258,11 @@ defmodule Champions.Battle.Simulator do
   # Reduces modifier timers and removes expired ones.
   # Called when processing a step for a unit.
   defp reduce_modifier_timers(modifiers, unit, history) do
-    Enum.reduce(modifiers, {[], history}, fn modifier, {acc, history} ->
+    Enum.reduce(modifiers, {[], history}, fn modifier, {acc, history_acc} ->
       case modifier.remaining_steps do
         # Modifier is permanent
         -1 ->
-          {[modifier | acc], history}
+          {[modifier | acc], history_acc}
 
         # Modifier expired
         0 ->
@@ -267,10 +270,10 @@ defmodule Champions.Battle.Simulator do
 
           {acc,
            add_to_history(
-             history,
+             history_acc,
              %{
                skill_id: modifier.skill_id,
-               target_ids: [unit.id],
+               target_id: unit.id,
                stat_affected: %{
                  stat: modifier.attribute |> String.upcase() |> String.to_atom(),
                  amount: modifier.float_magnitude
@@ -285,19 +288,52 @@ defmodule Champions.Battle.Simulator do
             "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)}."
           )
 
-          {[Map.put(modifier, :remaining_steps, remaining - 1) | acc], history}
+          {[Map.put(modifier, :remaining_steps, remaining - 1) | acc], history_acc}
+      end
+    end)
+  end
+
+  # Reduces tag timers and removes expired ones.
+  # Called when processing a step for a unit.
+  defp reduce_tag_timers(unit, history) do
+    Enum.reduce(unit.tags, {[], history}, fn tag, {acc, history} ->
+      case tag.remaining_steps do
+        # Tag is permanent
+        -1 ->
+          {[tag | acc], history}
+
+        # Tag expired
+        0 ->
+          Logger.info(~c"Tag \"#{tag.tag}\" expired for #{format_unit_name(unit)}.")
+
+          {acc,
+           add_to_history(
+             history,
+             %{
+               skill_id: tag.skill_id,
+               target_id: unit.id,
+               tag: tag.tag
+             },
+             :tag_expired
+           )}
+
+        # Tag still going, reduce its timer by one
+        remaining ->
+          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)}.")
+
+          {[Map.put(tag, :remaining_steps, remaining - 1) | acc], history}
       end
     end)
   end
 
   defp process_step_for_skills({current_state, history}, initial_step_state) do
-    Enum.reduce(current_state.skills_being_cast, {current_state, history}, fn skill, {current_state, history} ->
+    Enum.reduce(current_state.skills_being_cast, {current_state, history}, fn skill, {current_state, history_acc} ->
       Logger.info(
         "Process step #{current_state.step_number} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
       )
 
       # We need the initial_step_state to decide effect targets
-      process_step_for_skill(skill, current_state, initial_step_state, history)
+      process_step_for_skill(skill, current_state, initial_step_state, history_acc)
     end)
   end
 
@@ -361,42 +397,56 @@ defmodule Champions.Battle.Simulator do
             Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
             {targets_after_effect, new_history} =
-              Enum.reduce(effect.targets, {%{}, new_history}, fn id, {new_targets, new_history} ->
+              Enum.reduce(effect.targets, {%{}, new_history}, fn target_id, {new_targets, history_acc} ->
+                target = Map.get(current_state.units, target_id, target_id)
+
                 {new_target, new_history} =
                   maybe_apply_effect(
                     effect,
-                    current_state.units[id],
+                    target,
                     effect.caster,
                     current_state.step_number,
-                    effect_hits?(effect),
-                    new_history
+                    effect_hits?(effect, target),
+                    history_acc
                   )
 
-                {Map.put(new_targets, id, new_target), new_history}
+                {maybe_put_new_target(new_targets, new_target), new_history}
               end)
 
-            new_state =
-              update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
+            new_state = update_in(current_state, [:units], fn units -> Map.merge(units, targets_after_effect) end)
 
             # We don't add this effect to the new_pending_effects list because it has already been applied
             {{new_pending_effects, new_state}, new_history}
 
           effect ->
             # If the effect isn't ready to be processed, we reduce its remaining delay.
-
-            {{[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}, history}
+            {{[%{effect | delay: effect.delay - 1} | new_pending_effects], current_state}, new_history}
         end
       end)
 
     {Map.put(updated_game_state, :pending_effects, updated_pending_effects), new_history}
   end
 
+  defp maybe_put_new_target(targets, nil), do: targets
+  defp maybe_put_new_target(targets, target), do: Map.put(targets, target.id, target)
+
   # Check if the unit can attack this turn.
   # For now, attacking capability is only affected by whether the unit is currently casting a skill.
   # Later on, things like stuns will be handled here.
   defp can_attack(unit, initial_step_state) do
-    # Check the unit is not casting anything right now
-    not Enum.any?(initial_step_state.skills_being_cast, &(&1.caster_id == unit.id))
+    # Check the unit is not casting anything right now and is not stunned
+    cond do
+      Enum.any?(initial_step_state.skills_being_cast, &(&1.caster_id == unit.id)) ->
+        Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is casting another skill")
+        false
+
+      Enum.any?(unit.tags, &(&1.tag == "Stun")) ->
+        Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is stunned")
+        false
+
+      true ->
+        true
+    end
   end
 
   # Check if the unit can cast their ultimate skill this step.
@@ -485,6 +535,24 @@ defmodule Champions.Battle.Simulator do
     Enum.take(sorted_units, amount)
   end
 
+  # If we receive the target's id, it means that the unit has died before the effect hits.
+  # We send it as an EFFECT_MISS action.
+  defp maybe_apply_effect(effect, id, caster, _current_step_number, _hits, history) when is_binary(id) do
+    new_history =
+      add_to_history(
+        history,
+        %{
+          caster_id: caster.id,
+          target_ids: [id],
+          skill_id: effect.skill_id,
+          skill_action_type: :EFFECT_MISS
+        },
+        :skill_action
+      )
+
+    {nil, new_history}
+  end
+
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
   # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
@@ -503,7 +571,7 @@ defmodule Champions.Battle.Simulator do
       )
 
     {target_after_modifiers, new_history} =
-      Enum.reduce(effect.modifiers, {target, new_history}, fn modifier, {target, history} ->
+      Enum.reduce(effect.modifiers, {target, new_history}, fn modifier, {target, history_acc} ->
         # If it's permanent, we set its duration to -1
         new_modifier =
           modifier
@@ -512,10 +580,10 @@ defmodule Champions.Battle.Simulator do
 
         new_history =
           add_to_history(
-            history,
+            history_acc,
             %{
               skill_id: modifier.skill_id,
-              target_ids: [target.id],
+              target_id: target.id,
               stat_affected: %{
                 stat: modifier.attribute |> String.upcase() |> String.to_atom(),
                 amount: modifier.float_magnitude
@@ -539,7 +607,14 @@ defmodule Champions.Battle.Simulator do
         {new_target, new_history}
       end)
 
-    Enum.reduce(effect.executions, {target_after_modifiers, new_history}, fn execution, {target_acc, history_acc} ->
+    {target_after_tags, new_history} =
+      Enum.reduce(effect.components, {target_after_modifiers, new_history}, fn component, {target, history} ->
+        if component["type"] == "ApplyTags",
+          do: apply_tags(target, component["tags"], effect, history),
+          else: {target, history}
+      end)
+
+    Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
       process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
     end)
   end
@@ -562,9 +637,32 @@ defmodule Champions.Battle.Simulator do
     {target, new_history}
   end
 
-  # Return whether an effect with a ChanceToApply component hits.
-  # Later on, this might also handle similar mechanics like the target's dodge chance.
-  defp effect_hits?(effect) do
+  # Return whether an effect hits.
+  defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
+
+  defp effect_hits?(effect, target) do
+    cond do
+      !target_tag_requirements_met?(effect, target) -> false
+      !chance_to_apply_hits?(effect) -> false
+      true -> true
+    end
+  end
+
+  defp target_tag_requirements_met?(effect, target) do
+    requirements_component =
+      Enum.find(effect.components, fn comp -> comp["type"] == "TargetTagRequirements" end)
+
+    case requirements_component do
+      nil ->
+        true
+
+      requirements_component ->
+        target_tags = Enum.map(target.tags, fn %{tag: tag} -> tag end)
+        Enum.all?(requirements_component["tags"], &(&1 in target_tags))
+    end
+  end
+
+  defp chance_to_apply_hits?(effect) do
     chance_to_apply_component =
       Enum.find(effect.components, fn comp -> comp["type"] == "ChanceToApply" end)
 
@@ -575,6 +673,34 @@ defmodule Champions.Battle.Simulator do
       chance_to_apply_component ->
         chance_to_apply_component["chance"] >= :rand.uniform()
     end
+  end
+
+  defp apply_tags(target, tags_to_apply, effect, history) do
+    {new_tags, new_history} =
+      Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
+        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
+
+        new_history =
+          add_to_history(
+            history,
+            %{
+              skill_id: effect.skill_id,
+              target_id: target.id,
+              tag: tag
+            },
+            :tag_received
+          )
+
+        {[%{tag: tag, remaining_steps: Map.get(effect.type, "duration", -1) - 1, skill_id: effect.skill_id} | acc],
+         new_history}
+      end)
+
+    new_target =
+      update_in(target, [:tags], fn tags ->
+        tags ++ new_tags
+      end)
+
+    {new_target, new_history}
   end
 
   # Apply a DealDamage execution to its target. Returns the new state of the target.
@@ -591,10 +717,16 @@ defmodule Champions.Battle.Simulator do
          history,
          skill_id
        ) do
-    damage = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+
+    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
+    damage_after_defense =
+      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
+      |> Decimal.round()
+      |> Decimal.to_integer()
 
     Logger.info(
-      "Dealing #{damage} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage})"
+      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense})"
     )
 
     new_history =
@@ -603,14 +735,14 @@ defmodule Champions.Battle.Simulator do
         %{
           target_id: target.id,
           skill_id: skill_id,
-          stat_affected: %{stat: :HEALTH, amount: -damage}
+          stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
         },
         :execution_received
       )
 
     new_target =
       target
-      |> Map.put(:health, target.health - damage)
+      |> Map.put(:health, target.health - damage_after_defense)
       |> Map.put(:energy, min(target.energy + energy_recharge, @ultimate_energy_cost))
 
     {new_target, new_history}
@@ -623,7 +755,7 @@ defmodule Champions.Battle.Simulator do
          history,
          _skill_id
        ) do
-    Logger.warning("#{format_unit_name(caster)} tried to apply an unknown execution to #{format_unit_name(caster)}")
+    Logger.warning("#{format_unit_name(caster)} tried to apply an unknown execution to #{format_unit_name(target)}")
     {target, history}
   end
 
@@ -669,7 +801,8 @@ defmodule Champions.Battle.Simulator do
            additives: [],
            multiplicatives: [],
            overrides: []
-         }
+         },
+         tags: []
        }}
 
   # Used to create the initial skill maps to be used during simulation.
@@ -731,7 +864,8 @@ defmodule Champions.Battle.Simulator do
       target_allies: effect.target_allies,
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
-      executions: effect.executions
+      executions: effect.executions,
+      skill_id: skill_id
     }
 
   # Format step state for logs.
@@ -775,8 +909,9 @@ defmodule Champions.Battle.Simulator do
   defp format_modifier_name(modifier),
     do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
 
-  defp add_to_history([%{step_number: step_number, actions: actions} | history], entry_to_add, type),
-    do: [%{step_number: step_number, actions: [%{action_type: {type, entry_to_add}} | actions]} | history]
+  defp add_to_history([%{step_number: step_number, actions: actions} | history], entry_to_add, type) do
+    [%{step_number: step_number, actions: [%{action_type: {type, entry_to_add}} | actions]} | history]
+  end
 
   defp transform_initial_state_for_replay(%{units: units}) do
     %{

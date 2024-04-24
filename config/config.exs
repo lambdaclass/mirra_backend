@@ -80,6 +80,7 @@ dispatch = [
   _: [
     {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
     {"/join/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
+    {"/quick_game/:client_id/:character_name/:player_name", Arena.QuickGameHandler, []},
     {:_, Plug.Cowboy.Handler, {ArenaWeb.Endpoint, []}}
   ]
 ]

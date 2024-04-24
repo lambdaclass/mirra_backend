@@ -172,14 +172,26 @@ defmodule Arena.Game.Player do
           skill.execution_duration_ms
         )
 
-        skill_direction =
+        {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
+
+        action =
+          %{
+            action: skill_key_execution_action(skill_key),
+            duration: skill.execution_duration_ms
+          }
+          |> maybe_add_destination(game_state, player, skill_direction, skill)
 
         Process.send_after(
           self(),
           {:delayed_skill_mechanics, player.id, skill.mechanics,
-           Map.merge(skill_params, %{skill_direction: skill_direction, skill_key: skill_key})
+           Map.merge(skill_params, %{
+             skill_direction: skill_direction,
+             skill_key: skill_key,
+             skill_destination: action[:destination],
+             auto_aim?: auto_aim?
+           })
            |> Map.merge(skill)},
           skill.activation_delay_ms
         )
@@ -189,13 +201,6 @@ defmodule Arena.Game.Player do
           {:delayed_effect_application, player.id, Map.get(skill, :effects_to_apply), skill.execution_duration_ms},
           skill.activation_delay_ms
         )
-
-        action =
-          %{
-            action: skill_key_execution_action(skill_key),
-            duration: skill.execution_duration_ms
-          }
-          |> maybe_add_destination(player, skill_direction, skill)
 
         player =
           add_action(player, action)
@@ -212,16 +217,19 @@ defmodule Arena.Game.Player do
   # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
   # position in wich the player will spawn when the skill start and not when we actually execute the teleport
   # this is also optimistic since we asume the destination will be always available
-  defp maybe_add_destination(action, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+  defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
       y: player.position.y + skill_direction.y * teleport.range
     }
 
-    Map.put(action, :destination, target_position)
+    final_position =
+      Physics.get_closest_available_position(target_position, player, game_state.external_wall, game_state.obstacles)
+
+    Map.put(action, :destination, final_position)
   end
 
-  defp maybe_add_destination(action, _, _, _), do: action
+  defp maybe_add_destination(action, _, _, _, _), do: action
 
   @doc """
 
@@ -270,7 +278,7 @@ defmodule Arena.Game.Player do
       item ->
         Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
           effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-          Effect.put_effect(game_state_acc, player.id, player.id, effect)
+          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
         end)
         |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
@@ -340,12 +348,12 @@ defmodule Arena.Game.Player do
 
     case heal_interval? and damage_interval? and use_skill_interval? do
       true ->
-        heal_amount = floor(player.aditional_info.base_health * 0.1)
+        heal_amount = floor(player.aditional_info.max_health * 0.1)
 
         Map.update!(player, :aditional_info, fn info ->
           %{
             info
-            | health: min(info.health + heal_amount, info.base_health),
+            | health: min(info.health + heal_amount, info.max_health),
               last_natural_healing_update: now
           }
         end)
@@ -388,12 +396,17 @@ defmodule Arena.Game.Player do
       name: "in_game_inmunity",
       duration_ms: skill.execution_duration_ms,
       remove_on_action: false,
+      one_time_application: true,
       effect_mechanics: %{
-        damage_immunity: %{}
+        damage_immunity: %{
+          execute_multiple_times: false,
+          effect_delay_ms: 0
+        }
       }
     }
 
-    Effect.put_effect(game_state, player_id, player_id, effect)
+    player = Map.get(game_state.players, player_id)
+    Effect.put_effect_to_entity(game_state, player, player_id, effect)
   end
 
   defp maybe_make_player_invincible(game_state, _, _) do
