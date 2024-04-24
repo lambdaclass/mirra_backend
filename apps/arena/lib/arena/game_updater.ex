@@ -1061,6 +1061,8 @@ defmodule Arena.GameUpdater do
         else
           decide_collided_entity(projectile, other_entities, external_wall_id, players, crates)
         end
+      true ->
+        entity_id
     end
   end
 
