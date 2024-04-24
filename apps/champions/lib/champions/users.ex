@@ -3,6 +3,7 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias Champions.Users
   alias Champions.Utils
   alias Ecto.Changeset
@@ -211,20 +212,31 @@ defmodule Champions.Users do
   """
   def level_up_kaline_tree(user_id) do
     with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
-         [{level_up_currency_id, level_up_cost}] = calculate_cost_to_level_up_kaline_tree(user),
+         level_up_costs = calculate_costs_to_level_up_kaline_tree(user),
          {:can_afford, true} <-
            {:can_afford,
-            Currencies.can_afford(
-              user_id,
-              level_up_currency_id,
-              level_up_cost
-            )} do
-      Users.level_up_kaline_tree(user_id, level_up_currency_id, level_up_cost)
+            Enum.all?(level_up_costs, fn %CurrencyCost{currency_id: level_up_currency_id, amount: level_up_cost} ->
+              Currencies.can_afford(
+                user_id,
+                level_up_currency_id,
+                level_up_cost
+              )
+            end)} do
+      Users.level_up_kaline_tree(user_id, level_up_costs)
     else
       {:can_afford, false} -> {:error, :cant_afford}
     end
   end
 
-  defp calculate_cost_to_level_up_kaline_tree(user),
-    do: [{Currencies.get_currency_by_name!("Fertilizer").id, (user.kaline_tree_level.level + 1) * 100}]
+  defp calculate_costs_to_level_up_kaline_tree(user),
+    do: [
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Fertilizer").id,
+        amount: user.kaline_tree_level.fertilizer_level_up_cost
+      },
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        amount: user.kaline_tree_level.gold_level_up_cost
+      }
+    ]
 end

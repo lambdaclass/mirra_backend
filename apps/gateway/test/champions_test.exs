@@ -775,13 +775,8 @@ defmodule Gateway.Test.Champions do
       initial_kaline_tree_level = user.kaline_tree_level.level
       assert initial_kaline_tree_level == 1
 
-      # Level up Kaline Tree without enough fertilizer should return an error.
-      SocketTester.level_up_kaline_tree(socket_tester, user.id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
-
-      Currencies.add_currency_by_name!(user.id, "Fertilizer", 9999)
+      initial_fertilizer = Currencies.get_amount_of_currency_by_name(user.id, "Fertilizer")
+      initial_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
 
       # Level up Kaline Tree with enough fertilizer should return an updated user.
       SocketTester.level_up_kaline_tree(socket_tester, user.id)
@@ -789,6 +784,20 @@ defmodule Gateway.Test.Champions do
 
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
       assert leveled_up_user.kaline_tree_level.level == initial_kaline_tree_level + 1
+
+      # Currency should be deducted
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Fertilizer") ==
+               initial_fertilizer - user.kaline_tree_level.fertilizer_level_up_cost
+
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") ==
+               initial_gold - user.kaline_tree_level.gold_level_up_cost
+
+      # Level up Kaline Tree without enough fertilizer should return an error.
+      SocketTester.level_up_kaline_tree(socket_tester, user.id)
+
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
     end
   end
 

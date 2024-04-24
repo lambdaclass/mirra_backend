@@ -7,8 +7,8 @@ defmodule GameBackend.Users.KalineTreeLevel do
 
   schema "kaline_tree_levels" do
     field(:level, :integer)
-    field(:fertilizer_cost, :integer)
-    field(:gold_cost, :integer)
+    field(:fertilizer_level_up_cost, :integer)
+    field(:gold_level_up_cost, :integer)
     field(:unlock_features, {:array, :string})
     timestamps()
   end
@@ -16,7 +16,7 @@ defmodule GameBackend.Users.KalineTreeLevel do
   @doc false
   def changeset(kaline_tree_level, attrs) do
     kaline_tree_level
-    |> cast(attrs, [:level, :fertilizer_cost, :gold_cost, :unlock_features])
-    |> validate_required([:level, :fertilizer_cost, :gold_cost])
+    |> cast(attrs, [:level, :fertilizer_level_up_cost, :gold_level_up_cost, :unlock_features])
+    |> validate_required([:level, :fertilizer_level_up_cost, :gold_level_up_cost])
   end
 end

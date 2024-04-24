@@ -4,8 +4,8 @@ defmodule GameBackend.Repo.Migrations.AddKalineTreeLevelToUser do
   def change do
     create table(:kaline_tree_levels) do
       add :level, :integer
-      add :fertilizer_cost, :integer
-      add :gold_cost, :integer
+      add :fertilizer_level_up_cost, :integer
+      add :gold_level_up_cost, :integer
       add :unlock_features, {:array, :string}
       add :user_id, references(:users, on_delete: :nothing)
       timestamps()

@@ -118,11 +118,11 @@ Items.insert_item_template(%{
 
 # TODO: remove this function after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
 levels =
-  Enum.map(1..5, fn level_number ->
+  Enum.map(1..50, fn level_number ->
     %{
       level: level_number,
-      fertilizer_cost: level_number * 100,
-      gold_cost: level_number * 100,
+      fertilizer_level_up_cost: level_number * 100,
+      gold_level_up_cost: level_number * 100,
       unlock_features: [],
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)

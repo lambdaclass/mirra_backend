@@ -402,8 +402,8 @@ defmodule Gateway.Serialization.KalineTreeLevel do
 
   field(:id, 1, type: :string)
   field(:level, 2, type: :uint64)
-  field(:fertilizer_cost, 3, type: :uint64, json_name: "fertilizerCost")
-  field(:gold_cost, 4, type: :uint64, json_name: "goldCost")
+  field(:fertilizer_level_up_cost, 3, type: :uint64, json_name: "fertilizerLevelUpCost")
+  field(:gold_level_up_cost, 4, type: :uint64, json_name: "goldLevelUpCost")
   field(:unlock_features, 5, repeated: true, type: :string, json_name: "unlockFeatures")
 end
 

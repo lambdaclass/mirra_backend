@@ -115,16 +115,16 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
-  def level_up_kaline_tree(user_id, currency_id, level_up_cost) do
-    {:ok, result} =
+  def level_up_kaline_tree(user_id, level_up_costs) do
+    {:ok, _result} =
       Multi.new()
       |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
       |> Multi.run(:user_currency, fn _, _ ->
-        Currencies.add_currency(user_id, currency_id, -level_up_cost)
+        Currencies.substract_currencies(user_id, level_up_costs)
       end)
       |> Repo.transaction()
 
-    {:ok, result.user |> preload()}
+    get_user(user_id)
   end
 
   defp increment_tree_level(user_id) do
