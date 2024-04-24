@@ -20,6 +20,8 @@ Application for the Game Backend. Implements persistance layer for:
 
 ![GameBackend class diagram](/apps/game_backend/docs/game_backend_classes.png "GameBackend class diagram")
 
+Editable version can be found [here](https://app.diagrams.net/#G1ZLMr_s7qJGLKVnw3QMZ_YmEbyssMnqZ3#%7B%22pageId%22%3A%22urIyaa3H-M6x3zDFrDU4%22%7D).
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
