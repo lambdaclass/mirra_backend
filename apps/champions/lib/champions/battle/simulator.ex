@@ -35,16 +35,18 @@ defmodule Champions.Battle.Simulator do
   from having the battle be simultaneous.
 
   """
-  alias GameBackend.Units.Skills.Effect
-  alias GameBackend.Units.Skill
   alias Champions.Units
+  alias GameBackend.Units.Skills.Skill
+  alias GameBackend.Units.Skills.Mechanic
+  alias GameBackend.Units.Skills.Mechanics.Effect
   alias GameBackend.Units.Unit
 
   require Logger
 
   @default_seed 1
-  @default_maximum_steps 500
+  @default_maximum_steps 24_000
   @ultimate_energy_cost 500
+  @miliseconds_per_step 50
 
   @doc """
   Runs a battle between two teams.
@@ -75,7 +77,7 @@ defmodule Champions.Battle.Simulator do
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
     units = Map.merge(team_1, team_2)
 
-    initial_state = %{units: units, skills_being_cast: [], pending_effects: [], pending_executions: []}
+    initial_state = %{units: units, skills_being_cast: [], pending_effects: []}
 
     # The initial_step_state is what allows the battle to be simultaneous. If we refreshed the accum on every action,
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
@@ -340,18 +342,30 @@ defmodule Champions.Battle.Simulator do
   # Calculate the new state of the battle after a step passes for a skill being cast.
   # Reduces the remaining animation and effect trigger, and casts the effects if the latter has ended.
   defp process_step_for_skill(skill, current_state, initial_step_state, history) do
-    # Check if the casting unit has died
+    # Check the casting unit is alive
     if Map.has_key?(current_state.units, skill.caster_id) do
-      {{new_skill, new_state}, history} =
-        process_skill_effects_trigger_value(skill, current_state, initial_step_state, history)
+      # Process step for all mechanics
+      {{new_mechanics, new_state}, new_history} =
+        Enum.reduce(
+          skill.mechanics,
+          {{[], current_state}, history},
+          fn mechanic, {{mechanics_acc, state_acc}, history_acc} ->
+            {{new_mechanic, new_state}, new_history} =
+              process_mechanic_trigger_delay(mechanic, state_acc, initial_step_state, history_acc)
 
-      if new_skill.animation_duration == 0 do
+            {{[new_mechanic | mechanics_acc], new_state}, new_history}
+          end
+        )
+
+      if skill.animation_duration == 0 do
         # If the animation has finished, we remove skill from list.
-        {Map.put(new_state, :skills_being_cast, List.delete(new_state.skills_being_cast, skill)), history}
+        {Map.put(new_state, :skills_being_cast, List.delete(new_state.skills_being_cast, skill)), new_history}
       else
         # Otherwise, we update it with its new state.
-        new_skill = %{new_skill | animation_duration: skill.animation_duration - 1}
-        {Map.put(new_state, :skills_being_cast, [new_skill | List.delete(new_state.skills_being_cast, skill)]), history}
+        new_skill = %{skill | animation_duration: skill.animation_duration - 1, mechanics: new_mechanics}
+
+        {Map.put(new_state, :skills_being_cast, [new_skill | List.delete(new_state.skills_being_cast, skill)]),
+         new_history}
       end
     else
       # If the unit died, just delete the skill being cast
@@ -360,29 +374,69 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
-  # If the effects_trigger is ready, trigger the skill's effects, adding them to the `pending_effects` in the state.
-  defp process_skill_effects_trigger_value(%{effects_trigger: 0} = skill, current_state, initial_step_state, history) do
-    Logger.info("Animation trigger for skill #{skill.name} ready. Creating #{Enum.count(skill.effects)} effects.")
-    {new_state, new_history} = add_skill_effects_to_pending_effects(skill, current_state, initial_step_state, history)
-
-    {{%{skill | effects_trigger: -1}, new_state}, new_history}
+  # Calculate the new state of the battle after a step passes for a mechanic.
+  # If the trigger_delay is ready, process the mechanic.
+  defp process_mechanic_trigger_delay(
+         %{trigger_delay: 0} = mechanic,
+         current_state,
+         initial_step_state,
+         history
+       ) do
+    Logger.info("Trigger delay for mechanic #{String.slice(mechanic.id, 0..2)} of skill #{mechanic.skill_id} ready.")
+    process_mechanic(mechanic, current_state, initial_step_state, history)
   end
 
-  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
   # If the effects have already triggered, do nothing.
-  defp process_skill_effects_trigger_value(
-         %{effects_trigger: -1} = skill,
+  defp process_mechanic_trigger_delay(
+         %{trigger_delay: -1} = mechanic,
          current_state,
          _initial_step_state,
          history
        ),
-       do: {{skill, current_state}, history}
+       do: {{mechanic, current_state}, history}
 
-  # Calculate the new state of the battle after a step passes for a skill being cast, specifically for its `effects_trigger` value.
-  # If the effect hasn't triggered yet, reduce the remaining effects_trigger counter.
-  defp process_skill_effects_trigger_value(skill, current_state, _initial_step_state, history) do
-    {{%{skill | effects_trigger: skill.effects_trigger - 1}, current_state}, history}
+  # If the effect hasn't triggered yet, reduce the remaining trigger_delay counter.
+  defp process_mechanic_trigger_delay(mechanic, current_state, _initial_step_state, history) do
+    {{%{mechanic | trigger_delay: mechanic.trigger_delay - 1}, current_state}, history}
+  end
+
+  # Process an ApplyEffectsTo mechanic, adding the mechanic's effects to the pending_effects list.
+  defp process_mechanic(%{apply_effects_to: apply_effects_to} = mechanic, current_state, initial_step_state, history)
+       when not is_nil(apply_effects_to) do
+    caster = current_state.units[mechanic.caster_id]
+    # "Queues" the effect to be processed when its delay reaches 0.
+    # We store the caster's state in the effect in case the unit dies before the effect's delay ends.
+    # Also, we want to calculate numbers like damage done based on the status of the caster when the effect was cast.
+
+    targets = choose_targets(caster, apply_effects_to.targeting_strategy, initial_step_state)
+
+    {effects_with_caster, new_history} =
+      Enum.reduce(apply_effects_to.effects, {[], history}, fn effect, {effects_list, history} ->
+        new_effect =
+          effect
+          |> Map.put(:caster, caster)
+          |> Map.put(:targets, targets)
+          |> Map.put(:skill_id, mechanic.skill_id)
+
+        new_history =
+          add_to_history(
+            history,
+            %{
+              caster_id: caster.id,
+              target_ids: new_effect.targets,
+              skill_id: mechanic.skill_id,
+              skill_action_type: :EFFECT_TRIGGER,
+              stats_affected: []
+            },
+            :skill_action
+          )
+
+        {[new_effect | effects_list], new_history}
+      end)
+
+    new_state = Map.put(current_state, :pending_effects, effects_with_caster ++ current_state.pending_effects)
+
+    {{%{mechanic | trigger_delay: -1}, new_state}, new_history}
   end
 
   # Calculate the new state of the battle after a step passes for all pending effects
@@ -455,42 +509,6 @@ defmodule Champions.Battle.Simulator do
   # Check if the unit can cast their basic skill this step.
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
-  # Called when a skill being cast reaches effect_trigger 0.
-  # "Queues" the effect to be processed when its delay reaches 0.
-  defp add_skill_effects_to_pending_effects(skill, current_state, initial_step_state, history) do
-    caster = current_state.units[skill.caster_id]
-
-    # We store the caster's state in the effect in case the unit dies before the effect's delay ends.
-    # Also, we want to calculate numbers like damage done based on the status of the caster when the effect was cast.
-    {effects_with_caster, new_history} =
-      Enum.reduce(skill.effects, {[], history}, fn effect, {effects_list, history} ->
-        new_effect =
-          effect
-          |> Map.put(:caster, caster)
-          |> Map.put(:targets, choose_targets(caster, effect, initial_step_state))
-          |> Map.put(:skill_id, skill.id)
-
-        new_history =
-          add_to_history(
-            history,
-            %{
-              caster_id: caster.id,
-              target_ids: new_effect.targets,
-              skill_id: skill.id,
-              skill_action_type: :EFFECT_TRIGGER,
-              stats_affected: []
-            },
-            :skill_action
-          )
-
-        {[new_effect | effects_list], new_history}
-      end)
-
-    new_state = Map.put(current_state, :pending_effects, effects_with_caster ++ current_state.pending_effects)
-
-    {new_state, new_history}
-  end
-
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
   defp choose_targets(caster, %{count: count, type: "random", target_allies: target_allies}, state),
@@ -555,7 +573,6 @@ defmodule Champions.Battle.Simulator do
 
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
-  # Later on, it will "cast" them as we do with skills and effects to account for execution delays.
   # Returns the new state of the target.
   defp maybe_apply_effect(effect, target, caster, current_step_number, true, history) do
     new_history =
@@ -708,9 +725,7 @@ defmodule Champions.Battle.Simulator do
          %{
            "type" => "DealDamage",
            "attack_ratio" => attack_ratio,
-           "energy_recharge" => energy_recharge,
-           # TODO
-           "delay" => _delay
+           "energy_recharge" => energy_recharge
          },
          target,
          caster,
@@ -810,21 +825,26 @@ defmodule Champions.Battle.Simulator do
     do: %{
       id: skill.id,
       name: skill.name,
-      effects: Enum.map(skill.effects, &create_effect_map(&1, skill.id)),
-      base_cooldown: skill.cooldown,
-      remaining_cooldown: skill.cooldown,
+      mechanics: Enum.map(skill.mechanics, &create_mechanics_map(&1, skill.id, caster_id)),
+      base_cooldown:
+        if skill.cooldown do
+          div(skill.cooldown, @miliseconds_per_step)
+        end,
+      remaining_cooldown:
+        if skill.cooldown do
+          div(skill.cooldown, @miliseconds_per_step)
+        end,
       energy_regen: skill.energy_regen || 0,
-      animation_duration: skill.animation_duration || 0,
-      effects_trigger: skill.animation_trigger || 0,
+      animation_duration: div(skill.animation_duration, @miliseconds_per_step),
       caster_id: caster_id
     }
-
+    
   @implemented_targeting_strategies [
     "random",
     "nearest",
     "furthest"
   ]
-
+  
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
@@ -855,13 +875,17 @@ defmodule Champions.Battle.Simulator do
   # Used to create the initial effect maps to be used during simulation.
   defp create_effect_map(%Effect{} = effect, skill_id),
     do: %{
-      type: effect.type,
-      delay: effect.initial_delay,
-      target_count: effect.target_count,
+      type:
+        Enum.into(effect.type, %{}, fn
+          {key, value} when is_binary(value) ->
+            {String.to_atom(key), String.to_atom(value)}
+
+          {key, value} ->
+            {String.to_atom(key), value}
+        end),
+      delay: div(effect.initial_delay, @miliseconds_per_step),
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
       # target_strategy: effect.target_strategy,
-      target_strategy: "random",
-      target_allies: effect.target_allies,
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
@@ -872,8 +896,7 @@ defmodule Champions.Battle.Simulator do
   defp format_step_state(%{
          units: units,
          skills_being_cast: skl,
-         pending_effects: eff,
-         pending_executions: exec
+         pending_effects: eff
        }) do
     units = Enum.map(units, fn {_unit_id, unit} -> unit end)
 
@@ -893,12 +916,10 @@ defmodule Champions.Battle.Simulator do
           &%{
             name: &1.name,
             animation_duration: &1.animation_duration,
-            effects_trigger: &1.effects_trigger,
             caster_id: &1.caster_id
           }
         ),
-      pending_effects: eff,
-      pending_executions: exec
+      pending_effects: eff
     }
   end
 
