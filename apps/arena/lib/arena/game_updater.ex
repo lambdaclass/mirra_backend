@@ -770,7 +770,7 @@ defmodule Arena.GameUpdater do
   # This method will decide what to do when a projectile has collided with something in the map
   # - If collided with something with the same owner skip that collision
   # - If collided with external wall or obstacle explode projectile
-  # - If collided with another player do the projectile's damage
+  # - If collided with another player or a crate, do the projectile's damage
   # - Do nothing on unexpected cases
   defp resolve_projectiles_collisions(
          %{
