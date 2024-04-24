@@ -57,11 +57,6 @@ defmodule Champions.Battle.Simulator do
   - `maximum_steps`
   - `seed`
 
-  Options allowed are:
-
-  - `maximum_steps`
-  - `seed`
-
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
@@ -448,20 +443,34 @@ defmodule Champions.Battle.Simulator do
 
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
-  defp choose_targets(
-         %{team: team} = _caster,
-         %{
-           target_count: count,
-           target_strategy: "random",
-           target_allies: target_allies
-         } = _effect,
-         state
-       ),
-       do:
-         state.units
-         |> Enum.filter(fn {_id, unit} -> unit.team == team == target_allies end)
-         |> Enum.take_random(count)
-         |> Enum.map(fn {id, _unit} -> id end)
+  defp choose_targets(caster, %{count: count, type: "random", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.take_random(count)
+      |> Enum.map(fn {id, _unit} -> id end)
+
+  defp choose_targets(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
+    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+
+    state.units
+    |> Enum.map(fn {_id, unit} -> unit end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> find_by_proximity(
+      Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Logger.info(),
+      count
+    )
+    |> Enum.map(& &1.id)
+  end
+
+  defp find_by_proximity(units, slots_priorities, amount) do
+    sorted_units =
+      Enum.sort_by(units, fn unit ->
+        Enum.find_index(slots_priorities, &(&1 == unit.slot))
+      end)
+
+    Enum.take(sorted_units, amount)
+  end
 
   # Apply an effect to its target. Returns the new state of the target.
   # For now this applies the executions on the spot.
@@ -663,6 +672,28 @@ defmodule Champions.Battle.Simulator do
       effects_trigger: skill.animation_trigger || 0,
       caster_id: caster_id
     }
+
+  defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
+    apply_effects_to = %{
+      effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
+      targeting_strategy: %{
+        # TODO: replace random for the corresponding target type name (CHoM #325)
+        # type: mechanic.apply_effects_to.targeting_strategy.type,
+        type: "nearest",
+        count: mechanic.apply_effects_to.targeting_strategy.count,
+        target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies
+      }
+    }
+
+    %{
+      id: mechanic.id,
+      skill_id: skill_id,
+      caster_id: caster_id,
+      trigger_delay: div(mechanic.trigger_delay, @miliseconds_per_step),
+      apply_effects_to: apply_effects_to,
+      passive_effects: mechanic.passive_effects
+    }
+  end
 
   # Used to create the initial effect maps to be used during simulation.
   defp create_effect_map(%Effect{} = effect, skill_id),
