@@ -457,7 +457,20 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(fn {_id, unit} -> unit end)
     |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
     |> find_by_proximity(
-      Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Logger.info(),
+      Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name],
+      count
+    )
+    |> Enum.map(& &1.id)
+  end
+
+  defp choose_targets(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
+    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+
+    state.units
+    |> Enum.map(fn {_id, unit} -> unit end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> find_by_proximity(
+      Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Enum.reverse(),
       count
     )
     |> Enum.map(& &1.id)
@@ -673,13 +686,24 @@ defmodule Champions.Battle.Simulator do
       caster_id: caster_id
     }
 
+  @implemented_targeting_strategies [
+    "random",
+    "nearest",
+    "furthest"
+  ]
+
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
         # TODO: replace random for the corresponding target type name (CHoM #325)
         # type: mechanic.apply_effects_to.targeting_strategy.type,
-        type: "nearest",
+        type:
+          if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
+            mechanic.apply_effects_to.targeting_strategy.type
+          else
+            "random"
+          end,
         count: mechanic.apply_effects_to.targeting_strategy.count,
         target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies
       }
