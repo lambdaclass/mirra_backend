@@ -101,6 +101,9 @@ defmodule GameBackend.Users do
       |> User.experience_changeset(params)
       |> Repo.update()
 
+  @doc """
+  Updates the Kaline Tree level of a user.
+  """
   def update_kaline_tree_level(user, params),
     do:
       user
@@ -115,6 +118,11 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
+  @doc """
+  Level up the Kaline Tree of a user.
+
+  Returns the updated user if the operation was successful.
+  """
   def level_up_kaline_tree(user_id, level_up_costs) do
     {:ok, _result} =
       Multi.new()
