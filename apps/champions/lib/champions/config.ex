@@ -3,8 +3,10 @@ defmodule Champions.Config do
   Configuration utilities.
   """
 
+  alias GameBackend.Users
   alias Champions.Units
   alias Champions.Utils
+  alias GameBackend.Items
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
 
@@ -66,5 +68,23 @@ defmodule Champions.Config do
       nil -> nil
       skill -> skill.id
     end
+  end
+
+  def import_item_template_config() do
+    {:ok, item_templates_json} =
+      Application.app_dir(:champions, "priv/item_templates.json")
+      |> File.read()
+
+    Jason.decode!(item_templates_json, [{:keys, :atoms}])
+    |> Enum.map(fn item_template ->
+      Map.put(item_template, :game_id, Utils.game_id())
+      |> update_in([:upgrade_costs], fn upgrade_costs ->
+        Enum.map(
+          upgrade_costs,
+          &%{currency_id: Users.Currencies.get_currency_by_name!(&1.currency).id, amount: &1.amount}
+        )
+      end)
+    end)
+    |> Items.upsert_item_templates()
   end
 end

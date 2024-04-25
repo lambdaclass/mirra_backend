@@ -107,6 +107,39 @@ defmodule GameBackend.Items do
   def get_item_template(item_template_id), do: Repo.get(ItemTemplate, item_template_id)
 
   @doc """
+  Insert an ItemTemplate. If another one with the same config_id already exists, it updates it instead.
+  """
+  def upsert_item_template(attrs) do
+    case get_item_template_by_config_id(attrs.config_id) do
+      nil -> insert_item_template(attrs)
+      item_template -> update_item_template(item_template, attrs)
+    end
+  end
+
+  defp get_item_template_by_config_id(config_id) do
+    Repo.get_by(ItemTemplate, config_id: config_id)
+  end
+
+  @doc """
+  Update an ItemTemplate.
+  """
+  def update_item_template(item_template, attrs), do: item_template |> ItemTemplate.changeset(attrs) |> Repo.update()
+
+  @doc """
+  Inserts all ItemTemplates into the database.
+  If another one already exists with the same config_id, it updates it instead.
+  """
+  def upsert_item_templates(attrs_list) do
+    Enum.reduce(attrs_list, Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.name, fn _, _ ->
+        upsert_item_template(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  @doc """
   Inserts an item.
 
   ## Examples
