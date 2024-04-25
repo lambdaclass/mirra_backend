@@ -97,6 +97,7 @@ message GameState {
   map<uint64, Entity> items = 13;
   map<uint64, Entity> obstacles = 14;
   map<uint64, Entity> pools = 15;
+  map<uint64, Entity> crates = 16;
 }
 
 enum GameStatus {
@@ -138,6 +139,7 @@ message Entity {
     PowerUp power_up = 15;
     Item item = 16;
     Pool pool = 17;
+    Crate crate = 18;
   }
 }
 
@@ -185,6 +187,17 @@ message Obstacle {
 message PowerUp {
   uint64 owner_id = 1;
   PowerUpstatus status = 2;
+}
+
+message Crate {
+  uint64 health = 1;
+  uint64 amount_of_power_ups = 2;
+  CrateStatus status = 3;
+}
+
+enum CrateStatus {
+  FINE = 0;
+  DESTROYED = 1;
 }
 
 enum  PowerUpstatus {
