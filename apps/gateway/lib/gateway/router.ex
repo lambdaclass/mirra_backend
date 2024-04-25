@@ -21,8 +21,10 @@ defmodule Gateway.Router do
   scope "/auth", Gateway do
     pipe_through :browser
 
-    get "/:provider", Controllers.AuthController, :request
-    get "/:provider/callback", Controllers.AuthController, :callback
+    get "/browser/:provider", Controllers.AuthController, :request
+    get "/browser/:provider/callback", Controllers.AuthController, :callback
+    get "/unity/:provider", Controllers.AuthController, :request
+    get "/unity/:provider/callback", Controllers.AuthController, :callback
   end
 
   scope "/users", Gateway do
