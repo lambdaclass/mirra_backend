@@ -214,14 +214,10 @@ defmodule Champions.Users do
     with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
          level_up_costs = calculate_costs_to_level_up_kaline_tree(user),
          {:can_afford, true} <-
-           {:can_afford,
-            Enum.all?(level_up_costs, fn %CurrencyCost{currency_id: level_up_currency_id, amount: level_up_cost} ->
-              Currencies.can_afford(
-                user_id,
-                level_up_currency_id,
-                level_up_cost
-              )
-            end)} do
+           {
+             :can_afford,
+             Currencies.can_afford(user_id, level_up_costs)
+           } do
       Users.level_up_kaline_tree(user_id, level_up_costs)
     else
       {:can_afford, false} -> {:error, :cant_afford}
