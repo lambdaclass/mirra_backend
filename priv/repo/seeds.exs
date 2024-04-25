@@ -6,6 +6,7 @@ alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Users.KalineTreeLevel
 alias GameBackend.Campaigns.Rewards.CurrencyReward
 
 champions_of_mirra_id = 2
@@ -36,6 +37,9 @@ units_per_level = 5
     name: "Mystic Summon Scrolls"
   })
 
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
 {:ok, _items} = Champions.Config.import_item_template_config()
 
 {:ok, _} =
@@ -61,6 +65,21 @@ units_per_level = 5
     ],
     cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
+
+# TODO: remove this function after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+levels =
+  Enum.map(1..50, fn level_number ->
+    %{
+      level: level_number,
+      fertilizer_level_up_cost: level_number * 100,
+      gold_level_up_cost: level_number * 100,
+      unlock_features: [],
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+
+Repo.insert_all(KalineTreeLevel, levels)
 
 ######################
 # Campaigns creation #

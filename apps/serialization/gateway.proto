@@ -24,6 +24,7 @@ syntax = "proto3";
       GetAfkRewards get_afk_rewards = 21;
       ClaimAfkRewards claim_afk_rewards = 22;
       GetUserSuperCampaignProgresses get_user_super_campaign_progresses = 23;
+      LevelUpKalineTree level_up_kaline_tree = 24;
     }
   }
 
@@ -131,6 +132,10 @@ syntax = "proto3";
     string user_id = 1;
   }
 
+  message LevelUpKalineTree {
+    string user_id = 1;
+  }
+
   ////////////////////////////////////////
 
   message WebSocketResponse {
@@ -162,6 +167,15 @@ syntax = "proto3";
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
+    KalineTreeLevel kaline_tree_level = 11;
+  }
+
+  message KalineTreeLevel {
+    string id = 1;
+    uint64 level = 2;
+    uint64 fertilizer_level_up_cost = 3;
+    uint64 gold_level_up_cost = 4;
+    repeated string unlock_features = 5;
   }
 
   message SuperCampaignProgresses {
