@@ -224,6 +224,8 @@ defmodule Champions.Users do
     end
   end
 
+  # TODO: remove this after finishing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+  # The costs will be defined in a configuration file.
   defp calculate_costs_to_level_up_kaline_tree(user),
     do: [
       %CurrencyCost{
