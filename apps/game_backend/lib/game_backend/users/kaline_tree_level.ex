@@ -1,6 +1,8 @@
 defmodule GameBackend.Users.KalineTreeLevel do
   @moduledoc """
-  Kaline Tree Levels.
+  Kaline Tree Levels indicate the overarching progress of the player within the game.
+  Advancing the Kaline Tree unlocks new features in the game.
+  The Tree’s level can be upgraded spending Fertilizer and Gold.
   """
   use GameBackend.Schema
   import Ecto.Changeset
