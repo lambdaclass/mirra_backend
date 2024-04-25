@@ -217,6 +217,7 @@ defmodule Champions.Users do
       Users.level_up_kaline_tree(user_id, level_up_costs)
     else
       {:can_afford, false} -> {:error, :cant_afford}
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
     end
   end
 
