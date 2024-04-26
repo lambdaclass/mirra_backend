@@ -8,6 +8,7 @@ defmodule GameBackend.Repo.Migrations.AddArenaMatchResults do
       add :kills, :integer, null: false
       add :deaths, :integer, null: false
       add :character, :string, null: false
+      add :match_id, :uuid, null: false
       timestamps()
     end
   end

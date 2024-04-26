@@ -504,7 +504,7 @@ defmodule Arena.GameUpdater do
         }
       end)
 
-    payload = Jason.encode!(%{results: results})
+    payload = Jason.encode!(%{match_id: Ecto.UUID.generate(), results: results})
 
     ## TODO: we should be doing this in a better way, both the url and the actual request
     ## maybe a separate GenServer that gets the results and tries to send them to the server?
