@@ -100,6 +100,7 @@ defmodule GameBackend.Users do
   def get_google_user(google_user_id) do
     Repo.get(GoogleUser, google_user_id)
   end
+
   @doc """
   Gets a Kaline Tree level by its number.
 
