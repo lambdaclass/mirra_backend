@@ -40,9 +40,23 @@ defmodule Champions.TestUtils do
         name: "Default Name",
         energy_regen: 0,
         animation_duration: 0,
-        animation_trigger: 0,
-        effects: [],
+        mechanics: [
+          %{
+            trigger_delay: 0,
+            apply_effects_to: build_apply_effects_to_mechanic()
+          }
+        ],
         cooldown: 9999
+      },
+      params
+    )
+  end
+
+  def build_apply_effects_to_mechanic(params \\ %{}) do
+    Map.merge(
+      %{
+        effects: [],
+        targeting_strategy: %{count: 1, type: "random", target_allies: false}
       },
       params
     )
@@ -55,11 +69,7 @@ defmodule Champions.TestUtils do
         initial_delay: 0,
         components: [],
         modifiers: [],
-        executions: [],
-        target_strategy: "random",
-        target_count: 1,
-        target_allies: false,
-        target_attribute: "Health"
+        executions: []
       },
       params
     )
