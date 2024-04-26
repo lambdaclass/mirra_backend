@@ -67,6 +67,22 @@ defmodule ArenaLoadTest.Serialization.Position do
   field(:y, 2, type: :float)
 end
 
+defmodule ArenaLoadTest.Serialization.LobbyEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:event, 0)
+
+  field(:leave, 1, type: ArenaLoadTest.Serialization.LeaveLobby, oneof: 0)
+end
+
+defmodule ArenaLoadTest.Serialization.LeaveLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule ArenaLoadTest.Serialization.GameEvent do
   @moduledoc false
 

@@ -20,6 +20,14 @@ message Position {
   float y = 2;
 }
 
+message LobbyEvent {
+  oneof event {
+    LeaveLobby leave = 1;
+  }
+}
+
+message LeaveLobby { }
+
 message GameEvent {
   oneof event {
     GameJoined joined = 1;

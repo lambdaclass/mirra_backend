@@ -67,6 +67,22 @@ defmodule BotManager.Protobuf.Position do
   field(:y, 2, type: :float)
 end
 
+defmodule BotManager.Protobuf.LobbyEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:event, 0)
+
+  field(:leave, 1, type: BotManager.Protobuf.LeaveLobby, oneof: 0)
+end
+
+defmodule BotManager.Protobuf.LeaveLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule BotManager.Protobuf.GameEvent do
   @moduledoc false
 

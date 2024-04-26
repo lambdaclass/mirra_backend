@@ -5,6 +5,7 @@ defmodule Arena.SocketHandler do
   require Logger
   alias Arena.GameLauncher
   alias Arena.Serialization.GameState
+  alias Arena.Serialization.LeaveLobby
 
   @behaviour :cowboy_websocket
 
@@ -32,9 +33,15 @@ defmodule Arena.SocketHandler do
   end
 
   @impl true
-  def websocket_handle({:text, "leave_lobby"}, state) do
-    GameLauncher.leave(state.client_id)
-    {:stop, state}
+  def websocket_handle({:binary, message}, state) do
+    case LeaveLobby.decode(message) do
+      %LeaveLobby{} ->
+        GameLauncher.leave(state.client_id)
+        {:stop, state}
+
+      _ ->
+        {:ok, state}
+    end
   end
 
   def websocket_handle(:ping, state) do
