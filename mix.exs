@@ -3,6 +3,7 @@ defmodule MirraBackend.MixProject do
 
   def project do
     [
+      name: "mirra_backend",
       apps_path: "apps",
       apps: [
         :arena,
@@ -19,7 +20,19 @@ defmodule MirraBackend.MixProject do
       deps: deps(),
       aliases: aliases(),
       releases: releases(),
-      default_release: :all
+      default_release: :all,
+      docs: [
+        groups_for_modules: [
+          Arena: [~r"Arena", Physics],
+          "Arena Load Test": ~r"ArenaLoadTest",
+          Champions: ~r"Champions",
+          Configurator: ~r"Configurator",
+          "Bot Manager": ~r"BotManager",
+          "Game Backend": ~r"GameBackend",
+          GameClient: ~r"GameClient",
+          Gateway: ~r"Gateway"
+        ]
+      ]
     ]
   end
 
@@ -29,7 +42,7 @@ defmodule MirraBackend.MixProject do
   #
   # Run "mix help deps" for examples and options.
   defp deps do
-    []
+    [{:ex_doc, "~> 0.21", only: :dev, runtime: false}]
   end
 
   defp aliases() do
@@ -45,8 +58,9 @@ defmodule MirraBackend.MixProject do
     [
       arena: [applications: [arena: :permanent]],
       arena_load_test: [applications: [arena_load_test: :permanent]],
+      bot_manager: [applications: [bot_manager: :permanent]],
       game_client: [applications: [game_client: :permanent]],
-      game_backend: [
+      central_backend: [
         applications: [
           champions: :permanent,
           game_backend: :permanent,

@@ -64,7 +64,7 @@ defmodule GameBackend.Units do
   Gets a unit given its id.
   """
   def get_unit(id) do
-    unit = Repo.get(Unit, id) |> Repo.preload([:character, :user, :items])
+    unit = Repo.get(Unit, id) |> Repo.preload([:user, :items, character: [:basic_skill, :ultimate_skill]])
     if unit, do: {:ok, unit}, else: {:error, :not_found}
   end
 
@@ -114,7 +114,7 @@ defmodule GameBackend.Units do
     do:
       from(unit in user_units_query(user_id), where: unit.selected)
       |> Repo.all()
-      |> Repo.preload([:character, :user, :items])
+      |> Repo.preload([:user, items: :template, character: [:basic_skill, :ultimate_skill]])
 
   @doc """
   Get a user's unit associated to the given character.

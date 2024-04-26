@@ -23,6 +23,8 @@ syntax = "proto3";
       Summon summon = 20;
       GetAfkRewards get_afk_rewards = 21;
       ClaimAfkRewards claim_afk_rewards = 22;
+      GetUserSuperCampaignProgresses get_user_super_campaign_progresses = 23;
+      LevelUpKalineTree level_up_kaline_tree = 24;
     }
   }
 
@@ -126,6 +128,14 @@ syntax = "proto3";
     string box_id = 2;
   }
 
+  message GetUserSuperCampaignProgresses {
+    string user_id = 1;
+  }
+
+  message LevelUpKalineTree {
+    string user_id = 1;
+  }
+
   ////////////////////////////////////////
 
   message WebSocketResponse {
@@ -144,6 +154,7 @@ syntax = "proto3";
       Box box = 12;
       UserAndUnit user_and_unit = 13;
       AfkRewards afk_rewards = 14;
+      SuperCampaignProgresses super_campaign_progresses = 15;
     }
   }
   
@@ -152,22 +163,35 @@ syntax = "proto3";
     string username = 2;
     uint64 level = 3;
     uint64 experience = 4;
-    repeated CampaignProgress campaign_progresses = 6;
     repeated UserCurrency currencies = 7;
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
+    KalineTreeLevel kaline_tree_level = 11;
   }
 
-  message CampaignProgress {
+  message KalineTreeLevel {
+    string id = 1;
+    uint64 level = 2;
+    uint64 fertilizer_level_up_cost = 3;
+    uint64 gold_level_up_cost = 4;
+    repeated string unlock_features = 5;
+  }
+
+  message SuperCampaignProgresses {
+    repeated SuperCampaignProgress super_campaign_progresses = 1;
+  }
+
+  message SuperCampaignProgress {
     string user_id = 1;
     string campaign_id = 2;
     string level_id = 3;
+    string super_campaign_id = 4;
   }
 
   message AfkRewardRate {
     string user_id = 1;
-    string currency_id = 2;
+    Currency currency = 2;
     float rate = 3;
   }
 
@@ -240,15 +264,12 @@ syntax = "proto3";
     uint32 level_number = 3;
     repeated Unit units = 4;
     repeated CurrencyReward currency_rewards = 5;
+    uint32 experience_reward = 6;
   }
 
   message CurrencyReward {
     Currency currency = 1; 
     uint64 amount = 3;
-  }
-
-  message BattleResult {
-    string result = 1;
   }
 
   message AfkRewards {
@@ -290,4 +311,102 @@ syntax = "proto3";
   message UserAndUnit {
     User user = 1;
     Unit unit = 2;
+  }
+
+// BATTLE RESULT
+
+  enum SkillActionType {
+    ANIMATION_START = 0;
+    EFFECT_TRIGGER = 1;
+    EFFECT_HIT = 2;
+    EFFECT_MISS = 3;
+  }
+
+  enum Stat {
+    HEALTH = 0;
+    ENERGY = 1;
+    ATTACK = 2;
+    DEFENSE = 3;
+    DAMAGE_REDUCTION = 4;
+    SPEED = 5;
+  }
+
+  message BattleResult {
+    State initial_state = 1;
+    repeated Step steps = 2;
+    string result = 3;
+  }
+
+  message State {
+    repeated BattleUnit units = 1;
+  }
+
+  message BattleUnit {
+    string id = 1;
+    int32 health = 2;
+    int32 slot = 3;
+    string character_id = 4;
+    int32 team = 5;
+  }
+
+  message Step {
+    int32 step_number = 1;
+    repeated Action actions = 2;
+  }
+
+  message Action {
+    oneof action_type {
+      SkillAction skill_action = 1;
+      ModifierReceived modifier_received = 2;
+      TagReceived tag_received = 3;
+      ModifierExpired modifier_expired = 4;
+      TagExpired tag_expired = 5;
+      Death death = 6;
+      ExecutionReceived execution_received = 7;
+    }
+  }
+
+  message StatAffected {
+    Stat stat = 1;
+    float amount = 2;
+  }
+
+  message SkillAction {
+    string caster_id = 1;
+    repeated string target_ids = 2;
+    string skill_id = 3;
+    SkillActionType skill_action_type = 4;
+  }
+
+  message ExecutionReceived {
+    string target_id = 1;
+    StatAffected stat_affected = 2;
+  }
+
+  message ModifierReceived {
+    string skill_id = 1;
+    string target_id = 2;
+    StatAffected stat_affected = 3;
+  }
+
+  message TagReceived {
+    string skill_id = 1;
+    string target_id = 2;
+    string tag = 3;
+  }
+
+  message ModifierExpired {
+    string skill_id = 1;
+    string target_id = 2;
+    StatAffected stat_affected = 3;
+  }
+
+  message TagExpired {
+    string skill_id = 1;
+    string target_id = 2;
+    string tag = 3;
+  }
+
+  message Death {
+    string unit_id = 1;
   }

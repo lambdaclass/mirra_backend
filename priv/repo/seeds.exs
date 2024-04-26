@@ -5,91 +5,67 @@ alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Users.KalineTreeLevel
 alias GameBackend.Campaigns.Rewards.CurrencyReward
 
 champions_of_mirra_id = 2
 units_per_level = 5
 
+{:ok, _skills} = Champions.Config.import_skill_config()
 Champions.Config.import_character_config()
-
-muflus = Characters.get_character_by_name("Muflus")
-
-{:ok, _muflus} =
-  Characters.update_character(muflus, %{
-    basic_skill: %{
-      name: "Muflus Basic",
-      effects: [
-        %{
-          type: "instant",
-          initial_delay: 0,
-          components: [],
-          modifiers: [],
-          executions: [
-            %{
-              type: "DealDamage",
-              attack_ratio: 0.8,
-              energy_recharge: 50,
-              delay: 0
-            }
-          ],
-          target_strategy: "random",
-          target_count: 2,
-          target_allies: false,
-          target_attribute: "Health"
-        }
-      ],
-      cooldown: 5
-    },
-    ultimate_skill: %{
-      name: "Muflus Ultimate",
-      effects: [
-        %{
-          type: "instant",
-          initial_delay: 0,
-          components: [],
-          modifiers: [],
-          executions: [
-            %{
-              type: "DealDamage",
-              attack_ratio: 2.05,
-              energy_recharge: 50,
-              delay: 0
-            }
-          ],
-          target_strategy: "random",
-          target_count: 2,
-          target_allies: false,
-          target_attribute: "Health"
-        }
-      ]
-    }
-  })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Epic Sword of Epicness",
-  type: "weapon"
+  type: "weapon",
+  base_modifiers: [
+    %{
+      attribute: "attack",
+      modifier_operation: "Multiply",
+      base_value: 1.6
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Mythical Helmet of Mythicness",
-  type: "helmet"
+  type: "helmet",
+  base_modifiers: [
+    %{
+      attribute: "defense",
+      modifier_operation: "Multiply",
+      base_value: 1.15
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Legendary Chestplate of Legendaryness",
-  type: "chest"
+  type: "chest",
+  base_modifiers: [
+    %{
+      attribute: "defense",
+      modifier_operation: "Multiply",
+      base_value: 1.2
+    }
+  ]
 })
 
 Items.insert_item_template(%{
   game_id: champions_of_mirra_id,
   name: "Magical Boots of Magicness",
-  type: "boots"
+  type: "boots",
+  base_modifiers: [
+    %{
+      attribute: "speed",
+      modifier_operation: "Multiply",
+      base_value: 1.3
+    }
+  ]
 })
 
 {:ok, gold_currency} =
@@ -112,6 +88,9 @@ Items.insert_item_template(%{
     game_id: champions_of_mirra_id,
     name: "Mystic Summon Scrolls"
   })
+
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
 
 {:ok, _} =
   Gacha.insert_box(%{
@@ -136,6 +115,21 @@ Items.insert_item_template(%{
     ],
     cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
+
+# TODO: remove this function after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+levels =
+  Enum.map(1..50, fn level_number ->
+    %{
+      level: level_number,
+      fertilizer_level_up_cost: level_number * 100,
+      gold_level_up_cost: level_number * 100,
+      unlock_features: [],
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+
+Repo.insert_all(KalineTreeLevel, levels)
 
 ######################
 # Campaigns creation #
