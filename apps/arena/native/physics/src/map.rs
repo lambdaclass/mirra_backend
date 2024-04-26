@@ -54,6 +54,7 @@ pub enum Category {
     PowerUp,
     Pool,
     Item,
+    Crate,
 }
 
 impl Position {

@@ -111,6 +111,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "getUserSuperCampaignProgresses",
     oneof: 0
   )
+
+  field(:level_up_kaline_tree, 24,
+    type: Gateway.Serialization.LevelUpKalineTree,
+    json_name: "levelUpKalineTree",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -305,6 +311,14 @@ defmodule Gateway.Serialization.GetUserSuperCampaignProgresses do
   field(:user_id, 1, type: :string, json_name: "userId")
 end
 
+defmodule Gateway.Serialization.LevelUpKalineTree do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -374,6 +388,23 @@ defmodule Gateway.Serialization.User do
     type: Gateway.Serialization.AfkRewardRate,
     json_name: "afkRewardRates"
   )
+
+  field(:kaline_tree_level, 11,
+    type: Gateway.Serialization.KalineTreeLevel,
+    json_name: "kalineTreeLevel"
+  )
+end
+
+defmodule Gateway.Serialization.KalineTreeLevel do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:level, 2, type: :uint64)
+  field(:fertilizer_level_up_cost, 3, type: :uint64, json_name: "fertilizerLevelUpCost")
+  field(:gold_level_up_cost, 4, type: :uint64, json_name: "goldLevelUpCost")
+  field(:unlock_features, 5, repeated: true, type: :string, json_name: "unlockFeatures")
 end
 
 defmodule Gateway.Serialization.SuperCampaignProgresses do

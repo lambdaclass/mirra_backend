@@ -42,7 +42,8 @@ defmodule Gateway.ChampionsSocketHandler do
     GetBoxes,
     GetBox,
     Summon,
-    GetUserSuperCampaignProgresses
+    GetUserSuperCampaignProgresses,
+    LevelUpKalineTree
   }
 
   @behaviour :cowboy_websocket
@@ -214,6 +215,13 @@ defmodule Gateway.ChampionsSocketHandler do
       end)
 
     prepare_response(%{super_campaign_progresses: super_campaign_progresses}, :super_campaign_progresses)
+  end
+
+  defp handle(%LevelUpKalineTree{user_id: user_id}) do
+    case Users.level_up_kaline_tree(user_id) do
+      {:ok, result} -> prepare_response(result, :user)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
   end
 
   defp handle(unknown_request),

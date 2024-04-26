@@ -186,6 +186,36 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_crate(id, %{
+        position: position,
+        radius: radius,
+        shape: shape,
+        vertices: vertices,
+        health: health,
+        amount_of_power_ups: amount_of_power_ups
+      }) do
+    %{
+      id: id,
+      category: :crate,
+      shape: get_shape(shape),
+      name: "Crate" <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: vertices,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false,
+      aditional_info: %{
+        health: health,
+        amount_of_power_ups: amount_of_power_ups,
+        status: :FINE
+      }
+    }
+  end
+
   def make_circular_area(id, position, range) do
     %{
       id: id,
@@ -273,6 +303,15 @@ defmodule Arena.Entities do
     {:item,
      %Arena.Serialization.Item{
        name: entity.aditional_info.name
+     }}
+  end
+
+  def maybe_add_custom_info(entity) when entity.category == :crate do
+    {:crate,
+     %Arena.Serialization.Crate{
+       health: entity.aditional_info.health,
+       amount_of_power_ups: entity.aditional_info.amount_of_power_ups,
+       status: entity.aditional_info.status
      }}
   end
 
