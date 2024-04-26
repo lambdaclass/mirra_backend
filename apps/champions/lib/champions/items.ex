@@ -12,6 +12,11 @@ defmodule Champions.Items do
   def get_item(item_id), do: Items.get_item(item_id)
 
   @doc """
+  Get all items owned by a user.
+  """
+  def get_items(user_id), do: Items.get_items(user_id)
+
+  @doc """
   Level up a user's item and substracts the currency cost from the user.
 
   Returns `{:error, :not_found}` if item doesn't exist or if it's not owned by user.

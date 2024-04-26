@@ -245,6 +245,18 @@ syntax = "proto3";
     string id = 1;
     string name = 2;
     string type = 3;
+    int32 rarity = 4;
+    repeated ItemModifier modifiers = 5;
+    string config_id = 6;
+    string upgrades_from_config_id = 7;
+    int32 upgrades_from_quantity = 8;
+    repeated CurrencyCost upgrade_costs = 9;
+  }
+
+  message ItemModifier {
+    string attribute = 1;
+    float value = 2;
+    string operation = 3;
   }
 
   message Campaigns {

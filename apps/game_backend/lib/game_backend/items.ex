@@ -175,6 +175,18 @@ defmodule GameBackend.Items do
   end
 
   @doc """
+  Get all items for a user.
+
+  ## Examples
+
+      iex> get_items(user_id)
+      [%Item{}]
+  """
+  def get_items(user_id) do
+    Repo.get_by(Item, user_id: user_id) |> Repo.preload([:template])
+  end
+
+  @doc """
   Increment an item's level.
 
   ## Examples

@@ -10,11 +10,11 @@ defmodule GameBackend.Items.ItemTemplate do
         game_id: 2,
         name: "Sword",
         type: "weapon",
-        base_modifiers: [
+        modifiers: [
           %Modifier{
             attribute: "attack",
             operation: "Multiply",
-            base_value: 1.3
+            value: 1.3
           }
         ]
       }

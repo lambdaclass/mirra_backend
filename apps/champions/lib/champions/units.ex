@@ -469,7 +469,7 @@ defmodule Champions.Units do
 
   defp get_additive_and_multiplicative_modifiers(items, attribute) do
     item_modifiers =
-      Enum.flat_map(items, & &1.template.base_modifiers)
+      Enum.flat_map(items, & &1.template.modifiers)
 
     attribute_modifiers =
       Enum.filter(item_modifiers, &(&1.attribute == attribute))

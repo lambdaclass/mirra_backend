@@ -11,8 +11,6 @@ defmodule GameBackend.Items.Item do
   alias GameBackend.Units.Unit
 
   schema "items" do
-    field(:level, :integer)
-
     belongs_to(:template, ItemTemplate)
     belongs_to(:user, User)
     belongs_to(:unit, Unit)
@@ -22,8 +20,8 @@ defmodule GameBackend.Items.Item do
   @doc false
   def changeset(item, attrs) do
     item
-    |> cast(attrs, [:level, :template_id, :user_id, :unit_id])
-    |> validate_required([:level, :template_id, :user_id])
+    |> cast(attrs, [:template_id, :user_id, :unit_id])
+    |> validate_required([:template_id, :user_id])
   end
 
   @doc false

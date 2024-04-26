@@ -576,12 +576,14 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Bow of Testness",
+          config_id: "epic_bow_of_testness",
           type: "weapon",
+          rarity: 1,
           modifiers: [
             %{
               attribute: "attack",
-              modifier_operation: "Multiply",
-              base_value: 1.6
+              operation: "Multiply",
+              value: 1.6
             }
           ]
         })
@@ -597,7 +599,6 @@ defmodule Gateway.Test.Champions do
 
       assert fetched_item.id == item.id
       assert fetched_item.user_id == user.id
-      assert fetched_item.level == 1
       assert fetched_item.template.id == epic_bow.id
 
       # We expect the item to be unequipped after creation. Since protobuf can't handle null messages, we get an empty string.
@@ -618,22 +619,24 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Upgrader of All Stats",
+          config_id: "epic_upgrader_of_all_stats",
           type: "weapon",
-          base_modifiers: [
+          rarity: 1,
+          modifiers: [
             %{
               attribute: "attack",
-              modifier_operation: "Multiply",
-              base_value: attack_multiplier
+              operation: "Multiply",
+              value: attack_multiplier
             },
             %{
               attribute: "defense",
-              modifier_operation: "Multiply",
-              base_value: defense_multiplier
+              operation: "Multiply",
+              value: defense_multiplier
             },
             %{
               attribute: "health",
-              modifier_operation: "Add",
-              base_value: health_adder
+              operation: "Add",
+              value: health_adder
             }
           ]
         })
@@ -727,12 +730,14 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Axe of Testness",
+          config_id: "epic_axe_of_testness",
           type: "weapon",
+          rarity: 1,
           modifiers: [
             %{
               attribute: "attack",
-              modifier_operation: "Multiply",
-              base_value: 1.6
+              operation: "Multiply",
+              value: 1.6
             }
           ]
         })

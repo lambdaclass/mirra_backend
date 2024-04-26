@@ -527,6 +527,27 @@ defmodule Gateway.Serialization.ItemTemplate do
   field(:id, 1, type: :string)
   field(:name, 2, type: :string)
   field(:type, 3, type: :string)
+  field(:rarity, 4, type: :int32)
+  field(:modifiers, 5, repeated: true, type: Gateway.Serialization.ItemModifier)
+  field(:config_id, 6, type: :string, json_name: "configId")
+  field(:upgrades_from_config_id, 7, type: :string, json_name: "upgradesFromConfigId")
+  field(:upgrades_from_quantity, 8, type: :int32, json_name: "upgradesFromQuantity")
+
+  field(:upgrade_costs, 9,
+    repeated: true,
+    type: Gateway.Serialization.CurrencyCost,
+    json_name: "upgradeCosts"
+  )
+end
+
+defmodule Gateway.Serialization.ItemModifier do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:attribute, 1, type: :string)
+  field(:value, 2, type: :float)
+  field(:operation, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.Campaigns do

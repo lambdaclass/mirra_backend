@@ -16,5 +16,9 @@ defmodule GameBackend.Repo.Migrations.AddItemTemplateFields do
     alter(table(:item_templates)) do
       add(:upgrades_from_config_id, references(:item_templates, on_delete: :nothing, column: :config_id, type: :string))
     end
+
+    alter(table(:items)) do
+      remove(:level)
+    end
   end
 end
