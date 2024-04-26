@@ -11,7 +11,10 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.KalineTreeLevel
+  alias Ecto.Multi
   alias GameBackend.Repo
+  alias GameBackend.Users.Currencies
   alias GameBackend.Users.User
   alias GameBackend.Users.GoogleUser
 
@@ -97,6 +100,22 @@ defmodule GameBackend.Users do
   def get_google_user(google_user_id) do
     Repo.get(GoogleUser, google_user_id)
   end
+  @doc """
+  Gets a Kaline Tree level by its number.
+
+  Returns {:error, :not_found} if no level is found.
+
+  ## Examples
+
+      iex> get_kaline_tree_level(1)
+      %KalineTreeLevel{}
+
+      iex> get_kaline_tree_level(-1)
+      nil
+  """
+  def get_kaline_tree_level(level_number) do
+    Repo.get_by(KalineTreeLevel, level: level_number)
+  end
 
   @doc """
   Checks whether a user exists with the given id.
@@ -111,6 +130,15 @@ defmodule GameBackend.Users do
       |> User.experience_changeset(params)
       |> Repo.update()
 
+  @doc """
+  Updates the Kaline Tree level of a user.
+  """
+  def update_kaline_tree_level(user, params),
+    do:
+      user
+      |> User.kaline_tree_level_changeset(params)
+      |> Repo.update()
+
   def reset_afk_rewards_claim(user_id) do
     {:ok, user} = get_user(user_id)
 
@@ -119,14 +147,48 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
+  @doc """
+  Level up the Kaline Tree of a user.
+
+  Returns the updated user if the operation was successful.
+  """
+  def level_up_kaline_tree(user_id, level_up_costs) do
+    {:ok, _result} =
+      Multi.new()
+      |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        Currencies.substract_currencies(user_id, level_up_costs)
+      end)
+      |> Repo.transaction()
+
+    get_user(user_id)
+  end
+
+  defp increment_tree_level(user_id) do
+    case get_user(user_id) do
+      {:ok, user} ->
+        next_level = get_kaline_tree_level(user.kaline_tree_level.level + 1)
+
+        user
+        |> User.changeset(%{kaline_tree_level_id: next_level.id})
+        |> Repo.update()
+
+      error ->
+        error
+    end
+  end
+
   defp preload(user),
     do:
       Repo.preload(
         user,
-        afk_reward_rates: :currency,
-        super_campaign_progresses: :level,
-        items: :template,
-        units: [:character, :items],
-        currencies: :currency
+        [
+          :kaline_tree_level,
+          afk_reward_rates: :currency,
+          super_campaign_progresses: :level,
+          items: :template,
+          units: [:character, :items],
+          currencies: :currency
+        ]
       )
 end

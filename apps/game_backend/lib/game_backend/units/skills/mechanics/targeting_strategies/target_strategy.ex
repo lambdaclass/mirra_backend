@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Skills.Effects.TargetStrategy do
+defmodule GameBackend.Units.Skills.Mechanics.TargetingStrategies.Type do
   @moduledoc """
   The TargetStrategy type for skills.
   """

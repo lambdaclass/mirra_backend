@@ -3,6 +3,8 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias Champions.Users
   alias Champions.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
@@ -22,7 +24,15 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
-    case Users.register_user(%{username: username, game_id: Utils.game_id()}) do
+    kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
+
+    case Users.register_user(%{
+           username: username,
+           game_id: Utils.game_id(),
+           level: 1,
+           experience: 0,
+           kaline_tree_level_id: kaline_tree_level.id
+         }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
         add_sample_units(user)
@@ -89,6 +99,7 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
   end
 
   defp add_super_campaign_progresses(user) do
@@ -195,4 +206,32 @@ defmodule Champions.Users do
       {:error, _, reason, _} -> {:error, reason}
     end
   end
+
+  @doc """
+  Level up the Kaline Tree of a user.
+  """
+  def level_up_kaline_tree(user_id) do
+    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+         level_up_costs = calculate_costs_to_level_up_kaline_tree(user),
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level_up_costs)} do
+      Users.level_up_kaline_tree(user_id, level_up_costs)
+    else
+      {:can_afford, false} -> {:error, :cant_afford}
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+    end
+  end
+
+  # TODO: remove this after finishing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+  # The costs will be defined in a configuration file.
+  defp calculate_costs_to_level_up_kaline_tree(user),
+    do: [
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Fertilizer").id,
+        amount: user.kaline_tree_level.fertilizer_level_up_cost
+      },
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        amount: user.kaline_tree_level.gold_level_up_cost
+      }
+    ]
 end
