@@ -282,7 +282,7 @@ defmodule Champions.Battle.Simulator do
                skill_id: modifier.skill_id,
                target_id: unit.id,
                stat_affected: %{
-                 stat: modifier.attribute |> String.upcase() |> String.to_atom(),
+                 stat: modifier.attribute |> String.upcase() |> string_to_atom(),
                  amount: modifier.float_magnitude
                }
              },
@@ -580,7 +580,7 @@ defmodule Champions.Battle.Simulator do
               skill_id: modifier.skill_id,
               target_id: target.id,
               stat_affected: %{
-                stat: modifier.attribute |> String.upcase() |> String.to_atom(),
+                stat: modifier.attribute |> String.upcase() |> string_to_atom(),
                 amount: modifier.float_magnitude
               }
             },
@@ -845,10 +845,10 @@ defmodule Champions.Battle.Simulator do
       type:
         Enum.into(effect.type, %{}, fn
           {key, value} when is_binary(value) ->
-            {String.to_atom(key), String.to_atom(value)}
+            {string_to_atom(key), string_to_atom(value)}
 
           {key, value} ->
-            {String.to_atom(key), value}
+            {string_to_atom(key), value}
         end),
       delay: div(effect.initial_delay, @miliseconds_per_step),
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
@@ -909,4 +909,15 @@ defmodule Champions.Battle.Simulator do
         end)
     }
   end
+
+  defp string_to_atom("type"), do: :type
+  defp string_to_atom("duration"), do: :duration
+  defp string_to_atom("period"), do: :period
+  defp string_to_atom("instant"), do: :type
+
+  defp string_to_atom("ATTACK"), do: :ATTACK
+  defp string_to_atom("DEFENSE"), do: :DEFENSE
+  defp string_to_atom("HEALTH"), do: :HEALTH
+  defp string_to_atom("ENERGY"), do: :ENERGY
+  defp string_to_atom("SPEED"), do: :SPEED
 end
