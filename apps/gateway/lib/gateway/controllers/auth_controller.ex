@@ -3,8 +3,15 @@ defmodule Gateway.Controllers.AuthController do
   Controller for users authentication.
   """
   use Gateway, :controller
-  plug Ueberauth
   alias Ueberauth.Strategy.Helpers
+
+  ## You will see this and surely think "WTF?". Trust me, this is a sane approach to what we wanted
+  ## The idea here was to have 2 different redirects at the end of the authentication,
+  ## one for the browser and another for the unity client. Since we weren't allowed to pass params or anything of the sort
+  ## having 2 distinct routes allows us to pattern match and properly choose the correct redirect
+  ## So, this double invocation of `plug Ueberauth` is because each one will intercept the calls for that specific base_path
+  plug Ueberauth, base_path: "/auth/browser"
+  plug Ueberauth, base_path: "/auth/unity"
 
   def request(conn, _params) do
     render(conn, :request, callback_url: Helpers.callback_url(conn))
@@ -23,7 +30,7 @@ defmodule Gateway.Controllers.AuthController do
         |> put_flash(:info, "Successfully authenticated.")
         |> put_session(:current_user, user)
         |> configure_session(renew: true)
-        |> redirect(external: "http://localhost:3000/#{user.id}")
+        |> redirect(external: path_to_redirect_url(conn.path_info, user.id))
 
       {:error, _changeset} ->
         conn
@@ -31,4 +38,8 @@ defmodule Gateway.Controllers.AuthController do
         |> redirect(to: "/auth/google")
     end
   end
+
+  defp path_to_redirect_url(["auth", "browser" | _], user_id), do: "http://localhost:3000/#{user_id}"
+  ## TODO: change to proper deeplink
+  defp path_to_redirect_url(["auth", "unity" | _], user_id), do: "http://localhost:3000/#{user_id}?unity=true"
 end
