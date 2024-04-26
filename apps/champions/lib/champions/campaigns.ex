@@ -57,7 +57,6 @@ defmodule Champions.Campaigns do
       # TODO: Implement experience rewards [CHoM-#216]
       Multi.new()
       |> apply_currency_rewards(user_id, level.currency_rewards)
-      |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
       |> Multi.insert_all(:item_rewards, Item, fn _ ->
         build_item_rewards_params(user_id, level.item_rewards)
       end)
@@ -122,14 +121,6 @@ defmodule Champions.Campaigns do
     Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
       Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
         Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
-      end)
-    end)
-  end
-
-  defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
-    Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
-      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
-        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
       end)
     end)
   end

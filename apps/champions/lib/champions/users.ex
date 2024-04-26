@@ -9,6 +9,7 @@ defmodule Champions.Users do
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
+  alias GameBackend.Rewards
   alias GameBackend.Transaction
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
@@ -215,6 +216,15 @@ defmodule Champions.Users do
          level_up_costs = calculate_costs_to_level_up_kaline_tree(user),
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level_up_costs)} do
       Users.level_up_kaline_tree(user_id, level_up_costs)
+      |> case do
+        {:ok, updated_user} ->
+          apply_afk_rewards_increments(user_id, updated_user.kaline_tree_level.afk_rewards_increments)
+
+        {:error, :user_not_found} ->
+          {:error, :user_not_found}
+      end
+
+      # apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
     else
       {:can_afford, false} -> {:error, :cant_afford}
       {:user, {:error, :not_found}} -> {:error, :user_not_found}
@@ -234,4 +244,20 @@ defmodule Champions.Users do
         amount: user.kaline_tree_level.gold_level_up_cost
       }
     ]
+
+  # defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
+  #   Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
+  #     Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
+  #       Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
+  #     end)
+  #   end)
+  # end
+  defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
+    Enum.reduce(afk_rewards_increments, Multi.new(), fn increment, multi ->
+      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
+        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
+      end)
+    end)
+    |> Transaction.run()
+  end
 end
