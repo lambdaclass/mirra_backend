@@ -165,6 +165,7 @@ defmodule Arena.GameUpdater do
         state = put_in(state, [:game_state, :status], :ENDED)
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
+        report_game_results(state, winner.id)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -483,6 +484,31 @@ defmodule Arena.GameUpdater do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+  end
+
+  defp report_game_results(state, winner_id) do
+    results = Enum.map(state.game_state.client_to_player_map, fn {client_id, player_id} ->
+      player = Map.get(state.game_state.players, player_id)
+      %{
+        user_id: client_id,
+        result: (if player.id == winner_id, do: "win", else: "loss"),
+        kills: player.aditional_info.kill_count,
+        deaths: (if Player.alive?(player), do: 0, else: 1),
+        character: player.aditional_info.character_name
+      }
+    end)
+
+    payload = Jason.encode!(%{results: results})
+
+    ## TODO: we should be doing this in a better way, both the url and the actual request
+    ## maybe a separate GenServer that gets the results and tries to send them to the server?
+    ## This way if it fails we can retry or something
+    spawn(fn ->
+      gateway_url = System.get_env("GATEWAY_URL") || "http://localhost:4001"
+
+      Finch.build(:post, "#{gateway_url}/arena/match", [{"content-type", "application/json"}], payload)
+      |> Finch.request(Arena.Finch)
+    end)
   end
 
   ##########################
