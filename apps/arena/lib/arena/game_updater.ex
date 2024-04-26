@@ -36,15 +36,17 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients}) do
+  def init(%{clients: clients, bot_clients: bot_clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients, game_config)
+    game_state = new_game(game_id, clients ++ bot_clients, game_config)
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
-    {:ok, %{game_config: game_config, game_state: game_state}}
+    clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
+    bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
+    {:ok, %{clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
   end
 
   ##########################
@@ -487,16 +489,20 @@ defmodule Arena.GameUpdater do
   end
 
   defp report_game_results(state, winner_id) do
-    results = Enum.map(state.game_state.client_to_player_map, fn {client_id, player_id} ->
-      player = Map.get(state.game_state.players, player_id)
-      %{
-        user_id: client_id,
-        result: (if player.id == winner_id, do: "win", else: "loss"),
-        kills: player.aditional_info.kill_count,
-        deaths: (if Player.alive?(player), do: 0, else: 1),
-        character: player.aditional_info.character_name
-      }
-    end)
+    results =
+      Enum.filter(state.game_state.client_to_player_map, fn {client_id, _player_id} ->
+        Enum.member?(state.clients, client_id)
+      end)
+      |> Enum.map(fn {client_id, player_id} ->
+        player = Map.get(state.game_state.players, player_id)
+        %{
+          user_id: client_id,
+          result: (if player.id == winner_id, do: "win", else: "loss"), ##TODO: way to track `abandon`, currently a bot taking over will endup with a result
+          kills: player.aditional_info.kill_count,
+          deaths: (if Player.alive?(player), do: 0, else: 1), ## TODO: this only works because you can only die once
+          character: player.aditional_info.character_name
+        }
+      end)
 
     payload = Jason.encode!(%{results: results})
 
