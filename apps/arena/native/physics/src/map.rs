@@ -1,10 +1,11 @@
 use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
+use std::collections::HashMap;
 
 use crate::collision_detection::sat::intersect_circle_polygon;
 use crate::collision_detection::{
     circle_circle_collision, circle_polygon_collision, line_circle_collision,
-    point_circle_collision,
+    line_polygon_collision, point_circle_collision,
 };
 #[derive(NifMap, Clone)]
 pub struct Polygon {
@@ -64,7 +65,7 @@ impl Position {
         self.y /= length;
     }
 
-    pub fn add(a: Position, b: Position) -> Position {
+    pub fn add(a: &Position, b: &Position) -> Position {
         Position {
             x: a.x + b.x,
             y: a.y + b.y,
@@ -74,6 +75,13 @@ impl Position {
         Position {
             x: a.x - b.x,
             y: a.y - b.y,
+        }
+    }
+
+    pub fn mult(a: &Position, mult: f32) -> Position {
+        Position {
+            x: a.x * mult,
+            y: a.y * mult,
         }
     }
 
@@ -147,6 +155,12 @@ impl Entity {
                         result.push(entity.id);
                     }
                 }
+
+                (Shape::Line, Shape::Polygon) => {
+                    if line_polygon_collision(self, &entity) {
+                        result.push(entity.id);
+                    }
+                }
                 (Shape::Polygon, Shape::Circle) => {
                     if circle_polygon_collision(&entity, self) {
                         result.push(entity.id);
@@ -183,28 +197,12 @@ impl Entity {
         self.position = self.find_edge_position_inside(external_wall);
     }
 
-    pub fn move_to_next_valid_position_outside(&mut self, collided_with: Vec<&Entity>) {
-        self.move_to_edge_position_outside(collided_with);
-    }
-
-    pub fn find_edge_position_inside(&mut self, external_wall: &Entity) -> Position {
-        let x = self.position.x;
-        let y = self.position.y;
-        let length = (x.powf(2.) + y.powf(2.)).sqrt();
-        let normalized_position = Position {
-            x: self.position.x / length,
-            y: self.position.y / length,
-        };
-        Position {
-            x: external_wall.position.x
-                + normalized_position.x * (external_wall.radius - self.radius),
-            y: external_wall.position.y
-                + normalized_position.y * (external_wall.radius - self.radius),
-        }
-    }
-
-    pub fn move_to_edge_position_outside(&mut self, collisions: Vec<&Entity>) {
-        for entity in collisions {
+    pub fn move_to_next_valid_position_outside(
+        &mut self,
+        collided_with: Vec<&Entity>,
+        obstacles: &HashMap<u64, Entity>,
+    ) {
+        for entity in collided_with {
             match entity.shape {
                 Shape::Circle => {
                     let mut normalized_direction = Position::sub(self.position, entity.position);
@@ -222,7 +220,8 @@ impl Entity {
                     self.position = new_pos;
                 }
                 Shape::Polygon => {
-                    let (collided, direction, depth) = intersect_circle_polygon(self, entity);
+                    let (collided, direction, depth) =
+                        intersect_circle_polygon(self, entity, obstacles);
 
                     if collided {
                         let new_pos = Position {
@@ -234,6 +233,22 @@ impl Entity {
                 }
                 _ => continue,
             }
+        }
+    }
+
+    pub fn find_edge_position_inside(&mut self, external_wall: &Entity) -> Position {
+        let x = self.position.x;
+        let y = self.position.y;
+        let length = (x.powf(2.) + y.powf(2.)).sqrt();
+        let normalized_position = Position {
+            x: self.position.x / length,
+            y: self.position.y / length,
+        };
+        Position {
+            x: external_wall.position.x
+                + normalized_position.x * (external_wall.radius - self.radius),
+            y: external_wall.position.y
+                + normalized_position.y * (external_wall.radius - self.radius),
         }
     }
 
