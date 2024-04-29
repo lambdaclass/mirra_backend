@@ -501,6 +501,83 @@
         ]
       },
       {
+        "collider": "cannon rock 2 a",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "vertices": [
+          {
+            "x": -849.0,
+            "y": 4252.0
+          },
+          {
+            "x": -1120.0,
+            "y": 4900.0
+          },
+          {
+            "x": -748.0,
+            "y": 5674.0
+          },
+          {
+            "x": -135.0,
+            "y": 4836.0
+          },
+          {
+            "x": -439.0,
+            "y": 4212.0
+          }
+        ]
+      },
+      {
+        "collider": "cannon rock 2 b",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "vertices": [
+          {
+            "x": -748.0,
+            "y": 5674.0
+          },
+          {
+            "x": 456.0,
+            "y": 5159.0
+          },
+          {
+            "x": -135.0,
+            "y": 4836.0
+          }
+        ]
+      },
+      {
+        "collider": "cannon rock 2 c",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "vertices": [
+          {
+            "x": 1226.0,
+            "y": 5607.0
+          },
+          {
+            "x": 1175.0,
+            "y": 5427.0
+          },
+          {
+            "x": 456.0,
+            "y": 5159.0
+          }
+        ]
+      },
+      {
         "collider": "halfmoon rock 1 a",
         "position": {
           "x": 0.0,
