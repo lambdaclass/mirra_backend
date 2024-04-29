@@ -387,14 +387,16 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
 
     last_id = state.game_state.last_id + 1
-    ## TODO: make random position
-    position =
-      random_position_in_map(
-        state.game_state.external_wall.radius,
-        state.game_state.external_wall
-      )
 
     item_config = Enum.random(state.game_config.items)
+
+    position =
+      random_position_in_map(
+        item_config.radius,
+        state.game_state.external_wall,
+        state.game_state.obstacles
+      )
+
     item = Entities.new_item(last_id, position, item_config)
 
     state =
@@ -1186,27 +1188,33 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp random_position_in_map(radius, external_wall) do
-    integer_radius = trunc(radius)
+  defp random_position_in_map(object_radius, external_wall, obstacles) do
+    integer_radius = trunc(external_wall.radius - object_radius)
     x = Enum.random(-integer_radius..integer_radius) / 1.0
     y = Enum.random(-integer_radius..integer_radius) / 1.0
 
-    point = %{
+    circle = %{
       id: 1,
-      shape: :point,
+      shape: :circle,
       position: %{x: x, y: y},
-      radius: 0.0,
+      radius: object_radius,
       vertices: [],
       speed: 0.0,
       category: :obstacle,
       direction: %{x: 0.0, y: 0.0},
       is_moving: false,
-      name: "Point 1"
+      name: "Circle 1"
     }
 
-    case Physics.check_collisions(point, %{0 => external_wall}) do
-      [] -> random_position_in_map(integer_radius * 0.95, external_wall)
-      _ -> point.position
+    entities_to_collide_with =
+      obstacles
+      |> Map.merge(%{external_wall.id => external_wall})
+
+    external_wall_id = external_wall.id
+
+    case Physics.check_collisions(circle, entities_to_collide_with) do
+      [^external_wall_id | []] -> circle.position
+      _ -> random_position_in_map(object_radius, external_wall, obstacles)
     end
   end
 
