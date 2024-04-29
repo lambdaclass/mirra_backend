@@ -7,17 +7,16 @@ defmodule Gateway.Auth.GoogleTokenManager do
 
   use Joken.Config, default_signer: nil
 
-  @iss "https://accounts.google.com"
-
-  defp aud, do: System.get_env("GOOGLE_CLIENT_ID")
-
   add_hook(Gateway.Auth.GoogleVerifyHook)
 
   @impl Joken.Config
   def token_config do
+    issuer = Application.get_env(:joken, :issuer)
+    audience = Application.get_env(:joken, :audience)
+
     default_claims(skip: [:aud, :iss, :exp])
-    |> add_claim("iss", nil, &(&1 == @iss))
-    |> add_claim("aud", nil, &(&1 == aud()))
+    |> add_claim("iss", nil, &(&1 == issuer))
+    |> add_claim("aud", nil, &(&1 == audience))
     |> add_claim("exp", nil, &(&1 > current_time()))
   end
 end
