@@ -2,2010 +2,2472 @@
   {
     "name": "Melo Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Melo Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 0,
-          "period": 0
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.16,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 3,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 3,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "duration": 0,
+                "period": 0
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.16,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Arupe Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Arupe Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.64,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 2,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 2,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.64,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Valcher Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Valcher Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.79,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "all",
-        "target_count": 6,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "type": "random",
+            "count": 6,
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.79,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Byte Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Byte Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.51,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.51,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Qurin Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Qurin Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.8,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 2,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 2,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.8,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Chekla Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Chekla Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 1.8,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": true
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "lowest": "health"
+            },
+            "target_allies": true
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "Heal",
+                  "attack_ratio": 1.8
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Germund Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Germund Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.13,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 3,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 3,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.13,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Scratch Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Scratch Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 3.1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "lowest": "health"
+            },
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 3.1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Kel'mut Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "lowest": "Defense"
-        },
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "lowest": "defense"
+            },
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Kel'mut Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 3.2,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "lowest": "Defense"
-        },
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "lowest": "defense"
+            },
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 3.2,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Toburo Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Toburo Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.36,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 2,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 2,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.36,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Dafnet Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Dafnet Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 0.72,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "all",
-        "target_count": 6,
-        "target_allies": true
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 6,
+            "type": "random",
+            "target_allies": true
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "Heal",
+                  "attack_ratio": 0.72
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Hash Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Hash Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.45,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 3,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 3,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.45,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Obure Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
-      }
-    ],
-    "cooldown": 5
-  },
-  {
-    "name": "Obure Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
-      {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.79,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 2,
-        "target_allies": false
-      },
-      {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 1.4,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": true
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
-    "name": "Zil'kan Basic",
-    "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "name": "Obure Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.79,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "type": "random",
+            "count": 2,
+            "target_allies": false
           }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        }
+      },
+      {
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": 2000,
+                "period": 1000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "Heal",
+                  "attack_ratio": 1.4
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "type": {
+              "lowest": "health"
+            },
+            "count": 1,
+            "target_allies": true
+          }
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
-    "name": "Zil'kan Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "name": "Zil'Kan Basic",
+    "energy_regen": 100,
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "duration": 2,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [
-          {
-            "type": "ApplyTags",
-            "tags": [
-              "Burn"
-            ]
-          }
-        ],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.16,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
           },
-          {
-            "type": "DealDamageOverTime",
-            "attack_ratio": 0.24,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 3,
-        "target_allies": false
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "Zil'Kan Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 500,
+    "mechanics": [
+      {
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 3,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.16,
+                  "energy_recharge": 50
+                },
+                {
+                  "type": "DealDamageOverTime",
+                  "attack_ratio": 0.24,
+                  "energy_recharge": 50,
+                  "dot_type": "Burn"
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Fetra Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "lowest": "health"
+            },
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Fetra Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 5,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "defense",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0.85
-          }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.48,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "highest": "defense"
-        },
-        "target_count": 2,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 2,
+            "type": {
+              "highest": "defense"
+            },
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "duration": 5000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "defense",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "float",
+                  "float_magnitude": 0.85
+                }
+              ],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.48,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Kampako Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "type": "nearest",
+            "count": 1,
+            "target_allies": false
           }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Kampako Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 5,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [
-          {
-            "type": "ApplyTags",
-            "tags": [
-              "Stun"
-            ]
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": 5000
+              },
+              "initial_delay": 0,
+              "components": [
+                {
+                  "type": "ApplyTags",
+                  "tags": [
+                    "ControlEffect.Stun"
+                  ]
+                }
+              ],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.51,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": "nearest"
           }
-        ],
-        "modifiers": [
-          {
-            "attribute": "attack",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0
-          }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.51,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        }
       }
     ]
   },
   {
     "name": "Zanochi Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": "backline"
           }
-        ],
-        "target_strategy": "backline",
-        "target_count": 1,
-        "target_allies": false
-      }
-    ],
-    "cooldown": 5
-  },
-  {
-    "name": "Zanochi Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
-      {
-        "type": {
-          "duration": 5,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "attack",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0.92
-          }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.42,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 3,
-        "target_allies": false
+        }
       }
     ]
   },
   {
-    "name": "Kura'bara Basic",
-    "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "name": "Zanochi Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": 5000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "attack",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "Float",
+                  "float_magnitude": 0.92
+                }
+              ],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.42,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "type": "random",
+            "count": 3,
+            "target_allies": false
           }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
-    "name": "Kura'bara Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "name": "Kura'Bara Basic",
+    "energy_regen": 100,
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.96,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "all",
-        "target_count": 6,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "Kura'Bara Ultimate",
+    "energy_regen": 0,
+    "animation_duration": 500,
+    "mechanics": [
+      {
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "type": "random",
+            "count": 6,
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.96,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Boy Kampf Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Boy Kampf Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 4,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "attack",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": 4000
+              },
+              "initial_delay": 0,
+              "components": [
+                {
+                  "type": "ApplyTags",
+                  "tags": [
+                    "ControlEffect.Silence"
+                  ]
+                }
+              ],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.44,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 3,
+            "target_allies": false,
+            "type": "random"
           }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.44,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 3,
-        "target_allies": false
+        }
       }
     ]
   },
   {
     "name": "Romulo Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "backline",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "backline",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Romulo Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 6,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "attack",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0.85
-          }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.79,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "backline",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "backline",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "duration": 6000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "attack",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "float",
+                  "float_magnitude": 0.85
+                }
+              ],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.79,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Grimstein Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "nearest",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Grimstein Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 6,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "damage_reduction",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 1.2
-          }
-        ],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 0.38,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "self",
-        "target_count": 1,
-        "target_allies": true
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "type": "self"
+          },
+          "effects": [
+            {
+              "type": {
+                "duration": 6000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "dmg-red%",
+                  "modifier_operation": "Add",
+                  "magnitude_calc_type": "float",
+                  "float_magnitude": 0.2
+                }
+              ],
+              "executions": []
+            },
+            {
+              "type": {
+                "duration": 6000,
+                "period": 1000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "Heal",
+                  "attack_ratio": 0.38
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Elix1r Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Elix1r Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 7,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 0.48,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": 7000,
+                "period": 1000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "Heal",
+                  "attack_ratio": 0.48
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "type": {
+              "lowest": "health"
+            },
+            "count": 1,
+            "target_allies": true
           }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": false
+        }
       }
     ]
   },
   {
     "name": "Rust Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "backline",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "backline",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Rust Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 8,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "defense",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0.9
-          }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.57,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": {
-          "highest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "highest": "health"
+            },
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "duration": 8000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "defense",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "float",
+                  "float_magnitude": 0.9
+                }
+              ],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.57,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Jayson Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Jayson Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 6,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "speed",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 0.93
-          }
-        ],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1.98,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "backline",
-        "target_count": 2,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 2,
+            "type": "backline",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "duration": 6000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "speed",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "float",
+                  "float_magnitude": 0.93
+                }
+              ],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1.98,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Muflus Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.8,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.8,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "type": "nearest",
+            "count": 2,
+            "target_allies": false
           }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 2,
-        "target_allies": false
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Muflus Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 5,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [
-          {
-            "type": "ApplyTags",
-            "tags": [
-              "Stun"
-            ]
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": 5000
+              },
+              "initial_delay": 0,
+              "components": [
+                {
+                  "type": "ApplyTags",
+                  "tags": [
+                    "ControlEffect.Stun"
+                  ]
+                }
+              ],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 2.05,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 2,
+            "target_allies": false,
+            "type": "nearest"
           }
-        ],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 2.05,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 2,
-        "target_allies": false
+        }
       }
     ]
   },
   {
     "name": "Otix Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": "random"
           }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Otix Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 10,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [
-          {
-            "type": "ApplyTags",
-            "tags": [
-              "Burn"
-            ]
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "duration",
+                "duration": 10000,
+                "period": 10
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.73,
+                  "energy_recharge": 50,
+                  "delay": 0
+                },
+                {
+                  "type": "DealDamageOverTime",
+                  "attack_ratio": 0.32,
+                  "energy_recharge": 50,
+                  "dot_type": "Burn"
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 4,
+            "target_allies": false,
+            "type": "random"
           }
-        ],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.73,
-            "energy_recharge": 50,
-            "delay": 0
-          },
-          {
-            "type": "DealDamageOverTime",
-            "attack_ratio": 0.32,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 4,
-        "target_allies": false
+        }
       }
     ]
   },
   {
     "name": "Uma Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": {
+              "lowest": "health"
+            }
           }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": false
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Uma Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "energy_regen": 100,
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 3.48,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 3.48,
+                  "energy_recharge": 50,
+                  "delay": 0
+                }
+              ]
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": false,
+            "type": {
+              "lowest": "health"
+            }
           }
-        ],
-        "target_strategy": {
-          "lowest": "Health"
-        },
-        "target_count": 1,
-        "target_allies": false
+        }
       },
       {
-        "type": {
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "attack",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 1.08
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "effects": [
+            {
+              "type": {
+                "duration": -1
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "attack",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "Float",
+                  "float_magnitude": 1.08
+                }
+              ],
+              "executions": []
+            }
+          ],
+          "targeting_strategy": {
+            "count": 1,
+            "target_allies": true,
+            "type": "self"
           }
-        ],
-        "executions": [],
-        "target_strategy": "self",
-        "target_count": 1,
-        "target_allies": true
+        }
       }
     ]
   },
   {
     "name": "Uren Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
-      }
-    ],
-    "cooldown": 5
-  },
-  {
-    "name": "Uren Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
-      {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 0.63,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 3,
-        "target_allies": true
-      },
-      {
-        "type": {
-          "duration": 4.5,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [
-          {
-            "type": "ApplyTags",
-            "tags": [
-              "Silence"
-            ]
-          }
-        ],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.78,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 3,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
-    "name": "D'agna Basic",
-    "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "name": "Uren Ultimate",
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 3,
+            "type": "random",
+            "target_allies": true
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "Heal",
+                  "attack_ratio": 0.63,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 3,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "duration",
+                "duration": 4000
+              },
+              "initial_delay": 0,
+              "components": [
+                {
+                  "type": "ApplyTags",
+                  "tags": [
+                    "ControlEffect.Silence"
+                  ]
+                }
+              ],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.78,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
-    "name": "D'agna Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "name": "D'Agna Basic",
+    "energy_regen": 100,
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "duration": 5,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "speed",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 1.07
-          }
-        ],
-        "executions": [
-          {
-            "type": "Heal",
-            "attack_ratio": 0.17,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "all",
-        "target_count": 6,
-        "target_allies": true
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "name": "D'Agna Ultimate",
+    "animation_duration": 500,
+    "mechanics": [
+      {
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "type": "random",
+            "count": 6,
+            "target_allies": true
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "duration",
+                "duration": 5000
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [
+                {
+                  "attribute": "speed",
+                  "modifier_operation": "Multiply",
+                  "magnitude_calc_type": "Float",
+                  "float_magnitude": 1.07
+                }
+              ],
+              "executions": [
+                {
+                  "type": "HealOverTime",
+                  "attack_ratio": 0.17
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Valtimer Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "random",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Valtimer Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "energy_regen": 100,
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 3.26,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": {
+              "highest": "health"
+            },
+            "target_allies": false
           },
-          {
-            "type": "AddEnergy",
-            "amount": -200
-          }
-        ],
-        "target_strategy": {
-          "highest": "Attack"
-        },
-        "target_count": 1,
-        "target_allies": false
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 326,
+                  "energy_recharge": 50
+                },
+                {
+                  "type": "AddEnergy",
+                  "amount": -200
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "H4ck Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 1,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "backline",
-        "target_count": 1,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 1,
+            "type": "backline",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 1,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "H4ck Ultimate",
-    "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 500,
+    "mechanics": [
       {
-        "type": {
-          "duration": 2,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [
-          {
-            "type": "ApplyTags",
-            "tags": [
-              "Paralyzed"
-            ]
-          }
-        ],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.49,
-            "energy_recharge": 50,
-            "delay": 0
-          }
-        ],
-        "target_strategy": "all",
-        "target_count": 6,
-        "target_allies": false
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "count": 6,
+            "type": "random",
+            "target_allies": false
+          },
+          "effects": [
+            {
+              "type": {
+                "type": "duration",
+                "duration": 2000
+              },
+              "initial_delay": 0,
+              "components": [
+                {
+                  "type": "ApplyTags",
+                  "tags": [
+                    "ControlEffect.Paralyze"
+                  ]
+                }
+              ],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.49,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   },
   {
     "name": "Kenzu Basic",
     "energy_regen": 100,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 700,
+    "cooldown": 3000,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifier": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.8,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 200,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "type": "nearest",
+            "count": 1,
+            "target_allies": false
           },
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.8,
-            "energy_recharge": 50,
-            "delay": 1
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 1,
-        "target_allies": false
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.8,
+                  "energy_recharge": 50
+                }
+              ]
+            },
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 300,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.8,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
-    ],
-    "cooldown": 5
+    ]
   },
   {
     "name": "Kenzu Ultimate",
     "energy_regen": 0,
-    "animation_duration": 0,
-    "animation_trigger": 0,
-    "effects": [
+    "animation_duration": 2500,
+    "mechanics": [
       {
-        "type": {
-          "type": "instant"
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [],
-        "executions": [
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.38,
-            "energy_recharge": 50,
-            "delay": 0
+        "trigger_delay": 250,
+        "apply_effects_to": {
+          "targeting_strategy": {
+            "type": "nearest",
+            "count": 2,
+            "target_allies": false
           },
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.59,
-            "energy_recharge": 50,
-            "delay": 1
-          },
-          {
-            "type": "DealDamage",
-            "attack_ratio": 0.83,
-            "energy_recharge": 50,
-            "delay": 2
-          }
-        ],
-        "target_strategy": "nearest",
-        "target_count": 2,
-        "target_allies": false
-      },
-      {
-        "type": {
-          "duration": 6,
-          "period": 1
-        },
-        "initial_delay": 0,
-        "components": [],
-        "modifiers": [
-          {
-            "attribute": "speed",
-            "modifier_operation": "Multiply",
-            "magnitude_calc_type": "Float",
-            "float_magnitude": 1.06
-          }
-        ],
-        "executions": [],
-        "target_strategy": "self",
-        "target_count": 1,
-        "target_allies": true
+          "effects": [
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 0,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.38,
+                  "energy_recharge": 50
+                }
+              ]
+            },
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 1000,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.59,
+                  "energy_recharge": 50
+                }
+              ]
+            },
+            {
+              "type": {
+                "type": "instant"
+              },
+              "initial_delay": 2000,
+              "components": [],
+              "modifiers": [],
+              "executions": [
+                {
+                  "type": "DealDamage",
+                  "attack_ratio": 0.83,
+                  "energy_recharge": 50
+                }
+              ]
+            }
+          ]
+        }
       }
     ]
   }
