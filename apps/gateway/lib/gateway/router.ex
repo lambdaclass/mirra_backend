@@ -15,6 +15,13 @@ defmodule Gateway.Router do
     get "/:provider/token/:token_id", Controllers.AuthController, :validate_token
   end
 
+  scope "/users", Gateway do
+    pipe_through :api
+
+    post "/users/:user_id/change_username/:username", Controllers.UserController, :change_username
+    post "/users/:user_id/change_profile_picture/:profile_picture", Controllers.UserController, :change_profile_picture
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Gateway do
   #   pipe_through :api
