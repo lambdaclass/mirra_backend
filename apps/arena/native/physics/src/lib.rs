@@ -185,7 +185,7 @@ fn move_entity_to_closest_available_position(
             .iter()
             .map(|id| obstacles.get(id).unwrap())
             .collect();
-        entity.move_to_next_valid_position_outside(collided_with);
+        entity.move_to_next_valid_position_outside(collided_with, obstacles);
     }
 }
 
