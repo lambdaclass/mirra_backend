@@ -1,5 +1,7 @@
 defmodule Gateway.Auth.GoogleVerifyHook do
-  @moduledoc false
+  @moduledoc """
+  Module that implements a Joken Hook to do several operations before running any google token verification.
+  """
 
   use Joken.Hooks
 

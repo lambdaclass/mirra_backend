@@ -1,5 +1,9 @@
 defmodule Gateway.Auth.GoogleTokenManager do
-  @moduledoc false
+  @moduledoc """
+  Module responsible to verify and validate the Google TokenIDs.
+  Its logic has been done following the GoogleCertificates docs:
+  https://hexdocs.pm/google_certs/readme.html
+  """
 
   use Joken.Config, default_signer: nil
 
