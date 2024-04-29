@@ -722,17 +722,20 @@ defmodule Gateway.Test.Champions do
       assert Units.get_health(unit_without_item) == health_before_equip
     end
 
-    test "level up item", %{socket_tester: socket_tester} do
+    test "tier up item", %{socket_tester: socket_tester} do
       # Register user
       {:ok, user} = Users.register("LevelUpItemUser")
 
-      {:ok, epic_axe} =
+      gold_upgrade_cost = 100
+
+      {:ok, epic_axe_tier_1} =
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Axe of Testness",
-          config_id: "epic_axe_of_testness",
+          config_id: "epic_axe_of_testness_t1",
           type: "weapon",
           rarity: 1,
+          tier: 1,
           modifiers: [
             %{
               attribute: "attack",
@@ -742,33 +745,56 @@ defmodule Gateway.Test.Champions do
           ]
         })
 
-      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
+      {:ok, epic_axe_tier_2} =
+        Items.insert_item_template(%{
+          game_id: Utils.game_id(),
+          name: "Epic Axe of Testness",
+          config_id: "epic_axe_of_testness_t2",
+          upgrades_from_config_id: "epic_axe_of_testness_t1",
+          upgrade_costs: [%{currency_id: Currencies.get_currency_by_name!("Gold").id, amount: gold_upgrade_cost}],
+          upgrades_from_quantity: 3,
+          type: "weapon",
+          rarity: 1,
+          tier: 2,
+          modifiers: [
+            %{
+              attribute: "attack",
+              operation: "Multiply",
+              value: 2
+            }
+          ]
+        })
 
-      # Set user gold to the minimum amount required to level up the item
-      Currencies.add_currency(
-        user.id,
-        Currencies.get_currency_by_name!("Gold").id,
-        1 - Currencies.get_amount_of_currency_by_name(user.id, "Gold")
-      )
+      {:ok, item_1} = Items.insert_item(%{user_id: user.id, template_id: epic_axe_tier_1.id})
+      {:ok, item_2} = Items.insert_item(%{user_id: user.id, template_id: epic_axe_tier_1.id})
+      {:ok, item_3} = Items.insert_item(%{user_id: user.id, template_id: epic_axe_tier_1.id})
+
+      # Add required gold amount to user
+      Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, gold_upgrade_cost)
 
       gold_amount_before_level_up = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
 
-      # LevelUpItem
-      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      # FuseItems
+      :ok = SocketTester.fuse_items(socket_tester, user.id, [item_1.id, item_2.id, item_3.id])
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:item, %Item{} = leveled_up_item}
+        response_type: {:item, %Item{} = new_item}
       }
 
-      assert leveled_up_item.level == item.level + 1
-      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") < gold_amount_before_level_up
+      assert new_item.template.id == epic_axe_tier_2.id
+      assert new_item.template.config_id == epic_axe_tier_2.config_id
+      assert new_item.user_id == user.id
+      assert new_item.unit_id == ""
 
-      # LevelUpItem once again to check that we can't afford it
-      :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") ==
+               gold_amount_before_level_up - gold_upgrade_cost
+
+      # Try to Fuse the new item with nothing else and it will fail
+      :ok = SocketTester.fuse_items(socket_tester, user.id, [new_item.id])
       fetch_last_message(socket_tester)
 
-      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "consumed_items_invalid"}}}
     end
   end
 

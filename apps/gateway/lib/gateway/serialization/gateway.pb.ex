@@ -83,13 +83,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
   )
 
   field(:get_item, 16, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
-
-  field(:level_up_item, 17,
-    type: Gateway.Serialization.LevelUpItem,
-    json_name: "levelUpItem",
-    oneof: 0
-  )
-
+  field(:fuse_items, 17, type: Gateway.Serialization.FuseItems, json_name: "fuseItems", oneof: 0)
   field(:get_boxes, 18, type: Gateway.Serialization.GetBoxes, json_name: "getBoxes", oneof: 0)
   field(:get_box, 19, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
   field(:summon, 20, type: Gateway.Serialization.Summon, oneof: 0)
@@ -253,13 +247,13 @@ defmodule Gateway.Serialization.GetItem do
   field(:item_id, 2, type: :string, json_name: "itemId")
 end
 
-defmodule Gateway.Serialization.LevelUpItem do
+defmodule Gateway.Serialization.FuseItems do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:item_id, 2, type: :string, json_name: "itemId")
+  field(:item_ids, 2, repeated: true, type: :string, json_name: "itemIds")
 end
 
 defmodule Gateway.Serialization.GetAfkRewards do

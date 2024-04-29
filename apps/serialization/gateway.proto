@@ -17,7 +17,7 @@ syntax = "proto3";
       EquipItem equip_item = 14;
       UnequipItem unequip_item = 15;
       GetItem get_item = 16;
-      LevelUpItem level_up_item = 17;
+      FuseItems fuse_items = 17;
       GetBoxes get_boxes = 18;
       GetBox get_box = 19;
       Summon summon = 20;
@@ -102,9 +102,9 @@ syntax = "proto3";
     string item_id = 2;
   }
  
- message LevelUpItem {
+ message FuseItems {
     string user_id = 1;
-    string item_id = 2;
+    repeated string item_ids = 2;
   }
 
  message GetAfkRewards {

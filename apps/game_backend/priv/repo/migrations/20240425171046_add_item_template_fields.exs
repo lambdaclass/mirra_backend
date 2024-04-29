@@ -11,7 +11,8 @@ defmodule GameBackend.Repo.Migrations.AddItemTemplateFields do
       remove(:base_modifiers)
     end
 
-    create unique_index(:item_templates, [:config_id])
+    create(unique_index(:item_templates, [:config_id]))
+    drop(unique_index(:item_templates, [:game_id, :name]))
 
     alter(table(:item_templates)) do
       add(:upgrades_from_config_id, references(:item_templates, on_delete: :nothing, column: :config_id, type: :string))

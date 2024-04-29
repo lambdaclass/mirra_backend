@@ -35,6 +35,7 @@ defmodule GameBackend.Items.ItemTemplate do
     # Used to reference the ItemTemplate in the game's configuration
     field(:config_id, :string)
 
+    has_one(:upgrades_into, __MODULE__, foreign_key: :upgrades_from_config_id, references: :config_id)
     belongs_to(:upgrades_from, __MODULE__, foreign_key: :upgrades_from_config_id, references: :config_id, type: :string)
     field(:upgrades_from_quantity, :integer)
     embeds_many(:upgrade_costs, CurrencyCost, on_replace: :delete)
