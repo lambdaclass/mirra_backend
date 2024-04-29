@@ -872,28 +872,6 @@ defmodule Champions.Battle.Simulator do
     }
   end
 
-  defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
-    apply_effects_to = %{
-      effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
-      targeting_strategy: %{
-        # TODO: replace random for the corresponding target type name (CHoM #325)
-        # type: mechanic.apply_effects_to.targeting_strategy.type,
-        type: "random",
-        count: mechanic.apply_effects_to.targeting_strategy.count,
-        target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies
-      }
-    }
-
-    %{
-      id: mechanic.id,
-      skill_id: skill_id,
-      caster_id: caster_id,
-      trigger_delay: div(mechanic.trigger_delay, @miliseconds_per_step),
-      apply_effects_to: apply_effects_to,
-      passive_effects: mechanic.passive_effects
-    }
-  end
-
   # Used to create the initial effect maps to be used during simulation.
   defp create_effect_map(%Effect{} = effect, skill_id),
     do: %{
