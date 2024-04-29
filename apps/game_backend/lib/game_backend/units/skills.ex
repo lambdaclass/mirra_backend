@@ -5,7 +5,8 @@ defmodule GameBackend.Units.Skills do
 
   import Ecto.Query
 
-  alias GameBackend.Units.Skill
+  alias GameBackend.Units.Skills.Mechanic
+  alias GameBackend.Units.Skills.Skill
   alias GameBackend.Repo
 
   def insert_skill(attrs) do
@@ -35,7 +36,9 @@ defmodule GameBackend.Units.Skills do
   end
 
   def get_skill_by_name(skill_name) do
-    Repo.one(from(s in Skill, where: s.name == ^skill_name))
+    Repo.one(
+      from(s in Skill, where: s.name == ^skill_name, preload: [mechanics: [:apply_effects_to, :passive_effects]])
+    )
   end
 
   def upsert_skill(attrs) do
@@ -43,5 +46,11 @@ defmodule GameBackend.Units.Skills do
       nil -> insert_skill(attrs)
       skill -> update_skill(skill, attrs)
     end
+  end
+
+  def get_mechanic_detail(mechanic) do
+    Enum.find_value(Map.keys(mechanic), fn detail_type ->
+      detail_type in Mechanic.mechanic_types() and mechanic[detail_type] != nil
+    end)
   end
 end
