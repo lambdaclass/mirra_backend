@@ -38,20 +38,38 @@ defmodule GameBackend.Users do
 
   @doc """
   Gets a single user.
-
+  Returns {:ok, User}.
   Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
       iex> get_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
-      %User{}
+      {:ok, %User{}}
 
       iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
-      nil
+      {:error, :not_found}
   """
   def get_user(id) do
     user = Repo.get(User, id) |> preload()
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
+  Updates the given user by given params.
+  Returns {:ok, User}.
+  Returns {:error, Changeset} if update transaction fails.
+
+  ## Examples
+
+      iex> update_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
+      {:ok, %User{}}
+
+      iex> update_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
+      {:error, %Changeset{}}
+  """
+  def update_user(%User{} = user, params) do
+    User.changeset(user, params)
+    |> Repo.update()
   end
 
   @doc """
