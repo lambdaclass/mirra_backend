@@ -7,6 +7,7 @@ alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Users.AfkRewardIncrement
 alias GameBackend.Users.KalineTreeLevel
 alias GameBackend.Campaigns.Rewards.CurrencyReward
 
@@ -71,10 +72,10 @@ Items.insert_item_template(%{
 {:ok, gold_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 
-{:ok, gems_currency} =
+{:ok, _gems_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 
-{:ok, _arcane_crystals_currency} =
+{:ok, arcane_crystals_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
 
 {:ok, hero_souls_currency} =
@@ -116,8 +117,8 @@ Items.insert_item_template(%{
     cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
 
-# TODO: remove this function after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
-levels =
+# TODO: remove these inserts after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+kaline_tree_levels =
   Enum.map(1..50, fn level_number ->
     %{
       level: level_number,
@@ -129,7 +130,37 @@ levels =
     }
   end)
 
-Repo.insert_all(KalineTreeLevel, levels)
+{_, kaline_tree_levels} =
+  Repo.insert_all(KalineTreeLevel, kaline_tree_levels, returning: [:id, :level])
+
+afk_reward_increments =
+  Enum.flat_map(Enum.with_index(kaline_tree_levels, 1), fn {level, level_index} ->
+    [
+      %{
+        kaline_tree_level_id: level.id,
+        amount: 10 * level_index,
+        currency_id: gold_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
+      %{
+        kaline_tree_level_id: level.id,
+        amount: 2 * level_index,
+        currency_id: hero_souls_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
+      %{
+        kaline_tree_level_id: level.id,
+        amount: 3 * level_index,
+        currency_id: arcane_crystals_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+    ]
+  end)
+
+Repo.insert_all(AfkRewardIncrement, afk_reward_increments, on_conflict: :nothing)
 
 ######################
 # Campaigns creation #
@@ -233,7 +264,6 @@ currency_rewards =
       level_id: level.id,
       amount: 10 * (20 + level.level_number),
       currency_id: gold_currency.id,
-      afk_reward: false,
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }
@@ -246,34 +276,9 @@ currency_rewards =
         level_id: level.id,
         amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
         currency_id: hero_souls_currency.id,
-        afk_reward: false,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
     end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
-
-afk_reward_increments =
-  Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-    [
-      %{
-        level_id: level.id,
-        amount: 10 * level_index,
-        currency_id: gold_currency.id,
-        afk_reward: true,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      },
-      %{
-        level_id: level.id,
-        amount: level_index,
-        currency_id: gems_currency.id,
-        afk_reward: true,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
-    ]
-  end)
-
-Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)

@@ -101,6 +101,7 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Arcane Crystals").id, 100)
   end
 
   defp add_super_campaign_progresses(user) do
@@ -219,12 +220,11 @@ defmodule Champions.Users do
       |> case do
         {:ok, updated_user} ->
           apply_afk_rewards_increments(user_id, updated_user.kaline_tree_level.afk_rewards_increments)
+          {:ok, updated_user} |> IO.inspect()
 
-        {:error, :user_not_found} ->
-          {:error, :user_not_found}
+        {:error, reason} ->
+          {:error, reason}
       end
-
-      # apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
     else
       {:can_afford, false} -> {:error, :cant_afford}
       {:user, {:error, :not_found}} -> {:error, :user_not_found}
@@ -245,13 +245,6 @@ defmodule Champions.Users do
       }
     ]
 
-  # defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
-  #   Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
-  #     Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
-  #       Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
-  #     end)
-  #   end)
-  # end
   defp apply_afk_rewards_increments(user_id, afk_rewards_increments) do
     Enum.reduce(afk_rewards_increments, Multi.new(), fn increment, multi ->
       Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->

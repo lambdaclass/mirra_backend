@@ -6,7 +6,7 @@ defmodule GameBackend.Users.KalineTreeLevel do
   """
   use GameBackend.Schema
   import Ecto.Changeset
-  alias GameBackend.Campaigns.Rewards.CurrencyReward
+  alias GameBackend.Users.AfkRewardIncrement
 
   schema "kaline_tree_levels" do
     field(:level, :integer)
@@ -14,7 +14,7 @@ defmodule GameBackend.Users.KalineTreeLevel do
     field(:gold_level_up_cost, :integer)
     field(:unlock_features, {:array, :string})
 
-    has_many(:afk_rewards_increments, CurrencyReward, where: [afk_reward: true])
+    has_many(:afk_rewards_increments, AfkRewardIncrement)
 
     timestamps()
   end

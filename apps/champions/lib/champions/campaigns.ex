@@ -7,7 +7,6 @@ defmodule Champions.Campaigns do
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Repo
-  alias GameBackend.Rewards
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
