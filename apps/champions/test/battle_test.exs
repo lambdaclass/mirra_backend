@@ -406,17 +406,25 @@ defmodule Champions.Test.BattleTest do
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "Items Basic Skill",
-          effects: [
-            TestUtils.build_effect(%{
-              executions: [
-                %{
-                  type: "DealDamage",
-                  attack_ratio: 1,
-                  energy_recharge: 50,
-                  delay: 0
-                }
-              ]
-            })
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 50,
+                          delay: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
           ],
           cooldown: maximum_steps - 1
         })
