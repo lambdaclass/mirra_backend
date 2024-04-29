@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::mem::swap;
 
 use crate::map::{Entity, Position};
@@ -20,6 +21,7 @@ use crate::map::{Entity, Position};
 pub(crate) fn intersect_circle_polygon(
     circle: &mut Entity,
     polygon: &Entity,
+    obstacles: &HashMap<u64, Entity>,
 ) -> (bool, Position, f32) {
     // The normal will be the vector in which the polygons should move to stop colliding
     let mut normal = Position { x: 0.0, y: 0.0 };
@@ -46,6 +48,11 @@ pub(crate) fn intersect_circle_polygon(
 
         // FIXME normalizing on this loop may be bad
         axis.normalize();
+        println!("aber axis {:?}{:?}", axis.x, axis.y);
+        if invalid_axis(axis, circle, &current_vertex, &next_vertex, obstacles) {
+            println!("aber invalid axis {:?}{:?}", axis.x, axis.y);
+            continue;
+        }
         let (min_polygon_cast_point, max_polygon_cast_point) =
             project_vertices(&polygon.vertices, axis);
         let (min_circle_cast_point, max_circle_cast_point) = project_circle(circle, axis);
@@ -245,7 +252,7 @@ fn project_circle(circle: &Entity, axis: Position) -> (f32, f32) {
         y: axis.y * circle.radius,
     };
 
-    let position_plus_radius = Position::add(circle.position, direction_radius);
+    let position_plus_radius = Position::add(&circle.position, &direction_radius);
     let position_sub_radius = Position::sub(circle.position, direction_radius);
 
     min = dot(&position_plus_radius, axis);
@@ -276,4 +283,26 @@ fn find_closest_vertex(center: &Position, vertices: &Vec<Position>) -> Position 
 
 fn dot(a: &Position, b: Position) -> f32 {
     a.x * b.x + a.y * b.y
+}
+
+fn invalid_axis(
+    axis: Position,
+    circle: &Entity,
+    current_vertex: &Position,
+    next_vertex: &Position,
+    obstacles: &HashMap<u64, Entity>,
+) -> bool {
+    let current_vertex_moved =
+        Position::add(&current_vertex, &Position::mult(&axis, circle.radius));
+    let mut current_vertex_line =
+        Entity::new_line(1, vec![current_vertex.clone(), current_vertex_moved]);
+    let current_vertex_collitions =
+        current_vertex_line.collides_with(obstacles.clone().into_values().collect());
+
+    let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
+    let mut next_vertex_line = Entity::new_line(1, vec![next_vertex.clone(), next_vertex_moved]);
+    let next_vertex_collitions =
+        next_vertex_line.collides_with(obstacles.clone().into_values().collect());
+
+    !current_vertex_collitions.is_empty() && !next_vertex_collitions.is_empty()
 }
