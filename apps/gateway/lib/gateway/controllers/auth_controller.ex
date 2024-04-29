@@ -6,7 +6,7 @@ defmodule Gateway.Controllers.AuthController do
   alias Gateway.Auth.GoogleTokenManager
   alias GameBackend.Users
 
-  def validate_token(conn, %{"token_id" => token_id}) do
+  def validate_token(conn, %{"provider" => "google", "token_id" => token_id}) do
     case GoogleTokenManager.verify_and_validate(token_id) do
       {:ok, response} ->
         Users.find_or_create_google_user_by_email(response["email"])
