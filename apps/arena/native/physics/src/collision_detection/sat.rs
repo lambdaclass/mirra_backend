@@ -48,9 +48,14 @@ pub(crate) fn intersect_circle_polygon(
 
         // FIXME normalizing on this loop may be bad
         axis.normalize();
-        println!("aber axis {:?}{:?}", axis.x, axis.y);
-        if invalid_axis(axis, circle, &current_vertex, &next_vertex, obstacles) {
-            println!("aber invalid axis {:?}{:?}", axis.x, axis.y);
+        if invalid_axis(
+            axis,
+            circle,
+            &polygon,
+            &current_vertex,
+            &next_vertex,
+            obstacles,
+        ) {
             continue;
         }
         let (min_polygon_cast_point, max_polygon_cast_point) =
@@ -285,24 +290,35 @@ fn dot(a: &Position, b: Position) -> f32 {
     a.x * b.x + a.y * b.y
 }
 
+// We'll determine that an axis is invalid when both vertex that created that axis
+// are in contact with another obstacle in the direction of the axis, to check this
+// we'll cast a line from each vertex with a length of the cicle that's colliding and
+// check if both casted lines are colliding with the same obstacle, if this is true
+// it means that the axis is invalid since we'll end up inside another collider
 fn invalid_axis(
     axis: Position,
     circle: &Entity,
+    polygon: &Entity,
     current_vertex: &Position,
     next_vertex: &Position,
     obstacles: &HashMap<u64, Entity>,
 ) -> bool {
     let current_vertex_moved =
         Position::add(&current_vertex, &Position::mult(&axis, circle.radius));
-    let mut current_vertex_line =
-        Entity::new_line(1, vec![current_vertex.clone(), current_vertex_moved]);
+    let mut current_vertex_line = Entity::new_line(
+        polygon.id,
+        vec![current_vertex.clone(), current_vertex_moved],
+    );
     let current_vertex_collitions =
         current_vertex_line.collides_with(obstacles.clone().into_values().collect());
 
     let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
-    let mut next_vertex_line = Entity::new_line(1, vec![next_vertex.clone(), next_vertex_moved]);
+    let mut next_vertex_line =
+        Entity::new_line(polygon.id, vec![next_vertex.clone(), next_vertex_moved]);
     let next_vertex_collitions =
         next_vertex_line.collides_with(obstacles.clone().into_values().collect());
 
-    !current_vertex_collitions.is_empty() && !next_vertex_collitions.is_empty()
+    current_vertex_collitions
+        .iter()
+        .any(|collision_id| next_vertex_collitions.contains(collision_id))
 }
