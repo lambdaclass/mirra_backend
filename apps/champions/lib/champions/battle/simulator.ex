@@ -732,6 +732,14 @@ defmodule Champions.Battle.Simulator do
         },
         :execution_received
       )
+      |> add_to_history(
+        %{
+          target_id: target.id,
+          skill_id: skill_id,
+          stat_affected: %{stat: :ENERGY, amount: energy_recharge}
+        },
+        :execution_received
+      )
 
     new_target =
       target
