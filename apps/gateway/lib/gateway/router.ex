@@ -9,6 +9,12 @@ defmodule Gateway.Router do
     pipe_through :api
   end
 
+  scope "/auth", Gateway do
+    pipe_through :api
+
+    get "/:provider/token/:token_id", Controllers.AuthController, :validate_token
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Gateway do
   #   pipe_through :api
