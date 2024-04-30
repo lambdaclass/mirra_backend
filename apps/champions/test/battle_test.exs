@@ -24,11 +24,11 @@ defmodule Champions.Test.BattleTest do
 
     {:ok, target_dummy} = %{character_id: target_dummy_character.id} |> TestUtils.build_unit() |> Units.insert_unit()
     {:ok, target_dummy} = Units.get_unit(target_dummy.id)
-    {:ok, %{target_dummy: target_dummy}}
+    {:ok, %{target_dummy: target_dummy, target_dummy_character: target_dummy_character}}
   end
 
-  describe "Battle" do
-    test "Execution-DealDamage with delays", %{target_dummy: target_dummy} do
+  describe "Executions" do
+    test "DealDamage with delays", %{target_dummy: target_dummy} do
       maximum_steps = 5
       required_steps_to_win = maximum_steps + 1
       too_long_cooldown = maximum_steps
@@ -141,7 +141,7 @@ defmodule Champions.Test.BattleTest do
                ).result
     end
 
-    test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
+    test "DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
       cooldown = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
@@ -233,7 +233,7 @@ defmodule Champions.Test.BattleTest do
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
     end
 
-    test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
+    test "DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
       # In this test, the basic skill has a modifier that multiplies the attack by 0.1, an energy regen of 500 and a cooldown of 1.
       # The ultimate skill has an attack ratio of 0.5, so it will deal 1 point of damage (base attack * 0.1 * 0.5) every 2 steps to the target dummy, which has 10 health points.
       # This way, the battle should end in a victory for the team_1 after 21 steps.
@@ -308,7 +308,7 @@ defmodule Champions.Test.BattleTest do
       assert "team_1" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21).result
     end
 
-    test "Execution-DealDamage with defense" do
+    test "DealDamage with defense" do
       maximum_steps = 5
 
       {:ok, target_dummy_character} =
@@ -389,6 +389,174 @@ defmodule Champions.Test.BattleTest do
       # After reducing target_dummy health, we win again
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
+  end
+
+  describe "Targeting Strategies" do
+    test "Frontline", %{target_dummy_character: target_dummy_character} do
+      maximum_steps = 5
+
+      # Create a character with a basic skill that will deal 10 damage to the frontline
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage Frontline",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "frontline",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "Nearest Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Nearest Empty Skill"}),
+          base_attack: 10,
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      # Create 2 target dummies in frontline slots
+      [target_dummy_1, target_dummy_2] =
+        Enum.map(1..2, fn slot ->
+          {:ok, target_dummy} =
+            %{character_id: target_dummy_character.id, slot: slot} |> TestUtils.build_unit() |> Units.insert_unit()
+
+          {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+          target_dummy
+        end)
+
+      # Battle is won after only 1 skill execution
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy_1, target_dummy_2],
+                 maximum_steps: maximum_steps
+               ).result
+
+      # If we add a unit to the backline, we don't win anymore
+
+      {:ok, target_dummy_3} =
+        %{character_id: target_dummy_character.id, slot: 3} |> TestUtils.build_unit() |> Units.insert_unit()
+
+      {:ok, target_dummy_3} = Units.get_unit(target_dummy_3.id)
+
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy_1, target_dummy_2, target_dummy_3],
+                 maximum_steps: maximum_steps
+               ).result
+
+      # However if there are none in the backline, we win again because we default to the frontline
+      {:ok, target_dummy_1} = Units.update_unit(target_dummy_1, %{slot: 4})
+      {:ok, target_dummy_2} = Units.update_unit(target_dummy_2, %{slot: 5})
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy_1, target_dummy_2, target_dummy_3],
+                 maximum_steps: maximum_steps
+               ).result
+    end
+
+    test "Backline", %{target_dummy_character: target_dummy_character} do
+      maximum_steps = 5
+
+      # Create a character with a basic skill that will deal 10 damage to the backline
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage Backline",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "backline",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "Backline Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Backline Empty Skill"}),
+          base_attack: 10,
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      # Create 4 target dummies in backline slots
+      [target_dummy_1, target_dummy_2, target_dummy_3, target_dummy_4] =
+        Enum.map(3..6, fn slot ->
+          {:ok, target_dummy} =
+            %{character_id: target_dummy_character.id, slot: slot} |> TestUtils.build_unit() |> Units.insert_unit()
+
+          {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+          target_dummy
+        end)
+
+      # Battle is won after only 1 skill execution
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle(
+                 [unit],
+                 [target_dummy_1, target_dummy_2, target_dummy_3, target_dummy_4],
+                 maximum_steps: maximum_steps
+               ).result
+
+      # If we add a unit to the frontline, we don't win anymore
+      {:ok, target_dummy_5} =
+        %{character_id: target_dummy_character.id, slot: 2} |> TestUtils.build_unit() |> Units.insert_unit()
+
+      {:ok, target_dummy_5} = Units.get_unit(target_dummy_5.id)
+
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle(
+                 [unit],
+                 [target_dummy_1, target_dummy_2, target_dummy_3, target_dummy_4, target_dummy_5],
+                 maximum_steps: maximum_steps
+               ).result
+
+      # However if they are none in the backline, we win again because we default to the frontline
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy_5], maximum_steps: maximum_steps).result
     end
   end
 end
