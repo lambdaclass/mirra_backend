@@ -544,6 +544,42 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
+  defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
+    units =
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies and unit.slot in [3, 4, 5, 6] end)
+
+    # Default to frontline if there are no units in the backline
+    units =
+      case units do
+        [] ->
+          state.units
+
+        _ ->
+          units
+      end
+
+    Enum.map(units, fn {id, _unit} -> id end)
+  end
+
+  defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
+    units =
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies and unit.slot in [1, 2] end)
+
+    # Default to backline if there are no units in the frontline
+    units =
+      case units do
+        [] ->
+          state.units
+
+        _ ->
+          units
+      end
+
+    Enum.map(units, fn {id, _unit} -> id end)
+  end
+
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
       Enum.sort_by(units, fn unit ->
@@ -842,15 +878,15 @@ defmodule Champions.Battle.Simulator do
   @implemented_targeting_strategies [
     "random",
     "nearest",
-    "furthest"
+    "furthest",
+    "frontline",
+    "backline"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
-        # TODO: replace random for the corresponding target type name (CHoM #325)
-        # type: mechanic.apply_effects_to.targeting_strategy.type,
         type:
           if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
             mechanic.apply_effects_to.targeting_strategy.type
