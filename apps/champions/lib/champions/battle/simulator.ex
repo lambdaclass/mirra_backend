@@ -227,6 +227,14 @@ defmodule Champions.Battle.Simulator do
               },
               :skill_action
             )
+            |> add_to_history(
+              %{
+                target_id: unit.id,
+                skill_id: unit.basic_skill.id,
+                amount: unit.basic_skill.energy_regen
+              },
+              :energy_regen
+            )
 
           {new_state, new_history}
 
@@ -719,7 +727,7 @@ defmodule Champions.Battle.Simulator do
       |> Decimal.to_integer()
 
     Logger.info(
-      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense})"
+      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}"
     )
 
     new_history =
@@ -736,9 +744,9 @@ defmodule Champions.Battle.Simulator do
         %{
           target_id: target.id,
           skill_id: skill_id,
-          stat_affected: %{stat: :ENERGY, amount: energy_recharge}
+          amount: energy_recharge
         },
-        :execution_received
+        :energy_regen
       )
 
     new_target =
