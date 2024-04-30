@@ -51,7 +51,7 @@ pub(crate) fn intersect_circle_polygon(
         if invalid_axis(
             axis,
             circle,
-            &polygon,
+            polygon,
             &current_vertex,
             &next_vertex,
             obstacles,
@@ -303,18 +303,14 @@ fn invalid_axis(
     next_vertex: &Position,
     obstacles: &HashMap<u64, Entity>,
 ) -> bool {
-    let current_vertex_moved =
-        Position::add(&current_vertex, &Position::mult(&axis, circle.radius));
-    let mut current_vertex_line = Entity::new_line(
-        polygon.id,
-        vec![current_vertex.clone(), current_vertex_moved],
-    );
+    let current_vertex_moved = Position::add(current_vertex, &Position::mult(&axis, circle.radius));
+    let mut current_vertex_line =
+        Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
     let current_vertex_collitions =
         current_vertex_line.collides_with(obstacles.clone().into_values().collect());
 
     let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
-    let mut next_vertex_line =
-        Entity::new_line(polygon.id, vec![next_vertex.clone(), next_vertex_moved]);
+    let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
     let next_vertex_collitions =
         next_vertex_line.collides_with(obstacles.clone().into_values().collect());
 

@@ -179,7 +179,7 @@ pub(crate) fn line_line_collision(line: &Entity, other_line: &Entity) -> bool {
             - (other_line_second_vertex.x - other_line_first_vertex.x)
                 * (line_second_vertex.y - line_first_vertex.y));
 
-    return uA >= 0.0 && uA <= 1.0 && uB >= 0.0 && uB <= 1.0;
+    (0.0..=1.0).contains(&uA) && (0.0..=1.0).contains(&uB)
 }
 
 /*
