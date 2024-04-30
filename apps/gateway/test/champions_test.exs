@@ -718,6 +718,9 @@ defmodule Gateway.Test.Champions do
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Level up the Kaline Tree again to check that the afk rewards rates have increased
+      Currencies.add_currency_by_name!(claimed_user.id, "Gold", 200)
+      Currencies.add_currency_by_name!(claimed_user.id, "Fertilizer", 200)
+
       SocketTester.level_up_kaline_tree(socket_tester, claimed_user.id)
       fetch_last_message(socket_tester)
 
@@ -725,7 +728,7 @@ defmodule Gateway.Test.Champions do
       current_kaline_tree_level_id = more_advanced_user.kaline_tree_level.id
 
       current_level_afk_rewards_increments =
-        Repo.all(from(r in AfkRewardIncrement, where: r.level_id == ^current_kaline_tree_level_id))
+        Repo.all(from(r in AfkRewardIncrement, where: r.kaline_tree_level_id == ^current_kaline_tree_level_id))
         |> Repo.preload(:currency)
 
       assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->

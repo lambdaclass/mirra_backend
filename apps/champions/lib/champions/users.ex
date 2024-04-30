@@ -102,6 +102,7 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Arcane Crystals").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Hero Souls").id, 100)
   end
 
   defp add_super_campaign_progresses(user) do
@@ -220,7 +221,7 @@ defmodule Champions.Users do
       |> case do
         {:ok, updated_user} ->
           apply_afk_rewards_increments(user_id, updated_user.kaline_tree_level.afk_rewards_increments)
-          {:ok, updated_user} |> IO.inspect()
+          Users.get_user(user_id)
 
         {:error, reason} ->
           {:error, reason}
