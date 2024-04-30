@@ -1,11 +1,15 @@
 ## Motivation
 
 *Explain why not how.*
-Closes #
+Closes #issue_number
 
 ## Summary of changes
 
 *List your changes here.*
+
+## How to test it?
+
+*You can explain how you tested it or suggest a way to do so.*
 
 ## Checklist
 - [ ] Tested the changes locally.
