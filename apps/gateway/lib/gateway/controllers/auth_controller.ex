@@ -13,7 +13,7 @@ defmodule Gateway.Controllers.AuthController do
         send_resp(conn, 200, Jason.encode!(response))
 
       {:error, error} ->
-        send_resp(conn, 401, Jason.encode!(Map.new(error)))
+        send_resp(conn, 400, Jason.encode!(Map.new(error)))
     end
   end
 end
