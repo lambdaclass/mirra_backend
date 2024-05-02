@@ -495,11 +495,14 @@ defmodule Arena.GameUpdater do
       end)
       |> Enum.map(fn {client_id, player_id} ->
         player = Map.get(state.game_state.players, player_id)
+
         %{
           user_id: client_id,
-          result: (if player.id == winner_id, do: "win", else: "loss"), ##TODO: way to track `abandon`, currently a bot taking over will endup with a result
+          ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
+          result: if(player.id == winner_id, do: "win", else: "loss"),
           kills: player.aditional_info.kill_count,
-          deaths: (if Player.alive?(player), do: 0, else: 1), ## TODO: this only works because you can only die once
+          ## TODO: this only works because you can only die once
+          deaths: if(Player.alive?(player), do: 0, else: 1),
           character: player.aditional_info.character_name
         }
       end)

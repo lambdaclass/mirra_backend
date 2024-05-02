@@ -20,5 +20,4 @@ defmodule Gateway.Controllers.Arena.MatchResultsController do
         |> json(%{status: 422, message: "Unprocessable Entity", errors: errors})
     end
   end
-
 end
