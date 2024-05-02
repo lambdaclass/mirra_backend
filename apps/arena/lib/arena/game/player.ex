@@ -291,6 +291,11 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def get_golden_clock_effect(player) do
+    get_in(player, [:aditional_info, :effects])
+    |> Enum.find(fn effect -> effect.name == "golden_clock_effect" end)
+  end
+
   def remove_expired_effects(player) do
     now = System.monotonic_time(:millisecond)
 
@@ -375,7 +380,9 @@ defmodule Arena.Game.Player do
   end
 
   defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
-    put_in(player, [:aditional_info, :cooldowns, skill_key], cooldown_ms)
+    cooldown_multiplier = player |> get_golden_clock_effect |> get_cooldown_multiplier
+
+    put_in(player, [:aditional_info, :cooldowns, skill_key], round(cooldown_ms * cooldown_multiplier))
   end
 
   defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}) do
@@ -412,4 +419,10 @@ defmodule Arena.Game.Player do
   defp maybe_make_player_invincible(game_state, _, _) do
     game_state
   end
+
+  def get_cooldown_multiplier(%{effect_mechanics: %{reduce_cooldowns_interval: reduce_cooldowns_interval}}) do
+    reduce_cooldowns_interval.decrease_by
+  end
+
+  def get_cooldown_multiplier(_), do: 1
 end

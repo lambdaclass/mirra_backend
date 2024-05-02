@@ -241,6 +241,14 @@ defmodule Arena.Game.Effect do
     end
   end
 
+  defp do_effect_mechanics(_game_state, player, _effect, {:refresh_stamina, _refresh_stamina}) do
+    put_in(player, [:aditional_info, :available_stamina], player.aditional_info.max_stamina)
+  end
+
+  defp do_effect_mechanics(_game_state, player, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
+    put_in(player, [:aditional_info, :cooldowns], %{})
+  end
+
   ## Sink for mechanics that don't do anything
   defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
     player
