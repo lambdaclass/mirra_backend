@@ -101,6 +101,10 @@ defmodule Arena.Game.Effect do
     put_in(player, [:aditional_info, :stamina_interval], new_stamina_interval)
   end
 
+  defp apply_stat_modifier(player, {:reduce_cooldowns_duration, reduce_cooldowns_duration}) do
+    put_in(player, [:aditional_info, :cooldown_multiplier], reduce_cooldowns_duration.multiplier)
+  end
+
   defp apply_stat_modifier(player, {:speed_boost, speed_boost}) do
     %{player | speed: player.speed + speed_boost.amount}
   end

@@ -423,6 +423,7 @@
       "base_size": 110.0,
       "base_health": 440,
       "base_stamina": 3,
+      "base_cooldown_multiplier": 1,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
@@ -440,6 +441,7 @@
       "base_size": 90.0,
       "base_health": 400,
       "base_stamina": 3,
+      "base_cooldown_multiplier": 1,
       "stamina_interval": 1800,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
@@ -457,6 +459,7 @@
       "base_size": 95.0,
       "base_health": 400,
       "base_stamina": 3,
+      "base_cooldown_multiplier": 1,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
@@ -474,6 +477,7 @@
       "base_size": 100.0,
       "base_health": 400,
       "base_stamina": 3,
+      "base_cooldown_multiplier": 1,
       "stamina_interval": 2000,
       "max_inventory_size": 1,
       "natural_healing_interval": 1000,
@@ -566,8 +570,8 @@
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
-        "reduce_cooldowns_interval": {
-          "decrease_by": 0.5,
+        "reduce_cooldowns_duration": {
+          "multiplier": 0.5,
           "execute_multiple_times": false,
           "effect_delay_ms": 0
         },
