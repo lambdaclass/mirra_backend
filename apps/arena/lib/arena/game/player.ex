@@ -376,7 +376,11 @@ defmodule Arena.Game.Player do
   end
 
   defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
-    put_in(player, [:aditional_info, :cooldowns, skill_key], round(cooldown_ms * player.aditional_info.cooldown_multiplier))
+    put_in(
+      player,
+      [:aditional_info, :cooldowns, skill_key],
+      round(cooldown_ms * player.aditional_info.cooldown_multiplier)
+    )
   end
 
   defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}) do
