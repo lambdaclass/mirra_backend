@@ -4,7 +4,7 @@ defmodule GameClientWeb.AuthController do
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     token = auth.extra.raw_info.token.other_params["id_token"]
-    gateway_url = System.get_env("GATEWAY_URL") || "http://localhost:4001"
+    gateway_url = Application.get_env(:game_client, :gateway_url)
     response =
       Finch.build(:get, "#{gateway_url}/auth/google/token/#{token}", [{"content-type", "application/json"}])
       |> Finch.request(GameClient.Finch)

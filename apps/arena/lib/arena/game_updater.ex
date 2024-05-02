@@ -490,9 +490,7 @@ defmodule Arena.GameUpdater do
 
   defp report_game_results(state, winner_id) do
     results =
-      Enum.filter(state.game_state.client_to_player_map, fn {client_id, _player_id} ->
-        Enum.member?(state.clients, client_id)
-      end)
+      Map.take(state.game_state.client_to_player_map, state.clients)
       |> Enum.map(fn {client_id, player_id} ->
         player = Map.get(state.game_state.players, player_id)
 
@@ -513,7 +511,7 @@ defmodule Arena.GameUpdater do
     ## maybe a separate GenServer that gets the results and tries to send them to the server?
     ## This way if it fails we can retry or something
     spawn(fn ->
-      gateway_url = System.get_env("GATEWAY_URL") || "http://localhost:4001"
+      gateway_url = Application.get_env(:arena, :gateway_url)
 
       Finch.build(:post, "#{gateway_url}/arena/match", [{"content-type", "application/json"}], payload)
       |> Finch.request(Arena.Finch)

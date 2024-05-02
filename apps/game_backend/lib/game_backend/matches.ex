@@ -9,12 +9,12 @@ defmodule GameBackend.Matches do
   def create_arena_match_results(match_id, results) do
     transaction = Multi.new()
 
-    {transaction, _} =
-      Enum.reduce(results, {transaction, 1}, fn result, {transaction_acc, idx} ->
+    transaction =
+      Enum.reduce(results, transaction, fn result, transaction_acc ->
         attrs = Map.put(result, "match_id", match_id)
         changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
-        transaction_acc = Multi.insert(transaction_acc, {:insert, idx}, changeset)
-        {transaction_acc, idx + 1}
+        transaction_acc = Multi.insert(transaction_acc, {:insert, attrs["user_id"]}, changeset)
+        transaction_acc
       end)
 
     Repo.transaction(transaction)

@@ -1,4 +1,4 @@
-<%= if assigns[:user_id] do %>
+<%= unless assigns[:user_id] do %>
   <p>You are not logged in, match results won't be saved</p>
 <% end %>
 

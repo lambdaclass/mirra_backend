@@ -33,6 +33,8 @@ config :joken,
 # App configuration: arena #
 ############################
 
+config :arena, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
+
 if System.get_env("PHX_SERVER") do
   config :arena, ArenaWeb.Endpoint, server: true
 end
@@ -139,6 +141,9 @@ end
 ##################################
 # App configuration: game_client #
 ##################################
+
+config :game_client, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
+
 
 if System.get_env("PHX_SERVER") do
   config :game_client, GameClientWeb.Endpoint, server: true
