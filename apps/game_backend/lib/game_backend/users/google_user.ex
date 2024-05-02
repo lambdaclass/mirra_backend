@@ -8,7 +8,7 @@ defmodule GameBackend.Users.GoogleUser do
 
   schema "google_users" do
     field(:email, :string)
-    has_one(:user, User)
+    has_one(:user, GameBackend.Users.User)
     timestamps()
   end
 

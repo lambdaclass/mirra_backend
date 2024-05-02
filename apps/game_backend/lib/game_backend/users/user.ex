@@ -45,8 +45,9 @@ defmodule GameBackend.Users.User do
       :profile_picture,
       :google_user_id
     ])
-    |> unique_constraint([:game_id, :username, :profile_picture])
-    |> validate_required([:game_id, :username, :kaline_tree_level_id, :google_user_id])
+    |> unique_constraint([:game_id, :username])
+    |> assoc_constraint(:google_user)
+    |> validate_required([:game_id, :username, :kaline_tree_level_id])
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
