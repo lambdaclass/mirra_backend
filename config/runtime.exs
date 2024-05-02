@@ -25,6 +25,10 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
 
+config :joken,
+  issuer: "https://accounts.google.com",
+  audience: System.get_env("GOOGLE_CLIENT_ID")
+
 ############################
 # App configuration: arena #
 ############################
@@ -321,5 +325,3 @@ config :bot_manager, :end_point_configuration,
   options: [port: bot_manager_port]
 
 ###################################
-
-config :joken, issuer: "https://accounts.google.com", audience: System.get_env("GOOGLE_CLIENT_ID")

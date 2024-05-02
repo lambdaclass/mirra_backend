@@ -1,7 +1,16 @@
+<%= if assigns[:user_id] do %>
+  <p>You are not logged in, match results won't be saved</p>
+<% end %>
+
 <.form :let={f} for={%{}} action={~p"/"}>
   <.input field={f[:character]} name="character" label="Select a Character" type="select" options={["muflus", "h4ck", "uma", "valtimer"]} value=""/>
+  <.input field={f[:user_id]} name="user_id" type="hidden" value={assigns[:user_id]}/>
   <.button type="submit" name="game_mode" value="join">Play</.button>
   <.button type="submit" name="game_mode" value="quick_game">Quick Game</.button>
 </.form>
 
-<.link href={~p"/auth/google"}>Google login</.link>
+<%= if assigns[:user_id] do %>
+  <p>Logged in as user_id: <%= @user_id %></p>
+<% else %>
+  <.link href={~p"/auth/google"}>Google login</.link>
+<% end %>
