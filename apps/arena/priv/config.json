@@ -72,6 +72,7 @@
         "vertices": []
       },
       {
+        "name": "middle stone north",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -106,6 +107,7 @@
         ]
       },
       {
+        "name": "middle stone south",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -140,7 +142,7 @@
         ]
       },
       {
-        "collider": "carapace 1",
+        "name": "carapace 1",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -183,7 +185,7 @@
         ]
       },
       {
-        "collider": "carapace 2",
+        "name": "carapace 2",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -230,7 +232,7 @@
         ]
       },
       {
-        "collider": "lava rock 1 a",
+        "name": "lava rock 1 a",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -261,7 +263,7 @@
         ]
       },
       {
-        "collider": "lava rock 1 b",
+        "name": "lava rock 1 b",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -292,7 +294,7 @@
         ]
       },
       {
-        "collider": "lava rock 1 c",
+        "name": "lava rock 1 c",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -331,7 +333,7 @@
         ]
       },
       {
-        "collider": "lava rock 2 a",
+        "name": "lava rock 2 a",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -362,7 +364,7 @@
         ]
       },
       {
-        "collider": "lava rock 2 b",
+        "name": "lava rock 2 b",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -389,7 +391,7 @@
         ]
       },
       {
-        "collider": "lava rock 2 c",
+        "name": "lava rock 2 c",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -424,7 +426,7 @@
         ]
       },
       {
-        "collider": "cannon rock 1 a",
+        "name": "cannon rock 1 a",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -455,7 +457,7 @@
         ]
       },
       {
-        "collider": "cannon rock 1 b",
+        "name": "cannon rock 1 b",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -478,7 +480,7 @@
         ]
       },
       {
-        "collider": "cannon rock 1 c",
+        "name": "cannon rock 1 c",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -501,7 +503,7 @@
         ]
       },
       {
-        "collider": "cannon rock 2 a",
+        "name": "cannon rock 2 a",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -532,7 +534,7 @@
         ]
       },
       {
-        "collider": "cannon rock 2 b",
+        "name": "cannon rock 2 b",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -555,7 +557,7 @@
         ]
       },
       {
-        "collider": "cannon rock 2 c",
+        "name": "cannon rock 2 c",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -578,7 +580,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 1 a",
+        "name": "halfmoon rock 1 a",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -613,7 +615,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 1 b",
+        "name": "halfmoon rock 1 b",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -644,7 +646,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 1 c",
+        "name": "halfmoon rock 1 c",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -675,7 +677,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 1 d",
+        "name": "halfmoon rock 1 d",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -710,7 +712,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 2 a",
+        "name": "halfmoon rock 2 a",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -745,7 +747,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 2 b",
+        "name": "halfmoon rock 2 b",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -776,7 +778,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 2 c",
+        "name": "halfmoon rock 2 c",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -807,7 +809,7 @@
         ]
       },
       {
-        "collider": "halfmoon rock 2 d",
+        "name": "halfmoon rock 2 d",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -838,7 +840,7 @@
         ]
       },
       {
-        "collider": "wall entry",
+        "name": "wall entry",
         "position": {
           "x": 0.0,
           "y": 0.0
