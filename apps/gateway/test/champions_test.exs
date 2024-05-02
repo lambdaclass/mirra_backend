@@ -6,10 +6,10 @@ defmodule Gateway.Test.Champions do
 
   use ExUnit.Case
 
-  alias GameBackend.Users.AfkRewardIncrement
   alias Champions.{Units, Users, Utils}
-  alias GameBackend.Repo
+  alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
+  alias GameBackend.Repo
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
 
@@ -650,8 +650,21 @@ defmodule Gateway.Test.Champions do
     test "leveling up the Kaline Tree increments the afk rewards", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("AfkRewardsUser")
 
-      # Check that the initial afk reward rates is an empty list
-      refute Enum.any?(user.afk_reward_rates)
+      # Check that the initial afk reward rates is not an empty list
+      assert Enum.any?(user.kaline_tree_level.afk_reward_rates)
+
+      # Check that the gold, arcane crystals and hero souls afk rewards rates are 0 initially
+      rewardable_currencies = ["Gold", "Hero Souls", "Arcane Crystals"]
+
+      assert Enum.all?(user.kaline_tree_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   rate.rate == 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
 
       # Level up the Kaline Tree
       SocketTester.level_up_kaline_tree(socket_tester, user.id)
@@ -660,12 +673,10 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
 
       # Check that any afk reward rates exist
-      assert Enum.any?(leveled_up_user.afk_reward_rates)
+      assert Enum.any?(leveled_up_user.kaline_tree_level.afk_reward_rates)
 
       # Check that the gold, arcane crystals and hero souls afk rewards rates are greater than 0
-      rewardable_currencies = ["Gold", "Hero Souls", "Arcane Crystals"]
-
-      assert Enum.all?(leveled_up_user.afk_reward_rates, fn rate ->
+      assert Enum.all?(leveled_up_user.kaline_tree_level.afk_reward_rates, fn rate ->
                case rate.currency.name in rewardable_currencies do
                  true ->
                    rate.rate > 0
@@ -699,7 +710,10 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(claimed_user.currencies, fn currency ->
                user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
 
-               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency.name == currency.currency.name)) do
+               case Enum.find(
+                      claimed_user.kaline_tree_level.afk_reward_rates,
+                      &(&1.currency.name == currency.currency.name)
+                    ) do
                  nil ->
                    # If the currency is not in the afk rewards rates, we don't consider it.
                    true
@@ -727,20 +741,23 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
       current_kaline_tree_level_id = more_advanced_user.kaline_tree_level.id
 
-      current_level_afk_rewards_increments =
-        Repo.all(from(r in AfkRewardIncrement, where: r.kaline_tree_level_id == ^current_kaline_tree_level_id))
+      current_level_afk_rewards_rates =
+        Repo.all(from(r in AfkRewardRate, where: r.kaline_tree_level_id == ^current_kaline_tree_level_id))
         |> Repo.preload(:currency)
 
-      assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->
+      assert Enum.all?(more_advanced_user.kaline_tree_level.afk_reward_rates, fn rate ->
                case rate.currency.name in rewardable_currencies do
                  true ->
                    previous_rate =
-                     Enum.find(leveled_up_user.afk_reward_rates, &(&1.currency.name == rate.currency.name)).rate
+                     Enum.find(
+                       leveled_up_user.kaline_tree_level.afk_reward_rates,
+                       &(&1.currency.name == rate.currency.name)
+                     ).rate
 
-                   afk_reward_increment =
-                     Enum.find(current_level_afk_rewards_increments, &(&1.currency.name == rate.currency.name)).amount
+                   afk_reward_rate =
+                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
 
-                   new_rate = previous_rate + afk_reward_increment
+                   new_rate = previous_rate + afk_reward_rate
                    rate.rate > previous_rate
 
                  false ->

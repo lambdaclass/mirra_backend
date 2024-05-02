@@ -383,13 +383,7 @@ defmodule Gateway.Serialization.User do
   field(:units, 8, repeated: true, type: Gateway.Serialization.Unit)
   field(:items, 9, repeated: true, type: Gateway.Serialization.Item)
 
-  field(:afk_reward_rates, 10,
-    repeated: true,
-    type: Gateway.Serialization.AfkRewardRate,
-    json_name: "afkRewardRates"
-  )
-
-  field(:kaline_tree_level, 11,
+  field(:kaline_tree_level, 10,
     type: Gateway.Serialization.KalineTreeLevel,
     json_name: "kalineTreeLevel"
   )
@@ -405,6 +399,12 @@ defmodule Gateway.Serialization.KalineTreeLevel do
   field(:fertilizer_level_up_cost, 3, type: :uint64, json_name: "fertilizerLevelUpCost")
   field(:gold_level_up_cost, 4, type: :uint64, json_name: "goldLevelUpCost")
   field(:unlock_features, 5, repeated: true, type: :string, json_name: "unlockFeatures")
+
+  field(:afk_reward_rates, 6,
+    repeated: true,
+    type: Gateway.Serialization.AfkRewardRate,
+    json_name: "afkRewardRates"
+  )
 end
 
 defmodule Gateway.Serialization.SuperCampaignProgresses do
@@ -435,7 +435,7 @@ defmodule Gateway.Serialization.AfkRewardRate do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:kaline_tree_level_id, 1, type: :string, json_name: "kalineTreeLevelId")
   field(:currency, 2, type: Gateway.Serialization.Currency)
   field(:rate, 3, type: :float)
 end

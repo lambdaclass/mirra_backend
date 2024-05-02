@@ -1,15 +1,15 @@
 alias GameBackend.Campaigns
-alias GameBackend.Campaigns.Level
 alias GameBackend.Campaigns.Campaign
+alias GameBackend.Campaigns.Level
+alias GameBackend.Campaigns.Rewards.AfkRewardRate
+alias GameBackend.Campaigns.Rewards.CurrencyReward
 alias GameBackend.Gacha
 alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
 alias GameBackend.Users
-alias GameBackend.Users.AfkRewardIncrement
 alias GameBackend.Users.KalineTreeLevel
-alias GameBackend.Campaigns.Rewards.CurrencyReward
 
 champions_of_mirra_id = 2
 units_per_level = 5
@@ -133,26 +133,26 @@ kaline_tree_levels =
 {_, kaline_tree_levels} =
   Repo.insert_all(KalineTreeLevel, kaline_tree_levels, returning: [:id, :level])
 
-afk_reward_increments =
+afk_reward_rates =
   Enum.flat_map(Enum.with_index(kaline_tree_levels, 1), fn {level, level_index} ->
     [
       %{
         kaline_tree_level_id: level.id,
-        amount: 10 * level_index,
+        rate: 10.0 * (level_index - 1),
         currency_id: gold_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        amount: 2 * level_index,
+        rate: 2.0 * (level_index - 1),
         currency_id: hero_souls_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        amount: 3 * level_index,
+        rate: 3.0 * (level_index - 1),
         currency_id: arcane_crystals_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -160,7 +160,7 @@ afk_reward_increments =
     ]
   end)
 
-Repo.insert_all(AfkRewardIncrement, afk_reward_increments, on_conflict: :nothing)
+Repo.insert_all(AfkRewardRate, afk_reward_rates, on_conflict: :nothing)
 
 ######################
 # Campaigns creation #
