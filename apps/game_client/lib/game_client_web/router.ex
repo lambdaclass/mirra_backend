@@ -23,7 +23,6 @@ defmodule GameClientWeb.Router do
     live "/board/:player_id/:character/:player_name/:game_mode", BoardLive.GameQueue
   end
 
-
   scope "/auth", GameClientWeb do
     pipe_through :browser
 
