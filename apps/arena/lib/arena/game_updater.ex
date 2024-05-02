@@ -21,15 +21,15 @@ defmodule Arena.GameUpdater do
   end
 
   def move(game_pid, player_id, direction, timestamp) do
-    GenServer.call(game_pid, {:move, player_id, direction, timestamp})
+    GenServer.cast(game_pid, {:move, player_id, direction, timestamp})
   end
 
   def attack(game_pid, player_id, skill, skill_params, timestamp) do
-    GenServer.call(game_pid, {:attack, player_id, skill, skill_params, timestamp})
+    GenServer.cast(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
   def use_item(game_pid, player_id, timestamp) do
-    GenServer.call(game_pid, {:use_item, player_id, timestamp})
+    GenServer.cast(game_pid, {:use_item, player_id, timestamp})
   end
 
   ##########################
@@ -51,31 +51,6 @@ defmodule Arena.GameUpdater do
   # API Callbacks
   ##########################
 
-  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
-    player =
-      state.game_state.players
-      |> Map.get(player_id)
-      |> Player.move(direction)
-
-    game_state =
-      state.game_state
-      |> put_in([:players, player_id], player)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
-
-    game_state =
-      get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, skill_params, state)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
   def handle_call({:join, client_id}, _from, state) do
     case get_in(state.game_state, [:client_to_player_map, client_id]) do
       nil ->
@@ -87,12 +62,37 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_call({:use_item, player_id, _timestamp}, _from, state) do
+  def handle_cast({:move, player_id, direction, timestamp}, state) do
+    player =
+      state.game_state.players
+      |> Map.get(player_id)
+      |> Player.move(direction)
+
+    game_state =
+      state.game_state
+      |> put_in([:players, player_id], player)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:attack, player_id, skill_key, skill_params, timestamp}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
+
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_skill(skill_key, skill_params, state)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:use_item, player_id, _timestamp}, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_item(state.game_state, state.game_config)
 
-    {:reply, :ok, %{state | game_state: game_state}}
+    {:noreply, %{state | game_state: game_state}}
   end
 
   ##########################
