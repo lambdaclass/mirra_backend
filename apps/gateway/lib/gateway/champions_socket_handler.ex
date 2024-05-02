@@ -276,7 +276,7 @@ defmodule Gateway.ChampionsSocketHandler do
              )}
 
           :energy_regen ->
-            {type, Kernel.struct(EnergyRegen, update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1)))}
+            {type, Kernel.struct(EnergyRegen, action)}
         end
     }
   end
