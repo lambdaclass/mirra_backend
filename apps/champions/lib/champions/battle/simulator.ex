@@ -887,6 +887,8 @@ defmodule Champions.Battle.Simulator do
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
+        # TODO: replace random for the corresponding target type name (CHoM #325)
+        # type: mechanic.apply_effects_to.targeting_strategy.type,
         type:
           if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
             mechanic.apply_effects_to.targeting_strategy.type
