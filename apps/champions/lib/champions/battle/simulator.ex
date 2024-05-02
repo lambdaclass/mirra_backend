@@ -16,8 +16,8 @@ defmodule Champions.Battle.Simulator do
 
   They also have different targeting strategies:
   [x] Random
-  [ ] Nearest
-  [ ] Furthest
+  [X] Nearest
+  [X] Furthest
   [ ] Frontline - Heroes in slots 1 and 2
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
@@ -592,8 +592,10 @@ defmodule Champions.Battle.Simulator do
         # If it's permanent, we set its duration to -1
         new_modifier =
           modifier
-          |> Map.put(:remaining_steps, Map.get(effect.type, "duration", -1))
+          |> Map.put(:remaining_steps, get_duration(effect.type))
           |> Map.put(:step_applied_at, current_step_number)
+
+        Logger.info("Applying modifier [#{format_modifier_name(new_modifier)}] to #{format_unit_name(target)}.")
 
         new_history =
           add_to_history(
@@ -653,6 +655,9 @@ defmodule Champions.Battle.Simulator do
 
     {target, new_history}
   end
+
+  defp get_duration(%{duration: duration}), do: div(duration, @miliseconds_per_step)
+  defp get_duration(_type), do: -1
 
   # Return whether an effect hits.
   defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
@@ -857,8 +862,8 @@ defmodule Champions.Battle.Simulator do
           else
             "random"
           end,
-        count: mechanic.apply_effects_to.targeting_strategy.count,
-        target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies
+        count: mechanic.apply_effects_to.targeting_strategy.count || 1,
+        target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies || false
       }
     }
 
@@ -946,11 +951,12 @@ defmodule Champions.Battle.Simulator do
   defp string_to_atom("type"), do: :type
   defp string_to_atom("duration"), do: :duration
   defp string_to_atom("period"), do: :period
-  defp string_to_atom("instant"), do: :type
+  defp string_to_atom("instant"), do: :instant
 
   defp string_to_atom("ATTACK"), do: :ATTACK
   defp string_to_atom("DEFENSE"), do: :DEFENSE
   defp string_to_atom("HEALTH"), do: :HEALTH
   defp string_to_atom("ENERGY"), do: :ENERGY
   defp string_to_atom("SPEED"), do: :SPEED
+  defp string_to_atom("DAMAGE_REDUCTION"), do: :DAMAGE_REDUCTION
 end
