@@ -75,9 +75,24 @@ defmodule BotManager.Protobuf.LobbyEvent do
   oneof(:event, 0)
 
   field(:leave, 1, type: BotManager.Protobuf.LeaveLobby, oneof: 0)
+  field(:left, 2, type: BotManager.Protobuf.LeftLobby, oneof: 0)
+  field(:joined, 3, type: BotManager.Protobuf.JoinedLobby, oneof: 0)
+  field(:game, 4, type: BotManager.Protobuf.GameState, oneof: 0)
 end
 
 defmodule BotManager.Protobuf.LeaveLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.LeftLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.JoinedLobby do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

@@ -75,9 +75,24 @@ defmodule Arena.Serialization.LobbyEvent do
   oneof(:event, 0)
 
   field(:leave, 1, type: Arena.Serialization.LeaveLobby, oneof: 0)
+  field(:left, 2, type: Arena.Serialization.LeftLobby, oneof: 0)
+  field(:joined, 3, type: Arena.Serialization.JoinedLobby, oneof: 0)
+  field(:game, 4, type: Arena.Serialization.GameState, oneof: 0)
 end
 
 defmodule Arena.Serialization.LeaveLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule Arena.Serialization.LeftLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule Arena.Serialization.JoinedLobby do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
