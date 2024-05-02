@@ -17,6 +17,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Users.Currencies
   alias GameBackend.Users.User
   alias GameBackend.Users.GoogleUser
+  alias GameBackend.Utils
 
   @doc """
   Registers a user.
@@ -111,7 +112,25 @@ defmodule GameBackend.Users do
   end
 
   defp create_google_user_by_email(email) do
-    GoogleUser.changeset(%GoogleUser{}, %{email: email})
+    # TODO delete the following in a future refactor -> https://github.com/lambdaclass/mirra_backend/issues/557
+    kaline_tree_id = GameBackend.Users.get_kaline_tree_level(1).id
+    level = 1
+    experience = 1
+    amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
+    username = "User_#{amount_of_users + 1}"
+    ##################################################################
+    game_id = Utils.get_game_id("curse_of_mirra")
+
+    GoogleUser.changeset(%GoogleUser{}, %{
+      email: email,
+      user: %{
+        kaline_tree_level_id: kaline_tree_id,
+        game_id: game_id,
+        username: username,
+        level: level,
+        experience: experience
+      }
+    })
     |> Repo.insert()
   end
 
