@@ -656,7 +656,7 @@ defmodule Champions.Battle.Simulator do
     {target, new_history}
   end
 
-  defp get_duration(%{duration: duration}), do: div(duration, @miliseconds_per_step)
+  defp get_duration(%{duration: duration}), do: duration
   defp get_duration(_type), do: -1
 
   # Return whether an effect hits.
@@ -882,11 +882,9 @@ defmodule Champions.Battle.Simulator do
     do: %{
       type:
         Enum.into(effect.type, %{}, fn
-          {key, value} when is_binary(value) ->
-            {string_to_atom(key), string_to_atom(value)}
-
-          {key, value} ->
-            {string_to_atom(key), value}
+          {"type", type} -> {:type, string_to_atom(type)}
+          {"period", period} -> {:period, div(period, @miliseconds_per_step)}
+          {"duration", duration} -> {:duration, div(duration, @miliseconds_per_step)}
         end),
       delay: div(effect.initial_delay, @miliseconds_per_step),
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
