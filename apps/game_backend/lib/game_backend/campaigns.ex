@@ -5,7 +5,7 @@ defmodule GameBackend.Campaigns do
 
   import Ecto.Query
   alias GameBackend.Repo
-  alias GameBackend.Campaigns.{Campaign, CampaignProgress, Level, SuperCampaign}
+  alias GameBackend.Campaigns.{Campaign, SuperCampaignProgress, Level, SuperCampaign}
 
   @doc """
   Gets all campaigns, and sorted ascendingly by campaign number.
@@ -19,7 +19,7 @@ defmodule GameBackend.Campaigns do
         )
       )
 
-    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: {:ok, Enum.sort_by(campaigns, & &1.campaign_number)}
+    if Enum.empty?(campaigns), do: {:error, :no_campaigns}, else: {:ok, campaigns}
   end
 
   @doc """
@@ -60,9 +60,9 @@ defmodule GameBackend.Campaigns do
   @doc """
   Inserts a campaign progress.
   """
-  def insert_campaign_progress(attrs, opts \\ []) do
-    %CampaignProgress{}
-    |> CampaignProgress.changeset(attrs)
+  def insert_super_campaign_progress(attrs, opts \\ []) do
+    %SuperCampaignProgress{}
+    |> SuperCampaignProgress.changeset(attrs)
     |> Repo.insert(opts)
   end
 
@@ -81,26 +81,42 @@ defmodule GameBackend.Campaigns do
   Returns `{:error, :not_found}` if no level is found.
   """
   def get_level(level_id) do
-    level = Repo.get(Level, level_id) |> Repo.preload([:currency_rewards, units: :items, units: :character])
+    level =
+      Repo.get(Level, level_id)
+      |> Repo.preload([
+        :campaign,
+        :currency_rewards,
+        units: [
+          :items,
+          character: [basic_skill: [mechanics: :apply_effects_to], ultimate_skill: [mechanics: :apply_effects_to]]
+        ]
+      ])
+
     if level, do: {:ok, level}, else: {:error, :not_found}
   end
+
+  @doc """
+  Get all of a User's SuperCampaignProgresses.
+  """
+  def get_user_super_campaign_progresses(user_id),
+    do: Repo.all(from(cp in SuperCampaignProgress, where: cp.user_id == ^user_id, preload: [:level]))
 
   @doc """
   Get a campaign progress by user id and campaign id.
   Returns `{:error, :not_found}` if no progress is found.
   """
-  def get_campaign_progress(user_id, campaign_id) do
-    campaign_progress =
+  def get_super_campaign_progress(user_id, super_campaign_id) do
+    super_campaign_progress =
       Repo.one(
-        from(cp in CampaignProgress,
-          where: cp.user_id == ^user_id and cp.campaign_id == ^campaign_id,
+        from(cp in SuperCampaignProgress,
+          where: cp.user_id == ^user_id and cp.super_campaign_id == ^super_campaign_id,
           preload: [
             level: [:campaign, :item_rewards, :unit_rewards, :afk_rewards_increments, currency_rewards: :currency]
           ]
         )
       )
 
-    if campaign_progress, do: {:ok, campaign_progress}, else: {:error, :not_found}
+    if super_campaign_progress, do: {:ok, super_campaign_progress}, else: {:error, :not_found}
   end
 
   @doc """

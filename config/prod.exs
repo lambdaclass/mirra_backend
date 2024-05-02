@@ -66,5 +66,3 @@ config :game_client, GameClientWeb.Endpoint,
 # before starting your production server.
 config :configurator, ConfiguratorWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
-
-config :bot_manager, :end_point, port: [port: System.get_env("BOT_MANAGER_PORT") || 4003]

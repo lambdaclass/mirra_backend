@@ -4,14 +4,16 @@ defmodule BotManager.GameSocketHandler do
   It handles the communication with the server.
   """
 
-  use WebSockex, restart: :transient
+  alias BotManager.BotStateMachine
+
+  use WebSockex, restart: :temporary
   require Logger
 
-  @message_delay_ms 300
+  @decision_delay_ms 200
+  @action_delay_ms 30
 
-  def start_link(%{"bot_client" => bot_client, "game_id" => game_id}) do
-    Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id}")
-    ws_url = ws_url(bot_client, game_id)
+  def start_link(%{"bot_client" => bot_client, "game_id" => game_id} = params) do
+    ws_url = ws_url(params)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
       client_id: bot_client,
@@ -19,19 +21,61 @@ defmodule BotManager.GameSocketHandler do
     })
   end
 
+  #######################
+  #      handlers       #
+  #######################
+
   def handle_connect(_conn, state) do
-    send(self(), :move)
-    send(self(), :attack)
+    send(self(), :decide_action)
+    send(self(), :perform_action)
     {:ok, state}
   end
 
-  def handle_frame(_frame, state) do
+  def handle_frame({:binary, frame}, state) do
+    case BotManager.Protobuf.GameEvent.decode(frame) do
+      %{event: {:update, game_state}} ->
+        bot_player = Map.get(game_state.players, state.player_id)
+
+        update = %{
+          bot_player: bot_player,
+          game_state: game_state
+        }
+
+        {:ok, Map.merge(state, update)}
+
+      %{event: {:joined, joined}} ->
+        {:ok, Map.merge(state, joined)}
+
+      %{event: {:finished, _}} ->
+        exit(:shutdown)
+
+      _ ->
+        {:ok, state}
+    end
+  end
+
+  def handle_info(:decide_action, state) do
+    Process.send_after(self(), :decide_action, @decision_delay_ms)
+
+    action = BotStateMachine.decide_action(state)
+
+    {:ok, Map.put(state, :current_action, action)}
+  end
+
+  def handle_info(:perform_action, state) do
+    Process.send_after(self(), :perform_action, @action_delay_ms)
+
+    send_current_action(state)
+
     {:ok, state}
   end
 
-  def handle_info(:move, state) do
+  def handle_cast({:send, {_type, _msg} = frame}, state) do
+    {:reply, frame, state}
+  end
+
+  defp send_current_action(%{current_action: {:move, direction}}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    {x, y} = create_random_direction()
 
     game_action =
       BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
@@ -39,23 +83,18 @@ defmodule BotManager.GameSocketHandler do
           {:move,
            %BotManager.Protobuf.Move{
              direction: %BotManager.Protobuf.Direction{
-               x: x,
-               y: y
+               x: direction.x,
+               y: direction.y
              }
            }},
         timestamp: timestamp
       })
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
-
-    Process.send_after(self(), :move, @message_delay_ms)
-
-    {:ok, state}
   end
 
-  def handle_info(:attack, state) do
+  defp send_current_action(%{current_action: {:attack, direction}}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    {x, y} = create_random_direction()
 
     game_action =
       BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
@@ -65,8 +104,8 @@ defmodule BotManager.GameSocketHandler do
              skill: "1",
              parameters: %BotManager.Protobuf.AttackParameters{
                target: %BotManager.Protobuf.Direction{
-                 x: x,
-                 y: y
+                 x: direction.x,
+                 y: direction.y
                }
              }
            }},
@@ -74,38 +113,21 @@ defmodule BotManager.GameSocketHandler do
       })
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
-
-    Process.send_after(self(), :attack, @message_delay_ms)
-    {:ok, state}
   end
 
-  def handle_cast({:send, {_type, _msg} = frame}, state) do
-    {:reply, frame, state}
-  end
+  defp send_current_action(_), do: nil
 
-  def terminate(_, _, _) do
-    Logger.info("Websocket terminated")
-    :ok
-  end
+  defp ws_url(%{
+         "bot_client" => bot_client,
+         "game_id" => game_id,
+         "arena_host" => arena_host
+       }) do
+    Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_host}")
 
-  defp ws_url(player_id, game_id) do
-    host = System.get_env("SERVER_HOST", "localhost:4000")
-
-    case System.get_env("SSL_ENABLED") do
-      "true" ->
-        "wss://#{host}/play/#{game_id}/#{player_id}"
-
-      _ ->
-        "ws://#{host}/play/#{game_id}/#{player_id}"
+    if arena_host == "localhost" do
+      "ws://localhost:4000/play/#{game_id}/#{bot_client}"
+    else
+      "wss://#{arena_host}/play/#{game_id}/#{bot_client}"
     end
-  end
-
-  defp create_random_direction() do
-    Enum.random([
-      {1, 0},
-      {0, -1},
-      {-1, 0},
-      {0, 1}
-    ])
   end
 end

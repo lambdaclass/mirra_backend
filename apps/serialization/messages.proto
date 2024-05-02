@@ -97,7 +97,8 @@ message GameState {
   map<uint64, Entity> items = 13;
   map<uint64, Entity> obstacles = 14;
   map<uint64, Entity> pools = 15;
-  map<uint64, Entity> bushes = 16;
+  map<uint64, Entity> crates = 16;
+  map<uint64, Entity> bushes = 17;
 }
 
 enum GameStatus {
@@ -139,7 +140,8 @@ message Entity {
     PowerUp power_up = 15;
     Item item = 16;
     Pool pool = 17;
-    Bush bush = 18;
+    Crate crate = 18;
+    Bush bush = 19;
   }
 }
 
@@ -153,7 +155,7 @@ message Player {
   bool recharging_stamina = 7;
   string character_name = 8;
   uint64 power_ups = 9;
-  map<uint64, Effect> effects = 10;
+  repeated Effect effects = 10;
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
   repeated uint64 visible_players = 13;
@@ -179,6 +181,7 @@ message Projectile {
 enum ProjectileStatus {
   ACTIVE = 0;
   EXPLODED = 1;
+  CONSUMED = 2;
 }
 
 message Obstacle {
@@ -188,6 +191,17 @@ message Obstacle {
 message PowerUp {
   uint64 owner_id = 1;
   PowerUpstatus status = 2;
+}
+
+message Crate {
+  uint64 health = 1;
+  uint64 amount_of_power_ups = 2;
+  CrateStatus status = 3;
+}
+
+enum CrateStatus {
+  FINE = 0;
+  DESTROYED = 1;
 }
 
 enum  PowerUpstatus {

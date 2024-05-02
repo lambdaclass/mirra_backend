@@ -18,14 +18,9 @@ defmodule GameClientWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
-  end
-
-  scope "/", GameClientWeb do
-    pipe_through :browser
-    # pipe_through [:browser, :game]
-
+    post "/", PageController, :select_character
     live "/board/play/:game_id/:player_id", BoardLive.Show
-    live "/board/:player_id/:character/:player_name", BoardLive.GameQueue
+    live "/board/:player_id/:character/:player_name/:game_mode", BoardLive.GameQueue
   end
 
   # Other scopes may use custom stacks.

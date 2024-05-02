@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Skills.Effects.Modifier do
+defmodule GameBackend.Units.Skills.Mechanics.Effects.Modifier do
   @moduledoc """
   Modifiers change attributes of characters. Only used for non-Instant effects.
 
@@ -35,6 +35,7 @@ defmodule GameBackend.Units.Skills.Effects.Modifier do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  @primary_key false
   embedded_schema do
     field(:attribute, :string)
     field(:modifier_operation, :string)

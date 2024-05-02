@@ -6,7 +6,7 @@ defmodule GameBackend.Units.Characters.Character do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Skill
+  alias GameBackend.Units.Skills.Skill
 
   schema "characters" do
     field(:game_id, :integer)

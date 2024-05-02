@@ -156,6 +156,9 @@ config :game_client, dev_routes: true
 # App configuration: gateway #
 ##############################
 
+config :gateway, Gateway.Endpoint,
+  secret_key_base: "/v6PsTH3UkyIS1yUg7J0Df7SfgWUZbxfMtsI9Mjwp0kFe4MaXxHObc4L8IkfWhvR"
+
 ###################################
 # App configuration: configurator #
 ###################################
@@ -224,9 +227,3 @@ config :configurator, ConfiguratorWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :configurator, dev_routes: true
-
-##################################
-# App configuration: bot_manager #
-##################################
-
-config :bot_manager, :end_point, port: [port: System.get_env("BOT_MANAGER_PORT") || 4003]

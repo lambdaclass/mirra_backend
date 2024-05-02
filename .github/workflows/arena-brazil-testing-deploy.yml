@@ -1,16 +1,6 @@
 name: Deploy to Brazil Arena testing
 on:
   workflow_dispatch:
-    inputs:
-      release:
-        type: choice
-        description: What release to deploy
-        options:
-          - game_backend
-          - arena
-          - arena_load_test
-          - game_client
-        required: true
 
 jobs:
   build-deploy:
@@ -33,28 +23,28 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
-          TS_HOST: ${{ vars.TS_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
           sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 400 ~/.ssh/id_ed25519
-          retries=5; until ssh-keyscan $TS_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
+          retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: ${{ inputs.release }}
+          RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.HOST }}
           PORT: ${{ vars.ARENA_PORT }}

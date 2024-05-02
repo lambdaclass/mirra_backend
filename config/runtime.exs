@@ -304,3 +304,18 @@ if config_env() == :prod do
   #
   # Check `Plug.SSL` for all available options in `force_ssl`.
 end
+
+###################################
+# App configuration: Bot Manager  #
+###################################
+
+bot_manager_port = String.to_integer(System.get_env("BOT_MANAGER_PORT") || "4003")
+
+config :bot_manager, :end_point_configuration,
+  scheme: :http,
+  plug: BotManager.Endpoint,
+  options: [port: bot_manager_port]
+
+###################################
+
+config :joken, issuer: "https://accounts.google.com", audience: System.get_env("GOOGLE_CLIENT_ID")
