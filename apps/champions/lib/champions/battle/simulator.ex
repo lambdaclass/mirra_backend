@@ -825,7 +825,7 @@ defmodule Champions.Battle.Simulator do
     end
   end
 
-  # Called at the end of step processing. Sets unit health to max_health if it's above it.
+  # Called at the end of step processing. Sets unit energy to the max allowed energy if it's above it.
   defp cap_units_energy({state, history}) do
     {Map.put(
        state,
