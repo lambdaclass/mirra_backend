@@ -3,8 +3,8 @@ Sample code to create two teams of Mufluses and make them battle. Change [1..n] 
 ```
 {:ok, user_1} = Champions.Users.register("User1")
 {:ok, user_2} = Champions.Users.register("User2")
-team1 = Enum.map(1..6, fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, level: 1, tier: 1, rank: 1, selected: true, user_id: user_1.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload([:items, character: [[basic_skill: [mechanics: :apply_effects_to],ultimate_skill: [mechanics: :apply_effects_to]]]]) end)
-team2 = Enum.map(1..6, fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, level: 1, tier: 1, rank: 1, selected: true, user_id: user_2.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload([:items, character: [[basic_skill: [mechanics: :apply_effects_to],ultimate_skill: [mechanics: :apply_effects_to]]]]) end)
+team1 = Enum.map(1..6, fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, level: 1, tier: 1, rank: 1, selected: true, user_id: user_1.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload([items: :template, character: [[basic_skill: [mechanics: :apply_effects_to],ultimate_skill: [mechanics: :apply_effects_to]]]]) end)
+team2 = Enum.map(1..6, fn slot -> GameBackend.Units.insert_unit(%{character_id: GameBackend.Units.Characters.get_character_by_name("Muflus").id, level: 1, tier: 1, rank: 1, selected: true, user_id: user_2.id, slot: slot}) |> elem(1) |> GameBackend.Repo.preload([items: :template, character: [[basic_skill: [mechanics: :apply_effects_to],ultimate_skill: [mechanics: :apply_effects_to]]]]) end)
 result = Champions.Battle.Simulator.run_battle(team1, team2)
 ```
 
