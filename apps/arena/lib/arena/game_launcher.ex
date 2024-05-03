@@ -10,19 +10,19 @@ defmodule Arena.GameLauncher do
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 10_000
   # The available names for bots to enter a match, we should change this in the future
-  # @bot_names [
-  #   "TheBlackSwordman",
-  #   "SlashJava",
-  #   "SteelBallRun",
-  #   "Jeff",
-  #   "Thomas",
-  #   "Stone Ocean",
-  #   "Jeepers Creepers",
-  #   "Bob",
-  #   "El javo",
-  #   "Alberso",
-  #   "Messi"
-  # ]
+  @bot_names [
+    "TheBlackSwordman",
+    "SlashJava",
+    "SteelBallRun",
+    "Jeff",
+    "Messi",
+    "Stone Ocean",
+    "Jeepers Creepers",
+    "Bob",
+    "El javo",
+    "Alberso",
+    "Thomas"
+  ]
 
   # API
   def start_link(_) do
