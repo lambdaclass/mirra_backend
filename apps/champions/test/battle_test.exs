@@ -390,5 +390,86 @@ defmodule Champions.Test.BattleTest do
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
     end
+
+    test "Execution-AddEnergy", %{target_dummy: target_dummy} do
+      # We will create a battle between a damaging unit and a target dummy.
+      # The unit's basic skill will give itself 500 energy. The ultimate will deal 10 damage to the target dummy, killing it.
+
+      maximum_steps = 2
+
+      add_energy_params =
+        TestUtils.build_skill(%{
+          name: "AddEnergy",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "AddEnergy",
+                          amount: 500
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "random",
+                    target_allies: true
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps - 1
+        })
+
+      deal_damage_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "random",
+                    target_allies: false
+                  }
+                })
+            }
+          ]
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "AddEnergy Character",
+          basic_skill: add_energy_params,
+          ultimate_skill: deal_damage_params,
+          base_attack: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
   end
 end
