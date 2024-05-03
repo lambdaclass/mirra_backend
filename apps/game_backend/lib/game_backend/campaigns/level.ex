@@ -7,7 +7,6 @@ defmodule GameBackend.Campaigns.Level do
   import Ecto.Changeset
 
   alias GameBackend.Campaigns.Rewards.CurrencyReward
-  alias GameBackend.Items.ItemReward
   alias GameBackend.Campaigns.Rewards.UnitReward
   alias GameBackend.Campaigns.Rewards.ItemReward
   alias GameBackend.Campaigns.Campaign
