@@ -47,6 +47,22 @@ defmodule GameBackend.Users.Currencies do
   def get_currency_by_name!(name), do: Repo.get_by!(Currency, name: name)
 
   @doc """
+  Gets a single currency.
+
+  Returns nil if the Currency does not exist.
+
+  ## Examples
+
+      iex> get_currency("gold")
+      %Currency{}
+
+      iex> get_currency("silver")
+      nil
+
+  """
+  def get_currency_by_name(name), do: Repo.get_by(Currency, name: name)
+
+  @doc """
   Gets how much a user has of a given currency.
   """
   def get_amount_of_currency(user_id, currency_id),
@@ -173,4 +189,24 @@ defmodule GameBackend.Users.Currencies do
     do:
       user_id
       |> add_currency(get_currency_by_name!(currency_name).id, amount)
+
+  @doc """
+  Add the specified amount of currency to an user by it's name
+
+  Returns nil if the currency doesn't exists
+
+  ## Examples
+
+      iex> add_currency_by_name!(user_id, currency_name, amount)
+      %UserCurrency{}
+
+      iex> add_currency_by_name!(user_id, currency_name, amount)
+      nil
+  """
+  def add_currency_by_name(user_id, currency_name, amount) do
+    case get_currency_by_name(currency_name) do
+      nil -> nil
+      currency -> add_currency(user_id, currency.id, amount)
+    end
+  end
 end
