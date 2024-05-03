@@ -80,7 +80,7 @@ defmodule Champions.Test.BattleTest do
       # Decrease the cooldown and check that the battle ends in victory when the steps are enough
       {:ok, character} =
         Characters.update_character(character, %{
-          basic_skill: Map.put(basic_skill_params, :cooldown, maximum_steps - 2)
+          basic_skill: Map.put(basic_skill_params, :cooldown, (maximum_steps - 2) * @miliseconds_per_step)
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
@@ -88,27 +88,32 @@ defmodule Champions.Test.BattleTest do
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
+      trigger_delay_steps = 2
+      required_steps_to_win_with_trigger_delay_steps = required_steps_to_win + trigger_delay_steps
+
       # Add animation trigger delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
       {:ok, character} =
         Characters.update_character(character, %{
           basic_skill:
-            Map.put(basic_skill_params, :animation_duration, 2)
-            |> update_in([:mechanics], fn [mechanic] -> [Map.put(mechanic, :trigger_delay, 2)] end)
+            Map.put(basic_skill_params, :animation_duration, trigger_delay_steps * @miliseconds_per_step)
+            |> update_in([:mechanics], fn [mechanic] ->
+              [Map.put(mechanic, :trigger_delay, trigger_delay_steps * @miliseconds_per_step)]
+            end)
         })
 
       {:ok, unit} = Units.get_unit(unit.id)
-
-      required_steps_to_win_with_trigger_delay = required_steps_to_win + 2
 
       assert "timeout" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy],
-                 maximum_steps: required_steps_to_win_with_trigger_delay
+                 maximum_steps: required_steps_to_win_with_trigger_delay_steps
                ).result
 
       # Add initial delay and check that when the execution is delayed, the battle ends in timeout when the steps are not enough
+      initial_delay_steps = 1
+
       {:ok, _character} =
         Characters.update_character(character, %{
           basic_skill:
@@ -116,7 +121,7 @@ defmodule Champions.Test.BattleTest do
             |> Map.put(:animation_trigger, 0)
             |> Map.put(:effects, [
               TestUtils.build_effect(%{
-                initial_delay: 1,
+                initial_delay: initial_delay_steps * @miliseconds_per_step,
                 executions: [
                   %{
                     type: "DealDamage",
@@ -133,7 +138,7 @@ defmodule Champions.Test.BattleTest do
       assert "timeout" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
-      required_steps_to_win_with_initial_delay = required_steps_to_win + 1
+      required_steps_to_win_with_initial_delay = required_steps_to_win + initial_delay_steps
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy],
@@ -142,13 +147,13 @@ defmodule Champions.Test.BattleTest do
     end
 
     test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
-      cooldown = 1
+      cooldown_steps = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "DealDamage ChanceToApply",
-          cooldown: cooldown,
+          cooldown: cooldown_steps * @miliseconds_per_step,
           mechanics: [
             %{
               trigger_delay: 0,
@@ -230,7 +235,7 @@ defmodule Champions.Test.BattleTest do
 
       # Check that the battle ends in a victory for the team_1 right after the cooldown has elapsed
       assert "team_1" ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown + 1).result
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown_steps + 1).result
     end
 
     test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
@@ -242,7 +247,7 @@ defmodule Champions.Test.BattleTest do
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "BasicSkill3",
-          cooldown: 1,
+          cooldown: 1 * @miliseconds_per_step,
           mechanics: [
             %{
               trigger_delay: 0,
@@ -395,7 +400,7 @@ defmodule Champions.Test.BattleTest do
       # We will create a battle between a damaging unit and a target dummy.
       # The unit's basic skill will give itself 500 energy. The ultimate will deal 10 damage to the target dummy, killing it.
 
-      maximum_steps = 2
+      maximum_steps = 3
 
       add_energy_params =
         TestUtils.build_skill(%{
@@ -423,7 +428,8 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: maximum_steps - 1
+          # -2 so that it will give time for the ultimate to be cast
+          cooldown: (maximum_steps - 2) * @miliseconds_per_step
         })
 
       deal_damage_params =
