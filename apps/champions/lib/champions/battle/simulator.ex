@@ -76,7 +76,7 @@ defmodule Champions.Battle.Simulator do
     seed = options[:seed] || @default_seed
 
     :rand.seed(:default, seed)
-    Logger.info("Running battle with seed: #{seed}")
+    IO.inspect("Running battle with seed: #{seed}")
 
     team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
@@ -100,7 +100,7 @@ defmodule Champions.Battle.Simulator do
             |> process_step_for_skills(initial_step_state)
             |> process_step_for_effects()
 
-          Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
+          IO.inspect("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
           {new_state, new_history}
           |> remove_dead_units()
@@ -118,7 +118,7 @@ defmodule Champions.Battle.Simulator do
         if unit.health > 0 do
           {Map.put(units, unit_id, unit), history_acc}
         else
-          Logger.info("Unit #{format_unit_name(unit)} died.")
+          IO.inspect("Unit #{format_unit_name(unit)} died.")
 
           new_history = add_to_history(history_acc, %{unit_id: unit_id}, :death)
 
@@ -151,14 +151,14 @@ defmodule Champions.Battle.Simulator do
     case winner do
       "none" ->
         if step == maximum_steps - 1 do
-          Logger.info("Battle timeout.")
+          IO.inspect("Battle timeout.")
           {:halt, {history, "timeout"}}
         else
           {:cont, {state, history}}
         end
 
       result ->
-        Logger.info("Battle ended. Result: #{result}.")
+        IO.inspect("Battle ended. Result: #{result}.")
 
         {:halt, {history, result}}
     end
@@ -166,7 +166,7 @@ defmodule Champions.Battle.Simulator do
 
   defp process_step_for_units({initial_step_state, history}) do
     Enum.reduce(initial_step_state.units, {initial_step_state, history}, fn {unit_id, unit}, {current_state, history} ->
-      Logger.info("Process step #{initial_step_state.step_number} for unit #{format_unit_name(unit)}")
+      IO.inspect("Process step #{initial_step_state.step_number} for unit #{format_unit_name(unit)}")
       process_step_for_unit(initial_step_state.units[unit_id], current_state, initial_step_state, history)
     end)
   end
@@ -180,7 +180,7 @@ defmodule Champions.Battle.Simulator do
           {current_state, history}
 
         can_cast_ultimate_skill(unit) ->
-          Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
+          IO.inspect("Unit #{format_unit_name(unit)} casting Ultimate skill")
 
           new_state =
             current_state
@@ -199,11 +199,21 @@ defmodule Champions.Battle.Simulator do
               },
               :skill_action
             )
+            |> add_to_history(
+              %{
+                target_id: unit.id,
+                stat_affected: %{
+                  stat: :ENERGY,
+                  amount: -@ultimate_energy_cost
+                }
+              },
+              :stat_override
+            )
 
           {new_state, new_history}
 
         can_cast_basic_skill(unit) ->
-          Logger.info("Unit #{format_unit_name(unit)} casting basic skill")
+          IO.inspect("Unit #{format_unit_name(unit)} casting basic skill")
 
           new_state =
             current_state
@@ -281,7 +291,7 @@ defmodule Champions.Battle.Simulator do
 
         # Modifier expired
         0 ->
-          Logger.info("Modifier [#{format_modifier_name(modifier)}] expired for #{format_unit_name(unit)}.")
+          IO.inspect("Modifier [#{format_modifier_name(modifier)}] expired for #{format_unit_name(unit)}.")
 
           {acc,
            add_to_history(
@@ -299,7 +309,7 @@ defmodule Champions.Battle.Simulator do
 
         # Modifier still going, reduce its timer by one
         remaining ->
-          Logger.info(
+          IO.inspect(
             "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)}."
           )
 
@@ -319,7 +329,7 @@ defmodule Champions.Battle.Simulator do
 
         # Tag expired
         0 ->
-          Logger.info(~c"Tag \"#{tag.tag}\" expired for #{format_unit_name(unit)}.")
+          IO.inspect(~c"Tag \"#{tag.tag}\" expired for #{format_unit_name(unit)}.")
 
           {acc,
            add_to_history(
@@ -334,7 +344,7 @@ defmodule Champions.Battle.Simulator do
 
         # Tag still going, reduce its timer by one
         remaining ->
-          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)}.")
+          IO.inspect(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)}.")
 
           {[Map.put(tag, :remaining_steps, remaining - 1) | acc], history}
       end
@@ -343,7 +353,7 @@ defmodule Champions.Battle.Simulator do
 
   defp process_step_for_skills({current_state, history}, initial_step_state) do
     Enum.reduce(current_state.skills_being_cast, {current_state, history}, fn skill, {current_state, history_acc} ->
-      Logger.info(
+      IO.inspect(
         "Process step #{current_state.step_number} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
       )
 
@@ -382,7 +392,7 @@ defmodule Champions.Battle.Simulator do
       end
     else
       # If the unit died, just delete the skill being cast
-      Logger.info("Skill caster #{String.slice(skill.caster_id, 0..2)} died. Deleting skill from list.")
+      IO.inspect("Skill caster #{String.slice(skill.caster_id, 0..2)} died. Deleting skill from list.")
       {Map.put(current_state, :skills_being_cast, List.delete(current_state.skills_being_cast, skill)), history}
     end
   end
@@ -395,7 +405,7 @@ defmodule Champions.Battle.Simulator do
          initial_step_state,
          history
        ) do
-    Logger.info("Trigger delay for mechanic #{String.slice(mechanic.id, 0..2)} of skill #{mechanic.skill_id} ready.")
+    IO.inspect("Trigger delay for mechanic #{String.slice(mechanic.id, 0..2)} of skill #{mechanic.skill_id} ready.")
     process_mechanic(mechanic, current_state, initial_step_state, history)
   end
 
@@ -461,7 +471,7 @@ defmodule Champions.Battle.Simulator do
         case effect do
           %{delay: 0} ->
             # If the effect is ready to be processed, we apply it.
-            Logger.info("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
+            IO.inspect("#{format_unit_name(effect.caster)}'s effect is ready to be processed")
 
             {targets_after_effect, new_history} =
               Enum.reduce(effect.targets, {%{}, new_history}, fn target_id, {new_targets, history_acc} ->
@@ -504,11 +514,11 @@ defmodule Champions.Battle.Simulator do
     # Check the unit is not casting anything right now and is not stunned
     cond do
       Enum.any?(initial_step_state.skills_being_cast, &(&1.caster_id == unit.id)) ->
-        Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is casting another skill")
+        IO.inspect("Unit #{format_unit_name(unit)} cannot attack because it is casting another skill")
         false
 
       Enum.any?(unit.tags, &(&1.tag == "Stun")) ->
-        Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is stunned")
+        IO.inspect("Unit #{format_unit_name(unit)} cannot attack because it is stunned")
         false
 
       true ->
@@ -623,7 +633,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp maybe_apply_effect(effect, target, caster, _current_step_number, false, history) do
-    Logger.info("#{format_unit_name(effect.caster)}'s effect missed.")
+    IO.inspect("#{format_unit_name(effect.caster)}'s effect missed.")
 
     new_history =
       add_to_history(
@@ -681,7 +691,7 @@ defmodule Champions.Battle.Simulator do
   defp apply_tags(target, tags_to_apply, effect, history) do
     {new_tags, new_history} =
       Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
-        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
+        IO.inspect(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
 
         new_history =
           add_to_history(
@@ -726,7 +736,7 @@ defmodule Champions.Battle.Simulator do
       |> Decimal.round()
       |> Decimal.to_integer()
 
-    Logger.info(
+    IO.inspect(
       "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}"
     )
 

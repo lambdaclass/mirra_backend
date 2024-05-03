@@ -743,6 +743,12 @@ defmodule Gateway.Serialization.Action do
     json_name: "energyRegen",
     oneof: 0
   )
+
+  field(:stat_override, 9,
+    type: Gateway.Serialization.StatOverride,
+    json_name: "statOverride",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.StatAffected do
@@ -835,4 +841,13 @@ defmodule Gateway.Serialization.EnergyRegen do
   field(:target_id, 1, type: :string, json_name: "targetId")
   field(:skill_id, 2, type: :string, json_name: "skillId")
   field(:amount, 3, type: :float)
+end
+
+defmodule Gateway.Serialization.StatOverride do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:target_id, 1, type: :string, json_name: "targetId")
+  field(:stat_affected, 2, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
 end

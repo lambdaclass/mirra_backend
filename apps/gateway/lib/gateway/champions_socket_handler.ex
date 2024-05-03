@@ -15,7 +15,8 @@ defmodule Gateway.ChampionsSocketHandler do
     SkillAction,
     WebSocketResponse,
     ExecutionReceived,
-    EnergyRegen
+    EnergyRegen,
+    StatOverride
   }
 
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
@@ -277,6 +278,13 @@ defmodule Gateway.ChampionsSocketHandler do
 
           :energy_regen ->
             {type, Kernel.struct(EnergyRegen, action)}
+
+          :stat_override ->
+            {type,
+             Kernel.struct(
+               StatOverride,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
         end
     }
   end
