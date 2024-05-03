@@ -1,6 +1,6 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
-  # alias Ecto.UUID
+  alias Ecto.UUID
 
   use GenServer
   require Logger
@@ -37,7 +37,6 @@ defmodule Arena.GameLauncher do
   @impl true
   def init(_) do
     Process.send_after(self(), :launch_game?, 300)
-    create_ets_table(:games)
     {:ok, %{clients: [], batch_start_at: 0}}
   end
 
@@ -62,25 +61,20 @@ defmodule Arena.GameLauncher do
       send(self(), :start_game)
     end
 
-    Logger.info("Games playing: #{:ets.info(:games, :size)}")
-
     {:noreply, state}
   end
 
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
 
-    # bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
+    bot_clients = get_bot_clients(@clients_needed - Enum.count(state.clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: game_clients
-        # ++ bot_clients
+        clients: game_clients ++ bot_clients
       })
 
-    true = :ets.insert(:games, {game_pid, game_pid})
-
-    # spawn_bot_for_player(bot_clients, game_pid)
+    spawn_bot_for_player(bot_clients, game_pid)
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
@@ -112,19 +106,19 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  # defp get_bot_clients(missing_clients) do
-  #   Enum.map(1..missing_clients//1, fn i ->
-  #     client_id = UUID.generate()
+  defp get_bot_clients(missing_clients) do
+    Enum.map(1..missing_clients//1, fn i ->
+      client_id = UUID.generate()
 
-  #     {client_id, "h4ck", Enum.at(@bot_names, i), nil}
-  #   end)
-  # end
+      {client_id, "h4ck", Enum.at(@bot_names, i), nil}
+    end)
+  end
 
-  # defp spawn_bot_for_player(bot_clients, game_pid) do
-  #   Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-  #     send(self(), {:spawn_bot_for_player, bot_client, game_pid})
-  #   end)
-  # end
+  defp spawn_bot_for_player(bot_clients, game_pid) do
+    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
+      send(self(), {:spawn_bot_for_player, bot_client, game_pid})
+    end)
+  end
 
   defp build_bot_url(game_pid, bot_client) do
     encoded_game_pid = game_pid |> :erlang.term_to_binary() |> Base58.encode()
@@ -133,12 +127,5 @@ defmodule Arena.GameLauncher do
     bot_manager_host = System.get_env("BOT_MANAGER_HOST", "localhost")
     bot_manager_port = System.get_env("BOT_MANAGER_PORT", "4003")
     "http://#{bot_manager_host}:#{bot_manager_port}/join/#{server_url}/#{encoded_game_pid}/#{bot_client}"
-  end
-
-  defp create_ets_table(table_name) do
-    case :ets.whereis(table_name) do
-      :undefined -> :ets.new(table_name, [:set, :named_table, :public])
-      _table_exists_already -> nil
-    end
   end
 end

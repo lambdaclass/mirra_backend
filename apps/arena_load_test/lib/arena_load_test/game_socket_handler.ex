@@ -24,13 +24,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
   # Callbacks
   def handle_frame({:binary, _msg} = _frame, state) do
-    # {event_type, _state} = Serialization.GameEvent.decode(msg) |> Map.get(:event)
-
-    # if event_type == :finished do
-    #   {:stop, state}
-    # else
-      {:ok, state}
-    # end
+    {:ok, state}
   end
 
   def handle_info(:send_action, state) do
@@ -120,6 +114,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   defp ws_url(client_id, game_id) do
     case System.get_env("TARGET_SERVER") do
       nil ->
+        # TODO REPLACE THIS
         "ws://162.55.80.110:4000/play/#{game_id}/#{client_id}"
 
       target_server ->
