@@ -6,10 +6,8 @@ defmodule ArenaLoadTest.GameSocketHandler do
   alias ArenaLoadTest.SocketSupervisor
   alias ArenaLoadTest.Serialization
   use WebSockex, restart: :transient
-  require Logger
 
   def start_link({client_id, game_id}) do
-    Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
 
     WebSockex.start_link(
@@ -97,7 +95,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
     end
 
     {:ok, _pid} = SocketSupervisor.add_new_client(client_id)
-    Logger.info("Player websocket terminated. Game Ended.")
     exit(:normal)
   end
 
