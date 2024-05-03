@@ -94,6 +94,7 @@ defmodule Champions.Battle.Simulator do
             |> process_step_for_units()
             |> process_step_for_skills(initial_step_state)
             |> process_step_for_effects()
+            |> cap_units_energy()
 
           Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
@@ -741,7 +742,7 @@ defmodule Champions.Battle.Simulator do
       |> Decimal.to_integer()
 
     Logger.info(
-      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense})"
+      "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense})"
     )
 
     new_history =
@@ -759,6 +760,37 @@ defmodule Champions.Battle.Simulator do
       target
       |> Map.put(:health, target.health - damage_after_defense)
       |> Map.put(:energy, min(target.energy + energy_recharge, @ultimate_energy_cost))
+
+    {new_target, new_history}
+  end
+
+  # Apply an AddEnergy execution to its target. Returns the new state of the target.
+  defp process_execution(
+         %{
+           "type" => "AddEnergy",
+           "amount" => amount
+         },
+         target,
+         caster,
+         history,
+         skill_id
+       ) do
+    Logger.info(
+      "#{format_unit_name(caster)} adding #{amount} energy to #{format_unit_name(target)} (#{target.energy} -> #{target.energy - amount})"
+    )
+
+    new_history =
+      add_to_history(
+        history,
+        %{
+          target_id: target.id,
+          skill_id: skill_id,
+          stat_affected: %{stat: :ENERGY, amount: amount}
+        },
+        :execution_received
+      )
+
+    new_target = Map.put(target, :energy, target.energy + amount)
 
     {new_target, new_history}
   end
@@ -791,6 +823,17 @@ defmodule Champions.Battle.Simulator do
     else
       Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
     end
+  end
+
+  # Called at the end of step processing. Sets unit health to max_health if it's above it.
+  defp cap_units_energy({state, history}) do
+    {Map.put(
+       state,
+       :units,
+       Enum.map(state.units, fn {unit_id, unit} ->
+         {unit_id, Map.put(unit, :energy, min(@ultimate_energy_cost, unit.energy))}
+       end)
+     ), history}
   end
 
   # Used to create the initial unit maps to be used during simulation.
