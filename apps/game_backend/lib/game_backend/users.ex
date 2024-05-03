@@ -119,7 +119,7 @@ defmodule GameBackend.Users do
     amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
     username = "User_#{amount_of_users + 1}"
     ##################################################################
-    game_id = Utils.get_game_id("curse_of_mirra")
+    game_id = Utils.get_game_id(:curse_of_mirra)
 
     GoogleUser.changeset(%GoogleUser{}, %{
       email: email,
