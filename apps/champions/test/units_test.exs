@@ -35,7 +35,7 @@ defmodule Champions.Test.Units do
           rank: 1
         })
 
-      unit = Repo.preload(unit, [:character])
+      unit = Repo.preload(unit, [:character, items: :template])
 
       # 100 * (((1-1)^2)/3000 + (1-1)/30 + 1) * (1.05)^(1-1) * (1.1)^(1-1)
       # 100 * (1) * (1) * (1)

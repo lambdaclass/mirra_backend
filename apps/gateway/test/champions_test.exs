@@ -339,11 +339,11 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{
-        response_type: {:battle_result, _ = battle_result}
+        response_type: {:battle_result, battle_result}
       }
 
-      # Battle result should be either win or loss
-      assert battle_result.result == "win" or battle_result.result == "loss"
+      # Battle result should be either team_1, team_2, draw or timeout
+      assert battle_result.result in ["team_1", "team_2", "draw", "timeout"]
 
       # TODO: check rewards [#CHoM-341]
     end
@@ -372,7 +372,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, _ = battle_result}
       }
 
-      assert battle_result.result == "win"
+      assert battle_result.result == "team_1"
 
       {:ok, advanced_user} = Users.get_user(user.id)
 
@@ -447,7 +447,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, _ = battle_result}
       }
 
-      assert battle_result.result == "win"
+      assert battle_result.result == "team_1"
 
       # Get advanced user
       SocketTester.get_user(socket_tester, user.id)
@@ -455,10 +455,10 @@ defmodule Gateway.Test.Champions do
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = advanced_user}}
 
       # Check that the gold and gems afk rewards rates are now greater than the initial rewards, and the other rates are still 0
-      rewardable_currencies_ids = ["Gold", "Gems"] |> Enum.map(&Currencies.get_currency_by_name!(&1).id)
+      rewardable_currencies = ["Gold", "Gems"]
 
       assert Enum.all?(advanced_user.afk_reward_rates, fn rate ->
-               case rate.currency_id in rewardable_currencies_ids do
+               case rate.currency.name in rewardable_currencies do
                  true ->
                    rate.rate > 0
 
@@ -491,9 +491,7 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(claimed_user.currencies, fn currency ->
                user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
 
-               currency_id = Currencies.get_currency_by_name!(currency.currency.name).id
-
-               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency_id == currency_id)) do
+               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency.name == currency.currency.name)) do
                  nil ->
                    # If the currency is not in the afk rewards rates, we don't consider it.
                    true
@@ -528,7 +526,7 @@ defmodule Gateway.Test.Champions do
         response_type: {:battle_result, _ = battle_result}
       }
 
-      assert battle_result.result == "win"
+      assert battle_result.result == "team_1"
 
       # Get new user
       SocketTester.get_user(socket_tester, user.id)
@@ -549,14 +547,16 @@ defmodule Gateway.Test.Champions do
 
       current_level_afk_rewards_increments =
         Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
+        |> Repo.preload(:currency)
 
       assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->
-               case rate.currency_id in rewardable_currencies_ids do
+               case rate.currency.name in rewardable_currencies do
                  true ->
-                   previous_rate = Enum.find(advanced_user.afk_reward_rates, &(&1.currency_id == rate.currency_id)).rate
+                   previous_rate =
+                     Enum.find(advanced_user.afk_reward_rates, &(&1.currency.name == rate.currency.name)).rate
 
                    afk_reward_increment =
-                     Enum.find(current_level_afk_rewards_increments, &(&1.currency_id == rate.currency_id)).amount
+                     Enum.find(current_level_afk_rewards_increments, &(&1.currency.name == rate.currency.name)).amount
 
                    new_rate = previous_rate + afk_reward_increment
                    rate.rate > previous_rate
@@ -576,7 +576,14 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Bow of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              base_value: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_bow.id, level: 1})
@@ -603,16 +610,41 @@ defmodule Gateway.Test.Champions do
 
       [unit | _] = user.units
 
-      {:ok, epic_sword} =
+      attack_multiplier = 1.6
+      defense_multiplier = 1.2
+      health_adder = 100
+
+      {:ok, epic_item} =
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
-          name: "Epic Sword of Testness",
-          type: "weapon"
+          name: "Epic Upgrader of All Stats",
+          type: "weapon",
+          base_modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              base_value: attack_multiplier
+            },
+            %{
+              attribute: "defense",
+              modifier_operation: "Multiply",
+              base_value: defense_multiplier
+            },
+            %{
+              attribute: "health",
+              modifier_operation: "Add",
+              base_value: health_adder
+            }
+          ]
         })
 
-      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_sword.id, level: 1})
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_item.id, level: 1})
 
       # EquipItem
+      attack_before_equip = Units.get_attack(unit)
+      defense_before_equip = Units.get_defense(unit)
+      health_before_equip = Units.get_health(unit)
+
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
       fetch_last_message(socket_tester)
 
@@ -623,6 +655,28 @@ defmodule Gateway.Test.Champions do
       # The item is now equipped to the unit
       assert equipped_item.user_id == user.id
       assert equipped_item.unit_id == unit.id
+
+      # The item affected the unit stats
+      {:ok, updated_user} = Users.get_user(user.id)
+
+      unit_with_item =
+        updated_user.units
+        |> Enum.filter(&(&1.id == unit.id))
+        |> hd()
+        |> Repo.preload(items: :template)
+
+      # We use a range to avoid floating point rounding/truncating errors
+      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip * 0.95)..trunc(
+               attack_multiplier *
+                 attack_before_equip * 1.05
+             )
+
+      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip * 0.95)..trunc(
+               defense_multiplier *
+                 defense_before_equip * 1.05
+             )
+
+      assert Units.get_health(unit_with_item) == health_before_equip + health_adder
 
       # EquipItem again, to another unit
       another_unit = user.units |> Enum.at(1)
@@ -649,6 +703,19 @@ defmodule Gateway.Test.Champions do
       # The item is now unequipped
       assert unequipped_item.user_id == user.id
       assert unequipped_item.unit_id == ""
+
+      # The unit stats are back to normal
+      {:ok, updated_user} = Users.get_user(user.id)
+
+      unit_without_item =
+        updated_user.units
+        |> Enum.filter(&(&1.id == unit.id))
+        |> hd()
+        |> Repo.preload(items: :template)
+
+      assert Units.get_attack(unit_without_item) == attack_before_equip
+      assert Units.get_defense(unit_without_item) == defense_before_equip
+      assert Units.get_health(unit_without_item) == health_before_equip
     end
 
     test "level up item", %{socket_tester: socket_tester} do
@@ -659,7 +726,14 @@ defmodule Gateway.Test.Champions do
         Items.insert_item_template(%{
           game_id: Utils.game_id(),
           name: "Epic Axe of Testness",
-          type: "weapon"
+          type: "weapon",
+          modifiers: [
+            %{
+              attribute: "attack",
+              modifier_operation: "Multiply",
+              base_value: 1.6
+            }
+          ]
         })
 
       {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_axe.id, level: 1})
@@ -686,6 +760,40 @@ defmodule Gateway.Test.Champions do
 
       # LevelUpItem once again to check that we can't afford it
       :ok = SocketTester.level_up_item(socket_tester, user.id, item.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+    end
+  end
+
+  describe "kaline tree" do
+    test "kaline tree", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("KalineTreeUser")
+
+      # Kaline tree level is 1 when the user is created.
+      initial_kaline_tree_level = user.kaline_tree_level.level
+      assert initial_kaline_tree_level == 1
+
+      initial_fertilizer = Currencies.get_amount_of_currency_by_name(user.id, "Fertilizer")
+      initial_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+
+      # Level up Kaline Tree with enough fertilizer should return an updated user.
+      SocketTester.level_up_kaline_tree(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
+      assert leveled_up_user.kaline_tree_level.level == initial_kaline_tree_level + 1
+
+      # Currency should be deducted
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Fertilizer") ==
+               initial_fertilizer - user.kaline_tree_level.fertilizer_level_up_cost
+
+      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") ==
+               initial_gold - user.kaline_tree_level.gold_level_up_cost
+
+      # Level up Kaline Tree without enough fertilizer should return an error.
+      SocketTester.level_up_kaline_tree(socket_tester, user.id)
+
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}

@@ -24,12 +24,8 @@ syntax = "proto3";
       GetAfkRewards get_afk_rewards = 21;
       ClaimAfkRewards claim_afk_rewards = 22;
       GetUserSuperCampaignProgresses get_user_super_campaign_progresses = 23;
-      BattleTest battle_test = 24;
+      LevelUpKalineTree level_up_kaline_tree = 24;
     }
-  }
-
-  message BattleTest {
-    string user_id = 1;
   }
 
  message GetUser {
@@ -136,6 +132,10 @@ syntax = "proto3";
     string user_id = 1;
   }
 
+  message LevelUpKalineTree {
+    string user_id = 1;
+  }
+
   ////////////////////////////////////////
 
   message WebSocketResponse {
@@ -155,7 +155,6 @@ syntax = "proto3";
       UserAndUnit user_and_unit = 13;
       AfkRewards afk_rewards = 14;
       SuperCampaignProgresses super_campaign_progresses = 15;
-      BattleReplay battle_replay = 16;
     }
   }
   
@@ -168,6 +167,15 @@ syntax = "proto3";
     repeated Unit units = 8;
     repeated Item items = 9;
     repeated AfkRewardRate afk_reward_rates = 10;
+    KalineTreeLevel kaline_tree_level = 11;
+  }
+
+  message KalineTreeLevel {
+    string id = 1;
+    uint64 level = 2;
+    uint64 fertilizer_level_up_cost = 3;
+    uint64 gold_level_up_cost = 4;
+    repeated string unlock_features = 5;
   }
 
   message SuperCampaignProgresses {
@@ -183,7 +191,7 @@ syntax = "proto3";
 
   message AfkRewardRate {
     string user_id = 1;
-    string currency_id = 2;
+    Currency currency = 2;
     float rate = 3;
   }
 
@@ -256,15 +264,12 @@ syntax = "proto3";
     uint32 level_number = 3;
     repeated Unit units = 4;
     repeated CurrencyReward currency_rewards = 5;
+    uint32 experience_reward = 6;
   }
 
   message CurrencyReward {
     Currency currency = 1; 
     uint64 amount = 3;
-  }
-
-  message BattleResult {
-    string result = 1;
   }
 
   message AfkRewards {
@@ -308,7 +313,7 @@ syntax = "proto3";
     Unit unit = 2;
   }
 
-// BATTLE REPLAY
+// BATTLE RESULT
 
   enum SkillActionType {
     ANIMATION_START = 0;
@@ -320,11 +325,13 @@ syntax = "proto3";
   enum Stat {
     HEALTH = 0;
     ENERGY = 1;
-    DAMAGE = 2;
+    ATTACK = 2;
     DEFENSE = 3;
+    DAMAGE_REDUCTION = 4;
+    SPEED = 5;
   }
 
-  message BattleReplay {
+  message BattleResult {
     State initial_state = 1;
     repeated Step steps = 2;
     string result = 3;
@@ -355,6 +362,7 @@ syntax = "proto3";
       ModifierExpired modifier_expired = 4;
       TagExpired tag_expired = 5;
       Death death = 6;
+      ExecutionReceived execution_received = 7;
     }
   }
 
@@ -368,8 +376,11 @@ syntax = "proto3";
     repeated string target_ids = 2;
     string skill_id = 3;
     SkillActionType skill_action_type = 4;
-    // Stat should only be "health" or "energy" when in SkillAction
-    repeated StatAffected stats_affected = 5;
+  }
+
+  message ExecutionReceived {
+    string target_id = 1;
+    StatAffected stat_affected = 2;
   }
 
   message ModifierReceived {
@@ -381,7 +392,7 @@ syntax = "proto3";
   message TagReceived {
     string skill_id = 1;
     string target_id = 2;
-    string tag_name = 3;
+    string tag = 3;
   }
 
   message ModifierExpired {
@@ -393,7 +404,7 @@ syntax = "proto3";
   message TagExpired {
     string skill_id = 1;
     string target_id = 2;
-    string tag_name = 3;
+    string tag = 3;
   }
 
   message Death {

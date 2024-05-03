@@ -81,7 +81,17 @@ defmodule GameBackend.Campaigns do
   Returns `{:error, :not_found}` if no level is found.
   """
   def get_level(level_id) do
-    level = Repo.get(Level, level_id) |> Repo.preload([:campaign, :currency_rewards, units: :items, units: :character])
+    level =
+      Repo.get(Level, level_id)
+      |> Repo.preload([
+        :campaign,
+        :currency_rewards,
+        units: [
+          :items,
+          character: [basic_skill: [mechanics: :apply_effects_to], ultimate_skill: [mechanics: :apply_effects_to]]
+        ]
+      ])
+
     if level, do: {:ok, level}, else: {:error, :not_found}
   end
 
