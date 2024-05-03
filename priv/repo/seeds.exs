@@ -160,7 +160,7 @@ afk_reward_rates =
     ]
   end)
 
-Repo.insert_all(AfkRewardRate, afk_reward_rates, on_conflict: :nothing)
+Repo.insert_all(AfkRewardRate, afk_reward_rates)
 
 ######################
 # Campaigns creation #
