@@ -1,6 +1,6 @@
 defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
   @moduledoc """
-  The representation of a Kaline Tree level reward that gives a currency to the user.
+  The representation of a Kaline Tree AFK reward rate that periodically gives a currency to the user in that level of the Tree.
   """
 
   use GameBackend.Schema
