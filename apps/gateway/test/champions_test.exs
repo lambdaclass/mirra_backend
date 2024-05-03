@@ -6,7 +6,8 @@ defmodule Gateway.Test.Champions do
 
   use ExUnit.Case
 
-  alias Champions.{Units, Users, Utils}
+  alias Champions.{Units, Users}
+  alias GameBackend.Utils
   alias GameBackend.Campaigns.Rewards.CurrencyReward
   alias GameBackend.Repo
   alias GameBackend.Items
