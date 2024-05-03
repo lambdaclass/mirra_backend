@@ -52,12 +52,6 @@ defmodule ArenaLoadTest.SocketHandler do
     {:ok, state}
   end
 
-  @impl true
-  def terminate({:remote, 1002, ""}, state) do
-    ArenaLoadTest.SocketSupervisor.add_new_client(state.client_id)
-    exit(:normal)
-  end
-
   # Private
   defp ws_url(player_id) do
     character = get_random_active_character()
