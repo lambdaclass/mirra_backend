@@ -776,7 +776,7 @@ defmodule Champions.Battle.Simulator do
          skill_id
        ) do
     Logger.info(
-      "#{format_unit_name(caster)} adding #{amount} energy to #{format_unit_name(target)} (#{target.energy} -> #{target.energy - amount})"
+      "#{format_unit_name(caster)} adding #{amount} energy to #{format_unit_name(target)} (#{target.energy} -> #{target.energy + amount})"
     )
 
     new_history =
