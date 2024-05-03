@@ -9,6 +9,12 @@ defmodule Gateway.Router do
     pipe_through :api
   end
 
+  scope "/arena", Gateway.Controllers.Arena do
+    pipe_through :api
+
+    put "/currency/modify", CurrencyController, :modify_currency
+  end
+
   scope "/auth", Gateway do
     pipe_through :api
 
