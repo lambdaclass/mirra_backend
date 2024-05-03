@@ -1,4 +1,4 @@
-<%= unless assigns[:user_id] do %>
+<%= unless assigns[:current_user_id] do %>
   <p>You are not logged in, match results won't be saved</p>
 <% end %>
 
@@ -9,8 +9,8 @@
   <.button type="submit" name="game_mode" value="quick_game">Quick Game</.button>
 </.form>
 
-<%= if assigns[:user_id] do %>
-  <p>Logged in as user_id: <%= @user_id %></p>
+<%= if assigns[:current_user_id] do %>
+  <p>Logged in as user_id: <%= @current_user_id %></p>
 <% else %>
   <.link href={~p"/auth/google"}>Google login</.link>
 <% end %>
