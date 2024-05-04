@@ -23,6 +23,7 @@ defmodule Arena.Entities do
         base_health: character.base_health,
         max_health: character.base_health,
         base_speed: character.base_speed,
+        base_radius: character.base_size,
         base_stamina_interval: character.stamina_interval,
         skills: character.skills,
         current_actions: [],

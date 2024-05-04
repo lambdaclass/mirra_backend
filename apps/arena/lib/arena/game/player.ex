@@ -243,22 +243,23 @@ defmodule Arena.Game.Player do
 
   ## Examples
 
-      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10}}, 40)
-      44
+      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10, bonus_damage: 0.5}}, 40)
+      64
 
   """
   def calculate_real_damage(
         %{
           aditional_info: %{
             power_ups: power_up_amount,
-            power_up_damage_modifier: power_up_damage_modifier
+            power_up_damage_modifier: power_up_damage_modifier,
+            bonus_damage: bonus_damage
           }
         } = _player_damage_owner,
         damage
       ) do
-    aditional_damage = damage * power_up_damage_modifier * power_up_amount
+    multiplier = 1 + (power_up_damage_modifier * power_up_amount) + bonus_damage
 
-    (damage + aditional_damage)
+    (damage * multiplier)
     |> round()
   end
 
@@ -318,6 +319,7 @@ defmodule Arena.Game.Player do
   def reset_effects(player) do
     player
     |> put_in([:speed], player.aditional_info.base_speed)
+    |> put_in([:radius], player.aditional_info.base_radius)
     |> put_in([:aditional_info, :stamina_interval], player.aditional_info.base_stamina_interval)
     |> put_in([:aditional_info, :bonus_damage], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
