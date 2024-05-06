@@ -1239,20 +1239,24 @@ defmodule Arena.GameUpdater do
 
       visible_players =
         Enum.reduce(players, [], fn {candicandidate_player_id, candidate_player}, acc ->
-          candidate_bush_collisions =
-            Enum.filter(candidate_player.collides_with, fn collided_id ->
-              Map.has_key?(bushes, collided_id)
-            end)
+          if candidate_player.id != player_id do
+            candidate_bush_collisions =
+              Enum.filter(candidate_player.collides_with, fn collided_id ->
+                Map.has_key?(bushes, collided_id)
+              end)
 
-          players_in_same_bush? =
-            Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)
+            players_in_same_bush? =
+              Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)
 
-          players_close_enough? =
-            Physics.distance_between_entities(player, candidate_player) <= game_config.bushes.field_of_view_inside_bush
+            players_close_enough? =
+              Physics.distance_between_entities(player, candidate_player) <=
+                game_config.bushes.field_of_view_inside_bush
 
-          if candidate_player.id != player_id and
-               (Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?)) do
-            acc ++ [candicandidate_player_id]
+            if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
+              [candicandidate_player_id | acc]
+            else
+              acc
+            end
           else
             acc
           end
