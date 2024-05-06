@@ -87,4 +87,26 @@ defmodule Champions.Config do
       )
     end)
   end
+
+  def import_fusion_config() do
+    {:ok, fusion_json} =
+      Application.app_dir(:champions, "priv/fusion.json")
+      |> File.read()
+
+    fusion_rules = Jason.decode!(fusion_json, [{:keys, :atoms}])
+
+    Enum.each(fusion_rules, fn fusion_rule ->
+      Application.put_env(
+        :champions,
+        :"rank_#{fusion_rule.rank}_fusion",
+        %{
+          same_character_amount: fusion_rule.same_character_amount,
+          same_character_rank: fusion_rule.same_character_rank,
+          same_faction_amount: fusion_rule.same_faction_amount,
+          same_faction_rank: fusion_rule.same_faction_rank
+        },
+        persistent: true
+      )
+    end)
+  end
 end
