@@ -512,7 +512,7 @@ defmodule Champions.Battle.Simulator do
   defp choose_targets(caster, targeting_strategy, state) do
     targeteable_units =
       state.units
-      |> Enum.filter(fn {_, unit} -> not Enum.any?(unit.tags, &(&1.tag == "Untargeteable")) end)
+      |> Enum.filter(fn {_, unit} -> not Enum.any?(unit.tags, &(&1.tag == "Untargetable")) end)
 
     state_with_targeteable_units =
       Map.put(state, :units, targeteable_units)
