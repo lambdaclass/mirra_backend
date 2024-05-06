@@ -103,7 +103,7 @@ defmodule Arena.GameLauncher do
     characters =
       Arena.Configuration.get_game_config()
       |> Map.get(:characters)
-      |> Enum.filter(fn chara -> chara.active end)
+      |> Enum.filter(fn character -> character.active end)
 
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
