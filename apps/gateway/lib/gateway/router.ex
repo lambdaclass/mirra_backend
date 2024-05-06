@@ -15,8 +15,10 @@ defmodule Gateway.Router do
     get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
 
     scope "/users" do
-      put "/:user_id", Controllers.UserController, :update
-      resources "/currency", Controllers.Users.CurrencyController, only: [:update]
+      scope "/:user_id" do
+        put "/", Controllers.UserController, :update
+        put "/currency", Controllers.Users.CurrencyController, :modify_currency
+      end
     end
   end
 
