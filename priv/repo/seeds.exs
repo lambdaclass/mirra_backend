@@ -10,6 +10,7 @@ alias GameBackend.Users
 alias GameBackend.Users.KalineTreeLevel
 alias GameBackend.Campaigns.Rewards.CurrencyReward
 
+curse_of_mirra_id = 1
 champions_of_mirra_id = 2
 units_per_level = 5
 
@@ -91,6 +92,9 @@ Items.insert_item_template(%{
 
 {:ok, _fertilizer_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, _trophies_currency} =
+  Users.Currencies.insert_currency(%{game_id: curse_of_mirra_id, name: "Trophies"})
 
 {:ok, _} =
   Gacha.insert_box(%{
