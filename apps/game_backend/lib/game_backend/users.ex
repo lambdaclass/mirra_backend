@@ -62,10 +62,10 @@ defmodule GameBackend.Users do
 
   ## Examples
 
-      iex> update_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
+      iex> update_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf", %{valid_param: valid_value})
       {:ok, %User{}}
 
-      iex> update_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
+      iex> update_user("9483ae81-f3e8-4050-acea-13940d47d8ed", %{invalid_param: invalid_value})
       {:error, %Changeset{}}
   """
   def update_user(%User{} = user, params) do
