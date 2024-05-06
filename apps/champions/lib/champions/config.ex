@@ -87,7 +87,7 @@ defmodule Champions.Config do
     end)
     |> Items.upsert_item_templates()
   end
-  
+
   def import_proximity_config() do
     {:ok, proximities_json} =
       Application.app_dir(:champions, "priv/proximities.json")
