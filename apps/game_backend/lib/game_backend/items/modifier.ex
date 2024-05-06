@@ -25,7 +25,7 @@ defmodule GameBackend.Items.Modifier do
       %Modifier{
         attribute: "defense",
         operation: "Add",
-        base_value: 100
+        value: 100
       }
   """
 
