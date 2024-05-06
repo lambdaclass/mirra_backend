@@ -6,7 +6,8 @@ defmodule Gateway.Test.Champions do
 
   use ExUnit.Case
 
-  alias Champions.{Units, Users, Utils}
+  alias Champions.{Units, Users}
+  alias GameBackend.Utils
   alias GameBackend.Campaigns.Rewards.CurrencyReward
   alias GameBackend.Repo
   alias GameBackend.Items
@@ -196,7 +197,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, same_faction_character} =
         GameBackend.Units.Characters.insert_character(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           active: true,
           name: "SameFactionUnit",
           faction: muflus.faction,
@@ -574,7 +575,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_bow} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Bow of Testness",
           type: "weapon",
           modifiers: [
@@ -616,7 +617,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_item} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Upgrader of All Stats",
           type: "weapon",
           base_modifiers: [
@@ -724,7 +725,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_axe} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Axe of Testness",
           type: "weapon",
           modifiers: [
