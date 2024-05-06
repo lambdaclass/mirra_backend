@@ -544,6 +544,12 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
+  defp choose_targets(caster, %{count: _count, type: "all", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.map(fn {id, _unit} -> id end)
+
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
       Enum.sort_by(units, fn unit ->
@@ -847,7 +853,8 @@ defmodule Champions.Battle.Simulator do
   @implemented_targeting_strategies [
     "random",
     "nearest",
-    "furthest"
+    "furthest",
+    "all"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
