@@ -12,10 +12,17 @@ defmodule Arena.Configuration do
       Application.app_dir(:arena, "priv/config.json")
       |> File.read()
 
+    {:ok, conrrency_config_json} =
+      Application.app_dir(:arena, "priv/currencies_rules.json")
+      |> File.read()
+
     config = Jason.decode!(config_json, [{:keys, :atoms}])
+    currency_config = Jason.decode!(conrrency_config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
+
     %{config | skills: skills, characters: characters}
+    |> Map.merge(currency_config)
   end
 
   defp parse_skills_config(skills_config) do
