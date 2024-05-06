@@ -16,7 +16,9 @@ defmodule Gateway.Application do
       # Start a worker by calling: Gateway.Worker.start_link(arg)
       # {Gateway.Worker, arg},
       # Start to serve requests, typically the last entry
-      Gateway.Endpoint
+      Gateway.Endpoint,
+      # Google JWK fetcher genserver
+      GoogleCerts.CertificateCache
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

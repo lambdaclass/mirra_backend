@@ -315,3 +315,7 @@ config :bot_manager, :end_point_configuration,
   scheme: :http,
   plug: BotManager.Endpoint,
   options: [port: bot_manager_port]
+
+###################################
+
+config :joken, issuer: "https://accounts.google.com", audience: System.get_env("GOOGLE_CLIENT_ID")

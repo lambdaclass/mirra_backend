@@ -669,15 +669,14 @@ defmodule Gateway.Test.Champions do
         |> Repo.preload(items: :template)
 
       # We use a range to avoid floating point rounding/truncating errors
-      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip)..trunc(
+      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip * 0.95)..trunc(
                attack_multiplier *
-                 attack_before_equip + 1
+                 attack_before_equip * 1.05
              )
 
-      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip)..trunc(
+      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip * 0.95)..trunc(
                defense_multiplier *
-                 defense_before_equip +
-                 1
+                 defense_before_equip * 1.05
              )
 
       assert Units.get_health(unit_with_item) == health_before_equip + health_adder

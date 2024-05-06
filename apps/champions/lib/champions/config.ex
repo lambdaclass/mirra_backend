@@ -87,4 +87,24 @@ defmodule Champions.Config do
     end)
     |> Items.upsert_item_templates()
   end
+  
+  def import_proximity_config() do
+    {:ok, proximities_json} =
+      Application.app_dir(:champions, "priv/proximities.json")
+      |> File.read()
+
+    proximities = Jason.decode!(proximities_json, [{:keys, :atoms}])
+
+    Enum.each(0..5, fn index ->
+      Application.put_env(
+        :champions,
+        :"slot_#{index + 1}_proximities",
+        %{
+          ally_proximities: Enum.at(proximities.ally_proximities, index),
+          enemy_proximities: Enum.at(proximities.enemy_proximities, index)
+        },
+        persistent: true
+      )
+    end)
+  end
 end

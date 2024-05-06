@@ -14,6 +14,9 @@ defmodule Champions.Application do
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
+
+    Champions.Config.import_proximity_config()
+
     opts = [strategy: :one_for_one, name: Champions.Supervisor]
     Supervisor.start_link(children, opts)
   end
