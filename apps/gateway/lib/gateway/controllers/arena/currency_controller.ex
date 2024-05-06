@@ -1,4 +1,4 @@
-defmodule Gateway.Controllers.Users.Currency.CurrencyController do
+defmodule Gateway.Controllers.Users.CurrencyController do
   use Gateway, :controller
 
   alias GameBackend.Users.Currencies.UserCurrency
