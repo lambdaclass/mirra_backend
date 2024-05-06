@@ -4,7 +4,7 @@ defmodule Champions.Config do
   """
 
   alias Champions.Units
-  alias Champions.Utils
+  alias GameBackend.Utils
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
 
@@ -52,7 +52,7 @@ defmodule Champions.Config do
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
         base_defense: Integer.parse(defense) |> elem(0),
-        game_id: Utils.game_id(),
+        game_id: Utils.get_game_id(:champions_of_mirra),
         basic_skill_id: get_skill_id(basic_skill),
         ultimate_skill_id: get_skill_id(ultimate_skill),
         active: true

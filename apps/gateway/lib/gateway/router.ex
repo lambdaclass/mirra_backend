@@ -9,18 +9,17 @@ defmodule Gateway.Router do
     pipe_through :api
   end
 
-  scope "/users", Gateway.Controllers.Users do
+  scope "/", Gateway do
     pipe_through :api
 
-    scope "/currency", Currency do
-      put "/modify", CurrencyController, :modify_currency
+    get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
+
+    scope "/users" do
+      scope "/:user_id" do
+        put "/", Controllers.UserController, :update
+        put "/currency", Controllers.Users.CurrencyController, :modify_currency
+      end
     end
-  end
-
-  scope "/auth", Gateway do
-    pipe_through :api
-
-    get "/:provider/token/:token_id", Controllers.AuthController, :validate_token
   end
 
   # Other scopes may use custom stacks.

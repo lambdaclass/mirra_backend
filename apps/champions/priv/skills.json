@@ -1516,7 +1516,7 @@
               "components": [],
               "modifiers": [
                 {
-                  "attribute": "dmg-red%",
+                  "attribute": "damage_reduction",
                   "modifier_operation": "Add",
                   "magnitude_calc_type": "float",
                   "float_magnitude": 0.2
