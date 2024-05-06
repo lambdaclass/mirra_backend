@@ -18,7 +18,7 @@ defmodule GameBackend.Items.Modifier do
       %Modifier{
         attribute: "attack",
         operation: "Multiply",
-        base_value: 1.05
+        value: 1.05
       }
 
       # Base Modifier to increment defense by 100:
