@@ -18,8 +18,10 @@ defmodule GameBackend.Users.User do
     field(:level, :integer)
     field(:experience, :integer)
     field(:last_afk_reward_claim, :utc_datetime)
+    field(:profile_picture, :string)
 
     belongs_to(:kaline_tree_level, KalineTreeLevel)
+    belongs_to(:google_user, GoogleUser)
 
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
@@ -33,8 +35,18 @@ defmodule GameBackend.Users.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:game_id, :username, :last_afk_reward_claim, :kaline_tree_level_id, :level, :experience])
+    |> cast(attrs, [
+      :game_id,
+      :username,
+      :last_afk_reward_claim,
+      :kaline_tree_level_id,
+      :level,
+      :experience,
+      :profile_picture,
+      :google_user_id
+    ])
     |> unique_constraint([:game_id, :username])
+    |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username, :kaline_tree_level_id])
   end
 

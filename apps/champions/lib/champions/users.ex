@@ -5,7 +5,7 @@ defmodule Champions.Users do
 
   alias GameBackend.Users.Currencies.CurrencyCost
   alias Champions.Users
-  alias Champions.Utils
+  alias GameBackend.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
@@ -28,7 +28,7 @@ defmodule Champions.Users do
 
     case Users.register_user(%{
            username: username,
-           game_id: Utils.game_id(),
+           game_id: Utils.get_game_id(:champions_of_mirra),
            level: 1,
            experience: 0,
            kaline_tree_level_id: kaline_tree_level.id
@@ -109,7 +109,7 @@ defmodule Champions.Users do
     # Add SuperCampaignProgress for each SuperCampaign
     Enum.each(campaigns, fn {super_campaign_id, [first_campaign | _campaigns]} ->
       GameBackend.Campaigns.insert_super_campaign_progress(%{
-        game_id: Utils.game_id(),
+        game_id: Utils.get_game_id(:champions_of_mirra),
         user_id: user.id,
         super_campaign_id: super_campaign_id,
         level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
