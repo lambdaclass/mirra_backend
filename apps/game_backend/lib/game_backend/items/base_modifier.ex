@@ -17,14 +17,14 @@ defmodule GameBackend.Items.BaseModifier do
       # Base Modifier to increment attack by 5%:
       %BaseModifier{
         attribute: "attack",
-        modifier_operation: "Multiply",
+        operation: "Multiply",
         base_value: 1.05
       }
 
       # Base Modifier to increment defense by 100:
       %BaseModifier{
         attribute: "defense",
-        modifier_operation: "Add",
+        operation: "Add",
         base_value: 100
       }
   """
@@ -34,7 +34,7 @@ defmodule GameBackend.Items.BaseModifier do
 
   embedded_schema do
     field(:attribute, :string)
-    field(:modifier_operation, :string)
+    field(:operation, :string)
     field(:base_value, :float)
   end
 
@@ -43,8 +43,8 @@ defmodule GameBackend.Items.BaseModifier do
   """
   def changeset(modifier, attrs) do
     modifier
-    |> cast(attrs, [:attribute, :modifier_operation, :base_value])
-    |> validate_inclusion(:modifier_operation, ~w[Add Multiply])
-    |> validate_required([:modifier_operation, :base_value, :attribute])
+    |> cast(attrs, [:attribute, :operation, :base_value])
+    |> validate_inclusion(:operation, ~w[Add Multiply])
+    |> validate_required([:operation, :base_value, :attribute])
   end
 end

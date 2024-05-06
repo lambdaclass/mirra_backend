@@ -278,7 +278,7 @@ defmodule Champions.Battle.Simulator do
                target_id: unit.id,
                stat_affected: %{
                  stat: modifier.attribute |> String.upcase() |> string_to_atom(),
-                 amount: modifier.float_magnitude
+                 amount: modifier.magnitude
                }
              },
              :modifier_expired
@@ -605,14 +605,14 @@ defmodule Champions.Battle.Simulator do
               target_id: target.id,
               stat_affected: %{
                 stat: modifier.attribute |> String.upcase() |> string_to_atom(),
-                amount: modifier.float_magnitude
+                amount: modifier.magnitude
               }
             },
             :modifier_received
           )
 
         new_target =
-          case modifier.modifier_operation do
+          case modifier.operation do
             "Add" ->
               put_in(target, [:modifiers, :additives], [new_modifier | target.modifiers.additives])
 
@@ -786,15 +786,15 @@ defmodule Champions.Battle.Simulator do
     if Enum.empty?(overrides) do
       addition =
         Enum.filter(unit.modifiers.additives, &(&1.attribute == Atom.to_string(attribute)))
-        |> Enum.reduce(0, fn mod, acc -> mod.float_magnitude + acc end)
+        |> Enum.reduce(0, fn mod, acc -> mod.magnitude + acc end)
 
       multiplication =
         Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == Atom.to_string(attribute)))
-        |> Enum.reduce(1, fn mod, acc -> mod.float_magnitude * acc end)
+        |> Enum.reduce(1, fn mod, acc -> mod.magnitude * acc end)
 
       (unit[attribute] + addition) * multiplication
     else
-      Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
+      Enum.min_by(overrides, & &1.step_applied_at).magnitude
     end
   end
 
@@ -931,7 +931,7 @@ defmodule Champions.Battle.Simulator do
 
   # Format modifier name for logs.
   defp format_modifier_name(modifier),
-    do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
+    do: "#{modifier.operation} #{modifier.attribute} by #{modifier.magnitude}"
 
   defp add_to_history([%{step_number: step_number, actions: actions} | history], entry_to_add, type) do
     [%{step_number: step_number, actions: [%{action_type: {type, entry_to_add}} | actions]} | history]

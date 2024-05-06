@@ -475,10 +475,10 @@ defmodule Champions.Units do
       Enum.filter(item_modifiers, &(&1.attribute == attribute))
 
     additive_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Add"))
+      Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
 
     multiplicative_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Multiply"))
+      Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
 
     {additive_modifiers, multiplicative_modifiers}
   end

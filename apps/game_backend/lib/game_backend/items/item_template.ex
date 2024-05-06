@@ -13,7 +13,7 @@ defmodule GameBackend.Items.ItemTemplate do
         base_modifiers: [
           %BaseModifier{
             attribute: "attack",
-            modifier_operation: "Multiply",
+            operation: "Multiply",
             base_value: 1.3
           }
         ]

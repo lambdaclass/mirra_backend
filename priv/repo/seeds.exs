@@ -23,7 +23,7 @@ Items.insert_item_template(%{
   base_modifiers: [
     %{
       attribute: "attack",
-      modifier_operation: "Multiply",
+      operation: "Multiply",
       base_value: 1.6
     }
   ]
@@ -36,7 +36,7 @@ Items.insert_item_template(%{
   base_modifiers: [
     %{
       attribute: "defense",
-      modifier_operation: "Multiply",
+      operation: "Multiply",
       base_value: 1.15
     }
   ]
@@ -49,7 +49,7 @@ Items.insert_item_template(%{
   base_modifiers: [
     %{
       attribute: "defense",
-      modifier_operation: "Multiply",
+      operation: "Multiply",
       base_value: 1.2
     }
   ]
@@ -62,7 +62,7 @@ Items.insert_item_template(%{
   base_modifiers: [
     %{
       attribute: "speed",
-      modifier_operation: "Multiply",
+      operation: "Multiply",
       base_value: 1.3
     }
   ]

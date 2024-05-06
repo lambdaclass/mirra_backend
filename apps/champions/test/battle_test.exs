@@ -254,9 +254,9 @@ defmodule Champions.Test.BattleTest do
                       modifiers: [
                         %{
                           attribute: "attack",
-                          modifier_operation: "Multiply",
+                          operation: "Multiply",
                           magnitude_calc_type: "Float",
-                          float_magnitude: 0.1
+                          magnitude: 0.1
                         }
                       ],
                       target_allies: true

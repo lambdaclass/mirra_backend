@@ -580,7 +580,7 @@ defmodule Gateway.Test.Champions do
           modifiers: [
             %{
               attribute: "attack",
-              modifier_operation: "Multiply",
+              operation: "Multiply",
               base_value: 1.6
             }
           ]
@@ -622,17 +622,17 @@ defmodule Gateway.Test.Champions do
           base_modifiers: [
             %{
               attribute: "attack",
-              modifier_operation: "Multiply",
+              operation: "Multiply",
               base_value: attack_multiplier
             },
             %{
               attribute: "defense",
-              modifier_operation: "Multiply",
+              operation: "Multiply",
               base_value: defense_multiplier
             },
             %{
               attribute: "health",
-              modifier_operation: "Add",
+              operation: "Add",
               base_value: health_adder
             }
           ]
@@ -730,7 +730,7 @@ defmodule Gateway.Test.Champions do
           modifiers: [
             %{
               attribute: "attack",
-              modifier_operation: "Multiply",
+              operation: "Multiply",
               base_value: 1.6
             }
           ]
