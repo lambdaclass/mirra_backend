@@ -545,39 +545,17 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
-    units =
-      state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies and unit.slot in [3, 4, 5, 6] end)
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    # Default to frontline if there are no units in the backline
-    units =
-      case units do
-        [] ->
-          state.units
-
-        _ ->
-          units
-      end
-
-    Enum.map(units, fn {id, _unit} -> id end)
+    take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
   end
 
   defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
     units =
-      state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies and unit.slot in [1, 2] end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    # Default to backline if there are no units in the frontline
-    units =
-      case units do
-        [] ->
-          state.units
-
-        _ ->
-          units
-      end
-
-    Enum.map(units, fn {id, _unit} -> id end)
+    take_unit_ids_by_slots(units, [1, 2])
   end
 
   defp find_by_proximity(units, slots_priorities, amount) do
@@ -587,6 +565,23 @@ defmodule Champions.Battle.Simulator do
       end)
 
     Enum.take(sorted_units, amount)
+  end
+
+  defp take_unit_ids_by_slots(units, slots) do
+    slots_units = Enum.filter(units, fn {_id, unit} -> unit.slot in slots end)
+
+    # Fallback to all remaining units if there are no units in slots
+    # Might need to change this if we use this function for more than Frontline-Backline targeting
+    units =
+      case slots_units do
+        [] ->
+          units
+
+        _ ->
+          slots_units
+      end
+
+    Enum.map(units, fn {id, _unit} -> id end)
   end
 
   # If we receive the target's id, it means that the unit has died before the effect hits.
