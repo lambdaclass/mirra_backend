@@ -1784,7 +1784,9 @@
                 "type": "instant"
               },
               "initial_delay": 0,
-              "components": [],
+              "components": [
+                
+              ],
               "modifiers": [],
               "executions": [
                 {
@@ -1976,7 +1978,14 @@
                 "type": "instant"
               },
               "initial_delay": 0,
-              "components": [],
+              "components": [
+                {
+                  "type": "ApplyTags",
+                  "tags": [
+                    "Untargeteable"
+                  ]
+                }
+              ],
               "modifiers": [],
               "executions": [
                 {
