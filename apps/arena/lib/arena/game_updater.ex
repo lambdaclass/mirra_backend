@@ -37,15 +37,17 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients}) do
+  def init(%{clients: clients, bot_clients: bot_clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients, game_config)
+    game_state = new_game(game_id, clients ++ bot_clients, game_config)
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
-    {:ok, %{game_config: game_config, game_state: game_state}}
+    clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
+    bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
+    {:ok, %{clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
   end
 
   ##########################
