@@ -493,6 +493,8 @@ defmodule Arena.GameUpdater do
   end
 
   defp report_game_results(state, winner_id) do
+    match_id = Ecto.UUID.generate()
+
     results =
       Map.take(state.game_state.client_to_player_map, state.clients)
       |> Enum.map(fn {client_id, player_id} ->
@@ -505,11 +507,13 @@ defmodule Arena.GameUpdater do
           kills: player.aditional_info.kill_count,
           ## TODO: this only works because you can only die once
           deaths: if(Player.alive?(player), do: 0, else: 1),
-          character: player.aditional_info.character_name
+          character: player.aditional_info.character_name,
+          match_id: match_id,
+          position: Map.get(state.game_state.positions, client_id)
         }
       end)
 
-    payload = Jason.encode!(%{match_id: Ecto.UUID.generate(), results: results})
+    payload = Jason.encode!(%{results: results})
 
     ## TODO: we should be doing this in a better way, both the url and the actual request
     ## maybe a separate GenServer that gets the results and tries to send them to the server?
@@ -1328,7 +1332,11 @@ defmodule Arena.GameUpdater do
 
   defp put_player_position(%{positions: positions} = game_state, player_id) do
     next_position = 10 - Enum.count(positions)
-    update_in(game_state, [:positions], fn positions -> Map.put(positions, next_position, player_id) end)
+
+    {client_id, _player_id} =
+      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   ##########################
