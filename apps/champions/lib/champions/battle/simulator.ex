@@ -279,7 +279,8 @@ defmodule Champions.Battle.Simulator do
                stat_affected: %{
                  stat: modifier.attribute |> String.upcase() |> string_to_atom(),
                  amount: modifier.magnitude
-               }
+               },
+               operation: modifier.operation
              },
              :modifier_expired
            )}

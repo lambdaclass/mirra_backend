@@ -802,6 +802,7 @@ defmodule Gateway.Serialization.ModifierExpired do
   field(:skill_id, 1, type: :string, json_name: "skillId")
   field(:target_id, 2, type: :string, json_name: "targetId")
   field(:stat_affected, 3, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
+  field(:operation, 4, type: :string)
 end
 
 defmodule Gateway.Serialization.TagExpired do

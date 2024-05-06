@@ -400,6 +400,7 @@ syntax = "proto3";
     string skill_id = 1;
     string target_id = 2;
     StatAffected stat_affected = 3;
+    string operation = 4;
   }
 
   message TagExpired {
