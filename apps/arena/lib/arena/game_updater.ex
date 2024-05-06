@@ -164,7 +164,10 @@ defmodule Arena.GameUpdater do
         )
 
       {:ended, winner} ->
-        state = put_in(state, [:game_state, :status], :ENDED)
+        state =
+          put_in(state, [:game_state, :status], :ENDED)
+          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
         report_game_results(state, winner.id)
@@ -334,6 +337,7 @@ defmodule Arena.GameUpdater do
         count + 1
       end)
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
+      |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -557,6 +561,7 @@ defmodule Arena.GameUpdater do
       })
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(:positions, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -1319,6 +1324,11 @@ defmodule Arena.GameUpdater do
     Enum.map(effect_list, fn effect_name ->
       Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
     end)
+  end
+
+  defp put_player_position(%{positions: positions} = game_state, player_id) do
+    next_position = 10 - Enum.count(positions)
+    update_in(game_state, [:positions], fn positions -> Map.put(positions, next_position, player_id) end)
   end
 
   ##########################
