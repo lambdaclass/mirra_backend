@@ -375,6 +375,7 @@ syntax = "proto3";
       TagExpired tag_expired = 5;
       Death death = 6;
       ExecutionReceived execution_received = 7;
+      EnergyRegen energy_regen = 8;
     }
   }
 
@@ -421,4 +422,10 @@ syntax = "proto3";
 
   message Death {
     string unit_id = 1;
+  }
+
+  message EnergyRegen {
+    string target_id = 1;
+    string skill_id = 2;
+    float amount = 3;
   }
