@@ -715,9 +715,9 @@ defmodule Champions.Test.BattleTest do
 
     {:ok, character} =
       TestUtils.build_character(%{
-        name: "Character",
+        name: "All Character",
         basic_skill: basic_skill_params,
-        ultimate_skill: TestUtils.build_skill(%{name: "Empty Skill"}),
+        ultimate_skill: TestUtils.build_skill(%{name: "All Empty Skill"}),
         base_attack: 10,
         base_health: 10
       })
@@ -727,7 +727,7 @@ defmodule Champions.Test.BattleTest do
     {:ok, unit} = Units.get_unit(unit.id)
 
     # Create 6 target dummies for enemy team
-    [target_dummy_1, target_dummy_2, target_dummy_3, target_dummy_4, target_dummy_5, target_dummy_6] =
+    target_dummies =
       Enum.map(1..6, fn slot ->
         {:ok, target_dummy} =
           %{character_id: target_dummy_character.id, slot: slot} |> TestUtils.build_unit() |> Units.insert_unit()
@@ -740,7 +740,7 @@ defmodule Champions.Test.BattleTest do
     assert "team_1" ==
              Champions.Battle.Simulator.run_battle(
                [unit],
-               [target_dummy_1, target_dummy_2, target_dummy_3, target_dummy_4, target_dummy_5, target_dummy_6],
+               target_dummies,
                maximum_steps: maximum_steps
              ).result
   end
