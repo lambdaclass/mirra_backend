@@ -545,7 +545,7 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets(caster, %{count: _count, type: "all", target_allies: target_allies}, state),
+  defp choose_targets(caster, %{type: "all", target_allies: target_allies}, state),
     do:
       state.units
       |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
