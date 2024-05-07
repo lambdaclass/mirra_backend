@@ -949,7 +949,7 @@
         {
           "leap": {
             "range": 1000.0,
-            "speed": 2.5,
+            "speed": 25.0,
             "radius": 650,
             "on_arrival_mechanic": {
               "circle_hit": {

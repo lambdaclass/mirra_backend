@@ -254,12 +254,6 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction, auto_aim?: auto_aim?}) do
-    Process.send_after(
-      self(),
-      {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
-      leap.duration_ms
-    )
-
     skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, leap.range)
 
     target_position = %{
@@ -270,7 +264,11 @@ defmodule Arena.Game.Skill do
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
     duration = Physics.calculate_duration(entity.position, target_position, leap.speed) * 30
 
-    Process.send_after(self(), {:stop_leap, entity.id, entity.speed, leap.on_arrival_mechanic}, duration)
+    Process.send_after(
+      self(),
+      {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
+      duration
+    )
 
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
     ## by modifying base_speed we ensure that the dash speed is kept as expected
