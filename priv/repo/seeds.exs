@@ -4,7 +4,6 @@ alias GameBackend.Campaigns.Level
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Campaigns.Rewards.CurrencyReward
 alias GameBackend.Gacha
-alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
@@ -15,59 +14,8 @@ champions_of_mirra_id = 2
 units_per_level = 5
 
 {:ok, _skills} = Champions.Config.import_skill_config()
-Champions.Config.import_character_config()
 
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Epic Sword of Epicness",
-  type: "weapon",
-  base_modifiers: [
-    %{
-      attribute: "attack",
-      modifier_operation: "Multiply",
-      base_value: 1.6
-    }
-  ]
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Mythical Helmet of Mythicness",
-  type: "helmet",
-  base_modifiers: [
-    %{
-      attribute: "defense",
-      modifier_operation: "Multiply",
-      base_value: 1.15
-    }
-  ]
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Legendary Chestplate of Legendaryness",
-  type: "chest",
-  base_modifiers: [
-    %{
-      attribute: "defense",
-      modifier_operation: "Multiply",
-      base_value: 1.2
-    }
-  ]
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Magical Boots of Magicness",
-  type: "boots",
-  base_modifiers: [
-    %{
-      attribute: "speed",
-      modifier_operation: "Multiply",
-      base_value: 1.3
-    }
-  ]
-})
+{:ok, _characters} = Champions.Config.import_character_config()
 
 {:ok, gold_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
@@ -92,6 +40,8 @@ Items.insert_item_template(%{
 
 {:ok, _fertilizer_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, _items} = Champions.Config.import_item_template_config()
 
 {:ok, _} =
   Gacha.insert_box(%{
