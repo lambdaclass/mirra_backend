@@ -19,5 +19,6 @@ defmodule GameBackend.Units.Skills.Mechanics.TargetingStrategy do
   def changeset(targeting_strategy, attrs \\ %{}) do
     targeting_strategy
     |> cast(attrs, [:type, :count, :target_allies])
+    |> validate_required([:type])
   end
 end

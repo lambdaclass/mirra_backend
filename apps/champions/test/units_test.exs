@@ -3,7 +3,7 @@ defmodule Champions.Test.Units do
   Tests for Champions of Mirra units.
   """
   alias GameBackend.Repo
-  alias Champions.Utils
+  alias GameBackend.Utils
   alias Champions.Units
   alias Champions.Users
 
@@ -14,7 +14,7 @@ defmodule Champions.Test.Units do
 
     {:ok, character} =
       GameBackend.Units.Characters.insert_character(%{
-        game_id: Utils.game_id(),
+        game_id: Utils.get_game_id(:champions_of_mirra),
         name: "Test character",
         base_health: 100,
         faction: "Kaline"
