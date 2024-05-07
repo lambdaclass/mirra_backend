@@ -46,7 +46,9 @@ defmodule Arena.Entities do
         damage_immunity: false,
         effects: [],
         cooldowns: %{},
-        bonus_damage: 0
+        bonus_damage: 0,
+        visible_players: [],
+        on_bush: false
       }
     }
   end
@@ -188,6 +190,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_bush(id, position, radius, shape, vertices \\ []) do
+    %{
+      id: id,
+      category: :bush,
+      shape: get_shape(shape),
+      name: "Bush" <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: vertices,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def new_crate(id, %{
         position: position,
         radius: radius,
@@ -265,7 +285,9 @@ defmodule Arena.Entities do
        effects: entity.aditional_info.effects,
        power_ups: entity.aditional_info.power_ups,
        inventory: entity.aditional_info.inventory,
-       cooldowns: entity.aditional_info.cooldowns
+       cooldowns: entity.aditional_info.cooldowns,
+       visible_players: entity.aditional_info.visible_players,
+       on_bush: entity.aditional_info.on_bush
      }}
   end
 
