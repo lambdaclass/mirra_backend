@@ -95,7 +95,7 @@ result = Champions.Battle.fight_level(user_id, level_id)
 The parameters described are the required ones, you can check for other parameters in the GameBackend.Units.Characters.Character module.
 
 ```
-{:ok, character} = GameBackend.Units.Characters.insert_character(%{game_id: Champions.Utils.game_id(), active: true, name: character_name, faction: faction_name})
+{:ok, character} = GameBackend.Units.Characters.insert_character(%{game_id: GameBackend.Utils.get_game_id(:champions_of_mirra), active: true, name: character_name, faction: faction_name})
 ```
 
 #### Create Unit
@@ -142,7 +142,7 @@ Slot must be an unoccupied slot identified by number, between 1 and 6.
 #### Create Item Template
 
 ```
-{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: Champions.Utils.game_id(), name: name, type: item_type, rarity: rarity, config_id: config_id, modifiers: modifiers})
+{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: GameBackend.Utils.get_game_id(:champions_of_mirra), name: name, type: item_type, rarity: rarity, config_id: config_id, modifiers: modifiers})
 ```
 
 #### Create Item
