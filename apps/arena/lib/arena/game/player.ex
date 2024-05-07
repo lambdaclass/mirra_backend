@@ -170,6 +170,7 @@ defmodule Arena.Game.Player do
 
         execution_duration = calculate_duration(skill, player.position, skill_direction)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)
+
         action =
           %{
             action: skill_key_execution_action(skill_key),
