@@ -71,7 +71,7 @@ impl Position {
             y: a.y + b.y,
         }
     }
-    pub fn sub(a: Position, b: Position) -> Position {
+    pub fn sub(a: &Position, b: &Position) -> Position {
         Position {
             x: a.x - b.x,
             y: a.y - b.y,
@@ -205,7 +205,7 @@ impl Entity {
         for entity in collided_with {
             match entity.shape {
                 Shape::Circle => {
-                    let mut normalized_direction = Position::sub(self.position, entity.position);
+                    let mut normalized_direction = Position::sub(&self.position, &entity.position);
                     normalized_direction.normalize();
 
                     let new_pos = Position {

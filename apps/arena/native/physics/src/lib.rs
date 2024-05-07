@@ -157,7 +157,7 @@ fn nearest_entity_direction_in_range(
             if distance < max_distance {
                 max_distance = distance;
                 let difference_between_positions =
-                    Position::sub(other_entity.position, entity.position);
+                    Position::sub(&other_entity.position, &entity.position);
                 direction = Direction {
                     x: difference_between_positions.x,
                     y: difference_between_positions.y,

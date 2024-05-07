@@ -39,7 +39,7 @@ pub(crate) fn intersect_circle_polygon(
         let current_vertex = polygon.vertices[current_vertex_index];
         let next_vertex = polygon.vertices[next_vertex_index];
 
-        let current_line = Position::sub(current_vertex, next_vertex);
+        let current_line = Position::sub(&current_vertex, &next_vertex);
         // the axis will be the perpendicular line drawn from the current line of the polygon
         axis = Position {
             x: -current_line.y,
@@ -91,7 +91,7 @@ pub(crate) fn intersect_circle_polygon(
 
     // Check normal and depth for center
     let closest_vertex = find_closest_vertex(&circle.position, &polygon.vertices);
-    axis = Position::sub(closest_vertex, circle.position);
+    axis = Position::sub(&closest_vertex, &circle.position);
     axis.normalize();
 
     let (min_polygon_cast_point, max_polygon_cast_point) =
@@ -258,7 +258,7 @@ fn project_circle(circle: &Entity, axis: Position) -> (f32, f32) {
     };
 
     let position_plus_radius = Position::add(&circle.position, &direction_radius);
-    let position_sub_radius = Position::sub(circle.position, direction_radius);
+    let position_sub_radius = Position::sub(&circle.position, &direction_radius);
 
     min = dot(&position_plus_radius, axis);
     max = dot(&position_sub_radius, axis);
