@@ -13,6 +13,7 @@ defmodule Gateway.Router do
     pipe_through :api
 
     post "/match", MatchResultsController, :create
+    post "/match_report", MatchResultsController, :report
   end
 
   scope "/", Gateway do

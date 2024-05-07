@@ -66,8 +66,15 @@ defmodule Arena.GameTracker do
 
       data ->
         Process.send_after(self(), {:report, match_id}, @flush_interval_ms)
-        ## TODO: send to Gateway
-        IO.inspect(data, label: "Reporting match data")
+        gateway_url = Application.get_env(:arena, :gateway_url)
+        encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
+        payload = Jason.encode!(%{match_id: match_id, data: encoded_data})
+
+        Finch.build(:post, "#{gateway_url}/arena/match_report", [{"content-type", "application/json"}], payload)
+        ## We don't care about the result of this requests, if they fail it will be essentially retried on the next report
+        ## We might want to change this to `Finch.async_request/2`, but let's measure the impact first
+        |> Finch.request(Arena.Finch)
+
         {:noreply, state}
     end
   end

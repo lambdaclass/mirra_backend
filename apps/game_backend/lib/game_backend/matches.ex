@@ -3,8 +3,9 @@ defmodule GameBackend.Matches do
   Matches
   """
   alias Ecto.Multi
-  alias GameBackend.Repo
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Matches.ArenaMatchStatistics
+  alias GameBackend.Repo
 
   def create_arena_match_results(match_id, results) do
     transaction = Multi.new()
@@ -18,5 +19,11 @@ defmodule GameBackend.Matches do
       end)
 
     Repo.transaction(transaction)
+  end
+
+  def insert_match_stats(match_id, data) do
+    ArenaMatchStatistics.changeset(%ArenaMatchStatistics{}, %{match_id: match_id, data: data})
+    |> Repo.insert()
+    |> IO.inspect(label: "Inserting match stats")
   end
 end
