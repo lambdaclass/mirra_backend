@@ -911,6 +911,7 @@ defmodule Champions.Battle.Simulator do
          health: Units.get_health(unit),
          attack: Units.get_attack(unit),
          defense: Units.get_defense(unit),
+         speed: Units.get_speed(unit),
          energy: 0,
          modifiers: %{
            additives: [],
