@@ -257,7 +257,7 @@ defmodule Arena.Game.Player do
         } = _player_damage_owner,
         damage
       ) do
-    multiplier = 1 + (power_up_damage_modifier * power_up_amount) + bonus_damage
+    multiplier = 1 + power_up_damage_modifier * power_up_amount + bonus_damage
 
     (damage * multiplier)
     |> round()
