@@ -556,14 +556,14 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "backline", target_allies: target_allies}, state) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
     take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
   end
 
-  defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "frontline", target_allies: target_allies}, state) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
