@@ -424,7 +424,7 @@ defmodule Champions.Units do
       iex> Champions.Units.get_speed(unit)
       100
   """
-  def get_speed(unit), do: factor_items(1, unit, "speed")
+  def get_speed(unit), do: factor_items(Decimal.new(0), unit.items, "speed")
 
   defp calculate_stat(base_stat, unit, stat_name),
     do:
@@ -482,17 +482,13 @@ defmodule Champions.Units do
   end
 
   defp get_additive_and_multiplicative_modifiers(items, attribute) do
-    item_modifiers =
-      Enum.flat_map(items, & &1.template.modifiers)
+    item_modifiers = Enum.flat_map(items, & &1.template.modifiers)
 
-    attribute_modifiers =
-      Enum.filter(item_modifiers, &(&1.attribute == attribute))
+    attribute_modifiers = Enum.filter(item_modifiers, &(&1.attribute == attribute))
 
-    additive_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
+    additive_modifiers = Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
 
-    multiplicative_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
+    multiplicative_modifiers = Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
 
     {additive_modifiers, multiplicative_modifiers}
   end
