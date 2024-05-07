@@ -8,13 +8,11 @@ defmodule Gateway.Test.Champions do
 
   alias Champions.{Units, Users}
   alias GameBackend.Utils
-  alias GameBackend.Campaigns.Rewards.CurrencyReward
-  alias GameBackend.Repo
+  alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
+  alias GameBackend.Repo
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
-  alias Gateway.Serialization.AfkRewards
-  alias Gateway.Serialization.SuperCampaignProgresses
 
   alias Gateway.Serialization.{
     Box,
@@ -418,157 +416,6 @@ defmodule Gateway.Test.Champions do
     end
   end
 
-  describe "afk rewards" do
-    test "winning battles increments the afk rewards", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("AfkRewardsUser")
-
-      # Check that the initial afk reward rates are all 0
-      assert Enum.all?(user.afk_reward_rates, fn rate -> rate.rate == 0 end)
-
-      # Get initial afk rewards
-      SocketTester.get_afk_rewards(socket_tester, user.id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{response_type: {:afk_rewards, %AfkRewards{afk_rewards: initial_afk_rewards}}}
-
-      # Check that the initial afk rewards are all 0
-      assert Enum.all?(initial_afk_rewards, fn reward -> reward.amount == 0 end)
-
-      # Set up a powerful team to win a level with the user. That should increment the afk rewards rates
-      Enum.each(user.units, fn unit ->
-        GameBackend.Units.update_unit(unit, %{level: 9999})
-      end)
-
-      [super_campaign_progress | _] = user.super_campaign_progresses
-      level_id = super_campaign_progress.level_id
-      SocketTester.fight_level(socket_tester, user.id, level_id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:battle_result, _ = battle_result}
-      }
-
-      assert battle_result.result == "team_1"
-
-      # Get advanced user
-      SocketTester.get_user(socket_tester, user.id)
-      fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user, %User{} = advanced_user}}
-
-      # Check that the gold and gems afk rewards rates are now greater than the initial rewards, and the other rates are still 0
-      rewardable_currencies = ["Gold", "Gems"]
-
-      assert Enum.all?(advanced_user.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   rate.rate > 0
-
-                 false ->
-                   rate.rate == 0
-               end
-             end)
-
-      # Claim afk rewards
-      currencies_before_claiming = advanced_user.currencies
-
-      # Simulate waiting 2 seconds before claiming the rewards
-      seconds_to_wait = 2
-      {:ok, advanced_user_with_rewards} = Users.get_user(advanced_user.id)
-
-      {:ok, _} =
-        advanced_user_with_rewards
-        |> GameBackend.Users.User.changeset(%{
-          last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
-        })
-        |> Repo.update()
-
-      SocketTester.claim_afk_rewards(socket_tester, advanced_user.id)
-      fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
-
-      # Check that the user has received gold and gems.
-      # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
-      # We add 10% to the time waited to account for the time it takes to process the message.
-      assert Enum.all?(claimed_user.currencies, fn currency ->
-               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
-
-               case Enum.find(claimed_user.afk_reward_rates, &(&1.currency.name == currency.currency.name)) do
-                 nil ->
-                   # If the currency is not in the afk rewards rates, we don't consider it.
-                   true
-
-                 rate ->
-                   reward_rate = rate.rate
-
-                   currency_before_claim =
-                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
-
-                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
-                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
-               end
-             end)
-
-      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
-
-      # Play another level to increment the afk rewards rates again
-      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
-      }
-
-      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
-      next_level_id = super_campaign_progress.level_id
-      SocketTester.fight_level(socket_tester, advanced_user.id, next_level_id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:battle_result, _ = battle_result}
-      }
-
-      assert battle_result.result == "team_1"
-
-      # Get new user
-      SocketTester.get_user(socket_tester, user.id)
-      fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
-
-      # Check that the rewardable currencies afk rewards rates are now greater than the rewards before the second battle, and the other rates are still 0
-      # Get the current level number and check that the afk rewards rates have increased proportionally
-      SocketTester.get_user_super_campaign_progresses(socket_tester, advanced_user.id)
-      fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:super_campaign_progresses, %SuperCampaignProgresses{} = super_campaign_progresses}
-      }
-
-      [super_campaign_progress | _] = super_campaign_progresses.super_campaign_progresses
-      current_level_id = super_campaign_progress.level_id
-
-      current_level_afk_rewards_increments =
-        Repo.all(from(r in CurrencyReward, where: r.level_id == ^current_level_id and r.afk_reward))
-        |> Repo.preload(:currency)
-
-      assert Enum.all?(more_advanced_user.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   previous_rate =
-                     Enum.find(advanced_user.afk_reward_rates, &(&1.currency.name == rate.currency.name)).rate
-
-                   afk_reward_increment =
-                     Enum.find(current_level_afk_rewards_increments, &(&1.currency.name == rate.currency.name)).amount
-
-                   new_rate = previous_rate + afk_reward_increment
-                   rate.rate > previous_rate
-
-                 false ->
-                   rate.rate == 0
-               end
-             end)
-    end
-  end
-
   describe "items" do
     test "get item", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("GetItemUser")
@@ -798,6 +645,125 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+    end
+
+    test "leveling up the Kaline Tree increments the afk rewards", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("AfkRewardsUser")
+
+      # Check that the initial afk reward rates is not an empty list
+      assert Enum.any?(user.kaline_tree_level.afk_reward_rates)
+
+      # Check that the gold, arcane crystals and hero souls afk rewards rates are 0 initially
+      rewardable_currencies = ["Gold", "Hero Souls", "Arcane Crystals"]
+
+      assert Enum.all?(user.kaline_tree_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   rate.rate == 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+
+      # Level up the Kaline Tree
+      SocketTester.level_up_kaline_tree(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
+
+      # Check that any afk reward rates exist
+      assert Enum.any?(leveled_up_user.kaline_tree_level.afk_reward_rates)
+
+      # Check that the gold, arcane crystals and hero souls afk rewards rates are greater than 0
+      assert Enum.all?(leveled_up_user.kaline_tree_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   rate.rate > 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+
+      # Claim afk rewards
+      currencies_before_claiming = leveled_up_user.currencies
+
+      # Simulate waiting 2 seconds before claiming the rewards, to let the rewards accumulate
+      seconds_to_wait = 2
+      {:ok, leveled_up_user_with_rewards} = Users.get_user(leveled_up_user.id)
+
+      {:ok, _} =
+        leveled_up_user_with_rewards
+        |> GameBackend.Users.User.changeset(%{
+          last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+        })
+        |> Repo.update()
+
+      SocketTester.claim_afk_rewards(socket_tester, leveled_up_user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
+
+      # Check that the user has received gold, arcane crystals and hero souls
+      # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
+      # We add 10% to the time waited to account for the time it takes to process the message.
+      assert Enum.all?(claimed_user.currencies, fn currency ->
+               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
+
+               case Enum.find(
+                      claimed_user.kaline_tree_level.afk_reward_rates,
+                      &(&1.currency.name == currency.currency.name)
+                    ) do
+                 nil ->
+                   # If the currency is not in the afk rewards rates, we don't consider it.
+                   true
+
+                 rate ->
+                   reward_rate = rate.rate
+
+                   currency_before_claim =
+                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
+
+                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
+               end
+             end)
+
+      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
+
+      # Level up the Kaline Tree again to check that the afk rewards rates have increased
+      Currencies.add_currency_by_name!(claimed_user.id, "Gold", 200)
+      Currencies.add_currency_by_name!(claimed_user.id, "Fertilizer", 200)
+
+      SocketTester.level_up_kaline_tree(socket_tester, claimed_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
+      current_kaline_tree_level_id = more_advanced_user.kaline_tree_level.id
+
+      current_level_afk_rewards_rates =
+        Repo.all(from(r in AfkRewardRate, where: r.kaline_tree_level_id == ^current_kaline_tree_level_id))
+        |> Repo.preload(:currency)
+
+      assert Enum.all?(more_advanced_user.kaline_tree_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   previous_rate =
+                     Enum.find(
+                       leveled_up_user.kaline_tree_level.afk_reward_rates,
+                       &(&1.currency.name == rate.currency.name)
+                     ).rate
+
+                   afk_reward_rate =
+                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
+
+                   new_rate = previous_rate + afk_reward_rate
+                   rate.rate > previous_rate
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
     end
   end
 
