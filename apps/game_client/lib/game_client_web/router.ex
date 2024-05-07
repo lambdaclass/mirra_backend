@@ -23,6 +23,13 @@ defmodule GameClientWeb.Router do
     live "/board/:player_id/:character/:player_name/:game_mode", BoardLive.GameQueue
   end
 
+  scope "/auth", GameClientWeb do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", GameClientWeb do
   #   pipe_through :api

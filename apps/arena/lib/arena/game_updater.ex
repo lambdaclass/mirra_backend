@@ -21,60 +21,37 @@ defmodule Arena.GameUpdater do
   end
 
   def move(game_pid, player_id, direction, timestamp) do
-    GenServer.call(game_pid, {:move, player_id, direction, timestamp})
+    GenServer.cast(game_pid, {:move, player_id, direction, timestamp})
   end
 
   def attack(game_pid, player_id, skill, skill_params, timestamp) do
-    GenServer.call(game_pid, {:attack, player_id, skill, skill_params, timestamp})
+    GenServer.cast(game_pid, {:attack, player_id, skill, skill_params, timestamp})
   end
 
   def use_item(game_pid, player_id, timestamp) do
-    GenServer.call(game_pid, {:use_item, player_id, timestamp})
+    GenServer.cast(game_pid, {:use_item, player_id, timestamp})
   end
 
   ##########################
   # END API
   ##########################
 
-  def init(%{clients: clients}) do
+  def init(%{clients: clients, bot_clients: bot_clients}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
-    game_state = new_game(game_id, clients, game_config)
+    game_state = new_game(game_id, clients ++ bot_clients, game_config)
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
-    {:ok, %{game_config: game_config, game_state: game_state}}
+    clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
+    bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
+    {:ok, %{clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
   end
 
   ##########################
   # API Callbacks
   ##########################
-
-  def handle_call({:move, player_id, direction, timestamp}, _from, state) do
-    player =
-      state.game_state.players
-      |> Map.get(player_id)
-      |> Player.move(direction)
-
-    game_state =
-      state.game_state
-      |> put_in([:players, player_id], player)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
-
-  def handle_call({:attack, player_id, skill_key, skill_params, timestamp}, _from, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
-
-    game_state =
-      get_in(state, [:game_state, :players, player_id])
-      |> Player.use_skill(skill_key, skill_params, state)
-      |> put_in([:player_timestamps, player_id], timestamp)
-
-    {:reply, :ok, %{state | game_state: game_state}}
-  end
 
   def handle_call({:join, client_id}, _from, state) do
     case get_in(state.game_state, [:client_to_player_map, client_id]) do
@@ -87,12 +64,37 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  def handle_call({:use_item, player_id, _timestamp}, _from, state) do
+  def handle_cast({:move, player_id, direction, timestamp}, state) do
+    player =
+      state.game_state.players
+      |> Map.get(player_id)
+      |> Player.move(direction)
+
+    game_state =
+      state.game_state
+      |> put_in([:players, player_id], player)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:attack, player_id, skill_key, skill_params, timestamp}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, true)
+
+    game_state =
+      get_in(state, [:game_state, :players, player_id])
+      |> Player.use_skill(skill_key, skill_params, state)
+      |> put_in([:player_timestamps, player_id], timestamp)
+
+    {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:use_item, player_id, _timestamp}, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
       |> Player.use_item(state.game_state, state.game_config)
 
-    {:reply, :ok, %{state | game_state: game_state}}
+    {:noreply, %{state | game_state: game_state}}
   end
 
   ##########################
@@ -123,6 +125,7 @@ defmodule Arena.GameUpdater do
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
+      |> update_visible_players(state.game_config)
       # Projectiles
       |> update_projectiles_status()
       |> move_projectiles()
@@ -165,6 +168,7 @@ defmodule Arena.GameUpdater do
         state = put_in(state, [:game_state, :status], :ENDED)
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
+        report_game_results(state, winner.id)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -387,14 +391,16 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
 
     last_id = state.game_state.last_id + 1
-    ## TODO: make random position
-    position =
-      random_position_in_map(
-        state.game_state.external_wall.radius,
-        state.game_state.external_wall
-      )
 
     item_config = Enum.random(state.game_config.items)
+
+    position =
+      random_position_in_map(
+        item_config.radius,
+        state.game_state.external_wall,
+        state.game_state.obstacles
+      )
+
     item = Entities.new_item(last_id, position, item_config)
 
     state =
@@ -441,6 +447,7 @@ defmodule Arena.GameUpdater do
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
              pools: complete_entities(state.pools),
+             bushes: complete_entities(state.bushes),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -481,6 +488,36 @@ defmodule Arena.GameUpdater do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+  end
+
+  defp report_game_results(state, winner_id) do
+    results =
+      Map.take(state.game_state.client_to_player_map, state.clients)
+      |> Enum.map(fn {client_id, player_id} ->
+        player = Map.get(state.game_state.players, player_id)
+
+        %{
+          user_id: client_id,
+          ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
+          result: if(player.id == winner_id, do: "win", else: "loss"),
+          kills: player.aditional_info.kill_count,
+          ## TODO: this only works because you can only die once
+          deaths: if(Player.alive?(player), do: 0, else: 1),
+          character: player.aditional_info.character_name
+        }
+      end)
+
+    payload = Jason.encode!(%{match_id: Ecto.UUID.generate(), results: results})
+
+    ## TODO: we should be doing this in a better way, both the url and the actual request
+    ## maybe a separate GenServer that gets the results and tries to send them to the server?
+    ## This way if it fails we can retry or something
+    spawn(fn ->
+      gateway_url = Application.get_env(:arena, :gateway_url)
+
+      Finch.build(:post, "#{gateway_url}/arena/match", [{"content-type", "application/json"}], payload)
+      |> Finch.request(Arena.Finch)
+    end)
   end
 
   ##########################
@@ -550,10 +587,12 @@ defmodule Arena.GameUpdater do
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
     {crates, last_id} = initialize_crates(config.crates, last_id)
+    {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
 
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
+    |> Map.put(:bushes, bushes)
     |> Map.put(:crates, crates)
   end
 
@@ -573,6 +612,21 @@ defmodule Arena.GameUpdater do
         )
 
       {obstacles_acc, last_id}
+    end)
+  end
+
+  defp initialize_bushes(bushes, last_id) do
+    Enum.reduce(bushes, {Map.new(), last_id}, fn bush, {bush_acc, last_id} ->
+      last_id = last_id + 1
+
+      bush_acc =
+        Map.put(
+          bush_acc,
+          last_id,
+          Entities.new_bush(last_id, bush.position, bush.radius, bush.shape, bush.vertices)
+        )
+
+      {bush_acc, last_id}
     end)
   end
 
@@ -655,12 +709,13 @@ defmodule Arena.GameUpdater do
            ticks_to_move: ticks_to_move,
            external_wall: external_wall,
            obstacles: obstacles,
+           bushes: bushes,
            power_ups: power_ups,
            pools: pools,
            items: items
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items)
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes)
 
     moved_players =
       players
@@ -1186,28 +1241,70 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp random_position_in_map(radius, external_wall) do
-    integer_radius = trunc(radius)
+  defp random_position_in_map(object_radius, external_wall, obstacles) do
+    integer_radius = trunc(external_wall.radius - object_radius)
     x = Enum.random(-integer_radius..integer_radius) / 1.0
     y = Enum.random(-integer_radius..integer_radius) / 1.0
 
-    point = %{
+    circle = %{
       id: 1,
-      shape: :point,
+      shape: :circle,
       position: %{x: x, y: y},
-      radius: 0.0,
+      radius: object_radius,
       vertices: [],
       speed: 0.0,
       category: :obstacle,
       direction: %{x: 0.0, y: 0.0},
       is_moving: false,
-      name: "Point 1"
+      name: "Circle 1"
     }
 
-    case Physics.check_collisions(point, %{0 => external_wall}) do
-      [] -> random_position_in_map(integer_radius * 0.95, external_wall)
-      _ -> point.position
+    entities_to_collide_with =
+      obstacles
+      |> Map.merge(%{external_wall.id => external_wall})
+
+    external_wall_id = external_wall.id
+
+    case Physics.check_collisions(circle, entities_to_collide_with) do
+      [^external_wall_id | []] -> circle.position
+      _ -> random_position_in_map(object_radius, external_wall, obstacles)
     end
+  end
+
+  defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
+    Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
+      bush_collisions =
+        Enum.filter(player.collides_with, fn collided_id ->
+          Map.has_key?(bushes, collided_id)
+        end)
+
+      visible_players =
+        Map.delete(players, player_id)
+        |> Enum.reduce([], fn {candicandidate_player_id, candidate_player}, acc ->
+          candidate_bush_collisions =
+            Enum.filter(candidate_player.collides_with, fn collided_id ->
+              Map.has_key?(bushes, collided_id)
+            end)
+
+          players_in_same_bush? =
+            Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)
+
+          players_close_enough? =
+            Physics.distance_between_entities(player, candidate_player) <=
+              game_config.bushes.field_of_view_inside_bush
+
+          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
+            [candicandidate_player_id | acc]
+          else
+            acc
+          end
+        end)
+
+      update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+        Map.put(aditional_info, :visible_players, visible_players)
+        |> Map.put(:on_bush, not Enum.empty?(bush_collisions))
+      end)
+    end)
   end
 
   # You'll only apply effect to owned entities or

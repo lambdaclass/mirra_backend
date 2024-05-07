@@ -8,8 +8,10 @@ defmodule Gateway.Controllers.AuthController do
 
   def validate_token(conn, %{"provider" => "google", "token_id" => token_id}) do
     case GoogleTokenManager.verify_and_validate(token_id) do
-      {:ok, response} ->
-        Users.find_or_create_google_user_by_email(response["email"])
+      {:ok, claims} ->
+        {:ok, user} = Users.find_or_create_google_user_by_email(claims["email"])
+        {user, _} = Map.split(user, [:id, :email])
+        response = %{claims: claims, user: user}
         send_resp(conn, 200, Jason.encode!(response))
 
       {:error, error} ->
