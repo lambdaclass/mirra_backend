@@ -12,7 +12,6 @@ defmodule Champions.Test.BattleTest do
   use ExUnit.Case
 
   alias Champions.Users
-  alias Champions.Utils
   alias GameBackend.Items
   alias GameBackend.Units
   alias GameBackend.Units.Characters
