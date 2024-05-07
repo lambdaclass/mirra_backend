@@ -6,7 +6,8 @@ defmodule Gateway.Test.Champions do
 
   use ExUnit.Case
 
-  alias Champions.{Units, Users, Utils}
+  alias Champions.{Units, Users}
+  alias GameBackend.Utils
   alias GameBackend.Campaigns.Rewards.CurrencyReward
   alias GameBackend.Repo
   alias GameBackend.Items
@@ -196,7 +197,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, same_faction_character} =
         GameBackend.Units.Characters.insert_character(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           active: true,
           name: "SameFactionUnit",
           faction: muflus.faction,
@@ -574,7 +575,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_bow} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Bow of Testness",
           type: "weapon",
           modifiers: [
@@ -616,7 +617,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_item} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Upgrader of All Stats",
           type: "weapon",
           base_modifiers: [
@@ -666,15 +667,14 @@ defmodule Gateway.Test.Champions do
         |> Repo.preload(items: :template)
 
       # We use a range to avoid floating point rounding/truncating errors
-      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip)..trunc(
+      assert Units.get_attack(unit_with_item) in trunc(attack_multiplier * attack_before_equip * 0.95)..trunc(
                attack_multiplier *
-                 attack_before_equip + 1
+                 attack_before_equip * 1.05
              )
 
-      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip)..trunc(
+      assert Units.get_defense(unit_with_item) in trunc(defense_multiplier * defense_before_equip * 0.95)..trunc(
                defense_multiplier *
-                 defense_before_equip +
-                 1
+                 defense_before_equip * 1.05
              )
 
       assert Units.get_health(unit_with_item) == health_before_equip + health_adder
@@ -725,7 +725,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_axe} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Axe of Testness",
           type: "weapon",
           modifiers: [

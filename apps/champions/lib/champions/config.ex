@@ -4,7 +4,7 @@ defmodule Champions.Config do
   """
 
   alias Champions.Units
-  alias Champions.Utils
+  alias GameBackend.Utils
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
 
@@ -52,7 +52,7 @@ defmodule Champions.Config do
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
         base_defense: Integer.parse(defense) |> elem(0),
-        game_id: Utils.game_id(),
+        game_id: Utils.get_game_id(:champions_of_mirra),
         basic_skill_id: get_skill_id(basic_skill),
         ultimate_skill_id: get_skill_id(ultimate_skill),
         active: true
@@ -66,5 +66,25 @@ defmodule Champions.Config do
       nil -> nil
       skill -> skill.id
     end
+  end
+
+  def import_proximity_config() do
+    {:ok, proximities_json} =
+      Application.app_dir(:champions, "priv/proximities.json")
+      |> File.read()
+
+    proximities = Jason.decode!(proximities_json, [{:keys, :atoms}])
+
+    Enum.each(0..5, fn index ->
+      Application.put_env(
+        :champions,
+        :"slot_#{index + 1}_proximities",
+        %{
+          ally_proximities: Enum.at(proximities.ally_proximities, index),
+          enemy_proximities: Enum.at(proximities.enemy_proximities, index)
+        },
+        persistent: true
+      )
+    end)
   end
 end

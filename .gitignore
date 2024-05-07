@@ -33,3 +33,6 @@ apps/*/_build/*
 
 # Devenv build folder
 .devenv*
+
+# Ignore google fetched certificates
+apps/gateway/priv/google.oauth2.certificates.json
