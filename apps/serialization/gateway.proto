@@ -17,7 +17,7 @@ syntax = "proto3";
       EquipItem equip_item = 14;
       UnequipItem unequip_item = 15;
       GetItem get_item = 16;
-      LevelUpItem level_up_item = 17;
+      FuseItems fuse_items = 17;
       GetBoxes get_boxes = 18;
       GetBox get_box = 19;
       Summon summon = 20;
@@ -102,9 +102,9 @@ syntax = "proto3";
     string item_id = 2;
   }
  
- message LevelUpItem {
+ message FuseItems {
     string user_id = 1;
-    string item_id = 2;
+    repeated string item_ids = 2;
   }
 
  message GetAfkRewards {
@@ -245,6 +245,18 @@ syntax = "proto3";
     string id = 1;
     string name = 2;
     string type = 3;
+    int32 rarity = 4;
+    repeated ItemModifier modifiers = 5;
+    string config_id = 6;
+    string upgrades_from_config_id = 7;
+    int32 upgrades_from_quantity = 8;
+    repeated CurrencyCost upgrade_costs = 9;
+  }
+
+  message ItemModifier {
+    string attribute = 1;
+    float value = 2;
+    string operation = 3;
   }
 
   message Campaigns {
@@ -363,6 +375,7 @@ syntax = "proto3";
       TagExpired tag_expired = 5;
       Death death = 6;
       ExecutionReceived execution_received = 7;
+      EnergyRegen energy_regen = 8;
     }
   }
 
@@ -409,4 +422,10 @@ syntax = "proto3";
 
   message Death {
     string unit_id = 1;
+  }
+
+  message EnergyRegen {
+    string target_id = 1;
+    string skill_id = 2;
+    float amount = 3;
   }

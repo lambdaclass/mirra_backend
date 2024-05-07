@@ -5,6 +5,8 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
 
+  alias Gateway.Serialization.FuseItems
+
   alias Gateway.Serialization.{
     StatAffected,
     Death,
@@ -14,7 +16,8 @@ defmodule Gateway.ChampionsSocketHandler do
     ModifierReceived,
     SkillAction,
     WebSocketResponse,
-    ExecutionReceived
+    ExecutionReceived,
+    EnergyRegen
   }
 
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
@@ -36,7 +39,7 @@ defmodule Gateway.ChampionsSocketHandler do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem,
+    FuseItems,
     GetAfkRewards,
     ClaimAfkRewards,
     GetBoxes,
@@ -169,11 +172,10 @@ defmodule Gateway.ChampionsSocketHandler do
   defp handle(%GetItem{user_id: _user_id, item_id: item_id}),
     do: Items.get_item(item_id) |> prepare_response(:item)
 
-  defp handle(%LevelUpItem{user_id: user_id, item_id: item_id}) do
-    case Items.level_up(user_id, item_id) do
-      {:ok, %{item: item}} -> prepare_response(item, :item)
+  defp handle(%FuseItems{user_id: user_id, item_ids: item_ids}) do
+    case Items.fuse(user_id, item_ids) do
+      {:ok, item} -> prepare_response(item, :item)
       {:error, reason} -> prepare_response({:error, reason}, nil)
-      {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
     end
   end
 
@@ -273,6 +275,9 @@ defmodule Gateway.ChampionsSocketHandler do
                ExecutionReceived,
                update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
              )}
+
+          :energy_regen ->
+            {type, Kernel.struct(EnergyRegen, action)}
         end
     }
   end
