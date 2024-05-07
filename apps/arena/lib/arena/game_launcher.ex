@@ -100,10 +100,15 @@ defmodule Arena.GameLauncher do
   end
 
   defp get_bot_clients(missing_clients) do
+    characters =
+      Arena.Configuration.get_game_config()
+      |> Map.get(:characters)
+      |> Enum.filter(fn character -> character.active end)
+
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      {client_id, "h4ck", Enum.at(@bot_names, i), nil}
+      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
     end)
   end
 
@@ -120,7 +125,8 @@ defmodule Arena.GameLauncher do
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: clients ++ bot_clients
+        clients: clients,
+        bot_clients: bot_clients
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
