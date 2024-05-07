@@ -13,7 +13,7 @@ defmodule Champions.TestUtils do
         class: "Assassin",
         base_attack: 100,
         base_health: 100,
-        base_defense: 100,
+        base_defense: 0,
         basic_skill: build_skill(%{name: "Default Basic Skill"}),
         ultimate_skill: build_skill(%{name: "Default Ultimate Skill"})
       },

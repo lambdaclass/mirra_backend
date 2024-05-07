@@ -156,6 +156,9 @@ config :game_client, dev_routes: true
 # App configuration: gateway #
 ##############################
 
+config :gateway, Gateway.Endpoint,
+  secret_key_base: "/v6PsTH3UkyIS1yUg7J0Df7SfgWUZbxfMtsI9Mjwp0kFe4MaXxHObc4L8IkfWhvR"
+
 ###################################
 # App configuration: configurator #
 ###################################

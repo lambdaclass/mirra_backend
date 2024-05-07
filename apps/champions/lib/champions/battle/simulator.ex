@@ -16,8 +16,8 @@ defmodule Champions.Battle.Simulator do
 
   They also have different targeting strategies:
   [x] Random
-  [ ] Nearest
-  [ ] Furthest
+  [X] Nearest
+  [X] Furthest
   [ ] Frontline - Heroes in slots 1 and 2
   [ ] Backline - Heroes in slots 2 to 4
   [ ] Factions
@@ -59,11 +59,6 @@ defmodule Champions.Battle.Simulator do
   - `maximum_steps`
   - `seed`
 
-  Options allowed are:
-
-  - `maximum_steps`
-  - `seed`
-
   ## Examples
 
       iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
@@ -99,6 +94,7 @@ defmodule Champions.Battle.Simulator do
             |> process_step_for_units()
             |> process_step_for_skills(initial_step_state)
             |> process_step_for_effects()
+            |> cap_units_health()
 
           Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
@@ -516,20 +512,78 @@ defmodule Champions.Battle.Simulator do
 
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
-  defp choose_targets(
-         %{team: team} = _caster,
-         %{
-           count: count,
-           type: "random",
-           target_allies: target_allies
-         },
-         state
-       ),
-       do:
-         state.units
-         |> Enum.filter(fn {_id, unit} -> unit.team == team == target_allies end)
-         |> Enum.take_random(count)
-         |> Enum.map(fn {id, _unit} -> id end)
+  defp choose_targets(caster, %{count: count, type: "random", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.take_random(count)
+      |> Enum.map(fn {id, _unit} -> id end)
+
+  defp choose_targets(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
+    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+
+    state.units
+    |> Enum.map(fn {_id, unit} -> unit end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> find_by_proximity(
+      Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name],
+      count
+    )
+    |> Enum.map(& &1.id)
+  end
+
+  defp choose_targets(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
+    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+
+    state.units
+    |> Enum.map(fn {_id, unit} -> unit end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> find_by_proximity(
+      Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Enum.reverse(),
+      count
+    )
+    |> Enum.map(& &1.id)
+  end
+
+  defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
+  end
+
+  defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    take_unit_ids_by_slots(target_team, [1, 2])
+  end
+
+  defp find_by_proximity(units, slots_priorities, amount) do
+    sorted_units =
+      Enum.sort_by(units, fn unit ->
+        Enum.find_index(slots_priorities, &(&1 == unit.slot))
+      end)
+
+    Enum.take(sorted_units, amount)
+  end
+
+  defp take_unit_ids_by_slots(units, slots) do
+    slots_units = Enum.filter(units, fn {_id, unit} -> unit.slot in slots end)
+
+    # Fallback to all remaining units if there are no units in slots
+    # Might need to change this if we use this function for more than Frontline-Backline targeting
+    units =
+      case slots_units do
+        [] ->
+          units
+
+        _ ->
+          slots_units
+      end
+
+    Enum.map(units, fn {id, _unit} -> id end)
+  end
 
   # If we receive the target's id, it means that the unit has died before the effect hits.
   # We send it as an EFFECT_MISS action.
@@ -570,8 +624,10 @@ defmodule Champions.Battle.Simulator do
         # If it's permanent, we set its duration to -1
         new_modifier =
           modifier
-          |> Map.put(:remaining_steps, Map.get(effect.type, "duration", -1))
+          |> Map.put(:remaining_steps, get_duration(effect.type))
           |> Map.put(:step_applied_at, current_step_number)
+
+        Logger.info("Applying modifier [#{format_modifier_name(new_modifier)}] to #{format_unit_name(target)}.")
 
         new_history =
           add_to_history(
@@ -631,6 +687,9 @@ defmodule Champions.Battle.Simulator do
 
     {target, new_history}
   end
+
+  defp get_duration(%{duration: duration}), do: duration
+  defp get_duration(_type), do: -1
 
   # Return whether an effect hits.
   defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
@@ -741,6 +800,42 @@ defmodule Champions.Battle.Simulator do
     {new_target, new_history}
   end
 
+  # Apply a DealDamage execution to its target. Returns the new state of the target.
+  defp process_execution(
+         %{
+           "type" => "Heal",
+           "attack_ratio" => attack_ratio
+         },
+         target,
+         caster,
+         history,
+         skill_id
+       ) do
+    heal_amount = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+
+    Logger.info(
+      "Healing #{heal_amount} hp to #{format_unit_name(target)} (#{target.health} -> #{target.health + heal_amount})"
+    )
+
+    new_history =
+      add_to_history(
+        history,
+        %{
+          target_id: target.id,
+          skill_id: skill_id,
+          stat_affected: %{stat: :HEALTH, amount: heal_amount}
+        },
+        :execution_received
+      )
+
+    new_target = Map.put(target, :health, target.health + heal_amount)
+
+    # We don't cap to max_health here because the unit's health at the end of the step would depend
+    # on the order in which we process the executions.
+
+    {new_target, new_history}
+  end
+
   defp process_execution(
          _,
          target,
@@ -769,6 +864,17 @@ defmodule Champions.Battle.Simulator do
     else
       Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
     end
+  end
+
+  # Called at the end of step processing. Sets unit health to max_health if it's above it.
+  defp cap_units_health({state, history}) do
+    {Map.put(
+       state,
+       :units,
+       Enum.map(state.units, fn {unit_id, unit} ->
+         {unit_id, Map.put(unit, :health, min(unit.max_health, unit.health))}
+       end)
+     ), history}
   end
 
   # Used to create the initial unit maps to be used during simulation.
@@ -817,15 +923,28 @@ defmodule Champions.Battle.Simulator do
       caster_id: caster_id
     }
 
+  @implemented_targeting_strategies [
+    "random",
+    "nearest",
+    "furthest",
+    "frontline",
+    "backline"
+  ]
+
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
         # TODO: replace random for the corresponding target type name (CHoM #325)
         # type: mechanic.apply_effects_to.targeting_strategy.type,
-        type: "random",
-        count: mechanic.apply_effects_to.targeting_strategy.count,
-        target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies
+        type:
+          if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
+            mechanic.apply_effects_to.targeting_strategy.type
+          else
+            "random"
+          end,
+        count: mechanic.apply_effects_to.targeting_strategy.count || 1,
+        target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies || false
       }
     }
 
@@ -844,11 +963,9 @@ defmodule Champions.Battle.Simulator do
     do: %{
       type:
         Enum.into(effect.type, %{}, fn
-          {key, value} when is_binary(value) ->
-            {string_to_atom(key), string_to_atom(value)}
-
-          {key, value} ->
-            {string_to_atom(key), value}
+          {"type", type} -> {:type, string_to_atom(type)}
+          {"period", period} -> {:period, div(period, @miliseconds_per_step)}
+          {"duration", duration} -> {:duration, div(duration, @miliseconds_per_step)}
         end),
       delay: div(effect.initial_delay, @miliseconds_per_step),
       # TODO: replace random for the corresponding target strategy name (CHoM #325)
@@ -913,11 +1030,12 @@ defmodule Champions.Battle.Simulator do
   defp string_to_atom("type"), do: :type
   defp string_to_atom("duration"), do: :duration
   defp string_to_atom("period"), do: :period
-  defp string_to_atom("instant"), do: :type
+  defp string_to_atom("instant"), do: :instant
 
   defp string_to_atom("ATTACK"), do: :ATTACK
   defp string_to_atom("DEFENSE"), do: :DEFENSE
   defp string_to_atom("HEALTH"), do: :HEALTH
   defp string_to_atom("ENERGY"), do: :ENERGY
   defp string_to_atom("SPEED"), do: :SPEED
+  defp string_to_atom("DAMAGE_REDUCTION"), do: :DAMAGE_REDUCTION
 end
