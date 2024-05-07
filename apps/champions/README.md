@@ -168,8 +168,8 @@ Slot must be an unoccupied slot identified by number, between 1 and 6.
 {:ok, item} = Champions.Items.unequip_item(user_id, item_id)
 ```
 
-#### Level Up Item
+#### Fuse Items
 
 ```
-{:ok, item} = Champions.Items.level_up(user_id, item_id)
+{:ok, item} = Champions.Items.fuse(user_id, [item_1_id, item_2_id, item_3_id])
 ```
