@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
@@ -40,13 +41,15 @@ defmodule Arena.GameUpdater do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
+    match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
-    {:ok, %{clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
+    {:ok, %{match_id: match_id, clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
   end
 
   ##########################
@@ -324,6 +327,7 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
+    killer = Map.get(game_state.players, killer_id)
 
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
@@ -336,6 +340,7 @@ defmodule Arena.GameUpdater do
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
+    GameTracker.push_event(state.match_id, {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name}, %{id: victim.id, character_name: victim.aditional_info.character_name}})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -505,7 +510,8 @@ defmodule Arena.GameUpdater do
         }
       end)
 
-    payload = Jason.encode!(%{match_id: Ecto.UUID.generate(), results: results})
+    payload = Jason.encode!(%{match_id: state.match_id, results: results})
+    GameTracker.finish_tracking(state.match_id)
 
     ## TODO: we should be doing this in a better way, both the url and the actual request
     ## maybe a separate GenServer that gets the results and tries to send them to the server?
