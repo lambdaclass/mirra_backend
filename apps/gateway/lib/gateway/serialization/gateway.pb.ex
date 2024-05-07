@@ -1,3 +1,27 @@
+defmodule Gateway.Serialization.SkillActionType do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ANIMATION_START, 0)
+  field(:EFFECT_TRIGGER, 1)
+  field(:EFFECT_HIT, 2)
+  field(:EFFECT_MISS, 3)
+end
+
+defmodule Gateway.Serialization.Stat do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:HEALTH, 0)
+  field(:ENERGY, 1)
+  field(:ATTACK, 2)
+  field(:DEFENSE, 3)
+  field(:DAMAGE_REDUCTION, 4)
+  field(:SPEED, 5)
+end
+
 defmodule Gateway.Serialization.WebSocketRequest do
   @moduledoc false
 
@@ -59,13 +83,7 @@ defmodule Gateway.Serialization.WebSocketRequest do
   )
 
   field(:get_item, 16, type: Gateway.Serialization.GetItem, json_name: "getItem", oneof: 0)
-
-  field(:level_up_item, 17,
-    type: Gateway.Serialization.LevelUpItem,
-    json_name: "levelUpItem",
-    oneof: 0
-  )
-
+  field(:fuse_items, 17, type: Gateway.Serialization.FuseItems, json_name: "fuseItems", oneof: 0)
   field(:get_boxes, 18, type: Gateway.Serialization.GetBoxes, json_name: "getBoxes", oneof: 0)
   field(:get_box, 19, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
   field(:summon, 20, type: Gateway.Serialization.Summon, oneof: 0)
@@ -79,6 +97,18 @@ defmodule Gateway.Serialization.WebSocketRequest do
   field(:claim_afk_rewards, 22,
     type: Gateway.Serialization.ClaimAfkRewards,
     json_name: "claimAfkRewards",
+    oneof: 0
+  )
+
+  field(:get_user_super_campaign_progresses, 23,
+    type: Gateway.Serialization.GetUserSuperCampaignProgresses,
+    json_name: "getUserSuperCampaignProgresses",
+    oneof: 0
+  )
+
+  field(:level_up_kaline_tree, 24,
+    type: Gateway.Serialization.LevelUpKalineTree,
+    json_name: "levelUpKalineTree",
     oneof: 0
   )
 end
@@ -217,13 +247,13 @@ defmodule Gateway.Serialization.GetItem do
   field(:item_id, 2, type: :string, json_name: "itemId")
 end
 
-defmodule Gateway.Serialization.LevelUpItem do
+defmodule Gateway.Serialization.FuseItems do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:user_id, 1, type: :string, json_name: "userId")
-  field(:item_id, 2, type: :string, json_name: "itemId")
+  field(:item_ids, 2, repeated: true, type: :string, json_name: "itemIds")
 end
 
 defmodule Gateway.Serialization.GetAfkRewards do
@@ -265,6 +295,22 @@ defmodule Gateway.Serialization.Summon do
 
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:box_id, 2, type: :string, json_name: "boxId")
+end
+
+defmodule Gateway.Serialization.GetUserSuperCampaignProgresses do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
+defmodule Gateway.Serialization.LevelUpKalineTree do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
 end
 
 defmodule Gateway.Serialization.WebSocketResponse do
@@ -310,6 +356,12 @@ defmodule Gateway.Serialization.WebSocketResponse do
     json_name: "afkRewards",
     oneof: 0
   )
+
+  field(:super_campaign_progresses, 15,
+    type: Gateway.Serialization.SuperCampaignProgresses,
+    json_name: "superCampaignProgresses",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.User do
@@ -321,25 +373,47 @@ defmodule Gateway.Serialization.User do
   field(:username, 2, type: :string)
   field(:level, 3, type: :uint64)
   field(:experience, 4, type: :uint64)
-
-  field(:campaign_progresses, 6,
-    repeated: true,
-    type: Gateway.Serialization.CampaignProgress,
-    json_name: "campaignProgresses"
-  )
-
   field(:currencies, 7, repeated: true, type: Gateway.Serialization.UserCurrency)
   field(:units, 8, repeated: true, type: Gateway.Serialization.Unit)
   field(:items, 9, repeated: true, type: Gateway.Serialization.Item)
 
-  field(:afk_reward_rates, 10,
+  field(:kaline_tree_level, 10,
+    type: Gateway.Serialization.KalineTreeLevel,
+    json_name: "kalineTreeLevel"
+  )
+end
+
+defmodule Gateway.Serialization.KalineTreeLevel do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:level, 2, type: :uint64)
+  field(:fertilizer_level_up_cost, 3, type: :uint64, json_name: "fertilizerLevelUpCost")
+  field(:gold_level_up_cost, 4, type: :uint64, json_name: "goldLevelUpCost")
+  field(:unlock_features, 5, repeated: true, type: :string, json_name: "unlockFeatures")
+
+  field(:afk_reward_rates, 6,
     repeated: true,
     type: Gateway.Serialization.AfkRewardRate,
     json_name: "afkRewardRates"
   )
 end
 
-defmodule Gateway.Serialization.CampaignProgress do
+defmodule Gateway.Serialization.SuperCampaignProgresses do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:super_campaign_progresses, 1,
+    repeated: true,
+    type: Gateway.Serialization.SuperCampaignProgress,
+    json_name: "superCampaignProgresses"
+  )
+end
+
+defmodule Gateway.Serialization.SuperCampaignProgress do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -347,6 +421,7 @@ defmodule Gateway.Serialization.CampaignProgress do
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:campaign_id, 2, type: :string, json_name: "campaignId")
   field(:level_id, 3, type: :string, json_name: "levelId")
+  field(:super_campaign_id, 4, type: :string, json_name: "superCampaignId")
 end
 
 defmodule Gateway.Serialization.AfkRewardRate do
@@ -354,8 +429,8 @@ defmodule Gateway.Serialization.AfkRewardRate do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:user_id, 1, type: :string, json_name: "userId")
-  field(:currency_id, 2, type: :string, json_name: "currencyId")
+  field(:kaline_tree_level_id, 1, type: :string, json_name: "kalineTreeLevelId")
+  field(:currency, 2, type: Gateway.Serialization.Currency)
   field(:rate, 3, type: :float)
 end
 
@@ -446,6 +521,27 @@ defmodule Gateway.Serialization.ItemTemplate do
   field(:id, 1, type: :string)
   field(:name, 2, type: :string)
   field(:type, 3, type: :string)
+  field(:rarity, 4, type: :int32)
+  field(:modifiers, 5, repeated: true, type: Gateway.Serialization.ItemModifier)
+  field(:config_id, 6, type: :string, json_name: "configId")
+  field(:upgrades_from_config_id, 7, type: :string, json_name: "upgradesFromConfigId")
+  field(:upgrades_from_quantity, 8, type: :int32, json_name: "upgradesFromQuantity")
+
+  field(:upgrade_costs, 9,
+    repeated: true,
+    type: Gateway.Serialization.CurrencyCost,
+    json_name: "upgradeCosts"
+  )
+end
+
+defmodule Gateway.Serialization.ItemModifier do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:attribute, 1, type: :string)
+  field(:value, 2, type: :float)
+  field(:operation, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.Campaigns do
@@ -482,6 +578,8 @@ defmodule Gateway.Serialization.Level do
     type: Gateway.Serialization.CurrencyReward,
     json_name: "currencyRewards"
   )
+
+  field(:experience_reward, 6, type: :uint32, json_name: "experienceReward")
 end
 
 defmodule Gateway.Serialization.CurrencyReward do
@@ -491,14 +589,6 @@ defmodule Gateway.Serialization.CurrencyReward do
 
   field(:currency, 1, type: Gateway.Serialization.Currency)
   field(:amount, 3, type: :uint64)
-end
-
-defmodule Gateway.Serialization.BattleResult do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:result, 1, type: :string)
 end
 
 defmodule Gateway.Serialization.AfkRewards do
@@ -582,4 +672,182 @@ defmodule Gateway.Serialization.UserAndUnit do
 
   field(:user, 1, type: Gateway.Serialization.User)
   field(:unit, 2, type: Gateway.Serialization.Unit)
+end
+
+defmodule Gateway.Serialization.BattleResult do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:initial_state, 1, type: Gateway.Serialization.State, json_name: "initialState")
+  field(:steps, 2, repeated: true, type: Gateway.Serialization.Step)
+  field(:result, 3, type: :string)
+end
+
+defmodule Gateway.Serialization.State do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:units, 1, repeated: true, type: Gateway.Serialization.BattleUnit)
+end
+
+defmodule Gateway.Serialization.BattleUnit do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:health, 2, type: :int32)
+  field(:slot, 3, type: :int32)
+  field(:character_id, 4, type: :string, json_name: "characterId")
+  field(:team, 5, type: :int32)
+end
+
+defmodule Gateway.Serialization.Step do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:step_number, 1, type: :int32, json_name: "stepNumber")
+  field(:actions, 2, repeated: true, type: Gateway.Serialization.Action)
+end
+
+defmodule Gateway.Serialization.Action do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:action_type, 0)
+
+  field(:skill_action, 1,
+    type: Gateway.Serialization.SkillAction,
+    json_name: "skillAction",
+    oneof: 0
+  )
+
+  field(:modifier_received, 2,
+    type: Gateway.Serialization.ModifierReceived,
+    json_name: "modifierReceived",
+    oneof: 0
+  )
+
+  field(:tag_received, 3,
+    type: Gateway.Serialization.TagReceived,
+    json_name: "tagReceived",
+    oneof: 0
+  )
+
+  field(:modifier_expired, 4,
+    type: Gateway.Serialization.ModifierExpired,
+    json_name: "modifierExpired",
+    oneof: 0
+  )
+
+  field(:tag_expired, 5, type: Gateway.Serialization.TagExpired, json_name: "tagExpired", oneof: 0)
+  field(:death, 6, type: Gateway.Serialization.Death, oneof: 0)
+
+  field(:execution_received, 7,
+    type: Gateway.Serialization.ExecutionReceived,
+    json_name: "executionReceived",
+    oneof: 0
+  )
+
+  field(:energy_regen, 8,
+    type: Gateway.Serialization.EnergyRegen,
+    json_name: "energyRegen",
+    oneof: 0
+  )
+end
+
+defmodule Gateway.Serialization.StatAffected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:stat, 1, type: Gateway.Serialization.Stat, enum: true)
+  field(:amount, 2, type: :float)
+end
+
+defmodule Gateway.Serialization.SkillAction do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:caster_id, 1, type: :string, json_name: "casterId")
+  field(:target_ids, 2, repeated: true, type: :string, json_name: "targetIds")
+  field(:skill_id, 3, type: :string, json_name: "skillId")
+
+  field(:skill_action_type, 4,
+    type: Gateway.Serialization.SkillActionType,
+    json_name: "skillActionType",
+    enum: true
+  )
+end
+
+defmodule Gateway.Serialization.ExecutionReceived do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:target_id, 1, type: :string, json_name: "targetId")
+  field(:stat_affected, 2, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
+end
+
+defmodule Gateway.Serialization.ModifierReceived do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:stat_affected, 3, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
+end
+
+defmodule Gateway.Serialization.TagReceived do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:tag, 3, type: :string)
+end
+
+defmodule Gateway.Serialization.ModifierExpired do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:stat_affected, 3, type: Gateway.Serialization.StatAffected, json_name: "statAffected")
+end
+
+defmodule Gateway.Serialization.TagExpired do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:skill_id, 1, type: :string, json_name: "skillId")
+  field(:target_id, 2, type: :string, json_name: "targetId")
+  field(:tag, 3, type: :string)
+end
+
+defmodule Gateway.Serialization.Death do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:unit_id, 1, type: :string, json_name: "unitId")
+end
+
+defmodule Gateway.Serialization.EnergyRegen do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:target_id, 1, type: :string, json_name: "targetId")
+  field(:skill_id, 2, type: :string, json_name: "skillId")
+  field(:amount, 3, type: :float)
 end

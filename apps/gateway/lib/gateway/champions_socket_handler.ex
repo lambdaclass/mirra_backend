@@ -4,7 +4,22 @@ defmodule Gateway.ChampionsSocketHandler do
   """
 
   require Logger
-  alias Gateway.Serialization.WebSocketResponse
+
+  alias Gateway.Serialization.FuseItems
+
+  alias Gateway.Serialization.{
+    StatAffected,
+    Death,
+    TagReceived,
+    TagExpired,
+    ModifierExpired,
+    ModifierReceived,
+    SkillAction,
+    WebSocketResponse,
+    ExecutionReceived,
+    EnergyRegen
+  }
+
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
 
   alias Gateway.Serialization.{
@@ -24,12 +39,14 @@ defmodule Gateway.ChampionsSocketHandler do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem,
+    FuseItems,
     GetAfkRewards,
     ClaimAfkRewards,
     GetBoxes,
     GetBox,
-    Summon
+    Summon,
+    GetUserSuperCampaignProgresses,
+    LevelUpKalineTree
   }
 
   @behaviour :cowboy_websocket
@@ -103,8 +120,15 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%FightLevel{user_id: user_id, level_id: level_id}) do
     case Battle.fight_level(user_id, level_id) do
-      {:error, reason} -> prepare_response({:error, reason}, nil)
-      battle_result -> prepare_response(%{result: Atom.to_string(battle_result)}, :battle_result)
+      {:error, reason} ->
+        prepare_response({:error, reason}, nil)
+
+      battle_result ->
+        battle_result
+        |> update_in([:steps], fn steps ->
+          Enum.map(steps, &prepare_step/1)
+        end)
+        |> prepare_response(:battle_result)
     end
   end
 
@@ -148,11 +172,10 @@ defmodule Gateway.ChampionsSocketHandler do
   defp handle(%GetItem{user_id: _user_id, item_id: item_id}),
     do: Items.get_item(item_id) |> prepare_response(:item)
 
-  defp handle(%LevelUpItem{user_id: user_id, item_id: item_id}) do
-    case Items.level_up(user_id, item_id) do
-      {:ok, %{item: item}} -> prepare_response(item, :item)
+  defp handle(%FuseItems{user_id: user_id, item_ids: item_ids}) do
+    case Items.fuse(user_id, item_ids) do
+      {:ok, item} -> prepare_response(item, :item)
       {:error, reason} -> prepare_response({:error, reason}, nil)
-      {:error, _, _, _} -> prepare_response({:error, :transaction}, nil)
     end
   end
 
@@ -181,8 +204,83 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
+  defp handle(%GetUserSuperCampaignProgresses{user_id: user_id}) do
+    super_campaign_progresses =
+      Campaigns.get_user_super_campaign_progresses(user_id)
+      |> Enum.map(fn super_campaign_progress ->
+        %{
+          level_id: super_campaign_progress.level_id,
+          user_id: super_campaign_progress.user_id,
+          campaign_id: super_campaign_progress.level.campaign_id,
+          super_campaign_id: super_campaign_progress.super_campaign_id
+        }
+      end)
+
+    prepare_response(%{super_campaign_progresses: super_campaign_progresses}, :super_campaign_progresses)
+  end
+
+  defp handle(%LevelUpKalineTree{user_id: user_id}) do
+    case Users.level_up_kaline_tree(user_id) do
+      {:ok, result} -> prepare_response(result, :user)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
   defp handle(unknown_request),
     do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
+
+  defp prepare_step(step) do
+    update_in(step, [:actions], fn actions ->
+      Enum.map(actions, &prepare_action/1)
+    end)
+  end
+
+  defp prepare_action(%{action_type: {type, action}}) do
+    %{
+      action_type:
+        case type do
+          :skill_action ->
+            {type,
+             Kernel.struct(
+               SkillAction,
+               action
+             )}
+
+          :modifier_received ->
+            {type,
+             Kernel.struct(
+               ModifierReceived,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
+
+          :tag_received ->
+            {type, Kernel.struct(TagReceived, action)}
+
+          :tag_expired ->
+            {type, Kernel.struct(TagExpired, action)}
+
+          :modifier_expired ->
+            {type,
+             Kernel.struct(
+               ModifierExpired,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
+
+          :death ->
+            {type, Kernel.struct(Death, action)}
+
+          :execution_received ->
+            {type,
+             Kernel.struct(
+               ExecutionReceived,
+               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+             )}
+
+          :energy_regen ->
+            {type, Kernel.struct(EnergyRegen, action)}
+        end
+    }
+  end
 
   defp prepare_response({:error, reason}, _response_type) when is_atom(reason),
     do: prepare_response({:error, Atom.to_string(reason)}, nil)

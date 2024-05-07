@@ -17,7 +17,12 @@ defmodule Physics do
   def move_entity(_entity, _ticks_to_move, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_entity_to_direction(_entity, _direction, _amount),
+  def move_entity(_entity, _ticks_to_move, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
+
+  def get_closest_available_position(_entity, _new_position, _external_wall, _obstacles),
+    do: :erlang.nif_error(:nif_not_loaded)
+
+  def move_entity_to_direction(_entity, _direction, _amount, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
 
   def add_angle_to_direction(_direction, _angle), do: :erlang.nif_error(:nif_not_loaded)
@@ -31,5 +36,5 @@ defmodule Physics do
   def calculate_duration(_position_a, _position_b, _speed),
     do: :erlang.nif_error(:nif_not_loaded)
 
-  def nearest_entity_direction(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
+  def nearest_entity_direction_in_range(_entity, _entities, _range), do: :erlang.nif_error(:nif_not_loaded)
 end

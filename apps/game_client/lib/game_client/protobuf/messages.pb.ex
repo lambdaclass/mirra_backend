@@ -15,6 +15,16 @@ defmodule GameClient.Protobuf.ProjectileStatus do
 
   field(:ACTIVE, 0)
   field(:EXPLODED, 1)
+  field(:CONSUMED, 2)
+end
+
+defmodule GameClient.Protobuf.CrateStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:FINE, 0)
+  field(:DESTROYED, 1)
 end
 
 defmodule GameClient.Protobuf.PowerUpstatus do
@@ -241,7 +251,25 @@ defmodule GameClient.Protobuf.GameState.ItemsEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.ObstaclesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState.PoolsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
+defmodule GameClient.Protobuf.GameState.CratesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -299,7 +327,15 @@ defmodule GameClient.Protobuf.GameState do
   field(:status, 11, type: GameClient.Protobuf.GameStatus, enum: true)
   field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
   field(:items, 13, repeated: true, type: GameClient.Protobuf.GameState.ItemsEntry, map: true)
-  field(:pools, 14, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
+
+  field(:obstacles, 14,
+    repeated: true,
+    type: GameClient.Protobuf.GameState.ObstaclesEntry,
+    map: true
+  )
+
+  field(:pools, 15, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
+  field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameState.CratesEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -326,15 +362,7 @@ defmodule GameClient.Protobuf.Entity do
   field(:power_up, 15, type: GameClient.Protobuf.PowerUp, json_name: "powerUp", oneof: 0)
   field(:item, 16, type: GameClient.Protobuf.Item, oneof: 0)
   field(:pool, 17, type: GameClient.Protobuf.Pool, oneof: 0)
-end
-
-defmodule GameClient.Protobuf.Player.EffectsEntry do
-  @moduledoc false
-
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.Effect)
+  field(:crate, 18, type: GameClient.Protobuf.Crate, oneof: 0)
 end
 
 defmodule GameClient.Protobuf.Player.CooldownsEntry do
@@ -366,7 +394,7 @@ defmodule GameClient.Protobuf.Player do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
-  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Player.EffectsEntry, map: true)
+  field(:effects, 10, repeated: true, type: GameClient.Protobuf.Effect)
   field(:inventory, 11, type: GameClient.Protobuf.Item)
   field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
 end
@@ -416,6 +444,16 @@ defmodule GameClient.Protobuf.PowerUp do
   field(:status, 2, type: GameClient.Protobuf.PowerUpstatus, enum: true)
 end
 
+defmodule GameClient.Protobuf.Crate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:health, 1, type: :uint64)
+  field(:amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps")
+  field(:status, 3, type: GameClient.Protobuf.CrateStatus, enum: true)
+end
+
 defmodule GameClient.Protobuf.Pool do
   @moduledoc false
 
@@ -431,6 +469,7 @@ defmodule GameClient.Protobuf.PlayerAction do
 
   field(:action, 1, type: GameClient.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
+  field(:destination, 3, type: GameClient.Protobuf.Position)
 end
 
 defmodule GameClient.Protobuf.Move do

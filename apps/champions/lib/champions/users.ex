@@ -3,11 +3,12 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias Champions.Utils
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias Champions.Users
+  alias GameBackend.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
-  alias GameBackend.Rewards
   alias GameBackend.Transaction
   alias GameBackend.Users.Currencies
   alias GameBackend.Users
@@ -23,14 +24,21 @@ defmodule Champions.Users do
   Sample data is filled to the user for testing purposes.
   """
   def register(username) do
-    case Users.register_user(%{username: username, game_id: Utils.game_id()}) do
+    kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
+
+    case Users.register_user(%{
+           username: username,
+           game_id: Utils.get_game_id(:champions_of_mirra),
+           level: 1,
+           experience: 0,
+           kaline_tree_level_id: kaline_tree_level.id
+         }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
         add_sample_units(user)
         add_sample_items(user)
         add_sample_currencies(user)
-        add_campaign_progresses(user)
-        add_afk_reward_rates(user)
+        add_super_campaign_progresses(user)
 
         Users.get_user(user.id)
 
@@ -65,7 +73,7 @@ defmodule Champions.Users do
   end
 
   defp add_sample_units(user) do
-    characters = Characters.get_characters_by_rank(Champions.Units.get_quality(:epic))
+    characters = Characters.get_characters_by_quality(Champions.Units.get_quality(:epic))
 
     Enum.each(1..6, fn index ->
       Units.insert_unit(%{
@@ -91,31 +99,22 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Arcane Crystals").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Hero Souls").id, 100)
   end
 
-  defp add_campaign_progresses(user) do
+  defp add_super_campaign_progresses(user) do
     {:ok, campaigns} = GameBackend.Campaigns.get_campaigns()
+    campaigns = Enum.group_by(campaigns, & &1.super_campaign_id)
 
-    Enum.each(campaigns, fn campaign ->
-      # Only add campaign progress to the first ones of each SuperCampaign
-      if campaign.campaign_number == 1,
-        do:
-          GameBackend.Campaigns.insert_campaign_progress(%{
-            game_id: Utils.game_id(),
-            user_id: user.id,
-            campaign_id: campaign.id,
-            level_id: campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
-          })
-    end)
-  end
-
-  defp add_afk_reward_rates(user) do
-    ["Gold", "Gems", "Summon Scrolls"]
-    |> Enum.each(fn currency_name ->
-      Rewards.insert_afk_reward_rate(%{
+    # Add SuperCampaignProgress for each SuperCampaign
+    Enum.each(campaigns, fn {super_campaign_id, [first_campaign | _campaigns]} ->
+      GameBackend.Campaigns.insert_super_campaign_progress(%{
+        game_id: Utils.get_game_id(:champions_of_mirra),
         user_id: user.id,
-        currency_id: Currencies.get_currency_by_name!(currency_name).id,
-        rate: 0
+        super_campaign_id: super_campaign_id,
+        level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
       })
     end)
   end
@@ -160,7 +159,7 @@ defmodule Champions.Users do
   def get_afk_rewards(user_id) do
     case Users.get_user(user_id) do
       {:ok, user} ->
-        user.afk_reward_rates
+        user.kaline_tree_level.afk_reward_rates
         |> Enum.map(fn reward_rate ->
           currency = Currencies.get_currency(reward_rate.currency_id)
           amount = calculate_afk_rewards(user, reward_rate)
@@ -178,7 +177,7 @@ defmodule Champions.Users do
 
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
     seconds_since_last_claim = DateTime.diff(now, last_claim, :second)
-    afk_reward_rate.rate * min(seconds_since_last_claim, @max_afk_reward_seconds)
+    (afk_reward_rate.rate * min(seconds_since_last_claim, @max_afk_reward_seconds)) |> round()
   end
 
   @doc """
@@ -200,7 +199,41 @@ defmodule Champions.Users do
         {:error, "failed"}
       end
     end)
-    |> Multi.run(:reset_afk_claim, fn _, _ -> Users.reset_afk_rewards_claim(user_id) end)
+    |> Multi.run(:reset_afk_claim, fn _, _ ->
+      Users.reset_afk_rewards_claim(user_id)
+    end)
     |> Transaction.run()
+    |> case do
+      {:ok, result} -> {:ok, result.reset_afk_claim}
+      {:error, _, reason, _} -> {:error, reason}
+    end
   end
+
+  @doc """
+  Level up the Kaline Tree of a user.
+  """
+  def level_up_kaline_tree(user_id) do
+    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+         level_up_costs = calculate_costs_to_level_up_kaline_tree(user),
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level_up_costs)} do
+      Users.level_up_kaline_tree(user_id, level_up_costs)
+    else
+      {:can_afford, false} -> {:error, :cant_afford}
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+    end
+  end
+
+  # TODO: remove this after finishing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+  # The costs will be defined in a configuration file.
+  defp calculate_costs_to_level_up_kaline_tree(user),
+    do: [
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Fertilizer").id,
+        amount: user.kaline_tree_level.fertilizer_level_up_cost
+      },
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        amount: user.kaline_tree_level.gold_level_up_cost
+      }
+    ]
 end

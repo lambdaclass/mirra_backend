@@ -14,6 +14,13 @@
 # is restricted to this project.
 
 # General application configuration
+# This file is responsible for configuring your application
+# and its dependencies with the aid of the Config module.
+#
+# This configuration file is loaded before any dependency and
+# is restricted to this project.
+
+# General application configuration
 import Config
 
 ##########################
@@ -36,6 +43,12 @@ config :esbuild,
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../apps/game_client/assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
+  ],
+  configurator: [
+    args:
+      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+    cd: Path.expand("../apps/configurator/assets", __DIR__),
+    env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
 
 # Configure tailwind (the version is required)
@@ -48,6 +61,19 @@ config :tailwind,
       --output=../priv/static/assets/app.css
     ),
     cd: Path.expand("../apps/game_client/assets", __DIR__)
+  ],
+  configurator: [
+    args: ~w(
+      --config=tailwind.config.js
+      --input=css/app.css
+      --output=../priv/static/assets/app.css
+    ),
+    cd: Path.expand("../apps/configurator/assets", __DIR__)
+  ]
+
+config :ueberauth, Ueberauth,
+  providers: [
+    google: {Ueberauth.Strategy.Google, []}
   ]
 
 ############################
@@ -59,6 +85,7 @@ dispatch = [
   _: [
     {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
     {"/join/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
+    {"/quick_game/:client_id/:character_name/:player_name", Arena.QuickGameHandler, []},
     {:_, Plug.Cowboy.Handler, {ArenaWeb.Endpoint, []}}
   ]
 ]
@@ -105,7 +132,7 @@ config :game_backend, GameBackend.Repo, migration_primary_key: [type: :binary_id
 
 # Configures the endpoint
 config :game_client, GameClientWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: 4002],
   adapter: Phoenix.Endpoint.Cowboy2Adapter,
   render_errors: [
     formats: [html: GameClientWeb.ErrorHTML, json: GameClientWeb.ErrorJSON],
@@ -148,7 +175,26 @@ config :gateway, Gateway.Endpoint,
   ],
   pubsub_server: Gateway.PubSub,
   live_view: [signing_salt: "XED/NEZq"],
-  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch]
+  http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch],
+  server: true
+
+###################################
+# App configuration: configurator #
+###################################
+config :configurator,
+  ecto_repos: [Configurator.Repo],
+  generators: [timestamp_type: :utc_datetime]
+
+# Configures the endpoint
+config :configurator, ConfiguratorWeb.Endpoint,
+  url: [host: "localhost"],
+  adapter: Bandit.PhoenixAdapter,
+  render_errors: [
+    formats: [html: ConfiguratorWeb.ErrorHTML, json: ConfiguratorWeb.ErrorJSON],
+    layout: false
+  ],
+  pubsub_server: Configurator.PubSub,
+  live_view: [signing_salt: "6A8twvHJ"]
 
 ############################
 # Import environment specific config. This must remain at the bottom

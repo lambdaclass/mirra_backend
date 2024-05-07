@@ -33,12 +33,14 @@ defmodule Gateway.SocketTester do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem,
+    FuseItems,
     GetAfkRewards,
     ClaimAfkRewards,
     GetBox,
     GetBoxes,
-    Summon
+    Summon,
+    GetUserSuperCampaignProgresses,
+    LevelUpKalineTree
   }
 
   def start_link() do
@@ -201,13 +203,13 @@ defmodule Gateway.SocketTester do
          })}
       )
 
-  def level_up_item(pid, user_id, item_id),
+  def fuse_items(pid, user_id, item_ids),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:level_up_item, %LevelUpItem{user_id: user_id, item_id: item_id}}
+           request_type: {:fuse_items, %FuseItems{user_id: user_id, item_ids: item_ids}}
          })}
       )
 
@@ -258,6 +260,26 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def get_user_super_campaign_progresses(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_user_super_campaign_progresses, %GetUserSuperCampaignProgresses{user_id: user_id}}
+         })}
+      )
+
+  def level_up_kaline_tree(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:level_up_kaline_tree, %LevelUpKalineTree{user_id: user_id}}
          })}
       )
 

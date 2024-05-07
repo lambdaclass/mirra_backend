@@ -11,15 +11,13 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
-  alias GameBackend.Units.Unit
-  alias GameBackend.Items.Item
-  alias GameBackend.Rewards
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Campaigns.CampaignProgress
-  alias GameBackend.Campaigns
   alias GameBackend.Repo
+  alias GameBackend.Users.Currencies
   alias GameBackend.Users.User
+  alias GameBackend.Users.GoogleUser
+  alias GameBackend.Utils
 
   @doc """
   Registers a user.
@@ -41,20 +39,38 @@ defmodule GameBackend.Users do
 
   @doc """
   Gets a single user.
-
+  Returns {:ok, User}.
   Returns {:error, :not_found} if no user is found.
 
   ## Examples
 
       iex> get_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
-      %User{}
+      {:ok, %User{}}
 
       iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
-      nil
+      {:error, :not_found}
   """
   def get_user(id) do
     user = Repo.get(User, id) |> preload()
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
+  Updates the given user by given params.
+  Returns {:ok, User}.
+  Returns {:error, Changeset} if update transaction fails.
+
+  ## Examples
+
+      iex> update_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf", %{valid_param: valid_value})
+      {:ok, %User{}}
+
+      iex> update_user("9483ae81-f3e8-4050-acea-13940d47d8ed", %{invalid_param: invalid_value})
+      {:error, %Changeset{}}
+  """
+  def update_user(%User{} = user, params) do
+    User.changeset(user, params)
+    |> Repo.update()
   end
 
   @doc """
@@ -76,6 +92,66 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a GoogleUser by their email.
+  Creates a GoogleUser if none is found.
+  Returns {:error, changeset} if the creation failed.
+
+  ## Examples
+
+      iex> find_or_create_google_user_by_email("some_email")
+      {:ok, %GoogleUser{}}
+
+      iex> find_or_create_google_user_by_email("non_existing_email")
+      {:ok, %GoogleUser{}}
+  """
+  def find_or_create_google_user_by_email(email) do
+    case Repo.get_by(GoogleUser, email: email) do
+      nil -> create_google_user_by_email(email)
+      user -> {:ok, user}
+    end
+  end
+
+  defp create_google_user_by_email(email) do
+    # TODO delete the following in a future refactor -> https://github.com/lambdaclass/mirra_backend/issues/557
+    kaline_tree_id = GameBackend.Users.get_kaline_tree_level(1).id
+    level = 1
+    experience = 1
+    amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
+    username = "User_#{amount_of_users + 1}"
+    ##################################################################
+    game_id = Utils.get_game_id(:curse_of_mirra)
+
+    GoogleUser.changeset(%GoogleUser{}, %{
+      email: email,
+      user: %{
+        kaline_tree_level_id: kaline_tree_id,
+        game_id: game_id,
+        username: username,
+        level: level,
+        experience: experience
+      }
+    })
+    |> Repo.insert()
+  end
+
+  @doc """
+  Gets a Kaline Tree level by its number.
+
+  Returns {:error, :not_found} if no level is found.
+
+  ## Examples
+
+      iex> get_kaline_tree_level(1)
+      %KalineTreeLevel{}
+
+      iex> get_kaline_tree_level(-1)
+      nil
+  """
+  def get_kaline_tree_level(level_number) do
+    Repo.get_by(KalineTreeLevel, level: level_number)
+  end
+
+  @doc """
   Checks whether a user exists with the given id.
 
   Useful if you want to validate an id while not needing to operate with the user itself.
@@ -89,37 +165,13 @@ defmodule GameBackend.Users do
       |> Repo.update()
 
   @doc """
-  Increments a user's level and apply the level's rewards.
-  If it was the last level in the campaign, increments the campaign number and sets the level number to 1.
+  Updates the Kaline Tree level of a user.
   """
-  def advance_level(user_id, campaign_id) do
-    with {:campaign_progress, {:ok, campaign_progress}} <-
-           {:campaign_progress, Campaigns.get_campaign_progress(user_id, campaign_id)},
-         {:next_level, {next_campaign_id, next_level_id}} <-
-           {:next_level, Campaigns.get_next_level(campaign_progress.level)} do
-      level = campaign_progress.level
-
-      # TODO: Implement experience rewards [CHoM-#216]
-      Multi.new()
-      |> apply_currency_rewards(user_id, level.currency_rewards)
-      |> apply_afk_rewards_increments(user_id, level.afk_rewards_increments)
-      |> Multi.insert_all(:item_rewards, Item, fn _ ->
-        build_item_rewards_params(user_id, level.item_rewards)
-      end)
-      |> Multi.insert_all(:unit_rewards, Unit, fn _ ->
-        build_unit_rewards_params(user_id, level.unit_rewards)
-      end)
-      |> Multi.run(:update_campaign_progress, fn _, _ ->
-        if next_level_id == level.id,
-          do: {:ok, nil},
-          else: update_campaign_progress(campaign_progress, next_campaign_id, next_level_id)
-      end)
-      |> Repo.transaction()
-    else
-      {:campaign_progress, _transaction_error} -> {:error, :campaign_progress_not_found}
-      {:next_level, _transaction_error} -> {:campaign_progress_error}
-    end
-  end
+  def update_kaline_tree_level(user, params),
+    do:
+      user
+      |> User.kaline_tree_level_changeset(params)
+      |> Repo.update()
 
   def reset_afk_rewards_claim(user_id) do
     {:ok, user} = get_user(user_id)
@@ -129,74 +181,45 @@ defmodule GameBackend.Users do
     |> Repo.update()
   end
 
+  @doc """
+  Level up the Kaline Tree of a user.
+
+  Returns the updated user if the operation was successful.
+  """
+  def level_up_kaline_tree(user_id, level_up_costs) do
+    {:ok, _result} =
+      Multi.new()
+      |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        Currencies.substract_currencies(user_id, level_up_costs)
+      end)
+      |> Repo.transaction()
+
+    get_user(user_id)
+  end
+
+  defp increment_tree_level(user_id) do
+    case get_user(user_id) do
+      {:ok, user} ->
+        next_level = get_kaline_tree_level(user.kaline_tree_level.level + 1)
+
+        user
+        |> User.changeset(%{kaline_tree_level_id: next_level.id})
+        |> Repo.update()
+
+      error ->
+        error
+    end
+  end
+
   defp preload(user),
     do:
       Repo.preload(
         user,
-        [
-          :afk_reward_rates,
-          campaign_progresses: :level,
-          items: :template,
-          units: [:character, :items],
-          currencies: :currency
-        ]
+        kaline_tree_level: [afk_reward_rates: :currency],
+        super_campaign_progresses: :level,
+        items: :template,
+        units: [:character, :items],
+        currencies: :currency
       )
-
-  defp update_campaign_progress(campaign_progress, next_campaign_id, next_level_id) do
-    campaign_progress
-    |> CampaignProgress.advance_level_changeset(%{
-      campaign_id: next_campaign_id,
-      level_id: next_level_id
-    })
-    |> Repo.update()
-  end
-
-  defp build_item_rewards_params(user_id, item_rewards) do
-    Enum.map(item_rewards, fn item_reward ->
-      Enum.map(1..item_reward.amount, fn _ ->
-        %{
-          user_id: user_id,
-          template_id: item_reward.item_template_id,
-          level: 1,
-          inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-          updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-        }
-      end)
-    end)
-    |> List.flatten()
-  end
-
-  defp build_unit_rewards_params(user_id, unit_rewards) do
-    Enum.map(unit_rewards, fn unit_reward ->
-      Enum.map(1..unit_reward.amount, fn _ ->
-        %{
-          user_id: user_id,
-          character_id: unit_reward.character_id,
-          level: 1,
-          tier: 1,
-          rank: unit_reward.rank,
-          selected: false,
-          inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-          updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-        }
-      end)
-    end)
-    |> List.flatten()
-  end
-
-  defp apply_currency_rewards(multi, user_id, currency_rewards) do
-    Enum.reduce(currency_rewards, multi, fn currency_reward, multi ->
-      Multi.run(multi, {:add_currency, currency_reward.currency_id}, fn _, _ ->
-        Currencies.add_currency(user_id, currency_reward.currency_id, currency_reward.amount)
-      end)
-    end)
-  end
-
-  defp apply_afk_rewards_increments(multi, user_id, afk_rewards_increments) do
-    Enum.reduce(afk_rewards_increments, multi, fn increment, multi ->
-      Multi.run(multi, {:add_afk_reward_increment, increment.currency_id}, fn _, _ ->
-        Rewards.increment_afk_reward_rate(user_id, increment.currency_id, increment.amount)
-      end)
-    end)
-  end
 end

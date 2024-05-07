@@ -1,90 +1,29 @@
 alias GameBackend.Campaigns
-alias GameBackend.Campaigns.Level
 alias GameBackend.Campaigns.Campaign
+alias GameBackend.Campaigns.Level
+alias GameBackend.Campaigns.Rewards.AfkRewardRate
+alias GameBackend.Campaigns.Rewards.CurrencyReward
 alias GameBackend.Gacha
-alias GameBackend.Items
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Characters
 alias GameBackend.Units.Unit
 alias GameBackend.Users
-alias GameBackend.Campaigns.Rewards.CurrencyReward
+alias GameBackend.Users.KalineTreeLevel
 
 champions_of_mirra_id = 2
 units_per_level = 5
 
-Champions.Config.import_character_config()
+{:ok, _skills} = Champions.Config.import_skill_config()
 
-muflus = Characters.get_character_by_name("Muflus")
-
-{:ok, _muflus} =
-  Characters.update_character(muflus, %{
-    basic_skill: %{
-      effects: [
-        %{
-          type: "instant",
-          stat_affected: "health",
-          amount: -80,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
-        }
-      ],
-      cooldown: 5
-    },
-    ultimate_skill: %{
-      effects: [
-        %{
-          type: "instant",
-          stat_affected: "health",
-          amount: -205,
-          stat_based_on: "attack",
-          amount_format: "additive",
-          # TODO: Change back to nearest
-          targeting_strategy: "random",
-          amount_of_targets: 2,
-          targets_allies: false
-        }
-        # TODO: Add stun effect
-      ],
-      cooldown: 5
-    }
-  })
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Epic Sword of Epicness",
-  type: "weapon"
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Mythical Helmet of Mythicness",
-  type: "helmet"
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Legendary Chestplate of Legendaryness",
-  type: "chest"
-})
-
-Items.insert_item_template(%{
-  game_id: champions_of_mirra_id,
-  name: "Magical Boots of Magicness",
-  type: "boots"
-})
+{:ok, _characters} = Champions.Config.import_character_config()
 
 {:ok, gold_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gold"})
 
-{:ok, gems_currency} =
+{:ok, _gems_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 
-{:ok, _arcane_crystals_currency} =
+{:ok, arcane_crystals_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
 
 {:ok, hero_souls_currency} =
@@ -98,6 +37,11 @@ Items.insert_item_template(%{
     game_id: champions_of_mirra_id,
     name: "Mystic Summon Scrolls"
   })
+
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, _items} = Champions.Config.import_item_template_config()
 
 {:ok, _} =
   Gacha.insert_box(%{
@@ -122,6 +66,51 @@ Items.insert_item_template(%{
     ],
     cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
+
+# TODO: remove these inserts after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
+kaline_tree_levels =
+  Enum.map(1..50, fn level_number ->
+    %{
+      level: level_number,
+      fertilizer_level_up_cost: level_number * 100,
+      gold_level_up_cost: level_number * 100,
+      unlock_features: [],
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+
+{_, kaline_tree_levels} =
+  Repo.insert_all(KalineTreeLevel, kaline_tree_levels, returning: [:id, :level])
+
+afk_reward_rates =
+  Enum.flat_map(Enum.with_index(kaline_tree_levels, 1), fn {level, level_index} ->
+    [
+      %{
+        kaline_tree_level_id: level.id,
+        rate: 10.0 * (level_index - 1),
+        currency_id: gold_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
+      %{
+        kaline_tree_level_id: level.id,
+        rate: 2.0 * (level_index - 1),
+        currency_id: hero_souls_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
+      %{
+        kaline_tree_level_id: level.id,
+        rate: 3.0 * (level_index - 1),
+        currency_id: arcane_crystals_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      }
+    ]
+  end)
+
+Repo.insert_all(AfkRewardRate, afk_reward_rates)
 
 ######################
 # Campaigns creation #
@@ -225,7 +214,6 @@ currency_rewards =
       level_id: level.id,
       amount: 10 * (20 + level.level_number),
       currency_id: gold_currency.id,
-      afk_reward: false,
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }
@@ -238,34 +226,9 @@ currency_rewards =
         level_id: level.id,
         amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
         currency_id: hero_souls_currency.id,
-        afk_reward: false,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
     end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
-
-afk_reward_increments =
-  Enum.flat_map(Enum.with_index(levels_without_units, 1), fn {level, level_index} ->
-    [
-      %{
-        level_id: level.id,
-        amount: 10 * level_index,
-        currency_id: gold_currency.id,
-        afk_reward: true,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      },
-      %{
-        level_id: level.id,
-        amount: level_index,
-        currency_id: gems_currency.id,
-        afk_reward: true,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
-    ]
-  end)
-
-Repo.insert_all(CurrencyReward, afk_reward_increments, on_conflict: :nothing)

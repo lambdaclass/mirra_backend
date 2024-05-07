@@ -190,9 +190,8 @@ defmodule Champions.Units do
   @doc """
   Returns whether a unit can tier up. tier is blocked by rank.
   """
-  def can_tier_up(unit), do: can_tier_up(unit.rank, unit.tier)
+  def can_tier_up(unit), do: can_tier_up(unit.rank, unit.tier) and not can_level_up(unit)
 
-  # TODO: Don't allow units with a level lower than the tier's max to tier up [#CHoM-227]
   defp can_tier_up(@star1, tier) when tier < 1, do: true
   defp can_tier_up(@star2, tier) when tier < 2, do: true
   defp can_tier_up(@star3, tier) when tier < 3, do: true
@@ -268,6 +267,9 @@ defmodule Champions.Units do
 
       {:unit_not_in_consumed_units, false} ->
         {:error, :consumed_units_invalid}
+
+      {:consumed_units_owned, false} ->
+        {:error, :consumed_units_not_found}
 
       {:consumed_units_count, false} ->
         {:error, :consumed_units_not_found}
@@ -372,29 +374,112 @@ defmodule Champions.Units do
   ##########
 
   @doc """
-  Get a unit's max health stat for battle. Buffs from items and similar belong here.
+  Get a unit's health stat for battle, including modifiers from items.
 
-  For now, we just return the base character's stat.
+  Character and ItemTemplate must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_health(unit)
+      100
   """
-  def get_max_health(unit) do
-    unit.character.base_health
-  end
+  def get_health(unit), do: calculate_stat(unit.character.base_health, unit, "health")
 
   @doc """
-  Get a unit's attack stat for battle. Buffs from items and similar belong here.
+  Get a unit's attack stat for battle, including modifiers from items.
 
-  For now, we just return the base character's stat.
+  Character and ItemTemplate must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_attack(unit)
+      100
   """
-  def get_attack(unit) do
-    unit.character.base_attack
-  end
+  def get_attack(unit), do: calculate_stat(unit.character.base_attack, unit, "attack")
 
   @doc """
-  Get a unit's armor stat for battle. Buffs from items and similar belong here.
+  Get a unit's defense stat for battle, including modifiers from items.
 
-  For now, we just return the base character's stat.
+  Character and ItemTemplate must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_defense(unit)
+      100
   """
-  def get_armor(unit) do
-    unit.character.base_armor
+  def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit, "defense")
+
+  defp calculate_stat(base_stat, unit, stat_name),
+    do:
+      base_stat
+      |> Decimal.new()
+      |> factor_level(unit.level)
+      |> factor_tier(unit.tier)
+      |> factor_rank(unit.rank)
+      |> factor_items(unit.items, stat_name)
+      |> trunc()
+
+  defp factor_level(base_stat, level) do
+    level_modifier =
+      Math.pow(level - 1, 2)
+      |> Decimal.new()
+      |> Decimal.div(3000)
+      |> Decimal.add(Decimal.from_float((level - 1) / 30 + 1))
+
+    Decimal.mult(
+      base_stat,
+      level_modifier
+    )
+  end
+
+  defp factor_tier(stat_after_level, tier),
+    do: Decimal.mult(stat_after_level, Decimal.from_float(Math.pow(1.05, tier - 1)))
+
+  defp factor_rank(stat_after_tier, rank),
+    do: Decimal.mult(stat_after_tier, Decimal.from_float(Math.pow(1.1, rank - 1)))
+
+  defp factor_items(stat_after_rank, items, attribute_name) do
+    {additive_modifiers, multiplicative_modifiers} =
+      get_additive_and_multiplicative_modifiers(items, attribute_name)
+
+    additive_bonus =
+      Enum.reduce(additive_modifiers, 0, fn mod, acc ->
+        Decimal.from_float(mod.value)
+        |> Decimal.add(acc)
+      end)
+
+    multiplicative_bonus =
+      Enum.reduce(multiplicative_modifiers, 1, fn mod, acc ->
+        Decimal.from_float(mod.value)
+        |> Decimal.mult(acc)
+      end)
+
+    stat_after_rank
+    |> Decimal.add(additive_bonus)
+    |> Decimal.mult(multiplicative_bonus)
+    |> Decimal.to_float()
+  end
+
+  defp get_additive_and_multiplicative_modifiers([], _) do
+    {[], []}
+  end
+
+  defp get_additive_and_multiplicative_modifiers(items, attribute) do
+    item_modifiers =
+      Enum.flat_map(items, & &1.template.modifiers)
+
+    attribute_modifiers =
+      Enum.filter(item_modifiers, &(&1.attribute == attribute))
+
+    additive_modifiers =
+      Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
+
+    multiplicative_modifiers =
+      Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
+
+    {additive_modifiers, multiplicative_modifiers}
   end
 end

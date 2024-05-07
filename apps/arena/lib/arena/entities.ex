@@ -21,12 +21,17 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: character.base_health,
         base_health: character.base_health,
+        max_health: character.base_health,
+        base_speed: character.base_speed,
+        base_stamina_interval: character.stamina_interval,
+        base_cooldown_multiplier: 1,
         skills: character.skills,
         current_actions: [],
         kill_count: 0,
         available_stamina: character.base_stamina,
         max_stamina: character.base_stamina,
         stamina_interval: character.stamina_interval,
+        cooldown_multiplier: 1,
         recharging_stamina: false,
         last_natural_healing_update: now,
         natural_healing_interval: character.natural_healing_interval,
@@ -39,8 +44,9 @@ defmodule Arena.Entities do
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
-        effects: %{},
-        cooldowns: %{}
+        effects: [],
+        cooldowns: %{},
+        bonus_damage: 0
       }
     }
   end
@@ -70,7 +76,8 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
-        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics)
+        on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
+        on_collide_effects: Map.get(config_params, :on_collide_effects)
       }
     }
   end
@@ -90,7 +97,9 @@ defmodule Arena.Entities do
       aditional_info: %{
         owner_id: owner_id,
         status: :AVAILABLE,
-        remove_on_collision: true
+        remove_on_collision: true,
+        power_up_damage_modifier: power_up.power_up_damage_modifier,
+        power_up_health_modifier: power_up.power_up_health_modifier
       }
     }
   end
@@ -116,7 +125,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, owner_id) do
+  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, spawn_at) do
     %{
       id: id,
       category: :pool,
@@ -133,7 +142,11 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         effects_to_apply: effects_to_apply,
-        owner_id: owner_id
+        owner_id: owner_id,
+        effects: [],
+        stat_multiplier: 0,
+        duration_ms: duration_ms,
+        spawn_at: spawn_at
       }
     }
   end
@@ -145,7 +158,7 @@ defmodule Arena.Entities do
       shape: :circle,
       name: "Item" <> Integer.to_string(id),
       position: position,
-      radius: 30.0,
+      radius: config.radius,
       vertices: [],
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},
@@ -157,21 +170,51 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_circular_obstacle(id, position, radius) do
+  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices}) do
     %{
       id: id,
       category: :obstacle,
-      shape: :circle,
+      shape: get_shape(shape),
       name: "Obstacle" <> Integer.to_string(id),
       position: position,
       radius: radius,
-      vertices: [],
+      vertices: vertices,
       speed: 0.0,
       direction: %{
         x: 0.0,
         y: 0.0
       },
       is_moving: false
+    }
+  end
+
+  def new_crate(id, %{
+        position: position,
+        radius: radius,
+        shape: shape,
+        vertices: vertices,
+        health: health,
+        amount_of_power_ups: amount_of_power_ups
+      }) do
+    %{
+      id: id,
+      category: :crate,
+      shape: get_shape(shape),
+      name: "Crate" <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: vertices,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false,
+      aditional_info: %{
+        health: health,
+        amount_of_power_ups: amount_of_power_ups,
+        status: :FINE
+      }
     }
   end
 
@@ -244,6 +287,13 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :obstacle do
+    {:obstacle,
+     %Arena.Serialization.Obstacle{
+       color: "red"
+     }}
+  end
+
   def maybe_add_custom_info(entity) when entity.category == :pool do
     {:pool,
      %Arena.Serialization.Pool{
@@ -258,7 +308,22 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :crate do
+    {:crate,
+     %Arena.Serialization.Crate{
+       health: entity.aditional_info.health,
+       amount_of_power_ups: entity.aditional_info.amount_of_power_ups,
+       status: entity.aditional_info.status
+     }}
+  end
+
   def maybe_add_custom_info(_entity) do
     nil
   end
+
+  defp get_shape("polygon"), do: :polygon
+  defp get_shape("circle"), do: :circle
+  defp get_shape("line"), do: :line
+  defp get_shape("point"), do: :point
+  defp get_shape(_), do: nil
 end

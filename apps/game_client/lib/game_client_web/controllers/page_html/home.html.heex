@@ -1,15 +1,16 @@
-<ul>
-  <li> 
-  Mocked Muflus: <a href="/board/1/muflus" class="text-yellow-400">link</a>
-  </li>
-  <li> 
-  Mocked Uma: <a href="/board/1/uma" class="text-yellow-400">link</a>
-  </li>
-  <li> 
-  Mocked H4ck: <a href="/board/1/h4ck" class="text-yellow-400">link</a>
-  </li>
-  <li> 
-  Mocked Valtimer: <a href="/board/1/valtimer" class="text-yellow-400">link</a>
-  </li>
-</ul>
+<%= unless assigns[:current_user_id] do %>
+  <p>You are not logged in, match results won't be saved</p>
+<% end %>
 
+<.form :let={f} for={%{}} action={~p"/"}>
+  <.input field={f[:character]} name="character" label="Select a Character" type="select" options={["muflus", "h4ck", "uma", "valtimer"]} value=""/>
+  <.input field={f[:user_id]} name="user_id" type="hidden" value={assigns[:user_id]}/>
+  <.button type="submit" name="game_mode" value="join">Play</.button>
+  <.button type="submit" name="game_mode" value="quick_game">Quick Game</.button>
+</.form>
+
+<%= if assigns[:current_user_id] do %>
+  <p>Logged in as user_id: <%= @current_user_id %></p>
+<% else %>
+  <.link href={~p"/auth/google"}>Google login</.link>
+<% end %>
