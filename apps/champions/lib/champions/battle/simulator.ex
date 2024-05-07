@@ -552,10 +552,10 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
-    units =
+    target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    take_unit_ids_by_slots(units, [1, 2])
+    take_unit_ids_by_slots(target_team, [1, 2])
   end
 
   defp find_by_proximity(units, slots_priorities, amount) do
