@@ -216,13 +216,10 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
-        [
-          :kaline_tree_level,
-          afk_reward_rates: :currency,
-          super_campaign_progresses: :level,
-          items: :template,
-          units: [:character, :items],
-          currencies: :currency
-        ]
+        kaline_tree_level: [afk_reward_rates: :currency],
+        super_campaign_progresses: :level,
+        items: :template,
+        units: [:character, :items],
+        currencies: :currency
       )
 end

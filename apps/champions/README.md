@@ -142,12 +142,12 @@ Slot must be an unoccupied slot identified by number, between 1 and 6.
 #### Create Item Template
 
 ```
-{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: GameBackend.Utils.get_game_id(:champions_of_mirra), name: name, type: item_type, base_modifiers: base_modifiers})
+{:ok, item_template} = GameBackend.Items.insert_item_template(%{game_id: GameBackend.Utils.get_game_id(:champions_of_mirra), name: name, type: item_type, rarity: rarity, config_id: config_id, modifiers: modifiers})
 ```
 
 #### Create Item
 ```
-{:ok, item} = GameBackend.Items.insert_item(%{user_id: user_id, template_id: template_id, level: level})
+{:ok, item} = GameBackend.Items.insert_item(%{user_id: user_id, template_id: template_id})
 ```
 
 #### Get Item by Id
@@ -168,8 +168,8 @@ Slot must be an unoccupied slot identified by number, between 1 and 6.
 {:ok, item} = Champions.Items.unequip_item(user_id, item_id)
 ```
 
-#### Level Up Item
+#### Fuse Items
 
 ```
-{:ok, item} = Champions.Items.level_up(user_id, item_id)
+{:ok, item} = Champions.Items.fuse(user_id, [item_1_id, item_2_id, item_3_id])
 ```

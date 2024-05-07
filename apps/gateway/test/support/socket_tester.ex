@@ -33,7 +33,7 @@ defmodule Gateway.SocketTester do
     EquipItem,
     UnequipItem,
     GetItem,
-    LevelUpItem,
+    FuseItems,
     GetAfkRewards,
     ClaimAfkRewards,
     GetBox,
@@ -203,13 +203,13 @@ defmodule Gateway.SocketTester do
          })}
       )
 
-  def level_up_item(pid, user_id, item_id),
+  def fuse_items(pid, user_id, item_ids),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:level_up_item, %LevelUpItem{user_id: user_id, item_id: item_id}}
+           request_type: {:fuse_items, %FuseItems{user_id: user_id, item_ids: item_ids}}
          })}
       )
 

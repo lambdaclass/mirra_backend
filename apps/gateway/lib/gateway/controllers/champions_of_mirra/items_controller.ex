@@ -20,8 +20,4 @@ defmodule Gateway.Champions.ItemsController do
   def get_item(conn, %{"item_id" => item_id}) do
     Champions.Items.get_item(item_id) |> Gateway.Utils.format_response(conn)
   end
-
-  def level_up(conn, %{"user_id" => user_id, "item_id" => item_id}) do
-    Champions.Items.level_up(user_id, item_id) |> Gateway.Utils.format_response(conn)
-  end
 end

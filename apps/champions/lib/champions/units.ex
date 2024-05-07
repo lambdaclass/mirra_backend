@@ -447,13 +447,13 @@ defmodule Champions.Units do
 
     additive_bonus =
       Enum.reduce(additive_modifiers, 0, fn mod, acc ->
-        Decimal.from_float(mod.base_value)
+        Decimal.from_float(mod.value)
         |> Decimal.add(acc)
       end)
 
     multiplicative_bonus =
       Enum.reduce(multiplicative_modifiers, 1, fn mod, acc ->
-        Decimal.from_float(mod.base_value)
+        Decimal.from_float(mod.value)
         |> Decimal.mult(acc)
       end)
 
@@ -469,7 +469,7 @@ defmodule Champions.Units do
 
   defp get_additive_and_multiplicative_modifiers(items, attribute) do
     item_modifiers =
-      Enum.flat_map(items, & &1.template.base_modifiers)
+      Enum.flat_map(items, & &1.template.modifiers)
 
     attribute_modifiers =
       Enum.filter(item_modifiers, &(&1.attribute == attribute))

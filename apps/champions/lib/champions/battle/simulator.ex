@@ -94,6 +94,7 @@ defmodule Champions.Battle.Simulator do
             |> process_step_for_units()
             |> process_step_for_skills(initial_step_state)
             |> process_step_for_effects()
+            |> cap_units_health()
 
           Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
 
@@ -221,6 +222,14 @@ defmodule Champions.Battle.Simulator do
                 stats_affected: []
               },
               :skill_action
+            )
+            |> add_to_history(
+              %{
+                target_id: unit.id,
+                skill_id: unit.basic_skill.id,
+                amount: unit.basic_skill.energy_regen
+              },
+              :energy_regen
             )
 
           {new_state, new_history}
@@ -545,6 +554,20 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
+  defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
+  end
+
+  defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    take_unit_ids_by_slots(target_team, [1, 2])
+  end
+
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
       Enum.sort_by(units, fn unit ->
@@ -552,6 +575,23 @@ defmodule Champions.Battle.Simulator do
       end)
 
     Enum.take(sorted_units, amount)
+  end
+
+  defp take_unit_ids_by_slots(units, slots) do
+    slots_units = Enum.filter(units, fn {_id, unit} -> unit.slot in slots end)
+
+    # Fallback to all remaining units if there are no units in slots
+    # Might need to change this if we use this function for more than Frontline-Backline targeting
+    units =
+      case slots_units do
+        [] ->
+          units
+
+        _ ->
+          slots_units
+      end
+
+    Enum.map(units, fn {id, _unit} -> id end)
   end
 
   # If we receive the target's id, it means that the unit has died before the effect hits.
@@ -748,7 +788,7 @@ defmodule Champions.Battle.Simulator do
       |> Decimal.to_integer()
 
     Logger.info(
-      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense})"
+      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}"
     )
 
     new_history =
@@ -761,11 +801,55 @@ defmodule Champions.Battle.Simulator do
         },
         :execution_received
       )
+      |> add_to_history(
+        %{
+          target_id: target.id,
+          skill_id: skill_id,
+          amount: energy_recharge
+        },
+        :energy_regen
+      )
 
     new_target =
       target
       |> Map.put(:health, target.health - damage_after_defense)
       |> Map.put(:energy, min(target.energy + energy_recharge, @ultimate_energy_cost))
+
+    {new_target, new_history}
+  end
+
+  # Apply a DealDamage execution to its target. Returns the new state of the target.
+  defp process_execution(
+         %{
+           "type" => "Heal",
+           "attack_ratio" => attack_ratio
+         },
+         target,
+         caster,
+         history,
+         skill_id
+       ) do
+    heal_amount = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+
+    Logger.info(
+      "Healing #{heal_amount} hp to #{format_unit_name(target)} (#{target.health} -> #{target.health + heal_amount})"
+    )
+
+    new_history =
+      add_to_history(
+        history,
+        %{
+          target_id: target.id,
+          skill_id: skill_id,
+          stat_affected: %{stat: :HEALTH, amount: heal_amount}
+        },
+        :execution_received
+      )
+
+    new_target = Map.put(target, :health, target.health + heal_amount)
+
+    # We don't cap to max_health here because the unit's health at the end of the step would depend
+    # on the order in which we process the executions.
 
     {new_target, new_history}
   end
@@ -798,6 +882,17 @@ defmodule Champions.Battle.Simulator do
     else
       Enum.min_by(overrides, & &1.step_applied_at).magnitude
     end
+  end
+
+  # Called at the end of step processing. Sets unit health to max_health if it's above it.
+  defp cap_units_health({state, history}) do
+    {Map.put(
+       state,
+       :units,
+       Enum.map(state.units, fn {unit_id, unit} ->
+         {unit_id, Map.put(unit, :health, min(unit.max_health, unit.health))}
+       end)
+     ), history}
   end
 
   # Used to create the initial unit maps to be used during simulation.
@@ -849,7 +944,9 @@ defmodule Champions.Battle.Simulator do
   @implemented_targeting_strategies [
     "random",
     "nearest",
-    "furthest"
+    "furthest",
+    "frontline",
+    "backline"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
