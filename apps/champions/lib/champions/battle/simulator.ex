@@ -195,6 +195,16 @@ defmodule Champions.Battle.Simulator do
               },
               :skill_action
             )
+            |> add_to_history(
+              %{
+                target_id: unit.id,
+                stat_affected: %{
+                  stat: :ENERGY,
+                  amount: -@ultimate_energy_cost
+                }
+              },
+              :stat_override
+            )
 
           {new_state, new_history}
 
