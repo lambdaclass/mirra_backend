@@ -1978,14 +1978,7 @@
                 "type": "instant"
               },
               "initial_delay": 0,
-              "components": [
-                {
-                  "type": "ApplyTags",
-                  "tags": [
-                    "Untargetable"
-                  ]
-                }
-              ],
+              "components": [],
               "modifiers": [],
               "executions": [
                 {

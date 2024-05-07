@@ -514,6 +514,115 @@ defmodule Champions.Test.BattleTest do
     end
   end
 
+  describe "Components" do
+    test "Untargetable tag" do
+      # We will set up a battle between a unit with an untargetable skill and a unit that targets the nearest enemy, performing a DealDamage execution.
+      # The first unit will attack and tag the second unit as untargeteable each time it hits, so the second unit will only be hit once.
+      # The second unit is very weak, but the first unit will never be able to hit it, so the battle will end in a victory for the second unit.
+
+      backline_slot = 6
+      skill_cooldown = 5
+
+      untargetable_params =
+        TestUtils.build_skill(%{
+          name: "Untargetable",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      components: [
+                        %{
+                          type: "ApplyTags",
+                          tags: [
+                            "Untargetable"
+                          ]
+                        }
+                      ],
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ],
+          cooldown: skill_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, loser_character} =
+        TestUtils.build_character(%{
+          name: "Loser Character",
+          basic_skill: untargetable_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Untargetable Empty Skill"}),
+          base_attack: 5,
+          base_health: 5
+        })
+        |> Characters.insert_character()
+
+      {:ok, loser_unit} =
+        TestUtils.build_unit(%{character_id: loser_character.id, slot: backline_slot}) |> Units.insert_unit()
+
+      {:ok, loser_unit} = Units.get_unit(loser_unit.id)
+
+      damage_params =
+        TestUtils.build_skill(%{
+          name: "Untargetable Test - Damage",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    # Nearest so that he hits the target dummy
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: skill_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, winner_character} =
+        TestUtils.build_character(%{
+          name: "Winner Character",
+          basic_skill: damage_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Test-Untargetable Empty Skill"}),
+          base_attack: 1
+        })
+        |> Characters.insert_character()
+
+      {:ok, winner_unit} =
+        TestUtils.build_unit(%{character_id: winner_character.id}) |> Units.insert_unit()
+
+      {:ok, winner_unit} = Units.get_unit(winner_unit.id)
+
+      needed_steps = skill_cooldown * (1 + div(loser_character.base_health, winner_character.base_attack))
+
+      assert "team_2" ==
+               Champions.Battle.Simulator.run_battle([loser_unit], [winner_unit], maximum_steps: needed_steps).result
+    end
+  end
+
   describe "Targeting Strategies" do
     test "Frontline", %{target_dummy_character: target_dummy_character} do
       maximum_steps = 5
