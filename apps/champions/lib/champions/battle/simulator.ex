@@ -545,6 +545,20 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
+  defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
+  end
+
+  defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    take_unit_ids_by_slots(target_team, [1, 2])
+  end
+
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
       Enum.sort_by(units, fn unit ->
@@ -552,6 +566,23 @@ defmodule Champions.Battle.Simulator do
       end)
 
     Enum.take(sorted_units, amount)
+  end
+
+  defp take_unit_ids_by_slots(units, slots) do
+    slots_units = Enum.filter(units, fn {_id, unit} -> unit.slot in slots end)
+
+    # Fallback to all remaining units if there are no units in slots
+    # Might need to change this if we use this function for more than Frontline-Backline targeting
+    units =
+      case slots_units do
+        [] ->
+          units
+
+        _ ->
+          slots_units
+      end
+
+    Enum.map(units, fn {id, _unit} -> id end)
   end
 
   # If we receive the target's id, it means that the unit has died before the effect hits.
@@ -895,7 +926,9 @@ defmodule Champions.Battle.Simulator do
   @implemented_targeting_strategies [
     "random",
     "nearest",
-    "furthest"
+    "furthest",
+    "frontline",
+    "backline"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
