@@ -11,6 +11,7 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Users.KalineTreeLevel
+  alias GameBackend.Users.GoogleUser
 
   schema "users" do
     field(:game_id, :integer)

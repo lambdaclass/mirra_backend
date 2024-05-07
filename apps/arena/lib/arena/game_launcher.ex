@@ -125,7 +125,8 @@ defmodule Arena.GameLauncher do
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
-        clients: clients ++ bot_clients
+        clients: clients,
+        bot_clients: bot_clients
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()

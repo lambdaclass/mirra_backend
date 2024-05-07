@@ -71,6 +71,11 @@ config :tailwind,
     cd: Path.expand("../apps/configurator/assets", __DIR__)
   ]
 
+config :ueberauth, Ueberauth,
+  providers: [
+    google: {Ueberauth.Strategy.Google, []}
+  ]
+
 ############################
 # App configuration: arena #
 ############################
