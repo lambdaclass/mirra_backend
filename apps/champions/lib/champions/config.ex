@@ -77,7 +77,7 @@ defmodule Champions.Config do
 
     Jason.decode!(item_templates_json, [{:keys, :atoms}])
     |> Enum.map(fn item_template ->
-      Map.put(item_template, :game_id, Utils.game_id())
+      Map.put(item_template, :game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
       |> update_in([:upgrade_costs], fn upgrade_costs ->
         Enum.map(
           upgrade_costs,

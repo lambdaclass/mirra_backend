@@ -450,7 +450,7 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, item_template} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: GameBackend.Utils.get_game_id(:champions_of_mirra),
           name: "Attack-improving weapon",
           config_id: "attack_improving_weapon",
           type: "weapon",

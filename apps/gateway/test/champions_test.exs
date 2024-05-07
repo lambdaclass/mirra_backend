@@ -747,7 +747,7 @@ defmodule Gateway.Test.Champions do
 
       {:ok, epic_axe_tier_2} =
         Items.insert_item_template(%{
-          game_id: Utils.game_id(),
+          game_id: GameBackend.Utils.get_game_id(:champions_of_mirra),
           name: "Epic Axe of Testness",
           config_id: "epic_axe_of_testness_t2",
           upgrades_from_config_id: "epic_axe_of_testness_t1",
