@@ -207,7 +207,7 @@ defmodule Champions.Battle.Simulator do
             |> put_in(
               [:units, unit.id, :basic_skill, :remaining_cooldown],
               # We need this + 1 because we're going to reduce the cooldown at the end of the step
-              unit.basic_skill.base_cooldown + 1
+              calculate_cooldown(unit.basic_skill, unit) + 1
             )
             |> update_in([:units, unit.id, :energy], &(&1 + unit.basic_skill.energy_regen))
 
@@ -264,6 +264,16 @@ defmodule Champions.Battle.Simulator do
       |> put_in([:units, unit.id, :tags], new_tags)
 
     {new_state, new_history}
+  end
+
+  defp calculate_cooldown(skill, unit) do
+    speed = calculate_unit_stat(unit, :speed) |> Decimal.from_float()
+
+    divisor = Decimal.div(Decimal.max(-99, speed), 100) |> Decimal.add(1)
+
+    Decimal.div(skill.base_cooldown, divisor)
+    |> Decimal.round()
+    |> Decimal.to_integer()
   end
 
   # Reduces modifier timers and removes expired ones.
