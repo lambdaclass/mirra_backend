@@ -168,6 +168,12 @@ fn nearest_entity_direction_in_range(
 
     direction
 }
+#[rustler::nif()]
+fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
+    distance_between_positions(entity_a.position, entity_b.position)
+        - entity_a.radius
+        - entity_b.radius
+}
 
 fn move_entity_to_closest_available_position(
     entity: &mut Entity,
@@ -218,6 +224,7 @@ rustler::init!(
         calculate_triangle_vertices,
         get_direction_from_positions,
         calculate_speed,
+        distance_between_entities,
         nearest_entity_direction_in_range,
         get_closest_available_position
     ]

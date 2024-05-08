@@ -36,5 +36,7 @@ defmodule Physics do
   def calculate_speed(_position_a, _position_b, _duration_ms),
     do: :erlang.nif_error(:nif_not_loaded)
 
+  def distance_between_entities(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
+
   def nearest_entity_direction_in_range(_entity, _entities, _range), do: :erlang.nif_error(:nif_not_loaded)
 end
