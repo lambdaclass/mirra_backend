@@ -137,33 +137,33 @@ impl Entity {
 
             match (self_shape, entity_shape) {
                 (Shape::Circle, Shape::Circle) => {
-                    if circle_circle_collision(self, &entity) {
+                    if circle_circle_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Circle, Shape::Polygon) => {
-                    if circle_polygon_collision(self, &entity) {
+                    if circle_polygon_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Point, Shape::Circle) => {
-                    if point_circle_collision(self, &entity) {
+                    if point_circle_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Line, Shape::Circle) => {
-                    if line_circle_collision(self, &entity) {
+                    if line_circle_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
 
                 (Shape::Line, Shape::Polygon) => {
-                    if line_polygon_collision(self, &entity) {
+                    if line_polygon_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Polygon, Shape::Circle) => {
-                    if circle_polygon_collision(&entity, self) {
+                    if circle_polygon_collision(entity, self) {
                         result.push(entity.id);
                     }
                 }
