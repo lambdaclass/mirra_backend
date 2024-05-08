@@ -680,6 +680,159 @@ defmodule Champions.Test.BattleTest do
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy_5], maximum_steps: maximum_steps).result
     end
+
+    test "Self Heal", %{target_dummy_character: _target_dummy_character} do
+      maximum_steps = 5
+
+      # Create a character with a basic skill that will heal 5 damage to itself
+      heal_basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "Heal Self skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "Heal",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "self",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      {:ok, heal_character} =
+        TestUtils.build_character(%{
+          name: "Self Heal Character",
+          basic_skill: heal_basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Self Heal Empty Skill"}),
+          base_attack: 5,
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, heal_unit} = TestUtils.build_unit(%{character_id: heal_character.id}) |> Units.insert_unit()
+      {:ok, heal_unit} = Units.get_unit(heal_unit.id)
+
+      dealDamage_basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage Skill for Self Test",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 50,
+                          delay: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      # Create enemy unit
+      {:ok, heal_damage_character} =
+        TestUtils.build_character(%{
+          name: "DealDamage Character for Self Test",
+          basic_skill: dealDamage_basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Self Damage Empty Skill"}),
+          base_attack: 5,
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, damage_unit_for_heal} = TestUtils.build_unit(%{character_id: heal_damage_character.id}) |> Units.insert_unit()
+      {:ok, damage_unit_for_heal} = Units.get_unit(damage_unit_for_heal.id)
+
+      # Battle is timeout, since every time ally unit takes damage, it heals itself
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle(
+                 [heal_unit],
+                 [damage_unit_for_heal],
+                 maximum_steps: maximum_steps
+               ).result
+    end
+
+    test "Self Damage", %{target_dummy_character: target_dummy_character} do
+      maximum_steps = 5
+
+      # Create a character with a basic skill that will self deal 5 damage
+      self_damage_skill_params =
+        TestUtils.build_skill(%{
+          name: "Self Damage skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "self"
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      {:ok, self_damage_character} =
+        TestUtils.build_character(%{
+          name: "Self Damage Character",
+          basic_skill: self_damage_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Self Heal Empty Skill"}),
+          base_attack: 5,
+          base_health: 20
+        })
+        |> Characters.insert_character()
+
+      {:ok, self_damage_unit} = TestUtils.build_unit(%{character_id: self_damage_character.id}) |> Units.insert_unit()
+      {:ok, self_damage_unit} = Units.get_unit(self_damage_unit.id)
+
+      # create dummy enemy
+      {:ok, target_dummy} = TestUtils.build_unit(%{character_id: target_dummy_character.id, slot: 1})
+      Units.insert_unit(target_dummy)
+
+      # Battle is won by team_2, the dummy, since the team_1 unit damages itself
+      assert "team_2" ==
+               Champions.Battle.Simulator.run_battle(
+                 [self_damage_unit],
+                 [target_dummy],
+                 maximum_steps: maximum_steps
+               ).result
+    end
   end
 
   describe "Items" do
