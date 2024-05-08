@@ -257,7 +257,6 @@ defmodule Champions.Test.BattleTest do
                         %{
                           attribute: "attack",
                           modifier_operation: "Multiply",
-                          magnitude_calc_type: "Float",
                           float_magnitude: 0.1
                         }
                       ],
@@ -766,6 +765,231 @@ defmodule Champions.Test.BattleTest do
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
+  end
+
+  describe "Speed" do
+    test "Positive speed makes cooldowns shorter", %{target_dummy: target_dummy} do
+      # We will create a team with two units (A speed buffing unit and a damaging unit) against a target dummy
+      # Damaging unit will deal 5 damage per hit, and the target dummy has 10 health points.
+      # Cooldown for the damaging unit is 4 steps, so it can hit only once in an 8 step battle.
+      # Speeding unit will buff its speed up to a point where cooldowns are halved, so it gets to hit twice and team 1 wins.
+
+      # Battle will go like this (S = speed buff, D = damage)
+      # _ _ S _ D S _ D
+      maximum_steps = 8
+      speed_cooldown = 2
+      damage_cooldown = 4
+
+      speed_params =
+        TestUtils.build_skill(%{
+          name: "Speed Buff",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{
+                        "type" => "duration",
+                        "duration" => -1,
+                        "period" => 0
+                      },
+                      modifiers: [
+                        %{
+                          attribute: "speed",
+                          modifier_operation: "Add",
+                          float_magnitude: 100
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    # Nearest so that the speeder doesn't target himself
+                    type: "nearest",
+                    target_allies: true
+                  }
+                })
+            }
+          ],
+          cooldown: speed_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, speed_character} =
+        TestUtils.build_character(%{
+          name: "Speed Buffing Character",
+          basic_skill: speed_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Speed Empty Skill"})
+        })
+        |> Characters.insert_character()
+
+      {:ok, speeder} =
+        TestUtils.build_unit(%{character_id: speed_character.id, slot: 1}) |> Units.insert_unit()
+
+      {:ok, speeder} = Units.get_unit(speeder.id)
+
+      damage_params =
+        TestUtils.build_skill(%{
+          name: "Speed Test - Damage",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: damage_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, damager_character} =
+        TestUtils.build_character(%{
+          name: "Speed Test - Damage Character",
+          basic_skill: damage_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Speed-Damage Empty Skill"}),
+          base_attack: 5
+        })
+        |> Characters.insert_character()
+
+      {:ok, damager} =
+        TestUtils.build_unit(%{character_id: damager_character.id, slot: 2}) |> Units.insert_unit()
+
+      {:ok, damager} = Units.get_unit(damager.id)
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([speeder, damager], [target_dummy], maximum_steps: maximum_steps).result
+    end
+
+    test "Negative speed makes cooldowns longer" do
+      # We will create a team with a speed debuffing unit and a team with a damaging unit.
+      # Damaging unit will deal 5 damage per hit, and the speed buffing unit has 10 health points.
+      # Cooldown for the damaging unit is 2 steps, so it can hit twice in a 7 step battle.
+      # Speeding unit will debuff the damaging unit's speed down to a point where cooldowns are doubled, so it gets to hit only once
+      # so we get a timeout.
+
+      # Battle will go like this (S = speed debuff, D = damage)
+      # _ S D S _ S _
+      maximum_steps = 7
+      speed_cooldown = 1
+      damage_cooldown = 2
+
+      speed_params =
+        TestUtils.build_skill(%{
+          name: "Speed Debuff",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{
+                        "type" => "duration",
+                        "duration" => -1,
+                        "period" => 0
+                      },
+                      modifiers: [
+                        %{
+                          attribute: "speed",
+                          modifier_operation: "Add",
+                          float_magnitude: -50
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "random",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: speed_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, speed_character} =
+        TestUtils.build_character(%{
+          name: "Speed Buffing Character",
+          basic_skill: speed_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Speed Empty Skill"}),
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, speeder} =
+        TestUtils.build_unit(%{character_id: speed_character.id, slot: 1}) |> Units.insert_unit()
+
+      {:ok, speeder} = Units.get_unit(speeder.id)
+
+      damage_params =
+        TestUtils.build_skill(%{
+          name: "Speed Test - Damage",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: damage_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, damager_character} =
+        TestUtils.build_character(%{
+          name: "Speed Test - Damage Character",
+          basic_skill: damage_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Speed-Damage Empty Skill"}),
+          base_attack: 5
+        })
+        |> Characters.insert_character()
+
+      {:ok, damager} =
+        TestUtils.build_unit(%{character_id: damager_character.id, slot: 2}) |> Units.insert_unit()
+
+      {:ok, damager} = Units.get_unit(damager.id)
+
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([speeder], [damager], maximum_steps: maximum_steps).result
+
+      # If battle lasted 1 step longer, speeder dies
+      assert "team_2" ==
+               Champions.Battle.Simulator.run_battle([speeder], [damager], maximum_steps: maximum_steps + 1).result
     end
   end
 end
