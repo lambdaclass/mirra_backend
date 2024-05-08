@@ -764,7 +764,9 @@ defmodule Champions.Test.BattleTest do
         })
         |> Characters.insert_character()
 
-      {:ok, damage_unit_for_heal} = TestUtils.build_unit(%{character_id: heal_damage_character.id}) |> Units.insert_unit()
+      {:ok, damage_unit_for_heal} =
+        TestUtils.build_unit(%{character_id: heal_damage_character.id}) |> Units.insert_unit()
+
       {:ok, damage_unit_for_heal} = Units.get_unit(damage_unit_for_heal.id)
 
       # Battle is timeout, since every time ally unit takes damage, it heals itself
