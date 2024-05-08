@@ -510,18 +510,7 @@ defmodule Arena.GameUpdater do
         }
       end)
 
-    payload = Jason.encode!(%{match_id: state.match_id, results: results})
-    GameTracker.finish_tracking(self())
-
-    ## TODO: we should be doing this in a better way, both the url and the actual request
-    ## maybe a separate GenServer that gets the results and tries to send them to the server?
-    ## This way if it fails we can retry or something
-    spawn(fn ->
-      gateway_url = Application.get_env(:arena, :gateway_url)
-
-      Finch.build(:post, "#{gateway_url}/arena/match", [{"content-type", "application/json"}], payload)
-      |> Finch.request(Arena.Finch)
-    end)
+    GameTracker.finish_tracking(self(), results)
   end
 
   ##########################
