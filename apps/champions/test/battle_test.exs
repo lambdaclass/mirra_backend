@@ -149,7 +149,7 @@ defmodule Champions.Test.BattleTest do
     end
 
     test "DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
-      cooldown = 1
+      cooldown_steps = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params =
