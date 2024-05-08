@@ -262,7 +262,6 @@ defmodule Champions.Test.BattleTest do
                         %{
                           attribute: "attack",
                           modifier_operation: "Multiply",
-                          magnitude_calc_type: "Float",
                           float_magnitude: 0.1
                         }
                       ],

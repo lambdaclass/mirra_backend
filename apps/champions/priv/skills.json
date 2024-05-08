@@ -1070,7 +1070,6 @@
                 {
                   "attribute": "defense",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
                   "float_magnitude": 0.85
                 }
               ],
@@ -1218,7 +1217,6 @@
                 {
                   "attribute": "attack",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "Float",
                   "float_magnitude": 0.92
                 }
               ],
@@ -1444,7 +1442,6 @@
                 {
                   "attribute": "attack",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
                   "float_magnitude": 0.85
                 }
               ],
@@ -1518,7 +1515,6 @@
                 {
                   "attribute": "damage_reduction",
                   "modifier_operation": "Add",
-                  "magnitude_calc_type": "float",
                   "float_magnitude": 0.2
                 }
               ],
@@ -1676,7 +1672,6 @@
                 {
                   "attribute": "defense",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
                   "float_magnitude": 0.9
                 }
               ],
@@ -1752,7 +1747,6 @@
                 {
                   "attribute": "speed",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
                   "float_magnitude": 0.93
                 }
               ],
@@ -2011,7 +2005,6 @@
                 {
                   "attribute": "attack",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "Float",
                   "float_magnitude": 1.08
                 }
               ],
@@ -2189,7 +2182,6 @@
                 {
                   "attribute": "speed",
                   "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "Float",
                   "float_magnitude": 1.07
                 }
               ],
