@@ -37,12 +37,9 @@ defmodule GameBackend.Matches do
       fn %{"maximum_rank" => maximum} -> maximum end,
       :asc
     )
-    |> Enum.find(fn %{"maximum_rank" => maximum} when is_integer(maximum) ->
+    |> Enum.find(get_in(currencies_config, ["ranking_system", "infinite_rank"]), fn %{"maximum_rank" => maximum} ->
       maximum > current_trophies
     end)
-    |> case do
-      nil -> get_in(currencies_config, ["ranking_system", "infinite_rank"]) |> Map.get(position)
-      rank_config -> Map.get(rank_config, position)
-    end
+    |> Map.get(position)
   end
 end
