@@ -681,7 +681,7 @@ defmodule Champions.Test.BattleTest do
                Champions.Battle.Simulator.run_battle([unit], [target_dummy_5], maximum_steps: maximum_steps).result
     end
 
-    test "Self Heal", %{target_dummy_character: _target_dummy_character} do
+    test "Self Heal" do
       maximum_steps = 5
 
       # Create a character with a basic skill that will heal 5 damage to itself
@@ -778,8 +778,9 @@ defmodule Champions.Test.BattleTest do
                ).result
     end
 
-    test "Self Damage", %{target_dummy_character: target_dummy_character} do
-      maximum_steps = 5
+    test "Self Damage", %{target_dummy: target_dummy} do
+      maximum_steps = 10
+      self_damage_cooldown = 2
 
       # Create a character with a basic skill that will self deal 5 damage
       self_damage_skill_params =
@@ -807,7 +808,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: maximum_steps * @miliseconds_per_step - 1
+          cooldown: self_damage_cooldown * @miliseconds_per_step - 1
         })
 
       {:ok, self_damage_character} =
@@ -822,10 +823,6 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, self_damage_unit} = TestUtils.build_unit(%{character_id: self_damage_character.id}) |> Units.insert_unit()
       {:ok, self_damage_unit} = Units.get_unit(self_damage_unit.id)
-
-      # create dummy enemy
-      {:ok, target_dummy} = TestUtils.build_unit(%{character_id: target_dummy_character.id, slot: 1})
-      Units.insert_unit(target_dummy)
 
       # Battle is won by team_2, the dummy, since the team_1 unit damages itself
       assert "team_2" ==

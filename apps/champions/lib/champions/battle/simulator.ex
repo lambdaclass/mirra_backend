@@ -948,7 +948,8 @@ defmodule Champions.Battle.Simulator do
     "nearest",
     "furthest",
     "frontline",
-    "backline"
+    "backline",
+    "self"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
