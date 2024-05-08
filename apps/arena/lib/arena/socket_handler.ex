@@ -37,8 +37,6 @@ defmodule Arena.SocketHandler do
         left_msg = LobbyEvent.encode(%LobbyEvent{event: {:left, %LeftLobby{}}})
         {[{:binary, left_msg}, :close], state}
 
-      # {:reply, {:binary, left_msg}, state}
-
       _ ->
         {:ok, state}
     end
