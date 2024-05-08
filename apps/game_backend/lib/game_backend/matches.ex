@@ -9,12 +9,7 @@ defmodule GameBackend.Matches do
   alias GameBackend.Matches.ArenaMatchResult
 
   def create_arena_match_results(results) do
-    {:ok, conrrency_config_json} =
-      Application.app_dir(:game_backend, "priv/currencies_rules.json")
-      |> File.read()
-
-    currency_config =
-      Jason.decode!(conrrency_config_json)
+    currency_config = Application.get_env(:game_backend, :currencies_config)
 
     Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
@@ -37,12 +32,16 @@ defmodule GameBackend.Matches do
   end
 
   def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) do
-    Enum.sort_by(currencies_config["rank"], fn %{"maximum_rank" => maximum} -> maximum end, :asc)
-    |> Enum.find(fn %{"maximum_rank" => maximum} ->
+    Enum.sort_by(
+      get_in(currencies_config, ["ranking_system", "ranks"]),
+      fn %{"maximum_rank" => maximum} -> maximum end,
+      :asc
+    )
+    |> Enum.find(fn %{"maximum_rank" => maximum} when is_integer(maximum) ->
       maximum > current_trophies
     end)
     |> case do
-      nil -> 0
+      nil -> get_in(currencies_config, ["ranking_system", "infinite_rank"]) |> Map.get(position)
       rank_config -> Map.get(rank_config, position)
     end
   end

@@ -137,6 +137,11 @@ end
 ###################################
 # App configuration: game_backend #
 ###################################
+{:ok, conrrency_config_json} =
+  Application.app_dir(:game_backend, "priv/currencies_rules.json")
+  |> File.read()
+
+config :game_backend, :currencies_config, Jason.decode!(conrrency_config_json)
 
 ##################################
 # App configuration: game_client #
