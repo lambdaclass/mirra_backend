@@ -894,13 +894,35 @@ defmodule Champions.Battle.Simulator do
 
   # Called at the end of step processing. Sets unit health to max_health if it's above it.
   defp cap_units_health({state, history}) do
-    {Map.put(
-       state,
-       :units,
-       Enum.map(state.units, fn {unit_id, unit} ->
-         {unit_id, Map.put(unit, :health, min(unit.max_health, unit.health))}
-       end)
-     ), history}
+    new_history =
+      Enum.reduce(state.units, history, fn {_unit_id, unit}, history_acc ->
+        if unit.health > unit.max_health do
+          add_to_history(
+            history_acc,
+            %{
+              target_id: unit.id,
+              stat_affected: %{
+                stat: :HEALTH,
+                amount: unit.max_health
+              }
+            },
+            :stat_override
+          )
+        else
+          history_acc
+        end
+      end)
+
+    new_state =
+      Map.put(
+        state,
+        :units,
+        Enum.map(state.units, fn {unit_id, unit} ->
+          {unit_id, Map.put(unit, :health, min(unit.max_health, unit.health))}
+        end)
+      )
+
+    {new_state, new_history}
   end
 
   # Used to create the initial unit maps to be used during simulation.
