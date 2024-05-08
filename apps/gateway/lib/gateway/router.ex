@@ -12,8 +12,8 @@ defmodule Gateway.Router do
   scope "/arena", Gateway.Controllers.Arena do
     pipe_through :api
 
-    post "/match", MatchResultsController, :create
-    post "/match_report", MatchResultsController, :report
+    post "/match/:match_id", MatchResultsController, :create
+    post "/match/:match_id/report", MatchResultsController, :report
   end
 
   scope "/", Gateway do

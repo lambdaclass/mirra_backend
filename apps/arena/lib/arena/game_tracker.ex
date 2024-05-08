@@ -59,15 +59,15 @@ defmodule Arena.GameTracker do
     ## Final flush of match data
     ## TODO: Maybe this should be part of the final reporting
     encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
-    stats_payload = Jason.encode!(%{match_id: data.match_id, data: encoded_data})
+    stats_payload = Jason.encode!(%{data: encoded_data})
 
-    Finch.build(:post, "#{gateway_url}/arena/match_report", [{"content-type", "application/json"}], stats_payload)
+    Finch.build(:post, "#{gateway_url}/arena/match/#{data.match_id}/report", [{"content-type", "application/json"}], stats_payload)
     |> Finch.request(Arena.Finch)
 
     ## Send results
-    payload = Jason.encode!(%{match_id: data.match_id, results: results})
+    payload = Jason.encode!(%{results: results})
     ## TODO: make sure to handle errors and retry sending
-    Finch.build(:post, "#{gateway_url}/arena/match", [{"content-type", "application/json"}], payload)
+    Finch.build(:post, "#{gateway_url}/arena/match/#{data.match_id}", [{"content-type", "application/json"}], payload)
     |> Finch.request(Arena.Finch)
 
     matches = Map.delete(state.matches, match_pid)
@@ -91,7 +91,7 @@ defmodule Arena.GameTracker do
         encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
         payload = Jason.encode!(%{match_id: data.match_id, data: encoded_data})
 
-        Finch.build(:post, "#{gateway_url}/arena/match_report", [{"content-type", "application/json"}], payload)
+        Finch.build(:post, "#{gateway_url}/arena/match/#{data.match_id}/report", [{"content-type", "application/json"}], payload)
         ## We don't care about the result of this requests, if they fail it will be essentially retried on the next report
         ## We might want to change this to `Finch.async_request/2`, but let's measure the impact first
         |> Finch.request(Arena.Finch)
