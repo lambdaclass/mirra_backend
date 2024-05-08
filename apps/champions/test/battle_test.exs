@@ -783,7 +783,7 @@ defmodule Champions.Test.BattleTest do
 
       speed_params =
         TestUtils.build_skill(%{
-          name: "Speed Buff",
+          name: "SpeedBuff-SpeedBuffSkill",
           mechanics: [
             %{
               trigger_delay: 0,
@@ -819,9 +819,9 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, speed_character} =
         TestUtils.build_character(%{
-          name: "Speed Buffing Character",
+          name: "SpeedBuff-SpeedBuffCharacter",
           basic_skill: speed_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "Speed Empty Skill"})
+          ultimate_skill: TestUtils.build_skill(%{name: "SpeedBuff-SpeedBuffEmptySkill"})
         })
         |> Characters.insert_character()
 
@@ -832,7 +832,7 @@ defmodule Champions.Test.BattleTest do
 
       damage_params =
         TestUtils.build_skill(%{
-          name: "Speed Test - Damage",
+          name: "SpeedBuff-DamageSkill",
           mechanics: [
             %{
               trigger_delay: 0,
@@ -862,9 +862,9 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, damager_character} =
         TestUtils.build_character(%{
-          name: "Speed Test - Damage Character",
+          name: "SpeedBuff-DamageCharacter",
           basic_skill: damage_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "Speed-Damage Empty Skill"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "SpeedBuff-DamageEmptySkill"}),
           base_attack: 5
         })
         |> Characters.insert_character()
@@ -893,7 +893,7 @@ defmodule Champions.Test.BattleTest do
 
       speed_params =
         TestUtils.build_skill(%{
-          name: "Speed Debuff",
+          name: "SpeedDebuff-SpeedDebuffSkill",
           mechanics: [
             %{
               trigger_delay: 0,
@@ -928,9 +928,9 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, speed_character} =
         TestUtils.build_character(%{
-          name: "Speed Buffing Character",
+          name: "SpeedDebuff-SpeedDebuffCharacter",
           basic_skill: speed_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "Speed Empty Skill"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "SpeedDebuff-DebuffEmptySkill"}),
           base_health: 10
         })
         |> Characters.insert_character()
@@ -942,7 +942,7 @@ defmodule Champions.Test.BattleTest do
 
       damage_params =
         TestUtils.build_skill(%{
-          name: "Speed Test - Damage",
+          name: "SpeedDebuff-DamageSkill",
           mechanics: [
             %{
               trigger_delay: 0,
@@ -972,9 +972,9 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, damager_character} =
         TestUtils.build_character(%{
-          name: "Speed Test - Damage Character",
+          name: "SpeedDebuff-DamageCharacter",
           basic_skill: damage_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "Speed-Damage Empty Skill"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "SpeedDebuff-DamageEmptySkill"}),
           base_attack: 5
         })
         |> Characters.insert_character()
