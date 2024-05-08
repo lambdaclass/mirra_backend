@@ -53,22 +53,19 @@ defmodule Arena.GameTracker do
   @impl true
   ## TODO: a lot of things, final report and send to Gateway
   def handle_cast({:finish_tracking, match_pid, results}, state) do
-    gateway_url = Application.get_env(:arena, :gateway_url)
     data = get_in(state, [:matches, match_pid])
 
     ## Final flush of match data
-    ## TODO: Maybe this should be part of the final reporting
+    ## TODO: Maybe this should be part of the final reporting, as in the same request. Not a separate one
     encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
     stats_payload = Jason.encode!(%{data: encoded_data})
 
-    Finch.build(:post, "#{gateway_url}/arena/match/#{data.match_id}/report", [{"content-type", "application/json"}], stats_payload)
-    |> Finch.request(Arena.Finch)
+    send_request("/arena/match/#{data.match_id}/report", stats_payload)
 
     ## Send results
     payload = Jason.encode!(%{results: results})
-    ## TODO: make sure to handle errors and retry sending
-    Finch.build(:post, "#{gateway_url}/arena/match/#{data.match_id}", [{"content-type", "application/json"}], payload)
-    |> Finch.request(Arena.Finch)
+    ## TODO: Handle errors and retry sending
+    send_request("/arena/match/#{data.match_id}", payload)
 
     matches = Map.delete(state.matches, match_pid)
     {:noreply, %{state | matches: matches}}
@@ -87,14 +84,11 @@ defmodule Arena.GameTracker do
 
       data ->
         Process.send_after(self(), {:report, match_pid}, @flush_interval_ms)
-        gateway_url = Application.get_env(:arena, :gateway_url)
         encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
         payload = Jason.encode!(%{match_id: data.match_id, data: encoded_data})
 
-        Finch.build(:post, "#{gateway_url}/arena/match/#{data.match_id}/report", [{"content-type", "application/json"}], payload)
         ## We don't care about the result of this requests, if they fail it will be essentially retried on the next report
-        ## We might want to change this to `Finch.async_request/2`, but let's measure the impact first
-        |> Finch.request(Arena.Finch)
+        send_request("/arena/match/#{data.match_id}/report", payload)
 
         {:noreply, state}
     end
@@ -104,5 +98,13 @@ defmodule Arena.GameTracker do
     data
     |> update_in([:players, data.player_to_client[killer.id], :kills], fn kills -> kills ++ [victim.character_name] end)
     |> put_in([:players, data.player_to_client[victim.id], :death], killer.character_name)
+  end
+
+  defp send_request(path, payload) do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+
+    Finch.build(:post, "#{gateway_url}#{path}", [{"content-type", "application/json"}], payload)
+    ## We might want to change this to `Finch.async_request/2`, but let's measure the impact first
+    |> Finch.request(Arena.Finch)
   end
 end
