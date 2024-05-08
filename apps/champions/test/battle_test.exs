@@ -727,7 +727,7 @@ defmodule Champions.Test.BattleTest do
       {:ok, heal_unit} = TestUtils.build_unit(%{character_id: heal_character.id}) |> Units.insert_unit()
       {:ok, heal_unit} = Units.get_unit(heal_unit.id)
 
-      dealDamage_basic_skill_params =
+      deal_damage_basic_skill_params =
         TestUtils.build_skill(%{
           name: "DealDamage Skill for Self Test",
           mechanics: [
@@ -757,7 +757,7 @@ defmodule Champions.Test.BattleTest do
       {:ok, heal_damage_character} =
         TestUtils.build_character(%{
           name: "DealDamage Character for Self Test",
-          basic_skill: dealDamage_basic_skill_params,
+          basic_skill: deal_damage_basic_skill_params,
           ultimate_skill: TestUtils.build_skill(%{name: "Self Damage Empty Skill"}),
           base_attack: 5,
           base_health: 10
