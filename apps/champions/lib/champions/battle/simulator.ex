@@ -831,7 +831,7 @@ defmodule Champions.Battle.Simulator do
     heal_amount = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
 
     Logger.info(
-      "Healing #{heal_amount} HP to #{format_unit_name(target)} (#{target.health} -> #{target.health + heal_amount})"
+      "#{format_unit_name(caster)} healing #{heal_amount} HP to #{format_unit_name(target)} (#{target.health} -> #{target.health + heal_amount})"
     )
 
     new_history =
