@@ -18,10 +18,9 @@ defmodule GameBackend.Matches do
 
     Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
-
-      amount_of_trophies = Currencies.get_amount_of_currency_by_name(result["user_id"], "Trophies")
-
       {:ok, google_user} = Users.get_google_user(result["user_id"])
+
+      amount_of_trophies = Currencies.get_amount_of_currency_by_name(google_user.user.id, "Trophies")
 
       amount =
         get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
@@ -42,6 +41,9 @@ defmodule GameBackend.Matches do
     |> Enum.find(fn %{"maximum_rank" => maximum} ->
       maximum > current_trophies
     end)
-    |> Map.get(position)
+    |> case do
+      nil -> 0
+      rank_config -> Map.get(rank_config, position)
+    end
   end
 end
