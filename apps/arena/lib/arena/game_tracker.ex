@@ -17,6 +17,7 @@ defmodule Arena.GameTracker do
   def start_tracking(match_id, client_to_player_map) do
     GenServer.call(__MODULE__, {:start_tracking, match_id, client_to_player_map})
   end
+
   def finish_tracking(match_pid, results) do
     GenServer.cast(__MODULE__, {:finish_tracking, match_pid, results})
   end
@@ -39,8 +40,13 @@ defmodule Arena.GameTracker do
   def handle_call({:start_tracking, match_id, client_to_player_map}, {match_pid, _}, state) do
     Process.send_after(self(), {:report, match_pid}, @flush_interval_ms)
     player_to_client = Map.new(client_to_player_map, fn {client_id, player_id} -> {player_id, client_id} end)
-    players = Map.new(player_to_client, fn {player_id, user_id} -> {user_id, %{player_id: player_id, kills: [], death: nil}} end)
-    state = put_in(state, [:matches, match_pid], %{match_id: match_id, players: players, player_to_client: player_to_client})
+
+    players =
+      Map.new(player_to_client, fn {player_id, user_id} -> {user_id, %{player_id: player_id, kills: [], death: nil}} end)
+
+    state =
+      put_in(state, [:matches, match_pid], %{match_id: match_id, players: players, player_to_client: player_to_client})
+
     {:reply, :ok, state}
   end
 
@@ -54,6 +60,7 @@ defmodule Arena.GameTracker do
     ## TODO: Maybe this should be part of the final reporting
     encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
     stats_payload = Jason.encode!(%{match_id: data.match_id, data: encoded_data})
+
     Finch.build(:post, "#{gateway_url}/arena/match_report", [{"content-type", "application/json"}], stats_payload)
     |> Finch.request(Arena.Finch)
 

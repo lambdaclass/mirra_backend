@@ -24,6 +24,5 @@ defmodule GameBackend.Matches do
   def insert_match_stats(match_id, data) do
     ArenaMatchStatistics.changeset(%ArenaMatchStatistics{}, %{match_id: match_id, data: data})
     |> Repo.insert()
-    |> IO.inspect(label: "Inserting match stats")
   end
 end

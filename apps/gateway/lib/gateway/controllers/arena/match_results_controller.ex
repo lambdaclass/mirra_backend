@@ -23,10 +23,10 @@ defmodule Gateway.Controllers.Arena.MatchResultsController do
 
   def report(conn, %{"match_id" => match_id, "data" => encoded_data}) do
     data = :base64.decode(encoded_data)
+
     case Matches.insert_match_stats(match_id, data) do
       {:ok, _} ->
         send_resp(conn, 201, "")
-
 
       {:error, _reason} ->
         conn

@@ -49,7 +49,15 @@ defmodule Arena.GameUpdater do
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
-    {:ok, %{match_id: match_id, clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
+
+    {:ok,
+     %{
+       match_id: match_id,
+       clients: clients_ids,
+       bot_clients: bot_clients_ids,
+       game_config: game_config,
+       game_state: game_state
+     }}
   end
 
   ##########################
@@ -340,7 +348,12 @@ defmodule Arena.GameUpdater do
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
-    GameTracker.push_event(self(), {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name}, %{id: victim.id, character_name: victim.aditional_info.character_name}})
+
+    GameTracker.push_event(
+      self(),
+      {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
+       %{id: victim.id, character_name: victim.aditional_info.character_name}}
+    )
 
     {:noreply, %{state | game_state: game_state}}
   end
