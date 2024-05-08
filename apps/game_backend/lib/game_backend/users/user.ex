@@ -6,11 +6,11 @@ defmodule GameBackend.Users.User do
   use GameBackend.Schema
   import Ecto.Changeset
   alias GameBackend.Campaigns.SuperCampaignProgress
-  alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Users.KalineTreeLevel
+  alias GameBackend.Users.GoogleUser
 
   schema "users" do
     field(:game_id, :integer)
@@ -26,7 +26,6 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)
-    has_many(:afk_reward_rates, AfkRewardRate)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
 
     timestamps()

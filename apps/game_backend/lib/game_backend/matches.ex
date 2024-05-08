@@ -16,27 +16,25 @@ defmodule GameBackend.Matches do
     currency_config =
       Jason.decode!(conrrency_config_json)
 
-    transaction =
-      Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
-        changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
+    Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
+      changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
 
-        amount_of_trophies = Currencies.get_amount_of_currency_by_name(result["user_id"], "Trophies")
+      amount_of_trophies = Currencies.get_amount_of_currency_by_name(result["user_id"], "Trophies")
 
-        {:ok, google_user} = Users.get_google_user(result["user_id"])
+      {:ok, google_user} = Users.get_google_user(result["user_id"])
 
-        amount =
-          get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
+      amount =
+        get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
 
-        Multi.insert(transaction_acc, {:insert, result["user_id"]}, changeset)
-        |> Multi.run(
-          {:add_trophies_to, result["user_id"]},
-          fn _, _ ->
-            Currencies.add_currency_by_name!(google_user.user.id, "Trophies", amount)
-          end
-        )
-      end)
-
-    Repo.transaction(transaction)
+      Multi.insert(transaction_acc, {:insert, result["user_id"]}, changeset)
+      |> Multi.run(
+        {:add_trophies_to, result["user_id"]},
+        fn _, _ ->
+          Currencies.add_currency_by_name!(google_user.user.id, "Trophies", amount)
+        end
+      )
+    end)
+    |> Repo.transaction()
   end
 
   def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) do

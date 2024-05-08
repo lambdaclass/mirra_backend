@@ -125,6 +125,7 @@ defmodule Arena.GameUpdater do
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
+      |> update_visible_players(state.game_config)
       # Projectiles
       |> update_projectiles_status()
       |> move_projectiles()
@@ -450,6 +451,7 @@ defmodule Arena.GameUpdater do
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
              pools: complete_entities(state.pools),
+             bushes: complete_entities(state.bushes),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -594,10 +596,12 @@ defmodule Arena.GameUpdater do
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
     {crates, last_id} = initialize_crates(config.crates, last_id)
+    {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
 
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
+    |> Map.put(:bushes, bushes)
     |> Map.put(:crates, crates)
   end
 
@@ -617,6 +621,21 @@ defmodule Arena.GameUpdater do
         )
 
       {obstacles_acc, last_id}
+    end)
+  end
+
+  defp initialize_bushes(bushes, last_id) do
+    Enum.reduce(bushes, {Map.new(), last_id}, fn bush, {bush_acc, last_id} ->
+      last_id = last_id + 1
+
+      bush_acc =
+        Map.put(
+          bush_acc,
+          last_id,
+          Entities.new_bush(last_id, bush.position, bush.radius, bush.shape, bush.vertices)
+        )
+
+      {bush_acc, last_id}
     end)
   end
 
@@ -699,12 +718,13 @@ defmodule Arena.GameUpdater do
            ticks_to_move: ticks_to_move,
            external_wall: external_wall,
            obstacles: obstacles,
+           bushes: bushes,
            power_ups: power_ups,
            pools: pools,
            items: items
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items)
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes)
 
     moved_players =
       players
@@ -1258,6 +1278,42 @@ defmodule Arena.GameUpdater do
       [^external_wall_id | []] -> circle.position
       _ -> random_position_in_map(object_radius, external_wall, obstacles)
     end
+  end
+
+  defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
+    Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
+      bush_collisions =
+        Enum.filter(player.collides_with, fn collided_id ->
+          Map.has_key?(bushes, collided_id)
+        end)
+
+      visible_players =
+        Map.delete(players, player_id)
+        |> Enum.reduce([], fn {candicandidate_player_id, candidate_player}, acc ->
+          candidate_bush_collisions =
+            Enum.filter(candidate_player.collides_with, fn collided_id ->
+              Map.has_key?(bushes, collided_id)
+            end)
+
+          players_in_same_bush? =
+            Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)
+
+          players_close_enough? =
+            Physics.distance_between_entities(player, candidate_player) <=
+              game_config.bushes.field_of_view_inside_bush
+
+          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
+            [candicandidate_player_id | acc]
+          else
+            acc
+          end
+        end)
+
+      update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+        Map.put(aditional_info, :visible_players, visible_players)
+        |> Map.put(:on_bush, not Enum.empty?(bush_collisions))
+      end)
+    end)
   end
 
   # You'll only apply effect to owned entities or

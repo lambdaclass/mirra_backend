@@ -1,0 +1,1602 @@
+[
+    {
+        "name": "cw1",
+        "config_id": "cw1",
+        "type": "weapon",
+        "rarity": 1,
+        "tier": 1,
+        "upgrades_from_config_id": "",
+        "upgrades_from_quantity": null,
+        "upgrade_costs": [],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 12,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "cc1",
+        "config_id": "cc1",
+        "type": "chest",
+        "rarity": 1,
+        "tier": 1,
+        "upgrades_from_config_id": "",
+        "upgrades_from_quantity": null,
+        "upgrade_costs": [],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 58,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ca1",
+        "config_id": "ca1",
+        "type": "amulet",
+        "rarity": 1,
+        "tier": 1,
+        "upgrades_from_config_id": "",
+        "upgrades_from_quantity": null,
+        "upgrade_costs": [],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 9,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "cb1",
+        "config_id": "cb1",
+        "type": "boots",
+        "rarity": 1,
+        "tier": 1,
+        "upgrades_from_config_id": "",
+        "upgrades_from_quantity": null,
+        "upgrade_costs": [],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 45,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "cw2",
+        "config_id": "cw2",
+        "type": "weapon",
+        "rarity": 1,
+        "tier": 2,
+        "upgrades_from_config_id": "cw1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 18,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "cc2",
+        "config_id": "cc2",
+        "type": "chest",
+        "rarity": 1,
+        "tier": 2,
+        "upgrades_from_config_id": "cc1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 93,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ca2",
+        "config_id": "ca2",
+        "type": "amulet",
+        "rarity": 1,
+        "tier": 2,
+        "upgrades_from_config_id": "ca1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 14,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "cb2",
+        "config_id": "cb2",
+        "type": "boots",
+        "rarity": 1,
+        "tier": 2,
+        "upgrades_from_config_id": "cb1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 84,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rw1",
+        "config_id": "rw1",
+        "type": "weapon",
+        "rarity": 2,
+        "tier": 1,
+        "upgrades_from_config_id": "cw2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 2000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 65,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rc1",
+        "config_id": "rc1",
+        "type": "chest",
+        "rarity": 2,
+        "tier": 1,
+        "upgrades_from_config_id": "cc2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 2000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 336,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ra1",
+        "config_id": "ra1",
+        "type": "amulet",
+        "rarity": 2,
+        "tier": 1,
+        "upgrades_from_config_id": "ca2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 2000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 52,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rb1",
+        "config_id": "rb1",
+        "type": "boots",
+        "rarity": 2,
+        "tier": 1,
+        "upgrades_from_config_id": "cb2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 2000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 299,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rw2",
+        "config_id": "rw2",
+        "type": "weapon",
+        "rarity": 2,
+        "tier": 2,
+        "upgrades_from_config_id": "rw1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 4000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 86,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rc2",
+        "config_id": "rc2",
+        "type": "chest",
+        "rarity": 2,
+        "tier": 2,
+        "upgrades_from_config_id": "rc1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 4000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 436,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ra2",
+        "config_id": "ra2",
+        "type": "amulet",
+        "rarity": 2,
+        "tier": 2,
+        "upgrades_from_config_id": "ra1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 4000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 64,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rb2",
+        "config_id": "rb2",
+        "type": "boots",
+        "rarity": 2,
+        "tier": 2,
+        "upgrades_from_config_id": "rb1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 4000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 382,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rw3",
+        "config_id": "rw3",
+        "type": "weapon",
+        "rarity": 2,
+        "tier": 3,
+        "upgrades_from_config_id": "rw2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 8000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 113,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rc3",
+        "config_id": "rc3",
+        "type": "chest",
+        "rarity": 2,
+        "tier": 3,
+        "upgrades_from_config_id": "rc2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 8000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 586,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ra3",
+        "config_id": "ra3",
+        "type": "amulet",
+        "rarity": 2,
+        "tier": 3,
+        "upgrades_from_config_id": "ra2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 8000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 83,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "rb3",
+        "config_id": "rb3",
+        "type": "boots",
+        "rarity": 2,
+        "tier": 3,
+        "upgrades_from_config_id": "rb2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 8000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 501,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ew1",
+        "config_id": "ew1",
+        "type": "weapon",
+        "rarity": 3,
+        "tier": 1,
+        "upgrades_from_config_id": "rw3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 15000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 153,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.02,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ec1",
+        "config_id": "ec1",
+        "type": "chest",
+        "rarity": 3,
+        "tier": 1,
+        "upgrades_from_config_id": "rc3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 15000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 864,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.02,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ea1",
+        "config_id": "ea1",
+        "type": "amulet",
+        "rarity": 3,
+        "tier": 1,
+        "upgrades_from_config_id": "ra3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 15000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 126,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.015,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "eb1",
+        "config_id": "eb1",
+        "type": "boots",
+        "rarity": 3,
+        "tier": 1,
+        "upgrades_from_config_id": "rb3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 15000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 736,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.015,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ew2",
+        "config_id": "ew2",
+        "type": "weapon",
+        "rarity": 3,
+        "tier": 2,
+        "upgrades_from_config_id": "ew1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 30000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 215,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.03,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ec2",
+        "config_id": "ec2",
+        "type": "chest",
+        "rarity": 3,
+        "tier": 2,
+        "upgrades_from_config_id": "ec1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 30000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 1177,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.03,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ea2",
+        "config_id": "ea2",
+        "type": "amulet",
+        "rarity": 3,
+        "tier": 2,
+        "upgrades_from_config_id": "ea1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 30000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 174,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.02,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "eb2",
+        "config_id": "eb2",
+        "type": "boots",
+        "rarity": 3,
+        "tier": 2,
+        "upgrades_from_config_id": "eb1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 30000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 981,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.02,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ew3",
+        "config_id": "ew3",
+        "type": "weapon",
+        "rarity": 3,
+        "tier": 3,
+        "upgrades_from_config_id": "ew2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 50000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 285,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.04,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ec3",
+        "config_id": "ec3",
+        "type": "chest",
+        "rarity": 3,
+        "tier": 3,
+        "upgrades_from_config_id": "ec2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 50000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 1589,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.04,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ea3",
+        "config_id": "ea3",
+        "type": "amulet",
+        "rarity": 3,
+        "tier": 3,
+        "upgrades_from_config_id": "ea2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 50000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 233,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.025,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "eb3",
+        "config_id": "eb3",
+        "type": "boots",
+        "rarity": 3,
+        "tier": 3,
+        "upgrades_from_config_id": "eb2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 50000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 1324,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.025,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ew4",
+        "config_id": "ew4",
+        "type": "weapon",
+        "rarity": 3,
+        "tier": 4,
+        "upgrades_from_config_id": "ew3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 75000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 411,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.05,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ec4",
+        "config_id": "ec4",
+        "type": "chest",
+        "rarity": 3,
+        "tier": 4,
+        "upgrades_from_config_id": "ec3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 75000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 2146,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.05,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ea4",
+        "config_id": "ea4",
+        "type": "amulet",
+        "rarity": 3,
+        "tier": 4,
+        "upgrades_from_config_id": "ea3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 75000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 327,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.03,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "eb4",
+        "config_id": "eb4",
+        "type": "boots",
+        "rarity": 3,
+        "tier": 4,
+        "upgrades_from_config_id": "eb3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 75000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 1777,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.03,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ew5",
+        "config_id": "ew5",
+        "type": "weapon",
+        "rarity": 3,
+        "tier": 5,
+        "upgrades_from_config_id": "ew4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 150000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 516,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.06,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ec5",
+        "config_id": "ec5",
+        "type": "chest",
+        "rarity": 3,
+        "tier": 5,
+        "upgrades_from_config_id": "ec4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 150000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 3005,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.06,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ea5",
+        "config_id": "ea5",
+        "type": "amulet",
+        "rarity": 3,
+        "tier": 5,
+        "upgrades_from_config_id": "ea4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 150000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 486,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.035,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "eb5",
+        "config_id": "eb5",
+        "type": "boots",
+        "rarity": 3,
+        "tier": 5,
+        "upgrades_from_config_id": "eb4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 150000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 2628,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.035,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "uw1",
+        "config_id": "uw1",
+        "type": "weapon",
+        "rarity": 4,
+        "tier": 1,
+        "upgrades_from_config_id": "ew5",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 100000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 718,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.07,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "critical_chance",
+                "value": 1.01,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "uc1",
+        "config_id": "uc1",
+        "type": "chest",
+        "rarity": 4,
+        "tier": 1,
+        "upgrades_from_config_id": "ec5",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 100000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 4125,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.07,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "defense",
+                "value": 400,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ua1",
+        "config_id": "ua1",
+        "type": "amulet",
+        "rarity": 4,
+        "tier": 1,
+        "upgrades_from_config_id": "ea5",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 100000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 687,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.04,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "dmg-red",
+                "value": 1.02,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ub1",
+        "config_id": "ub1",
+        "type": "boots",
+        "rarity": 4,
+        "tier": 1,
+        "upgrades_from_config_id": "eb5",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 100000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 3785,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.04,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "speed",
+                "value": 3,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "uw2",
+        "config_id": "uw2",
+        "type": "weapon",
+        "rarity": 4,
+        "tier": 2,
+        "upgrades_from_config_id": "uw1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 200000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 999,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.08,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "critical_chance",
+                "value": 2,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "uc2",
+        "config_id": "uc2",
+        "type": "chest",
+        "rarity": 4,
+        "tier": 2,
+        "upgrades_from_config_id": "uc1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 200000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 5640,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.08,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "defense",
+                "value": 600,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ua2",
+        "config_id": "ua2",
+        "type": "amulet",
+        "rarity": 4,
+        "tier": 2,
+        "upgrades_from_config_id": "ua1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 200000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 687,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.04,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "dmg-red",
+                "value": 1.02,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ub2",
+        "config_id": "ub2",
+        "type": "boots",
+        "rarity": 4,
+        "tier": 2,
+        "upgrades_from_config_id": "ub1",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 200000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 3785,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.04,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "speed",
+                "value": 3,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "uw3",
+        "config_id": "uw3",
+        "type": "weapon",
+        "rarity": 4,
+        "tier": 3,
+        "upgrades_from_config_id": "uw2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 400000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 999,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.08,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "critical_chance",
+                "value": 1.03,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "uc3",
+        "config_id": "uc3",
+        "type": "chest",
+        "rarity": 4,
+        "tier": 3,
+        "upgrades_from_config_id": "uc2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 400000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 5640,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.08,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "defense",
+                "value": 800,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ua3",
+        "config_id": "ua3",
+        "type": "amulet",
+        "rarity": 4,
+        "tier": 3,
+        "upgrades_from_config_id": "ua2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 400000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 971,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.04,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "dmg-red",
+                "value": 1.03,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ub3",
+        "config_id": "ub3",
+        "type": "boots",
+        "rarity": 4,
+        "tier": 3,
+        "upgrades_from_config_id": "ub2",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 400000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 5321,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.04,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "speed",
+                "value": 4,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "uw4",
+        "config_id": "uw4",
+        "type": "weapon",
+        "rarity": 4,
+        "tier": 4,
+        "upgrades_from_config_id": "uw3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 800000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 1402,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.09,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "critical_chance",
+                "value": 4,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "uc4",
+        "config_id": "uc4",
+        "type": "chest",
+        "rarity": 4,
+        "tier": 4,
+        "upgrades_from_config_id": "uc3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 800000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 7814,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.09,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "defense",
+                "value": 1200,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ua4",
+        "config_id": "ua4",
+        "type": "amulet",
+        "rarity": 4,
+        "tier": 4,
+        "upgrades_from_config_id": "ua3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 800000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 1356,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.05,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "dmg-red",
+                "value": 1.04,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ub4",
+        "config_id": "ub4",
+        "type": "boots",
+        "rarity": 4,
+        "tier": 4,
+        "upgrades_from_config_id": "ub3",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 800000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 7463,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.05,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "speed",
+                "value": 5,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "uw5",
+        "config_id": "uw5",
+        "type": "weapon",
+        "rarity": 4,
+        "tier": 5,
+        "upgrades_from_config_id": "uw4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1500000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 2000,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.1,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "critical_chance",
+                "value": 1.05,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "uc5",
+        "config_id": "uc5",
+        "type": "chest",
+        "rarity": 4,
+        "tier": 5,
+        "upgrades_from_config_id": "uc4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1500000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 11000,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.1,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "defense",
+                "value": 1500,
+                "operation": "Add"
+            }
+        ]
+    },
+    {
+        "name": "ua5",
+        "config_id": "ua5",
+        "type": "amulet",
+        "rarity": 4,
+        "tier": 5,
+        "upgrades_from_config_id": "ua4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1500000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "attack",
+                "value": 1800,
+                "operation": "Add"
+            },
+            {
+                "attribute": "attack",
+                "value": 1.06,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "dmg-red",
+                "value": 1.05,
+                "operation": "Multiply"
+            }
+        ]
+    },
+    {
+        "name": "ub5",
+        "config_id": "ub5",
+        "type": "boots",
+        "rarity": 4,
+        "tier": 5,
+        "upgrades_from_config_id": "ub4",
+        "upgrades_from_quantity": 3,
+        "upgrade_costs": [
+            {
+                "currency": "Gold",
+                "amount": 1500000
+            }
+        ],
+        "modifiers": [
+            {
+                "attribute": "health",
+                "value": 10200,
+                "operation": "Add"
+            },
+            {
+                "attribute": "health",
+                "value": 1.06,
+                "operation": "Multiply"
+            },
+            {
+                "attribute": "speed",
+                "value": 6,
+                "operation": "Add"
+            }
+        ]
+    }
+]
