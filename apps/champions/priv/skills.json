@@ -1784,9 +1784,7 @@
                 "type": "instant"
               },
               "initial_delay": 0,
-              "components": [
-                
-              ],
+              "components": [],
               "modifiers": [],
               "executions": [
                 {
