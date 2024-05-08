@@ -340,7 +340,7 @@ defmodule Arena.GameUpdater do
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
-    GameTracker.push_event(state.match_id, {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name}, %{id: victim.id, character_name: victim.aditional_info.character_name}})
+    GameTracker.push_event(self(), {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name}, %{id: victim.id, character_name: victim.aditional_info.character_name}})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -511,7 +511,7 @@ defmodule Arena.GameUpdater do
       end)
 
     payload = Jason.encode!(%{match_id: state.match_id, results: results})
-    GameTracker.finish_tracking(state.match_id)
+    GameTracker.finish_tracking(self())
 
     ## TODO: we should be doing this in a better way, both the url and the actual request
     ## maybe a separate GenServer that gets the results and tries to send them to the server?
