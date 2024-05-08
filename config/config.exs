@@ -111,6 +111,9 @@ config :arena, ArenaWeb.Endpoint,
 # at the `config/runtime.exs`.
 config :arena, Arena.Mailer, adapter: Swoosh.Adapters.Local
 
+# Amount of clients needed to start a game
+config :arena, :clients_needed_in_match, 10
+
 ################################
 # App configuration: champions #
 ################################

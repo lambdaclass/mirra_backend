@@ -5,8 +5,6 @@ defmodule Arena.GameLauncher do
 
   use GenServer
 
-  # Amount of clients needed to start a game
-  @clients_needed 10
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 10_000
   # The available names for bots to enter a match, we should change this in the future
@@ -68,7 +66,8 @@ defmodule Arena.GameLauncher do
     Process.send_after(self(), :launch_game?, 300)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
-    if length(clients) >= @clients_needed or (diff >= @start_timeout_ms and length(clients) > 0) do
+    if length(clients) >= Application.get_env(:arena, :clients_needed_in_match) or
+         (diff >= @start_timeout_ms and length(clients) > 0) do
       send(self(), :start_game)
     end
 
@@ -76,7 +75,7 @@ defmodule Arena.GameLauncher do
   end
 
   def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, @clients_needed)
+    {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :clients_needed_in_match))
     create_game_for_clients(game_clients)
 
     {:noreply, %{state | clients: remaining_clients}}
@@ -121,7 +120,7 @@ defmodule Arena.GameLauncher do
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients) do
-    bot_clients = get_bot_clients(@clients_needed - Enum.count(clients))
+    bot_clients = get_bot_clients(Application.get_env(:arena, :clients_needed_in_match) - Enum.count(clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
