@@ -520,7 +520,6 @@ defmodule Champions.Test.BattleTest do
       # The first unit will attack and tag the second unit as untargeteable each time it hits, so the second unit will only be hit once.
       # The second unit is very weak, but the first unit will never be able to hit it, so the battle will end in a victory for the second unit.
 
-      backline_slot = 6
       skill_cooldown = 5
 
       untargetable_params =
@@ -567,7 +566,7 @@ defmodule Champions.Test.BattleTest do
         |> Characters.insert_character()
 
       {:ok, loser_unit} =
-        TestUtils.build_unit(%{character_id: loser_character.id, slot: backline_slot}) |> Units.insert_unit()
+        TestUtils.build_unit(%{character_id: loser_character.id, slot: 1}) |> Units.insert_unit()
 
       {:ok, loser_unit} = Units.get_unit(loser_unit.id)
 
