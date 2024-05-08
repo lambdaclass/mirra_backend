@@ -124,7 +124,7 @@ impl Entity {
         }
     }
 
-    pub fn collides_with(&mut self, entities: Vec<Entity>) -> Vec<u64> {
+    pub fn collides_with(&mut self, entities: &Vec<Entity>) -> Vec<u64> {
         let mut result = Vec::new();
 
         for entity in entities {
@@ -202,6 +202,7 @@ impl Entity {
         &mut self,
         collided_with: Vec<&Entity>,
         obstacles: &HashMap<u64, Entity>,
+        external_wall: &Entity,
     ) {
         for entity in collided_with {
             match entity.shape {
@@ -222,7 +223,7 @@ impl Entity {
                 }
                 Shape::Polygon => {
                     let (collided, direction, depth) =
-                        intersect_circle_polygon(self, entity, obstacles);
+                        intersect_circle_polygon(self, entity, obstacles, external_wall);
 
                     if collided {
                         let new_pos = Position {

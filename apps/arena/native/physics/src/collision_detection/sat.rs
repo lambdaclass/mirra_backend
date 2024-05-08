@@ -22,6 +22,7 @@ pub(crate) fn intersect_circle_polygon(
     circle: &mut Entity,
     polygon: &Entity,
     obstacles: &HashMap<u64, Entity>,
+    external_wall: &Entity,
 ) -> (bool, Position, f32) {
     // The normal will be the vector in which the polygons should move to stop colliding
     let mut normal = Position { x: 0.0, y: 0.0 };
@@ -55,6 +56,7 @@ pub(crate) fn intersect_circle_polygon(
             &current_vertex,
             &next_vertex,
             obstacles,
+            external_wall,
         ) {
             continue;
         }
@@ -302,19 +304,21 @@ fn invalid_axis(
     current_vertex: &Position,
     next_vertex: &Position,
     obstacles: &HashMap<u64, Entity>,
+    external_wall: &Entity,
 ) -> bool {
+    let mut obstacle_vector: Vec<Entity> = obstacles.clone().into_values().collect();
+    obstacle_vector.push(external_wall.clone());
+
     let current_vertex_moved = Position::add(current_vertex, &Position::mult(&axis, circle.radius));
     let mut current_vertex_line =
         Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
-    let current_vertex_collitions =
-        current_vertex_line.collides_with(obstacles.clone().into_values().collect());
+    let current_vertex_collitions = current_vertex_line.collides_with(&obstacle_vector);
 
     let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
     let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
-    let next_vertex_collitions =
-        next_vertex_line.collides_with(obstacles.clone().into_values().collect());
+    let next_vertex_collitions = next_vertex_line.collides_with(&obstacle_vector);
 
-    current_vertex_collitions
-        .iter()
-        .any(|collision_id| next_vertex_collitions.contains(collision_id))
+    current_vertex_collitions.iter().any(|collision_id| {
+        next_vertex_collitions.contains(collision_id) && collision_id != &external_wall.id
+    }) || (current_vertex_collitions.is_empty() && next_vertex_collitions.is_empty())
 }

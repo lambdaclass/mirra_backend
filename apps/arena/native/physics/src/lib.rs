@@ -83,7 +83,7 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
     let mut entity: Entity = entity;
     let ent = entities.into_values().collect();
 
-    entity.collides_with(ent)
+    entity.collides_with(&ent)
 }
 
 #[rustler::nif()]
@@ -184,14 +184,14 @@ fn move_entity_to_closest_available_position(
         entity.move_to_next_valid_position_inside(external_wall);
     }
 
-    let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
+    let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
 
     if entity.category == Category::Player && !collides_with.is_empty() {
         let collided_with: Vec<&Entity> = collides_with
             .iter()
             .map(|id| obstacles.get(id).unwrap())
             .collect();
-        entity.move_to_next_valid_position_outside(collided_with, obstacles);
+        entity.move_to_next_valid_position_outside(collided_with, obstacles, external_wall);
     }
 }
 
