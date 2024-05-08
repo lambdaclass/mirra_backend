@@ -3,6 +3,7 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.GameUpdater
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
@@ -172,6 +173,14 @@ defmodule Arena.Game.Player do
           skill.execution_duration_ms
         )
 
+        GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
+
+        Process.send_after(
+          self(),
+          {:block_movement, player.id, false},
+          skill.execution_duration_ms
+        )
+
         {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
@@ -205,9 +214,16 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action)
           |> apply_skill_cooldown(skill_key, skill)
-          |> put_in([:direction], skill_direction |> Utils.normalize())
-          |> put_in([:is_moving], false)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
+
+        player =
+          if skill.block_movement do
+            player
+            |> put_in([:direction], skill_direction |> Utils.normalize())
+            |> put_in([:is_moving], false)
+          else
+            player
+          end
 
         put_in(game_state, [:players, player.id], player)
         |> maybe_make_player_invincible(player.id, skill)

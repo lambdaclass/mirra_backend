@@ -415,6 +415,11 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:block_movement, player_id, value}, state) do
+    broadcast_player_block_movement(state.game_state.game_id, player_id, value)
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -425,6 +430,10 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_player_block_actions(game_id, player_id, value) do
     PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
+  end
+
+  def broadcast_player_block_movement(game_id, player_id, value) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:block_movement, player_id, value})
   end
 
   # Broadcast game update to all players
