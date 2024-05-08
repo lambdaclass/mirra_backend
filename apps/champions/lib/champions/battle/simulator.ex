@@ -1058,6 +1058,7 @@ defmodule Champions.Battle.Simulator do
   defp string_to_atom("duration"), do: :duration
   defp string_to_atom("period"), do: :period
   defp string_to_atom("instant"), do: :instant
+  defp string_to_atom("permanent"), do: :permanent
 
   defp string_to_atom("ATTACK"), do: :ATTACK
   defp string_to_atom("DEFENSE"), do: :DEFENSE
