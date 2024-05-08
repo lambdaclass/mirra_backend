@@ -758,7 +758,7 @@ defmodule Champions.Test.BattleTest do
         TestUtils.build_character(%{
           name: "DealDamage Character for Self Test",
           basic_skill: deal_damage_basic_skill_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "Self Damage Empty Skill"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "Self Heal Empty Skill 2"}),
           base_attack: 5,
           base_health: 10
         })
@@ -814,7 +814,7 @@ defmodule Champions.Test.BattleTest do
         TestUtils.build_character(%{
           name: "Self Damage Character",
           basic_skill: self_damage_skill_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "Self Heal Empty Skill"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "Self Damage Empty Skill"}),
           base_attack: 5,
           base_health: 20
         })
