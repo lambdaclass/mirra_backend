@@ -792,9 +792,7 @@ defmodule Champions.Test.BattleTest do
                   effects: [
                     TestUtils.build_effect(%{
                       type: %{
-                        "type" => "duration",
-                        "duration" => -1,
-                        "period" => 0
+                        "type" => "permanent"
                       },
                       modifiers: [
                         %{
