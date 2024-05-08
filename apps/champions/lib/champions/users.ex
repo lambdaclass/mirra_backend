@@ -5,7 +5,7 @@ defmodule Champions.Users do
 
   alias GameBackend.Users.Currencies.CurrencyCost
   alias Champions.Users
-  alias Champions.Utils
+  alias GameBackend.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
   alias GameBackend.Items
@@ -28,7 +28,7 @@ defmodule Champions.Users do
 
     case Users.register_user(%{
            username: username,
-           game_id: Utils.game_id(),
+           game_id: Utils.get_game_id(:champions_of_mirra),
            level: 1,
            experience: 0,
            kaline_tree_level_id: kaline_tree_level.id
@@ -100,6 +100,8 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Arcane Crystals").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Hero Souls").id, 100)
   end
 
   defp add_super_campaign_progresses(user) do
@@ -109,7 +111,7 @@ defmodule Champions.Users do
     # Add SuperCampaignProgress for each SuperCampaign
     Enum.each(campaigns, fn {super_campaign_id, [first_campaign | _campaigns]} ->
       GameBackend.Campaigns.insert_super_campaign_progress(%{
-        game_id: Utils.game_id(),
+        game_id: Utils.get_game_id(:champions_of_mirra),
         user_id: user.id,
         super_campaign_id: super_campaign_id,
         level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
@@ -157,7 +159,7 @@ defmodule Champions.Users do
   def get_afk_rewards(user_id) do
     case Users.get_user(user_id) do
       {:ok, user} ->
-        user.afk_reward_rates
+        user.kaline_tree_level.afk_reward_rates
         |> Enum.map(fn reward_rate ->
           currency = Currencies.get_currency(reward_rate.currency_id)
           amount = calculate_afk_rewards(user, reward_rate)

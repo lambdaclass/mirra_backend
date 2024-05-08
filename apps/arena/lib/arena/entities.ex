@@ -24,12 +24,14 @@ defmodule Arena.Entities do
         max_health: character.base_health,
         base_speed: character.base_speed,
         base_stamina_interval: character.stamina_interval,
+        base_cooldown_multiplier: 1,
         skills: character.skills,
         current_actions: [],
         kill_count: 0,
         available_stamina: character.base_stamina,
         max_stamina: character.base_stamina,
         stamina_interval: character.stamina_interval,
+        cooldown_multiplier: 1,
         recharging_stamina: false,
         last_natural_healing_update: now,
         natural_healing_interval: character.natural_healing_interval,
@@ -44,7 +46,9 @@ defmodule Arena.Entities do
         damage_immunity: false,
         effects: [],
         cooldowns: %{},
-        bonus_damage: 0
+        bonus_damage: 0,
+        visible_players: [],
+        on_bush: false
       }
     }
   end
@@ -186,6 +190,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_bush(id, position, radius, shape, vertices \\ []) do
+    %{
+      id: id,
+      category: :bush,
+      shape: get_shape(shape),
+      name: "Bush" <> Integer.to_string(id),
+      position: position,
+      radius: radius,
+      vertices: vertices,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def new_crate(id, %{
         position: position,
         radius: radius,
@@ -263,7 +285,9 @@ defmodule Arena.Entities do
        effects: entity.aditional_info.effects,
        power_ups: entity.aditional_info.power_ups,
        inventory: entity.aditional_info.inventory,
-       cooldowns: entity.aditional_info.cooldowns
+       cooldowns: entity.aditional_info.cooldowns,
+       visible_players: entity.aditional_info.visible_players,
+       on_bush: entity.aditional_info.on_bush
      }}
   end
 

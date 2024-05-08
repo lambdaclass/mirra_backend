@@ -870,7 +870,8 @@
           }
         ]
       }
-    ]
+    ],
+    "bushes": []
   },
   "game": {
     "tick_rate_ms": 30,
@@ -1357,11 +1358,20 @@
       "one_time_application": true,
       "effect_mechanics": {
         "reduce_stamina_interval": {
-          "decrease_by": 0.3,
+          "decrease_by": 0.5,
           "execute_multiple_times": false,
           "effect_delay_ms": 0
         },
         "refresh_stamina": {
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        },
+        "reduce_cooldowns_duration": {
+          "multiplier": 0.5,
+          "execute_multiple_times": false,
+          "effect_delay_ms": 0
+        },
+        "refresh_cooldowns": {
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }
@@ -1405,5 +1415,8 @@
       }
     }
   ],
+  "bushes": {
+    "field_of_view_inside_bush": 500
+  },
   "crates": []
 }

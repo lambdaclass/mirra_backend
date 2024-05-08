@@ -319,6 +319,7 @@ defmodule Arena.Game.Player do
     player
     |> put_in([:speed], player.aditional_info.base_speed)
     |> put_in([:aditional_info, :stamina_interval], player.aditional_info.base_stamina_interval)
+    |> put_in([:aditional_info, :cooldown_multiplier], player.aditional_info.base_cooldown_multiplier)
     |> put_in([:aditional_info, :bonus_damage], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
     |> Effect.apply_stat_effects()
@@ -375,7 +376,11 @@ defmodule Arena.Game.Player do
   end
 
   defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
-    put_in(player, [:aditional_info, :cooldowns, skill_key], cooldown_ms)
+    put_in(
+      player,
+      [:aditional_info, :cooldowns, skill_key],
+      round(cooldown_ms * player.aditional_info.cooldown_multiplier)
+    )
   end
 
   defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}) do

@@ -1,6 +1,6 @@
-defmodule GameBackend.Items.BaseModifier do
+defmodule GameBackend.Items.Modifier do
   @moduledoc """
-  Item BaseModifiers change attributes of a character while the Item is equipped.
+  Item Modifiers change attributes of a character while the Item is equipped.
 
   Operation descriptions
   - `"Add"`: Adds the result to the Base Modifier's specified Attribute. Use a negative value for subtraction.
@@ -15,27 +15,28 @@ defmodule GameBackend.Items.BaseModifier do
 
   ## Examples
       # Base Modifier to increment attack by 5%:
-      %BaseModifier{
+      %Modifier{
         attribute: "attack",
-        modifier_operation: "Multiply",
-        base_value: 1.05
+        operation: "Multiply",
+        value: 1.05
       }
 
       # Base Modifier to increment defense by 100:
-      %BaseModifier{
+      %Modifier{
         attribute: "defense",
-        modifier_operation: "Add",
-        base_value: 100
+        operation: "Add",
+        value: 100
       }
   """
 
   use GameBackend.Schema
   import Ecto.Changeset
 
+  @primary_key false
   embedded_schema do
     field(:attribute, :string)
-    field(:modifier_operation, :string)
-    field(:base_value, :float)
+    field(:operation, :string)
+    field(:value, :float)
   end
 
   @doc """
@@ -43,8 +44,8 @@ defmodule GameBackend.Items.BaseModifier do
   """
   def changeset(modifier, attrs) do
     modifier
-    |> cast(attrs, [:attribute, :modifier_operation, :base_value])
-    |> validate_inclusion(:modifier_operation, ~w[Add Multiply])
-    |> validate_required([:modifier_operation, :base_value, :attribute])
+    |> cast(attrs, [:attribute, :operation, :value])
+    |> validate_inclusion(:operation, ~w[Add Multiply])
+    |> validate_required([:operation, :value, :attribute])
   end
 end

@@ -111,7 +111,7 @@ defmodule GameBackend.Campaigns do
         from(cp in SuperCampaignProgress,
           where: cp.user_id == ^user_id and cp.super_campaign_id == ^super_campaign_id,
           preload: [
-            level: [:campaign, :item_rewards, :unit_rewards, :afk_rewards_increments, currency_rewards: :currency]
+            level: [:campaign, :item_rewards, :unit_rewards, currency_rewards: :currency]
           ]
         )
       )

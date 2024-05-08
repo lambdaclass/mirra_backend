@@ -21,9 +21,19 @@ import Config
 # General configurations #
 ##########################
 
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: System.get_env("GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
+
+config :joken,
+  issuer: "https://accounts.google.com",
+  audience: System.get_env("GOOGLE_CLIENT_ID")
+
 ############################
 # App configuration: arena #
 ############################
+
+config :arena, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
 
 if System.get_env("PHX_SERVER") do
   config :arena, ArenaWeb.Endpoint, server: true
@@ -131,6 +141,8 @@ end
 ##################################
 # App configuration: game_client #
 ##################################
+
+config :game_client, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
 
 if System.get_env("PHX_SERVER") do
   config :game_client, GameClientWeb.Endpoint, server: true
@@ -317,5 +329,3 @@ config :bot_manager, :end_point_configuration,
   options: [port: bot_manager_port]
 
 ###################################
-
-config :joken, issuer: "https://accounts.google.com", audience: System.get_env("GOOGLE_CLIENT_ID")

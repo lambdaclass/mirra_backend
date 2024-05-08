@@ -11,8 +11,10 @@ defmodule Champions.Test.BattleTest do
 
   use ExUnit.Case
 
-  alias GameBackend.Units.Characters
+  alias Champions.Users
+  alias GameBackend.Items
   alias GameBackend.Units
+  alias GameBackend.Units.Characters
   alias Champions.TestUtils
 
   @miliseconds_per_step 50
@@ -24,11 +26,11 @@ defmodule Champions.Test.BattleTest do
 
     {:ok, target_dummy} = %{character_id: target_dummy_character.id} |> TestUtils.build_unit() |> Units.insert_unit()
     {:ok, target_dummy} = Units.get_unit(target_dummy.id)
-    {:ok, %{target_dummy: target_dummy}}
+    {:ok, %{target_dummy: target_dummy, target_dummy_character: target_dummy_character}}
   end
 
-  describe "Battle" do
-    test "Execution-DealDamage with delays", %{target_dummy: target_dummy} do
+  describe "Executions" do
+    test "DealDamage with delays", %{target_dummy: target_dummy} do
       maximum_steps = 5
       required_steps_to_win = maximum_steps + 1
       too_long_cooldown = maximum_steps
@@ -146,8 +148,8 @@ defmodule Champions.Test.BattleTest do
                ).result
     end
 
-    test "Execution-DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
-      cooldown_steps = 1
+    test "DealDamage with ChanceToApply Component", %{target_dummy: target_dummy} do
+      cooldown = 1
 
       # Configure a basic skill with a ChanceToApply component of 0
       basic_skill_params =
@@ -238,7 +240,7 @@ defmodule Champions.Test.BattleTest do
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: cooldown_steps + 1).result
     end
 
-    test "Execution-DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
+    test "DealDamage with modifiers, using the ultimate skill", %{target_dummy: target_dummy} do
       # In this test, the basic skill has a modifier that multiplies the attack by 0.1, an energy regen of 500 and a cooldown of 1.
       # The ultimate skill has an attack ratio of 0.5, so it will deal 1 point of damage (base attack * 0.1 * 0.5) every 2 steps to the target dummy, which has 10 health points.
       # This way, the battle should end in a victory for the team_1 after 21 steps.
@@ -313,7 +315,7 @@ defmodule Champions.Test.BattleTest do
       assert "team_1" == Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 21).result
     end
 
-    test "Execution-DealDamage with defense" do
+    test "DealDamage with defense" do
       maximum_steps = 5
 
       {:ok, target_dummy_character} =
@@ -394,6 +396,126 @@ defmodule Champions.Test.BattleTest do
       # After reducing target_dummy health, we win again
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
+
+    test "Execution-Heal", %{target_dummy: target_dummy} do
+      # We will create a battle between a team made of a healer and a target dummy, and another one with a
+      # DealDamage unit. The unit will get to hit the target dummy thrice for a total of 15 damage (lethal).
+      # Inbetween the attacks, the healer will heal the target dummy for 5 health points, saving them from death until the third hit.
+      # Because we're healing the target dummy, the DealDamage unit doesn't get to kill the healer in time, resulting in a timeout.
+
+      # Cooldowns will be 2 for the damage and 5 for the heal, so steps will look like this:
+      # _ _ D _ _ HD _ _ D
+      maximum_steps = 9
+      backline_slot = 6
+      heal_cooldown = 5
+      damage_cooldown = 2
+
+      heal_params =
+        TestUtils.build_skill(%{
+          name: "Heal",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "Heal",
+                          attack_ratio: 1
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    # Nearest so that the healer doesn't target himself
+                    type: "nearest",
+                    target_allies: true
+                  }
+                })
+            }
+          ],
+          cooldown: heal_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, healer_character} =
+        TestUtils.build_character(%{
+          name: "Heal Character",
+          basic_skill: heal_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Heal Empty Skill"}),
+          base_attack: 5,
+          # Will die if he gets hit once
+          base_health: 5
+        })
+        |> Characters.insert_character()
+
+      {:ok, healer} =
+        TestUtils.build_unit(%{character_id: healer_character.id, slot: backline_slot}) |> Units.insert_unit()
+
+      {:ok, healer} = Units.get_unit(healer.id)
+
+      damage_params =
+        TestUtils.build_skill(%{
+          name: "Heal Test - Damage",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    # Nearest so that he hits the target dummy
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: damage_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, damage_character} =
+        TestUtils.build_character(%{
+          name: "Heal Test - Damage Character",
+          basic_skill: damage_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Heal-Damage Empty Skill"}),
+          base_attack: 5
+        })
+        |> Characters.insert_character()
+
+      {:ok, damager} =
+        TestUtils.build_unit(%{character_id: damage_character.id}) |> Units.insert_unit()
+
+      {:ok, damager} = Units.get_unit(damager.id)
+
+      # Check that the battle ends in timeout when healer heals the target dummy in time
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([healer, target_dummy], [damager], maximum_steps: maximum_steps).result
+
+      # If healer doesn't get to heal, we lose!
+      {:ok, _} =
+        Characters.update_character(healer_character, %{
+          basic_skill: Map.put(heal_params, :cooldown, maximum_steps * @miliseconds_per_step)
+        })
+
+      {:ok, healer} = Units.get_unit(healer.id)
+
+      assert "team_2" ==
+               Champions.Battle.Simulator.run_battle([healer, target_dummy], [damager], maximum_steps: maximum_steps).result
     end
 
     test "Execution-AddEnergy", %{target_dummy: target_dummy} do
