@@ -680,157 +680,157 @@ defmodule Champions.Test.BattleTest do
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy_5], maximum_steps: maximum_steps).result
     end
+
+    test "All", %{target_dummy_character: target_dummy_character} do
+      maximum_steps = 1
+
+      # Create a character with a basic skill that will deal 10 damage to all the enemies
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage All Enemies",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "all",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "All Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "All Empty Skill"}),
+          base_attack: 10,
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      # Create 6 target dummies for enemy team
+      target_dummies =
+        Enum.map(1..6, fn slot ->
+          {:ok, target_dummy} =
+            %{character_id: target_dummy_character.id, slot: slot} |> TestUtils.build_unit() |> Units.insert_unit()
+
+          {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+          target_dummy
+        end)
+
+      # Battle is won after only 1 skill execution
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle(
+                 [unit],
+                 target_dummies,
+                 maximum_steps: maximum_steps
+               ).result
+    end
   end
 
-  test "All", %{target_dummy_character: target_dummy_character} do
-    maximum_steps = 1
+  describe "Items" do
+    test "Affects unit stats", %{target_dummy: target_dummy} do
+      {:ok, user} = Users.register("Items User")
 
-    # Create a character with a basic skill that will deal 10 damage to all the enemies
-    basic_skill_params =
-      TestUtils.build_skill(%{
-        name: "DealDamage All Enemies",
-        mechanics: [
-          %{
-            trigger_delay: 0,
-            apply_effects_to:
-              TestUtils.build_apply_effects_to_mechanic(%{
-                effects: [
-                  TestUtils.build_effect(%{
-                    executions: [
-                      %{
-                        type: "DealDamage",
-                        attack_ratio: 1,
-                        energy_recharge: 0
-                      }
-                    ]
-                  })
-                ],
-                targeting_strategy: %{
-                  type: "all",
-                  target_allies: false
-                }
-              })
-          }
-        ],
-        cooldown: maximum_steps * @miliseconds_per_step - 1
-      })
+      maximum_steps = 5
 
-    {:ok, character} =
-      TestUtils.build_character(%{
-        name: "All Character",
-        basic_skill: basic_skill_params,
-        ultimate_skill: TestUtils.build_skill(%{name: "All Empty Skill"}),
-        base_attack: 10,
-        base_health: 10
-      })
-      |> Characters.insert_character()
+      # Create a character with a basic skill that has a cooldown too long to execute
+      # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "Items Basic Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 50,
+                          delay: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ],
+          cooldown: maximum_steps - 1
+        })
 
-    {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
-    {:ok, unit} = Units.get_unit(unit.id)
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "Items Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Items Ultimate Skill"}),
+          # No damage should result in timeout
+          base_attack: 0
+        })
+        |> Characters.insert_character()
 
-    # Create 6 target dummies for enemy team
-    target_dummies =
-      Enum.map(1..6, fn slot ->
-        {:ok, target_dummy} =
-          %{character_id: target_dummy_character.id, slot: slot} |> TestUtils.build_unit() |> Units.insert_unit()
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id, user_id: user.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
 
-        {:ok, target_dummy} = Units.get_unit(target_dummy.id)
-        target_dummy
-      end)
+      # Check that the battle ends in timeout when the unit has no damage
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
 
-    # Battle is won after only 1 skill execution
-    assert "team_1" ==
-             Champions.Battle.Simulator.run_battle(
-               [unit],
-               target_dummies,
-               maximum_steps: maximum_steps
-             ).result
-  end
-end
+      # Equip an item that increases the attack of the unit
 
-describe "Items" do
-  test "Affects unit stats", %{target_dummy: target_dummy} do
-    {:ok, user} = Users.register("Items User")
+      {:ok, item_template} =
+        Items.insert_item_template(%{
+          game_id: GameBackend.Utils.get_game_id(:champions_of_mirra),
+          name: "Attack-improving weapon",
+          config_id: "attack_improving_weapon",
+          type: "weapon",
+          rarity: 1,
+          tier: 1,
+          modifiers: [
+            %{
+              attribute: "attack",
+              operation: "Add",
+              value: 10
+            }
+          ]
+        })
 
-    maximum_steps = 5
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: item_template.id})
 
-    # Create a character with a basic skill that has a cooldown too long to execute
-    # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
-    basic_skill_params =
-      TestUtils.build_skill(%{
-        name: "Items Basic Skill",
-        mechanics: [
-          %{
-            trigger_delay: 0,
-            apply_effects_to:
-              TestUtils.build_apply_effects_to_mechanic(%{
-                effects: [
-                  TestUtils.build_effect(%{
-                    executions: [
-                      %{
-                        type: "DealDamage",
-                        attack_ratio: 1,
-                        energy_recharge: 50,
-                        delay: 0
-                      }
-                    ]
-                  })
-                ]
-              })
-          }
-        ],
-        cooldown: maximum_steps - 1
-      })
+      {:ok, _} = Items.equip_item(user.id, item.id, unit.id)
 
-    {:ok, character} =
-      TestUtils.build_character(%{
-        name: "Items Character",
-        basic_skill: basic_skill_params,
-        ultimate_skill: TestUtils.build_skill(%{name: "Items Ultimate Skill"}),
-        # No damage should result in timeout
-        base_attack: 0
-      })
-      |> Characters.insert_character()
+      {:ok, unit} = Units.get_unit(unit.id)
 
-    {:ok, unit} = TestUtils.build_unit(%{character_id: character.id, user_id: user.id}) |> Units.insert_unit()
-    {:ok, unit} = Units.get_unit(unit.id)
+      unit =
+        GameBackend.Repo.preload(
+          unit,
+          [:user, items: :template, character: [:basic_skill, :ultimate_skill]]
+        )
 
-    # Check that the battle ends in timeout when the unit has no damage
-    assert "timeout" ==
-             Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
-
-    # Equip an item that increases the attack of the unit
-
-    {:ok, item_template} =
-      Items.insert_item_template(%{
-        game_id: GameBackend.Utils.get_game_id(:champions_of_mirra),
-        name: "Attack-improving weapon",
-        config_id: "attack_improving_weapon",
-        type: "weapon",
-        rarity: 1,
-        tier: 1,
-        modifiers: [
-          %{
-            attribute: "attack",
-            operation: "Add",
-            value: 10
-          }
-        ]
-      })
-
-    {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: item_template.id})
-
-    {:ok, _} = Items.equip_item(user.id, item.id, unit.id)
-
-    {:ok, unit} = Units.get_unit(unit.id)
-
-    unit =
-      GameBackend.Repo.preload(
-        unit,
-        [:user, items: :template, character: [:basic_skill, :ultimate_skill]]
-      )
-
-    assert "team_1" ==
-             Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
   end
 end
