@@ -331,9 +331,7 @@ defmodule Arena.GameUpdater do
     game_state =
       game_state
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
-      |> update_in([:players, killer_id, :aditional_info, :kill_count], fn count ->
-        count + 1
-      end)
+      |> maybe_add_kill_to_player(killer_id)
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
@@ -998,7 +996,13 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    Player.take_damage(player, zone_damage)
+    updated_player = Player.take_damage(player, zone_damage)
+
+    unless Player.alive?(updated_player) do
+      send(self(), {:to_killfeed, 9999, player.id})
+    end
+
+    updated_player
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
@@ -1375,6 +1379,16 @@ defmodule Arena.GameUpdater do
     Enum.map(effect_list, fn effect_name ->
       Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
     end)
+  end
+
+  defp maybe_add_kill_to_player(%{players: players} = game_state, player_id) do
+    if Map.has_key?(players, player_id) do
+      update_in(game_state, [:players, player_id, :aditional_info, :kill_count], fn count ->
+        count + 1
+      end)
+    else
+      game_state
+    end
   end
 
   ##########################
