@@ -6,34 +6,51 @@ defmodule Champions.Battle.Simulator do
   has no cooldown and it's cast whenever a unit reaches 500 energy. Energy is gained whenever the target attacks.
   The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
-  Skills possess many effects with their own targets. Effects are composed of `Components`, `Modifiers` and
-  `Executions` (check module docs for more info on each).
+  Skills possess many mechanics. The only implemented mechanic right now is `ApplyEffectsTo`, which is composed of many effects
+  and a targeting strategy. Effects are composed of `Components`, `Modifiers` and `Executions` (check module docs for more info on each).
 
-  They have different application types (checked are implemented):
+  ### ApplyEffectsTo mechanics
+
+  Effects have different application types:
   [x] Instant - Applied once, irreversible.
   [x] Permanent - Applied once, is stored in the unit so that it can be reversed (with a dispel, for example)
   [x] Duration - Applied once and reverted once its duration ends.
+  [ ] Periodic - Applied every X steps  until duration ends.
 
-  They also have different targeting strategies:
+  The different targeting strategies are:
   [x] Random
-  [X] Nearest
-  [X] Furthest
-  [ ] Frontline - Heroes in slots 1 and 2
-  [ ] Backline - Heroes in slots 2 to 4
+  [x] Nearest
+  [x] Furthest
+  [x] Frontline - Heroes in slots 1 and 2
+  [x] Backline - Heroes in slots 2 to 4
+  [x] All
+  [ ] Self
   [ ] Factions
   [ ] Classes
   [ ] Min (STAT)
   [ ] Max (STAT)
 
-  And different ways in which their amount is interpreted:
-  [x] Additive
-  [x] Multiplicative
-  [x] Additive & based on stat - The amount is a % of one of the caster's stats
-  [ ] Multiplicative & based on stat?
+  It can also be chosen how many targets are affected by the effect, and if they are allies or enemies.
+
+
+  ### Simultaneous Battles
 
   Two units can attack the same unit at the same time and over-kill it. This is expected behavior that results
-  from having the battle be simultaneous.
+  from having the battle be simultaneous. If this weren't the case, the battle would be turn-based, since a unit
+  would base its actions on the state of the battle at the end of the previous unit's action.
 
+  ### Speed Stat
+  Units have a `speed` stat that affects the cooldown of their basic skill. The formula is:
+  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100];`
+  For now, speed is only used to calculate the cooldown of newly cast skills, meaning it's not retroactive with
+  skills already on cooldown.
+
+  ### History
+
+  A "history" is built as the battle progresses. This history is used to animate the battle in the client. The history
+  is a list of maps, each map representing a step in the battle. Each step has a `step_number` and a list of `actions`.
+  These are all translated into Protobuf messages, together with the initial state of the battle and the result,
+  and then sent to the client.
   """
   alias Champions.Units
   alias GameBackend.Units.Skills.Skill
