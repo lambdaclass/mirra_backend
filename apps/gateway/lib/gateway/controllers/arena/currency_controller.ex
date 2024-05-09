@@ -24,7 +24,7 @@ defmodule Gateway.Curse.Controllers.Users.CurrencyController do
     else
       {:get_user, _} -> send_resp(conn, 404, "User not found")
       {:curse_user, _} -> send_resp(conn, 400, "User from another game")
-      {:add_currency, _} -> send_resp(conn, 400, "Couldn't add currency")
+      {:add_currency, _} -> send_resp(conn, 404, "Currency not found")
     end
   end
 end
