@@ -838,7 +838,7 @@ defmodule Champions.Test.BattleTest do
 
       # Battle is timeout, since every time ally unit takes damage, it heals itself
       assert "timeout" ==
-        Champions.Battle.Simulator.run_battle([heal_unit], [damage_unit_for_heal], maximum_steps: maximum_steps).result
+               Champions.Battle.Simulator.run_battle([heal_unit], [damage_unit_for_heal], maximum_steps: maximum_steps).result
     end
 
     test "Self Damage", %{target_dummy: target_dummy} do
@@ -889,7 +889,7 @@ defmodule Champions.Test.BattleTest do
 
       # Battle is won by team_2, the dummy, since the team_1 unit damages itself
       assert "team_2" ==
-        Champions.Battle.Simulator.run_battle([self_damage_unit], [target_dummy], maximum_steps: maximum_steps).result
+               Champions.Battle.Simulator.run_battle([self_damage_unit], [target_dummy], maximum_steps: maximum_steps).result
     end
   end
 
