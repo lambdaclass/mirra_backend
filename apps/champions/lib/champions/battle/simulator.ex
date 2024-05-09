@@ -200,7 +200,7 @@ defmodule Champions.Battle.Simulator do
                 target_id: unit.id,
                 stat_affected: %{
                   stat: :ENERGY,
-                  amount: -@ultimate_energy_cost
+                  amount: 0
                 }
               },
               :stat_override
