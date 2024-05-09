@@ -37,14 +37,14 @@ defmodule GameBackend.Users.Currencies do
 
   ## Examples
 
-      iex> get_currency!("gold")
+      iex> get_currency_by_name_and_game!("gold", 1)
       %Currency{}
 
-      iex> get_currency!("silver")
+      iex> get_currency_by_name_and_game!("silver", 1)
       ** (Ecto.NoResultsError)
 
   """
-  def get_currency_by_name!(name), do: Repo.get_by!(Currency, name: name)
+  def get_currency_by_name_and_game!(name, game_id), do: Repo.get_by!(Currency, name: name, game_id: game_id)
 
   @doc """
   Gets a single currency.
@@ -53,14 +53,14 @@ defmodule GameBackend.Users.Currencies do
 
   ## Examples
 
-      iex> get_currency("gold")
+      iex> get_currency_by_name_and_game("gold", 1)
       %Currency{}
 
-      iex> get_currency("silver")
+      iex> get_currency_by_name_and_game("silver", 1)
       nil
 
   """
-  def get_currency_by_name(name), do: Repo.get_by(Currency, name: name)
+  def get_currency_by_name_and_game(name, game_id), do: Repo.get_by(Currency, name: name, game_id: game_id)
 
   @doc """
   Gets how much a user has of a given currency.
@@ -185,10 +185,10 @@ defmodule GameBackend.Users.Currencies do
   @doc """
   Add amount of currency to user by its name.
   """
-  def add_currency_by_name!(user_id, currency_name, amount),
+  def add_currency_by_name_and_game!(user_id, currency_name, game_id, amount),
     do:
       user_id
-      |> add_currency(get_currency_by_name!(currency_name).id, amount)
+      |> add_currency(get_currency_by_name_and_game!(currency_name, game_id).id, amount)
 
   @doc """
   Add the specified amount of currency to an user by it's name
@@ -197,14 +197,14 @@ defmodule GameBackend.Users.Currencies do
 
   ## Examples
 
-      iex> add_currency_by_name!(user_id, currency_name, amount)
+      iex> add_currency_by_name_and_game(user_id, currency_name, amount)
       %UserCurrency{}
 
-      iex> add_currency_by_name!(user_id, currency_name, amount)
+      iex> add_currency_by_name_and_game(user_id, currency_name, amount)
       nil
   """
-  def add_currency_by_name(user_id, currency_name, amount) do
-    case get_currency_by_name(currency_name) do
+  def add_currency_by_name_and_game(user_id, currency_name, game_id, amount) do
+    case get_currency_by_name_and_game(currency_name, game_id) do
       nil -> nil
       currency -> add_currency(user_id, currency.id, amount)
     end

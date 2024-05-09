@@ -81,7 +81,11 @@ defmodule Champions.Config do
       |> update_in([:upgrade_costs], fn upgrade_costs ->
         Enum.map(
           upgrade_costs,
-          &%{currency_id: Users.Currencies.get_currency_by_name!(&1.currency).id, amount: &1.amount}
+          &%{
+            currency_id:
+              Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
+            amount: &1.amount
+          }
         )
       end)
     end)

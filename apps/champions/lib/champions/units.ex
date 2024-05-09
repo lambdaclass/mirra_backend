@@ -7,6 +7,7 @@ defmodule Champions.Units do
   - Tier ups cost an amount of gold that depends on the unit level, plus a set number of gems.
   """
 
+  alias GameBackend.Utils
   alias Ecto.Multi
   alias GameBackend.Transaction
   alias GameBackend.Units
@@ -118,7 +119,7 @@ defmodule Champions.Units do
   def calculate_level_up_cost(unit),
     do: [
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
         amount: unit.level |> Math.pow(2) |> round()
       }
     ]
@@ -210,10 +211,13 @@ defmodule Champions.Units do
   def calculate_tier_up_cost(unit),
     do: [
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
         amount: unit.level |> Math.pow(2) |> round()
       },
-      %CurrencyCost{currency_id: Currencies.get_currency_by_name!("Gems").id, amount: 50}
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id,
+        amount: 50
+      }
     ]
 
   ##########
