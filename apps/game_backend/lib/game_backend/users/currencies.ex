@@ -197,10 +197,10 @@ defmodule GameBackend.Users.Currencies do
 
   ## Examples
 
-      iex> add_currency_by_name_and_game(user_id, currency_name, amount)
+      iex> add_currency_by_name_and_game(user_id, currency_name, game_id, amount)
       %UserCurrency{}
 
-      iex> add_currency_by_name_and_game(user_id, currency_name, amount)
+      iex> add_currency_by_name_and_game(user_id, currency_name, game_id, amount)
       nil
   """
   def add_currency_by_name_and_game(user_id, currency_name, game_id, amount) do
