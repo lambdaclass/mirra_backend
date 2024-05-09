@@ -100,6 +100,8 @@ defmodule Champions.Users do
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
     Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Arcane Crystals").id, 100)
+    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Hero Souls").id, 100)
   end
 
   defp add_super_campaign_progresses(user) do
@@ -157,7 +159,7 @@ defmodule Champions.Users do
   def get_afk_rewards(user_id) do
     case Users.get_user(user_id) do
       {:ok, user} ->
-        user.afk_reward_rates
+        user.kaline_tree_level.afk_reward_rates
         |> Enum.map(fn reward_rate ->
           currency = Currencies.get_currency(reward_rate.currency_id)
           amount = calculate_afk_rewards(user, reward_rate)

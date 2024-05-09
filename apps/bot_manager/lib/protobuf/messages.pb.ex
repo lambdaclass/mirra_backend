@@ -278,6 +278,15 @@ defmodule BotManager.Protobuf.GameState.CratesEntry do
   field(:value, 2, type: BotManager.Protobuf.Entity)
 end
 
+defmodule BotManager.Protobuf.GameState.BushesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: BotManager.Protobuf.Entity)
+end
+
 defmodule BotManager.Protobuf.GameState do
   @moduledoc false
 
@@ -336,6 +345,7 @@ defmodule BotManager.Protobuf.GameState do
 
   field(:pools, 15, repeated: true, type: BotManager.Protobuf.GameState.PoolsEntry, map: true)
   field(:crates, 16, repeated: true, type: BotManager.Protobuf.GameState.CratesEntry, map: true)
+  field(:bushes, 17, repeated: true, type: BotManager.Protobuf.GameState.BushesEntry, map: true)
 end
 
 defmodule BotManager.Protobuf.Entity do
@@ -363,6 +373,7 @@ defmodule BotManager.Protobuf.Entity do
   field(:item, 16, type: BotManager.Protobuf.Item, oneof: 0)
   field(:pool, 17, type: BotManager.Protobuf.Pool, oneof: 0)
   field(:crate, 18, type: BotManager.Protobuf.Crate, oneof: 0)
+  field(:bush, 19, type: BotManager.Protobuf.Bush, oneof: 0)
 end
 
 defmodule BotManager.Protobuf.Player.CooldownsEntry do
@@ -397,6 +408,8 @@ defmodule BotManager.Protobuf.Player do
   field(:effects, 10, repeated: true, type: BotManager.Protobuf.Effect)
   field(:inventory, 11, type: BotManager.Protobuf.Item)
   field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
+  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
+  field(:on_bush, 14, type: :bool, json_name: "onBush")
 end
 
 defmodule BotManager.Protobuf.Effect do
@@ -460,6 +473,12 @@ defmodule BotManager.Protobuf.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+end
+
+defmodule BotManager.Protobuf.Bush do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
 defmodule BotManager.Protobuf.PlayerAction do

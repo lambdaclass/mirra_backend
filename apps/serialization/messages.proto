@@ -98,6 +98,7 @@ message GameState {
   map<uint64, Entity> obstacles = 14;
   map<uint64, Entity> pools = 15;
   map<uint64, Entity> crates = 16;
+  map<uint64, Entity> bushes = 17;
 }
 
 enum GameStatus {
@@ -140,6 +141,7 @@ message Entity {
     Item item = 16;
     Pool pool = 17;
     Crate crate = 18;
+    Bush bush = 19;
   }
 }
 
@@ -156,6 +158,8 @@ message Player {
   repeated Effect effects = 10;
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
+  repeated uint64 visible_players = 13;
+  bool on_bush  = 14;
 }
 
 message Effect {
@@ -207,6 +211,9 @@ enum  PowerUpstatus {
 
 message Pool {
   uint64 owner_id = 1;
+}
+
+message Bush {
 }
 
 message PlayerAction {
