@@ -554,6 +554,12 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
+  defp choose_targets(caster, %{type: "all", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.map(fn {id, _unit} -> id end)
+
   defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
@@ -945,6 +951,7 @@ defmodule Champions.Battle.Simulator do
     "random",
     "nearest",
     "furthest",
+    "all",
     "frontline",
     "backline"
   ]
