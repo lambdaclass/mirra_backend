@@ -136,6 +136,52 @@ pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
     collision
 }
 
+pub(crate) fn line_polygon_collision(line: &Entity, polygon: &Entity) -> bool {
+    for current_vertex_index in 0..polygon.vertices.len() {
+        let mut next_vertex_index = current_vertex_index + 1;
+        if next_vertex_index == polygon.vertices.len() {
+            next_vertex_index = 0
+        };
+        let current_vertex = polygon.vertices[current_vertex_index];
+        let next_vertex = polygon.vertices[next_vertex_index];
+
+        let polygon_line = Entity::new_line(1, vec![current_vertex, next_vertex]);
+
+        if line_line_collision(line, &polygon_line) {
+            return true;
+        }
+    }
+
+    false
+}
+
+pub(crate) fn line_line_collision(line: &Entity, other_line: &Entity) -> bool {
+    let line_first_vertex = line.vertices[0];
+    let line_second_vertex = line.vertices[1];
+    let other_line_first_vertex = other_line.vertices[0];
+    let other_line_second_vertex = other_line.vertices[1];
+
+    let uA = ((other_line_second_vertex.x - other_line_first_vertex.x)
+        * (line_first_vertex.y - other_line_first_vertex.y)
+        - (other_line_second_vertex.y - other_line_first_vertex.y)
+            * (line_first_vertex.x - other_line_first_vertex.x))
+        / ((other_line_second_vertex.y - other_line_first_vertex.y)
+            * (line_second_vertex.x - line_first_vertex.x)
+            - (other_line_second_vertex.x - other_line_first_vertex.x)
+                * (line_second_vertex.y - line_first_vertex.y));
+
+    let uB = ((line_second_vertex.x - line_first_vertex.x)
+        * (line_first_vertex.y - other_line_first_vertex.y)
+        - (line_second_vertex.y - line_first_vertex.y)
+            * (line_first_vertex.x - other_line_first_vertex.x))
+        / ((other_line_second_vertex.y - other_line_first_vertex.y)
+            * (line_second_vertex.x - line_first_vertex.x)
+            - (other_line_second_vertex.x - other_line_first_vertex.x)
+                * (line_second_vertex.y - line_first_vertex.y));
+
+    (0.0..=1.0).contains(&uA) && (0.0..=1.0).contains(&uB)
+}
+
 /*
  * Calculates the distance between two positions
  */
