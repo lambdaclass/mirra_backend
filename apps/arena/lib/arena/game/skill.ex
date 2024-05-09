@@ -265,7 +265,6 @@ defmodule Arena.Game.Skill do
     player =
       entity
       |> Map.put(:is_moving, true)
-      |> Map.put(:speed, leap.speed)
       |> put_in([:aditional_info, :base_speed], leap.speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
