@@ -167,7 +167,9 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
-        effects: config.effects
+        effects: config.effects,
+        on_pickup_effects: config.on_pickup_effects,
+        mechanics: config.mechanics
       }
     }
   end
