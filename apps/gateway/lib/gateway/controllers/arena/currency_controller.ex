@@ -22,7 +22,7 @@ defmodule Gateway.Curse.Controllers.Users.CurrencyController do
            {:add_currency, Currencies.add_currency_by_name_and_game(user_id, currencty_name, user.game_id, amount)} do
       send_resp(conn, 200, Jason.encode!(Map.take(user_currency, [:amount, :user_id, :currency_id])))
     else
-      {:get_user, _} -> send_resp(conn, 400, "User not found")
+      {:get_user, _} -> send_resp(conn, 404, "User not found")
       {:curse_user, _} -> send_resp(conn, 400, "User from another game")
       {:add_currency, _} -> send_resp(conn, 400, "Couldn't add currency")
     end
