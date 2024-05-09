@@ -253,21 +253,11 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction, auto_aim?: auto_aim?}) do
-    skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, leap.range)
-
-    target_position = %{
-      x: entity.position.x + skill_direction.x,
-      y: entity.position.y + skill_direction.y
-    }
-
-    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    duration = Physics.calculate_duration(entity.position, target_position, leap.speed) * 30
-
+  def do_mechanic(game_state, entity, {:leap, leap}, %{execution_duration: execution_duration}) do
     Process.send_after(
       self(),
       {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
-      duration
+      execution_duration
     )
 
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick

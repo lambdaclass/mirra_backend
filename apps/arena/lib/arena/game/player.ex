@@ -185,7 +185,8 @@ defmodule Arena.Game.Player do
              skill_direction: skill_direction,
              skill_key: skill_key,
              skill_destination: action[:destination],
-             auto_aim?: auto_aim?
+             auto_aim?: auto_aim?,
+             execution_duration: execution_duration
            })
            |> Map.merge(skill)},
           skill.activation_delay_ms
