@@ -23,7 +23,7 @@ defmodule Gateway.Router do
     scope "/users" do
       scope "/:user_id" do
         put "/", Controllers.UserController, :update
-        put "/currency", Controllers.Users.CurrencyController, :modify_currency
+        put "/:game_name/currency", Controllers.Users.CurrencyController, :modify_currency
       end
     end
   end
