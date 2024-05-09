@@ -20,15 +20,15 @@ defmodule GameBackend.Units.Skills.Mechanics.Effects.Modifier do
       # Modifier to reduce damage by 25%:
       %Modifier{
         attribute: "damage",
-        modifier_operation: "Multiply",
-        float_magnitude: 0.75
+        operation: "Multiply",
+        magnitude: 0.75
       }
 
       # Modifier to reduce defense by 100:
       %Modifier{
         attribute: "defense",
-        modifier_operation: "Add",
-        float_magnitude: -100
+        operation: "Add",
+        magnitude: -100
       }
   """
 
@@ -38,14 +38,14 @@ defmodule GameBackend.Units.Skills.Mechanics.Effects.Modifier do
   @primary_key false
   embedded_schema do
     field(:attribute, :string)
-    field(:modifier_operation, :string)
-    field(:float_magnitude, :float)
+    field(:operation, :string)
+    field(:magnitude, :float)
   end
 
   def changeset(modifier, attrs) do
     modifier
-    |> cast(attrs, [:attribute, :modifier_operation, :float_magnitude])
-    |> validate_inclusion(:modifier_operation, ~w[Add Multiply Override])
-    |> validate_required([:modifier_operation, :float_magnitude, :attribute])
+    |> cast(attrs, [:attribute, :operation, :magnitude])
+    |> validate_inclusion(:operation, ~w[Add Multiply Override])
+    |> validate_required([:operation, :magnitude, :attribute])
   end
 end
