@@ -682,7 +682,11 @@ defmodule Champions.Test.BattleTest do
     end
 
     test "Self Heal" do
-      maximum_steps = 5
+      # This test pairs a self healing unit with 10 health, against a damage dealing unit that makes 5 damage for each attack,
+      # the second one attacks 3 times, but since the healer unit will heal itself for the same amount the same number of times,
+      # the battle will end on a timeout.
+      maximum_steps = 15
+      skills_cooldown = 5
 
       # Create a character with a basic skill that will heal 5 damage to itself
       heal_basic_skill_params =
@@ -705,13 +709,12 @@ defmodule Champions.Test.BattleTest do
                     })
                   ],
                   targeting_strategy: %{
-                    type: "self",
-                    target_allies: false
+                    type: "self"
                   }
                 })
             }
           ],
-          cooldown: maximum_steps * @miliseconds_per_step - 1
+          cooldown: skills_cooldown * @miliseconds_per_step - 1
         })
 
       {:ok, heal_character} =
@@ -750,7 +753,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: maximum_steps * @miliseconds_per_step - 1
+          cooldown: skills_cooldown * @miliseconds_per_step - 1
         })
 
       # Create enemy unit
@@ -759,8 +762,7 @@ defmodule Champions.Test.BattleTest do
           name: "DealDamage Character for Self Test",
           basic_skill: deal_damage_basic_skill_params,
           ultimate_skill: TestUtils.build_skill(%{name: "Self Heal Empty Skill 2"}),
-          base_attack: 5,
-          base_health: 10
+          base_attack: 5
         })
         |> Characters.insert_character()
 
@@ -771,11 +773,7 @@ defmodule Champions.Test.BattleTest do
 
       # Battle is timeout, since every time ally unit takes damage, it heals itself
       assert "timeout" ==
-               Champions.Battle.Simulator.run_battle(
-                 [heal_unit],
-                 [damage_unit_for_heal],
-                 maximum_steps: maximum_steps
-               ).result
+        Champions.Battle.Simulator.run_battle([heal_unit], [damage_unit_for_heal], maximum_steps: maximum_steps).result
     end
 
     test "Self Damage", %{target_dummy: target_dummy} do
@@ -826,11 +824,7 @@ defmodule Champions.Test.BattleTest do
 
       # Battle is won by team_2, the dummy, since the team_1 unit damages itself
       assert "team_2" ==
-               Champions.Battle.Simulator.run_battle(
-                 [self_damage_unit],
-                 [target_dummy],
-                 maximum_steps: maximum_steps
-               ).result
+        Champions.Battle.Simulator.run_battle([self_damage_unit], [target_dummy], maximum_steps: maximum_steps).result
     end
   end
 
