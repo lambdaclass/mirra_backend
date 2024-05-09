@@ -101,6 +101,10 @@ defmodule Arena.Game.Effect do
     put_in(player, [:aditional_info, :stamina_interval], new_stamina_interval)
   end
 
+  defp apply_stat_modifier(player, {:reduce_cooldowns_duration, reduce_cooldowns_duration}) do
+    put_in(player, [:aditional_info, :cooldown_multiplier], reduce_cooldowns_duration.multiplier)
+  end
+
   defp apply_stat_modifier(player, {:speed_boost, speed_boost}) do
     %{player | speed: player.speed * (1 + speed_boost.modifier)}
   end
@@ -243,6 +247,14 @@ defmodule Arena.Game.Effect do
           current_duration + buff_attributes.additive_duration_add_ms
         end)
     end
+  end
+
+  defp do_effect_mechanics(_game_state, player, _effect, {:refresh_stamina, _refresh_stamina}) do
+    put_in(player, [:aditional_info, :available_stamina], player.aditional_info.max_stamina)
+  end
+
+  defp do_effect_mechanics(_game_state, player, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
+    put_in(player, [:aditional_info, :cooldowns], %{})
   end
 
   ## Sink for mechanics that don't do anything

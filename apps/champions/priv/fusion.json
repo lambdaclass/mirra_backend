@@ -1,0 +1,37 @@
+[
+    {
+        "rank": 4,
+        "same_character_amount": 2,
+        "same_character_rank": 4,
+        "same_faction_amount": 4,
+        "same_faction_rank": 4
+    },
+    {
+        "rank": 5,
+        "same_character_amount": 1,
+        "same_character_rank": 5,
+        "same_faction_amount": 4,
+        "same_faction_rank": 5
+    },
+    {
+        "rank": 6,
+        "same_character_amount": 1,
+        "same_character_rank": 5,
+        "same_faction_amount": 1,
+        "same_faction_rank": 6
+    },
+    {
+        "rank": 7,
+        "same_character_amount": 1,
+        "same_character_rank": 5,
+        "same_faction_amount": 2,
+        "same_faction_rank": 6
+    },
+    {
+        "rank": 8,
+        "same_character_amount": 3,
+        "same_character_rank": 5,
+        "same_faction_amount": 2,
+        "same_faction_rank": 6
+    }
+]

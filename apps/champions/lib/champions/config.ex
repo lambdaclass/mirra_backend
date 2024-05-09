@@ -4,9 +4,11 @@ defmodule Champions.Config do
   """
 
   alias Champions.Units
-  alias Champions.Utils
+  alias GameBackend.Items
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
+  alias GameBackend.Users
+  alias GameBackend.Utils
 
   @doc """
   Imports the skills configuration from 'skills.json' in the app's priv folder.
@@ -52,7 +54,7 @@ defmodule Champions.Config do
         base_attack: Integer.parse(attack) |> elem(0),
         base_health: Integer.parse(health) |> elem(0),
         base_defense: Integer.parse(defense) |> elem(0),
-        game_id: Utils.game_id(),
+        game_id: Utils.get_game_id(:champions_of_mirra),
         basic_skill_id: get_skill_id(basic_skill),
         ultimate_skill_id: get_skill_id(ultimate_skill),
         active: true
@@ -66,6 +68,24 @@ defmodule Champions.Config do
       nil -> nil
       skill -> skill.id
     end
+  end
+
+  def import_item_template_config() do
+    {:ok, item_templates_json} =
+      Application.app_dir(:champions, "priv/item_templates.json")
+      |> File.read()
+
+    Jason.decode!(item_templates_json, [{:keys, :atoms}])
+    |> Enum.map(fn item_template ->
+      Map.put(item_template, :game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
+      |> update_in([:upgrade_costs], fn upgrade_costs ->
+        Enum.map(
+          upgrade_costs,
+          &%{currency_id: Users.Currencies.get_currency_by_name!(&1.currency).id, amount: &1.amount}
+        )
+      end)
+    end)
+    |> Items.upsert_item_templates()
   end
 
   def import_proximity_config() do
@@ -82,6 +102,28 @@ defmodule Champions.Config do
         %{
           ally_proximities: Enum.at(proximities.ally_proximities, index),
           enemy_proximities: Enum.at(proximities.enemy_proximities, index)
+        },
+        persistent: true
+      )
+    end)
+  end
+
+  def import_fusion_config() do
+    {:ok, fusion_json} =
+      Application.app_dir(:champions, "priv/fusion.json")
+      |> File.read()
+
+    fusion_rules = Jason.decode!(fusion_json, [{:keys, :atoms}])
+
+    Enum.each(fusion_rules, fn fusion_rule ->
+      Application.put_env(
+        :champions,
+        :"rank_#{fusion_rule.rank}_fusion",
+        %{
+          same_character_amount: fusion_rule.same_character_amount,
+          same_character_rank: fusion_rule.same_character_rank,
+          same_faction_amount: fusion_rule.same_faction_amount,
+          same_faction_rank: fusion_rule.same_faction_rank
         },
         persistent: true
       )

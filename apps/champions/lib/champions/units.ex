@@ -286,17 +286,16 @@ defmodule Champions.Units do
   end
 
   defp meets_fuse_requirements?(unit, unit_list) do
-    {same_character_amount, same_character_rank} = same_character_requirements(unit)
-    {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
+    requirements = Application.get_env(:champions, :"rank_#{unit.rank}_fusion")
 
     with {:ok, removed_same_character} <-
-           remove_same_character(unit, unit_list, same_character_amount, same_character_rank),
+           remove_same_character(unit, unit_list, requirements.same_character_amount, requirements.same_character_rank),
          {:ok, removed_same_faction} <-
            remove_same_faction(
              unit,
              removed_same_character,
-             same_faction_amount,
-             same_faction_rank
+             requirements.same_faction_amount,
+             requirements.same_faction_rank
            ) do
       # If we got here with an empty list, then the units are valid
       if Enum.empty?(removed_same_faction), do: true, else: false
@@ -304,18 +303,6 @@ defmodule Champions.Units do
       :error -> false
     end
   end
-
-  defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
-  defp same_character_requirements(%Unit{rank: @star5}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination1}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination2}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination3}), do: {3, @star5}
-
-  defp same_faction_requirements(%Unit{rank: @star4}), do: {4, @star4}
-  defp same_faction_requirements(%Unit{rank: @star5}), do: {4, @star5}
-  defp same_faction_requirements(%Unit{rank: @illumination1}), do: {1, @illumination1}
-  defp same_faction_requirements(%Unit{rank: @illumination2}), do: {2, @illumination2}
-  defp same_faction_requirements(%Unit{rank: @illumination3}), do: {2, @illumination2}
 
   defp remove_same_character(unit, unit_list, amount, rank) do
     Enum.reduce_while(1..amount, unit_list, fn _, list ->
@@ -447,13 +434,13 @@ defmodule Champions.Units do
 
     additive_bonus =
       Enum.reduce(additive_modifiers, 0, fn mod, acc ->
-        Decimal.from_float(mod.base_value)
+        Decimal.from_float(mod.value)
         |> Decimal.add(acc)
       end)
 
     multiplicative_bonus =
       Enum.reduce(multiplicative_modifiers, 1, fn mod, acc ->
-        Decimal.from_float(mod.base_value)
+        Decimal.from_float(mod.value)
         |> Decimal.mult(acc)
       end)
 
@@ -469,16 +456,16 @@ defmodule Champions.Units do
 
   defp get_additive_and_multiplicative_modifiers(items, attribute) do
     item_modifiers =
-      Enum.flat_map(items, & &1.template.base_modifiers)
+      Enum.flat_map(items, & &1.template.modifiers)
 
     attribute_modifiers =
       Enum.filter(item_modifiers, &(&1.attribute == attribute))
 
     additive_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Add"))
+      Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
 
     multiplicative_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.modifier_operation == "Multiply"))
+      Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
 
     {additive_modifiers, multiplicative_modifiers}
   end
