@@ -1,25 +1,29 @@
-defmodule Gateway.Controllers.Users.CurrencyController do
-  use Gateway, :controller
-
-  alias GameBackend.Utils
-  alias GameBackend.Users.Currencies.UserCurrency
-  alias GameBackend.Users.Currencies
-
+defmodule Gateway.Curse.Controllers.Users.CurrencyController do
   @moduledoc """
     Controller to control currency changes in users
   """
 
+  use Gateway, :controller
+
+  alias GameBackend.Users
+  alias GameBackend.Utils
+  alias GameBackend.Users.Currencies
+
   def modify_currency(conn, %{
         "currency_name" => currencty_name,
         "amount" => amount,
-        "user_id" => user_id,
-        "game_name" => game_name
+        "user_id" => user_id
       }) do
-    game_id = Utils.get_game_id(String.to_atom(game_name))
+    {:ok, user} = Users.get_user(user_id)
+    game_id = Utils.get_game_id(:curse_of_mirra)
 
-    case Currencies.add_currency_by_name_and_game(user_id, currencty_name, game_id, amount) do
-      {:ok, %UserCurrency{}} -> send_resp(conn, 200, "Currency added")
-      _ -> send_resp(conn, 400, "Couldn't add currency")
+    with {:curse_user, ^game_id} <- {:curse_user, user.game_id},
+         {:add_currency, {:ok, user_currency}} <-
+           {:add_currency, Currencies.add_currency_by_name_and_game(user_id, currencty_name, user.game_id, amount)} do
+      send_resp(conn, 200, Jason.encode!(Map.take(user_currency, [:amount, :user_id, :currency_id])))
+    else
+      {:curse_user, _} -> send_resp(conn, 400, "User from another game")
+      {:add_currency, _} -> send_resp(conn, 400, "Couldn't add currency")
     end
   end
 end
