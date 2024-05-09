@@ -20,18 +20,4 @@ defmodule Gateway.Controllers.Arena.MatchResultsController do
         |> json(%{status: 422, message: "Unprocessable Entity", errors: errors})
     end
   end
-
-  def report(conn, %{"match_id" => match_id, "data" => encoded_data}) do
-    data = :base64.decode(encoded_data)
-
-    case Matches.insert_match_stats(match_id, data) do
-      {:ok, _} ->
-        send_resp(conn, 201, "")
-
-      {:error, _reason} ->
-        conn
-        |> put_status(400)
-        |> json(%{status: 400, message: "Bad request"})
-    end
-  end
 end

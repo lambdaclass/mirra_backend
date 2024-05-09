@@ -8,8 +8,6 @@ defmodule Arena.GameTracker do
   """
   use GenServer
 
-  @flush_interval_ms 10_000
-
   def start_link(_args) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
@@ -38,7 +36,6 @@ defmodule Arena.GameTracker do
 
   @impl true
   def handle_call({:start_tracking, match_id, client_to_player_map}, {match_pid, _}, state) do
-    Process.send_after(self(), {:report, match_pid}, @flush_interval_ms)
     player_to_client = Map.new(client_to_player_map, fn {client_id, player_id} -> {player_id, client_id} end)
 
     players =
@@ -55,13 +52,6 @@ defmodule Arena.GameTracker do
   def handle_cast({:finish_tracking, match_pid, results}, state) do
     data = get_in(state, [:matches, match_pid])
 
-    ## Final flush of match data
-    ## TODO: Maybe this should be part of the final reporting, as in the same request. Not a separate one
-    encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
-    stats_payload = Jason.encode!(%{data: encoded_data})
-
-    send_request("/arena/match/#{data.match_id}/report", stats_payload)
-
     ## Send results
     payload = Jason.encode!(%{results: results})
     ## TODO: Handle errors and retry sending
@@ -74,24 +64,6 @@ defmodule Arena.GameTracker do
   def handle_cast({:push_event, match_pid, event}, state) do
     state = update_in(state, [:matches, match_pid], fn data -> update_data(data, event) end)
     {:noreply, state}
-  end
-
-  @impl true
-  def handle_info({:report, match_pid}, state) do
-    case get_in(state, [:matches, match_pid]) do
-      nil ->
-        {:noreply, state}
-
-      data ->
-        Process.send_after(self(), {:report, match_pid}, @flush_interval_ms)
-        encoded_data = :erlang.term_to_binary(data) |> :base64.encode()
-        payload = Jason.encode!(%{match_id: data.match_id, data: encoded_data})
-
-        ## We don't care about the result of this requests, if they fail it will be essentially retried on the next report
-        send_request("/arena/match/#{data.match_id}/report", payload)
-
-        {:noreply, state}
-    end
   end
 
   defp update_data(data, {:kill, killer, victim}) do
