@@ -1,6 +1,6 @@
 defmodule Gateway.Curse.Controllers.Users.CurrencyController do
   @moduledoc """
-    Controller to control currency changes in users
+  Controller to control currency changes in users
   """
 
   use Gateway, :controller
