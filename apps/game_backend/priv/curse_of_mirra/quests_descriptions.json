@@ -1,0 +1,22 @@
+[
+    {
+        "description": "Tests description",
+        "quest_objectives": [
+            {
+                "type": "kills",
+                "value": 3,
+                "comparison": "greater"
+            },
+            {
+                "type": "character",
+                "value": "muflus",
+                "comparison": "equal"
+            },
+            {
+                "type": "result",
+                "value": "abandon",
+                "comparison": "equal"
+            }
+        ]
+    }
+]
