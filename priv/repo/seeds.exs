@@ -1,3 +1,4 @@
+alias GameBackend.Utils
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Campaign
 alias GameBackend.Campaigns.Level
@@ -10,8 +11,8 @@ alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Users.KalineTreeLevel
 
-curse_of_mirra_id = 1
-champions_of_mirra_id = 2
+curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
+champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 units_per_level = 5
 
 {:ok, _skills} = Champions.Config.import_skill_config()
