@@ -10,6 +10,7 @@ alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Users.KalineTreeLevel
 
+curse_of_mirra_id = 1
 champions_of_mirra_id = 2
 units_per_level = 5
 
@@ -36,6 +37,24 @@ units_per_level = 5
   Users.Currencies.insert_currency(%{
     game_id: champions_of_mirra_id,
     name: "Mystic Summon Scrolls"
+  })
+
+{:ok, _curse_gold} =
+  Users.Currencies.insert_currency(%{
+    game_id: curse_of_mirra_id,
+    name: "Gold"
+  })
+
+{:ok, _curse_gems} =
+  Users.Currencies.insert_currency(%{
+    game_id: curse_of_mirra_id,
+    name: "Gems"
+  })
+
+{:ok, _curse_feature_tokens} =
+  Users.Currencies.insert_currency(%{
+    game_id: curse_of_mirra_id,
+    name: "Feature Tokens"
   })
 
 {:ok, _fertilizer_currency} =
