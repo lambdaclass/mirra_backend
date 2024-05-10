@@ -136,6 +136,7 @@ defmodule Arena.GameUpdater do
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
+      |> update_visible_players(state.game_config)
       # Projectiles
       |> update_projectiles_status()
       |> move_projectiles()
@@ -175,7 +176,10 @@ defmodule Arena.GameUpdater do
         )
 
       {:ended, winner} ->
-        state = put_in(state, [:game_state, :status], :ENDED)
+        state =
+          put_in(state, [:game_state, :status], :ENDED)
+          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
         report_game_results(state, winner.id)
@@ -346,6 +350,7 @@ defmodule Arena.GameUpdater do
         count + 1
       end)
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
+      |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -464,6 +469,7 @@ defmodule Arena.GameUpdater do
              projectiles: complete_entities(state.projectiles),
              power_ups: complete_entities(state.power_ups),
              pools: complete_entities(state.pools),
+             bushes: complete_entities(state.bushes),
              items: complete_entities(state.items),
              server_timestamp: state.server_timestamp,
              player_timestamps: state.player_timestamps,
@@ -519,7 +525,9 @@ defmodule Arena.GameUpdater do
           kills: player.aditional_info.kill_count,
           ## TODO: this only works because you can only die once
           deaths: if(Player.alive?(player), do: 0, else: 1),
-          character: player.aditional_info.character_name
+          character: player.aditional_info.character_name,
+          match_id: Ecto.UUID.generate(),
+          position: Map.get(state.game_state.positions, client_id)
         }
       end)
 
@@ -565,6 +573,7 @@ defmodule Arena.GameUpdater do
       })
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(:positions, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -593,10 +602,12 @@ defmodule Arena.GameUpdater do
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
     {crates, last_id} = initialize_crates(config.crates, last_id)
+    {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
 
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
+    |> Map.put(:bushes, bushes)
     |> Map.put(:crates, crates)
   end
 
@@ -616,6 +627,21 @@ defmodule Arena.GameUpdater do
         )
 
       {obstacles_acc, last_id}
+    end)
+  end
+
+  defp initialize_bushes(bushes, last_id) do
+    Enum.reduce(bushes, {Map.new(), last_id}, fn bush, {bush_acc, last_id} ->
+      last_id = last_id + 1
+
+      bush_acc =
+        Map.put(
+          bush_acc,
+          last_id,
+          Entities.new_bush(last_id, bush.position, bush.radius, bush.shape, bush.vertices)
+        )
+
+      {bush_acc, last_id}
     end)
   end
 
@@ -698,12 +724,13 @@ defmodule Arena.GameUpdater do
            ticks_to_move: ticks_to_move,
            external_wall: external_wall,
            obstacles: obstacles,
+           bushes: bushes,
            power_ups: power_ups,
            pools: pools,
            items: items
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items)
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes)
 
     moved_players =
       players
@@ -1259,6 +1286,42 @@ defmodule Arena.GameUpdater do
     end
   end
 
+  defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
+    Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
+      bush_collisions =
+        Enum.filter(player.collides_with, fn collided_id ->
+          Map.has_key?(bushes, collided_id)
+        end)
+
+      visible_players =
+        Map.delete(players, player_id)
+        |> Enum.reduce([], fn {candicandidate_player_id, candidate_player}, acc ->
+          candidate_bush_collisions =
+            Enum.filter(candidate_player.collides_with, fn collided_id ->
+              Map.has_key?(bushes, collided_id)
+            end)
+
+          players_in_same_bush? =
+            Enum.any?(bush_collisions, fn collided_id -> collided_id in candidate_bush_collisions end)
+
+          players_close_enough? =
+            Physics.distance_between_entities(player, candidate_player) <=
+              game_config.bushes.field_of_view_inside_bush
+
+          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
+            [candicandidate_player_id | acc]
+          else
+            acc
+          end
+        end)
+
+      update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+        Map.put(aditional_info, :visible_players, visible_players)
+        |> Map.put(:on_bush, not Enum.empty?(bush_collisions))
+      end)
+    end)
+  end
+
   # You'll only apply effect to owned entities or
   # entities without an owner, implement behavior if needed
   defp get_entities_to_apply(collided_entities, projectile) do
@@ -1327,6 +1390,15 @@ defmodule Arena.GameUpdater do
     Enum.map(effect_list, fn effect_name ->
       Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
     end)
+  end
+
+  defp put_player_position(%{positions: positions} = game_state, player_id) do
+    next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
+
+    {client_id, _player_id} =
+      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   ##########################

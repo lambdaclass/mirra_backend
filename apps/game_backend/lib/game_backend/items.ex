@@ -3,17 +3,18 @@ defmodule GameBackend.Items do
   The Items application defines utilites for interacting with Items, that are common across all games. Also defines the data structures themselves. Operations that can be done to an Item are:
   - Create
   - Equip to a unit
-  - Level up
+  - Fuse many into a new one with a better ItemTemplate
 
-  Items are created by instantiating copies of ItemTemplates. This way, many users can have their own copy of the "Epic Sword" item. Likewise, this allows for a user to have many copies of it, each with their own level and equipped to a different unit.
+  Items are created by instantiating copies of ItemTemplates. This way, many users can have their own copy of the "Epic Sword" item. Likewise, this allows for a user to have many copies of it, each equipped to a different unit.
   """
 
   alias Ecto.Multi
-  alias GameBackend.Users.Currencies
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
   alias GameBackend.Repo
   alias GameBackend.Units
+
+  import Ecto.Query
 
   @doc """
   Equips an item to a unit. Returns an `{:ok, %Item{}}` tuple with the item's updated state.
@@ -107,6 +108,39 @@ defmodule GameBackend.Items do
   def get_item_template(item_template_id), do: Repo.get(ItemTemplate, item_template_id)
 
   @doc """
+  Insert an ItemTemplate. If another one with the same config_id already exists, it updates it instead.
+  """
+  def upsert_item_template(attrs) do
+    case get_item_template_by_config_id(attrs.config_id) do
+      nil -> insert_item_template(attrs)
+      item_template -> update_item_template(item_template, attrs)
+    end
+  end
+
+  defp get_item_template_by_config_id(config_id) do
+    Repo.get_by(ItemTemplate, config_id: config_id)
+  end
+
+  @doc """
+  Update an ItemTemplate.
+  """
+  def update_item_template(item_template, attrs), do: item_template |> ItemTemplate.changeset(attrs) |> Repo.update()
+
+  @doc """
+  Inserts all ItemTemplates into the database.
+  If another one already exists with the same config_id, it updates it instead.
+  """
+  def upsert_item_templates(attrs_list) do
+    Enum.reduce(attrs_list, Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.name, fn _, _ ->
+        upsert_item_template(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  @doc """
   Inserts an item.
 
   ## Examples
@@ -142,25 +176,25 @@ defmodule GameBackend.Items do
   end
 
   @doc """
-  Increment an item's level.
+  Get all items for a user.
 
   ## Examples
 
-      iex> level_up(%Item{level: 41}, 1)
-      {:ok, %Item{level: 42}}
+      iex> get_items(user_id)
+      [%Item{}]
   """
-  def add_level(item, level \\ 1) do
-    item
-    |> Item.level_up_changeset(%{level: item.level + level})
-    |> Repo.update()
+  def get_items(user_id) do
+    Repo.get_by(Item, user_id: user_id) |> Repo.preload([:template])
   end
 
-  def level_up(item, currency_id, cost) do
-    Multi.new()
-    |> Multi.run(:item, fn _, _ -> add_level(item) end)
-    |> Multi.run(:user_currency, fn _, _ ->
-      Currencies.add_currency(item.user_id, currency_id, -cost)
-    end)
-    |> Repo.transaction()
-  end
+  @doc """
+  Gets all items from ids in a list.
+  """
+  def get_items_by_ids(item_ids) when is_list(item_ids),
+    do: Repo.all(from(i in Item, where: i.id in ^item_ids, preload: [template: :upgrades_into]))
+
+  @doc """
+  Deletes all items in a list by ids.
+  """
+  def delete_items(item_ids), do: Repo.delete_all(from(u in Item, where: u.id in ^item_ids))
 end
