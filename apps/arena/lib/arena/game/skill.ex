@@ -261,7 +261,8 @@ defmodule Arena.Game.Skill do
     )
 
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
-    ## by modifying base_speed we ensure that the dash speed is kept as expected
+    ## by modifying base_speed we ensure that the dash speed is kept as expected cause when the
+    ## stat effects are reapplied there is a check on speed effects to prevent adding if `forced_movement = true`
     player =
       entity
       |> Map.put(:is_moving, true)
