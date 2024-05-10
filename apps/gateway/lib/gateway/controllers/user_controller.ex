@@ -18,12 +18,12 @@ defmodule Gateway.Controllers.UserController do
 
   def claim_daily_reward(conn, %{"user_id" => user_id}) do
     with {:ok, user} <- Users.get_user(user_id),
-         {:ok, :can_claim} <- Rewards.user_claimed_today?(user),
+         {:ok, :can_claim} <- Rewards.user_claimed_today(user),
          {:ok, daily_reward} <- Rewards.claim_daily_reward(user),
          {:ok, user} <-
            Users.update_user(user, %{
-             last_daily_reward_claim: DateTime.utc_now(),
-             last_daily_reward_claim_type: daily_reward
+             last_daily_reward_claim_at: DateTime.utc_now(),
+             last_daily_reward_claim: daily_reward
            }) do
       send_resp(conn, 200, Jason.encode!(user.id))
     else

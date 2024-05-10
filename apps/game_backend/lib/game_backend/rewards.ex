@@ -52,8 +52,8 @@ defmodule GameBackend.Rewards do
     daily_reward_config = Application.get_env(:game_backend, :daily_reward_config)
     yesterday = DateTime.utc_now() |> Date.add(-1)
 
-    case Date.compare(user.last_daily_reward_claim, yesterday) do
-      :eq -> claim_next_reward(daily_reward_config, user.last_daily_reward_claim_type)
+    case Date.compare(user.last_daily_reward_claim_at, yesterday) do
+      :eq -> claim_next_reward(daily_reward_config, user.last_daily_reward_claim)
       _ -> claim_first_reward(daily_reward_config)
     end
   end
@@ -76,10 +76,10 @@ defmodule GameBackend.Rewards do
   Receives a user.
   Returns {:ok, can_claim} if the user claimed today already.
   """
-  def user_claimed_today?(user) do
+  def user_claimed_today(user) do
     now = DateTime.utc_now()
 
-    case Date.compare(user.last_daily_reward_claim, now) do
+    case Date.compare(user.last_daily_reward_claim_at, now) do
       :eq -> {:ok, :can_claim}
       _ -> {:error, :already_claimed}
     end
