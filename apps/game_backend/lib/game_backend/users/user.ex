@@ -18,7 +18,8 @@ defmodule GameBackend.Users.User do
     field(:username, :string)
     field(:level, :integer)
     field(:experience, :integer)
-    field(:last_afk_reward_claim, :utc_datetime)
+    field(:last_kaline_afk_reward_claim, :utc_datetime)
+    field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
@@ -39,7 +40,8 @@ defmodule GameBackend.Users.User do
     |> cast(attrs, [
       :game_id,
       :username,
-      :last_afk_reward_claim,
+      :last_kaline_afk_reward_claim,
+      :last_dungeon_afk_reward_claim,
       :dungeon_settlement_level_id,
       :kaline_tree_level_id,
       :level,

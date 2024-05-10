@@ -727,7 +727,7 @@ defmodule Gateway.Test.Champions do
       {:ok, _} =
         leveled_up_user_with_rewards
         |> GameBackend.Users.User.changeset(%{
-          last_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+          last_kaline_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
         })
         |> Repo.update()
 
@@ -799,7 +799,7 @@ defmodule Gateway.Test.Champions do
   end
 
   defp fetch_last_message(socket_tester) do
-    :timer.sleep(100)
+    :timer.sleep(150)
     send(socket_tester, {:last_message, self()})
   end
 

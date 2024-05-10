@@ -193,7 +193,7 @@ defmodule GameBackend.Users do
     {:ok, user} = get_user(user_id)
 
     user
-    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
+    |> User.changeset(%{last_kaline_afk_reward_claim: DateTime.utc_now()})
     |> Repo.update()
   end
 

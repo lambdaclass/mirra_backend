@@ -174,7 +174,7 @@ defmodule Champions.Users do
   end
 
   defp calculate_afk_rewards(user, afk_reward_rate) do
-    last_claim = user.last_afk_reward_claim
+    last_claim = user.last_kaline_afk_reward_claim
     now = DateTime.utc_now()
 
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
