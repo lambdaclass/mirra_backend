@@ -18,6 +18,8 @@ defmodule GameBackend.Users.User do
     field(:level, :integer)
     field(:experience, :integer)
     field(:last_afk_reward_claim, :utc_datetime)
+    field(:last_daily_reward_claim, :utc_datetime)
+    field(:last_daily_reward_claim_type, :string)
     field(:profile_picture, :string)
 
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -38,6 +40,8 @@ defmodule GameBackend.Users.User do
       :game_id,
       :username,
       :last_afk_reward_claim,
+      :last_daily_reward_claim,
+      :last_daily_reward_claim_type,
       :kaline_tree_level_id,
       :level,
       :experience,
