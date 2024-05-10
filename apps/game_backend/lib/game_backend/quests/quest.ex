@@ -15,10 +15,6 @@ defmodule GameBackend.Quests.Quest do
     timestamps()
   end
 
-  @types ["daily"]
-
-  def types, do: @types
-
   @required [
     :description,
     :objectives,
@@ -32,6 +28,6 @@ defmodule GameBackend.Quests.Quest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
-    |> validate_inclusion(:type, @types)
+    |> validate_inclusion(:type, ["daily"])
   end
 end
