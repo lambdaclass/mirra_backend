@@ -2,9 +2,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
 
   """
-  alias GameBackend.Quests.UserDailyQuest
+  alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
-  alias GameBackend.Quests.QuestDescription
+  alias GameBackend.Quests.Quest
   alias GameBackend.Matches.ArenaMatchResult
   alias Ecto.Multi
   import Ecto.Query
@@ -27,7 +27,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   def upsert_quests(quests_params) do
     {multi, _acc} =
       Enum.reduce(quests_params, {Multi.new(), 0}, fn quest_param, {multi, acc} ->
-        quest_changeset = QuestDescription.changeset(%QuestDescription{}, quest_param)
+        quest_changeset = Quest.changeset(%Quest{}, quest_param)
 
         multi = Multi.insert(multi, {:insert_quest, acc}, quest_changeset)
 
@@ -37,11 +37,16 @@ defmodule GameBackend.CurseOfMirra.Quests do
     Repo.transaction(multi)
   end
 
-  def build_query_from_quest_description(%QuestDescription{} = quest_description) do
+  def build_query_from_quest_description(%Quest{} = quest_description, user_id) do
     base_query =
       from(amr in ArenaMatchResult,
-        as: :amr
+        as: :amr,
+        # Fixme results should belong to User and no GoogleUser
+        join: google_user in assoc(amr, :user),
+        join: user in assoc(google_user, :user),
+        where: user.id == ^user_id
       )
+      |> filter_by_quest_duration(quest_description)
 
     Enum.reduce(quest_description.quest_objectives, base_query, fn quest_objective, query ->
       type = String.to_atom(quest_objective["type"])
@@ -53,6 +58,19 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   defp parse_comparator("equal"), do: :==
   defp parse_comparator("greater"), do: :>
+  defp parse_comparator("lesser"), do: :<
+
+  defp filter_by_quest_duration(base_query, %{type: "daily"}) do
+    naive_today = NaiveDateTime.utc_now()
+    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
+    end_of_date = NaiveDateTime.end_of_day(naive_today)
+
+    where(base_query, [{:amr, amr}], amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date)
+  end
+
+  defp filter_by_quest_duration(base_query, _) do
+    base_query
+  end
 
   for operator <- [:!=, :<, :<=, :==, :>, :>=, :ilike, :in, :like] do
     defp custom_where(queryable, binding, field_name, unquote(operator), value) do
@@ -62,7 +80,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   def get_quests_by_type(type) do
     q =
-      from(qd in QuestDescription,
+      from(qd in Quest,
         where: qd.type == ^type
       )
 
@@ -78,12 +96,10 @@ defmodule GameBackend.CurseOfMirra.Quests do
       Enum.reduce(1..amount, {Multi.new(), available_quests}, fn _index, {multi, [quest | next_quests]} ->
         attrs = %{
           user_id: user_id,
-          quest_description_id: quest.id,
-          target: quest.target,
-          progress: 0
+          quest_id: quest.id
         }
 
-        changeset = UserDailyQuest.changeset(%UserDailyQuest{}, attrs)
+        changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
 
         multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
 
