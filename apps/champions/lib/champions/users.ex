@@ -25,13 +25,15 @@ defmodule Champions.Users do
   """
   def register(username) do
     kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
+    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level(1)
 
     case Users.register_user(%{
            username: username,
            game_id: Utils.get_game_id(:champions_of_mirra),
            level: 1,
            experience: 0,
-           kaline_tree_level_id: kaline_tree_level.id
+           kaline_tree_level_id: kaline_tree_level.id,
+           dungeon_settlement_level_id: dungeon_settlement_level.id
          }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
@@ -156,7 +158,7 @@ defmodule Champions.Users do
   Get a user's available AFK rewards, according to their AFK reward rates and the time since their last claim.
   If more than 12 hours have passed since the last claim, the user will have accumulated the maximum amount of rewards.
   """
-  def get_afk_rewards(user_id) do
+  def get_kaline_afk_rewards(user_id) do
     case Users.get_user(user_id) do
       {:ok, user} ->
         user.kaline_tree_level.afk_reward_rates
@@ -183,8 +185,8 @@ defmodule Champions.Users do
   @doc """
   Claim a user's AFK rewards, and reset their last AFK reward claim time.
   """
-  def claim_afk_rewards(user_id) do
-    afk_rewards = get_afk_rewards(user_id)
+  def claim_kaline_afk_rewards(user_id) do
+    afk_rewards = get_kaline_afk_rewards(user_id)
 
     Multi.new()
     |> Multi.run(:add_currencies, fn _, _ ->

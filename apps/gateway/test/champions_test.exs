@@ -731,7 +731,7 @@ defmodule Gateway.Test.Champions do
         })
         |> Repo.update()
 
-      SocketTester.claim_afk_rewards(socket_tester, leveled_up_user.id)
+      SocketTester.claim_kaline_afk_rewards(socket_tester, leveled_up_user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
 

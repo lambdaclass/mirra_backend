@@ -21,7 +21,7 @@ defmodule GameBackend.Users.User do
     field(:last_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
 
-    belongs_to(:dungeon_settlement_level_id, DungeonSettlementLevel)
+    belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
     belongs_to(:google_user, GoogleUser)
 

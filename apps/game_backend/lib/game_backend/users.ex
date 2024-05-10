@@ -11,6 +11,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
   alias GameBackend.Repo
@@ -113,7 +114,6 @@ defmodule GameBackend.Users do
 
   defp create_google_user_by_email(email) do
     # TODO delete the following in a future refactor -> https://github.com/lambdaclass/mirra_backend/issues/557
-    kaline_tree_id = GameBackend.Users.get_kaline_tree_level(1).id
     level = 1
     experience = 1
     amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
@@ -124,7 +124,6 @@ defmodule GameBackend.Users do
     GoogleUser.changeset(%GoogleUser{}, %{
       email: email,
       user: %{
-        kaline_tree_level_id: kaline_tree_id,
         game_id: game_id,
         username: username,
         level: level,
@@ -135,7 +134,7 @@ defmodule GameBackend.Users do
   end
 
   @doc """
-  Gets a Kaline Tree level by its number.
+  Gets a KalineTreelevel by its number.
 
   Returns {:error, :not_found} if no level is found.
 
@@ -149,6 +148,23 @@ defmodule GameBackend.Users do
   """
   def get_kaline_tree_level(level_number) do
     Repo.get_by(KalineTreeLevel, level: level_number)
+  end
+
+  @doc """
+  Gets a DungeonSettlementLevel by its number.
+
+  Returns {:error, :not_found} if no level is found.
+
+  ## Examples
+
+      iex> get_dungeon_settlement_level(1)
+      %DungeonSettlementLevel{}
+
+      iex> get_dungeon_settlement_level(-1)
+      nil
+  """
+  def get_dungeon_settlement_level(level_number) do
+    Repo.get_by(DungeonSettlementLevel, level: level_number)
   end
 
   @doc """

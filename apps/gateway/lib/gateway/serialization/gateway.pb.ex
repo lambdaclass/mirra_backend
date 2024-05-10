@@ -88,15 +88,15 @@ defmodule Gateway.Serialization.WebSocketRequest do
   field(:get_box, 19, type: Gateway.Serialization.GetBox, json_name: "getBox", oneof: 0)
   field(:summon, 20, type: Gateway.Serialization.Summon, oneof: 0)
 
-  field(:get_afk_rewards, 21,
-    type: Gateway.Serialization.GetAfkRewards,
-    json_name: "getAfkRewards",
+  field(:get_kaline_afk_rewards, 21,
+    type: Gateway.Serialization.GetKalineAfkRewards,
+    json_name: "getKalineAfkRewards",
     oneof: 0
   )
 
-  field(:claim_afk_rewards, 22,
-    type: Gateway.Serialization.ClaimAfkRewards,
-    json_name: "claimAfkRewards",
+  field(:claim_kaline_afk_rewards, 22,
+    type: Gateway.Serialization.ClaimKalineAfkRewards,
+    json_name: "claimKalineAfkRewards",
     oneof: 0
   )
 
@@ -109,6 +109,18 @@ defmodule Gateway.Serialization.WebSocketRequest do
   field(:level_up_kaline_tree, 24,
     type: Gateway.Serialization.LevelUpKalineTree,
     json_name: "levelUpKalineTree",
+    oneof: 0
+  )
+
+  field(:claim_dungeon_afk_rewards, 25,
+    type: Gateway.Serialization.ClaimDungeonAfkRewards,
+    json_name: "claimDungeonAfkRewards",
+    oneof: 0
+  )
+
+  field(:level_up_dungeon_settlement, 26,
+    type: Gateway.Serialization.LevelUpDungeonSettlement,
+    json_name: "levelUpDungeonSettlement",
     oneof: 0
   )
 end
@@ -256,7 +268,7 @@ defmodule Gateway.Serialization.FuseItems do
   field(:item_ids, 2, repeated: true, type: :string, json_name: "itemIds")
 end
 
-defmodule Gateway.Serialization.GetAfkRewards do
+defmodule Gateway.Serialization.GetKalineAfkRewards do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -264,7 +276,7 @@ defmodule Gateway.Serialization.GetAfkRewards do
   field(:user_id, 1, type: :string, json_name: "userId")
 end
 
-defmodule Gateway.Serialization.ClaimAfkRewards do
+defmodule Gateway.Serialization.ClaimKalineAfkRewards do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -306,6 +318,22 @@ defmodule Gateway.Serialization.GetUserSuperCampaignProgresses do
 end
 
 defmodule Gateway.Serialization.LevelUpKalineTree do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
+defmodule Gateway.Serialization.ClaimDungeonAfkRewards do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
+defmodule Gateway.Serialization.LevelUpDungeonSettlement do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
