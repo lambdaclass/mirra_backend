@@ -143,6 +143,12 @@ end
 
 config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
 
+{:ok, currency_config_json} =
+  "./apps/game_backend/priv/currencies_rules.json"
+  |> File.read()
+
+config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
+
 ##################################
 # App configuration: game_client #
 ##################################
