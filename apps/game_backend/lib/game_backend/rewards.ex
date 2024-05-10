@@ -48,7 +48,11 @@ defmodule GameBackend.Rewards do
   @doc """
   Receives a user.
   Returns the next daily reward for the given user.
+  Or the first claim if never claimed at all.
   """
+  def claim_daily_reward(%GameBackend.Users.User{last_daily_reward_claim_at: nil}),
+    do: claim_first_reward(Utils.get_daily_rewards_config())
+
   def claim_daily_reward(user) do
     daily_reward_config = Utils.get_daily_rewards_config()
     yesterday = DateTime.utc_now() |> Date.add(-1)
@@ -75,8 +79,10 @@ defmodule GameBackend.Rewards do
 
   @doc """
   Receives a user.
-  Returns {:ok, can_claim} if the user claimed today already.
+  Returns {:ok, can_claim} if the user claimed today already or never claimed at all.
   """
+  def user_claimed_today(%GameBackend.Users.User{last_daily_reward_claim_at: nil}), do: {:ok, :can_claim}
+
   def user_claimed_today(user) do
     now = DateTime.utc_now()
 
