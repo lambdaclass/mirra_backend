@@ -87,8 +87,12 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  defp apply_stat_modifier(player, {:damage_up, damage_up}) do
-    update_in(player, [:aditional_info, :bonus_damage], fn bonus_damage -> bonus_damage + damage_up end)
+  defp apply_stat_modifier(player, {:damage_change, damage_change}) do
+    update_in(player, [:aditional_info, :bonus_damage], fn bonus_damage -> bonus_damage + damage_change.modifier end)
+  end
+
+  defp apply_stat_modifier(player, {:defense_change, defense_change}) do
+    update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense -> bonus_defense + defense_change.modifier end)
   end
 
   defp apply_stat_modifier(player, {:reduce_stamina_interval, reduce_stamina_interval}) do
@@ -108,8 +112,12 @@ defmodule Arena.Game.Effect do
   defp apply_stat_modifier(player, {:speed_boost, speed_boost}) do
     case player.aditional_info.forced_movement do
       true -> player
-      false -> %{player | speed: player.speed + speed_boost.amount}
+      false -> %{player | speed: player.speed * (1 + speed_boost.modifier)}
     end
+  end
+
+  defp apply_stat_modifier(player, {:modify_radius, modify_radius}) do
+    %{player | radius: player.radius * (1 + modify_radius.modifier)}
   end
 
   defp apply_stat_modifier(player, {:damage_immunity, _damage_immunity}) do
