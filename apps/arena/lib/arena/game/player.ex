@@ -26,12 +26,16 @@ defmodule Arena.Game.Player do
   end
 
   def take_damage(player, damage) do
-    send(self(), {:damage_taken, player.id, damage})
+
+    defense_multiplier = 1 - player.aditional_info.bonus_defense
+    damage_taken = round(damage * defense_multiplier)
+
+    send(self(), {:damage_taken, player.id, damage_taken})
 
     Map.update!(player, :aditional_info, fn info ->
       %{
         info
-        | health: max(info.health - damage, 0),
+        | health: max(info.health - damage_taken, 0),
           last_damage_received: System.monotonic_time(:millisecond)
       }
     end)
@@ -323,6 +327,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :stamina_interval], player.aditional_info.base_stamina_interval)
     |> put_in([:aditional_info, :cooldown_multiplier], player.aditional_info.base_cooldown_multiplier)
     |> put_in([:aditional_info, :bonus_damage], 0)
+    |> put_in([:aditional_info, :bonus_defense], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
     |> Effect.apply_stat_effects()
   end

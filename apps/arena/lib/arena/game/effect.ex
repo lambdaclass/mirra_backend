@@ -87,8 +87,12 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  defp apply_stat_modifier(player, {:damage_up, damage_up}) do
-    update_in(player, [:aditional_info, :bonus_damage], fn bonus_damage -> bonus_damage + damage_up.modifier end)
+  defp apply_stat_modifier(player, {:damage_change, damage_change}) do
+    update_in(player, [:aditional_info, :bonus_damage], fn bonus_damage -> bonus_damage + damage_change.modifier end)
+  end
+
+  defp apply_stat_modifier(player, {:defense_change, defense_change}) do
+    update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense -> bonus_defense + defense_change.modifier end)
   end
 
   defp apply_stat_modifier(player, {:reduce_stamina_interval, reduce_stamina_interval}) do

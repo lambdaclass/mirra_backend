@@ -48,6 +48,7 @@ defmodule Arena.Entities do
         effects: [],
         cooldowns: %{},
         bonus_damage: 0,
+        bonus_defense: 0,
         visible_players: [],
         on_bush: false
       }
