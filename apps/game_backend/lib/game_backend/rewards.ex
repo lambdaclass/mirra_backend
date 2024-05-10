@@ -43,4 +43,45 @@ defmodule GameBackend.Rewards do
         insert_afk_reward_rate(%{user_id: user_id, currency_id: currency_id, rate: rate_increment})
     end
   end
+
+  @doc """
+  Receives a user.
+  Returns the next daily reward for the given user.
+  """
+  def claim_daily_reward(user) do
+    daily_reward_config = Application.get_env(:game_backend, :daily_reward_config)
+    yesterday = DateTime.utc_now() |> Date.add(-1)
+
+    case Date.compare(user.last_daily_reward_claim, yesterday) do
+      :eq -> claim_next_reward(daily_reward_config, user.last_daily_reward_claim_type)
+      _ -> claim_first_reward(daily_reward_config)
+    end
+  end
+
+  defp claim_first_reward(daily_reward_config) do
+    case Map.get(daily_reward_config, "1") do
+      nil -> {:error, :invalid_reward}
+      first_daily_reward -> {:ok, first_daily_reward}
+    end
+  end
+
+  defp claim_next_reward(daily_reward_config, current_reward) do
+    case Map.get(daily_reward_config, current_reward) do
+      nil -> {:error, :invalid_reward}
+      next_daily_reward -> {:ok, next_daily_reward}
+    end
+  end
+
+  @doc """
+  Receives a user.
+  Returns {:ok, can_claim} if the user claimed today already.
+  """
+  def user_claimed_today?(user) do
+    now = DateTime.utc_now()
+
+    case Date.compare(user.last_daily_reward_claim, now) do
+      :eq -> {:ok, :can_claim}
+      _ -> {:error, :already_claimed}
+    end
+  end
 end
