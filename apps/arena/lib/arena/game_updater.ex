@@ -1385,7 +1385,7 @@ defmodule Arena.GameUpdater do
   end
 
   defp put_player_position(%{positions: positions} = game_state, player_id) do
-    next_position = Application.get_env(:arena, :clients_needed_in_match) - Enum.count(positions)
+    next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
 
     {client_id, _player_id} =
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
