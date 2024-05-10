@@ -579,6 +579,12 @@ defmodule Champions.Battle.Simulator do
     take_unit_ids_by_slots(target_team, [1, 2])
   end
 
+  defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.map(fn {id, _unit} -> id end)
+
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
       Enum.sort_by(units, fn unit ->
