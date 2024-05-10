@@ -550,6 +550,7 @@ defmodule ArenaLoadTest.Serialization.PlayerAction do
   field(:action, 1, type: ArenaLoadTest.Serialization.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
   field(:destination, 3, type: ArenaLoadTest.Serialization.Position)
+  field(:direction, 4, type: ArenaLoadTest.Serialization.Position)
 end
 
 defmodule ArenaLoadTest.Serialization.Move do

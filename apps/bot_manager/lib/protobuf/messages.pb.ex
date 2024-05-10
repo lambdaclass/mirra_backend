@@ -520,6 +520,7 @@ defmodule BotManager.Protobuf.PlayerAction do
   field(:action, 1, type: BotManager.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
   field(:destination, 3, type: BotManager.Protobuf.Position)
+  field(:direction, 4, type: BotManager.Protobuf.Position)
 end
 
 defmodule BotManager.Protobuf.Move do

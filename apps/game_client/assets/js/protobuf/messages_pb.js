@@ -7249,7 +7249,8 @@ proto.PlayerAction.toObject = function(includeInstance, msg) {
   var f, obj = {
     action: jspb.Message.getFieldWithDefault(msg, 1, 0),
     duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f)
+    destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f),
+    direction: (f = msg.getDirection()) && proto.Position.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -7299,6 +7300,11 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
       msg.setDestination(value);
       break;
+    case 4:
+      var value = new proto.Position;
+      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      msg.setDirection(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7346,6 +7352,14 @@ proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
   if (f != null) {
     writer.writeMessage(
       3,
+      f,
+      proto.Position.serializeBinaryToWriter
+    );
+  }
+  f = message.getDirection();
+  if (f != null) {
+    writer.writeMessage(
+      4,
       f,
       proto.Position.serializeBinaryToWriter
     );
@@ -7423,6 +7437,43 @@ proto.PlayerAction.prototype.clearDestination = function() {
  */
 proto.PlayerAction.prototype.hasDestination = function() {
   return jspb.Message.getField(this, 3) != null;
+};
+
+
+/**
+ * optional Position direction = 4;
+ * @return {?proto.Position}
+ */
+proto.PlayerAction.prototype.getDirection = function() {
+  return /** @type{?proto.Position} */ (
+    jspb.Message.getWrapperField(this, proto.Position, 4));
+};
+
+
+/**
+ * @param {?proto.Position|undefined} value
+ * @return {!proto.PlayerAction} returns this
+*/
+proto.PlayerAction.prototype.setDirection = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.PlayerAction} returns this
+ */
+proto.PlayerAction.prototype.clearDirection = function() {
+  return this.setDirection(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.PlayerAction.prototype.hasDirection = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

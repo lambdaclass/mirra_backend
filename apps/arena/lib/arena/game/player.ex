@@ -188,7 +188,8 @@ defmodule Arena.Game.Player do
         action =
           %{
             action: skill_key_execution_action(skill_key),
-            duration: skill.execution_duration_ms
+            duration: skill.execution_duration_ms,
+            direction: skill_direction
           }
           |> maybe_add_destination(game_state, player, skill_direction, skill)
 
