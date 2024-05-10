@@ -3,7 +3,7 @@
         "description": "Tests description",
         "type": "daily",
         "target": 4,
-        "quest_objectives": [
+        "objectives": [
             {
                 "type": "kills",
                 "value": 4,

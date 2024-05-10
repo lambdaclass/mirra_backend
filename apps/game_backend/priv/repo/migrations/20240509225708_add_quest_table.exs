@@ -6,7 +6,7 @@ defmodule GameBackend.Repo.Migrations.AddQuestTable do
       add :description, :string, default: ""
       add :type, :string
       add :target, :integer
-      add :quest_objectives, {:array, :map}
+      add :objectives, {:array, :map}
       timestamps()
     end
   end

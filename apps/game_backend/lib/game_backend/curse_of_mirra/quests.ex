@@ -48,10 +48,10 @@ defmodule GameBackend.CurseOfMirra.Quests do
       )
       |> filter_by_quest_duration(quest_description)
 
-    Enum.reduce(quest_description.quest_objectives, base_query, fn quest_objective, query ->
-      type = String.to_atom(quest_objective["type"])
-      comparator = quest_objective["comparison"] |> parse_comparator()
-      value = quest_objective["value"]
+    Enum.reduce(quest_description.objectives, base_query, fn objective, query ->
+      type = String.to_atom(objective["type"])
+      comparator = objective["comparison"] |> parse_comparator()
+      value = objective["value"]
       custom_where(query, :amr, type, comparator, value)
     end)
   end

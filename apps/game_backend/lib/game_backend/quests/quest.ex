@@ -10,7 +10,7 @@ defmodule GameBackend.Quests.Quest do
     field(:description, :string)
     field(:type, :string)
     field(:target, :integer)
-    field(:quest_objectives, {:array, :map})
+    field(:objectives, {:array, :map})
 
     timestamps()
   end
@@ -21,7 +21,7 @@ defmodule GameBackend.Quests.Quest do
 
   @required [
     :description,
-    :quest_objectives,
+    :objectives,
     :type,
     :target
   ]
