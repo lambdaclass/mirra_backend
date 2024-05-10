@@ -394,12 +394,12 @@ defmodule Arena.GameUpdater do
 
     item_config = Enum.random(state.game_config.items)
 
-    position = %{x: 0.0, y: 0.0}
-      # random_position_in_map(
-      #   item_config.radius,
-      #   state.game_state.external_wall,
-      #   state.game_state.obstacles
-      # )
+    position =
+      random_position_in_map(
+        item_config.radius,
+        state.game_state.external_wall,
+        state.game_state.obstacles
+      )
 
     item = Entities.new_item(last_id, position, item_config)
 
@@ -805,20 +805,22 @@ defmodule Arena.GameUpdater do
   end
 
   defp resolve_players_collisions_with_items(game_state) do
-    {game_state, players, items} =
-      Enum.reduce(game_state.players, {game_state, game_state.players, game_state.items}, fn {_player_id, player},
-                                                                                 {game_state, players_acc, items_acc} ->
+    player_ids = Enum.map(game_state.players, fn {player_id, _player} -> player_id end)
+
+    {game_state, items} =
+      Enum.reduce(player_ids, {game_state, game_state.items}, fn player_id, {game_state, items_acc} ->
+        player = Map.get(game_state.players, player_id)
+
         case find_collided_item(player.collides_with, items_acc) do
           nil ->
-            {game_state, players_acc, items_acc}
+            {game_state, items_acc}
 
           item ->
-            process_item(game_state, player, item, players_acc, items_acc)
+            process_item(game_state, player, item, items_acc)
         end
       end)
 
     game_state
-    |> Map.put(:players, players)
     |> Map.put(:items, items)
   end
 
@@ -1232,13 +1234,12 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp process_item(game_state, player, item, players_acc, items_acc) do
+  defp process_item(game_state, player, item, items_acc) do
     if Player.inventory_full?(player) do
-      {game_state, players_acc, items_acc}
+      {game_state, items_acc}
     else
       game_state = Player.store_item(game_state, player, item.aditional_info)
-      player = Map.get(game_state.players, player.id)
-      {game_state, Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
+      {game_state, Map.delete(items_acc, item.id)}
     end
   end
 
