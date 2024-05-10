@@ -495,8 +495,6 @@ defmodule Arena.GameUpdater do
   end
 
   defp report_game_results(state, winner_id) do
-    match_id = Ecto.UUID.generate()
-
     results =
       Map.take(state.game_state.client_to_player_map, state.clients)
       |> Enum.map(fn {client_id, player_id} ->
@@ -510,7 +508,7 @@ defmodule Arena.GameUpdater do
           ## TODO: this only works because you can only die once
           deaths: if(Player.alive?(player), do: 0, else: 1),
           character: player.aditional_info.character_name,
-          match_id: match_id,
+          match_id: Ecto.UUID.generate(),
           position: Map.get(state.game_state.positions, client_id)
         }
       end)
