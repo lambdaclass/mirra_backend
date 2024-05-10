@@ -886,7 +886,7 @@
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
     "zone_damage": 40,
-    "item_spawn_interval_ms": 7500
+    "item_spawn_interval_ms": 1000
   },
   "skills": [
     {
@@ -1194,25 +1194,23 @@
   ],
   "items": [
     {
-      "name": "golden_clock",
+      "name": "fake_item",
       "radius": 200.0,
-      "effects": [
-        "golden_clock_effect"
-      ]
-    },
-    {
-      "name": "magic_boots",
-      "radius": 200.0,
-      "effects": [
-        "magic_boots_effect"
-      ]
-    },
-    {
-      "name": "mirra_blessing",
-      "radius": 200.0,
-      "effects": [
-        "mirra_blessing_effect"
-      ]
+      "effects": [],
+      "on_pickup_effects": {},
+      "mechanics": {
+        "create_item": {
+          "name": "fake_item",
+          "damage_delay_ms": 100,
+          "damage_type": {
+            "circle_hit": {
+              "damage": 64,
+              "range": 1000.0,
+              "offset": 0
+            }
+          }
+        }
+      }
     }
   ],
   "characters": [

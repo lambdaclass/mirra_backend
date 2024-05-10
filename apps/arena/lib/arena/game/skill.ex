@@ -14,24 +14,28 @@ defmodule Arena.Game.Skill do
   end
 
   def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
-    circle_center_position = get_position_with_offset(entity.position, entity.direction, circle_hit.offset)
-    circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range)
+    circle_center_position = get_position_with_offset(entity.position, entity.direction, circle_hit.offset) |> IO.inspect(label: :position)
+    circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range) |> IO.inspect(label: :area)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     # Players
     alive_players =
       Player.alive_players(game_state.players)
-      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
+      |> IO.inspect(label: :alive_players)
+      # |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
 
     players =
       Physics.check_collisions(circular_damage_area, alive_players)
+      |> IO.inspect(label: :collisions)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
 
         target_player =
           Map.get(players_acc, player_id)
+          |> IO.inspect(label: :before)
           |> Player.take_damage(real_damage)
+          |> IO.inspect(label: :after)
 
         send(self(), {:damage_done, entity_player_owner.id, circle_hit.damage})
 
@@ -61,6 +65,7 @@ defmodule Arena.Game.Skill do
 
     %{game_state | players: players, crates: crates}
     |> maybe_move_player(entity, circle_hit[:move_by])
+    |> IO.inspect(label: :final_state)
   end
 
   def do_mechanic(game_state, entity, {:cone_hit, cone_hit}, _skill_params) do
