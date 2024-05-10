@@ -26,7 +26,6 @@ defmodule Arena.Game.Player do
   end
 
   def take_damage(player, damage) do
-
     defense_multiplier = 1 - player.aditional_info.bonus_defense
     damage_taken = round(damage * defense_multiplier)
 
