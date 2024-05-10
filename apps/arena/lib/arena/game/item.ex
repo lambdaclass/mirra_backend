@@ -15,9 +15,6 @@ defmodule Arena.Game.Item do
     end)
   end
 
-  @doc """
-  Apply create item mechanic to an entity
-  """
   def do_mechanic(game_state, entity, {:create_item, mechanic_params}) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
@@ -35,13 +32,16 @@ defmodule Arena.Game.Item do
       mechanics: %{}
     }
 
-    bomb_item = Entities.new_item(last_id, entity_player_owner.position, new_item_params)
+    new_item = Entities.new_item(last_id, entity_player_owner.position, new_item_params)
 
     game_state
     |> put_in([:last_id], last_id)
-    |> put_in([:items, bomb_item.id], bomb_item)
+    |> put_in([:items, new_item.id], new_item)
   end
 
+  @doc """
+  Apply all item pickup effects to an entity
+  """
   def do_pickup_effect(game_state, entity, item, pick_effects) when map_size(pick_effects) == 0 do
     entity = put_in(entity, [:aditional_info, :inventory], item)
     put_in(game_state, [:players, entity.id], entity)
@@ -57,6 +57,10 @@ defmodule Arena.Game.Item do
     maybe_delay_damage(game_state, entity, pickup_effect_params)
   end
 
+
+  @doc """
+  Delay the damage in case the pickup effect has that param
+  """
   defp maybe_delay_damage(game_state, entity, %{damage_delay_ms: damage_delay_ms} = pickup_effect_params) do
     Enum.reduce(pickup_effect_params.damage_type, game_state, fn damage_type, game_state ->
       Arena.Game.Skill.do_mechanic(game_state, entity, damage_type, %{})
@@ -66,7 +70,6 @@ defmodule Arena.Game.Item do
   defp maybe_delay_damage(game_state, entity, pickup_effect_params) do
     Arena.Game.Skill.do_mechanic(game_state, entity, pickup_effect_params.damage_type, %{})
   end
-
 
   defp get_entity_player_owner(_game_state, %{category: :player} = player), do: player
 
