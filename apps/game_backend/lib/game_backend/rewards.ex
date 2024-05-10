@@ -6,6 +6,7 @@ defmodule GameBackend.Rewards do
   import Ecto.Query
   alias GameBackend.Repo
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
+  alias GameBackend.Utils
 
   @doc """
   Inserts an AfkRewardRate.
@@ -49,7 +50,7 @@ defmodule GameBackend.Rewards do
   Returns the next daily reward for the given user.
   """
   def claim_daily_reward(user) do
-    daily_reward_config = Application.get_env(:game_backend, :daily_reward_config)
+    daily_reward_config = Utils.get_daily_rewards_config()
     yesterday = DateTime.utc_now() |> Date.add(-1)
 
     case Date.compare(user.last_daily_reward_claim_at, yesterday) do
