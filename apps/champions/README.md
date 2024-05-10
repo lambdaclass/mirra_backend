@@ -50,7 +50,7 @@ be found at <https://hexdocs.pm/champions_of_mirra>.
 #### Add Currency to User
 
 ```
-{:ok, user_currency} = GameBackend.Users.Currencies.add_currency_by_name!(user.id, "Gold", 100)
+{:ok, user_currency} = GameBackend.Users.Currencies.add_currency_by_name_and_game!(user.id, "Gold", 2, 100)
 ```
 
 #### Update User level/experience
