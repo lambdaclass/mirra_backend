@@ -27,6 +27,7 @@ defmodule Gateway.Router do
     get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
 
     put "/users/:user_id", Controllers.UserController, :update
+    get "/users/:user_id/claim_daily_reward", Controllers.UserController, :claim_daily_reward
   end
 
   # Other scopes may use custom stacks.
