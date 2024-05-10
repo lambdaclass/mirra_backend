@@ -2,7 +2,7 @@ defmodule GameBackend.Users.DungeonSettlementLevel do
   @moduledoc """
   DungeonSettlementLevels indicate the level of a dungeon settlement.
   Dungeon Settlements are the overarching progression mechanic of the Dungeon mode.
-  They define the amount of supplies
+  They define the amount of supplies a player can hold, and limit the max level of dungeons that can be accessed.
   """
   use GameBackend.Schema
 
