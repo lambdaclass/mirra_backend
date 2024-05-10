@@ -143,6 +143,12 @@ end
 
 config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
 
+{:ok, daily_rewards_json} =
+  Application.app_dir(:game_backend, "priv/daily_rewards_rules.json")
+  |> File.read()
+
+config :game_backend, :daily_rewards_config, Jason.decode!(daily_rewards_json)
+
 ##################################
 # App configuration: game_client #
 ##################################
