@@ -1407,7 +1407,7 @@
           "execute_multiple_times": true
         },
         "speed_boost": {
-          "modifier": -0.5,
+          "modifier": -0.25,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
