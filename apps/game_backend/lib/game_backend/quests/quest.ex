@@ -1,4 +1,4 @@
-defmodule GameBackend.Quests.QuestDescription do
+defmodule GameBackend.Quests.Quest do
   @moduledoc """
 
   """
@@ -6,9 +6,10 @@ defmodule GameBackend.Quests.QuestDescription do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  schema "quest_descriptions" do
+  schema "quests" do
     field(:description, :string)
     field(:type, :string)
+    field(:target, :integer)
     field(:quest_objectives, {:array, :map})
 
     timestamps()
@@ -20,7 +21,9 @@ defmodule GameBackend.Quests.QuestDescription do
 
   @required [
     :description,
-    :quest_objectives
+    :quest_objectives,
+    :type,
+    :target
   ]
 
   @permitted [] ++ @required
