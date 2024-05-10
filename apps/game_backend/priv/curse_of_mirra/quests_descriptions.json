@@ -2,23 +2,31 @@
     {
         "description": "Tests description",
         "type": "daily",
-        "target": 4,
         "objectives": [
             {
                 "type": "kills",
-                "value": 4,
+                "value": 3,
                 "comparison": "greater"
-            },
+            }
+        ],
+        "conditions": [
             {
                 "type": "character",
                 "value": "muflus",
                 "comparison": "equal"
-            },
-            {
-                "type": "result",
-                "value": "abandon",
-                "comparison": "equal"
             }
         ]
+    },
+    {
+        "description": "Tests description",
+        "type": "daily",
+        "objectives": [
+            {
+                "type": "kills",
+                "value": 100,
+                "comparison": "greater"
+            }
+        ],
+        "conditions": []
     }
 ]
