@@ -750,8 +750,8 @@ defmodule Champions.Test.BattleTest do
       # This test pairs a self healing unit with 10 health, against a damage dealing unit that makes 5 damage for each attack,
       # the second one attacks 3 times, but since the healer unit will heal itself for the same amount the same number of times,
       # the battle will end on a timeout.
-      maximum_steps = 15
       skills_cooldown = 5
+      maximum_steps = (skills_cooldown + 1) * 3
 
       # Create a character with a basic skill that will heal 5 damage to itself
       heal_basic_skill_params =
@@ -779,7 +779,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: skills_cooldown * @miliseconds_per_step - 1
+          cooldown: skills_cooldown * @miliseconds_per_step
         })
 
       {:ok, heal_character} =
@@ -818,7 +818,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: skills_cooldown * @miliseconds_per_step - 1
+          cooldown: skills_cooldown * @miliseconds_per_step
         })
 
       # Create enemy unit
@@ -842,8 +842,10 @@ defmodule Champions.Test.BattleTest do
     end
 
     test "Self Damage", %{target_dummy: target_dummy} do
-      maximum_steps = 10
+      # This test pairs a self damaging unit agains a target dummy, the second team has no way of dealing damage to the first, but since the first team unit's
+      # skill makes it damage itself for 5 damage, after 4 turns it will die, since it has 20 health.
       self_damage_cooldown = 2
+      maximum_steps = (self_damage_cooldown + 1) * 4
 
       # Create a character with a basic skill that will self deal 5 damage
       self_damage_skill_params =
@@ -871,7 +873,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: self_damage_cooldown * @miliseconds_per_step - 1
+          cooldown: self_damage_cooldown * @miliseconds_per_step
         })
 
       {:ok, self_damage_character} =
