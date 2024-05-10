@@ -263,8 +263,8 @@ defmodule Arena.Game.Player do
     |> round()
   end
 
-  def store_item(player, item) do
-    Item.do_pickup_effect(player, item, item.on_pickup_effects)
+  def store_item(game_state, player, item) do
+    Item.do_pickup_effect(game_state, player, item, item.on_pickup_effects)
   end
 
   def inventory_full?(player) do
