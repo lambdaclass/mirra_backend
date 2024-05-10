@@ -45,10 +45,11 @@ defmodule Arena.GameUpdater do
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
-    :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
+
+    :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
 
     {:ok,
      %{
@@ -182,7 +183,7 @@ defmodule Arena.GameUpdater do
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
-        report_game_results(state, winner.id)
+        GameTracker.finish_tracking(self(), winner.id)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -510,28 +511,6 @@ defmodule Arena.GameUpdater do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
-  end
-
-  defp report_game_results(state, winner_id) do
-    results =
-      Map.take(state.game_state.client_to_player_map, state.clients)
-      |> Enum.map(fn {client_id, player_id} ->
-        player = Map.get(state.game_state.players, player_id)
-
-        %{
-          user_id: client_id,
-          ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
-          result: if(player.id == winner_id, do: "win", else: "loss"),
-          kills: player.aditional_info.kill_count,
-          ## TODO: this only works because you can only die once
-          deaths: if(Player.alive?(player), do: 0, else: 1),
-          character: player.aditional_info.character_name,
-          match_id: Ecto.UUID.generate(),
-          position: Map.get(state.game_state.positions, client_id)
-        }
-      end)
-
-    GameTracker.finish_tracking(self(), results)
   end
 
   ##########################

@@ -12,12 +12,12 @@ defmodule Arena.GameTracker do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
-  def start_tracking(match_id, client_to_player_map) do
-    GenServer.call(__MODULE__, {:start_tracking, match_id, client_to_player_map})
+  def start_tracking(match_id, client_to_player_map, players, human_clients) do
+    GenServer.call(__MODULE__, {:start_tracking, match_id, client_to_player_map, players, human_clients})
   end
 
-  def finish_tracking(match_pid, results) do
-    GenServer.cast(__MODULE__, {:finish_tracking, match_pid, results})
+  def finish_tracking(match_pid, winner_id) do
+    GenServer.cast(__MODULE__, {:finish_tracking, match_pid, winner_id})
   end
 
   ## TODO: define event struct
@@ -35,27 +35,44 @@ defmodule Arena.GameTracker do
   end
 
   @impl true
-  def handle_call({:start_tracking, match_id, client_to_player_map}, {match_pid, _}, state) do
-    player_to_client = Map.new(client_to_player_map, fn {client_id, player_id} -> {player_id, client_id} end)
+  def handle_call({:start_tracking, match_id, client_to_player_map, players, human_clients}, {match_pid, _}, state) do
+    player_to_client =
+      Map.new(client_to_player_map, fn {client_id, player_id} -> {player_id, client_id} end)
 
     players =
-      Map.new(player_to_client, fn {player_id, user_id} -> {user_id, %{player_id: player_id, kills: [], death: nil}} end)
+      Map.new(players, fn {_, player} ->
+        player_data = %{
+          id: player.id,
+          controller: if(Enum.member?(human_clients, player_to_client[player.id]), do: :human, else: :bot),
+          character: player.aditional_info.character_name,
+          kills: [],
+          death: nil
+        }
 
-    state =
-      put_in(state, [:matches, match_pid], %{match_id: match_id, players: players, player_to_client: player_to_client})
+        {player.id, player_data}
+      end)
 
+    match_state = %{
+      match_id: match_id,
+      players: players,
+      player_to_client: player_to_client,
+      position_on_death: map_size(players)
+    }
+
+    state = put_in(state, [:matches, match_pid], match_state)
     {:reply, :ok, state}
   end
 
   @impl true
   ## TODO: a lot of things, final report and send to Gateway
-  def handle_cast({:finish_tracking, match_pid, results}, state) do
-    data = get_in(state, [:matches, match_pid])
+  def handle_cast({:finish_tracking, match_pid, winner_id}, state) do
+    match_data = get_in(state, [:matches, match_pid])
+    results = generate_results(match_data, winner_id)
 
     ## Send results
     payload = Jason.encode!(%{results: results})
     ## TODO: Handle errors and retry sending
-    send_request("/arena/match/#{data.match_id}", payload)
+    send_request("/arena/match/#{match_data.match_id}", payload)
 
     matches = Map.delete(state.matches, match_pid)
     {:noreply, %{state | matches: matches}}
@@ -68,8 +85,27 @@ defmodule Arena.GameTracker do
 
   defp update_data(data, {:kill, killer, victim}) do
     data
-    |> update_in([:players, data.player_to_client[killer.id], :kills], fn kills -> kills ++ [victim.character_name] end)
-    |> put_in([:players, data.player_to_client[victim.id], :death], killer.character_name)
+    |> update_in([:players, killer.id, :kills], fn kills -> kills ++ [victim.character_name] end)
+    |> put_in([:players, victim.id, :death], killer.character_name)
+    |> put_in([:players, victim.id, :position], data.position_on_death)
+    |> put_in([:position_on_death], data.position_on_death - 1)
+  end
+
+  defp generate_results(match_data, winner_id) do
+    Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
+    |> Enum.map(fn {_player_id, player_data} ->
+      %{
+        user_id: get_in(match_data, [:player_to_client, player_data.id]),
+        ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
+        ##    GameUpdater should send an event when the abandon happens to mark the player
+        result: if(player_data.id == winner_id, do: "win", else: "loss"),
+        kills: length(player_data.kills),
+        ## TODO: this only works because you can only die once
+        deaths: if(player_data.death == nil, do: 0, else: 1),
+        character: player_data.character,
+        position: player_data.position
+      }
+    end)
   end
 
   defp send_request(path, payload) do
