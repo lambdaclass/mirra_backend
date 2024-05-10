@@ -8,10 +8,15 @@ defmodule GameBackend.Quests.QuestDescription do
 
   schema "quest_descriptions" do
     field(:description, :string)
+    field(:type, :string)
     field(:quest_objectives, {:array, :map})
 
     timestamps()
   end
+
+  @types ["daily"]
+
+  def types, do: @types
 
   @required [
     :description,
@@ -24,5 +29,6 @@ defmodule GameBackend.Quests.QuestDescription do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
+    |> validate_inclusion(:type, @types)
   end
 end

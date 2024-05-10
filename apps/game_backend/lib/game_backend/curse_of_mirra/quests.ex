@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
 
   """
+  alias GameBackend.Quests.UserDailyQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.QuestDescription
   alias GameBackend.Matches.ArenaMatchResult
@@ -57,5 +58,38 @@ defmodule GameBackend.CurseOfMirra.Quests do
     defp custom_where(queryable, binding, field_name, unquote(operator), value) do
       custom_where_macro(queryable, binding, field_name, unquote(operator), value)
     end
+  end
+
+  def get_quests_by_type(type) do
+    q =
+      from(qd in QuestDescription,
+        where: qd.type == ^type
+      )
+
+    Repo.all(q)
+  end
+
+  def add_quest_to_user_id(user_id, amount, type) do
+    available_quests =
+      get_quests_by_type(type)
+      |> Enum.shuffle()
+
+    {multi, _quests} =
+      Enum.reduce(1..amount, {Multi.new(), available_quests}, fn _index, {multi, [quest | next_quests]} ->
+        attrs = %{
+          user_id: user_id,
+          quest_description_id: quest.id,
+          target: quest.target,
+          progress: 0
+        }
+
+        changeset = UserDailyQuest.changeset(%UserDailyQuest{}, attrs)
+
+        multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+
+        {multi, next_quests}
+      end)
+
+    Repo.transaction(multi)
   end
 end
