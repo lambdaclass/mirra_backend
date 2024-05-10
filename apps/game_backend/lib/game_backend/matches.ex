@@ -2,6 +2,7 @@ defmodule GameBackend.Matches do
   @moduledoc """
   Matches
   """
+  alias GameBackend.Utils
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
@@ -24,7 +25,12 @@ defmodule GameBackend.Matches do
       |> Multi.run(
         {:add_trophies_to, result["user_id"]},
         fn _, _ ->
-          Currencies.add_currency_by_name!(google_user.user.id, "Trophies", amount)
+          Currencies.add_currency_by_name_and_game!(
+            google_user.user.id,
+            "Trophies",
+            Utils.get_game_id(:curse_of_mirra),
+            amount
+          )
         end
       )
     end)
