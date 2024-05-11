@@ -30,7 +30,7 @@ defmodule GameBackend.Repo.Migrations.CreateAttributes do
 
     create table("user_attributes", prefix: "champions") do
       add :user_id, references("demo_users", prefix: "common")
-      add :rank, :string
+      add :rank, :integer
       add :last_reward_at, :utc_datetime
       add :last_transaction_id, references("currency_transactions")
       timestamps()
