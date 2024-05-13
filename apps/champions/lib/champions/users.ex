@@ -187,28 +187,18 @@ defmodule Champions.Users do
   Get a user's available AFK rewards, according to their AFK reward rates and the time since their last claim.
   If more than 12 hours have passed since the last claim, the user will have accumulated the maximum amount of rewards.
   """
-  def get_kaline_afk_rewards(user_id) do
+  def get_afk_rewards(user_id, type) when type in [:kaline, :dungeon] do
     case Users.get_user(user_id) do
       {:ok, user} ->
-        user.kaline_tree_level.afk_reward_rates
-        |> Enum.map(fn reward_rate ->
-          currency = Currencies.get_currency(reward_rate.currency_id)
-          amount = calculate_afk_rewards(user.last_kaline_afk_reward_claim, reward_rate)
-          %{currency: currency, amount: amount}
-        end)
+        {level, last_claim} =
+          case type do
+            :kaline -> {user.kaline_tree_level, user.last_kaline_afk_reward_claim}
+            :dungeon -> {user.dungeon_settlement_level, user.last_dungeon_afk_reward_claim}
+          end
 
-      {:error, :not_found} ->
-        {:error, :not_found}
-    end
-  end
-
-  def get_dungeon_afk_rewards(user_id) do
-    case Users.get_user(user_id) do
-      {:ok, user} ->
-        user.dungeon_settlement_level.afk_reward_rates
-        |> Enum.map(fn reward_rate ->
+        Enum.map(level.afk_reward_rates, fn reward_rate ->
           currency = Currencies.get_currency(reward_rate.currency_id)
-          amount = calculate_afk_rewards(user.last_dungeon_afk_reward_claim, reward_rate)
+          amount = calculate_afk_rewards(last_claim, reward_rate)
           %{currency: currency, amount: amount}
         end)
 
@@ -228,14 +218,9 @@ defmodule Champions.Users do
   @doc """
   Claim a user's AFK rewards, and reset their last AFK reward claim time.
   """
-  def claim_kaline_afk_rewards(user_id) do
-    afk_rewards = get_kaline_afk_rewards(user_id)
-    claim_afk_rewards(user_id, afk_rewards, :kaline)
-  end
-
-  def claim_dungeon_afk_rewards(user_id) do
-    afk_rewards = get_dungeon_afk_rewards(user_id)
-    claim_afk_rewards(user_id, afk_rewards, :dungeon)
+  def claim_afk_rewards(user_id, type) when type in [:kaline, :dungeon] do
+    afk_rewards = get_afk_rewards(user_id, type)
+    claim_afk_rewards(user_id, afk_rewards, type)
   end
 
   defp claim_afk_rewards(user_id, afk_rewards, type) do

@@ -184,10 +184,10 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   defp handle(%GetKalineAfkRewards{user_id: user_id}),
-    do: prepare_response(%{afk_rewards: Users.get_kaline_afk_rewards(user_id)}, :afk_rewards)
+    do: prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id, :kaline)}, :afk_rewards)
 
   defp handle(%ClaimKalineAfkRewards{user_id: user_id}),
-    do: Users.claim_kaline_afk_rewards(user_id) |> prepare_response(:user)
+    do: Users.claim_afk_rewards(user_id, :kaline) |> prepare_response(:user)
 
   defp handle(%GetBoxes{}) do
     %{boxes: Gacha.get_boxes()} |> prepare_response(:boxes)
@@ -230,7 +230,7 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   defp handle(%ClaimDungeonAfkRewards{user_id: user_id}) do
-    Users.claim_dungeon_afk_rewards(user_id) |> prepare_response(:user)
+    Users.claim_afk_rewards(user_id, :dungeon) |> prepare_response(:user)
   end
 
   defp handle(%LevelUpDungeonSettlement{user_id: user_id}) do
