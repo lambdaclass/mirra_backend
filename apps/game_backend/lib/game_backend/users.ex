@@ -66,7 +66,7 @@ defmodule GameBackend.Users do
       iex> get_google_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
       [%GoogleUser{}]
   """
-  def get_google_users_with_todays_daily_quests(ids) do
+  def get_google_users_with_todays_daily_quests(ids, repo \\ Repo) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
@@ -78,7 +78,7 @@ defmodule GameBackend.Users do
 
     daily_quest_subquery =
       from(dq in DailyQuest,
-        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date,
+        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and not dq.completed,
         preload: [:quest]
       )
 
@@ -93,7 +93,7 @@ defmodule GameBackend.Users do
         ]
       )
 
-    Repo.all(q)
+    repo.all(q)
   end
 
   @doc """

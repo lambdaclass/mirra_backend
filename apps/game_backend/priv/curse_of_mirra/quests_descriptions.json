@@ -41,5 +41,27 @@
             "currency": "Gold",
             "amount": 444
         }
+    },
+    {
+        "config_id": 3,
+        "description": "This is curse of mirra, lose a match",
+        "type": "daily",
+        "objective": {
+            "field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "field": "result",
+                "value": "loss",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
     }
 ]

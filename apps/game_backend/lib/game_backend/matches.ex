@@ -2,6 +2,8 @@ defmodule GameBackend.Matches do
   @moduledoc """
   Matches
   """
+  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
@@ -34,6 +36,54 @@ defmodule GameBackend.Matches do
           )
         end
       )
+    end)
+    |> Multi.run(:get_google_users, fn repo, _changes_so_far ->
+      google_users =
+        Enum.map(results, fn result -> result["user_id"] end)
+        |> Users.get_google_users_with_todays_daily_quests(repo)
+
+      {:ok, google_users}
+    end)
+    |> Multi.run(:insert_completed_quests_result, fn repo,
+                                                     %{
+                                                       get_google_users: google_users
+                                                     } ->
+      correctly_updated_list =
+        Enum.map(google_users, fn
+          google_user ->
+            Quests.get_google_user_daily_quests_completed(google_user)
+            |> Enum.map(fn %DailyQuest{quest: quest} = daily_quest ->
+              updated_match =
+                DailyQuest.changeset(daily_quest, %{
+                  completed: true,
+                  completed_at: DateTime.utc_now()
+                })
+                |> repo.update()
+
+              inserted_currency =
+                Currencies.add_currency_by_name_and_game(
+                  google_user.user.id,
+                  quest.reward["currency"],
+                  Utils.get_game_id(:curse_of_mirra),
+                  quest.reward["amount"]
+                )
+
+              case {updated_match, inserted_currency} do
+                {{:ok, _}, {:ok, _}} ->
+                  {:ok, nil}
+
+                {_, _} ->
+                  {:error, google_user.user.id}
+              end
+            end)
+        end)
+        |> List.flatten()
+
+      if Enum.empty?(correctly_updated_list) or Enum.all?(correctly_updated_list, fn {result, _} -> result == :ok end) do
+        {:ok, nil}
+      else
+        {:error, nil}
+      end
     end)
     |> Repo.transaction()
   end
