@@ -1,83 +1,36 @@
 defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
-
+    Module to work with quest logic
   """
+  alias GameBackend.Users.GoogleUser
+  alias GameBackend.Users.User
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest
-  alias GameBackend.Matches.ArenaMatchResult
   alias Ecto.Multi
   import Ecto.Query
 
-  defmacrop custom_where_macro(queryable, binding, field_name, operator, value) do
-    {:where, [],
-     [
-       queryable,
-       [
-         {{:^, [], [binding]}, {:relation, [], Elixir}}
-       ],
-       {operator, [context: Elixir, import: Kernel],
-        [
-          {:field, [], [{:relation, [], Elixir}, {:^, [], [field_name]}]},
-          {:^, [], [value]}
-        ]}
-     ]}
+  @doc """
+  Get a %Quest{} by the config_id field
+
+  ## Examples
+
+      iex>get_quest_by_config_id(4)
+      %Quest{config_id: 4}
+
+  """
+  def get_quest_by_config_id(quest_config_id) do
+    Repo.get_by(Quest, config_id: quest_config_id)
   end
 
-  def upsert_quests(quests_params) do
-    {multi, _acc} =
-      Enum.reduce(quests_params, {Multi.new(), 0}, fn quest_param, {multi, acc} ->
-        quest_changeset = Quest.changeset(%Quest{}, quest_param)
+  @doc """
+  Get all %Quest{} by the type field
 
-        multi = Multi.insert(multi, {:insert_quest, acc}, quest_changeset)
+  ## Examples
 
-        {multi, acc + 1}
-      end)
-
-    Repo.transaction(multi)
-  end
-
-  def build_query_from_quest_description(%Quest{} = quest_description, user_id) do
-    base_query =
-      from(amr in ArenaMatchResult,
-        as: :amr,
-        # Fixme results should belong to User and no GoogleUser
-        join: google_user in assoc(amr, :user),
-        join: user in assoc(google_user, :user),
-        where: user.id == ^user_id
-      )
-      |> filter_by_quest_duration(quest_description)
-
-    Enum.reduce(quest_description.objectives, base_query, fn objective, query ->
-      type = String.to_atom(objective["type"])
-      comparator = objective["comparison"] |> parse_comparator()
-      value = objective["value"]
-      custom_where(query, :amr, type, comparator, value)
-    end)
-  end
-
-  defp parse_comparator("equal"), do: :==
-  defp parse_comparator("greater"), do: :>
-  defp parse_comparator("lesser"), do: :<
-
-  defp filter_by_quest_duration(base_query, %{type: "daily"}) do
-    naive_today = NaiveDateTime.utc_now()
-    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
-    end_of_date = NaiveDateTime.end_of_day(naive_today)
-
-    where(base_query, [{:amr, amr}], amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date)
-  end
-
-  defp filter_by_quest_duration(base_query, _) do
-    base_query
-  end
-
-  for operator <- [:!=, :<, :<=, :==, :>, :>=, :ilike, :in, :like] do
-    defp custom_where(queryable, binding, field_name, unquote(operator), value) do
-      custom_where_macro(queryable, binding, field_name, unquote(operator), value)
-    end
-  end
-
+      iex>get_quest_by_config_id("daily")
+      [%Quest{type: "daily"}]
+  """
   def get_quests_by_type(type) do
     q =
       from(qd in Quest,
@@ -87,25 +40,125 @@ defmodule GameBackend.CurseOfMirra.Quests do
     Repo.all(q)
   end
 
+  @doc """
+  Run the quest changeset with the given attrs
+  Return %Changeset{}
+
+  ## Examples
+
+      iex>change_quest(quest, attrs)
+      %Changeset{}
+
+  """
+  def change_quest(quest, attrs) do
+    Quest.changeset(quest, attrs)
+  end
+
+  defmacrop custom_comparator_macro(operator, first_value, second_value) do
+    {operator, [context: Elixir, import: Kernel], [first_value, second_value]}
+  end
+
+  @doc """
+  Insert or update config quests present in the "quests_descriptions.json" file
+  """
+  def upsert_quests(quests_params) do
+    Enum.reduce(quests_params, Multi.new(), fn quest_param, multi ->
+      case get_quest_by_config_id(quest_param.config_id) do
+        nil ->
+          changeset = change_quest(%Quest{}, quest_param)
+          Multi.insert(multi, quest_param.config_id, changeset)
+
+        quest ->
+          changeset = change_quest(quest, quest_param)
+          Multi.update(multi, quest_param.config_id, changeset)
+      end
+    end)
+    |> Repo.transaction()
+  end
+
   def add_quest_to_user_id(user_id, amount, type) do
     available_quests =
       get_quests_by_type(type)
       |> Enum.shuffle()
 
     {multi, _quests} =
-      Enum.reduce(1..amount, {Multi.new(), available_quests}, fn _index, {multi, [quest | next_quests]} ->
-        attrs = %{
-          user_id: user_id,
-          quest_id: quest.id
-        }
+      Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
+        _index, {multi, []} ->
+          {multi, []}
 
-        changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
+        _index, {multi, [quest | next_quests]} ->
+          attrs = %{
+            user_id: user_id,
+            quest_id: quest.id
+          }
 
-        multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+          changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
 
-        {multi, next_quests}
+          multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+
+          {multi, next_quests}
       end)
 
     Repo.transaction(multi)
+  end
+
+  def get_google_user_daily_quests_completed(%GoogleUser{
+        arena_match_results: arena_match_results,
+        user: %User{daily_quests: daily_quests}
+      }) do
+    Enum.reduce(daily_quests, [], fn daily_quest, acc ->
+      if completed_daily_quest?(daily_quest, arena_match_results) do
+        [daily_quest | acc]
+      else
+        acc
+      end
+    end)
+  end
+
+  #####################
+  #      helpers      #
+  #####################
+
+  defp parse_comparator("equal"), do: :==
+  defp parse_comparator("distinct"), do: :!=
+  defp parse_comparator("greater"), do: :>
+  defp parse_comparator("greater_or_equal"), do: :>=
+  defp parse_comparator("lesser"), do: :<
+  defp parse_comparator("lesser_or_equal"), do: :<=
+  defp parse_comparator(comparator), do: raise("Comparator not implemented yet #{comparator}")
+
+  defp acumulate_objective_progress_by_scope("day", value), do: value
+  defp acumulate_objective_progress_by_scope("match", _value), do: 1
+
+  for operator <- [:!=, :<, :<=, :==, :>, :>=, :in] do
+    defp custom_comparator(unquote(operator), first_value, second_value) do
+      custom_comparator_macro(unquote(operator), first_value, second_value)
+    end
+  end
+
+  defp custom_comparator(operator, _first_value, _second_value) do
+    raise "Invalid operator #{operator}!"
+  end
+
+  defp completed_daily_quest?(%DailyQuest{quest: %Quest{} = quest}, arena_match_results) do
+    progess =
+      Enum.filter(arena_match_results, fn arena_match_result ->
+        Enum.all?(quest.conditions, fn condition ->
+          type = String.to_atom(condition["type"])
+          comparator = condition["comparison"] |> parse_comparator()
+          value = condition["value"]
+
+          arena_match_result_value = Map.get(arena_match_result, type)
+
+          custom_comparator(comparator, arena_match_result_value, value)
+        end)
+      end)
+      |> Enum.reduce(0, fn arena_match_result, acc ->
+        type = String.to_atom(quest.objective["type"])
+
+        acc + acumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+      end)
+
+    custom_comparator(parse_comparator(quest.objective["comparison"]), progess, quest.objective["value"])
   end
 end
