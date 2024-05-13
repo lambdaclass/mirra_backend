@@ -4,19 +4,19 @@
         "description": "Win three matches with Muflus",
         "type": "daily",
         "objective": {
-            "type": "result",
+            "field": "result",
             "value": 3,
             "comparison": "greater",
             "scope": "match"
         },
         "conditions": [
             {
-                "type": "character",
+                "field": "character",
                 "value": "muflus",
                 "comparison": "equal"
             },
             {
-                "type": "result",
+                "field": "result",
                 "value": "win",
                 "comparison": "equal"
             }
@@ -31,7 +31,7 @@
         "description": "Get 44 kills",
         "type": "daily",
         "objective": {
-            "type": "kills",
+            "field": "kills",
             "value": 44,
             "comparison": "greater",
             "scope": "day"
