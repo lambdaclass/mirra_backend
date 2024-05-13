@@ -1097,8 +1097,8 @@ defmodule Champions.Test.BattleTest do
                       modifiers: [
                         %{
                           attribute: "speed",
-                          modifier_operation: "Add",
-                          float_magnitude: 100
+                          operation: "Add",
+                          magnitude: 100
                         }
                       ]
                     })
@@ -1207,8 +1207,8 @@ defmodule Champions.Test.BattleTest do
                       modifiers: [
                         %{
                           attribute: "speed",
-                          modifier_operation: "Add",
-                          float_magnitude: -50
+                          operation: "Add",
+                          magnitude: -50
                         }
                       ]
                     })
