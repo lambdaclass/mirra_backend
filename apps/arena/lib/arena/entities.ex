@@ -169,7 +169,8 @@ defmodule Arena.Entities do
         name: config.name,
         effects: config.effects,
         on_pickup_effects: config.on_pickup_effects,
-        mechanics: config.mechanics
+        mechanics: config.mechanics,
+        pickable: config.pickable
       }
     }
   end
