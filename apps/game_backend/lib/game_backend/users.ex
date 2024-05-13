@@ -56,6 +56,27 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a single GoogleUser.
+  Returns {:ok, GoogleUser}.
+  Returns {:error, :not_found} if no user is found.
+
+  ## Examples
+
+      iex> get_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
+      {:ok, %GoogleUser{}}
+
+      iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
+      {:error, :not_found}
+  """
+  def get_google_user(id) do
+    user =
+      Repo.get(GoogleUser, id)
+      |> Repo.preload([:user])
+
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
   Updates the given user by given params.
   Returns {:ok, User}.
   Returns {:error, Changeset} if update transaction fails.
