@@ -1,6 +1,6 @@
 defmodule GameBackend.CurseOfMirra.Config do
   @moduledoc """
-
+    Module to import config to the db related to Curse Of Mirra from json files
   """
 
   alias GameBackend.CurseOfMirra.Quests
