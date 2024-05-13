@@ -264,6 +264,14 @@ defmodule Arena.Game.Player do
   end
 
   def store_item(game_state, player, item) do
+    player =
+      if item.pickable do
+        put_in(player, [:aditional_info, :inventory], item)
+      else
+        player
+      end
+
+    game_state = put_in(game_state, [:players, player.id], player)
     Item.do_pickup_effect(game_state, player, item, item.on_pickup_effects)
   end
 
