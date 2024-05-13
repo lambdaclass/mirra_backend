@@ -4,7 +4,7 @@ defmodule Arena.GameTracker do
   datapoints and use for quests, analytics, etc.
 
   `GameTracker` will behave similar to a metrics collector, but with a push model rather than pull.
-  Games will push the data to it and every X time it will push the data to Gateway for storing and updating quests
+  Games will push the data to it and at the end GameTracker will push the data to Gateway for storing
   """
   use GenServer
 
@@ -20,7 +20,8 @@ defmodule Arena.GameTracker do
     GenServer.cast(__MODULE__, {:finish_tracking, match_pid, winner_id})
   end
 
-  ## TODO: define event struct
+  ## TODO: define events structs or pattern
+  ##    https://github.com/lambdaclass/mirra_backend/issues/601
   def push_event(match_pid, event) do
     GenServer.cast(__MODULE__, {:push_event, match_pid, event})
   end
@@ -30,8 +31,7 @@ defmodule Arena.GameTracker do
   ##########################
   @impl true
   def init(_) do
-    state = %{matches: %{}}
-    {:ok, state}
+    {:ok, %{matches: %{}}}
   end
 
   @impl true
@@ -64,14 +64,12 @@ defmodule Arena.GameTracker do
   end
 
   @impl true
-  ## TODO: a lot of things, final report and send to Gateway
   def handle_cast({:finish_tracking, match_pid, winner_id}, state) do
     match_data = get_in(state, [:matches, match_pid])
     results = generate_results(match_data, winner_id)
-
-    ## Send results
     payload = Jason.encode!(%{results: results})
     ## TODO: Handle errors and retry sending
+    ##    https://github.com/lambdaclass/mirra_backend/issues/601
     send_request("/arena/match/#{match_data.match_id}", payload)
 
     matches = Map.delete(state.matches, match_pid)
@@ -98,9 +96,11 @@ defmodule Arena.GameTracker do
         user_id: get_in(match_data, [:player_to_client, player_data.id]),
         ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
         ##    GameUpdater should send an event when the abandon happens to mark the player
+        ##    https://github.com/lambdaclass/mirra_backend/issues/601
         result: if(player_data.id == winner_id, do: "win", else: "loss"),
         kills: length(player_data.kills),
         ## TODO: this only works because you can only die once
+        ##    https://github.com/lambdaclass/mirra_backend/issues/601
         deaths: if(player_data.death == nil, do: 0, else: 1),
         character: player_data.character,
         position: player_data.position

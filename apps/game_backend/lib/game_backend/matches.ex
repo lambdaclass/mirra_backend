@@ -37,6 +37,7 @@ defmodule GameBackend.Matches do
   end
 
   ## TODO: Properly pre-process `currencies_config` so the keys are integers and we don't need convertion
+  ##    https://github.com/lambdaclass/mirra_backend/issues/601
   def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) when is_integer(position) do
     get_amount_of_trophies_to_modify(current_trophies, to_string(position), currencies_config)
   end
