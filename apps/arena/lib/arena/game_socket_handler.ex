@@ -153,7 +153,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate(_reason, _req, %{game_finished: false} = state) do
+  def terminate(_reason, _req, %{game_finished: false, enable: true} = state) do
     spawn(fn ->
       Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
       |> Finch.request(Arena.Finch)
