@@ -68,16 +68,19 @@ defmodule Arena.GameTracker do
     match_data = get_in(state, [:matches, match_pid])
     results = generate_results(match_data, winner_id)
     payload = Jason.encode!(%{results: results})
-    ## TODO: Handle errors and retry sending
-    ##    https://github.com/lambdaclass/mirra_backend/issues/601
     send_request("/arena/match/#{match_data.match_id}", payload)
-
     matches = Map.delete(state.matches, match_pid)
     {:noreply, %{state | matches: matches}}
   end
 
   def handle_cast({:push_event, match_pid, event}, state) do
     state = update_in(state, [:matches, match_pid], fn data -> update_data(data, event) end)
+    {:noreply, state}
+  end
+
+  @impl true
+  def handle_info({:retry_request, path, payload, backoff}, state) do
+    send_request(path, payload, backoff)
     {:noreply, state}
   end
 
@@ -108,11 +111,20 @@ defmodule Arena.GameTracker do
     end)
   end
 
-  defp send_request(path, payload) do
+  defp send_request(path, payload, backoff \\ 0) do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
-    Finch.build(:post, "#{gateway_url}#{path}", [{"content-type", "application/json"}], payload)
-    ## We might want to change this to `Finch.async_request/2`, but let's measure the impact first
-    |> Finch.request(Arena.Finch)
+    result =
+      Finch.build(:post, "#{gateway_url}#{path}", [{"content-type", "application/json"}], payload)
+      ## We might want to change this to `Finch.async_request/2`, but let's measure the impact first
+      |> Finch.request(Arena.Finch)
+
+    case result do
+      {:ok, %Finch.Response{status: 201}} ->
+        :ok
+
+      _else_error ->
+        Process.send_after(self(), {:retry_request, path, payload, backoff + 1}, backoff * 500)
+    end
   end
 end
