@@ -409,6 +409,11 @@ defmodule Gateway.Serialization.User do
     type: Gateway.Serialization.KalineTreeLevel,
     json_name: "kalineTreeLevel"
   )
+
+  field(:dungeon_settlement_level, 11,
+    type: Gateway.Serialization.DungeonSettlementLevel,
+    json_name: "dungeonSettlementLevel"
+  )
 end
 
 defmodule Gateway.Serialization.KalineTreeLevel do
@@ -423,6 +428,31 @@ defmodule Gateway.Serialization.KalineTreeLevel do
   field(:unlock_features, 5, repeated: true, type: :string, json_name: "unlockFeatures")
 
   field(:afk_reward_rates, 6,
+    repeated: true,
+    type: Gateway.Serialization.AfkRewardRate,
+    json_name: "afkRewardRates"
+  )
+end
+
+defmodule Gateway.Serialization.DungeonSettlementLevel do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:level, 2, type: :uint64)
+
+  field(:upgrade_costs, 3,
+    repeated: true,
+    type: Gateway.Serialization.CurrencyCost,
+    json_name: "upgradeCosts"
+  )
+
+  field(:max_dungeon, 4, type: :uint64, json_name: "maxDungeon")
+  field(:max_factional, 5, type: :uint64, json_name: "maxFactional")
+  field(:supply_limit, 6, type: :uint64, json_name: "supplyLimit")
+
+  field(:afk_reward_rates, 7,
     repeated: true,
     type: Gateway.Serialization.AfkRewardRate,
     json_name: "afkRewardRates"

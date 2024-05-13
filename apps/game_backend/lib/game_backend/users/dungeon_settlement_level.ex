@@ -25,7 +25,7 @@ defmodule GameBackend.Users.DungeonSettlementLevel do
 
     has_many(:afk_reward_rates, AfkRewardRate)
 
-    embeds_many(:upgrade_costs, CurrencyCost)
+    embeds_many(:level_up_costs, CurrencyCost)
 
     timestamps()
   end
@@ -35,7 +35,7 @@ defmodule GameBackend.Users.DungeonSettlementLevel do
     dungeon_settlement_level
     |> cast(attrs, [:level, :max_dungeon, :max_factional, :supply_limit])
     |> cast_assoc(:afk_reward_rates)
-    |> cast_embed(:upgrade_costs)
+    |> cast_embed(:level_up_costs)
     |> validate_required([:level, :max_dungeon, :max_factional, :supply_limit])
   end
 end

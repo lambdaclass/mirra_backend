@@ -164,7 +164,7 @@ defmodule Champions.Users do
         user.kaline_tree_level.afk_reward_rates
         |> Enum.map(fn reward_rate ->
           currency = Currencies.get_currency(reward_rate.currency_id)
-          amount = calculate_afk_rewards(user, reward_rate)
+          amount = calculate_afk_rewards(user.last_kaline_afk_reward_claim, reward_rate)
           %{currency: currency, amount: amount}
         end)
 
@@ -173,8 +173,22 @@ defmodule Champions.Users do
     end
   end
 
-  defp calculate_afk_rewards(user, afk_reward_rate) do
-    last_claim = user.last_kaline_afk_reward_claim
+  def get_dungeon_afk_rewards(user_id) do
+    case Users.get_user(user_id) do
+      {:ok, user} ->
+        user.dungeon_settlement_level.afk_reward_rates
+        |> Enum.map(fn reward_rate ->
+          currency = Currencies.get_currency(reward_rate.currency_id)
+          amount = calculate_afk_rewards(user.last_dungeon_afk_reward_claim, reward_rate)
+          %{currency: currency, amount: amount}
+        end)
+
+      {:error, :not_found} ->
+        {:error, :not_found}
+    end
+  end
+
+  defp calculate_afk_rewards(last_claim, afk_reward_rate) do
     now = DateTime.utc_now()
 
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
@@ -187,7 +201,15 @@ defmodule Champions.Users do
   """
   def claim_kaline_afk_rewards(user_id) do
     afk_rewards = get_kaline_afk_rewards(user_id)
+    claim_afk_rewards(user_id, afk_rewards, :kaline)
+  end
 
+  def claim_dungeon_afk_rewards(user_id) do
+    afk_rewards = get_dungeon_afk_rewards(user_id)
+    claim_afk_rewards(user_id, afk_rewards, :dungeon)
+  end
+
+  defp claim_afk_rewards(user_id, afk_rewards, type) do
     Multi.new()
     |> Multi.run(:add_currencies, fn _, _ ->
       results =
@@ -202,7 +224,7 @@ defmodule Champions.Users do
       end
     end)
     |> Multi.run(:reset_afk_claim, fn _, _ ->
-      Users.reset_afk_rewards_claim(user_id)
+      Users.reset_afk_rewards_claim(user_id, type)
     end)
     |> Transaction.run()
     |> case do
@@ -216,7 +238,7 @@ defmodule Champions.Users do
   """
   def level_up_kaline_tree(user_id) do
     with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
-         level_up_costs = calculate_costs_to_level_up_kaline_tree(user),
+         level_up_costs = get_kaline_tree_level_up_costs(user),
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level_up_costs)} do
       Users.level_up_kaline_tree(user_id, level_up_costs)
     else
@@ -225,9 +247,23 @@ defmodule Champions.Users do
     end
   end
 
+  @doc """
+  Level up the Dungeon Settlement of a user.
+  """
+  def level_up_dungeon_settlement(user_id) do
+    with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
+         level_up_costs = user.dungeon_settlement_level.level_up_costs,
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level_up_costs)} do
+      Users.level_up_dungeon_settlement(user_id, level_up_costs)
+    else
+      {:can_afford, false} -> {:error, :cant_afford}
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+    end
+  end
+
   # TODO: remove this after finishing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
   # The costs will be defined in a configuration file.
-  defp calculate_costs_to_level_up_kaline_tree(user),
+  defp get_kaline_tree_level_up_costs(user),
     do: [
       %CurrencyCost{
         currency_id: Currencies.get_currency_by_name!("Fertilizer").id,

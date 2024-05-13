@@ -7,7 +7,7 @@ defmodule GameBackend.Repo.Migrations.AddDungeonSettlementLevel do
       add(:max_dungeon, :integer)
       add(:max_factional, :integer)
       add(:supply_limit, :integer)
-      add(:upgrade_costs, :map)
+      add(:level_up_costs, :map)
       timestamps()
     end
 

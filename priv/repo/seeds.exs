@@ -254,7 +254,7 @@ _dungeon_settlement_levels =
             afk_reward_rates: [
               %{rate: 10.0 * (level_number - 1), currency_id: supplies_currency.id}
             ],
-            upgrade_costs: [
+            level_up_costs: [
               %{currency_id: gold_currency.id, amount: level_number * 100},
               %{currency_id: blueprints_currency.id, amount: level_number * 50}
             ],
