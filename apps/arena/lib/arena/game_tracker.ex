@@ -56,7 +56,8 @@ defmodule Arena.GameTracker do
           death: nil,
           damage_taken: 0,
           damage_done: 0,
-          health_healed: 0
+          health_healed: 0,
+          killed_by_bot: nil
         }
 
         {player.id, player_data}
@@ -105,6 +106,7 @@ defmodule Arena.GameTracker do
     data
     |> update_in([:players, killer.id, :kills], fn kills -> kills ++ [victim.character_name] end)
     |> put_in([:players, victim.id, :death], killer.character_name)
+    |> put_in([:players, victim.id, :killed_by_bot], get_in(data, [:players, killer.id, :controller]) == :bot)
     |> put_in([:players, victim.id, :position], data.position_on_death)
     |> put_in([:position_on_death], data.position_on_death - 1)
   end
@@ -138,7 +140,9 @@ defmodule Arena.GameTracker do
         position: player_data.position,
         damage_taken: player_data.damage_taken,
         damage_done: player_data.damage_done,
-        health_healed: player_data.health_healed
+        health_healed: player_data.health_healed,
+        killed_by: player_data.death,
+        killed_by_bot: player_data.killed_by_bot
       }
     end)
   end
@@ -155,6 +159,7 @@ defmodule Arena.GameTracker do
       {:ok, %Finch.Response{status: 201}} ->
         :ok
 
+      ## TODO: need to figure out user not found to prevent retrying in that case
       _else_error ->
         Process.send_after(self(), {:retry_request, path, payload, backoff + 1}, backoff * 500)
     end
