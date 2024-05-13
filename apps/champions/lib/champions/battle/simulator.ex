@@ -111,6 +111,7 @@ defmodule Champions.Battle.Simulator do
             |> process_step_for_units()
             |> process_step_for_skills(initial_step_state)
             |> process_step_for_effects()
+            |> cap_units_energy()
             |> cap_units_health()
 
           Logger.info("Step #{step} finished: #{inspect(format_step_state(new_state))}")
@@ -314,8 +315,9 @@ defmodule Champions.Battle.Simulator do
                target_id: unit.id,
                stat_affected: %{
                  stat: modifier.attribute |> String.upcase() |> string_to_atom(),
-                 amount: modifier.float_magnitude
-               }
+                 amount: modifier.magnitude
+               },
+               operation: modifier.operation
              },
              :modifier_expired
            )}
@@ -580,6 +582,12 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
+  defp choose_targets(caster, %{type: "all", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.map(fn {id, _unit} -> id end)
+
   defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
@@ -592,6 +600,10 @@ defmodule Champions.Battle.Simulator do
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
     take_unit_ids_by_slots(target_team, [1, 2])
+  end
+
+  defp choose_targets(caster, %{type: "self"}, _state) do
+    [caster.id]
   end
 
   defp find_by_proximity(units, slots_priorities, amount) do
@@ -672,14 +684,15 @@ defmodule Champions.Battle.Simulator do
               target_id: target.id,
               stat_affected: %{
                 stat: modifier.attribute |> String.upcase() |> string_to_atom(),
-                amount: modifier.float_magnitude
-              }
+                amount: modifier.magnitude
+              },
+              operation: modifier.operation
             },
             :modifier_received
           )
 
         new_target =
-          case modifier.modifier_operation do
+          case modifier.operation do
             "Add" ->
               put_in(target, [:modifiers, :additives], [new_modifier | target.modifiers.additives])
 
@@ -813,7 +826,7 @@ defmodule Champions.Battle.Simulator do
       |> Decimal.to_integer()
 
     Logger.info(
-      "Dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}"
+      "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}."
     )
 
     new_history =
@@ -843,7 +856,7 @@ defmodule Champions.Battle.Simulator do
     {new_target, new_history}
   end
 
-  # Apply a DealDamage execution to its target. Returns the new state of the target.
+  # Apply a Heal execution to its target. Returns the new state of the target.
   defp process_execution(
          %{
            "type" => "Heal",
@@ -857,7 +870,7 @@ defmodule Champions.Battle.Simulator do
     heal_amount = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
 
     Logger.info(
-      "Healing #{heal_amount} hp to #{format_unit_name(target)} (#{target.health} -> #{target.health + heal_amount})"
+      "#{format_unit_name(caster)} healing #{heal_amount} HP to #{format_unit_name(target)} (#{target.health} -> #{target.health + heal_amount})"
     )
 
     new_history =
@@ -875,6 +888,37 @@ defmodule Champions.Battle.Simulator do
 
     # We don't cap to max_health here because the unit's health at the end of the step would depend
     # on the order in which we process the executions.
+
+    {new_target, new_history}
+  end
+
+  # Apply an AddEnergy execution to its target. Returns the new state of the target.
+  defp process_execution(
+         %{
+           "type" => "AddEnergy",
+           "amount" => amount
+         },
+         target,
+         caster,
+         history,
+         skill_id
+       ) do
+    Logger.info(
+      "#{format_unit_name(caster)} adding #{amount} energy to #{format_unit_name(target)} (#{target.energy} -> #{target.energy + amount})"
+    )
+
+    new_history =
+      add_to_history(
+        history,
+        %{
+          target_id: target.id,
+          skill_id: skill_id,
+          stat_affected: %{stat: :ENERGY, amount: amount}
+        },
+        :execution_received
+      )
+
+    new_target = Map.put(target, :energy, target.energy + amount)
 
     {new_target, new_history}
   end
@@ -897,15 +941,15 @@ defmodule Champions.Battle.Simulator do
     if Enum.empty?(overrides) do
       addition =
         Enum.filter(unit.modifiers.additives, &(&1.attribute == Atom.to_string(attribute)))
-        |> Enum.reduce(0, fn mod, acc -> mod.float_magnitude + acc end)
+        |> Enum.reduce(0, fn mod, acc -> mod.magnitude + acc end)
 
       multiplication =
         Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == Atom.to_string(attribute)))
-        |> Enum.reduce(1, fn mod, acc -> mod.float_magnitude * acc end)
+        |> Enum.reduce(1, fn mod, acc -> mod.magnitude * acc end)
 
       (unit[attribute] + addition) * multiplication
     else
-      Enum.min_by(overrides, & &1.step_applied_at).float_magnitude
+      Enum.min_by(overrides, & &1.step_applied_at).magnitude
     end
   end
 
@@ -916,6 +960,17 @@ defmodule Champions.Battle.Simulator do
        :units,
        Enum.map(state.units, fn {unit_id, unit} ->
          {unit_id, Map.put(unit, :health, min(unit.max_health, unit.health))}
+       end)
+     ), history}
+  end
+
+  # Called at the end of step processing. Sets unit energy to the max allowed energy if it's above it.
+  defp cap_units_energy({state, history}) do
+    {Map.put(
+       state,
+       :units,
+       Enum.map(state.units, fn {unit_id, unit} ->
+         {unit_id, Map.put(unit, :energy, min(@ultimate_energy_cost, unit.energy))}
        end)
      ), history}
   end
@@ -971,8 +1026,10 @@ defmodule Champions.Battle.Simulator do
     "random",
     "nearest",
     "furthest",
+    "all",
     "frontline",
-    "backline"
+    "backline",
+    "self"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
@@ -1056,7 +1113,7 @@ defmodule Champions.Battle.Simulator do
 
   # Format modifier name for logs.
   defp format_modifier_name(modifier),
-    do: "#{modifier.modifier_operation} #{modifier.attribute} by #{modifier.float_magnitude}"
+    do: "#{modifier.operation} #{modifier.attribute} by #{modifier.magnitude}"
 
   defp add_to_history([%{step_number: step_number, actions: actions} | history], entry_to_add, type) do
     [%{step_number: step_number, actions: [%{action_type: {type, entry_to_add}} | actions]} | history]

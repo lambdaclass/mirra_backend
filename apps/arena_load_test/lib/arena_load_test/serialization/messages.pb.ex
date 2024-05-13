@@ -67,6 +67,37 @@ defmodule ArenaLoadTest.Serialization.Position do
   field(:y, 2, type: :float)
 end
 
+defmodule ArenaLoadTest.Serialization.LobbyEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:event, 0)
+
+  field(:leave, 1, type: ArenaLoadTest.Serialization.LeaveLobby, oneof: 0)
+  field(:left, 2, type: ArenaLoadTest.Serialization.LeftLobby, oneof: 0)
+  field(:joined, 3, type: ArenaLoadTest.Serialization.JoinedLobby, oneof: 0)
+  field(:game, 4, type: ArenaLoadTest.Serialization.GameState, oneof: 0)
+end
+
+defmodule ArenaLoadTest.Serialization.LeaveLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule ArenaLoadTest.Serialization.LeftLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule ArenaLoadTest.Serialization.JoinedLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule ArenaLoadTest.Serialization.GameEvent do
   @moduledoc false
 
@@ -278,6 +309,15 @@ defmodule ArenaLoadTest.Serialization.GameState.CratesEntry do
   field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
 end
 
+defmodule ArenaLoadTest.Serialization.GameState.BushesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
+end
+
 defmodule ArenaLoadTest.Serialization.GameState do
   @moduledoc false
 
@@ -355,6 +395,12 @@ defmodule ArenaLoadTest.Serialization.GameState do
     type: ArenaLoadTest.Serialization.GameState.CratesEntry,
     map: true
   )
+
+  field(:bushes, 17,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.GameState.BushesEntry,
+    map: true
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Entity do
@@ -382,6 +428,7 @@ defmodule ArenaLoadTest.Serialization.Entity do
   field(:item, 16, type: ArenaLoadTest.Serialization.Item, oneof: 0)
   field(:pool, 17, type: ArenaLoadTest.Serialization.Pool, oneof: 0)
   field(:crate, 18, type: ArenaLoadTest.Serialization.Crate, oneof: 0)
+  field(:bush, 19, type: ArenaLoadTest.Serialization.Bush, oneof: 0)
 end
 
 defmodule ArenaLoadTest.Serialization.Player.CooldownsEntry do
@@ -421,6 +468,9 @@ defmodule ArenaLoadTest.Serialization.Player do
     type: ArenaLoadTest.Serialization.Player.CooldownsEntry,
     map: true
   )
+
+  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
+  field(:on_bush, 14, type: :bool, json_name: "onBush")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do
@@ -484,6 +534,12 @@ defmodule ArenaLoadTest.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+end
+
+defmodule ArenaLoadTest.Serialization.Bush do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
 defmodule ArenaLoadTest.Serialization.PlayerAction do

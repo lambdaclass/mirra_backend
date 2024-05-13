@@ -7,6 +7,7 @@ defmodule Champions.Units do
   - Tier ups cost an amount of gold that depends on the unit level, plus a set number of gems.
   """
 
+  alias GameBackend.Utils
   alias Ecto.Multi
   alias GameBackend.Transaction
   alias GameBackend.Units
@@ -118,7 +119,7 @@ defmodule Champions.Units do
   def calculate_level_up_cost(unit),
     do: [
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
         amount: unit.level |> Math.pow(2) |> round()
       }
     ]
@@ -210,10 +211,13 @@ defmodule Champions.Units do
   def calculate_tier_up_cost(unit),
     do: [
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
         amount: unit.level |> Math.pow(2) |> round()
       },
-      %CurrencyCost{currency_id: Currencies.get_currency_by_name!("Gems").id, amount: 50}
+      %CurrencyCost{
+        currency_id: Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id,
+        amount: 50
+      }
     ]
 
   ##########
@@ -286,17 +290,16 @@ defmodule Champions.Units do
   end
 
   defp meets_fuse_requirements?(unit, unit_list) do
-    {same_character_amount, same_character_rank} = same_character_requirements(unit)
-    {same_faction_amount, same_faction_rank} = same_faction_requirements(unit)
+    requirements = Application.get_env(:champions, :"rank_#{unit.rank}_fusion")
 
     with {:ok, removed_same_character} <-
-           remove_same_character(unit, unit_list, same_character_amount, same_character_rank),
+           remove_same_character(unit, unit_list, requirements.same_character_amount, requirements.same_character_rank),
          {:ok, removed_same_faction} <-
            remove_same_faction(
              unit,
              removed_same_character,
-             same_faction_amount,
-             same_faction_rank
+             requirements.same_faction_amount,
+             requirements.same_faction_rank
            ) do
       # If we got here with an empty list, then the units are valid
       if Enum.empty?(removed_same_faction), do: true, else: false
@@ -304,18 +307,6 @@ defmodule Champions.Units do
       :error -> false
     end
   end
-
-  defp same_character_requirements(%Unit{rank: @star4}), do: {2, @star4}
-  defp same_character_requirements(%Unit{rank: @star5}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination1}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination2}), do: {1, @star5}
-  defp same_character_requirements(%Unit{rank: @illumination3}), do: {3, @star5}
-
-  defp same_faction_requirements(%Unit{rank: @star4}), do: {4, @star4}
-  defp same_faction_requirements(%Unit{rank: @star5}), do: {4, @star5}
-  defp same_faction_requirements(%Unit{rank: @illumination1}), do: {1, @illumination1}
-  defp same_faction_requirements(%Unit{rank: @illumination2}), do: {2, @illumination2}
-  defp same_faction_requirements(%Unit{rank: @illumination3}), do: {2, @illumination2}
 
   defp remove_same_character(unit, unit_list, amount, rank) do
     Enum.reduce_while(1..amount, unit_list, fn _, list ->

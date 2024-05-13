@@ -96,12 +96,41 @@ defmodule Champions.Users do
   end
 
   defp add_sample_currencies(user) do
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, 100)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gems").id, 500)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Summon Scrolls").id, 100)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Fertilizer").id, 100)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Arcane Crystals").id, 100)
-    Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Hero Souls").id, 100)
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+      100
+    )
+
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Gems", Utils.get_game_id(:champions_of_mirra)).id,
+      500
+    )
+
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Summon Scrolls", Utils.get_game_id(:champions_of_mirra)).id,
+      100
+    )
+
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id,
+      100
+    )
+
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Arcane Crystals", Utils.get_game_id(:champions_of_mirra)).id,
+      100
+    )
+
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Hero Souls", Utils.get_game_id(:champions_of_mirra)).id,
+      100
+    )
   end
 
   defp add_super_campaign_progresses(user) do
@@ -228,11 +257,11 @@ defmodule Champions.Users do
   defp calculate_costs_to_level_up_kaline_tree(user),
     do: [
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name!("Fertilizer").id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id,
         amount: user.kaline_tree_level.fertilizer_level_up_cost
       },
       %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name!("Gold").id,
+        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
         amount: user.kaline_tree_level.gold_level_up_cost
       }
     ]

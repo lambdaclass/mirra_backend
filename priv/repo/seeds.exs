@@ -1,3 +1,4 @@
+alias GameBackend.Utils
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Campaign
 alias GameBackend.Campaigns.Level
@@ -10,7 +11,8 @@ alias GameBackend.Units.Unit
 alias GameBackend.Users
 alias GameBackend.Users.KalineTreeLevel
 
-champions_of_mirra_id = 2
+curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
+champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 units_per_level = 5
 
 {:ok, _skills} = Champions.Config.import_skill_config()
@@ -38,8 +40,29 @@ units_per_level = 5
     name: "Mystic Summon Scrolls"
   })
 
+{:ok, _curse_gold} =
+  Users.Currencies.insert_currency(%{
+    game_id: curse_of_mirra_id,
+    name: "Gold"
+  })
+
+{:ok, _curse_gems} =
+  Users.Currencies.insert_currency(%{
+    game_id: curse_of_mirra_id,
+    name: "Gems"
+  })
+
+{:ok, _curse_feature_tokens} =
+  Users.Currencies.insert_currency(%{
+    game_id: curse_of_mirra_id,
+    name: "Feature Tokens"
+  })
+
 {:ok, _fertilizer_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, _trophies_currency} =
+  Users.Currencies.insert_currency(%{game_id: curse_of_mirra_id, name: "Trophies"})
 
 {:ok, _items} = Champions.Config.import_item_template_config()
 

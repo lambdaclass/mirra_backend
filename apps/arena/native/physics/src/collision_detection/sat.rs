@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::mem::swap;
 
 use crate::map::{Entity, Position};
@@ -20,6 +21,8 @@ use crate::map::{Entity, Position};
 pub(crate) fn intersect_circle_polygon(
     circle: &mut Entity,
     polygon: &Entity,
+    obstacles: &HashMap<u64, Entity>,
+    external_wall: &Entity,
 ) -> (bool, Position, f32) {
     // The normal will be the vector in which the polygons should move to stop colliding
     let mut normal = Position { x: 0.0, y: 0.0 };
@@ -37,7 +40,7 @@ pub(crate) fn intersect_circle_polygon(
         let current_vertex = polygon.vertices[current_vertex_index];
         let next_vertex = polygon.vertices[next_vertex_index];
 
-        let current_line = Position::sub(current_vertex, next_vertex);
+        let current_line = Position::sub(&current_vertex, &next_vertex);
         // the axis will be the perpendicular line drawn from the current line of the polygon
         axis = Position {
             x: -current_line.y,
@@ -46,6 +49,17 @@ pub(crate) fn intersect_circle_polygon(
 
         // FIXME normalizing on this loop may be bad
         axis.normalize();
+        if invalid_axis(
+            axis,
+            circle,
+            polygon,
+            &current_vertex,
+            &next_vertex,
+            obstacles,
+            external_wall,
+        ) {
+            continue;
+        }
         let (min_polygon_cast_point, max_polygon_cast_point) =
             project_vertices(&polygon.vertices, axis);
         let (min_circle_cast_point, max_circle_cast_point) = project_circle(circle, axis);
@@ -79,7 +93,7 @@ pub(crate) fn intersect_circle_polygon(
 
     // Check normal and depth for center
     let closest_vertex = find_closest_vertex(&circle.position, &polygon.vertices);
-    axis = Position::sub(closest_vertex, circle.position);
+    axis = Position::sub(&closest_vertex, &circle.position);
     axis.normalize();
 
     let (min_polygon_cast_point, max_polygon_cast_point) =
@@ -245,8 +259,8 @@ fn project_circle(circle: &Entity, axis: Position) -> (f32, f32) {
         y: axis.y * circle.radius,
     };
 
-    let position_plus_radius = Position::add(circle.position, direction_radius);
-    let position_sub_radius = Position::sub(circle.position, direction_radius);
+    let position_plus_radius = Position::add(&circle.position, &direction_radius);
+    let position_sub_radius = Position::sub(&circle.position, &direction_radius);
 
     min = dot(&position_plus_radius, axis);
     max = dot(&position_sub_radius, axis);
@@ -276,4 +290,35 @@ fn find_closest_vertex(center: &Position, vertices: &Vec<Position>) -> Position 
 
 fn dot(a: &Position, b: Position) -> f32 {
     a.x * b.x + a.y * b.y
+}
+
+// We'll determine that an axis is invalid when both vertex that created that axis
+// are in contact with another obstacle in the direction of the axis, to check this
+// we'll cast a line from each vertex with a length of the cicle that's colliding and
+// check if both casted lines are colliding with the same obstacle, if this is true
+// it means that the axis is invalid since we'll end up inside another collider
+fn invalid_axis(
+    axis: Position,
+    circle: &Entity,
+    polygon: &Entity,
+    current_vertex: &Position,
+    next_vertex: &Position,
+    obstacles: &HashMap<u64, Entity>,
+    external_wall: &Entity,
+) -> bool {
+    let mut obstacle_vector: Vec<Entity> = obstacles.clone().into_values().collect();
+    obstacle_vector.push(external_wall.clone());
+
+    let current_vertex_moved = Position::add(current_vertex, &Position::mult(&axis, circle.radius));
+    let mut current_vertex_line =
+        Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
+    let current_vertex_collitions = current_vertex_line.collides_with(&obstacle_vector);
+
+    let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
+    let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
+    let next_vertex_collitions = next_vertex_line.collides_with(&obstacle_vector);
+
+    current_vertex_collitions.iter().any(|collision_id| {
+        next_vertex_collitions.contains(collision_id) && collision_id != &external_wall.id
+    }) || (current_vertex_collitions.is_empty() && next_vertex_collitions.is_empty())
 }

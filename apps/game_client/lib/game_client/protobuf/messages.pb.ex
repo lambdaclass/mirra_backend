@@ -67,6 +67,37 @@ defmodule GameClient.Protobuf.Position do
   field(:y, 2, type: :float)
 end
 
+defmodule GameClient.Protobuf.LobbyEvent do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  oneof(:event, 0)
+
+  field(:leave, 1, type: GameClient.Protobuf.LeaveLobby, oneof: 0)
+  field(:left, 2, type: GameClient.Protobuf.LeftLobby, oneof: 0)
+  field(:joined, 3, type: GameClient.Protobuf.JoinedLobby, oneof: 0)
+  field(:game, 4, type: GameClient.Protobuf.GameState, oneof: 0)
+end
+
+defmodule GameClient.Protobuf.LeaveLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule GameClient.Protobuf.LeftLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule GameClient.Protobuf.JoinedLobby do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule GameClient.Protobuf.GameEvent do
   @moduledoc false
 
@@ -278,6 +309,15 @@ defmodule GameClient.Protobuf.GameState.CratesEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.BushesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -336,6 +376,7 @@ defmodule GameClient.Protobuf.GameState do
 
   field(:pools, 15, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
   field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameState.CratesEntry, map: true)
+  field(:bushes, 17, repeated: true, type: GameClient.Protobuf.GameState.BushesEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -363,6 +404,7 @@ defmodule GameClient.Protobuf.Entity do
   field(:item, 16, type: GameClient.Protobuf.Item, oneof: 0)
   field(:pool, 17, type: GameClient.Protobuf.Pool, oneof: 0)
   field(:crate, 18, type: GameClient.Protobuf.Crate, oneof: 0)
+  field(:bush, 19, type: GameClient.Protobuf.Bush, oneof: 0)
 end
 
 defmodule GameClient.Protobuf.Player.CooldownsEntry do
@@ -397,6 +439,8 @@ defmodule GameClient.Protobuf.Player do
   field(:effects, 10, repeated: true, type: GameClient.Protobuf.Effect)
   field(:inventory, 11, type: GameClient.Protobuf.Item)
   field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
+  field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
+  field(:on_bush, 14, type: :bool, json_name: "onBush")
 end
 
 defmodule GameClient.Protobuf.Effect do
@@ -460,6 +504,12 @@ defmodule GameClient.Protobuf.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+end
+
+defmodule GameClient.Protobuf.Bush do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
 defmodule GameClient.Protobuf.PlayerAction do
