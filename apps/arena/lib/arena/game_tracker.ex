@@ -26,6 +26,7 @@ defmodule Arena.GameTracker do
           {:kill, player(), player()}
           | {:damage_taken, player_id(), non_neg_integer()}
           | {:damage_done, player_id(), non_neg_integer()}
+          | {:heal, player_id(), non_neg_integer()}
 
   @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
@@ -54,7 +55,8 @@ defmodule Arena.GameTracker do
           kills: [],
           death: nil,
           damage_taken: 0,
-          damage_done: 0
+          damage_done: 0,
+          health_healed: 0
         }
 
         {player.id, player_data}
@@ -115,6 +117,10 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :damage_done], fn damage_done -> damage_done + amount end)
   end
 
+  defp update_data(data, {:heal, player_id, amount}) do
+    update_in(data, [:players, player_id, :health_healed], fn health_healed -> health_healed + amount end)
+  end
+
   defp generate_results(match_data, winner_id) do
     Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
     |> Enum.map(fn {_player_id, player_data} ->
@@ -131,7 +137,8 @@ defmodule Arena.GameTracker do
         character: player_data.character,
         position: player_data.position,
         damage_taken: player_data.damage_taken,
-        damage_done: player_data.damage_done
+        damage_done: player_data.damage_done,
+        health_healed: player_data.health_healed
       }
     end)
   end
