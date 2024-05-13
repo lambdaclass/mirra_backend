@@ -574,6 +574,10 @@ defmodule Champions.Battle.Simulator do
     take_unit_ids_by_slots(target_team, [1, 2])
   end
 
+  defp choose_targets(caster, %{type: "self"}, _state) do
+    [caster.id]
+  end
+
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
       Enum.sort_by(units, fn unit ->
@@ -953,7 +957,8 @@ defmodule Champions.Battle.Simulator do
     "furthest",
     "all",
     "frontline",
-    "backline"
+    "backline",
+    "self"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
