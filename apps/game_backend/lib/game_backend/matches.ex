@@ -68,13 +68,7 @@ defmodule GameBackend.Matches do
                   quest.reward["amount"]
                 )
 
-              case {updated_match, inserted_currency} do
-                {{:ok, _}, {:ok, _}} ->
-                  {:ok, nil}
-
-                {_, _} ->
-                  {:error, google_user.user.id}
-              end
+              get_operation_result(updated_match, inserted_currency)
             end)
         end)
         |> List.flatten()
@@ -99,4 +93,7 @@ defmodule GameBackend.Matches do
     end)
     |> Map.get(position)
   end
+
+  defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
+  defp get_operation_result(_, _), do: {:error, nil}
 end
