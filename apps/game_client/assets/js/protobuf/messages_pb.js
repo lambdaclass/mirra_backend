@@ -558,7 +558,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.Crate = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.Crate.repeatedFields_, null);
 };
 goog.inherits(proto.Crate, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -6795,6 +6795,13 @@ proto.PowerUp.prototype.setStatus = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.Crate.repeatedFields_ = [4];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -6828,7 +6835,9 @@ proto.Crate.toObject = function(includeInstance, msg) {
   var f, obj = {
     health: jspb.Message.getFieldWithDefault(msg, 1, 0),
     amountOfPowerUps: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
+    status: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
+    proto.Effect.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -6876,6 +6885,11 @@ proto.Crate.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {!proto.CrateStatus} */ (reader.readEnum());
       msg.setStatus(value);
+      break;
+    case 4:
+      var value = new proto.Effect;
+      reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
+      msg.addEffects(value);
       break;
     default:
       reader.skipField();
@@ -6925,6 +6939,14 @@ proto.Crate.serializeBinaryToWriter = function(message, writer) {
     writer.writeEnum(
       3,
       f
+    );
+  }
+  f = message.getEffectsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      4,
+      f,
+      proto.Effect.serializeBinaryToWriter
     );
   }
 };
@@ -6981,6 +7003,44 @@ proto.Crate.prototype.getStatus = function() {
  */
 proto.Crate.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 3, value);
+};
+
+
+/**
+ * repeated Effect effects = 4;
+ * @return {!Array<!proto.Effect>}
+ */
+proto.Crate.prototype.getEffectsList = function() {
+  return /** @type{!Array<!proto.Effect>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 4));
+};
+
+
+/**
+ * @param {!Array<!proto.Effect>} value
+ * @return {!proto.Crate} returns this
+*/
+proto.Crate.prototype.setEffectsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 4, value);
+};
+
+
+/**
+ * @param {!proto.Effect=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.Effect}
+ */
+proto.Crate.prototype.addEffects = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.Effect, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.Crate} returns this
+ */
+proto.Crate.prototype.clearEffectsList = function() {
+  return this.setEffectsList([]);
 };
 
 

@@ -526,6 +526,7 @@ defmodule ArenaLoadTest.Serialization.Crate do
   field(:health, 1, type: :uint64)
   field(:amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps")
   field(:status, 3, type: ArenaLoadTest.Serialization.CrateStatus, enum: true)
+  field(:effects, 4, repeated: true, type: ArenaLoadTest.Serialization.Effect)
 end
 
 defmodule ArenaLoadTest.Serialization.Pool do

@@ -235,7 +235,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: health,
         amount_of_power_ups: amount_of_power_ups,
-        status: :FINE
+        status: :FINE,
+        effects: []
       }
     }
   end

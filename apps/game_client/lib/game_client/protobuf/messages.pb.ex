@@ -496,6 +496,7 @@ defmodule GameClient.Protobuf.Crate do
   field(:health, 1, type: :uint64)
   field(:amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps")
   field(:status, 3, type: GameClient.Protobuf.CrateStatus, enum: true)
+  field(:effects, 4, repeated: true, type: GameClient.Protobuf.Effect)
 end
 
 defmodule GameClient.Protobuf.Pool do

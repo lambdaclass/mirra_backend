@@ -62,10 +62,21 @@ defmodule Arena.Game.Effect do
     |> Map.put(:last_id, last_id)
   end
 
-  def remove_owner_effects(game_state, player_id, owner_id) do
-    update_in(game_state, [:players, player_id, :aditional_info, :effects], fn current_effects ->
-      Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
-    end)
+  def remove_owner_effects(game_state, entity_id, owner_id) do
+    cond do
+      Map.has_key?(game_state.players, entity_id) ->
+        update_in(game_state, [:players, entity_id, :aditional_info, :effects], fn current_effects ->
+          Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
+        end)
+
+      Map.has_key?(game_state.players, entity_id) ->
+        update_in(game_state, [:crates, entity_id, :aditional_info, :effects], fn current_effects ->
+          Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
+        end)
+
+      true ->
+        game_state
+    end
   end
 
   @doc """

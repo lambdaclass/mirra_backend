@@ -132,6 +132,7 @@ defmodule Arena.GameUpdater do
       |> resolve_projectiles_collisions()
       |> explode_projectiles()
       # Pools
+      |> add_pools_collisions()
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
       # Crates
@@ -719,10 +720,11 @@ defmodule Arena.GameUpdater do
            bushes: bushes,
            power_ups: power_ups,
            pools: pools,
-           items: items
+           items: items,
+           crates: crates
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes)
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes) |> Map.merge(crates)
 
     moved_players =
       players
@@ -873,12 +875,37 @@ defmodule Arena.GameUpdater do
     |> Map.put(:crates, updated_crates)
   end
 
+  defp add_pools_collisions(
+         %{
+           players: players,
+           crates: crates,
+           pools: pools
+         } = game_state
+       ) do
+    entities_to_collide_with =
+      Player.alive_players(players)
+      |> Map.merge(crates)
+
+    # updated_pools =
+    #   pools
+    #   |> Map.put(
+    #   :collides_with,
+    #   Physics.check_collisions(value, entities_to_collide_with)
+    # )
+
+    updated_pools = update_collisions(pools, pools, entities_to_collide_with) |> IO.inspect(label: :aver_pools)
+
+    game_state
+    |> Map.put(:pools, updated_pools)
+  end
+
   defp resolve_projectiles_effects_on_collisions(
          %{
            projectiles: projectiles,
            players: players,
            obstacles: obstacles,
-           pools: pools
+           pools: pools,
+           crates: crates
          } = game_state,
          game_config
        ) do
@@ -888,7 +915,12 @@ defmodule Arena.GameUpdater do
           game_state
 
         on_collide_effects ->
-          entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
+          entities_map =
+            Map.merge(pools, obstacles)
+            |> Map.merge(players)
+            |> Map.merge(projectiles)
+            |> Map.merge(crates)
+            |> IO.inspect(label: :aver_crates)
 
           effects_to_apply =
             get_effects_from_config(on_collide_effects.effects, game_config)
@@ -1216,25 +1248,27 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp handle_pools(%{players: players} = game_state, game_config) do
-    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-      Enum.reduce(game_state.pools, game_state, fn {pool_id, pool}, acc ->
-        if pool_id in player.collides_with do
-          add_pool_effects(acc, game_config, player, pool)
+  defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
+    entities = Map.merge(crates, players)
+
+    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+      Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
+        if entity_id in pool.collides_with do
+          add_pool_effects(acc, game_config, entity, pool)
         else
-          Effect.remove_owner_effects(acc, player.id, pool_id)
+          Effect.remove_owner_effects(acc, entity_id, pool_id)
         end
       end)
     end)
   end
 
-  defp add_pool_effects(game_state, game_config, player, pool) do
-    if player.id == pool.aditional_info.owner_id do
+  defp add_pool_effects(game_state, game_config, entity, pool) do
+    if entity.id == pool.aditional_info.owner_id do
       game_state
     else
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        Effect.put_effect_to_entity(game_state, player, pool.id, effect)
+        Effect.put_effect_to_entity(game_state, entity, pool.id, effect)
       end)
     end
   end
@@ -1375,6 +1409,7 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :power_up}), do: :power_ups
   defp get_entity_path(%{category: :projectile}), do: :projectiles
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
+  defp get_entity_path(%{category: :crate}), do: :crates
 
   def get_effects_from_config([], _game_config), do: []
 

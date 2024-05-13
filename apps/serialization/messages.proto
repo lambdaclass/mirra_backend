@@ -210,6 +210,7 @@ message Crate {
   uint64 health = 1;
   uint64 amount_of_power_ups = 2;
   CrateStatus status = 3;
+  repeated Effect effects = 4;
 }
 
 enum CrateStatus {
