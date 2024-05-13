@@ -10,6 +10,10 @@ defmodule GameBackend.CurseOfMirra.Quests do
   alias Ecto.Multi
   import Ecto.Query
 
+  defmacrop custom_comparator_macro(operator, first_value, second_value) do
+    {operator, [context: Elixir, import: Kernel], [first_value, second_value]}
+  end
+
   @doc """
   Get a %Quest{} by the config_id field
 
@@ -52,10 +56,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
   """
   def change_quest(quest, attrs) do
     Quest.changeset(quest, attrs)
-  end
-
-  defmacrop custom_comparator_macro(operator, first_value, second_value) do
-    {operator, [context: Elixir, import: Kernel], [first_value, second_value]}
   end
 
   @doc """
