@@ -689,7 +689,7 @@ defmodule Gateway.Test.Champions do
     end
 
     test "leveling up the Kaline Tree increments the afk rewards", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("KelineTreeAFKRewardsUser")
+      {:ok, user} = Users.register("KalineTreeAFKRewardsUser")
 
       # Check that the initial afk reward rates is not an empty list
       assert Enum.any?(user.kaline_tree_level.afk_reward_rates)
