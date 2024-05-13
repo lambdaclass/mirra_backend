@@ -98,7 +98,7 @@ defmodule Gateway.Test.Champions do
     test "progression", %{socket_tester: socket_tester} do
       muflus = GameBackend.Units.Characters.get_character_by_name("Muflus")
       {:ok, user} = Users.register("LevelUpUser")
-      Currencies.add_currency_by_name!(user.id, "Gold", 9999)
+      Currencies.add_currency_by_name_and_game!(user.id, "Gold", Utils.get_game_id(:champions_of_mirra), 9999)
 
       {:ok, unit} =
         GameBackend.Units.insert_unit(%{
@@ -233,7 +233,8 @@ defmodule Gateway.Test.Champions do
       {:ok, user} = Users.register("Summon user")
       units = Enum.count(user.units)
 
-      {:ok, previous_scrolls} = Currencies.add_currency_by_name!(user.id, "Summon Scrolls", 1)
+      {:ok, previous_scrolls} =
+        Currencies.add_currency_by_name_and_game!(user.id, "Summon Scrolls", Utils.get_game_id(:champions_of_mirra), 1)
 
       {:ok, box} = GameBackend.Gacha.get_box_by_name("Basic Summon")
 
@@ -598,7 +599,12 @@ defmodule Gateway.Test.Champions do
           name: "Epic Axe of Testness",
           config_id: "epic_axe_of_testness_t2",
           upgrades_from_config_id: "epic_axe_of_testness_t1",
-          upgrade_costs: [%{currency_id: Currencies.get_currency_by_name!("Gold").id, amount: gold_upgrade_cost}],
+          upgrade_costs: [
+            %{
+              currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+              amount: gold_upgrade_cost
+            }
+          ],
           upgrades_from_quantity: 3,
           type: "weapon",
           rarity: 1,
@@ -617,7 +623,11 @@ defmodule Gateway.Test.Champions do
       {:ok, item_3} = Items.insert_item(%{user_id: user.id, template_id: epic_axe_tier_1.id})
 
       # Add required gold amount to user
-      Currencies.add_currency(user.id, Currencies.get_currency_by_name!("Gold").id, gold_upgrade_cost)
+      Currencies.add_currency(
+        user.id,
+        Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
+        gold_upgrade_cost
+      )
 
       gold_amount_before_level_up = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
 
@@ -763,8 +773,14 @@ defmodule Gateway.Test.Champions do
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Level up the Kaline Tree again to check that the afk rewards rates have increased
-      Currencies.add_currency_by_name!(claimed_user.id, "Gold", 200)
-      Currencies.add_currency_by_name!(claimed_user.id, "Fertilizer", 200)
+      Currencies.add_currency_by_name_and_game!(claimed_user.id, "Gold", Utils.get_game_id(:champions_of_mirra), 200)
+
+      Currencies.add_currency_by_name_and_game!(
+        claimed_user.id,
+        "Fertilizer",
+        Utils.get_game_id(:champions_of_mirra),
+        200
+      )
 
       SocketTester.level_up_kaline_tree(socket_tester, claimed_user.id)
       fetch_last_message(socket_tester)
