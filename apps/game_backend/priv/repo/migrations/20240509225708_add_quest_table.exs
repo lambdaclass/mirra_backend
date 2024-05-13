@@ -5,9 +5,15 @@ defmodule GameBackend.Repo.Migrations.AddQuestTable do
     create table(:quests) do
       add :description, :string, default: ""
       add :type, :string
+      add :config_id, :integer
       add :target, :integer
-      add :objectives, {:array, :map}
+      add :objective,  :map
+      add :reward, :map
+      add :conditions, {:array, :map}
+
       timestamps()
     end
+
+    create(unique_index(:quests, [:config_id]))
   end
 end
