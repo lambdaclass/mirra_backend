@@ -831,7 +831,8 @@ defmodule Gateway.Test.Champions do
       initial_currencies = %{"Blueprints" => initial_blueprints, "Gold" => initial_gold}
 
       # Add enough blueprints for 1 upgrade
-      {:ok, _} = Currencies.add_currency_by_name!(user.id, "Blueprints", 50)
+      {:ok, _} =
+        Currencies.add_currency_by_name_and_game!(user.id, "Blueprints", Utils.get_game_id(:champions_of_mirra), 50)
 
       # Level up Dungeon Settlements with enough Blueprints and Gold should return an updated user.
       SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
@@ -874,7 +875,8 @@ defmodule Gateway.Test.Champions do
              end)
 
       # Add enough blueprints for 1 upgrade
-      {:ok, _} = Currencies.add_currency_by_name!(user.id, "Blueprints", 50)
+      {:ok, _} =
+        Currencies.add_currency_by_name_and_game!(user.id, "Blueprints", Utils.get_game_id(:champions_of_mirra), 50)
 
       # Level up the Dungeon Settlement
       SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
@@ -942,8 +944,16 @@ defmodule Gateway.Test.Champions do
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Level up the Dungeon Settlements again to check that the afk rewards rates have increased
-      Currencies.add_currency_by_name!(claimed_user.id, "Gold", 200)
-      Currencies.add_currency_by_name!(claimed_user.id, "Blueprints", 200)
+      {:ok, _} =
+        Currencies.add_currency_by_name_and_game!(claimed_user.id, "Gold", Utils.get_game_id(:champions_of_mirra), 200)
+
+      {:ok, _} =
+        Currencies.add_currency_by_name_and_game!(
+          claimed_user.id,
+          "Blueprints",
+          Utils.get_game_id(:champions_of_mirra),
+          200
+        )
 
       SocketTester.level_up_dungeon_settlement(socket_tester, claimed_user.id)
       fetch_last_message(socket_tester)
