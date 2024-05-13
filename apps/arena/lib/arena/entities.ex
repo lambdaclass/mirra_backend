@@ -170,7 +170,8 @@ defmodule Arena.Entities do
         effects: config.effects,
         on_pickup_effects: config.on_pickup_effects,
         mechanics: config.mechanics,
-        pickable: config.pickable
+        pickable: config.pickable,
+        status: :AVAILABLE
       }
     }
   end
