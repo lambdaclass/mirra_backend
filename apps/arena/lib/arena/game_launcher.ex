@@ -37,6 +37,10 @@ defmodule Arena.GameLauncher do
     GenServer.call(__MODULE__, {:join_quick_game, client_id, character_name, player_name})
   end
 
+  def leave(client_id) do
+    GenServer.call(__MODULE__, {:leave, client_id})
+  end
+
   # Callbacks
   @impl true
   def init(_) do
@@ -54,6 +58,11 @@ defmodule Arena.GameLauncher do
        | batch_start_at: batch_start_at,
          clients: clients ++ [{client_id, character_name, player_name, from_pid}]
      }}
+  end
+
+  def handle_call({:leave, client_id}, _, state) do
+    clients = Enum.reject(state.clients, fn {id, _, _, _} -> id == client_id end)
+    {:reply, :ok, %{state | clients: clients}}
   end
 
   @impl true
