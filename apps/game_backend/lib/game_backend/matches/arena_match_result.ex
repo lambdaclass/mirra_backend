@@ -12,15 +12,28 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     field(:deaths, :integer)
     field(:character, :string)
     field(:match_id, Ecto.UUID)
+    field(:position, :integer)
     timestamps()
 
     belongs_to(:user, GameBackend.Users.GoogleUser)
   end
 
+  @required [
+    :result,
+    :kills,
+    :deaths,
+    :character,
+    :match_id,
+    :user_id,
+    :position
+  ]
+
+  @permitted [] ++ @required
+
   def changeset(match_result, attrs) do
     match_result
-    |> cast(attrs, [:result, :kills, :deaths, :character, :match_id, :user_id])
-    |> validate_required([:result, :kills, :deaths, :character, :match_id, :user_id])
+    |> cast(attrs, @permitted)
+    |> validate_required(@required)
     |> validate_number(:kills, greater_than_or_equal_to: 0)
     |> validate_number(:deaths, greater_than_or_equal_to: 0)
     |> validate_inclusion(:result, ["win", "loss", "abandon"])
