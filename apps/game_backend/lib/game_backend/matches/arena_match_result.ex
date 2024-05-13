@@ -13,6 +13,8 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     field(:character, :string)
     field(:match_id, Ecto.UUID)
     field(:position, :integer)
+    field(:damage_done, :integer, default: 0)
+    field(:damage_taken, :integer, default: 0)
     timestamps()
 
     belongs_to(:user, GameBackend.Users.GoogleUser)
@@ -25,7 +27,9 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     :character,
     :match_id,
     :user_id,
-    :position
+    :position,
+    :damage_done,
+    :damage_taken
   ]
 
   @permitted [] ++ @required
@@ -36,6 +40,8 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     |> validate_required(@required)
     |> validate_number(:kills, greater_than_or_equal_to: 0)
     |> validate_number(:deaths, greater_than_or_equal_to: 0)
+    |> validate_number(:damage_done, greater_than_or_equal_to: 0)
+    |> validate_number(:damage_taken, greater_than_or_equal_to: 0)
     |> validate_inclusion(:result, ["win", "loss", "abandon"])
     ## TODO: This enums should actually be read from config
     ##    https://github.com/lambdaclass/mirra_backend/issues/601

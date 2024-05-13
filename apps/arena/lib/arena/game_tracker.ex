@@ -20,8 +20,14 @@ defmodule Arena.GameTracker do
     GenServer.cast(__MODULE__, {:finish_tracking, match_pid, winner_id})
   end
 
-  ## TODO: define events structs or pattern
-  ##    https://github.com/lambdaclass/mirra_backend/issues/601
+  @type player_id :: pos_integer()
+  @type player :: %{id: player_id(), character_name: binary()}
+  @type event ::
+          {:kill, player(), player()}
+          | {:damage_taken, player_id(), non_neg_integer()}
+          | {:damage_done, player_id(), non_neg_integer()}
+
+  @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
     GenServer.cast(__MODULE__, {:push_event, match_pid, event})
   end
@@ -46,7 +52,9 @@ defmodule Arena.GameTracker do
           controller: if(Enum.member?(human_clients, player_to_client[player.id]), do: :human, else: :bot),
           character: player.aditional_info.character_name,
           kills: [],
-          death: nil
+          death: nil,
+          damage_taken: 0,
+          damage_done: 0
         }
 
         {player.id, player_data}
@@ -74,8 +82,15 @@ defmodule Arena.GameTracker do
   end
 
   def handle_cast({:push_event, match_pid, event}, state) do
-    state = update_in(state, [:matches, match_pid], fn data -> update_data(data, event) end)
-    {:noreply, state}
+    case get_in(state, [:matches, match_pid]) do
+      nil ->
+        {:noreply, state}
+
+      match_data ->
+        updated_data = update_data(match_data, event)
+        state = put_in(state, [:matches, match_pid], updated_data)
+        {:noreply, state}
+    end
   end
 
   @impl true
@@ -92,6 +107,14 @@ defmodule Arena.GameTracker do
     |> put_in([:position_on_death], data.position_on_death - 1)
   end
 
+  defp update_data(data, {:damage_taken, player_id, amount}) do
+    update_in(data, [:players, player_id, :damage_taken], fn damage_taken -> damage_taken + amount end)
+  end
+
+  defp update_data(data, {:damage_done, player_id, amount}) do
+    update_in(data, [:players, player_id, :damage_done], fn damage_done -> damage_done + amount end)
+  end
+
   defp generate_results(match_data, winner_id) do
     Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
     |> Enum.map(fn {_player_id, player_data} ->
@@ -106,7 +129,9 @@ defmodule Arena.GameTracker do
         ##    https://github.com/lambdaclass/mirra_backend/issues/601
         deaths: if(player_data.death == nil, do: 0, else: 1),
         character: player_data.character,
-        position: player_data.position
+        position: player_data.position,
+        damage_taken: player_data.damage_taken,
+        damage_done: player_data.damage_done
       }
     end)
   end

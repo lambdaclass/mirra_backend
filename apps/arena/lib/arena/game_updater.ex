@@ -374,6 +374,8 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_done, player_id, damage}, state) do
+    GameTracker.push_event(self(), {:damage_done, player_id, damage})
+
     state =
       update_in(state, [:game_state, :damage_done, player_id], fn
         nil -> damage
@@ -384,6 +386,8 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_taken, player_id, damage}, state) do
+    GameTracker.push_event(self(), {:damage_taken, player_id, damage})
+
     state =
       update_in(state, [:game_state, :damage_taken, player_id], fn
         nil -> damage
