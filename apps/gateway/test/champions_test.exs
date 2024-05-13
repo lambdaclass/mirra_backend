@@ -679,7 +679,7 @@ defmodule Gateway.Test.Champions do
     end
 
     test "leveling up the Kaline Tree increments the afk rewards", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("AfkRewardsUser")
+      {:ok, user} = Users.register("KelineTreeAFKRewardsUser")
 
       # Check that the initial afk reward rates is not an empty list
       assert Enum.any?(user.kaline_tree_level.afk_reward_rates)
@@ -782,6 +782,169 @@ defmodule Gateway.Test.Champions do
                    previous_rate =
                      Enum.find(
                        leveled_up_user.kaline_tree_level.afk_reward_rates,
+                       &(&1.currency.name == rate.currency.name)
+                     ).rate
+
+                   afk_reward_rate =
+                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
+
+                   new_rate = previous_rate + afk_reward_rate
+                   rate.rate > previous_rate
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+    end
+  end
+
+  describe "Dungeon Settlement" do
+    test "Dungeon Settlement", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("Dungeon Settlement User")
+
+      # Dungeon Settlement level is 1 when the user is created.
+      initial_dungeon_settlement_level = user.dungeon_settlement_level.level
+      assert initial_dungeon_settlement_level == 1
+
+      initial_blueprints = Currencies.get_amount_of_currency_by_name(user.id, "Blueprints")
+      initial_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+
+      assert initial_blueprints == 0
+      # Due to sample currencies
+      assert initial_gold == 100
+      initial_currencies = %{"Blueprints" => initial_blueprints, "Gold" => initial_gold}
+
+      # Add enough blueprints for 1 upgrade
+      {:ok, _} = Currencies.add_currency_by_name!(user.id, "Blueprints", 50)
+
+      # Level up Dungeon Settlements with enough Blueprints and Gold should return an updated user.
+      SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
+      assert leveled_up_user.dungeon_settlement_level.level == initial_dungeon_settlement_level + 1
+
+      # Currency should be deducted
+      Enum.each(user.dungeon_settlement_level.level_up_costs, fn currency_cost ->
+        assert Currencies.get_amount_of_currency_by_name(user.id, currency_cost.currency.name) ==
+                 (Map.get(initial_currencies, currency_cost.currency.name) - currency_cost.amount) |> max(0)
+      end)
+
+      # Level up Dungeon Settlements without enough blueprints should return an error.
+      SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
+
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+    end
+
+    test "leveling up the Dungeon Settlements increments the afk rewards", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("DungeonSettlementAFKRewardsUser")
+
+      # Check that the initial afk reward rates is not an empty list
+      assert Enum.any?(user.dungeon_settlement_level.afk_reward_rates)
+
+      # Check that supply afk reward rates are 0 initially
+      rewardable_currencies = ["Supplies"]
+
+      assert Enum.all?(user.dungeon_settlement_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   rate.rate == 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+
+      # Add enough blueprints for 1 upgrade
+      {:ok, _} = Currencies.add_currency_by_name!(user.id, "Blueprints", 50)
+
+      # Level up the Dungeon Settlement
+      SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
+
+      # Check that any afk reward rates exist
+      assert Enum.any?(leveled_up_user.dungeon_settlement_level.afk_reward_rates)
+
+      # Check that supply afk reward rate is greater than 0
+      assert Enum.all?(leveled_up_user.dungeon_settlement_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   rate.rate > 0
+
+                 false ->
+                   rate.rate == 0
+               end
+             end)
+
+      # Claim afk rewards
+      currencies_before_claiming = leveled_up_user.currencies
+
+      # Simulate waiting 2 seconds before claiming the rewards, to let the rewards accumulate
+      seconds_to_wait = 2
+      {:ok, leveled_up_user_with_rewards} = Users.get_user(leveled_up_user.id)
+
+      {:ok, _} =
+        leveled_up_user_with_rewards
+        |> GameBackend.Users.User.changeset(%{
+          last_kaline_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+        })
+        |> Repo.update()
+
+      SocketTester.claim_kaline_afk_rewards(socket_tester, leveled_up_user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
+
+      # Check that the user has received supplies
+      # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
+      # We add 10% to the time waited to account for the time it takes to process the message.
+      assert Enum.all?(claimed_user.currencies, fn currency ->
+               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
+
+               case Enum.find(
+                      claimed_user.dungeon_settlement_level.afk_reward_rates,
+                      &(&1.currency.name == currency.currency.name)
+                    ) do
+                 nil ->
+                   # If the currency is not in the afk rewards rates, we don't consider it.
+                   true
+
+                 rate ->
+                   reward_rate = rate.rate
+
+                   currency_before_claim =
+                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
+
+                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
+               end
+             end)
+
+      # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
+
+      # Level up the Dungeon Settlements again to check that the afk rewards rates have increased
+      Currencies.add_currency_by_name!(claimed_user.id, "Gold", 200)
+      Currencies.add_currency_by_name!(claimed_user.id, "Blueprints", 200)
+
+      SocketTester.level_up_dungeon_settlement(socket_tester, claimed_user.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
+      current_dungeon_settlement_level_id = more_advanced_user.dungeon_settlement_level.id
+
+      current_level_afk_rewards_rates =
+        Repo.all(from(r in AfkRewardRate, where: r.dungeon_settlement_level_id == ^current_dungeon_settlement_level_id))
+        |> Repo.preload(:currency)
+
+      assert Enum.all?(more_advanced_user.dungeon_settlement_level.afk_reward_rates, fn rate ->
+               case rate.currency.name in rewardable_currencies do
+                 true ->
+                   previous_rate =
+                     Enum.find(
+                       leveled_up_user.dungeon_settlement_level.afk_reward_rates,
                        &(&1.currency.name == rate.currency.name)
                      ).rate
 
