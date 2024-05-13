@@ -635,7 +635,12 @@ defmodule Champions.Test.BattleTest do
                         }
                       ]
                     })
-                  ]
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
                 })
             }
           ],
@@ -652,8 +657,7 @@ defmodule Champions.Test.BattleTest do
         })
         |> Characters.insert_character()
 
-      {:ok, loser_unit} =
-        TestUtils.build_unit(%{character_id: loser_character.id}) |> Units.insert_unit()
+      {:ok, loser_unit} = TestUtils.build_unit(%{character_id: loser_character.id}) |> Units.insert_unit()
 
       {:ok, loser_unit} = Units.get_unit(loser_unit.id)
 
@@ -710,10 +714,11 @@ defmodule Champions.Test.BattleTest do
 
     test "Nearest target is untargetable, so unit picks another target" do
       # We will set up a battle between a two units team vs a one unit team.
-      # Team 1 will have a unit that tags their ally as untargetable, and another unit that can kill their target in one hit.
-      # Team 2 will have a unit that can kill their furthest target in one hit.
+      # Team 1 will have a unit that tags theirself as untargetable, and another unit that can kill their target in one hit.
+      # Team 2 will have a unit that can kill their nearest target in one hit. Team 1 untargetable unit will be the nearest target, so that we can test that the untargetable tag works.
       # The cooldowns are set up so that the untargetable tag is applied before the Team 2 attack is executed, and the other Team 1 unit has a longer cooldown than the Team 2 unit.
-      # The battle should end in a victory for Team 1.
+      # The battle should end in a victory in timeout, as the Team 1 targetable unit will be killed before it is able to perform an attack, and the untargetable unit will never be attacked.
+      # If the untargetable tag wouldn't work, it would be a victory for Team 2.
 
       skill_cooldown = 5
 
@@ -740,9 +745,7 @@ defmodule Champions.Test.BattleTest do
                     })
                   ],
                   targeting_strategy: %{
-                    count: 1,
-                    type: "nearest",
-                    target_allies: true
+                    type: "self"
                   }
                 })
             }
@@ -750,18 +753,18 @@ defmodule Champions.Test.BattleTest do
           cooldown: skill_cooldown * @miliseconds_per_step
         })
 
-      {:ok, team_1_nearest} =
+      {:ok, team_1_untargetable} =
         TestUtils.build_character(%{
-          name: "Team 1 nearest Character",
+          name: "Team 1 untargetable Character",
           basic_skill: untargetable_params,
           ultimate_skill: TestUtils.build_skill(%{name: "Untargetable Empty"})
         })
         |> Characters.insert_character()
 
-      {:ok, team_1_nearest_unit} =
-        TestUtils.build_unit(%{character_id: team_1_nearest.id, slot: 1}) |> Units.insert_unit()
+      {:ok, team_1_untargetable_unit} =
+        TestUtils.build_unit(%{character_id: team_1_untargetable.id, slot: 1}) |> Units.insert_unit()
 
-      {:ok, team_1_nearest_unit} = Units.get_unit(team_1_nearest_unit.id)
+      {:ok, team_1_untargetable_unit} = Units.get_unit(team_1_untargetable_unit.id)
 
       team_1_furthest_params =
         TestUtils.build_skill(%{
@@ -828,7 +831,7 @@ defmodule Champions.Test.BattleTest do
                   ],
                   targeting_strategy: %{
                     count: 1,
-                    type: "furthest",
+                    type: "nearest",
                     target_allies: false
                   }
                 })
@@ -852,19 +855,11 @@ defmodule Champions.Test.BattleTest do
       {:ok, team_2_unit} = Units.get_unit(team_2_unit.id)
 
       # Battle result is timeout if team_1_furthest doesn't get to attack.
-      # This means that team_1_nearest applied the untargetable tag in time and team_2_unit attacked team_1_nearest.
+      # This means that team_1_untargetable applied the untargetable tag in time and team_2_unit attacked team_1_furthest.
+      # We set an exaggerated amount of steps to make sure that the battle ends in timeout.
       assert "timeout" ==
-               Champions.Battle.Simulator.run_battle([team_1_nearest_unit, team_1_furthest_unit], [team_2_unit],
-                 maximum_steps: skill_cooldown + 1
-               ).result
-
-      # If team_1_furthest gets to attack, then team_1 wins
-      assert "team_1" ==
-               Champions.Battle.Simulator.run_battle(
-                 [team_1_furthest_unit, team_1_nearest_unit],
-                 [team_2_unit],
-                 # Enough steps for team_1_furthest to attack
-                 maximum_steps: skill_cooldown + 3
+               Champions.Battle.Simulator.run_battle([team_1_untargetable_unit, team_1_furthest_unit], [team_2_unit],
+                 maximum_steps: skill_cooldown + 1000
                ).result
     end
   end
