@@ -1,6 +1,6 @@
 defmodule GameBackend.Quests.DailyQuest do
   @moduledoc """
-
+    Relation between users and quests, will determine if a quest is completed or no
   """
 
   use GameBackend.Schema
