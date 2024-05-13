@@ -13,7 +13,8 @@ defmodule GameBackend.Matches do
     currency_config = Application.get_env(:game_backend, :currencies_config)
 
     Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
-      changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
+      attrs = Map.put(result, "google_user_id", result["user_id"])
+      changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
       {:ok, google_user} = Users.get_google_user(result["user_id"])
 
       amount_of_trophies = Currencies.get_amount_of_currency_by_name(google_user.user.id, "Trophies")
