@@ -138,6 +138,14 @@ end
 # App configuration: game_backend #
 ###################################
 
+if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
+  {:ok, currency_config_json} =
+    "./apps/game_backend/priv/currencies_rules.json"
+    |> File.read()
+
+  config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
+end
+
 ##################################
 # App configuration: game_client #
 ##################################

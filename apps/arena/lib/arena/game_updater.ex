@@ -165,7 +165,10 @@ defmodule Arena.GameUpdater do
         )
 
       {:ended, winner} ->
-        state = put_in(state, [:game_state, :status], :ENDED)
+        state =
+          put_in(state, [:game_state, :status], :ENDED)
+          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
         report_game_results(state, winner.id)
@@ -335,6 +338,7 @@ defmodule Arena.GameUpdater do
         count + 1
       end)
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
+      |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
@@ -503,11 +507,13 @@ defmodule Arena.GameUpdater do
           kills: player.aditional_info.kill_count,
           ## TODO: this only works because you can only die once
           deaths: if(Player.alive?(player), do: 0, else: 1),
-          character: player.aditional_info.character_name
+          character: player.aditional_info.character_name,
+          match_id: Ecto.UUID.generate(),
+          position: Map.get(state.game_state.positions, client_id)
         }
       end)
 
-    payload = Jason.encode!(%{match_id: Ecto.UUID.generate(), results: results})
+    payload = Jason.encode!(%{results: results})
 
     ## TODO: we should be doing this in a better way, both the url and the actual request
     ## maybe a separate GenServer that gets the results and tries to send them to the server?
@@ -559,6 +565,7 @@ defmodule Arena.GameUpdater do
       })
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(:positions, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -1377,6 +1384,15 @@ defmodule Arena.GameUpdater do
     Enum.map(effect_list, fn effect_name ->
       Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
     end)
+  end
+
+  defp put_player_position(%{positions: positions} = game_state, player_id) do
+    next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
+
+    {client_id, _player_id} =
+      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
+    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
   end
 
   ##########################

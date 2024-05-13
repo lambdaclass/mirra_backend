@@ -1165,21 +1165,37 @@
     {
       "name": "fake_item",
       "radius": 200.0,
-      "effects": [],
-      "on_pickup_effects": {},
-      "mechanics": {
-        "create_item": {
-          "name": "fake_item",
-          "damage_delay_ms": 100,
-          "damage_type": {
-            "circle_hit": {
-              "damage": 64,
-              "range": 1000.0,
-              "offset": 0
-            }
-          }
-        }
-      }
+      "effects": [
+        "golden_clock_effect"
+      ]
+    },
+    {
+      "name": "magic_boots",
+      "radius": 200.0,
+      "effects": [
+        "magic_boots_effect"
+      ]
+    },
+    {
+      "name": "mirra_blessing",
+      "radius": 200.0,
+      "effects": [
+        "mirra_blessing_effect"
+      ]
+    },
+    {
+      "name": "giant",
+      "radius": 200.0,
+      "effects": [
+        "giant_effect"
+      ]
+    },
+    {
+      "name": "fake_item",
+      "radius": 200.0,
+      "effects": [
+        "giant_effect"
+      ]
     }
   ],
   "characters": [
@@ -1351,7 +1367,7 @@
       "one_time_application": true,
       "effect_mechanics": {
         "speed_boost": {
-          "amount": 14,
+          "modifier": 0.5,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }
@@ -1377,6 +1393,34 @@
         "damage": {
           "damage": 17,
           "effect_delay_ms": 220,
+          "execute_multiple_times": true
+        }
+      }
+    },
+    {
+      "name": "giant_effect",
+      "duration_ms": 8000,
+      "remove_on_action": false,
+      "one_time_application": true,
+      "effect_mechanics": {
+        "modify_radius": {
+          "modifier": 1.0,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        },
+        "damage_change": {
+          "modifier": 0.2,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": true
+        },
+        "speed_boost": {
+          "modifier": -0.25,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        },
+        "defense_change": {
+          "modifier": 0.3,
+          "effect_delay_ms": 0,
           "execute_multiple_times": true
         }
       }
