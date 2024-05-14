@@ -49,6 +49,15 @@ defmodule GameClient.Protobuf.PlayerActionType do
   field(:EXECUTING_SKILL_3, 5)
 end
 
+defmodule GameClient.Protobuf.TrapStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PREPARED, 0)
+  field(:TRIGGERED, 1)
+end
+
 defmodule GameClient.Protobuf.Direction do
   @moduledoc false
 
@@ -520,6 +529,7 @@ defmodule GameClient.Protobuf.Trap do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:name, 2, type: :string)
+  field(:status, 3, type: GameClient.Protobuf.TrapStatus, enum: true)
 end
 
 defmodule GameClient.Protobuf.PlayerAction do

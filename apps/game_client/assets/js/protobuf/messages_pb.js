@@ -63,6 +63,7 @@ goog.exportSymbol('proto.PowerUpstatus', null, global);
 goog.exportSymbol('proto.Projectile', null, global);
 goog.exportSymbol('proto.ProjectileStatus', null, global);
 goog.exportSymbol('proto.Trap', null, global);
+goog.exportSymbol('proto.TrapStatus', null, global);
 goog.exportSymbol('proto.UseItem', null, global);
 goog.exportSymbol('proto.Zone', null, global);
 /**
@@ -7322,7 +7323,8 @@ proto.Trap.prototype.toObject = function(opt_includeInstance) {
 proto.Trap.toObject = function(includeInstance, msg) {
   var f, obj = {
     ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    name: jspb.Message.getFieldWithDefault(msg, 2, "")
+    name: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    status: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -7367,6 +7369,10 @@ proto.Trap.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setName(value);
       break;
+    case 3:
+      var value = /** @type {!proto.TrapStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7410,6 +7416,13 @@ proto.Trap.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7446,6 +7459,24 @@ proto.Trap.prototype.getName = function() {
  */
 proto.Trap.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional TrapStatus status = 3;
+ * @return {!proto.TrapStatus}
+ */
+proto.Trap.prototype.getStatus = function() {
+  return /** @type {!proto.TrapStatus} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {!proto.TrapStatus} value
+ * @return {!proto.Trap} returns this
+ */
+proto.Trap.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
 
@@ -9007,6 +9038,14 @@ proto.PlayerActionType = {
   EXECUTING_SKILL_1: 3,
   EXECUTING_SKILL_2: 4,
   EXECUTING_SKILL_3: 5
+};
+
+/**
+ * @enum {number}
+ */
+proto.TrapStatus = {
+  PREPARED: 0,
+  TRIGGERED: 1
 };
 
 goog.object.extend(exports, proto);

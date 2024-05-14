@@ -49,6 +49,15 @@ defmodule Arena.Serialization.PlayerActionType do
   field(:EXECUTING_SKILL_3, 5)
 end
 
+defmodule Arena.Serialization.TrapStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PREPARED, 0)
+  field(:TRIGGERED, 1)
+end
+
 defmodule Arena.Serialization.Direction do
   @moduledoc false
 
@@ -520,6 +529,7 @@ defmodule Arena.Serialization.Trap do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:name, 2, type: :string)
+  field(:status, 3, type: Arena.Serialization.TrapStatus, enum: true)
 end
 
 defmodule Arena.Serialization.PlayerAction do

@@ -233,6 +233,7 @@ message Bush {
 message Trap {
   uint64 owner_id = 1;
   string name = 2;
+  TrapStatus status = 3;
 }
 
 message PlayerAction {
@@ -248,6 +249,11 @@ enum PlayerActionType {
     EXECUTING_SKILL_1 = 3;
     EXECUTING_SKILL_2 = 4;
     EXECUTING_SKILL_3 = 5;
+}
+
+enum TrapStatus{
+  PREPARED = 0;
+  TRIGGERED = 1;
 }
 
 /*
