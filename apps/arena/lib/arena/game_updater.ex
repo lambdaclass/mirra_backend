@@ -685,7 +685,7 @@ defmodule Arena.GameUpdater do
 
     activated_traps =
       Enum.filter(game_state.traps, fn {_trap_id, trap} ->
-        trap.activate_at > now
+        trap.activate_at < now
       end)
 
     {game_state, traps} =
