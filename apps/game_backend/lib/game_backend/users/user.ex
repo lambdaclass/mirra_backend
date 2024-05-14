@@ -18,7 +18,6 @@ defmodule GameBackend.Users.User do
     field(:username, :string)
     field(:level, :integer)
     field(:experience, :integer)
-    field(:last_afk_reward_claim, :utc_datetime)
     field(:last_daily_reward_claim_at, :utc_datetime)
     field(:last_daily_reward_claim, :string)
     field(:last_kaline_afk_reward_claim, :utc_datetime)
@@ -43,7 +42,6 @@ defmodule GameBackend.Users.User do
     |> cast(attrs, [
       :game_id,
       :username,
-      :last_afk_reward_claim,
       :last_daily_reward_claim_at,
       :last_daily_reward_claim,
       :last_kaline_afk_reward_claim,
