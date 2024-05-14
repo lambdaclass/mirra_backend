@@ -3,7 +3,7 @@ defmodule GameBackend.Repo.Migrations.AddQuestTable do
 
   def change do
     create table(:quests) do
-      add :description, :string, default: ""
+      add :description, :string
       add :type, :string
       add :config_id, :integer
       add :target, :integer
