@@ -139,6 +139,8 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
+    # Traps
+
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -566,6 +568,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
       |> Map.put(:positions, %{})
+      |> Map.put(:traps, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,

@@ -6,6 +6,7 @@ defmodule Arena.Game.Player do
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
+  alias Arena.Game.Item
 
   def add_action(player, action) do
     Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
@@ -280,11 +281,14 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-        end)
-        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+        game_state =
+          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
+          end)
+          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+
+        Item.do_mechanics(game_state, player, item.mechanics)
     end
   end
 
