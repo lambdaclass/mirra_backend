@@ -812,22 +812,20 @@ defmodule Arena.GameUpdater do
   end
 
   defp resolve_players_collisions_with_items(game_state) do
-    player_ids = Enum.map(game_state.players, fn {player_id, _player} -> player_id end)
-
-    {game_state, items} =
-      Enum.reduce(player_ids, {game_state, game_state.items}, fn player_id, {game_state, items_acc} ->
-        player = Map.get(game_state.players, player_id)
-
+    {players, items} =
+      Enum.reduce(game_state.players, {game_state.players, game_state.items}, fn {_player_id, player},
+                                                                                 {players_acc, items_acc} ->
         case find_collided_item(player.collides_with, items_acc) do
           nil ->
-            {game_state, items_acc}
+            {players_acc, items_acc}
 
           item ->
-            process_item(game_state, player, item, items_acc)
+            process_item(player, item, players_acc, items_acc)
         end
       end)
 
     game_state
+    |> Map.put(:players, players)
     |> Map.put(:items, items)
   end
 
@@ -1241,12 +1239,12 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp process_item(game_state, player, item, items_acc) do
+  defp process_item(player, item, players_acc, items_acc) do
     if Player.inventory_full?(player) do
-      {game_state, items_acc}
+      {players_acc, items_acc}
     else
-      game_state = Player.store_item(game_state, player, item.aditional_info)
-      {game_state, Map.delete(items_acc, item.id)}
+      player = Player.store_item(player, item.aditional_info)
+      {Map.put(players_acc, player.id, player), Map.delete(items_acc, item.id)}
     end
   end
 

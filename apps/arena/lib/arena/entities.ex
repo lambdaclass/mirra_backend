@@ -170,10 +170,7 @@ defmodule Arena.Entities do
       aditional_info: %{
         name: config.name,
         effects: config.effects,
-        on_pickup_effects: config.on_pickup_effects,
-        mechanics: config.mechanics,
-        pickable: config.pickable,
-        status: :AVAILABLE
+        mechanics: config.mechanics
       }
     }
   end

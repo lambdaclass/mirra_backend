@@ -6,7 +6,6 @@ defmodule Arena.Game.Player do
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
-  alias Arena.Game.Item
 
   def add_action(player, action) do
     Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
@@ -267,16 +266,8 @@ defmodule Arena.Game.Player do
     |> round()
   end
 
-  def store_item(game_state, player, item) do
-    player =
-      if item.pickable do
-        put_in(player, [:aditional_info, :inventory], item)
-      else
-        player
-      end
-
-    game_state = put_in(game_state, [:players, player.id], player)
-    Item.do_pickup_effect(game_state, player, item, item.on_pickup_effects)
+  def store_item(player, item) do
+    put_in(player, [:aditional_info, :inventory], item)
   end
 
   def inventory_full?(player) do
@@ -289,14 +280,11 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        game_state =
-          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-          end)
-          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
-
-        Item.do_mechanic(game_state, player, item.mechanics)
+        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
+        end)
+        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
     end
   end
 
