@@ -118,6 +118,7 @@ defmodule Arena.GameUpdater do
       |> remove_expired_effects()
       |> remove_effects_on_action()
       |> reset_players_effects()
+      |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
       |> reduce_players_cooldowns(time_diff)
@@ -137,7 +138,6 @@ defmodule Arena.GameUpdater do
       |> remove_expired_pools(now)
       # Crates
       |> handle_destroyed_crates(state.game_config)
-      |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)

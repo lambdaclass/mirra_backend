@@ -152,42 +152,26 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  def apply_effect_mechanic(%{players: players, pools: pools, crates: crates} = game_state) do
-    game_state =
-      Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
-        if crate.aditional_info.status == :FINE do
-          crate =
-            Enum.reduce(crate.aditional_info.effects, crate, fn effect, crate ->
-              apply_effect_mechanic(crate, effect, game_state)
-            end)
+  @doc """
+  Receives the game state.
+  Gets the desired entities to apply effects to.
+  Triggers the effect mechanic to those entities.
+  Current affected entities: pools, crates, players.
+  """
+  def apply_effect_mechanic_to_entities(game_state) do
+    entities_to_apply = Map.merge(game_state.crates, game_state.players) |> Map.merge(game_state.pools)
 
-          put_in(game_state, [:crates, crate_id], crate)
-        else
-          game_state
-        end
-      end)
+    Enum.reduce(entities_to_apply, game_state, fn {_entity_id, entity}, game_state ->
+      if Entities.alive?(entity) do
+        entity =
+          Enum.reduce(entity.aditional_info.effects, entity, fn effect, entity ->
+            apply_effect_mechanic(entity, effect, game_state)
+          end)
 
-    game_state =
-      Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-        if Player.alive?(player) do
-          player =
-            Enum.reduce(player.aditional_info.effects, player, fn effect, player ->
-              apply_effect_mechanic(player, effect, game_state)
-            end)
-
-          put_in(game_state, [:players, player.id], player)
-        else
-          game_state
-        end
-      end)
-
-    Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
-      pool =
-        Enum.reduce(pool.aditional_info.effects, pool, fn effect, pool ->
-          apply_effect_mechanic(pool, effect, game_state)
-        end)
-
-      put_in(game_state, [:pools, pool.id], pool)
+        Entities.update_entity(entity, game_state)
+      else
+        game_state
+      end
     end)
   end
 
@@ -260,11 +244,11 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_effect_mechanics(game_state, player, _effect, {:buff_pool, buff_attributes}) do
-    Map.get(game_state.pools, player.id)
+  defp do_effect_mechanics(game_state, entity, _effect, {:buff_pool, buff_attributes}) do
+    Map.get(game_state.pools, entity.id)
     |> case do
       nil ->
-        player
+        entity
 
       pool ->
         update_in(pool, [:aditional_info, :stat_multiplier], fn
@@ -280,17 +264,17 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_effect_mechanics(_game_state, player, _effect, {:refresh_stamina, _refresh_stamina}) do
-    put_in(player, [:aditional_info, :available_stamina], player.aditional_info.max_stamina)
+  defp do_effect_mechanics(_game_state, entity, _effect, {:refresh_stamina, _refresh_stamina}) do
+    Entities.refresh_stamina(entity)
   end
 
-  defp do_effect_mechanics(_game_state, player, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
-    put_in(player, [:aditional_info, :cooldowns], %{})
+  defp do_effect_mechanics(_game_state, entity, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
+    Entities.refresh_cooldowns(entity)
   end
 
   ## Sink for mechanics that don't do anything
-  defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
-    player
+  defp do_effect_mechanics(_game_state, entity, _effect, _mechanic) do
+    entity
   end
 
   defp maybe_send_to_killfeed(%{category: :player} = entity, pool_owner_id) do

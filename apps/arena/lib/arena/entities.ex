@@ -356,4 +356,28 @@ defmodule Arena.Entities do
 
   def take_damage(%{category: :player} = entity, damage), do: Player.take_damage(entity, damage)
   def take_damage(%{category: :crate} = entity, damage), do: Crate.take_damage(entity, damage)
+
+  def alive?(%{category: :player} = entity), do: Player.alive?(entity)
+  def alive?(%{category: :crate} = entity), do: Crate.alive?(entity)
+  def alive?(%{category: :pool} = _entity), do: true
+
+  def update_entity(%{category: :player} = entity, game_state) do
+    put_in(game_state, [:players, entity.id], entity)
+  end
+
+  def update_entity(%{category: :crate} = entity, game_state) do
+    put_in(game_state, [:crates, entity.id], entity)
+  end
+
+  def update_entity(%{category: :pool} = entity, game_state) do
+    put_in(game_state, [:pools, entity.id], entity)
+  end
+
+  def refresh_stamina(%{category: :player} = entity) do
+    put_in(entity, [:aditional_info, :available_stamina], entity.aditional_info.max_stamina)
+  end
+
+  def refresh_cooldowns(%{category: :player} = entity) do
+    put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
 end
