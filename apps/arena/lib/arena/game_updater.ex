@@ -402,7 +402,9 @@ defmodule Arena.GameUpdater do
       random_position_in_map(
         item_config.radius,
         state.game_state.external_wall,
-        state.game_state.obstacles
+        state.game_state.obstacles,
+        state.game_state.external_wall.position,
+        state.game_state.external_wall.radius
       )
 
     item = Entities.new_item(last_id, position, item_config)
@@ -1138,15 +1140,15 @@ defmodule Arena.GameUpdater do
     distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
 
     Enum.reduce(1..amount//1, game_state, fn _, game_state ->
-      random_x =
-        victim.position.x +
-          Enum.random(-distance_to_power_up..distance_to_power_up)
+      random_position =
+        random_position_in_map(
+          game_config.power_ups.power_up.radius,
+          game_state.external_wall,
+          game_state.obstacles,
+          victim.position,
+          distance_to_power_up
+        )
 
-      random_y =
-        victim.position.y +
-          Enum.random(-distance_to_power_up..distance_to_power_up)
-
-      random_position = %{x: random_x, y: random_y}
       last_id = game_state.last_id + 1
 
       power_up =
@@ -1248,10 +1250,10 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp random_position_in_map(object_radius, external_wall, obstacles) do
-    integer_radius = trunc(external_wall.radius - object_radius)
-    x = Enum.random(-integer_radius..integer_radius) / 1.0
-    y = Enum.random(-integer_radius..integer_radius) / 1.0
+  defp random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius) do
+    integer_radius = trunc(available_radius - object_radius)
+    x = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.x
+    y = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.y
 
     circle = %{
       id: 1,
@@ -1274,7 +1276,7 @@ defmodule Arena.GameUpdater do
 
     case Physics.check_collisions(circle, entities_to_collide_with) do
       [^external_wall_id | []] -> circle.position
-      _ -> random_position_in_map(object_radius, external_wall, obstacles)
+      _ -> random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius)
     end
   end
 
