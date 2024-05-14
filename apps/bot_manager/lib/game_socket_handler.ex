@@ -26,8 +26,8 @@ defmodule BotManager.GameSocketHandler do
   #######################
 
   def handle_connect(_conn, state) do
-    # send(self(), :decide_action)
-    # send(self(), :perform_action)
+    send(self(), :decide_action)
+    send(self(), :perform_action)
     {:ok, state}
   end
 
