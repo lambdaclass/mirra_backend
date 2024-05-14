@@ -3,6 +3,8 @@ defmodule Arena.Entities do
   Entities manager.
   """
   alias Arena.Configuration
+  alias Arena.Game.Player
+  alias Arena.Game.Crate
 
   def new_player(id, character_name, player_name, position, direction, config, now) do
     character = Configuration.get_character_config(character_name, config)
@@ -351,4 +353,7 @@ defmodule Arena.Entities do
   defp get_shape("line"), do: :line
   defp get_shape("point"), do: :point
   defp get_shape(_), do: nil
+
+  def take_damage(%{category: :player} = entity, damage), do: Player.take_damage(entity, damage)
+  def take_damage(%{category: :crate} = entity, damage), do: Crate.take_damage(entity, damage)
 end

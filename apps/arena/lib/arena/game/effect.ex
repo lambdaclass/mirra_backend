@@ -5,6 +5,7 @@ defmodule Arena.Game.Effect do
 
   alias Arena.GameUpdater
   alias Arena.Game.Player
+  alias Arena.Entities
 
   @doc """
   Add an effect to any kind of entity
@@ -151,7 +152,21 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  def apply_effect_mechanic(%{players: players, pools: pools} = game_state) do
+  def apply_effect_mechanic(%{players: players, pools: pools, crates: crates} = game_state) do
+    game_state =
+      Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
+        if crate.aditional_info.status == :FINE do
+          crate =
+            Enum.reduce(crate.aditional_info.effects, crate, fn effect, crate ->
+              apply_effect_mechanic(crate, effect, game_state)
+            end)
+
+          put_in(game_state, [:crates, crate_id], crate)
+        else
+          game_state
+        end
+      end)
+
     game_state =
       Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
         if Player.alive?(player) do
@@ -176,10 +191,10 @@ defmodule Arena.Game.Effect do
     end)
   end
 
-  def apply_effect_mechanic(player, effect, game_state) do
+  defp apply_effect_mechanic(entity, effect, game_state) do
     now = System.monotonic_time(:millisecond)
 
-    Enum.reduce(effect.effect_mechanics, player, fn {mechanic_name, mechanic_params} = mechanic, player ->
+    Enum.reduce(effect.effect_mechanics, entity, fn {mechanic_name, mechanic_params} = mechanic, entity ->
       execute_multiple_times? =
         mechanic_params.execute_multiple_times or is_nil(Map.get(mechanic_params, :last_application_time))
 
@@ -188,45 +203,51 @@ defmodule Arena.Game.Effect do
           now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms
 
       if execute_multiple_times? and enough_time_passed? do
-        do_effect_mechanics(game_state, player, effect, mechanic)
+        do_effect_mechanics(game_state, entity, effect, mechanic)
         |> put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
       else
-        player
+        entity
       end
     end)
   end
 
-  defp do_effect_mechanics(game_state, player, effect, {:pull, pull_params}) do
+  defp do_effect_mechanics(game_state, entity, effect, {:pull, pull_params}) do
     case Map.get(game_state.pools, effect.owner_id) do
       nil ->
-        player
+        entity
 
-      %{position: pool_position} when pool_position == player.position ->
-        player
+      %{position: pool_position} when pool_position == entity.position ->
+        entity
 
       pool ->
-        if player.aditional_info.damage_immunity do
-          player
+        if entity.aditional_info.damage_immunity do
+          entity
         else
-          direction = Physics.get_direction_from_positions(player.position, pool.position)
+          direction = Physics.get_direction_from_positions(entity.position, pool.position)
 
-          pull_foce =
+          pull_force =
             pull_params.force + pull_params.force * pool.aditional_info.stat_multiplier
 
-          Physics.move_entity_to_direction(player, direction, pull_foce, game_state.external_wall, game_state.obstacles)
-          |> Map.put(:aditional_info, player.aditional_info)
-          |> Map.put(:collides_with, player.collides_with)
+          Physics.move_entity_to_direction(
+            entity,
+            direction,
+            pull_force,
+            game_state.external_wall,
+            game_state.obstacles
+          )
+          |> Map.put(:aditional_info, entity.aditional_info)
+          |> Map.put(:collides_with, entity.collides_with)
         end
     end
   end
 
-  defp do_effect_mechanics(game_state, player, effect, {:damage, damage_params}) do
+  defp do_effect_mechanics(game_state, entity, effect, {:damage, damage_params}) do
     # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
     # applies this effect
     Map.get(game_state.pools, effect.owner_id)
     |> case do
       nil ->
-        player
+        entity
 
       pool ->
         pool_owner = Map.get(game_state.players, pool.aditional_info.owner_id)
@@ -234,13 +255,8 @@ defmodule Arena.Game.Effect do
 
         send(self(), {:damage_done, pool_owner.id, real_damage})
 
-        player = Player.take_damage(player, real_damage)
-
-        unless Player.alive?(player) do
-          send(self(), {:to_killfeed, pool_owner.id, player.id})
-        end
-
-        player
+        Entities.take_damage(entity, real_damage)
+        |> maybe_send_to_killfeed(pool_owner.id)
     end
   end
 
@@ -276,4 +292,14 @@ defmodule Arena.Game.Effect do
   defp do_effect_mechanics(_game_state, player, _effect, _mechanic) do
     player
   end
+
+  defp maybe_send_to_killfeed(%{category: :player} = entity, pool_owner_id) do
+    unless Player.alive?(entity) do
+      send(self(), {:to_killfeed, pool_owner_id, entity.id})
+    end
+
+    entity
+  end
+
+  defp maybe_send_to_killfeed(entity, _pool_owner_id), do: entity
 end
