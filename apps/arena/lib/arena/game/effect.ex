@@ -70,7 +70,7 @@ defmodule Arena.Game.Effect do
           Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
         end)
 
-      Map.has_key?(game_state.players, entity_id) ->
+      Map.has_key?(game_state.crates, entity_id) ->
         update_in(game_state, [:crates, entity_id, :aditional_info, :effects], fn current_effects ->
           Enum.reject(current_effects, fn effect -> effect.owner_id == owner_id end)
         end)
