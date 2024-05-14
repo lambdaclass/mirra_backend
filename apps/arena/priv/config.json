@@ -1163,39 +1163,48 @@
   ],
   "items": [
     {
-      "name": "fake_item",
-      "radius": 200.0,
-      "effects": [
-        "golden_clock_effect"
-      ]
-    },
-    {
       "name": "magic_boots",
       "radius": 200.0,
       "effects": [
         "magic_boots_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
       "effects": [
         "mirra_blessing_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "giant",
       "radius": 200.0,
       "effects": [
         "giant_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "fake_item",
       "radius": 200.0,
-      "effects": [
-        "giant_effect"
-      ]
+      "effects": [],
+      "mechanics": {
+        "spawn_bomb": {
+          "name": "bomb",
+          "radius": 200.0,
+          "activation_delay_ms": 3000,
+          "vertices": [],
+          "mechanics": {
+            "circle_hit": {
+              "damage": 64,
+              "range": 380.0,
+              "offset": 400
+            }
+          }
+        }
+      }
     }
   ],
   "characters": [
@@ -1429,5 +1438,6 @@
   "bushes": {
     "field_of_view_inside_bush": 500
   },
-  "crates": []
+  "crates": [],
+  "traps": []
 }
