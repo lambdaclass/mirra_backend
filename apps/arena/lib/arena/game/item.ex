@@ -14,6 +14,9 @@ defmodule Arena.Game.Item do
     end)
   end
 
+  @doc """
+  Apply an item mechanic to an entity, depending on the mechanic type.
+  """
   def do_mechanic(game_state, entity, {:spawn_bomb, bomb_params}) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
@@ -30,10 +33,4 @@ defmodule Arena.Game.Item do
   end
 
   defp get_entity_player_owner(_game_state, %{category: :player} = player), do: player
-
-  defp get_entity_player_owner(game_state, %{
-         category: :projectile,
-         aditional_info: %{owner_id: owner_id}
-       }),
-       do: get_in(game_state, [:players, owner_id])
 end
