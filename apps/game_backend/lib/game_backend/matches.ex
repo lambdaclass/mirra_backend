@@ -6,20 +6,19 @@ defmodule GameBackend.Matches do
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
-  alias GameBackend.Repo
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Repo
 
-  def create_arena_match_results(results) do
+  def create_arena_match_results(match_id, results) do
     currency_config = Application.get_env(:game_backend, :currencies_config)
 
     Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
+      result = Map.put(result, "match_id", match_id)
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
       {:ok, google_user} = Users.get_google_user(result["user_id"])
 
       amount_of_trophies = Currencies.get_amount_of_currency_by_name(google_user.user.id, "Trophies")
-
-      amount =
-        get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
+      amount = get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
 
       Multi.insert(transaction_acc, {:insert, result["user_id"]}, changeset)
       |> Multi.run(
@@ -35,6 +34,12 @@ defmodule GameBackend.Matches do
       )
     end)
     |> Repo.transaction()
+  end
+
+  ## TODO: Properly pre-process `currencies_config` so the keys are integers and we don't need convertion
+  ##    https://github.com/lambdaclass/mirra_backend/issues/601
+  def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) when is_integer(position) do
+    get_amount_of_trophies_to_modify(current_trophies, to_string(position), currencies_config)
   end
 
   def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) do

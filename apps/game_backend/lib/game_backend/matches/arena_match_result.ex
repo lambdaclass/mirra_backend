@@ -37,6 +37,8 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     |> validate_number(:kills, greater_than_or_equal_to: 0)
     |> validate_number(:deaths, greater_than_or_equal_to: 0)
     |> validate_inclusion(:result, ["win", "loss", "abandon"])
+    ## TODO: This enums should actually be read from config
+    ##    https://github.com/lambdaclass/mirra_backend/issues/601
     |> validate_inclusion(:character, ["h4ck", "muflus", "uma"])
     |> foreign_key_constraint(:user_id)
   end
