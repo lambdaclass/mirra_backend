@@ -205,7 +205,7 @@ syntax = "proto3";
     string user_id = 1;
     string campaign_id = 2;
     string level_id = 3;
-    string super_campaign_id = 4;
+    string super_campaign_name = 4;
   }
 
   message AfkRewardRate {
