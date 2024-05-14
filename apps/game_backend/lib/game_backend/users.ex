@@ -11,6 +11,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
   alias GameBackend.Repo
@@ -52,6 +53,27 @@ defmodule GameBackend.Users do
   """
   def get_user(id) do
     user = Repo.get(User, id) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
+  Gets a single GoogleUser.
+  Returns {:ok, GoogleUser}.
+  Returns {:error, :not_found} if no user is found.
+
+  ## Examples
+
+      iex> get_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
+      {:ok, %GoogleUser{}}
+
+      iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
+      {:error, :not_found}
+  """
+  def get_google_user(id) do
+    user =
+      Repo.get(GoogleUser, id)
+      |> Repo.preload([:user])
+
     if user, do: {:ok, user}, else: {:error, :not_found}
   end
 
@@ -113,7 +135,6 @@ defmodule GameBackend.Users do
 
   defp create_google_user_by_email(email) do
     # TODO delete the following in a future refactor -> https://github.com/lambdaclass/mirra_backend/issues/557
-    kaline_tree_id = GameBackend.Users.get_kaline_tree_level(1).id
     level = 1
     experience = 1
     amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
@@ -124,7 +145,6 @@ defmodule GameBackend.Users do
     GoogleUser.changeset(%GoogleUser{}, %{
       email: email,
       user: %{
-        kaline_tree_level_id: kaline_tree_id,
         game_id: game_id,
         username: username,
         level: level,
@@ -135,7 +155,7 @@ defmodule GameBackend.Users do
   end
 
   @doc """
-  Gets a Kaline Tree level by its number.
+  Gets a KalineTreelevel by its number.
 
   Returns {:error, :not_found} if no level is found.
 
@@ -149,6 +169,23 @@ defmodule GameBackend.Users do
   """
   def get_kaline_tree_level(level_number) do
     Repo.get_by(KalineTreeLevel, level: level_number)
+  end
+
+  @doc """
+  Gets a DungeonSettlementLevel by its number.
+
+  Returns {:error, :not_found} if no level is found.
+
+  ## Examples
+
+      iex> get_dungeon_settlement_level(1)
+      %DungeonSettlementLevel{}
+
+      iex> get_dungeon_settlement_level(-1)
+      nil
+  """
+  def get_dungeon_settlement_level(level_number) do
+    Repo.get_by(DungeonSettlementLevel, level: level_number)
   end
 
   @doc """
@@ -173,11 +210,22 @@ defmodule GameBackend.Users do
       |> User.kaline_tree_level_changeset(params)
       |> Repo.update()
 
-  def reset_afk_rewards_claim(user_id) do
+  @doc """
+  Resets the AFK rewards claim time of a user, setting it to the current time.
+  """
+  def reset_afk_rewards_claim(user_id, :kaline) do
     {:ok, user} = get_user(user_id)
 
     user
-    |> User.changeset(%{last_afk_reward_claim: DateTime.utc_now()})
+    |> User.changeset(%{last_kaline_afk_reward_claim: DateTime.utc_now()})
+    |> Repo.update()
+  end
+
+  def reset_afk_rewards_claim(user_id, :dungeon) do
+    {:ok, user} = get_user(user_id)
+
+    user
+    |> User.changeset(%{last_dungeon_afk_reward_claim: DateTime.utc_now()})
     |> Repo.update()
   end
 
@@ -212,11 +260,43 @@ defmodule GameBackend.Users do
     end
   end
 
+  @doc """
+  Level up the Dungeon Settlement of a user.
+
+  Returns the updated user if the operation was successful.
+  """
+  def level_up_dungeon_settlement(user_id, level_up_costs) do
+    {:ok, _result} =
+      Multi.new()
+      |> Multi.run(:user, fn _, _ -> increment_settlement_level(user_id) end)
+      |> Multi.run(:user_currency, fn _, _ ->
+        Currencies.substract_currencies(user_id, level_up_costs)
+      end)
+      |> Repo.transaction()
+
+    get_user(user_id)
+  end
+
+  defp increment_settlement_level(user_id) do
+    case get_user(user_id) do
+      {:ok, user} ->
+        next_level = get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1)
+
+        user
+        |> User.changeset(%{dungeon_settlement_level_id: next_level.id})
+        |> Repo.update()
+
+      error ->
+        error
+    end
+  end
+
   defp preload(user),
     do:
       Repo.preload(
         user,
         kaline_tree_level: [afk_reward_rates: :currency],
+        dungeon_settlement_level: [afk_reward_rates: :currency, level_up_costs: :currency],
         super_campaign_progresses: :level,
         items: :template,
         units: [:character, :items],

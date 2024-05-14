@@ -1,3 +1,4 @@
+alias GameBackend.Utils
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Campaign
 alias GameBackend.Campaigns.Level
@@ -8,10 +9,11 @@ alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
 
-curse_of_mirra_id = 1
-champions_of_mirra_id = 2
+curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
+champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 units_per_level = 5
 
 {:ok, _skills} = Champions.Config.import_skill_config()
@@ -59,6 +61,15 @@ units_per_level = 5
 
 {:ok, _fertilizer_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, supplies_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
+
+{:ok, blueprints_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
+
+{:ok, _trophies_currency} =
+  Users.Currencies.insert_currency(%{game_id: curse_of_mirra_id, name: "Trophies"})
 
 {:ok, _items} = Champions.Config.import_item_template_config()
 
@@ -251,3 +262,30 @@ currency_rewards =
     end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
+
+_dungeon_settlement_levels =
+  Enum.map(1..20, fn level_number ->
+    {:ok, dungeon_settlement_level} =
+      Repo.insert(
+        DungeonSettlementLevel.changeset(
+          %DungeonSettlementLevel{},
+          %{
+            level: level_number,
+            max_dungeon: level_number * 10,
+            max_factional: level_number * 5,
+            supply_limit: level_number * 5,
+            afk_reward_rates: [
+              %{rate: 10.0 * (level_number - 1), currency_id: supplies_currency.id}
+            ],
+            level_up_costs: [
+              %{currency_id: gold_currency.id, amount: level_number * 100},
+              %{currency_id: blueprints_currency.id, amount: level_number * 50}
+            ],
+            inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+            updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+          }
+        )
+      )
+
+    dungeon_settlement_level
+  end)

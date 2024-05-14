@@ -27,12 +27,15 @@ defmodule Arena.Game.Player do
   end
 
   def take_damage(player, damage) do
-    send(self(), {:damage_taken, player.id, damage})
+    defense_multiplier = 1 - player.aditional_info.bonus_defense
+    damage_taken = round(damage * defense_multiplier)
+
+    send(self(), {:damage_taken, player.id, damage_taken})
 
     Map.update!(player, :aditional_info, fn info ->
       %{
         info
-        | health: max(info.health - damage, 0),
+        | health: max(info.health - damage_taken, 0),
           last_damage_received: System.monotonic_time(:millisecond)
       }
     end)
@@ -158,9 +161,7 @@ defmodule Arena.Game.Player do
     player.aditional_info.forced_movement
   end
 
-  def use_skill(player, skill_key, skill_params, %{
-        game_state: game_state
-      }) do
+  def use_skill(player, skill_key, skill_params, %{game_state: game_state}) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         Process.send(self(), {:block_actions, player.id}, [])
@@ -185,10 +186,13 @@ defmodule Arena.Game.Player do
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
+        execution_duration = calculate_duration(skill, player.position, skill_direction)
+        Process.send_after(self(), {:block_actions, player.id}, execution_duration)
+
         action =
           %{
             action: skill_key_execution_action(skill_key),
-            duration: skill.execution_duration_ms,
+            duration: execution_duration + skill.activation_delay_ms,
             direction: skill_direction
           }
           |> maybe_add_destination(game_state, player, skill_direction, skill)
@@ -200,7 +204,8 @@ defmodule Arena.Game.Player do
              skill_direction: skill_direction,
              skill_key: skill_key,
              skill_destination: action[:destination],
-             auto_aim?: auto_aim?
+             auto_aim?: auto_aim?,
+             execution_duration: execution_duration
            })
            |> Map.merge(skill)},
           skill.activation_delay_ms
@@ -260,22 +265,23 @@ defmodule Arena.Game.Player do
 
   ## Examples
 
-      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10}}, 40)
-      44
+      iex>calculate_real_damage(%{aditional_info: %{power_ups: 1, power_up_damage_modifier: 0.10, bonus_damage: 0.5}}, 40)
+      64
 
   """
   def calculate_real_damage(
         %{
           aditional_info: %{
             power_ups: power_up_amount,
-            power_up_damage_modifier: power_up_damage_modifier
+            power_up_damage_modifier: power_up_damage_modifier,
+            bonus_damage: bonus_damage
           }
         } = _player_damage_owner,
         damage
       ) do
-    aditional_damage = damage * power_up_damage_modifier * power_up_amount
+    multiplier = 1 + power_up_damage_modifier * power_up_amount + bonus_damage
 
-    (damage + aditional_damage)
+    (damage * multiplier)
     |> round()
   end
 
@@ -335,9 +341,11 @@ defmodule Arena.Game.Player do
   def reset_effects(player) do
     player
     |> put_in([:speed], player.aditional_info.base_speed)
+    |> put_in([:radius], player.aditional_info.base_radius)
     |> put_in([:aditional_info, :stamina_interval], player.aditional_info.base_stamina_interval)
     |> put_in([:aditional_info, :cooldown_multiplier], player.aditional_info.base_cooldown_multiplier)
     |> put_in([:aditional_info, :bonus_damage], 0)
+    |> put_in([:aditional_info, :bonus_defense], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
     |> Effect.apply_stat_effects()
   end
@@ -411,6 +419,25 @@ defmodule Arena.Game.Player do
       _ ->
         player
     end
+  end
+
+  ## Yes, we are pattern matching on exactly one mechanic. As of time writing we only have one mechanic per skill
+  ## so to simplify my life an executive decision was made to take thas as a fact
+  ## When the time comes to have more than one mechanic per skill this function will need to be refactored, good thing
+  ## is that it will crash here so not something we can ignore
+  defp calculate_duration(%{mechanics: [{:leap, leap}]}, position, direction) do
+    ## TODO: Cap target_position to leap.range
+    target_position = %{
+      x: position.x + direction.x * leap.range,
+      y: position.y + direction.y * leap.range
+    }
+
+    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
+    Physics.calculate_duration(position, target_position, leap.speed) * 30
+  end
+
+  defp calculate_duration(%{mechanics: [_]} = skill, _, _) do
+    skill.execution_duration_ms
   end
 
   defp maybe_make_player_invincible(game_state, player_id, %{inmune_while_executing: true} = skill) do

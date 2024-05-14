@@ -5,6 +5,8 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
 
+  alias Gateway.Serialization.LevelUpDungeonSettlement
+  alias Gateway.Serialization.ClaimDungeonAfkRewards
   alias Gateway.Serialization.FuseItems
 
   alias Gateway.Serialization.{
@@ -40,13 +42,15 @@ defmodule Gateway.ChampionsSocketHandler do
     UnequipItem,
     GetItem,
     FuseItems,
-    GetAfkRewards,
-    ClaimAfkRewards,
+    GetKalineAfkRewards,
+    ClaimKalineAfkRewards,
     GetBoxes,
     GetBox,
     Summon,
     GetUserSuperCampaignProgresses,
-    LevelUpKalineTree
+    LevelUpKalineTree,
+    ClaimDungeonAfkRewards,
+    LevelUpDungeonSettlement
   }
 
   @behaviour :cowboy_websocket
@@ -179,12 +183,11 @@ defmodule Gateway.ChampionsSocketHandler do
     end
   end
 
-  defp handle(%GetAfkRewards{user_id: user_id}),
-    do: prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id)}, :afk_rewards)
+  defp handle(%GetKalineAfkRewards{user_id: user_id}),
+    do: prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id, :kaline)}, :afk_rewards)
 
-  defp handle(%ClaimAfkRewards{user_id: user_id}) do
-    Users.claim_afk_rewards(user_id) |> prepare_response(:user)
-  end
+  defp handle(%ClaimKalineAfkRewards{user_id: user_id}),
+    do: Users.claim_afk_rewards(user_id, :kaline) |> prepare_response(:user)
 
   defp handle(%GetBoxes{}) do
     %{boxes: Gacha.get_boxes()} |> prepare_response(:boxes)
@@ -221,6 +224,17 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%LevelUpKalineTree{user_id: user_id}) do
     case Users.level_up_kaline_tree(user_id) do
+      {:ok, result} -> prepare_response(result, :user)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%ClaimDungeonAfkRewards{user_id: user_id}) do
+    Users.claim_afk_rewards(user_id, :dungeon) |> prepare_response(:user)
+  end
+
+  defp handle(%LevelUpDungeonSettlement{user_id: user_id}) do
+    case Users.level_up_dungeon_settlement(user_id) do
       {:ok, result} -> prepare_response(result, :user)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
