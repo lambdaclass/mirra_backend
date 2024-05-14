@@ -2,17 +2,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
-  alias GameBackend.Users.GoogleUser
-  alias GameBackend.Users.User
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest
   alias Ecto.Multi
   import Ecto.Query
-
-  defmacrop custom_comparator_macro(operator, first_value, second_value) do
-    {operator, [context: Elixir, import: Kernel], [first_value, second_value]}
-  end
 
   @doc """
   Get a %Quest{} by the config_id field
@@ -100,65 +94,5 @@ defmodule GameBackend.CurseOfMirra.Quests do
       end)
 
     Repo.transaction(multi)
-  end
-
-  def get_google_user_daily_quests_completed(%GoogleUser{
-        arena_match_results: arena_match_results,
-        user: %User{daily_quests: daily_quests}
-      }) do
-    Enum.reduce(daily_quests, [], fn daily_quest, acc ->
-      if completed_daily_quest?(daily_quest, arena_match_results) do
-        [daily_quest | acc]
-      else
-        acc
-      end
-    end)
-  end
-
-  #####################
-  #      helpers      #
-  #####################
-
-  defp parse_comparator("equal"), do: :==
-  defp parse_comparator("distinct"), do: :!=
-  defp parse_comparator("greater"), do: :>
-  defp parse_comparator("greater_or_equal"), do: :>=
-  defp parse_comparator("lesser"), do: :<
-  defp parse_comparator("lesser_or_equal"), do: :<=
-  defp parse_comparator(comparator), do: raise("Comparator not implemented yet #{comparator}")
-
-  defp acumulate_objective_progress_by_scope("day", value), do: value
-  defp acumulate_objective_progress_by_scope("match", _value), do: 1
-
-  for operator <- [:!=, :<, :<=, :==, :>, :>=, :in] do
-    defp custom_comparator(unquote(operator), first_value, second_value) do
-      custom_comparator_macro(unquote(operator), first_value, second_value)
-    end
-  end
-
-  defp custom_comparator(operator, _first_value, _second_value) do
-    raise "Invalid operator #{operator}!"
-  end
-
-  defp completed_daily_quest?(%DailyQuest{quest: %Quest{} = quest}, arena_match_results) do
-    progess =
-      Enum.filter(arena_match_results, fn arena_match_result ->
-        Enum.all?(quest.conditions, fn condition ->
-          type = String.to_atom(condition["field"])
-          comparator = condition["comparison"] |> parse_comparator()
-          value = condition["value"]
-
-          arena_match_result_value = Map.get(arena_match_result, type)
-
-          custom_comparator(comparator, arena_match_result_value, value)
-        end)
-      end)
-      |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = String.to_atom(quest.objective["field"])
-
-        acc + acumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
-      end)
-
-    custom_comparator(parse_comparator(quest.objective["comparison"]), progess, quest.objective["value"])
   end
 end
