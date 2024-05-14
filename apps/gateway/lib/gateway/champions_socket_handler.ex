@@ -215,7 +215,7 @@ defmodule Gateway.ChampionsSocketHandler do
           level_id: super_campaign_progress.level_id,
           user_id: super_campaign_progress.user_id,
           campaign_id: super_campaign_progress.level.campaign_id,
-          super_campaign_id: super_campaign_progress.super_campaign.name
+          super_campaign_name: super_campaign_progress.super_campaign.name
         }
       end)
 
