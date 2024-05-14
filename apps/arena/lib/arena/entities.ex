@@ -262,7 +262,8 @@ defmodule Arena.Entities do
         name: config.name,
         mechanics: config.mechanics,
         activation_delay_ms: config.activation_delay_ms,
-        owner_id: owner_id
+        owner_id: owner_id,
+        status: :PREPARED
       }
     }
   end
