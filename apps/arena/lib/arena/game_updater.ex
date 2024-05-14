@@ -886,17 +886,9 @@ defmodule Arena.GameUpdater do
       Player.alive_players(players)
       |> Map.merge(crates)
 
-    # updated_pools =
-    #   pools
-    #   |> Map.put(
-    #   :collides_with,
-    #   Physics.check_collisions(value, entities_to_collide_with)
-    # )
+    updated_pools = update_collisions(pools, pools, entities_to_collide_with)
 
-    updated_pools = update_collisions(pools, pools, entities_to_collide_with) |> IO.inspect(label: :aver_pools)
-
-    game_state
-    |> Map.put(:pools, updated_pools)
+    Map.put(game_state, :pools, updated_pools)
   end
 
   defp resolve_projectiles_effects_on_collisions(
