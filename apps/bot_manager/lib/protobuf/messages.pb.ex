@@ -405,6 +405,7 @@ defmodule BotManager.Protobuf.Entity do
   field(:pool, 17, type: BotManager.Protobuf.Pool, oneof: 0)
   field(:crate, 18, type: BotManager.Protobuf.Crate, oneof: 0)
   field(:bush, 19, type: BotManager.Protobuf.Bush, oneof: 0)
+  field(:trap, 20, type: BotManager.Protobuf.Trap, oneof: 0)
 end
 
 defmodule BotManager.Protobuf.Player.CooldownsEntry do
@@ -510,6 +511,15 @@ defmodule BotManager.Protobuf.Bush do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
 end
 
 defmodule BotManager.Protobuf.PlayerAction do

@@ -155,7 +155,7 @@ message Entity {
     Pool pool = 17;
     Crate crate = 18;
     Bush bush = 19;
-    Trap = 20;
+    Trap trap = 20;
   }
 }
 

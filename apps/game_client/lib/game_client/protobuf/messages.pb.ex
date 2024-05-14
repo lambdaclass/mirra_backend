@@ -405,6 +405,7 @@ defmodule GameClient.Protobuf.Entity do
   field(:pool, 17, type: GameClient.Protobuf.Pool, oneof: 0)
   field(:crate, 18, type: GameClient.Protobuf.Crate, oneof: 0)
   field(:bush, 19, type: GameClient.Protobuf.Bush, oneof: 0)
+  field(:trap, 20, type: GameClient.Protobuf.Trap, oneof: 0)
 end
 
 defmodule GameClient.Protobuf.Player.CooldownsEntry do
@@ -510,6 +511,15 @@ defmodule GameClient.Protobuf.Bush do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule GameClient.Protobuf.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
 end
 
 defmodule GameClient.Protobuf.PlayerAction do

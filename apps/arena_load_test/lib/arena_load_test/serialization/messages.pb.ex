@@ -429,6 +429,7 @@ defmodule ArenaLoadTest.Serialization.Entity do
   field(:pool, 17, type: ArenaLoadTest.Serialization.Pool, oneof: 0)
   field(:crate, 18, type: ArenaLoadTest.Serialization.Crate, oneof: 0)
   field(:bush, 19, type: ArenaLoadTest.Serialization.Bush, oneof: 0)
+  field(:trap, 20, type: ArenaLoadTest.Serialization.Trap, oneof: 0)
 end
 
 defmodule ArenaLoadTest.Serialization.Player.CooldownsEntry do
@@ -540,6 +541,15 @@ defmodule ArenaLoadTest.Serialization.Bush do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule ArenaLoadTest.Serialization.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.PlayerAction do
