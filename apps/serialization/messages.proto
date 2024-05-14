@@ -155,6 +155,7 @@ message Entity {
     Pool pool = 17;
     Crate crate = 18;
     Bush bush = 19;
+    Trap = 20;
   }
 }
 
@@ -227,6 +228,11 @@ message Pool {
 }
 
 message Bush {
+}
+
+message Trap {
+  uint64 owner_id = 1;
+  string name = 2;
 }
 
 message PlayerAction {

@@ -241,6 +241,32 @@ defmodule Arena.Entities do
     }
   end
 
+  def new_trap(
+        id,
+        %{
+          position: position
+        },
+        config
+      ) do
+    %{
+      id: id,
+      category: :trap,
+      shape: :circle,
+      name: "Trap" <> Integer.to_string(id),
+      position: position,
+      radius: config.radius,
+      vertices: config.vertices,
+      speed: 0.0,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      aditional_info: %{
+        name: config.name,
+        mechanics: config.mechanics,
+        activation_delay_ms: config.activation_delay_ms
+      }
+    }
+  end
+
   def make_circular_area(id, position, range) do
     %{
       id: id,
