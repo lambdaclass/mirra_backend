@@ -28,6 +28,7 @@ defmodule Gateway.Router do
 
     put "/users/:user_id", Controllers.UserController, :update
     get "/users/:user_id/claim_daily_reward", Controllers.UserController, :claim_daily_reward
+    get "/users/:user_id/get_daily_reward_status", Controllers.UserController, :get_daily_reward_status
   end
 
   # Other scopes may use custom stacks.

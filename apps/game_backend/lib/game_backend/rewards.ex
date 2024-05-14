@@ -91,4 +91,26 @@ defmodule GameBackend.Rewards do
       _ -> {:error, :already_claimed}
     end
   end
+
+  defp user_in_daily_rewards_streak?(%GameBackend.Users.User{last_daily_reward_claim_at: nil}), do: false
+
+  defp user_in_daily_rewards_streak?(user) do
+    today = DateTime.utc_now()
+    yesterday = today |> Date.add(-1)
+
+    Date.compare(user.last_daily_reward_claim_at, yesterday) == :eq or
+      Date.compare(user.last_daily_reward_claim_at, yesterday) == :eq
+  end
+
+  def mark_user_daily_rewards_as_completed(daily_rewards_config, user) do
+    if user_in_daily_rewards_streak?(user) do
+      Map.new(daily_rewards_config, fn {day, _next_reward} ->
+        last_claim = String.to_integer(user.last_daily_reward_claim)
+        current_day = String.to_integer(day)
+        if last_claim <= current_day, do: {day, "claimed"}, else: {day, "not claimed"}
+      end)
+    else
+      Map.new(daily_rewards_config, fn {day, _next_reward} -> {day, "not claimed"} end)
+    end
+  end
 end
