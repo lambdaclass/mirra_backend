@@ -680,24 +680,21 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
-  defp remove_expired_traps(game_state) do
-    now = System.monotonic_time(:millisecond)
-
-    traps =
-      game_state.traps
-      |> Enum.filter(fn trap -> is_nil(trap.remove_at) or trap.remove_at > now end)
-
-    %{game_state | traps: traps}
-  end
-
   defp activate_traps(game_state) do
     now = System.monotonic_time(:millisecond)
 
-    game_state.traps
-    |> Enum.filter(fn {_trap_id, trap} -> trap.activate_at > now end)
-    |> Enum.reduce(game_state, fn {_trap_id, trap}, game_state_acc ->
-      Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
-    end)
+    activated_traps =
+      Enum.filter(game_state.traps, fn {_trap_id, trap} ->
+        trap.activate_at > now
+      end)
+
+    {game_state, traps} =
+      Enum.reduce(activated_traps, {game_state, game_state.traps}, fn {trap_id, trap}, {game_state_acc, traps_acc} ->
+        game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
+        {game_state, Map.delete(traps_acc, trap_id)}
+      end)
+
+    put_in(game_state, [:traps], traps)
   end
 
   defp remove_effects_on_action(game_state) do

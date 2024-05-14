@@ -23,7 +23,6 @@ defmodule Arena.Game.Item do
     new_trap =
       Entities.new_trap(last_id, entity_player_owner.id, entity_player_owner.position, bomb_params)
       |> Map.put(:activate_at, now + bomb_params.activation_delay_ms)
-      |> Map.put(:remove_at, now + bomb_params.activation_delay_ms)
 
     game_state
     |> put_in([:last_id], last_id)
