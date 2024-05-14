@@ -14,7 +14,7 @@ defmodule GameBackend.Campaigns do
     campaigns =
       Repo.all(
         from(c in Campaign,
-          preload: [levels: ^level_preload_query()],
+          preload: [:super_campaign, levels: ^level_preload_query()],
           order_by: [asc: c.campaign_number]
         )
       )

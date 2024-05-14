@@ -616,7 +616,7 @@ defmodule Gateway.Serialization.Campaign do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:id, 1, type: :string)
-  field(:super_campaign_id, 2, type: :string, json_name: "superCampaignId")
+  field(:super_campaign_name, 2, type: :string, json_name: "superCampaignName")
   field(:campaign_number, 3, type: :uint32, json_name: "campaignNumber")
   field(:levels, 4, repeated: true, type: Gateway.Serialization.Level)
 end
