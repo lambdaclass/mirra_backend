@@ -1,5 +1,5 @@
 defmodule Arena.Game.Trap do
-  @doc """
+  @moduledoc """
   Module to handle traps logic
   """
   alias Arena.Game.Skill
