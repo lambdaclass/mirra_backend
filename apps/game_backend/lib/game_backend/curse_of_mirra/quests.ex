@@ -2,8 +2,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
-  alias GameBackend.Users.GoogleUser
-  alias GameBackend.Users.User
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest

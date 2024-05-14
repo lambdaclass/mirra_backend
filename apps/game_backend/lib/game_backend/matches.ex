@@ -2,8 +2,6 @@ defmodule GameBackend.Matches do
   @moduledoc """
   Matches
   """
-  alias GameBackend.Quests.DailyQuest
-  alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
@@ -126,7 +124,4 @@ defmodule GameBackend.Matches do
     end)
     |> Map.get(position)
   end
-
-  defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
-  defp get_operation_result(_, _), do: {:error, nil}
 end
