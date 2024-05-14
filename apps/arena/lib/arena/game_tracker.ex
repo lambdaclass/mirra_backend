@@ -65,6 +65,7 @@ defmodule Arena.GameTracker do
 
     match_state = %{
       match_id: match_id,
+      start_at: System.monotonic_time(:millisecond),
       players: players,
       player_to_client: player_to_client,
       position_on_death: map_size(players)
@@ -124,6 +125,8 @@ defmodule Arena.GameTracker do
   end
 
   defp generate_results(match_data, winner_id) do
+    duration = System.monotonic_time(:millisecond) - match_data.start_at
+
     Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
     |> Enum.map(fn {_player_id, player_data} ->
       %{
@@ -142,7 +145,8 @@ defmodule Arena.GameTracker do
         damage_done: player_data.damage_done,
         health_healed: player_data.health_healed,
         killed_by: player_data.death,
-        killed_by_bot: player_data.killed_by_bot
+        killed_by_bot: player_data.killed_by_bot,
+        duration_ms: duration
       }
     end)
   end
