@@ -98,7 +98,7 @@ defmodule GameBackend.Rewards do
     today = DateTime.utc_now()
     yesterday = today |> Date.add(-1)
 
-    Date.compare(user.last_daily_reward_claim_at, yesterday) == :eq or
+    Date.compare(user.last_daily_reward_claim_at, today) == :eq or
       Date.compare(user.last_daily_reward_claim_at, yesterday) == :eq
   end
 
