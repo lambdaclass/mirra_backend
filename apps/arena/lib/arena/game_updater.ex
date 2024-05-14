@@ -912,7 +912,6 @@ defmodule Arena.GameUpdater do
             |> Map.merge(players)
             |> Map.merge(projectiles)
             |> Map.merge(crates)
-            |> IO.inspect(label: :aver_crates)
 
           effects_to_apply =
             get_effects_from_config(on_collide_effects.effects, game_config)
