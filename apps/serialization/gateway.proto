@@ -21,10 +21,12 @@ syntax = "proto3";
       GetBoxes get_boxes = 18;
       GetBox get_box = 19;
       Summon summon = 20;
-      GetAfkRewards get_afk_rewards = 21;
-      ClaimAfkRewards claim_afk_rewards = 22;
+      GetKalineAfkRewards get_kaline_afk_rewards = 21;
+      ClaimKalineAfkRewards claim_kaline_afk_rewards = 22;
       GetUserSuperCampaignProgresses get_user_super_campaign_progresses = 23;
       LevelUpKalineTree level_up_kaline_tree = 24;
+      ClaimDungeonAfkRewards claim_dungeon_afk_rewards = 25;
+      LevelUpDungeonSettlement level_up_dungeon_settlement = 26;
     }
   }
 
@@ -107,11 +109,11 @@ syntax = "proto3";
     repeated string item_ids = 2;
   }
 
- message GetAfkRewards {
+ message GetKalineAfkRewards {
     string user_id = 1;
  }
 
- message ClaimAfkRewards {
+ message ClaimKalineAfkRewards {
     string user_id = 1;
  }
 
@@ -133,6 +135,14 @@ syntax = "proto3";
   }
 
   message LevelUpKalineTree {
+    string user_id = 1;
+  }
+
+  message ClaimDungeonAfkRewards {
+    string user_id = 1;
+ }
+
+  message LevelUpDungeonSettlement {
     string user_id = 1;
   }
 
@@ -167,14 +177,23 @@ syntax = "proto3";
     repeated Unit units = 8;
     repeated Item items = 9;
     KalineTreeLevel kaline_tree_level = 10;
+    DungeonSettlementLevel dungeon_settlement_level = 11;
   }
 
   message KalineTreeLevel {
-    string id = 1;
-    uint64 level = 2;
-    uint64 fertilizer_level_up_cost = 3;
-    uint64 gold_level_up_cost = 4;
-    repeated string unlock_features = 5;
+    uint64 level = 1;
+    uint64 fertilizer_level_up_cost = 2;
+    uint64 gold_level_up_cost = 3;
+    repeated string unlock_features = 4;
+    repeated AfkRewardRate afk_reward_rates = 5;
+  }
+
+  message DungeonSettlementLevel {
+    uint64 level = 1;
+    repeated CurrencyCost upgrade_costs = 2;
+    uint64 max_dungeon = 3;
+    uint64 max_factional = 4;
+    uint64 supply_limit = 5;
     repeated AfkRewardRate afk_reward_rates = 6;
   }
 

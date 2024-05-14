@@ -253,29 +253,20 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction, auto_aim?: auto_aim?}) do
+  def do_mechanic(game_state, entity, {:leap, leap}, %{execution_duration: execution_duration}) do
     Process.send_after(
       self(),
       {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
-      leap.duration_ms
+      execution_duration
     )
 
-    skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, leap.range)
-
-    target_position = %{
-      x: entity.position.x + skill_direction.x,
-      y: entity.position.y + skill_direction.y
-    }
-
-    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    speed = Physics.calculate_speed(entity.position, target_position, leap.duration_ms) * 30
-
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
-    ## by modifying base_speed we ensure that the dash speed is kept as expected
+    ## by modifying base_speed we ensure that the dash speed is kept as expected cause when the
+    ## stat effects are reapplied there is a check on speed effects to prevent adding if `forced_movement = true`
     player =
       entity
       |> Map.put(:is_moving, true)
-      |> put_in([:aditional_info, :base_speed], speed)
+      |> put_in([:aditional_info, :base_speed], leap.speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)
