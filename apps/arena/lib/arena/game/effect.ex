@@ -110,7 +110,10 @@ defmodule Arena.Game.Effect do
   end
 
   defp apply_stat_modifier(player, {:speed_boost, speed_boost}) do
-    %{player | speed: player.speed * (1 + speed_boost.modifier)}
+    case player.aditional_info.forced_movement do
+      true -> player
+      false -> %{player | speed: player.speed * (1 + speed_boost.modifier)}
+    end
   end
 
   defp apply_stat_modifier(player, {:modify_radius, modify_radius}) do
