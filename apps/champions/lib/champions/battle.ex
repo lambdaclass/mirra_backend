@@ -5,9 +5,11 @@ defmodule Champions.Battle do
 
   require Logger
 
+  alias GameBackend.Users.DungeonSettlementLevel
+  alias GameBackend.Users.User
   alias Champions.Battle.Simulator
   alias GameBackend.Campaigns
-  alias GameBackend.Campaigns.SuperCampaignProgress
+  alias GameBackend.Campaigns.{Campaign, Level, SuperCampaign, SuperCampaignProgress}
   alias GameBackend.Units
   alias GameBackend.Users
 
@@ -19,11 +21,11 @@ defmodule Champions.Battle do
   """
   def fight_level(user_id, level_id) do
     with start_time <- :os.system_time(:millisecond),
-         {:user_exists, true} <- {:user_exists, Users.exists?(user_id)},
+         {:user_exists, {:ok, user}} <- {:user_exists, Users.get_user(user_id)},
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)},
          {:super_campaign_progress, {:ok, %SuperCampaignProgress{level_id: current_level_id}}} <-
            {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, level.campaign.super_campaign_id)},
-         {:level_valid, true} <- {:level_valid, current_level_id == level_id},
+         {:level_valid, true} <- {:level_valid, level_valid?(level, current_level_id, user)},
          units <- Units.get_selected_units(user_id),
          {:max_units_met, true} <- {:max_units_met, Enum.count(units) <= (level.max_units || @default_max_units)} do
       units =
@@ -52,12 +54,28 @@ defmodule Champions.Battle do
 
       response
     else
-      {:user_exists, false} -> {:error, :user_not_found}
+      {:user_exists, _} -> {:error, :user_not_found}
       {:level, {:error, :not_found}} -> {:error, :level_not_found}
       {:super_campaign_progress, {:error, :not_found}} -> {:error, :super_campaign_progress_not_found}
       {:level_valid, false} -> {:error, :level_invalid}
       {:max_units_met, false} -> {:error, :max_units_exceeded}
     end
+  end
+
+  defp level_valid?(
+         %Level{
+           id: id,
+           campaign: %Campaign{super_campaign: %SuperCampaign{name: "Dungeon"}},
+           level_number: level_number
+         },
+         current_level_id,
+         %User{dungeon_settlement_level: %DungeonSettlementLevel{max_dungeon: max_dungeon}}
+       ) do
+    id == current_level_id && level_number <= max_dungeon
+  end
+
+  defp level_valid?(%Level{id: id}, current_level_id, _) do
+    id == current_level_id
   end
 
   # TODO: implement buffs [#CHoM-428]
