@@ -5,13 +5,13 @@ defmodule Champions.Battle do
 
   require Logger
 
-  alias GameBackend.Users.DungeonSettlementLevel
-  alias GameBackend.Users.User
   alias Champions.Battle.Simulator
   alias GameBackend.Campaigns
   alias GameBackend.Campaigns.{Campaign, Level, SuperCampaign, SuperCampaignProgress}
   alias GameBackend.Units
   alias GameBackend.Users
+  alias GameBackend.Users.DungeonSettlementLevel
+  alias GameBackend.Users.User
 
   @default_max_units 6
 
