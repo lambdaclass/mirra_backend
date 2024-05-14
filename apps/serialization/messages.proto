@@ -82,7 +82,7 @@ message ConfigCharacter {
 }
 
 message ClientConfig {
-  map<string, ConfigLagSpikes> lag_spikes = 1;
+  ConfigLagSpikes lag_spikes = 1;
 }
 
 message ConfigLagSpikes {

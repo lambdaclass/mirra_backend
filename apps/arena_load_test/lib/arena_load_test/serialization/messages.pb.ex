@@ -210,26 +210,12 @@ defmodule ArenaLoadTest.Serialization.ConfigCharacter do
   )
 end
 
-defmodule ArenaLoadTest.Serialization.ClientConfig.LagSpikesEntry do
-  @moduledoc false
-
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:key, 1, type: :string)
-  field(:value, 2, type: ArenaLoadTest.Serialization.ConfigLagSpikes)
-end
-
 defmodule ArenaLoadTest.Serialization.ClientConfig do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:lag_spikes, 1,
-    repeated: true,
-    type: ArenaLoadTest.Serialization.ClientConfig.LagSpikesEntry,
-    json_name: "lagSpikes",
-    map: true
-  )
+  field(:lag_spikes, 1, type: ArenaLoadTest.Serialization.ConfigLagSpikes, json_name: "lagSpikes")
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigLagSpikes do

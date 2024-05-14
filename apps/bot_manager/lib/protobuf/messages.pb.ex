@@ -206,26 +206,12 @@ defmodule BotManager.Protobuf.ConfigCharacter do
   )
 end
 
-defmodule BotManager.Protobuf.ClientConfig.LagSpikesEntry do
-  @moduledoc false
-
-  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:key, 1, type: :string)
-  field(:value, 2, type: BotManager.Protobuf.ConfigLagSpikes)
-end
-
 defmodule BotManager.Protobuf.ClientConfig do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:lag_spikes, 1,
-    repeated: true,
-    type: BotManager.Protobuf.ClientConfig.LagSpikesEntry,
-    json_name: "lagSpikes",
-    map: true
-  )
+  field(:lag_spikes, 1, type: BotManager.Protobuf.ConfigLagSpikes, json_name: "lagSpikes")
 end
 
 defmodule BotManager.Protobuf.ConfigLagSpikes do

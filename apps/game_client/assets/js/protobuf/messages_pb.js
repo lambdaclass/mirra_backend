@@ -3524,7 +3524,7 @@ proto.ClientConfig.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ClientConfig.toObject = function(includeInstance, msg) {
   var f, obj = {
-    lagSpikesMap: (f = msg.getLagSpikesMap()) ? f.toObject(includeInstance, proto.ConfigLagSpikes.toObject) : []
+    lagSpikes: (f = msg.getLagSpikes()) && proto.ConfigLagSpikes.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3562,10 +3562,9 @@ proto.ClientConfig.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = msg.getLagSpikesMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.ConfigLagSpikes.deserializeBinaryFromReader, "", new proto.ConfigLagSpikes());
-         });
+      var value = new proto.ConfigLagSpikes;
+      reader.readMessage(value,proto.ConfigLagSpikes.deserializeBinaryFromReader);
+      msg.setLagSpikes(value);
       break;
     default:
       reader.skipField();
@@ -3596,33 +3595,51 @@ proto.ClientConfig.prototype.serializeBinary = function() {
  */
 proto.ClientConfig.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getLagSpikesMap(true);
-  if (f && f.getLength() > 0) {
-    f.serializeBinary(1, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ConfigLagSpikes.serializeBinaryToWriter);
+  f = message.getLagSpikes();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      proto.ConfigLagSpikes.serializeBinaryToWriter
+    );
   }
 };
 
 
 /**
- * map<string, ConfigLagSpikes> lag_spikes = 1;
- * @param {boolean=} opt_noLazyCreate Do not create the map if
- * empty, instead returning `undefined`
- * @return {!jspb.Map<string,!proto.ConfigLagSpikes>}
+ * optional ConfigLagSpikes lag_spikes = 1;
+ * @return {?proto.ConfigLagSpikes}
  */
-proto.ClientConfig.prototype.getLagSpikesMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<string,!proto.ConfigLagSpikes>} */ (
-      jspb.Message.getMapField(this, 1, opt_noLazyCreate,
-      proto.ConfigLagSpikes));
+proto.ClientConfig.prototype.getLagSpikes = function() {
+  return /** @type{?proto.ConfigLagSpikes} */ (
+    jspb.Message.getWrapperField(this, proto.ConfigLagSpikes, 1));
 };
 
 
 /**
- * Clears values from the map. The map will be non-null.
+ * @param {?proto.ConfigLagSpikes|undefined} value
+ * @return {!proto.ClientConfig} returns this
+*/
+proto.ClientConfig.prototype.setLagSpikes = function(value) {
+  return jspb.Message.setWrapperField(this, 1, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
  * @return {!proto.ClientConfig} returns this
  */
-proto.ClientConfig.prototype.clearLagSpikesMap = function() {
-  this.getLagSpikesMap().clear();
-  return this;
+proto.ClientConfig.prototype.clearLagSpikes = function() {
+  return this.setLagSpikes(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.ClientConfig.prototype.hasLagSpikes = function() {
+  return jspb.Message.getField(this, 1) != null;
 };
 
 
