@@ -137,11 +137,14 @@ end
 ###################################
 # App configuration: game_backend #
 ###################################
-{:ok, currency_config_json} =
-  Application.app_dir(:game_backend, "priv/currencies_rules.json")
-  |> File.read()
 
-config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
+if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
+  {:ok, currency_config_json} =
+    "./apps/game_backend/priv/currencies_rules.json"
+    |> File.read()
+
+  config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
+end
 
 {:ok, daily_rewards_json} =
   Application.app_dir(:game_backend, "priv/daily_rewards_rules.json")
