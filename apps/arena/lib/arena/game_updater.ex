@@ -141,8 +141,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, now)
       # Traps
       |> activate_traps()
-
-    # |> remove_expired_traps()
+      |> remove_expired_traps()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -685,16 +684,29 @@ defmodule Arena.GameUpdater do
 
     activated_traps =
       Enum.filter(game_state.traps, fn {_trap_id, trap} ->
-        trap.activate_at < now
+        trap.activate_at < now && trap.aditional_info.status == :PREPARED
       end)
 
     {game_state, traps} =
       Enum.reduce(activated_traps, {game_state, game_state.traps}, fn {trap_id, trap}, {game_state_acc, traps_acc} ->
         game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
-        {game_state, Map.delete(traps_acc, trap_id)}
+        trap = put_in(trap, [:aditional_info, :status], :TRIGGERED)
+        {game_state, Map.put(traps_acc, trap_id, trap)}
       end)
 
     put_in(game_state, [:traps], traps)
+  end
+
+  defp remove_expired_traps(game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    remaining_traps =
+      Enum.filter(game_state.traps, fn {_trap_id, trap} ->
+        trap.remove_at > now
+      end)
+      |> Map.new()
+
+    put_in(game_state, [:traps], remaining_traps)
   end
 
   defp remove_effects_on_action(game_state) do
