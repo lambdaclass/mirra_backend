@@ -15,7 +15,16 @@ defmodule Arena.Configuration do
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
-    %{config | skills: skills, characters: characters}
+    client_config = get_client_config()
+    %{config | skills: skills, characters: characters, client_config: client_config}
+  end
+
+  defp get_client_config() do
+    {:ok, config_json} =
+      Application.app_dir(:arena, "priv/client_config.json")
+      |> File.read()
+
+    Jason.decode!(config_json, [{:keys, :atoms}])
   end
 
   defp parse_skills_config(skills_config) do
