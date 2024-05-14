@@ -1,10 +1,11 @@
 use rustler::{NifMap, NifTaggedEnum};
 use serde::Deserialize;
+use std::collections::HashMap;
 
 use crate::collision_detection::sat::intersect_circle_polygon;
 use crate::collision_detection::{
     circle_circle_collision, circle_polygon_collision, line_circle_collision,
-    point_circle_collision,
+    line_polygon_collision, point_circle_collision,
 };
 #[derive(NifMap, Clone)]
 pub struct Polygon {
@@ -65,16 +66,23 @@ impl Position {
         self.y /= length;
     }
 
-    pub fn add(a: Position, b: Position) -> Position {
+    pub fn add(a: &Position, b: &Position) -> Position {
         Position {
             x: a.x + b.x,
             y: a.y + b.y,
         }
     }
-    pub fn sub(a: Position, b: Position) -> Position {
+    pub fn sub(a: &Position, b: &Position) -> Position {
         Position {
             x: a.x - b.x,
             y: a.y - b.y,
+        }
+    }
+
+    pub fn mult(a: &Position, mult: f32) -> Position {
+        Position {
+            x: a.x * mult,
+            y: a.y * mult,
         }
     }
 
@@ -116,7 +124,7 @@ impl Entity {
         }
     }
 
-    pub fn collides_with(&mut self, entities: Vec<Entity>) -> Vec<u64> {
+    pub fn collides_with(&mut self, entities: &Vec<Entity>) -> Vec<u64> {
         let mut result = Vec::new();
 
         for entity in entities {
@@ -129,27 +137,33 @@ impl Entity {
 
             match (self_shape, entity_shape) {
                 (Shape::Circle, Shape::Circle) => {
-                    if circle_circle_collision(self, &entity) {
+                    if circle_circle_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Circle, Shape::Polygon) => {
-                    if circle_polygon_collision(self, &entity) {
+                    if circle_polygon_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Point, Shape::Circle) => {
-                    if point_circle_collision(self, &entity) {
+                    if point_circle_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Line, Shape::Circle) => {
-                    if line_circle_collision(self, &entity) {
+                    if line_circle_collision(self, entity) {
+                        result.push(entity.id);
+                    }
+                }
+
+                (Shape::Line, Shape::Polygon) => {
+                    if line_polygon_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
                 (Shape::Polygon, Shape::Circle) => {
-                    if circle_polygon_collision(&entity, self) {
+                    if circle_polygon_collision(entity, self) {
                         result.push(entity.id);
                     }
                 }
@@ -184,8 +198,44 @@ impl Entity {
         self.position = self.find_edge_position_inside(external_wall);
     }
 
-    pub fn move_to_next_valid_position_outside(&mut self, collided_with: Vec<&Entity>) {
-        self.move_to_edge_position_outside(collided_with);
+    pub fn move_to_next_valid_position_outside(
+        &mut self,
+        collided_with: Vec<&Entity>,
+        obstacles: &HashMap<u64, Entity>,
+        external_wall: &Entity,
+    ) {
+        for entity in collided_with {
+            match entity.shape {
+                Shape::Circle => {
+                    let mut normalized_direction = Position::sub(&self.position, &entity.position);
+                    normalized_direction.normalize();
+
+                    let new_pos = Position {
+                        x: entity.position.x
+                            + normalized_direction.x * entity.radius
+                            + normalized_direction.x * self.radius,
+                        y: entity.position.y
+                            + normalized_direction.y * entity.radius
+                            + normalized_direction.y * self.radius,
+                    };
+
+                    self.position = new_pos;
+                }
+                Shape::Polygon => {
+                    let (collided, direction, depth) =
+                        intersect_circle_polygon(self, entity, obstacles, external_wall);
+
+                    if collided {
+                        let new_pos = Position {
+                            x: self.position.x + direction.x * depth,
+                            y: self.position.y + direction.y * depth,
+                        };
+                        self.position = new_pos;
+                    }
+                }
+                _ => continue,
+            }
+        }
     }
 
     pub fn find_edge_position_inside(&mut self, external_wall: &Entity) -> Position {
@@ -201,40 +251,6 @@ impl Entity {
                 + normalized_position.x * (external_wall.radius - self.radius),
             y: external_wall.position.y
                 + normalized_position.y * (external_wall.radius - self.radius),
-        }
-    }
-
-    pub fn move_to_edge_position_outside(&mut self, collisions: Vec<&Entity>) {
-        for entity in collisions {
-            match entity.shape {
-                Shape::Circle => {
-                    let mut normalized_direction = Position::sub(self.position, entity.position);
-                    normalized_direction.normalize();
-
-                    let new_pos = Position {
-                        x: entity.position.x
-                            + normalized_direction.x * entity.radius
-                            + normalized_direction.x * self.radius,
-                        y: entity.position.y
-                            + normalized_direction.y * entity.radius
-                            + normalized_direction.y * self.radius,
-                    };
-
-                    self.position = new_pos;
-                }
-                Shape::Polygon => {
-                    let (collided, direction, depth) = intersect_circle_polygon(self, entity);
-
-                    if collided {
-                        let new_pos = Position {
-                            x: self.position.x + direction.x * depth,
-                            y: self.position.y + direction.y * depth,
-                        };
-                        self.position = new_pos;
-                    }
-                }
-                _ => continue,
-            }
         }
     }
 

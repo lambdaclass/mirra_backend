@@ -83,7 +83,7 @@ fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> 
     let mut entity: Entity = entity;
     let ent = entities.into_values().collect();
 
-    entity.collides_with(ent)
+    entity.collides_with(&ent)
 }
 
 #[rustler::nif()]
@@ -134,9 +134,9 @@ fn get_direction_from_positions(position_a: Position, position_b: Position) -> D
 }
 
 #[rustler::nif()]
-fn calculate_speed(position_a: Position, position_b: Position, duration: u64) -> f32 {
+fn calculate_duration(position_a: Position, position_b: Position, speed: f32) -> u64 {
     let len = distance_between_positions(position_a, position_b);
-    len / duration as f32
+    (len / speed) as u64
 }
 
 #[rustler::nif()]
@@ -157,7 +157,7 @@ fn nearest_entity_direction_in_range(
             if distance < max_distance {
                 max_distance = distance;
                 let difference_between_positions =
-                    Position::sub(other_entity.position, entity.position);
+                    Position::sub(&other_entity.position, &entity.position);
                 direction = Direction {
                     x: difference_between_positions.x,
                     y: difference_between_positions.y,
@@ -184,14 +184,14 @@ fn move_entity_to_closest_available_position(
         entity.move_to_next_valid_position_inside(external_wall);
     }
 
-    let collides_with = entity.collides_with(obstacles.clone().into_values().collect());
+    let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
 
     if entity.category == Category::Player && !collides_with.is_empty() {
         let collided_with: Vec<&Entity> = collides_with
             .iter()
             .map(|id| obstacles.get(id).unwrap())
             .collect();
-        entity.move_to_next_valid_position_outside(collided_with);
+        entity.move_to_next_valid_position_outside(collided_with, obstacles, external_wall);
     }
 }
 
@@ -223,7 +223,7 @@ rustler::init!(
         add_angle_to_direction,
         calculate_triangle_vertices,
         get_direction_from_positions,
-        calculate_speed,
+        calculate_duration,
         distance_between_entities,
         nearest_entity_direction_in_range,
         get_closest_available_position

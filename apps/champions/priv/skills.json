@@ -1069,9 +1069,8 @@
               "modifiers": [
                 {
                   "attribute": "defense",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
-                  "float_magnitude": 0.85
+                  "operation": "Multiply",
+                  "magnitude": 0.85
                 }
               ],
               "executions": [
@@ -1217,9 +1216,8 @@
               "modifiers": [
                 {
                   "attribute": "attack",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "Float",
-                  "float_magnitude": 0.92
+                  "operation": "Multiply",
+                  "magnitude": 0.92
                 }
               ],
               "executions": [
@@ -1443,9 +1441,8 @@
               "modifiers": [
                 {
                   "attribute": "attack",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
-                  "float_magnitude": 0.85
+                  "operation": "Multiply",
+                  "magnitude": 0.85
                 }
               ],
               "executions": [
@@ -1517,9 +1514,8 @@
               "modifiers": [
                 {
                   "attribute": "damage_reduction",
-                  "modifier_operation": "Add",
-                  "magnitude_calc_type": "float",
-                  "float_magnitude": 0.2
+                  "operation": "Add",
+                  "magnitude": 0.2
                 }
               ],
               "executions": []
@@ -1675,9 +1671,8 @@
               "modifiers": [
                 {
                   "attribute": "defense",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
-                  "float_magnitude": 0.9
+                  "operation": "Multiply",
+                  "magnitude": 0.9
                 }
               ],
               "executions": [
@@ -1751,9 +1746,8 @@
               "modifiers": [
                 {
                   "attribute": "speed",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "float",
-                  "float_magnitude": 0.93
+                  "operation": "Multiply",
+                  "magnitude": 0.93
                 }
               ],
               "executions": [
@@ -2010,9 +2004,8 @@
               "modifiers": [
                 {
                   "attribute": "attack",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "Float",
-                  "float_magnitude": 1.08
+                  "operation": "Multiply",
+                  "magnitude": 1.08
                 }
               ],
               "executions": []
@@ -2188,9 +2181,8 @@
               "modifiers": [
                 {
                   "attribute": "speed",
-                  "modifier_operation": "Multiply",
-                  "magnitude_calc_type": "Float",
-                  "float_magnitude": 1.07
+                  "operation": "Multiply",
+                  "magnitude": 1.07
                 }
               ],
               "executions": [
