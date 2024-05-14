@@ -18,7 +18,12 @@ defmodule Arena.Game.Item do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    new_trap = Entities.new_trap(last_id, %{position: entity_player_owner.position}, bomb_params)
+    now = System.monotonic_time(:millisecond)
+
+    new_trap =
+      Entities.new_trap(last_id, entity_player_owner.id, entity_player_owner.position, bomb_params)
+      |> Map.put(:activate_at, now + bomb_params.activation_delay_ms)
+      |> Map.put(:remove_at, now + bomb_params.activation_delay_ms)
 
     game_state
     |> put_in([:last_id], last_id)

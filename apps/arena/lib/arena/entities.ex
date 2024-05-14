@@ -243,9 +243,8 @@ defmodule Arena.Entities do
 
   def new_trap(
         id,
-        %{
-          position: position
-        },
+        owner_id,
+        position,
         config
       ) do
     %{
@@ -262,7 +261,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         name: config.name,
         mechanics: config.mechanics,
-        activation_delay_ms: config.activation_delay_ms
+        activation_delay_ms: config.activation_delay_ms,
+        owner_id: owner_id
       }
     }
   end

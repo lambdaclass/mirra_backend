@@ -12,6 +12,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
   alias Arena.Utils
+  alias Arena.Game.Trap
 
   ##########################
   # API
@@ -138,8 +139,10 @@ defmodule Arena.GameUpdater do
       |> handle_destroyed_crates(state.game_config)
       |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
+      # Traps
+      |> activate_traps()
 
-    # Traps
+    # |> remove_expired_traps()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -675,6 +678,26 @@ defmodule Arena.GameUpdater do
       end)
 
     %{game_state | players: players}
+  end
+
+  defp remove_expired_traps(game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    traps =
+      game_state.traps
+      |> Enum.filter(fn trap -> is_nil(trap.remove_at) or trap.remove_at > now end)
+
+    %{game_state | traps: traps}
+  end
+
+  defp activate_traps(game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    game_state.traps
+    |> Enum.filter(fn {_trap_id, trap} -> trap.activate_at > now end)
+    |> Enum.reduce(game_state, fn {_trap_id, trap}, game_state_acc ->
+      Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
+    end)
   end
 
   defp remove_effects_on_action(game_state) do
