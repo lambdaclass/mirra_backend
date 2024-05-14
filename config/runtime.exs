@@ -27,7 +27,7 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
 
 config :joken,
   issuer: "https://accounts.google.com",
-  audience: System.get_env("GOOGLE_CLIENT_ID")
+  audience: "273396836446-bpoko025ahovlv9pfs5rtsg7dfm1mrno.apps.googleusercontent.com"
 
 ############################
 # App configuration: arena #
