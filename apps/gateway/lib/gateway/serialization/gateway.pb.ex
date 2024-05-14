@@ -421,13 +421,12 @@ defmodule Gateway.Serialization.KalineTreeLevel do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:id, 1, type: :string)
-  field(:level, 2, type: :uint64)
-  field(:fertilizer_level_up_cost, 3, type: :uint64, json_name: "fertilizerLevelUpCost")
-  field(:gold_level_up_cost, 4, type: :uint64, json_name: "goldLevelUpCost")
-  field(:unlock_features, 5, repeated: true, type: :string, json_name: "unlockFeatures")
+  field(:level, 1, type: :uint64)
+  field(:fertilizer_level_up_cost, 2, type: :uint64, json_name: "fertilizerLevelUpCost")
+  field(:gold_level_up_cost, 3, type: :uint64, json_name: "goldLevelUpCost")
+  field(:unlock_features, 4, repeated: true, type: :string, json_name: "unlockFeatures")
 
-  field(:afk_reward_rates, 6,
+  field(:afk_reward_rates, 5,
     repeated: true,
     type: Gateway.Serialization.AfkRewardRate,
     json_name: "afkRewardRates"
@@ -439,20 +438,19 @@ defmodule Gateway.Serialization.DungeonSettlementLevel do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:id, 1, type: :string)
-  field(:level, 2, type: :uint64)
+  field(:level, 1, type: :uint64)
 
-  field(:upgrade_costs, 3,
+  field(:upgrade_costs, 2,
     repeated: true,
     type: Gateway.Serialization.CurrencyCost,
     json_name: "upgradeCosts"
   )
 
-  field(:max_dungeon, 4, type: :uint64, json_name: "maxDungeon")
-  field(:max_factional, 5, type: :uint64, json_name: "maxFactional")
-  field(:supply_limit, 6, type: :uint64, json_name: "supplyLimit")
+  field(:max_dungeon, 3, type: :uint64, json_name: "maxDungeon")
+  field(:max_factional, 4, type: :uint64, json_name: "maxFactional")
+  field(:supply_limit, 5, type: :uint64, json_name: "supplyLimit")
 
-  field(:afk_reward_rates, 7,
+  field(:afk_reward_rates, 6,
     repeated: true,
     type: Gateway.Serialization.AfkRewardRate,
     json_name: "afkRewardRates"

@@ -60,6 +60,7 @@ message Configuration {
   ConfigGame game = 1;
   ConfigMap map = 2;
   repeated ConfigCharacter characters = 3;
+  ClientConfig client_config = 4;
 }
 
 message ConfigGame {
@@ -78,6 +79,18 @@ message ConfigCharacter {
   uint64 base_health = 5;
   uint64 max_inventory_size = 6;
   map<string, ConfigSkill> skills = 7;
+}
+
+message ClientConfig {
+  map<string, ConfigLagSpikes> lag_spikes = 1;
+}
+
+message ConfigLagSpikes {
+  uint64 spike_value_threshold = 1;
+  uint64 spikes_amount_threshold = 2;
+  uint64 timestamps_max_length = 3;
+  uint64 ms_until_warning = 4;
+  uint64 max_ms_between_events = 5;
 }
 
 message ConfigSkill {

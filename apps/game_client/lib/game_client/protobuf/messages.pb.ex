@@ -159,6 +159,7 @@ defmodule GameClient.Protobuf.Configuration do
   field(:game, 1, type: GameClient.Protobuf.ConfigGame)
   field(:map, 2, type: GameClient.Protobuf.ConfigMap)
   field(:characters, 3, repeated: true, type: GameClient.Protobuf.ConfigCharacter)
+  field(:client_config, 4, type: GameClient.Protobuf.ClientConfig, json_name: "clientConfig")
 end
 
 defmodule GameClient.Protobuf.ConfigGame do
@@ -203,6 +204,40 @@ defmodule GameClient.Protobuf.ConfigCharacter do
     type: GameClient.Protobuf.ConfigCharacter.SkillsEntry,
     map: true
   )
+end
+
+defmodule GameClient.Protobuf.ClientConfig.LagSpikesEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :string)
+  field(:value, 2, type: GameClient.Protobuf.ConfigLagSpikes)
+end
+
+defmodule GameClient.Protobuf.ClientConfig do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:lag_spikes, 1,
+    repeated: true,
+    type: GameClient.Protobuf.ClientConfig.LagSpikesEntry,
+    json_name: "lagSpikes",
+    map: true
+  )
+end
+
+defmodule GameClient.Protobuf.ConfigLagSpikes do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:spike_value_threshold, 1, type: :uint64, json_name: "spikeValueThreshold")
+  field(:spikes_amount_threshold, 2, type: :uint64, json_name: "spikesAmountThreshold")
+  field(:timestamps_max_length, 3, type: :uint64, json_name: "timestampsMaxLength")
+  field(:ms_until_warning, 4, type: :uint64, json_name: "msUntilWarning")
+  field(:max_ms_between_events, 5, type: :uint64, json_name: "maxMsBetweenEvents")
 end
 
 defmodule GameClient.Protobuf.ConfigSkill do
