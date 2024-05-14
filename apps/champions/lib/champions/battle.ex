@@ -11,6 +11,8 @@ defmodule Champions.Battle do
   alias GameBackend.Units
   alias GameBackend.Users
 
+  @default_max_units 6
+
   @doc """
   Plays a level for a user, which means fighting its units with their selected ones.
   Returns `:win` or `:loss` accordingly, and updates the user's progress if they win..
@@ -21,8 +23,15 @@ defmodule Champions.Battle do
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)},
          {:super_campaign_progress, {:ok, %SuperCampaignProgress{level_id: current_level_id}}} <-
            {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, level.campaign.super_campaign_id)},
-         {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
-      units = Units.get_selected_units(user_id)
+         {:level_valid, true} <- {:level_valid, current_level_id == level_id},
+         units <- Units.get_selected_units(user_id),
+         {:max_units_met, true} <- {:max_units_met, Enum.count(units) <= (level.max_units || @default_max_units)} do
+      units =
+        if level.campaign.super_campaign.name == "Dungeon" do
+          apply_buffs(units, user_id)
+        else
+          units
+        end
 
       response =
         case Simulator.run_battle(units, level.units) do
@@ -47,6 +56,12 @@ defmodule Champions.Battle do
       {:level, {:error, :not_found}} -> {:error, :level_not_found}
       {:super_campaign_progress, {:error, :not_found}} -> {:error, :super_campaign_progress_not_found}
       {:level_valid, false} -> {:error, :level_invalid}
+      {:max_units_met, false} -> {:error, :max_units_exceeded}
     end
+  end
+
+  # TODO: implement buffs [#CHoM-428]
+  defp apply_buffs(units, _user_id) do
+    units
   end
 end

@@ -84,8 +84,8 @@ defmodule GameBackend.Campaigns do
     level =
       Repo.get(Level, level_id)
       |> Repo.preload([
-        :campaign,
         :currency_rewards,
+        campaign: :super_campaign,
         units: [
           :items,
           character: [basic_skill: [mechanics: :apply_effects_to], ultimate_skill: [mechanics: :apply_effects_to]]
@@ -100,6 +100,13 @@ defmodule GameBackend.Campaigns do
   """
   def get_user_super_campaign_progresses(user_id),
     do: Repo.all(from(cp in SuperCampaignProgress, where: cp.user_id == ^user_id, preload: [:level]))
+
+  @doc """
+  Get a super campaign by id.
+  """
+  def get_super_campaign(super_campaign_id) do
+    Repo.get(SuperCampaign, super_campaign_id)
+  end
 
   @doc """
   Get a campaign progress by user id and campaign id.
