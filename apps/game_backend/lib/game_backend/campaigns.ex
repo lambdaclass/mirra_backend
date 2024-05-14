@@ -109,6 +109,13 @@ defmodule GameBackend.Campaigns do
   end
 
   @doc """
+  Get a super campaign by name and game_id.
+  """
+  def get_super_campaign_by_name_and_game(name, game_id) do
+    Repo.get_by(SuperCampaign, name: name, game_id: game_id)
+  end
+
+  @doc """
   Get a campaign progress by user id and campaign id.
   Returns `{:error, :not_found}` if no progress is found.
   """
