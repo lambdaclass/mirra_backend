@@ -163,12 +163,10 @@ defmodule Arena.Game.Effect do
 
     Enum.reduce(entities_to_apply, game_state, fn {_entity_id, entity}, game_state ->
       if Entities.alive?(entity) do
-        entity =
-          Enum.reduce(entity.aditional_info.effects, entity, fn effect, entity ->
-            apply_effect_mechanic(entity, effect, game_state)
-          end)
-
-        Entities.update_entity(entity, game_state)
+        Enum.reduce(entity.aditional_info.effects, entity, fn effect, entity ->
+          apply_effect_mechanic(entity, effect, game_state)
+        end)
+        |> Entities.update_entity(game_state)
       else
         game_state
       end
