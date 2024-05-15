@@ -58,22 +58,25 @@ defmodule GameBackend.Rewards do
     yesterday = DateTime.utc_now() |> Date.add(-1)
 
     case Date.compare(user.last_daily_reward_claim_at, yesterday) do
-      :eq -> claim_next_reward(daily_reward_config, user.last_daily_reward_claim)
+      :eq -> claim_todays_reward(daily_reward_config, user.last_daily_reward_claim)
       _ -> claim_first_reward(daily_reward_config)
     end
   end
 
   defp claim_first_reward(daily_reward_config) do
-    case Map.get(daily_reward_config, "1") do
+    case Map.get(daily_reward_config, "day_1") do
       nil -> {:error, :invalid_reward}
-      first_daily_reward -> {:ok, first_daily_reward}
+      first_daily_reward -> {:ok, first_daily_reward |> Map.put("day", "day_1")}
     end
   end
 
-  defp claim_next_reward(daily_reward_config, current_reward) do
-    case Map.get(daily_reward_config, current_reward) do
-      nil -> {:error, :invalid_reward}
-      next_daily_reward -> {:ok, next_daily_reward}
+  defp claim_todays_reward(daily_reward_config, last_daily_reward_claim) do
+    case Map.get(daily_reward_config, last_daily_reward_claim) do
+      nil ->
+        {:error, :invalid_reward}
+
+      last_reward ->
+        {:ok, Map.get(daily_reward_config, last_reward["next_reward"]) |> Map.put("day", last_reward["next_reward"])}
     end
   end
 
