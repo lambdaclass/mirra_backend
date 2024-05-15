@@ -7,7 +7,7 @@ defmodule Gateway.Controllers.Arena.MatchResultsController do
   alias GameBackend.Matches
 
   def create(conn, %{"match_id" => match_id, "results" => results}) do
-    case Matches.create_arena_match_results(match_id, results) do
+    case Matches.create_arena_match_results(match_id, results) |> IO.inspect() do
       {:ok, _match_result} ->
         send_resp(conn, 201, "")
 

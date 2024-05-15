@@ -35,12 +35,11 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     :damage_done,
     :damage_taken,
     :health_healed,
-    :killed_by,
     :killed_by_bot,
     :duration_ms
   ]
 
-  @permitted [] ++ @required
+  @permitted [:killed_by] ++ @required
 
   def changeset(match_result, attrs) do
     match_result
@@ -56,7 +55,7 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     ## TODO: This enums should actually be read from config
     ##    https://github.com/lambdaclass/mirra_backend/issues/601
     |> validate_inclusion(:character, ["h4ck", "muflus", "uma", "valtimer", "otix"])
-    |> validate_inclusion(:killed_by, ["h4ck", "muflus", "uma", "valtimer", "otix"])
+    |> validate_inclusion(:killed_by, ["h4ck", "muflus", "uma", "valtimer", "otix", "zone"])
     |> foreign_key_constraint(:user_id)
   end
 end

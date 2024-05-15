@@ -27,6 +27,7 @@ defmodule Arena.GameTracker do
           | {:damage_taken, player_id(), non_neg_integer()}
           | {:damage_done, player_id(), non_neg_integer()}
           | {:heal, player_id(), non_neg_integer()}
+          | {:kill_by_zone, player_id()}
 
   @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
@@ -57,7 +58,7 @@ defmodule Arena.GameTracker do
           damage_taken: 0,
           damage_done: 0,
           health_healed: 0,
-          killed_by_bot: nil
+          killed_by_bot: false
         }
 
         {player.id, player_data}
@@ -112,6 +113,14 @@ defmodule Arena.GameTracker do
     |> put_in([:position_on_death], data.position_on_death - 1)
   end
 
+  defp update_data(data, {:kill_by_zone, victim_id}) do
+    data
+    |> put_in([:players, victim_id, :death], "zone")
+    |> put_in([:players, victim_id, :killed_by_bot], false)
+    |> put_in([:players, victim_id, :position], data.position_on_death)
+    |> put_in([:position_on_death], data.position_on_death - 1)
+  end
+
   defp update_data(data, {:damage_taken, player_id, amount}) do
     update_in(data, [:players, player_id, :damage_taken], fn damage_taken -> damage_taken + amount end)
   end
@@ -140,7 +149,7 @@ defmodule Arena.GameTracker do
         ##    https://github.com/lambdaclass/mirra_backend/issues/601
         deaths: if(player_data.death == nil, do: 0, else: 1),
         character: player_data.character,
-        position: player_data.position,
+        position: if(player_data.id == winner_id, do: 1, else: player_data.position),
         damage_taken: player_data.damage_taken,
         damage_done: player_data.damage_done,
         health_healed: player_data.health_healed,
