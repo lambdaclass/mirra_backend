@@ -1163,6 +1163,14 @@
   ],
   "items": [
     {
+      "name": "golden_clock",
+      "radius": 200.0,
+      "effects": [
+        "golden_clock_effect"
+      ],
+      "mechanics": {}
+    },
+    {
       "name": "magic_boots",
       "radius": 200.0,
       "effects": [
