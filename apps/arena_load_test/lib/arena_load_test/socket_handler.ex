@@ -6,6 +6,7 @@ defmodule ArenaLoadTest.SocketHandler do
   use WebSockex, restart: :transient
   alias ArenaLoadTest.Serialization
   alias ArenaLoadTest.SocketSupervisor
+  alias ArenaLoadTest.Utils
 
   def start_link(client_id) do
     ws_url = ws_url(client_id)
@@ -59,10 +60,10 @@ defmodule ArenaLoadTest.SocketHandler do
 
     case System.get_env("TARGET_SERVER") do
       nil ->
-        "ws://162.55.80.110:4000/join/#{player_id}/#{character}/#{player_name}"
+        "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
       target_server ->
-        "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
+        "ws://#{Utils.get_server_ip(target_server)}:4000/join/#{player_id}/#{character}/#{player_name}"
     end
   end
 

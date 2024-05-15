@@ -4,7 +4,6 @@ defmodule Arena.GameLauncher do
   alias Ecto.UUID
 
   use GenServer
-  require Logger
 
   # Amount of clients needed to start a game
   @clients_needed 10
