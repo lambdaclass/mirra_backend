@@ -397,6 +397,7 @@ syntax = "proto3";
       Death death = 6;
       ExecutionReceived execution_received = 7;
       EnergyRegen energy_regen = 8;
+      StatOverride stat_override = 9;
     }
   }
 
@@ -451,4 +452,9 @@ syntax = "proto3";
     string target_id = 1;
     string skill_id = 2;
     float amount = 3;
+  }
+
+  message StatOverride {
+    string target_id = 1;
+    StatAffected stat_affected = 2;
   }
