@@ -327,6 +327,15 @@ defmodule ArenaLoadTest.Serialization.GameState.BushesEntry do
   field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
 end
 
+defmodule ArenaLoadTest.Serialization.GameState.TrapsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
+end
+
 defmodule ArenaLoadTest.Serialization.GameState do
   @moduledoc false
 
@@ -408,6 +417,12 @@ defmodule ArenaLoadTest.Serialization.GameState do
   field(:bushes, 17,
     repeated: true,
     type: ArenaLoadTest.Serialization.GameState.BushesEntry,
+    map: true
+  )
+
+  field(:traps, 18,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.GameState.TrapsEntry,
     map: true
   )
 end

@@ -112,6 +112,7 @@ message GameState {
   map<uint64, Entity> pools = 15;
   map<uint64, Entity> crates = 16;
   map<uint64, Entity> bushes = 17;
+  map<uint64, Entity> traps = 18;
 }
 
 enum GameStatus {

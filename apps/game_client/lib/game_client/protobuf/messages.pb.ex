@@ -327,6 +327,15 @@ defmodule GameClient.Protobuf.GameState.BushesEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.TrapsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -386,6 +395,7 @@ defmodule GameClient.Protobuf.GameState do
   field(:pools, 15, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
   field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: GameClient.Protobuf.GameState.BushesEntry, map: true)
+  field(:traps, 18, repeated: true, type: GameClient.Protobuf.GameState.TrapsEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do

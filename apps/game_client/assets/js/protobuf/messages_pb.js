@@ -3786,7 +3786,8 @@ proto.GameState.toObject = function(includeInstance, msg) {
     obstaclesMap: (f = msg.getObstaclesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
   };
 
   if (includeInstance) {
@@ -3915,6 +3916,12 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 18:
+      var value = msg.getTrapsMap();
+      reader.readMessage(value, function(message, reader) {
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+         });
+      break;
     default:
       reader.skipField();
       break;
@@ -4031,6 +4038,10 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getBushesMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(17, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getTrapsMap(true);
+  if (f && f.getLength() > 0) {
+    f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
 };
 
@@ -4431,6 +4442,29 @@ proto.GameState.prototype.getBushesMap = function(opt_noLazyCreate) {
  */
 proto.GameState.prototype.clearBushesMap = function() {
   this.getBushesMap().clear();
+  return this;
+};
+
+
+/**
+ * map<uint64, Entity> traps = 18;
+ * @param {boolean=} opt_noLazyCreate Do not create the map if
+ * empty, instead returning `undefined`
+ * @return {!jspb.Map<number,!proto.Entity>}
+ */
+proto.GameState.prototype.getTrapsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+      jspb.Message.getMapField(this, 18, opt_noLazyCreate,
+      proto.Entity));
+};
+
+
+/**
+ * Clears values from the map. The map will be non-null.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearTrapsMap = function() {
+  this.getTrapsMap().clear();
   return this;
 };
 
