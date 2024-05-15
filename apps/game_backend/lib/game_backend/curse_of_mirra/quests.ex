@@ -44,7 +44,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
         left_join: dq in DailyQuest,
         on: q.id == dq.quest_id and dq.user_id == ^user_id,
         where:
-          (is_nil(dq) or dq.inserted_at < ^start_of_date or dq.inserted_at > ^end_of_date or not is_nil(dq.completed_at)) and
+          (is_nil(dq) or dq.inserted_at < ^start_of_date or dq.inserted_at > ^end_of_date or not is_nil(dq.completed_at) or
+             dq.status != "available") and
             q.type == ^type,
         distinct: q.id
       )
@@ -74,6 +75,28 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   def get_users_daily_quests(user_id) do
     q = from(dq in DailyQuest, preload: [:quest], where: dq.user_id == ^user_id)
+
+    Repo.all(q)
+  end
+
+  @doc """
+  Get all %DailyQuest{} for the user_id that were inserted today
+
+  ## Examples
+
+      iex>get_user_missing_quests_by_type(user_id, "daily")
+      [%Quest{type: "daily"}]
+  """
+  def get_user_todays_daily_quests(user_id) do
+    naive_today = NaiveDateTime.utc_now()
+    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
+    end_of_date = NaiveDateTime.end_of_day(naive_today)
+
+    q =
+      from(dq in DailyQuest,
+        preload: [:quest],
+        where: dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date
+      )
 
     Repo.all(q)
   end
@@ -109,7 +132,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
           _index, {multi, [quest | next_quests]} ->
             attrs = %{
               user_id: user_id,
-              quest_id: quest.id
+              quest_id: quest.id,
+              status: "available"
             }
 
             changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
@@ -124,31 +148,39 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   def reroll_quest(daily_quest, reroll_costs) do
-    new_quest =
-      get_quests_by_type(daily_quest.quest.type)
-      |> Enum.random()
+    get_user_missing_quests_by_type(daily_quest.user_id, daily_quest.quest.type)
+    |> case do
+      [] ->
+        {:error, :not_enough_available_quests}
 
-    attrs = %{
-      user_id: daily_quest.user_id,
-      quest_id: new_quest.id
-    }
+      quests ->
+        new_quest =
+          quests
+          |> Enum.random()
 
-    new_quest_changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
+        attrs = %{
+          user_id: daily_quest.user_id,
+          quest_id: new_quest.id,
+          status: "available"
+        }
 
-    finish_previous_quest_changeset =
-      DailyQuest.changeset(daily_quest, %{
-        status: "rerolled"
-      })
+        new_quest_changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
 
-    Multi.new()
-    # Deduct currency
-    |> Multi.run(:deduct_currencies, fn _, _ ->
-      Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
-    end)
-    # Update old daily quest
-    |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
-    # Add new daily quest
-    |> Multi.insert(:insert_quest, new_quest_changeset)
-    |> Repo.transaction()
+        finish_previous_quest_changeset =
+          DailyQuest.changeset(daily_quest, %{
+            status: "rerolled"
+          })
+
+        Multi.new()
+        # Deduct currency
+        |> Multi.run(:deduct_currencies, fn _, _ ->
+          Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
+        end)
+        # Update old daily quest
+        |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
+        # Add new daily quest
+        |> Multi.insert(:insert_quest, new_quest_changeset)
+        |> Repo.transaction()
+    end
   end
 end
