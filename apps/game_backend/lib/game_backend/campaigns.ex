@@ -26,7 +26,9 @@ defmodule GameBackend.Campaigns do
   Get a campaign by id.
   """
   def get_campaign(campaign_id) do
-    case Repo.one(from(c in Campaign, where: c.id == ^campaign_id, preload: [levels: ^level_preload_query()])) do
+    case Repo.one(
+           from(c in Campaign, where: c.id == ^campaign_id, preload: [:super_campaign, levels: ^level_preload_query()])
+         ) do
       nil -> {:error, :not_found}
       campaign -> {:ok, Map.put(campaign, :levels, Enum.sort_by(campaign.levels, & &1.level_number))}
     end
