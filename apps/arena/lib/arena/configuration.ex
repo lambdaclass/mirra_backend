@@ -16,7 +16,9 @@ defmodule Arena.Configuration do
     skills = parse_skills_config(config.skills)
     characters = parse_characters_config(config.characters, skills)
     client_config = get_client_config()
-    %{config | skills: skills, characters: characters, client_config: client_config}
+
+    %{config | skills: skills, characters: characters}
+    |> Map.put(:client_config, client_config)
   end
 
   defp get_client_config() do
