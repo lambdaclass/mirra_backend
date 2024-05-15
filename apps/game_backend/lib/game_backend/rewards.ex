@@ -104,13 +104,11 @@ defmodule GameBackend.Rewards do
 
   def mark_user_daily_rewards_as_completed(daily_rewards_config, user) do
     if user_in_daily_rewards_streak?(user) do
-      Map.new(daily_rewards_config, fn {day, _next_reward} ->
-        last_claim = String.to_integer(user.last_daily_reward_claim)
-        current_day = String.to_integer(day)
-        if last_claim <= current_day, do: {day, "claimed"}, else: {day, "not claimed"}
+      Map.new(daily_rewards_config, fn {day, _reward_info} ->
+        if day <= user.last_daily_reward_claim, do: {day, "claimed"}, else: {day, "not claimed"}
       end)
     else
-      Map.new(daily_rewards_config, fn {day, _next_reward} -> {day, "not claimed"} end)
+      Map.new(daily_rewards_config, fn {day, _reward_info} -> {day, "not claimed"} end)
     end
   end
 end
