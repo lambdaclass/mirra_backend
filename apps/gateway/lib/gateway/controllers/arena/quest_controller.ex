@@ -11,17 +11,13 @@ defmodule Gateway.Curse.Controllers.Users.QuestController do
   use Gateway, :controller
 
   def reroll_quest(conn, %{"quest_id" => quest_id}) do
-    {:ok, quest_prices_attrs} =
-      Application.app_dir(:game_backend, "priv/curse_of_mirra/quest_reroll_configuration.json")
-      |> File.read()
-
-    reroll_configurations = Jason.decode!(quest_prices_attrs, [{:keys, :atoms}])
+    reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
 
     daily_quest =
       Quests.get_daily_quest(quest_id)
 
     amount_of_daily_quests =
-      Quests.get_users_daily_quests(daily_quest.user_id)
+      Quests.get_user_todays_daily_quests(daily_quest.user_id)
       |> Enum.count()
 
     reroll_costs =
@@ -40,19 +36,25 @@ defmodule Gateway.Curse.Controllers.Users.QuestController do
         %CurrencyCost{currency_id: currency.id, amount: amount}
       end)
 
-    if Currencies.can_afford(daily_quest.user_id, reroll_costs) do
-      case Quests.reroll_quest(daily_quest, reroll_costs) do
-        {:ok, %{insert_quest: _daily_quest}} ->
-          conn
-          |> send_resp(200, "added!")
+    cond do
+      not Currencies.can_afford(daily_quest.user_id, reroll_costs) ->
+        conn
+        |> send_resp(400, "You can't afford this reroll")
 
-        _ ->
-          conn
-          |> send_resp(400, "Error rerolling quest")
-      end
-    else
-      conn
-      |> send_resp(400, "You can't afford this reroll")
+      daily_quest.status == "rerolled" ->
+        conn
+        |> send_resp(400, "quest already rerolled")
+
+      true ->
+        case Quests.reroll_quest(daily_quest, reroll_costs) do
+          {:ok, %{insert_quest: _daily_quest}} ->
+            conn
+            |> send_resp(200, "added!")
+
+          _ ->
+            conn
+            |> send_resp(400, "Error rerolling quest")
+        end
     end
   end
 end
