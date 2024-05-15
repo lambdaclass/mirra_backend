@@ -25,7 +25,7 @@ defmodule GameBackend.Matches do
     Enum.reduce(results, multi, fn result, multi ->
       attrs =
         Map.put(result, "google_user_id", result["user_id"])
-        |> Map.put(result, "match_id", match_id)
+        |> Map.put("match_id", match_id)
 
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
       Multi.insert(multi, {:insert, result["user_id"]}, changeset)
