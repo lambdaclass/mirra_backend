@@ -1204,6 +1204,7 @@
           "radius": 200.0,
           "activation_delay_ms": 3000,
           "vertices": [],
+          "activate_on_proximity": true,
           "mechanics": {
             "circle_hit": {
               "damage": 64,
