@@ -79,7 +79,7 @@ defmodule GameBackend.Users do
 
     daily_quest_subquery =
       from(dq in DailyQuest,
-        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and not dq.completed,
+        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at),
         preload: [:quest]
       )
 

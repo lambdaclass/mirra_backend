@@ -11,8 +11,6 @@ defmodule GameBackend.Quests.DailyQuest do
 
   schema "daily_quest" do
     field(:completed_at, :utc_datetime)
-    field(:completed, :boolean, default: false)
-    field(:status, :string)
     belongs_to(:quest, Quest)
     belongs_to(:user, User)
 
@@ -24,7 +22,7 @@ defmodule GameBackend.Quests.DailyQuest do
     :user_id
   ]
 
-  @permitted [:completed, :completed_at, :status] ++ @required
+  @permitted [:completed_at] ++ @required
 
   def changeset(changeset, attrs) do
     changeset

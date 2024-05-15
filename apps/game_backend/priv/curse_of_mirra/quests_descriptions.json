@@ -4,19 +4,19 @@
         "description": "Win three matches with Muflus",
         "type": "daily",
         "objective": {
-            "field": "result",
+            "match_tracking_field": "result",
             "value": 3,
             "comparison": "greater",
             "scope": "match"
         },
         "conditions": [
             {
-                "field": "character",
+                "match_tracking_field": "character",
                 "value": "muflus",
                 "comparison": "equal"
             },
             {
-                "field": "result",
+                "match_tracking_field": "result",
                 "value": "win",
                 "comparison": "equal"
             }
@@ -31,7 +31,7 @@
         "description": "Get 44 kills",
         "type": "daily",
         "objective": {
-            "field": "kills",
+            "match_tracking_field": "kills",
             "value": 44,
             "comparison": "greater",
             "scope": "day"
@@ -47,14 +47,14 @@
         "description": "This is curse of mirra, lose a match",
         "type": "daily",
         "objective": {
-            "field": "result",
+            "match_tracking_field": "result",
             "value": 1,
             "comparison": "greater_or_equal",
             "scope": "match"
         },
         "conditions": [
             {
-                "field": "result",
+                "match_tracking_field": "result",
                 "value": "loss",
                 "comparison": "equal"
             }
