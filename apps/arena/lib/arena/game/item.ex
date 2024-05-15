@@ -19,12 +19,8 @@ defmodule Arena.Game.Item do
   """
   def do_mechanic(game_state, entity, {:spawn_bomb, bomb_params}) do
     last_id = game_state.last_id + 1
-
-    now = System.monotonic_time(:millisecond)
-
     new_trap =
       Entities.new_trap(last_id, entity.id, entity.position, bomb_params)
-      |> Map.put(:activate_at, now + bomb_params.activation_delay_ms)
 
     game_state
     |> put_in([:last_id], last_id)

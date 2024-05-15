@@ -263,6 +263,7 @@ defmodule Arena.Entities do
         mechanics: config.mechanics,
         activation_delay_ms: config.activation_delay_ms,
         owner_id: owner_id,
+        activate_on_proximity: config.activate_on_proximity,
         status: :PREPARED
       }
     }
