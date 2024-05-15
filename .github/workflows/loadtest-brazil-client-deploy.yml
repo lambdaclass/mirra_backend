@@ -61,6 +61,8 @@ jobs:
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: ${{ inputs.release }}
           TARGET_SERVER: ${{ inputs.target_server }}
+          LOADTEST_EUROPE_HOST: ${{ vars.LOADTEST_EUROPE_HOST }}
+          LOADTEST_BRAZIL_HOST: ${{ vars.LOADTEST_BRAZIL_HOST }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -78,6 +80,8 @@ jobs:
                 MIX_ENV=${MIX_ENV} \
                 RELEASE=${RELEASE} \
                 TARGET_SERVER=${TARGET_SERVER} \
+                LOADTEST_EUROPE_HOST=${LOADTEST_EUROPE_HOST} \
+                LOADTEST_BRAZIL_HOST=${LOADTEST_BRAZIL_HOST} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
