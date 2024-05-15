@@ -81,14 +81,14 @@ defmodule GameBackend.Rewards do
   Receives a user.
   Returns {:ok, can_claim} if the user claimed today already or never claimed at all.
   """
-  def user_claimed_today(%GameBackend.Users.User{last_daily_reward_claim_at: nil}), do: {:ok, :can_claim}
+  def user_can_claim(%GameBackend.Users.User{last_daily_reward_claim_at: nil}), do: {:ok, :can_claim}
 
-  def user_claimed_today(user) do
+  def user_can_claim(user) do
     now = DateTime.utc_now()
 
     case Date.compare(user.last_daily_reward_claim_at, now) do
-      :eq -> {:ok, :can_claim}
-      _ -> {:error, :already_claimed}
+      :eq -> {:error, :already_claimed}
+      _ -> {:ok, :can_claim}
     end
   end
 
