@@ -140,8 +140,8 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
       # Traps
-      |> activate_traps()
-      |> remove_expired_traps()
+      |> remove_activated_traps()
+      |> activate_stepped_traps()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -680,7 +680,7 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
-  defp activate_traps(game_state) do
+  defp activate_stepped_traps(game_state) do
     now = System.monotonic_time(:millisecond)
 
     activated_traps =
@@ -688,22 +688,17 @@ defmodule Arena.GameUpdater do
         trap.activate_at < now && trap.aditional_info.status == :PREPARED
       end)
 
-    {game_state, traps} =
-      Enum.reduce(activated_traps, {game_state, game_state.traps}, fn {trap_id, trap}, {game_state_acc, traps_acc} ->
-        game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
-        trap = put_in(trap, [:aditional_info, :status], :TRIGGERED)
-        {game_state, Map.put(traps_acc, trap_id, trap)}
-      end)
-
-    put_in(game_state, [:traps], traps)
+    Enum.reduce(activated_traps, game_state, fn {_trap_id, trap}, game_state_acc ->
+      game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
+      trap = put_in(trap, [:aditional_info, :status], :TRIGGERED)
+      update_entity_in_game_state(game_state, trap)
+    end)
   end
 
-  defp remove_expired_traps(game_state) do
-    now = System.monotonic_time(:millisecond)
-
+  defp remove_activated_traps(game_state) do
     remaining_traps =
       Enum.filter(game_state.traps, fn {_trap_id, trap} ->
-        trap.remove_at > now
+        trap.aditional_info.status != :TRIGGERED
       end)
       |> Map.new()
 
@@ -1411,6 +1406,7 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :power_up}), do: :power_ups
   defp get_entity_path(%{category: :projectile}), do: :projectiles
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
+  defp get_entity_path(%{category: :trap}), do: :traps
 
   def get_effects_from_config([], _game_config), do: []
 
