@@ -204,7 +204,7 @@ defmodule Arena.Game.Effect do
         entity
 
       pool ->
-        if entity.aditional_info.damage_immunity do
+        if Map.has_key?(entity.aditional_info, :damage_immunity) do
           entity
         else
           direction = Physics.get_direction_from_positions(entity.position, pool.position)
