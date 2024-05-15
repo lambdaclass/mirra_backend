@@ -47,6 +47,7 @@ defmodule Arena.Entities do
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
+        pull_immunity: false,
         effects: [],
         cooldowns: %{},
         bonus_damage: 0,
@@ -84,6 +85,7 @@ defmodule Arena.Entities do
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
+        pull_immunity: true,
         on_collide_effects: Map.get(config_params, :on_collide_effects)
       },
       collides_with: []
@@ -106,6 +108,7 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :AVAILABLE,
         remove_on_collision: true,
+        pull_immunity: true,
         power_up_damage_modifier: power_up.power_up_damage_modifier,
         power_up_health_modifier: power_up.power_up_health_modifier
       }
@@ -154,6 +157,7 @@ defmodule Arena.Entities do
         effects: [],
         stat_multiplier: 0,
         duration_ms: duration_ms,
+        pull_immunity: true,
         spawn_at: spawn_at
       },
       collides_with: []
@@ -174,6 +178,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
+        pull_immunity: true,
         effects: config.effects
       }
     }
@@ -241,6 +246,7 @@ defmodule Arena.Entities do
         health: health,
         amount_of_power_ups: amount_of_power_ups,
         status: :FINE,
+        pull_immunity: true,
         effects: []
       },
       collides_with: []
