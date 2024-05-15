@@ -19,6 +19,7 @@ defmodule Arena.Game.Item do
   """
   def do_mechanic(game_state, entity, {:spawn_bomb, bomb_params}) do
     last_id = game_state.last_id + 1
+
     new_trap =
       Entities.new_trap(last_id, entity.id, entity.position, bomb_params)
 

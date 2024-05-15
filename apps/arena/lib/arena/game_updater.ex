@@ -673,12 +673,12 @@ defmodule Arena.GameUpdater do
 
     activated_traps =
       Enum.filter(game_state.traps, fn {_trap_id, trap} ->
-        trap_activated?(trap, now, trap.aditional_info.activate_on_proximity)
+        trap_activated?(trap, now)
       end)
 
     Enum.reduce(activated_traps, game_state, fn {_trap_id, trap}, game_state_acc ->
       game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
-      trap = put_in(trap, [:aditional_info, :status], :TRIGGERED)
+      trap = put_in(trap, [:aditional_info, :status], :USED)
       update_entity_in_game_state(game_state, trap)
     end)
   end
@@ -686,7 +686,7 @@ defmodule Arena.GameUpdater do
   defp remove_activated_traps(game_state) do
     remaining_traps =
       Enum.filter(game_state.traps, fn {_trap_id, trap} ->
-        trap.aditional_info.status != :TRIGGERED
+        trap.aditional_info.status != :USED
       end)
       |> Map.new()
 
@@ -694,11 +694,19 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_traps(game_state) do
-    Enum.reduce(game_state.players, game_state, fn {_player_id, player}, game_state ->
-      Enum.reduce(game_state.traps, game_state, fn {trap_id, trap}, game_state ->
-        IO.inspect(player.collides_with, label: :player_collides_with)
+    players = game_state.players
+    traps = game_state.traps |> Enum.filter(fn {_trap_id, trap} -> trap.aditional_info.status == :PREPARED end)
+
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
+      Enum.reduce(traps, game_state, fn {trap_id, trap}, game_state ->
         if trap_id in player.collides_with && trap.aditional_info.activate_on_proximity do
-          trap = put_in(trap, [:aditional_info, :status], :PREPARED)
+          now = System.monotonic_time(:millisecond)
+
+          trap =
+            trap
+            |> put_in([:aditional_info, :status], :TRIGGERED)
+            |> Map.put(:activate_at, now + trap.aditional_info.activation_delay_ms)
+
           update_entity_in_game_state(game_state, trap)
         else
           game_state
@@ -707,12 +715,8 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp trap_activated?(trap, _now, true = _activate_on_proximity) do
-    trap.aditional_info.status == :TRIGGERED
-  end
-
-  defp trap_activated?(trap, now, _activate_on_proximity) do
-    trap.activate_at < now
+  defp trap_activated?(trap, now) do
+    Map.has_key?(trap, :activate_at) && trap.activate_at < now && trap.aditional_info.status == :TRIGGERED
   end
 
   defp remove_effects_on_action(game_state) do
@@ -870,8 +874,6 @@ defmodule Arena.GameUpdater do
     |> Map.put(:players, players)
     |> Map.put(:items, items)
   end
-
-
 
   # This method will decide what to do when a projectile has collided with something in the map
   # - If collided with something with the same owner skip that collision
