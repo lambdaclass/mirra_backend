@@ -253,29 +253,20 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, entity, {:leap, leap}, %{skill_direction: skill_direction, auto_aim?: auto_aim?}) do
+  def do_mechanic(game_state, entity, {:leap, leap}, %{execution_duration: execution_duration}) do
     Process.send_after(
       self(),
       {:stop_leap, entity.id, entity.aditional_info.base_speed, leap.on_arrival_mechanic},
-      leap.duration_ms
+      execution_duration
     )
 
-    skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, leap.range)
-
-    target_position = %{
-      x: entity.position.x + skill_direction.x,
-      y: entity.position.y + skill_direction.y
-    }
-
-    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    speed = Physics.calculate_speed(entity.position, target_position, leap.duration_ms) * 30
-
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
-    ## by modifying base_speed we ensure that the dash speed is kept as expected
+    ## by modifying base_speed we ensure that the dash speed is kept as expected cause when the
+    ## stat effects are reapplied there is a check on speed effects to prevent adding if `forced_movement = true`
     player =
       entity
       |> Map.put(:is_moving, true)
-      |> put_in([:aditional_info, :base_speed], speed)
+      |> put_in([:aditional_info, :base_speed], leap.speed)
       |> put_in([:aditional_info, :forced_movement], true)
 
     put_in(game_state, [:players, player.id], player)
@@ -378,10 +369,10 @@ defmodule Arena.Game.Skill do
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
       true ->
-        nearest_entity_direction_in_range =
-          Physics.nearest_entity_direction_in_range(player, entities, skill.max_autoaim_range)
+        nearest_entity_position_in_range =
+          Physics.nearest_entity_position_in_range(player, entities, skill.max_autoaim_range)
 
-        {nearest_entity_direction_in_range != player.direction, nearest_entity_direction_in_range}
+        {nearest_entity_position_in_range != player.direction, nearest_entity_position_in_range}
 
       false ->
         {false, player.direction |> maybe_normalize(not skill.can_pick_destination)}
@@ -422,11 +413,11 @@ defmodule Arena.Game.Skill do
     game_state
   end
 
-  defp maybe_multiply_by_range(%{x: x, y: y}, false = _auto_aim?, range) do
+  def maybe_multiply_by_range(%{x: x, y: y}, false = _auto_aim?, range) do
     %{x: x * range, y: y * range}
   end
 
-  defp maybe_multiply_by_range(direction, true = _auto_aim?, _range) do
+  def maybe_multiply_by_range(direction, true = _auto_aim?, _range) do
     direction
   end
 end
