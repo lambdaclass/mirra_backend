@@ -53,7 +53,8 @@ defmodule Arena.Entities do
         bonus_defense: 0,
         visible_players: [],
         on_bush: false
-      }
+      },
+      collides_with: []
     }
   end
 
@@ -84,7 +85,8 @@ defmodule Arena.Entities do
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
         on_collide_effects: Map.get(config_params, :on_collide_effects)
-      }
+      },
+      collides_with: []
     }
   end
 
@@ -153,7 +155,8 @@ defmodule Arena.Entities do
         stat_multiplier: 0,
         duration_ms: duration_ms,
         spawn_at: spawn_at
-      }
+      },
+      collides_with: []
     }
   end
 
@@ -239,7 +242,8 @@ defmodule Arena.Entities do
         amount_of_power_ups: amount_of_power_ups,
         status: :FINE,
         effects: []
-      }
+      },
+      collides_with: []
     }
   end
 
