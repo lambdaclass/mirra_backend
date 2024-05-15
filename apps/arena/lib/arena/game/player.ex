@@ -171,7 +171,7 @@ defmodule Arena.Game.Player do
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
 
-        execution_duration = calculate_duration(skill, player.position, skill_direction)
+        execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)
 
         action =
@@ -402,18 +402,20 @@ defmodule Arena.Game.Player do
   ## so to simplify my life an executive decision was made to take thas as a fact
   ## When the time comes to have more than one mechanic per skill this function will need to be refactored, good thing
   ## is that it will crash here so not something we can ignore
-  defp calculate_duration(%{mechanics: [{:leap, leap}]}, position, direction) do
+  defp calculate_duration(%{mechanics: [{:leap, leap}]}, position, direction, auto_aim?) do
     ## TODO: Cap target_position to leap.range
+    direction = Skill.maybe_multiply_by_range(direction, auto_aim?, leap.range)
+
     target_position = %{
-      x: position.x + direction.x * leap.range,
-      y: position.y + direction.y * leap.range
+      x: position.x + direction.x,
+      y: position.y + direction.y
     }
 
     ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
     Physics.calculate_duration(position, target_position, leap.speed) * 30
   end
 
-  defp calculate_duration(%{mechanics: [_]} = skill, _, _) do
+  defp calculate_duration(%{mechanics: [_]} = skill, _, _, _) do
     skill.execution_duration_ms
   end
 

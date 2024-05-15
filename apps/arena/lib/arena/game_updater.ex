@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
@@ -40,13 +41,24 @@ defmodule Arena.GameUpdater do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
+    match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
     Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
-    {:ok, %{clients: clients_ids, bot_clients: bot_clients_ids, game_config: game_config, game_state: game_state}}
+
+    :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
+
+    {:ok,
+     %{
+       match_id: match_id,
+       clients: clients_ids,
+       bot_clients: bot_clients_ids,
+       game_config: game_config,
+       game_state: game_state
+     }}
   end
 
   ##########################
@@ -171,7 +183,7 @@ defmodule Arena.GameUpdater do
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(winner, state.game_state)
-        report_game_results(state, winner.id)
+        GameTracker.finish_tracking(self(), winner.id)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
@@ -328,6 +340,7 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
+    killer = Map.get(game_state.players, killer_id)
 
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
@@ -341,6 +354,12 @@ defmodule Arena.GameUpdater do
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
+
+    GameTracker.push_event(
+      self(),
+      {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
+       %{id: victim.id, character_name: victim.aditional_info.character_name}}
+    )
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -492,38 +511,6 @@ defmodule Arena.GameUpdater do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
-  end
-
-  defp report_game_results(state, winner_id) do
-    results =
-      Map.take(state.game_state.client_to_player_map, state.clients)
-      |> Enum.map(fn {client_id, player_id} ->
-        player = Map.get(state.game_state.players, player_id)
-
-        %{
-          user_id: client_id,
-          ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
-          result: if(player.id == winner_id, do: "win", else: "loss"),
-          kills: player.aditional_info.kill_count,
-          ## TODO: this only works because you can only die once
-          deaths: if(Player.alive?(player), do: 0, else: 1),
-          character: player.aditional_info.character_name,
-          match_id: Ecto.UUID.generate(),
-          position: Map.get(state.game_state.positions, client_id)
-        }
-      end)
-
-    payload = Jason.encode!(%{results: results})
-
-    ## TODO: we should be doing this in a better way, both the url and the actual request
-    ## maybe a separate GenServer that gets the results and tries to send them to the server?
-    ## This way if it fails we can retry or something
-    spawn(fn ->
-      gateway_url = Application.get_env(:arena, :gateway_url)
-
-      Finch.build(:post, "#{gateway_url}/arena/match", [{"content-type", "application/json"}], payload)
-      |> Finch.request(Arena.Finch)
-    end)
   end
 
   ##########################
