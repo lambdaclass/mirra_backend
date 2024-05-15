@@ -11,7 +11,7 @@ Quests are a set of conditions that the players need to meet by playing matches 
   - `match_tracking_field`: The match_tracking_field of the arena match result table that will be used as target
   - `value`: The amount of progress that the player needs to met to complete the quest
   - `comparison`: comparator to use against the progress to check quest completion
-  - `scope`: Will determine how the progress will be processes to meet quest completion: `match` will only add 1 foe each valid match , `day` will sum the numeric value of the field *Do not use with string fields*
+  - `scope`: Will determine how the progress will be processed to meet quest completion: `match` will only add 1 foe each valid match , `day` will sum the numeric value of the field *Do not use with string fields*
 - `conditions`: A list of condition to filter if a match is valid in order to add to the progress of quest completion
   - `value`: Value to compare with arena results to check validity
   - `match_tracking_field`: match_tracking_field from the arena result to take to compare
