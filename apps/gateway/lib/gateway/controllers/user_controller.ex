@@ -6,6 +6,8 @@ defmodule Gateway.Controllers.UserController do
   alias GameBackend.Users
   alias GameBackend.Rewards
   alias GameBackend.Utils
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.UserCurrency
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -18,13 +20,20 @@ defmodule Gateway.Controllers.UserController do
 
   def claim_daily_reward(conn, %{"user_id" => user_id}) do
     with {:ok, user} <- Users.get_user(user_id),
-         {:ok, :can_claim} <- Rewards.user_claimed_today(user),
+         {:ok, :can_claim} <- Rewards.user_can_claim(user),
          {:ok, daily_reward} <- Rewards.claim_daily_reward(user),
          {:ok, user} <-
            Users.update_user(user, %{
              last_daily_reward_claim_at: DateTime.utc_now(),
-             last_daily_reward_claim: daily_reward
-           }) do
+             last_daily_reward_claim: daily_reward["day"]
+           }),
+         {:ok, %UserCurrency{}} <-
+           Currencies.add_currency_by_name_and_game!(
+             user_id,
+             daily_reward["currency"],
+             Utils.get_game_id(:curse_of_mirra),
+             daily_reward["amount"]
+           ) do
       send_resp(conn, 200, Jason.encode!(user.id))
     end
   end
