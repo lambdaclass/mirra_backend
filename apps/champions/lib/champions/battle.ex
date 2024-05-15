@@ -5,6 +5,7 @@ defmodule Champions.Battle do
 
   require Logger
 
+  alias GameBackend.Users.Currencies
   alias Champions.Battle.Simulator
   alias GameBackend.Campaigns
   alias GameBackend.Campaigns.SuperCampaignProgress
@@ -21,8 +22,10 @@ defmodule Champions.Battle do
          {:level, {:ok, level}} <- {:level, Campaigns.get_level(level_id)},
          {:super_campaign_progress, {:ok, %SuperCampaignProgress{level_id: current_level_id}}} <-
            {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, level.campaign.super_campaign_id)},
-         {:level_valid, true} <- {:level_valid, current_level_id == level_id} do
+         {:level_valid, true} <- {:level_valid, current_level_id == level_id},
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.currency_costs)} do
       units = Units.get_selected_units(user_id)
+      Currencies.substract_currencies(user_id, level.currency_costs)
 
       response =
         case Simulator.run_battle(units, level.units) do
