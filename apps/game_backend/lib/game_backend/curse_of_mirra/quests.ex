@@ -22,17 +22,30 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   @doc """
-  Get all %Quest{} by the type field
+  Get all %Quest{} by the type field that doesn't have a valid daily quest
+
+  a valid daily quest means:
+  - the inserted at is inside the current day period
+  - It hasn't been completed
 
   ## Examples
 
-      iex>get_quest_by_config_id("daily")
+      iex>get_user_missing_quests_by_type(user_id, "daily")
       [%Quest{type: "daily"}]
   """
-  def get_quests_by_type(type) do
+  def get_user_missing_quests_by_type(user_id, type) do
+    naive_today = NaiveDateTime.utc_now()
+    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
+    end_of_date = NaiveDateTime.end_of_day(naive_today)
+
     q =
-      from(qd in Quest,
-        where: qd.type == ^type
+      from(q in Quest,
+        left_join: dq in DailyQuest,
+        on: q.id == dq.quest_id and dq.user_id == ^user_id,
+        where:
+          (is_nil(dq) or dq.inserted_at < ^start_of_date or dq.inserted_at > ^end_of_date or not is_nil(dq.completed_at)) and
+            q.type == ^type,
+        distinct: q.id
       )
 
     Repo.all(q)
@@ -72,27 +85,28 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   def add_quest_to_user_id(user_id, amount, type) do
     available_quests =
-      get_quests_by_type(type)
+      get_user_missing_quests_by_type(user_id, type)
       |> Enum.shuffle()
 
-    {multi, _quests} =
-      Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
-        _index, {multi, []} ->
-          {multi, []}
+    if amount > Enum.count(available_quests) do
+      {:error, :not_enough_quests_in_config}
+    else
+      {multi, _quests} =
+        Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
+          _index, {multi, [quest | next_quests]} ->
+            attrs = %{
+              user_id: user_id,
+              quest_id: quest.id
+            }
 
-        _index, {multi, [quest | next_quests]} ->
-          attrs = %{
-            user_id: user_id,
-            quest_id: quest.id
-          }
+            changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
 
-          changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
+            multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
 
-          multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+            {multi, next_quests}
+        end)
 
-          {multi, next_quests}
-      end)
-
-    Repo.transaction(multi)
+      Repo.transaction(multi)
+    end
   end
 end
