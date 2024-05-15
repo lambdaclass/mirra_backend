@@ -86,7 +86,6 @@ defmodule GameBackend.Users.Currencies do
                amount: max(user_currency.amount + amount, 0)
              }) do
         Repo.update(changeset)
-        |> IO.inspect(label: "aber currency")
       else
         nil ->
           # User has none of this currency, create it with given amount
