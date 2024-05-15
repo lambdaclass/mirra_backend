@@ -144,7 +144,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     progess =
       Enum.filter(arena_match_results, fn arena_match_result ->
         Enum.all?(quest.conditions, fn condition ->
-          type = String.to_atom(condition["field"])
+          type = String.to_atom(condition["match_tracking_field"])
           value = condition["value"]
           arena_match_result_value = Map.get(arena_match_result, type)
 
@@ -154,7 +154,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         end)
       end)
       |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = String.to_atom(quest.objective["field"])
+        type = String.to_atom(quest.objective["match_tracking_field"])
 
         acc + acumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
       end)
