@@ -164,13 +164,15 @@ main_campaign = %{
   name: "Main Campaign"
 }
 
-dungeon_campaign = %{
+dungeon_super_campaign = %{
   game_id: champions_of_mirra_id,
   name: "Dungeon"
 }
 
 {_, main_campaign} = Campaigns.insert_super_campaign(main_campaign, returning: true)
-{_, dungeon_campaign} = Campaigns.insert_super_campaign(dungeon_campaign, returning: true)
+
+{_, dungeon_super_campaign} =
+  Campaigns.insert_super_campaign(dungeon_super_campaign, returning: true)
 
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
@@ -296,29 +298,35 @@ _dungeon_settlement_levels =
     dungeon_settlement_level
   end)
 
-# Since insert_all doesn't accept assocs, we insert the levels first and then their units
-dungeon_levels =
-  Enum.flat_map(Enum.with_index(rules, 1), fn {campaign_rules, campaign_index} ->
-    {_, campaign} =
-      Campaigns.insert_campaign(
-        %{
-          game_id: champions_of_mirra_id,
-          super_campaign_id: dungeon_campaign.id,
-          campaign_number: campaign_index
-        },
-        returning: true
-      )
+dungeon_rules =
+  %{
+    base_level: 5,
+    scaler: 1.05,
+    possible_factions: ["Araban", "Kaline", "Merliot", "Otobi"],
+    length: 200
+  }
 
-    Enum.map(1..campaign_rules.length, fn level_index ->
-      %{
-        game_id: champions_of_mirra_id,
-        campaign_id: campaign.id,
-        level_number: level_index,
-        experience_reward: 100 * level_index,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
-    end)
+# Since insert_all doesn't accept assocs, we insert the levels first and then their units
+{:ok, dungeon_campaign} =
+  Campaigns.insert_campaign(
+    %{
+      game_id: champions_of_mirra_id,
+      super_campaign_id: dungeon_super_campaign.id,
+      campaign_number: 1
+    },
+    returning: true
+  )
+
+dungeon_levels =
+  Enum.map(1..dungeon_rules.length, fn level_index ->
+    %{
+      game_id: champions_of_mirra_id,
+      campaign_id: dungeon_campaign.id,
+      level_number: level_index,
+      experience_reward: 100 * level_index,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
   end)
 
 {_, levels_without_units} =
@@ -327,12 +335,11 @@ dungeon_levels =
 units =
   Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
     campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
-    campaign_rules = Enum.at(rules, campaign_number - 1)
 
-    base_level = campaign_rules.base_level
-    level_scaler = campaign_rules.scaler
+    base_level = dungeon_rules.base_level
+    level_scaler = dungeon_rules.scaler
 
-    possible_characters = Units.all_characters_from_factions(campaign_rules.possible_factions)
+    possible_characters = Units.all_characters_from_factions(dungeon_rules.possible_factions)
 
     agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
 
