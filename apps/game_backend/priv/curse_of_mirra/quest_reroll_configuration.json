@@ -1,0 +1,9 @@
+{
+    "reroll_multiplier": 0.20,
+    "costs": [
+        {
+            "quest_base_cost": 100,
+            "quest_currency_cost_name": "Gold"
+        }
+    ]
+}

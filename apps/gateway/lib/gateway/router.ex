@@ -13,6 +13,7 @@ defmodule Gateway.Router do
     pipe_through :api
 
     put "/users/:user_id/currency", Controllers.Users.CurrencyController, :modify_currency
+    get "/quest/:quest_id/reroll_quest", Controllers.Users.QuestController, :reroll_quest
   end
 
   scope "/arena", Gateway.Controllers.Arena do

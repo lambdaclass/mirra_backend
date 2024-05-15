@@ -52,6 +52,18 @@ defmodule GameBackend.CurseOfMirra.Quests do
     Quest.changeset(quest, attrs)
   end
 
+  def get_daily_quest(daily_quest_id) do
+    q = from(dq in DailyQuest, preload: [:quest, :currency], where: dq.id == ^daily_quest_id)
+
+    Repo.one(q)
+  end
+
+  def count_users_daily_quests(user_id) do
+    q = from(dq in DailyQuest, where: dq.user_id == ^user_id, select: count())
+
+    Repo.one(q)
+  end
+
   @doc """
   Insert or update config quests present in the "quests_descriptions.json" file
   """
