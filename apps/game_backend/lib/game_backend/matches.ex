@@ -8,12 +8,12 @@ defmodule GameBackend.Matches do
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
-  alias GameBackend.Repo
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Repo
 
-  def create_arena_match_results(results) do
+  def create_arena_match_results(match_id, results) do
     Multi.new()
-    |> create_arena_match_results(results)
+    |> create_arena_match_results(match_id, results)
     |> add_google_users_to_multi(results)
     |> give_trophies(results)
     |> maybe_complete_quests()
@@ -24,9 +24,12 @@ defmodule GameBackend.Matches do
   # Multi operations #
   ####################
 
-  defp create_arena_match_results(multi, results) do
+  defp create_arena_match_results(multi, match_id, results) do
     Enum.reduce(results, multi, fn result, multi ->
-      attrs = Map.put(result, "google_user_id", result["user_id"])
+      attrs =
+        Map.put(result, "google_user_id", result["user_id"])
+        |> Map.put("match_id", match_id)
+
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
       Multi.insert(multi, {:insert, result["user_id"]}, changeset)
     end)
@@ -115,7 +118,13 @@ defmodule GameBackend.Matches do
   #      Helpers     #
   ####################
 
-  defp get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) do
+  ## TODO: Properly pre-process `currencies_config` so the keys are integers and we don't need conversion
+  ##    https://github.com/lambdaclass/mirra_backend/issues/601
+  def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) when is_integer(position) do
+    get_amount_of_trophies_to_modify(current_trophies, to_string(position), currencies_config)
+  end
+
+  def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) do
     Enum.sort_by(
       get_in(currencies_config, ["ranking_system", "ranks"]),
       fn %{"maximum_rank" => maximum} -> maximum end,

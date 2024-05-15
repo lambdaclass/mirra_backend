@@ -7,6 +7,16 @@ defmodule Gateway.SocketTester do
       {_ok, pid} = SocketTester.start_link()
       SocketTester.create_user(pid, "Username")
       SocketTester.get_user_by_username(pid, "Username")
+
+  To use SocketTester in the elixir shell, you can move this file under the `lib/gateway/` directory.
+  To fetch the last message received by the SocketTester, you can run:
+
+  ```
+  send(pid, {:last_message, self()})
+  ```
+
+  This will send the last message received by the SocketTester to the caller process (our shell).
+  You can then use `flush()` to see the message.
   """
 
   @ws_url "ws://127.0.0.1:4001/2"
@@ -34,13 +44,15 @@ defmodule Gateway.SocketTester do
     UnequipItem,
     GetItem,
     FuseItems,
-    GetAfkRewards,
-    ClaimAfkRewards,
+    GetKalineAfkRewards,
+    ClaimKalineAfkRewards,
     GetBox,
     GetBoxes,
     Summon,
     GetUserSuperCampaignProgresses,
-    LevelUpKalineTree
+    LevelUpKalineTree,
+    ClaimDungeonAfkRewards,
+    LevelUpDungeonSettlement
   }
 
   def start_link() do
@@ -243,23 +255,23 @@ defmodule Gateway.SocketTester do
          })}
       )
 
-  def get_afk_rewards(pid, user_id),
+  def get_kaline_afk_rewards(pid, user_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:get_afk_rewards, %GetAfkRewards{user_id: user_id}}
+           request_type: {:get_kaline_afk_rewards, %GetKalineAfkRewards{user_id: user_id}}
          })}
       )
 
-  def claim_afk_rewards(pid, user_id),
+  def claim_kaline_afk_rewards(pid, user_id),
     do:
       WebSockex.send_frame(
         pid,
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:claim_afk_rewards, %ClaimAfkRewards{user_id: user_id}}
+           request_type: {:claim_kaline_afk_rewards, %ClaimKalineAfkRewards{user_id: user_id}}
          })}
       )
 
@@ -280,6 +292,26 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:level_up_kaline_tree, %LevelUpKalineTree{user_id: user_id}}
+         })}
+      )
+
+  def claim_dungeon_afk_rewards(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:claim_dungeon_afk_rewards, %ClaimDungeonAfkRewards{user_id: user_id}}
+         })}
+      )
+
+  def level_up_dungeon_settlement(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:level_up_dungeon_settlement, %LevelUpDungeonSettlement{user_id: user_id}}
          })}
       )
 
