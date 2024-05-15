@@ -927,12 +927,19 @@ defmodule Arena.GameUpdater do
     updated_players =
       Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
         player = Map.get(players_acc, player_id)
-        last_damage = player |> get_in([:aditional_info, :last_damage_received])
-        elapse_time = now - last_damage
 
-        player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
+        case Player.alive?(player) do
+          false ->
+            players_acc
 
-        Map.put(players_acc, player_id, player)
+          true ->
+            last_damage = player |> get_in([:aditional_info, :last_damage_received])
+            elapse_time = now - last_damage
+
+            player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
+
+            Map.put(players_acc, player_id, player)
+        end
       end)
 
     %{game_state | players: updated_players}
