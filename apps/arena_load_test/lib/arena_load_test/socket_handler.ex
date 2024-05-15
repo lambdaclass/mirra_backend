@@ -63,6 +63,8 @@ defmodule ArenaLoadTest.SocketHandler do
         "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
       target_server ->
+        # TODO Replace this for a SSL connection using erlang credentials.
+        # TODO https://github.com/lambdaclass/mirra_backend/issues/493
         "ws://#{Utils.get_server_ip(target_server)}:4000/join/#{player_id}/#{character}/#{player_name}"
     end
   end
