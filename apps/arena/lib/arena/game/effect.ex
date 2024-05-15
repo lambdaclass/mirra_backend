@@ -136,6 +136,10 @@ defmodule Arena.Game.Effect do
     put_in(player, [:aditional_info, :damage_immunity], true)
   end
 
+  defp apply_stat_modifier(player, {:pull_immunity, _damage_immunity}) do
+    put_in(player, [:aditional_info, :pull_immunity], true)
+  end
+
   defp apply_stat_modifier(player, _) do
     player
   end

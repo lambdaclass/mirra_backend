@@ -324,6 +324,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :bonus_damage], 0)
     |> put_in([:aditional_info, :bonus_defense], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
+    |> put_in([:aditional_info, :pull_immunity], false)
     |> Effect.apply_stat_effects()
   end
 
@@ -427,6 +428,10 @@ defmodule Arena.Game.Player do
       one_time_application: true,
       effect_mechanics: %{
         damage_immunity: %{
+          execute_multiple_times: false,
+          effect_delay_ms: 0
+        },
+        pull_immunity: %{
           execute_multiple_times: false,
           effect_delay_ms: 0
         }
