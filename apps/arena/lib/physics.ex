@@ -38,5 +38,5 @@ defmodule Physics do
 
   def distance_between_entities(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
 
-  def nearest_entity_direction_in_range(_entity, _entities, _range), do: :erlang.nif_error(:nif_not_loaded)
+  def nearest_entity_position_in_range(_entity, _entities, _range), do: :erlang.nif_error(:nif_not_loaded)
 end
