@@ -56,6 +56,7 @@ defmodule GameClient.Protobuf.TrapStatus do
 
   field(:PREPARED, 0)
   field(:TRIGGERED, 1)
+  field(:USED, 2)
 end
 
 defmodule GameClient.Protobuf.Direction do

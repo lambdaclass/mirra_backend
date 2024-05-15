@@ -9079,7 +9079,8 @@ proto.PlayerActionType = {
  */
 proto.TrapStatus = {
   PREPARED: 0,
-  TRIGGERED: 1
+  TRIGGERED: 1,
+  USED: 2
 };
 
 goog.object.extend(exports, proto);
