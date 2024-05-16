@@ -88,8 +88,8 @@ message ClientConfig {
 message ConfigLagSpikes {
   uint64 spike_value_threshold = 1;
   uint64 spikes_amount_threshold = 2;
-  uint64 timestamps_max_length = 3;
-  uint64 ms_until_warning = 4;
+  uint64 spikes_until_warning = 3;
+  uint64 timestamps_max_length = 4;
   uint64 max_ms_between_events = 5;
 }
 

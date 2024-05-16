@@ -1,9 +1,9 @@
 {
-    "lag_spikes": {
-        "spike_value_threshold": 150,
-        "spikes_amount_threshold": 3,
-        "timestamps_max_length": 100,
-        "ms_until_warning": 2000,
-        "max_ms_between_events": 3000
-    }
+  "lag_spikes": {
+    "spike_value_threshold": 150,
+    "spikes_amount_threshold": 3,
+    "spikes_until_warning": 1,
+    "timestamps_max_length": 100,
+    "max_ms_between_events": 3000
+  }
 }
