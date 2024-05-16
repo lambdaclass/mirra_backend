@@ -196,6 +196,16 @@ defmodule Champions.Battle.Simulator do
               },
               :skill_action
             )
+            |> add_to_history(
+              %{
+                target_id: unit.id,
+                stat_affected: %{
+                  stat: :ENERGY,
+                  amount: 0
+                }
+              },
+              :stat_override
+            )
 
           {new_state, new_history}
 
@@ -928,13 +938,32 @@ defmodule Champions.Battle.Simulator do
 
   # Called at the end of step processing. Sets unit health to max_health if it's above it.
   defp cap_units_health({state, history}) do
-    {Map.put(
-       state,
-       :units,
-       Enum.map(state.units, fn {unit_id, unit} ->
-         {unit_id, Map.put(unit, :health, min(unit.max_health, unit.health))}
-       end)
-     ), history}
+    {new_history, units_state} =
+      Enum.reduce(state.units, {history, %{}}, fn {unit_id, unit}, {history_acc, state_acc} ->
+        units_state =
+          Map.put(state_acc, unit_id, Map.put(unit, :health, min(unit.max_health, unit.health)))
+
+        if unit.health > unit.max_health do
+          new_history =
+            add_to_history(
+              history_acc,
+              %{
+                target_id: unit.id,
+                stat_affected: %{
+                  stat: :HEALTH,
+                  amount: unit.max_health
+                }
+              },
+              :stat_override
+            )
+
+          {new_history, units_state}
+        else
+          {history_acc, units_state}
+        end
+      end)
+
+    {Map.put(state, :units, units_state), new_history}
   end
 
   # Called at the end of step processing. Sets unit energy to the max allowed energy if it's above it.
