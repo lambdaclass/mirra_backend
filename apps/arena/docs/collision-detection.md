@@ -138,5 +138,5 @@ a->b first vector
 a->v next vector
 
 That scalar results negative
-![Triangle containment check by cross product usage](./images/sat-no-overlapping.jpg "Point inside triangle")
+![Triangle containment check by cross product usage](./images/Point%20inside%20triangle.jpg "Point inside triangle")
 
