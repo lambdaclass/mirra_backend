@@ -1,5 +1,21 @@
 use crate::map::{Entity, Position};
 
+/*
+Ear clipping triangulation algorithm
+
+The logic of the algorithm goes like this:
+1. Traverse the polygon looking for ears
+2. Once we find an ear do the following:
+   - Save the triangle formed by the current previous and next vertex
+   - Delete the current vertex from the available vertex list
+   - Start again with the cleaned up vertex list until the list length is 3
+3. Make a final triangle with the 3 remaining vertices
+
+Even tho the resolution is different the logic is the same as the following article:
+- [Geometric tools article](https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf)
+
+*/
+
 pub(crate) fn maybe_triangulate_polygon(mut polygon: Entity) -> Vec<Entity> {
     clean_extra_vertices(&mut polygon);
     if is_polygon_convex(&polygon) {
