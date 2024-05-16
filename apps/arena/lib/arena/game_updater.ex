@@ -153,7 +153,8 @@ defmodule Arena.GameUpdater do
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
-      |> handle_traps()
+      |> prepare_traps()
+      |> handle_trap_collisions()
       |> activate_trap_mechanics()
 
     broadcast_game_update(game_state)
@@ -693,12 +694,12 @@ defmodule Arena.GameUpdater do
     put_in(game_state, [:traps], remaining_traps)
   end
 
-  def handle_traps(game_state) do
+  def handle_trap_collisions(game_state) do
     players = game_state.players
     traps = game_state.traps |> Enum.filter(fn {_trap_id, trap} -> trap.aditional_info.status == :PREPARED end)
 
-    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-      Enum.reduce(traps, game_state, fn {trap_id, trap}, game_state ->
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state_acc ->
+      Enum.reduce(traps, game_state_acc, fn {trap_id, trap}, game_state_acc ->
         if trap_id in player.collides_with && trap.aditional_info.activate_on_proximity do
           now = System.monotonic_time(:millisecond)
 
@@ -707,16 +708,33 @@ defmodule Arena.GameUpdater do
             |> put_in([:aditional_info, :status], :TRIGGERED)
             |> Map.put(:activate_at, now + trap.aditional_info.activation_delay_ms)
 
-          update_entity_in_game_state(game_state, trap)
+          update_entity_in_game_state(game_state_acc, trap)
         else
-          game_state
+          game_state_acc
         end
       end)
     end)
   end
 
+  def prepare_traps(game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    Enum.reduce(game_state.traps, game_state, fn {_trap_id, trap}, game_state_acc ->
+      if trap_ready?(trap, now) do
+        trap = put_in(trap, [:aditional_info, :status], :PREPARED)
+        update_entity_in_game_state(game_state_acc, trap) |> IO.inspect(label: :wea)
+      else
+        game_state_acc
+      end
+    end)
+  end
+
   defp trap_activated?(trap, now) do
     Map.has_key?(trap, :activate_at) && trap.activate_at < now && trap.aditional_info.status == :TRIGGERED
+  end
+
+  defp trap_ready?(trap, now) do
+    trap.aditional_info.status == :PENDING && trap.prepare_at < now
   end
 
   defp remove_effects_on_action(game_state) do

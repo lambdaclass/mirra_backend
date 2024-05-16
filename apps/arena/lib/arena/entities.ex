@@ -261,10 +261,11 @@ defmodule Arena.Entities do
       aditional_info: %{
         name: config.name,
         mechanics: config.mechanics,
+        preparation_delay_ms: config.preparation_delay_ms,
         activation_delay_ms: config.activation_delay_ms,
         owner_id: owner_id,
         activate_on_proximity: config.activate_on_proximity,
-        status: :PREPARED
+        status: :PENDING
       }
     }
   end

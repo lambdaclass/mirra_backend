@@ -1202,6 +1202,7 @@
         "spawn_bomb": {
           "name": "bomb",
           "radius": 200.0,
+          "preparation_delay_ms": 2000,
           "activation_delay_ms": 3000,
           "vertices": [],
           "activate_on_proximity": true,
