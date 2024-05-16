@@ -225,8 +225,8 @@ defmodule ArenaLoadTest.Serialization.ConfigLagSpikes do
 
   field(:spike_value_threshold, 1, type: :uint64, json_name: "spikeValueThreshold")
   field(:spikes_amount_threshold, 2, type: :uint64, json_name: "spikesAmountThreshold")
-  field(:timestamps_max_length, 3, type: :uint64, json_name: "timestampsMaxLength")
-  field(:ms_until_warning, 4, type: :uint64, json_name: "msUntilWarning")
+  field(:spikes_until_warning, 3, type: :uint64, json_name: "spikesUntilWarning")
+  field(:timestamps_max_length, 4, type: :uint64, json_name: "timestampsMaxLength")
   field(:max_ms_between_events, 5, type: :uint64, json_name: "maxMsBetweenEvents")
 end
 

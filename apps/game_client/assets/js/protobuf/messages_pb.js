@@ -3677,8 +3677,8 @@ proto.ConfigLagSpikes.toObject = function(includeInstance, msg) {
   var f, obj = {
     spikeValueThreshold: jspb.Message.getFieldWithDefault(msg, 1, 0),
     spikesAmountThreshold: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    timestampsMaxLength: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    msUntilWarning: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    spikesUntilWarning: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    timestampsMaxLength: jspb.Message.getFieldWithDefault(msg, 4, 0),
     maxMsBetweenEvents: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
 
@@ -3726,11 +3726,11 @@ proto.ConfigLagSpikes.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 3:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setTimestampsMaxLength(value);
+      msg.setSpikesUntilWarning(value);
       break;
     case 4:
       var value = /** @type {number} */ (reader.readUint64());
-      msg.setMsUntilWarning(value);
+      msg.setTimestampsMaxLength(value);
       break;
     case 5:
       var value = /** @type {number} */ (reader.readUint64());
@@ -3779,14 +3779,14 @@ proto.ConfigLagSpikes.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTimestampsMaxLength();
+  f = message.getSpikesUntilWarning();
   if (f !== 0) {
     writer.writeUint64(
       3,
       f
     );
   }
-  f = message.getMsUntilWarning();
+  f = message.getTimestampsMaxLength();
   if (f !== 0) {
     writer.writeUint64(
       4,
@@ -3840,10 +3840,10 @@ proto.ConfigLagSpikes.prototype.setSpikesAmountThreshold = function(value) {
 
 
 /**
- * optional uint64 timestamps_max_length = 3;
+ * optional uint64 spikes_until_warning = 3;
  * @return {number}
  */
-proto.ConfigLagSpikes.prototype.getTimestampsMaxLength = function() {
+proto.ConfigLagSpikes.prototype.getSpikesUntilWarning = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
@@ -3852,16 +3852,16 @@ proto.ConfigLagSpikes.prototype.getTimestampsMaxLength = function() {
  * @param {number} value
  * @return {!proto.ConfigLagSpikes} returns this
  */
-proto.ConfigLagSpikes.prototype.setTimestampsMaxLength = function(value) {
+proto.ConfigLagSpikes.prototype.setSpikesUntilWarning = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
 /**
- * optional uint64 ms_until_warning = 4;
+ * optional uint64 timestamps_max_length = 4;
  * @return {number}
  */
-proto.ConfigLagSpikes.prototype.getMsUntilWarning = function() {
+proto.ConfigLagSpikes.prototype.getTimestampsMaxLength = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
@@ -3870,7 +3870,7 @@ proto.ConfigLagSpikes.prototype.getMsUntilWarning = function() {
  * @param {number} value
  * @return {!proto.ConfigLagSpikes} returns this
  */
-proto.ConfigLagSpikes.prototype.setMsUntilWarning = function(value) {
+proto.ConfigLagSpikes.prototype.setTimestampsMaxLength = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
