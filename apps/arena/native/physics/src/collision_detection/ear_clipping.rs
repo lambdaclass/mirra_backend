@@ -18,10 +18,9 @@ Even tho the resolution is different the logic is the same as the following arti
 
 pub(crate) fn maybe_triangulate_polygon(mut polygon: Entity) -> Vec<Entity> {
     clean_extra_vertices(&mut polygon);
-    if is_polygon_convex(&polygon) {
+    if is_polygon_concave(&polygon) {
         return vec![polygon.clone()];
     }
-
     triangulate_polygon(&polygon)
 }
 
@@ -60,6 +59,7 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     let mut positions = polygon.vertices.clone();
 
     while positions.len() > 3 {
+        println!("aber positions {:?}", positions);
         for current_vertex_index in 0..positions.len() {
             let previous_vertex_index = get_previous_cyclic_index(current_vertex_index, &positions);
             let next_vertex_index = get_next_cyclic_index(current_vertex_index, &positions);
@@ -147,7 +147,7 @@ fn get_cross_product_scalar(first_vector: &Position, second_vector: &Position) -
 }
 
 // A polygon convex means that every
-fn is_polygon_convex(polygon: &Entity) -> bool {
+fn is_polygon_concave(polygon: &Entity) -> bool {
     let mut result = true;
     for current_vertex_index in 0..polygon.vertices.len() {
         let previous_vertex_index =
@@ -161,7 +161,7 @@ fn is_polygon_convex(polygon: &Entity) -> bool {
         let first_vector = Position::sub(&previous_vertex, &current_vertex);
         let second_vector = Position::sub(&next_vertex, &current_vertex);
 
-        result = result && get_cross_product_scalar(&first_vector, &second_vector) >= 0.0
+        result = result && get_cross_product_scalar(&first_vector, &second_vector) >= 0.0;
     }
 
     result
