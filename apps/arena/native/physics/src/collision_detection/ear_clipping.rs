@@ -59,7 +59,6 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     let mut positions = polygon.vertices.clone();
 
     while positions.len() > 3 {
-        println!("aber positions {:?}", positions);
         for current_vertex_index in 0..positions.len() {
             let previous_vertex_index = get_previous_cyclic_index(current_vertex_index, &positions);
             let next_vertex_index = get_next_cyclic_index(current_vertex_index, &positions);
