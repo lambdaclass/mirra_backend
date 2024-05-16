@@ -722,7 +722,7 @@ defmodule Arena.GameUpdater do
     Enum.reduce(game_state.traps, game_state, fn {_trap_id, trap}, game_state_acc ->
       if trap_ready?(trap, now) do
         trap = put_in(trap, [:aditional_info, :status], :PREPARED)
-        update_entity_in_game_state(game_state_acc, trap) |> IO.inspect(label: :wea)
+        update_entity_in_game_state(game_state_acc, trap)
       else
         game_state_acc
       end
