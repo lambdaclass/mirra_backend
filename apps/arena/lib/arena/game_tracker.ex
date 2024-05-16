@@ -46,7 +46,8 @@ defmodule Arena.GameTracker do
           controller: if(Enum.member?(human_clients, player_to_client[player.id]), do: :human, else: :bot),
           character: player.aditional_info.character_name,
           kills: [],
-          death: nil
+          death: nil,
+          position: nil
         }
 
         {player.id, player_data}
@@ -79,6 +80,13 @@ defmodule Arena.GameTracker do
   def handle_cast({:push_event, match_pid, event}, state) do
     state = update_in(state, [:matches, match_pid], fn data -> update_data(data, event) end)
     {:noreply, state}
+  end
+
+  defp update_data(data, {:kill, %{character_name: "Zone"}, victim}) do
+    data
+    |> put_in([:players, victim.id, :death], "Zone")
+    |> put_in([:players, victim.id, :position], data.position_on_death)
+    |> put_in([:position_on_death], data.position_on_death - 1)
   end
 
   defp update_data(data, {:kill, killer, victim}) do
