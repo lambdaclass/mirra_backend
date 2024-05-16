@@ -145,6 +145,7 @@ export const BoardGame = function () {
           newEntity.boardObject.drawCircle(0, 0, newEntity.radius);
           break;
         case "polygon":
+          newEntity.boardObject.lineStyle(1, 0xFF00FF, 1);
           newEntity.boardObject.drawPolygon(newEntity.coords.flat());
           break;
       }
