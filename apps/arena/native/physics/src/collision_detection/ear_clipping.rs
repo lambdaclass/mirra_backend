@@ -24,6 +24,8 @@ pub(crate) fn maybe_triangulate_polygon(mut polygon: Entity) -> Vec<Entity> {
     triangulate_polygon(&polygon)
 }
 
+// Here we'll remove any vertices are shouldn't be part of the polygon or are useless
+// - If three vertices are in a line that's a useless connections that we should remove
 fn clean_extra_vertices(polygon: &mut Entity) {
     let mut cleaned_vertices = vec![];
     for current_vertex_index in 0..polygon.vertices.len() {
@@ -93,6 +95,9 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     result
 }
 
+// Check if the three vertex are a valid ear, this means
+// 1. The inner angle formed by the three vertex isn't greater that 180 degrees
+// 2. There isn't any vertex inside the triangle area
 fn is_position_ear(
     current_vertex: Position,
     previous_vertex: Position,
@@ -111,6 +116,7 @@ fn is_position_ear(
     get_cross_product_scalar(&first_vector, &second_vector) > 0.0 && !triangle_has_point_inside
 }
 
+// Check if any vertex beside the one that belongs to the triangle is inside the triangle area
 fn triangle_has_point_inside(triangle: &Entity, vertex: &Vec<Position>) -> bool {
     let vector_from_a_to_b = Position::sub(&triangle.vertices[1], &triangle.vertices[0]);
     let vector_from_b_to_c = Position::sub(&triangle.vertices[2], &triangle.vertices[1]);
@@ -145,7 +151,8 @@ fn get_cross_product_scalar(first_vector: &Position, second_vector: &Position) -
     first_vector.x * second_vector.y - first_vector.y * second_vector.x
 }
 
-// A polygon convex means that every
+// A polygon concave means that every inner angle doesn't have more then
+// 180 degrees
 fn is_polygon_concave(polygon: &Entity) -> bool {
     let mut result = true;
     for current_vertex_index in 0..polygon.vertices.len() {
