@@ -737,7 +737,7 @@ defmodule Champions.Battle.Simulator do
   # Step 1: steps_remaining = 1. Modifier is effective. steps_remaining != 0 so we substract 1. Next steps_remaining = 1-1 = 0.
   # Step 2: steps_remaining = 0. Modifier is effective. steps_remaining == 0 so we remove it from the modifiers list for next step.
   # Step 3: Modifier has been removed, and is no longer effective.
-  defp get_duration(%{duration: duration}), do: duration
+  defp get_duration(%{duration: duration}), do: duration - 1
 
   # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
