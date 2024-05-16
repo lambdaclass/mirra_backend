@@ -5,11 +5,10 @@ defmodule ArenaLoadTest.GameSocketHandler do
   """
   alias ArenaLoadTest.SocketSupervisor
   alias ArenaLoadTest.Serialization
+  alias ArenaLoadTest.Utils
   use WebSockex, restart: :transient
-  require Logger
 
   def start_link({client_id, game_id}) do
-    Logger.info("Player INIT")
     ws_url = ws_url(client_id, game_id)
 
     WebSockex.start_link(
@@ -23,14 +22,17 @@ defmodule ArenaLoadTest.GameSocketHandler do
   end
 
   # Callbacks
-  def handle_frame({:binary, msg} = _frame, state) do
-    {event_type, _state} = Serialization.GameEvent.decode(msg) |> Map.get(:event)
+  def handle_frame({:binary, _msg} = _frame, state) do
+    {:ok, state}
+  end
 
-    if event_type == :finished do
-      {:stop, state}
-    else
-      {:ok, state}
-    end
+  def handle_info(:send_action, state) do
+    action = Enum.random([:move, :attack])
+    send(self(), action)
+
+    Process.send_after(self(), :send_action, 120, [])
+
+    {:ok, state}
   end
 
   def handle_info(:move, state) do
@@ -52,7 +54,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :move, 500, [])
     {:ok, state}
   end
 
@@ -78,7 +79,6 @@ defmodule ArenaLoadTest.GameSocketHandler do
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
-    Process.send_after(self(), :attack, 300, [])
     {:ok, state}
   end
 
@@ -95,8 +95,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         raise KeyError, message: "Player with ID #{client_id} doesn't exist."
     end
 
-    SocketSupervisor.add_new_client(client_id)
-    Logger.info("Player websocket terminated. Game Ended.")
+    {:ok, _pid} = SocketSupervisor.add_new_client(client_id)
     exit(:normal)
   end
 
@@ -116,7 +115,9 @@ defmodule ArenaLoadTest.GameSocketHandler do
         "ws://localhost:4000/play/#{game_id}/#{client_id}"
 
       target_server ->
-        "wss://#{target_server}/play/#{game_id}/#{client_id}"
+        # TODO Replace this for a SSL connection using erlang credentials.
+        # TODO https://github.com/lambdaclass/mirra_backend/issues/493
+        "ws://#{Utils.get_server_ip(target_server)}:4000/play/#{game_id}/#{client_id}"
     end
   end
 

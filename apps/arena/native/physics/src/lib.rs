@@ -141,13 +141,13 @@ fn calculate_duration(position_a: Position, position_b: Position, speed: f32) ->
 }
 
 #[rustler::nif()]
-fn nearest_entity_direction_in_range(
+fn nearest_entity_position_in_range(
     entity: Entity,
     entities: HashMap<u64, Entity>,
     range: i64,
-) -> Direction {
+) -> Position {
     let mut max_distance = range as f32;
-    let mut direction = Direction {
+    let mut position = Position {
         x: entity.direction.x,
         y: entity.direction.y,
     };
@@ -159,7 +159,7 @@ fn nearest_entity_direction_in_range(
                 max_distance = distance;
                 let difference_between_positions =
                     Position::sub(&other_entity.position, &entity.position);
-                direction = Direction {
+                position = Position {
                     x: difference_between_positions.x,
                     y: difference_between_positions.y,
                 };
@@ -167,7 +167,7 @@ fn nearest_entity_direction_in_range(
         }
     }
 
-    direction
+    position
 }
 #[rustler::nif()]
 fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
@@ -236,7 +236,7 @@ rustler::init!(
         get_direction_from_positions,
         calculate_duration,
         distance_between_entities,
-        nearest_entity_direction_in_range,
+        nearest_entity_position_in_range,
         get_closest_available_position,
         process_polygon_triangulation
     ]
