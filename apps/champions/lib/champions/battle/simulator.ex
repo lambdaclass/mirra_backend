@@ -731,7 +731,15 @@ defmodule Champions.Battle.Simulator do
     {target, new_history}
   end
 
+  # We substract a step because the modifier/tag is removed on the step when its' *initial* remaining value is 0.
+  # For a 2-step duration, this looks like:
+  # Step 0: Applied. steps_remaining = 2-1 = 1. Will be effective starting next step.
+  # Step 1: steps_remaining = 1. Modifier is effective. steps_remaining != 0 so we substract 1. Next steps_remaining = 1-1 = 0.
+  # Step 2: steps_remaining = 0. Modifier is effective. steps_remaining == 0 so we remove it from the modifiers list for next step.
+  # Step 3: Modifier has been removed, and is no longer effective.
   defp get_duration(%{duration: duration}), do: duration
+
+  # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
 
   # Return whether an effect hits.
@@ -773,16 +781,10 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp apply_tags(target, tags_to_apply, effect, history) do
+    steps = get_duration(effect.type)
+
     {new_tags, new_history} =
       Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
-        steps =
-          case Map.get(effect.type, :duration) do
-            nil -> -1
-            # We substract a step because the tag is removed on the step when its' remaining value is 0.
-            # For a 2-step duration, this looks like: 1, 0, [removed]
-            duration -> duration - 1
-          end
-
         Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)} for #{steps} steps.")
 
         new_history =
