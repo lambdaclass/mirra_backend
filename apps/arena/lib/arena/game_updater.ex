@@ -340,7 +340,23 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    killer = Map.get(game_state.players, killer_id)
+
+    Map.get(game_state.players, killer_id)
+    |> case do
+      nil ->
+        GameTracker.push_event(
+          self(),
+          {:kill, %{id: killer_id, character_name: "Zone"},
+           %{id: victim.id, character_name: victim.aditional_info.character_name}}
+        )
+
+      killer ->
+        GameTracker.push_event(
+          self(),
+          {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
+           %{id: victim.id, character_name: victim.aditional_info.character_name}}
+        )
+    end
 
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
@@ -352,12 +368,6 @@ defmodule Arena.GameUpdater do
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
-
-    GameTracker.push_event(
-      self(),
-      {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
-       %{id: victim.id, character_name: victim.aditional_info.character_name}}
-    )
 
     {:noreply, %{state | game_state: game_state}}
   end
