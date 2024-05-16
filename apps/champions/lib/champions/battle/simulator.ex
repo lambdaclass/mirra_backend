@@ -515,7 +515,7 @@ defmodule Champions.Battle.Simulator do
         Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is casting another skill")
         false
 
-      Enum.any?(unit.tags, &(&1.tag == "Stun")) ->
+      Enum.any?(unit.tags, &(&1.tag == "ControlEffect.Stun")) ->
         Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is stunned")
         false
 
