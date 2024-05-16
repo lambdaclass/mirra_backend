@@ -54,9 +54,10 @@ defmodule BotManager.Protobuf.TrapStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:PREPARED, 0)
-  field(:TRIGGERED, 1)
-  field(:USED, 2)
+  field(:PENDING, 0)
+  field(:PREPARED, 1)
+  field(:TRIGGERED, 2)
+  field(:USED, 3)
 end
 
 defmodule BotManager.Protobuf.Direction do

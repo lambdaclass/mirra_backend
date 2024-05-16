@@ -253,9 +253,10 @@ enum PlayerActionType {
 }
 
 enum TrapStatus{
-  PREPARED = 0;
-  TRIGGERED = 1;
-  USED = 2;
+  PENDING = 0;
+  PREPARED = 1;
+  TRIGGERED = 2;
+  USED = 3;
 }
 
 /*
