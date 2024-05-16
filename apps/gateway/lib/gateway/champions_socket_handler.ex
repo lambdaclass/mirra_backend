@@ -127,7 +127,7 @@ defmodule Gateway.ChampionsSocketHandler do
       {:error, reason} ->
         prepare_response({:error, reason}, nil)
 
-      battle_result ->
+      {:ok, battle_result} ->
         battle_result
         |> update_in([:steps], fn steps ->
           Enum.map(steps, &prepare_step/1)
