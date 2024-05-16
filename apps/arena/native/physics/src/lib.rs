@@ -3,6 +3,7 @@
 mod collision_detection;
 mod map;
 
+use crate::collision_detection::ear_clipping;
 use crate::map::{Category, Direction, Entity, Position};
 use std::collections::HashMap;
 
@@ -175,6 +176,16 @@ fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
         - entity_b.radius
 }
 
+#[rustler::nif()]
+fn process_polygon_triangulation(obstacles: Vec<Entity>) -> Vec<Entity> {
+    let mut result = vec![];
+    for obstacle in obstacles {
+        let mut triangulated_polygons = ear_clipping::maybe_triangulate_polygon(obstacle);
+        result.append(&mut triangulated_polygons);
+    }
+    result
+}
+
 fn move_entity_to_closest_available_position(
     entity: &mut Entity,
     external_wall: &Entity,
@@ -226,6 +237,7 @@ rustler::init!(
         calculate_duration,
         distance_between_entities,
         nearest_entity_direction_in_range,
-        get_closest_available_position
+        get_closest_available_position,
+        process_polygon_triangulation
     ]
 );
