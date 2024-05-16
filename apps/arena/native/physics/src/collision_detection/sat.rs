@@ -40,7 +40,7 @@ pub(crate) fn intersect_circle_polygon(
         let current_vertex = polygon.vertices[current_vertex_index];
         let next_vertex = polygon.vertices[next_vertex_index];
 
-        let current_line = Position::sub(&current_vertex, &next_vertex);
+        let current_line = Position::sub(&next_vertex, &current_vertex);
         // the axis will be the perpendicular line drawn from the current line of the polygon
         axis = Position {
             x: -current_line.y,
@@ -317,6 +317,11 @@ fn invalid_axis(
     let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
     let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
     let next_vertex_collitions = next_vertex_line.collides_with(&obstacle_vector);
+
+    println!("next_vertex_line {:?}", next_vertex_line.vertices);
+    println!("next_vertex_collitions {:?}", next_vertex_collitions);
+    println!("current_vertex_line {:?}", current_vertex_line.vertices);
+    println!("current_vertex_collitions {:?}", current_vertex_collitions);
 
     current_vertex_collitions.iter().any(|collision_id| {
         next_vertex_collitions.contains(collision_id) && collision_id != &external_wall.id
