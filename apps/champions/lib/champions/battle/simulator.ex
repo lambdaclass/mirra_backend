@@ -525,7 +525,10 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Check if the unit can cast their ultimate skill this step.
-  defp can_cast_ultimate_skill(unit), do: unit.energy >= @ultimate_energy_cost
+  defp can_cast_ultimate_skill(unit),
+    do:
+      unit.energy >= @ultimate_energy_cost and
+        "ControlEffect.Silence" not in Enum.map(unit.tags, fn %{tag: tag} -> tag end)
 
   # Check if the unit can cast their basic skill this step.
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
