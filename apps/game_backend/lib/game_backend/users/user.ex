@@ -5,6 +5,7 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Matches.CharacterPrestige
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
@@ -34,6 +35,7 @@ defmodule GameBackend.Users.User do
     has_many(:items, Item)
     has_many(:daily_quests, DailyQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
+    has_many(:prestiges, CharacterPrestige)
 
     timestamps()
   end

@@ -159,21 +159,33 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
   arena_prestige_ranks =
     Enum.reduce(arena_prestige_ranks_json["ranks"], [], fn rank, acc ->
       Enum.reduce(rank["sub_ranks"], acc, fn sub_rank, acc ->
-        entry = %{rank: rank["rank"], sub_rank: sub_rank["sub_rank"], min: sub_rank["min"], max: sub_rank["max"]}
+        entry = %{
+          rank: rank["rank"],
+          sub_rank: sub_rank["sub_rank"],
+          min: sub_rank["min"],
+          max: sub_rank["max"]
+        }
+
         [entry | acc]
       end)
     end)
-    |> Enum.sort_by(&(&1.min), :asc)
+    |> Enum.sort_by(& &1.min, :asc)
+
   ## TODO: validate arena_prestige_ranks no overlaps, etc?
 
   arena_prestige_rewards =
     Enum.reduce(arena_prestige_ranks_json["rewards"], %{}, fn reward, acc ->
       distributions =
         Enum.reduce(reward["distributions"], [], fn distribution, acc ->
-          entry = %{min: distribution["min"], max: distribution["max"], reward: distribution["reward"]}
+          entry = %{
+            min: distribution["min"],
+            max: distribution["max"],
+            reward: distribution["reward"]
+          }
+
           [entry | acc]
         end)
-        |> Enum.sort_by(&(&1.min), :asc)
+        |> Enum.sort_by(& &1.min, :asc)
 
       Map.put(acc, reward["position"], distributions)
     end)

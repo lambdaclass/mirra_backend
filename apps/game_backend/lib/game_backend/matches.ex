@@ -7,6 +7,7 @@ defmodule GameBackend.Matches do
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Matches.CharacterPrestige
   alias GameBackend.Repo
 
   def create_arena_match_results(match_id, results) do
@@ -93,5 +94,36 @@ defmodule GameBackend.Matches do
       maximum > current_trophies
     end)
     |> Map.get(position)
+  end
+
+  def give_prestige(multi, results) do
+    prestige_config = Application.get_env(:game_backend, :arena_prestige)
+
+    Enum.reduce(results, multi, fn result, transaction_acc ->
+      Multi.update(transaction_acc, {:update_prestige, result["user_id"]}, fn %{get_google_users: google_users} ->
+        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+        prestige = Enum.find(google_user.user.prestiges, fn prestige -> prestige.character == result["character"] end)
+
+        reward =
+          Map.get(prestige_config[:rewards], result["position"])
+          |> Enum.find(fn %{min: minp, max: maxp} -> prestige.amount in minp..maxp end)
+          |> Map.get(:reward)
+
+        changes = calculate_rank_and_amount_changes(prestige, reward, prestige_config[:ranks])
+        CharacterPrestige.changeset(prestige, changes)
+      end)
+    end)
+  end
+
+  defp calculate_rank_and_amount_changes(prestige, reward, ranks) when reward >= 0 do
+    amount = prestige.amount + reward
+    new_rank = Enum.find(ranks, fn rank -> amount in rank.min..rank.max end)
+    %{rank: new_rank.rank, sub_rank: new_rank.sub_rank, amount: amount}
+  end
+
+  defp calculate_rank_and_amount_changes(prestige, reward, ranks) when reward < 0 do
+    current_rank = Enum.find(ranks, fn rank -> prestige.amount in rank.min..rank.max end)
+    amount = max(prestige.amount + reward, current_rank.min)
+    %{amount: amount}
   end
 end
