@@ -47,7 +47,10 @@ defmodule GameBackend.Matches do
     Enum.reduce(results, multi, fn result, transaction_acc ->
       Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, %{get_google_users: google_users} ->
         google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
-        prestige = Enum.find(google_user.user.character_prestiges, fn prestige -> prestige.character == result["character"] end)
+
+        prestige =
+          Enum.find(google_user.user.character_prestiges, fn prestige -> prestige.character == result["character"] end)
+
         reward = match_prestige_reward(prestige, result["position"], prestige_config[:rewards])
         changes = calculate_rank_and_amount_changes(prestige, reward, prestige_config[:ranks])
         insert_or_update_prestige(repo, google_user.user.id, result["character"], changes, prestige)
@@ -86,6 +89,7 @@ defmodule GameBackend.Matches do
 
   defp insert_or_update_prestige(repo, user_id, character, changes, nil) do
     attrs = Map.merge(changes, %{user_id: user_id, character: character})
+
     CharacterPrestige.insert_changeset(attrs)
     |> repo.insert()
   end
