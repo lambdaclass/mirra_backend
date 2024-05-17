@@ -1,0 +1,34 @@
+{
+  "ranks": [
+    {
+      "rank": "bronze",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 0,
+          "max": 9
+        },
+        {
+          "sub_rank": 2,
+          "min": 10,
+          "max": 19
+        },
+        {
+          "sub_rank": 3,
+          "min": 20,
+          "max": 29
+        },
+        {
+          "sub_rank": 4,
+          "min": 30,
+          "max": 39
+        },
+        {
+          "sub_rank": 5,
+          "min": 40,
+          "max": 49
+        }
+      ]
+    }
+  ]
+}

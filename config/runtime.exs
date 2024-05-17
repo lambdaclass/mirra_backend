@@ -150,6 +150,24 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
     |> File.read()
 
   config :game_backend, :daily_rewards_config, Jason.decode!(daily_rewards_json)
+
+  arena_prestige_ranks_json =
+    Application.app_dir(:game_backend, "priv/arena_prestige_ranks.json")
+    |> File.read!()
+    |> Jason.decode!()
+
+arena_prestige_ranks =
+    Enum.reduce(arena_prestige_ranks_json["ranks"], [], fn rank, acc ->
+      Enum.reduce(rank["sub_ranks"], acc, fn sub_rank, acc ->
+        entry = %{rank: rank["rank"], sub_rank: sub_rank["sub_rank"], min: sub_rank["min"], max: sub_rank["max"]}
+        [entry | acc]
+      end)
+    end)
+    |> Enum.sort_by(&(&1.min), :asc)
+
+  ## TODO: validate prestige ranks no overlaps, etc?
+
+  config :game_backend, :arena_prestige_ranks, arena_prestige_ranks
 end
 
 ##################################
