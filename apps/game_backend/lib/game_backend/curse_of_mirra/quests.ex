@@ -2,6 +2,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
+  alias GameBackend.CurseOfMirra.Quests
+  alias GameBackend.Utils
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
@@ -80,22 +83,25 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   @doc """
-  Get all %DailyQuest{} for the user_id that were inserted today
+  Get all %DailyQuest{} for the user_id that were inserted today and were rerolled
 
   ## Examples
 
-      iex>get_user_missing_quests_by_type(user_id, "daily")
+      iex>get_user_today_rerolled_daily_quests_by_type(user_id, "daily")
       [%Quest{type: "daily"}]
   """
-  def get_user_todays_daily_quests(user_id) do
+  def get_user_today_rerolled_daily_quests_by_type(user_id, type) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
 
     q =
       from(dq in DailyQuest,
+        join: q in assoc(dq, :quest),
         preload: [:quest],
-        where: dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date
+        where:
+          dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and
+            dq.status == ^"rerolled" and q.type == ^type
       )
 
     Repo.all(q)
@@ -147,7 +153,34 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
-  def reroll_quest(daily_quest, reroll_costs) do
+  def reroll_quest(daily_quest_id) do
+    reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
+
+    daily_quest =
+      Quests.get_daily_quest(daily_quest_id)
+
+    amount_of_rerolled_daily_quests =
+      Quests.get_user_today_rerolled_daily_quests_by_type(daily_quest.user_id, daily_quest.quest.type)
+      |> Enum.count()
+
+    reroll_costs =
+      reroll_configurations.costs
+      |> Enum.map(fn currency_cost_params ->
+        currency =
+          Currencies.get_currency_by_name_and_game!(
+            currency_cost_params.quest_currency_cost_name,
+            Utils.get_game_id(:curse_of_mirra)
+          )
+
+        amount =
+          (currency_cost_params.quest_base_cost +
+             currency_cost_params.quest_base_cost * amount_of_rerolled_daily_quests *
+               reroll_configurations.reroll_multiplier)
+          |> round()
+
+        %CurrencyCost{currency_id: currency.id, amount: amount}
+      end)
+
     get_user_missing_quests_by_type(daily_quest.user_id, daily_quest.quest.type)
     |> case do
       [] ->
@@ -171,16 +204,25 @@ defmodule GameBackend.CurseOfMirra.Quests do
             status: "rerolled"
           })
 
-        Multi.new()
-        # Deduct currency
-        |> Multi.run(:deduct_currencies, fn _, _ ->
-          Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
-        end)
-        # Update old daily quest
-        |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
-        # Add new daily quest
-        |> Multi.insert(:insert_quest, new_quest_changeset)
-        |> Repo.transaction()
+        cond do
+          daily_quest.status == "rerolled" ->
+            {:error, :quest_rerolled}
+
+          not Currencies.can_afford(daily_quest.user_id, reroll_costs) ->
+            {:error, :cant_afford}
+
+          true ->
+            Multi.new()
+            # Deduct currency
+            |> Multi.run(:deduct_currencies, fn _, _ ->
+              Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
+            end)
+            # Update old daily quest
+            |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
+            # Add new daily quest
+            |> Multi.insert(:insert_quest, new_quest_changeset)
+            |> Repo.transaction()
+        end
     end
   end
 end
