@@ -59,8 +59,10 @@ fn is_vertex_consecutive(
 fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     let mut result: Vec<Entity> = vec![];
     let mut positions = polygon.vertices.clone();
+    let mut ear_found: bool;
 
     while positions.len() > 3 {
+        ear_found = false;
         for current_vertex_index in 0..positions.len() {
             let previous_vertex_index = get_previous_cyclic_index(current_vertex_index, &positions);
             let next_vertex_index = get_next_cyclic_index(current_vertex_index, &positions);
@@ -70,12 +72,17 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
             let next_vertex = positions[next_vertex_index];
 
             if is_position_ear(current_vertex, previous_vertex, next_vertex, &positions) {
+                ear_found = true;
                 let triangle_vertex = vec![current_vertex, next_vertex, previous_vertex];
                 let candidate_triangle = Entity::new_polygon(1, triangle_vertex);
                 result.push(candidate_triangle);
                 positions.retain(|pos| pos != &current_vertex);
                 break;
             }
+        }
+
+        if !ear_found {
+            panic!("No ear detected, polygon invalid")
         }
     }
     let previous_vertex = positions[0];
@@ -88,7 +95,7 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
 
     // This algorithm should always result n - 2 triangles where n is the amount of vertex
     // in the polygon
-    if result.len() != polygon.vertices.len() - 2 {
+    if result.len() > polygon.vertices.len() - 2 {
         panic!("Wrong triangulation result")
     }
 
