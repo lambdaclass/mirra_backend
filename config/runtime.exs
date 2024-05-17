@@ -139,12 +139,6 @@ end
 ###################################
 
 if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
-  {:ok, currency_config_json} =
-    "./apps/game_backend/priv/currencies_rules.json"
-    |> File.read()
-
-  config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
-
   {:ok, daily_rewards_json} =
     Application.app_dir(:game_backend, "priv/daily_rewards_rules.json")
     |> File.read()
@@ -170,8 +164,6 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
       end)
     end)
     |> Enum.sort_by(& &1.min, :asc)
-
-  ## TODO: validate arena_prestige_ranks no overlaps, etc?
 
   arena_prestige_rewards =
     Enum.reduce(arena_prestige_ranks_json["rewards"], %{}, fn reward, acc ->
