@@ -20,8 +20,6 @@ units_per_level = 6
 
 ### Champions Currencies
 
-### Champions Currencies
-
 {:ok, _skills} = Champions.Config.import_skill_config()
 
 {:ok, _characters} = Champions.Config.import_character_config()
