@@ -796,7 +796,8 @@ defmodule Arena.GameUpdater do
            crates: crates
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes) |> Map.merge(crates) |> Map.merge(traps)
+    entities_to_collide =
+      Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes) |> Map.merge(crates) |> Map.merge(traps)
 
     moved_players =
       players
