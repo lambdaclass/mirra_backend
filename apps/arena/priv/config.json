@@ -1422,5 +1422,116 @@
   "bushes": {
     "field_of_view_inside_bush": 500
   },
-  "crates": []
+  "crates": [
+    {
+      "position": {
+        "y": 500.0,
+        "x": 0.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": -250.0,
+        "x": 250.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": -250.0,
+        "x": -250.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": -4390.0,
+        "x": 2630.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": -1830.0,
+        "x": 4360.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": -1860.0,
+        "x": -4650.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": 2870.0,
+        "x": -3960.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": 5010.0,
+        "x": 290.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": 4680.0,
+        "x": 2400.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    },
+    {
+      "position": {
+        "y": 1730.0,
+        "x": 4950.0
+      },
+      "shape": "circle",
+      "radius": 250.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1
+    }
+  ]
 }

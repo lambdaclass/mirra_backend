@@ -45,13 +45,13 @@ defmodule ArenaLoadTest.SocketSupervisor do
   Loadtests entrypoint.
   Creates given amount of clients that will join and play a game for the given duration.
   """
-  def spawn_players(num_clients, playtime_duration_ms \\ 999_999) do
+  def spawn_players(num_clients, playtime_duration_ms \\ 99_999_999) do
     send(LoadtestManager, :clients_log)
     Process.send_after(LoadtestManager, :loadtest_finished, playtime_duration_ms)
 
     Enum.each(1..num_clients, fn client_number ->
       Logger.info("Iteration: #{client_number}")
-      {:ok, _pid} = add_new_client(client_number)
+      {:ok, _pid} = ArenaLoadTest.SocketSupervisor.add_new_client(client_number)
     end)
   end
 

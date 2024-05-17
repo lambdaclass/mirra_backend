@@ -130,6 +130,7 @@ defmodule Arena.GameUpdater do
       |> remove_expired_effects()
       |> remove_effects_on_action()
       |> reset_players_effects()
+      |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
       |> reduce_players_cooldowns(time_diff)
@@ -144,11 +145,11 @@ defmodule Arena.GameUpdater do
       |> resolve_projectiles_collisions()
       |> explode_projectiles()
       # Pools
+      |> add_pools_collisions()
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
       # Crates
       |> handle_destroyed_crates(state.game_config)
-      |> Effect.apply_effect_mechanic()
       |> Map.put(:server_timestamp, now)
 
     broadcast_game_update(game_state)
@@ -340,26 +341,28 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    killer = Map.get(game_state.players, killer_id)
-
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
 
     game_state =
       game_state
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
-      |> update_in([:players, killer_id, :aditional_info, :kill_count], fn count ->
-        count + 1
-      end)
+      |> maybe_add_kill_to_player(killer_id)
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
 
-    GameTracker.push_event(
-      self(),
-      {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
-       %{id: victim.id, character_name: victim.aditional_info.character_name}}
-    )
+    case Map.get(game_state.players, killer_id) do
+      nil ->
+        GameTracker.push_event(self(), {:kill_by_zone, victim.id})
+
+      killer ->
+        GameTracker.push_event(
+          self(),
+          {:kill, %{id: killer.id, character_name: killer.aditional_info.character_name},
+           %{id: victim.id, character_name: victim.aditional_info.character_name}}
+        )
+    end
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -374,6 +377,8 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_done, player_id, damage}, state) do
+    GameTracker.push_event(self(), {:damage_done, player_id, damage})
+
     state =
       update_in(state, [:game_state, :damage_done, player_id], fn
         nil -> damage
@@ -384,6 +389,8 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:damage_taken, player_id, damage}, state) do
+    GameTracker.push_event(self(), {:damage_taken, player_id, damage})
+
     state =
       update_in(state, [:game_state, :damage_taken, player_id], fn
         nil -> damage
@@ -421,7 +428,9 @@ defmodule Arena.GameUpdater do
       random_position_in_map(
         item_config.radius,
         state.game_state.external_wall,
-        state.game_state.obstacles
+        state.game_state.obstacles,
+        state.game_state.external_wall.position,
+        state.game_state.external_wall.radius
       )
 
     item = Entities.new_item(last_id, position, item_config)
@@ -706,10 +715,11 @@ defmodule Arena.GameUpdater do
            bushes: bushes,
            power_ups: power_ups,
            pools: pools,
-           items: items
+           items: items,
+           crates: crates
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes)
+    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes) |> Map.merge(crates)
 
     moved_players =
       players
@@ -860,12 +870,29 @@ defmodule Arena.GameUpdater do
     |> Map.put(:crates, updated_crates)
   end
 
+  defp add_pools_collisions(
+         %{
+           players: players,
+           crates: crates,
+           pools: pools
+         } = game_state
+       ) do
+    entities_to_collide_with =
+      Player.alive_players(players)
+      |> Map.merge(crates)
+
+    updated_pools = update_collisions(pools, pools, entities_to_collide_with)
+
+    Map.put(game_state, :pools, updated_pools)
+  end
+
   defp resolve_projectiles_effects_on_collisions(
          %{
            projectiles: projectiles,
            players: players,
            obstacles: obstacles,
-           pools: pools
+           pools: pools,
+           crates: crates
          } = game_state,
          game_config
        ) do
@@ -875,7 +902,11 @@ defmodule Arena.GameUpdater do
           game_state
 
         on_collide_effects ->
-          entities_map = Map.merge(pools, obstacles) |> Map.merge(players) |> Map.merge(projectiles)
+          entities_map =
+            Map.merge(pools, obstacles)
+            |> Map.merge(players)
+            |> Map.merge(projectiles)
+            |> Map.merge(crates)
 
           effects_to_apply =
             get_effects_from_config(on_collide_effects.effects, game_config)
@@ -916,12 +947,19 @@ defmodule Arena.GameUpdater do
     updated_players =
       Enum.reduce(to_damage_ids, players, fn player_id, players_acc ->
         player = Map.get(players_acc, player_id)
-        last_damage = player |> get_in([:aditional_info, :last_damage_received])
-        elapse_time = now - last_damage
 
-        player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
+        case Player.alive?(player) do
+          false ->
+            players_acc
 
-        Map.put(players_acc, player_id, player)
+          true ->
+            last_damage = player |> get_in([:aditional_info, :last_damage_received])
+            elapse_time = now - last_damage
+
+            player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
+
+            Map.put(players_acc, player_id, player)
+        end
       end)
 
     %{game_state | players: updated_players}
@@ -992,7 +1030,13 @@ defmodule Arena.GameUpdater do
 
   defp maybe_receive_zone_damage(player, elapse_time, zone_damage_interval, zone_damage)
        when elapse_time > zone_damage_interval do
-    Player.take_damage(player, zone_damage)
+    updated_player = Player.take_damage(player, zone_damage)
+
+    unless Player.alive?(updated_player) do
+      send(self(), {:to_killfeed, 9999, player.id})
+    end
+
+    updated_player
   end
 
   defp maybe_receive_zone_damage(player, _elaptime, _zone_damage_interval, _zone_damage),
@@ -1125,15 +1169,15 @@ defmodule Arena.GameUpdater do
     distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
 
     Enum.reduce(1..amount//1, game_state, fn _, game_state ->
-      random_x =
-        victim.position.x +
-          Enum.random(-distance_to_power_up..distance_to_power_up)
+      random_position =
+        random_position_in_map(
+          game_config.power_ups.power_up.radius,
+          game_state.external_wall,
+          game_state.obstacles,
+          victim.position,
+          distance_to_power_up
+        )
 
-      random_y =
-        victim.position.y +
-          Enum.random(-distance_to_power_up..distance_to_power_up)
-
-      random_position = %{x: random_x, y: random_y}
       last_id = game_state.last_id + 1
 
       power_up =
@@ -1203,25 +1247,27 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp handle_pools(%{players: players} = game_state, game_config) do
-    Enum.reduce(players, game_state, fn {_player_id, player}, game_state ->
-      Enum.reduce(game_state.pools, game_state, fn {pool_id, pool}, acc ->
-        if pool_id in player.collides_with do
-          add_pool_effects(acc, game_config, player, pool)
+  defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
+    entities = Map.merge(crates, players)
+
+    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+      Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
+        if entity_id in pool.collides_with do
+          add_pool_effects(acc, game_config, entity, pool)
         else
-          Effect.remove_owner_effects(acc, player.id, pool_id)
+          Effect.remove_owner_effects(acc, entity_id, pool_id)
         end
       end)
     end)
   end
 
-  defp add_pool_effects(game_state, game_config, player, pool) do
-    if player.id == pool.aditional_info.owner_id do
+  defp add_pool_effects(game_state, game_config, entity, pool) do
+    if entity.id == pool.aditional_info.owner_id do
       game_state
     else
       Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
         effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        Effect.put_effect_to_entity(game_state, player, pool.id, effect)
+        Effect.put_effect_to_entity(game_state, entity, pool.id, effect)
       end)
     end
   end
@@ -1235,10 +1281,10 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp random_position_in_map(object_radius, external_wall, obstacles) do
-    integer_radius = trunc(external_wall.radius - object_radius)
-    x = Enum.random(-integer_radius..integer_radius) / 1.0
-    y = Enum.random(-integer_radius..integer_radius) / 1.0
+  defp random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius) do
+    integer_radius = trunc(available_radius - object_radius)
+    x = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.x
+    y = Enum.random(-integer_radius..integer_radius) / 1.0 + initial_position.y
 
     circle = %{
       id: 1,
@@ -1261,7 +1307,7 @@ defmodule Arena.GameUpdater do
 
     case Physics.check_collisions(circle, entities_to_collide_with) do
       [^external_wall_id | []] -> circle.position
-      _ -> random_position_in_map(object_radius, external_wall, obstacles)
+      _ -> random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius)
     end
   end
 
@@ -1362,6 +1408,7 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :power_up}), do: :power_ups
   defp get_entity_path(%{category: :projectile}), do: :projectiles
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
+  defp get_entity_path(%{category: :crate}), do: :crates
 
   def get_effects_from_config([], _game_config), do: []
 
@@ -1378,6 +1425,16 @@ defmodule Arena.GameUpdater do
       Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
     update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+  end
+
+  defp maybe_add_kill_to_player(%{players: players} = game_state, player_id) do
+    if Map.has_key?(players, player_id) do
+      update_in(game_state, [:players, player_id, :aditional_info, :kill_count], fn count ->
+        count + 1
+      end)
+    else
+      game_state
+    end
   end
 
   ##########################
