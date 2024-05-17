@@ -4,9 +4,12 @@ defmodule GameBackend.Rewards do
   """
 
   import Ecto.Query
+  alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Utils
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
 
   @doc """
   Inserts an AfkRewardRate.
@@ -113,5 +116,30 @@ defmodule GameBackend.Rewards do
     else
       Map.new(daily_rewards_config, fn {day, _reward_info} -> {day, "not claimed"} end)
     end
+  end
+
+  @doc """
+  Receives a user and a daily_reward params map.
+  Updates the user's daily_reward fields and also add the currency rewards to that user.
+  Returns {:ok, map_of_ran_operations} in case of success.
+  Returns {:error, failed_operation, failed_value, changes_so_far} if one of the operations fail.
+  """
+  def update_user_due_to_daily_rewards_claim(user, daily_reward) do
+    Multi.new()
+    |> Multi.run(:update_user, fn _, _ ->
+      Users.update_user(user, %{
+        last_daily_reward_claim_at: DateTime.utc_now(),
+        last_daily_reward_claim: daily_reward["day"]
+      })
+    end)
+    |> Multi.run(:update_user_currencies, fn _, _ ->
+      Currencies.add_currency_by_name_and_game!(
+        user.id,
+        daily_reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        daily_reward["amount"]
+      )
+    end)
+    |> Repo.transaction()
   end
 end
