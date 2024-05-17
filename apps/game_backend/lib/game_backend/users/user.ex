@@ -12,6 +12,7 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
   alias GameBackend.Users.GoogleUser
+  alias GameBackend.Quests.DailyQuest
 
   schema "users" do
     field(:game_id, :integer)
@@ -29,6 +30,7 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)
+    has_many(:daily_quests, DailyQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
 
     timestamps()

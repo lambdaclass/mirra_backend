@@ -1,0 +1,67 @@
+[
+    {
+        "config_id": 1,
+        "description": "Win three matches with Muflus",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 3,
+            "comparison": "greater",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "muflus",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    },
+    {
+        "config_id": 2,
+        "description": "Get 44 kills",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "kills",
+            "value": 44,
+            "comparison": "greater",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    },
+    {
+        "config_id": 3,
+        "description": "This is curse of mirra, lose a match",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "result",
+                "value": "loss",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    }
+]
