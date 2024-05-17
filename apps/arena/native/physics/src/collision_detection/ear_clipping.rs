@@ -50,8 +50,8 @@ fn is_vertex_consecutive(
     current_vertex: &Position,
     next_vertex: &Position,
 ) -> bool {
-    let first_vector = Position::sub(&previous_vertex, &current_vertex);
-    let second_vector = Position::sub(&next_vertex, &current_vertex);
+    let first_vector = Position::sub(previous_vertex, current_vertex);
+    let second_vector = Position::sub(next_vertex, current_vertex);
 
     get_cross_product_scalar(&first_vector, &second_vector) == 0.0
 }
@@ -118,7 +118,7 @@ fn is_position_ear(
     let first_vector = Position::sub(&previous_vertex, &current_vertex);
     let second_vector = Position::sub(&next_vertex, &current_vertex);
 
-    let triangle_has_point_inside = triangle_has_point_inside(&candidate_triangle, &vertices);
+    let triangle_has_point_inside = triangle_has_point_inside(&candidate_triangle, vertices);
 
     get_cross_product_scalar(&first_vector, &second_vector) > 0.0 && !triangle_has_point_inside
 }
@@ -180,7 +180,7 @@ fn is_polygon_concave(polygon: &Entity) -> bool {
     result
 }
 
-fn get_previous_cyclic_index(index: usize, vector: &Vec<Position>) -> usize {
+fn get_previous_cyclic_index(index: usize, vector: &[Position]) -> usize {
     if index == 0 {
         vector.len() - 1
     } else {
@@ -188,7 +188,7 @@ fn get_previous_cyclic_index(index: usize, vector: &Vec<Position>) -> usize {
     }
 }
 
-fn get_next_cyclic_index(index: usize, vector: &Vec<Position>) -> usize {
+fn get_next_cyclic_index(index: usize, vector: &[Position]) -> usize {
     if index == vector.len() - 1 {
         0
     } else {
