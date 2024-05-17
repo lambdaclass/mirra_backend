@@ -26,8 +26,8 @@ defmodule GameBackend.Repo.Migrations.AddDungeonUpgradesAndBuffs do
     end
 
     create(table(:upgrade_unlocks)) do
-      add(:upgrade_locking, references(:upgrades, on_delete: :delete_all), null: false)
-      add(:upgrade_unlocked, references(:upgrades, on_delete: :delete_all), null: false)
+      add(:upgrade_locking_id, references(:upgrades, on_delete: :delete_all), null: false, primary_key: true)
+      add(:upgrade_unlocked_id, references(:upgrades, on_delete: :delete_all), null: false, primary_key: true)
 
       timestamps()
     end
