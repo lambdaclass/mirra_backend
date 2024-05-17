@@ -3,6 +3,7 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.GameTracker
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
@@ -352,11 +353,14 @@ defmodule Arena.Game.Player do
     case heal_interval? and damage_interval? and use_skill_interval? do
       true ->
         heal_amount = floor(player.aditional_info.max_health * 0.1)
+        new_health = min(player.aditional_info.health + heal_amount, player.aditional_info.max_health)
+
+        GameTracker.push_event(self(), {:heal, player.id, new_health - player.aditional_info.health})
 
         Map.update!(player, :aditional_info, fn info ->
           %{
             info
-            | health: min(info.health + heal_amount, info.max_health),
+            | health: new_health,
               last_natural_healing_update: now
           }
         end)
