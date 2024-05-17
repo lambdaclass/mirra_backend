@@ -35,7 +35,7 @@ defmodule GameBackend.Users.User do
     has_many(:items, Item)
     has_many(:daily_quests, DailyQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
-    has_many(:prestiges, CharacterPrestige)
+    has_many(:character_prestiges, CharacterPrestige)
 
     timestamps()
   end

@@ -15,6 +15,7 @@ defmodule GameBackend.Matches do
     |> create_arena_match_results(match_id, results)
     |> add_google_users_to_multi(results)
     |> give_trophies(results)
+    |> give_prestige(results)
     |> Repo.transaction()
   end
 
@@ -74,6 +75,20 @@ defmodule GameBackend.Matches do
     end)
   end
 
+  defp give_prestige(multi, results) do
+    prestige_config = Application.get_env(:game_backend, :arena_prestige)
+
+    Enum.reduce(results, multi, fn result, transaction_acc ->
+      Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, %{get_google_users: google_users} ->
+        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+        prestige = Enum.find(google_user.user.character_prestiges, fn prestige -> prestige.character == result["character"] end)
+        reward = match_prestige_reward(prestige, result["position"], prestige_config[:rewards])
+        changes = calculate_rank_and_amount_changes(prestige, reward, prestige_config[:ranks])
+        insert_or_update_prestige(repo, google_user.user.id, result["character"], changes, prestige)
+      end)
+    end)
+  end
+
   ####################
   #      Helpers     #
   ####################
@@ -96,23 +111,18 @@ defmodule GameBackend.Matches do
     |> Map.get(position)
   end
 
-  def give_prestige(multi, results) do
-    prestige_config = Application.get_env(:game_backend, :arena_prestige)
+  defp match_prestige_reward(nil, position, rewards) do
+    match_prestige_reward(%{amount: 0}, position, rewards)
+  end
 
-    Enum.reduce(results, multi, fn result, transaction_acc ->
-      Multi.update(transaction_acc, {:update_prestige, result["user_id"]}, fn %{get_google_users: google_users} ->
-        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
-        prestige = Enum.find(google_user.user.prestiges, fn prestige -> prestige.character == result["character"] end)
+  defp match_prestige_reward(prestige, position, rewards) do
+    Map.get(rewards, position)
+    |> Enum.find(fn %{min: minp, max: maxp} -> prestige.amount in minp..maxp end)
+    |> Map.get(:reward)
+  end
 
-        reward =
-          Map.get(prestige_config[:rewards], result["position"])
-          |> Enum.find(fn %{min: minp, max: maxp} -> prestige.amount in minp..maxp end)
-          |> Map.get(:reward)
-
-        changes = calculate_rank_and_amount_changes(prestige, reward, prestige_config[:ranks])
-        CharacterPrestige.changeset(prestige, changes)
-      end)
-    end)
+  defp calculate_rank_and_amount_changes(nil, reward, ranks) do
+    calculate_rank_and_amount_changes(%{amount: 0}, reward, ranks)
   end
 
   defp calculate_rank_and_amount_changes(prestige, reward, ranks) when reward >= 0 do
@@ -125,5 +135,16 @@ defmodule GameBackend.Matches do
     current_rank = Enum.find(ranks, fn rank -> prestige.amount in rank.min..rank.max end)
     amount = max(prestige.amount + reward, current_rank.min)
     %{amount: amount}
+  end
+
+  defp insert_or_update_prestige(repo, user_id, character, changes, nil) do
+    attrs = Map.merge(changes, %{user_id: user_id, character: character})
+    CharacterPrestige.insert_changeset(attrs)
+    |> repo.insert()
+  end
+
+  defp insert_or_update_prestige(repo, _user_id, _character, changes, prestige) do
+    CharacterPrestige.update_changeset(prestige, changes)
+    |> repo.update()
   end
 end
