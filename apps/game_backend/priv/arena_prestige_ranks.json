@@ -1,4 +1,66 @@
 {
+  "rewards": [
+    {
+      "position": 1,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 699,
+          "reward": 10
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": 9
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 8
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": 7
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": 5
+        }
+      ]
+    },
+    {
+      "position": 2,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 399,
+          "reward": 8
+        },
+        {
+          "min": 400,
+          "max": 799,
+          "reward": 7
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 6
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": 5
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": 3
+        }
+      ]
+    }
+  ],
   "ranks": [
     {
       "rank": "bronze",
