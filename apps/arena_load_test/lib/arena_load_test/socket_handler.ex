@@ -4,12 +4,11 @@ defmodule ArenaLoadTest.SocketHandler do
   It handles the communication with the server as a new client.
   """
   use WebSockex, restart: :transient
-  require Logger
   alias ArenaLoadTest.Serialization
   alias ArenaLoadTest.SocketSupervisor
+  alias ArenaLoadTest.Utils
 
   def start_link(client_id) do
-    Logger.info("Client INIT")
     ws_url = ws_url(client_id)
 
     WebSockex.start_link(
@@ -26,14 +25,12 @@ defmodule ArenaLoadTest.SocketHandler do
   # Game hasn't started yet
   @impl true
   def handle_frame({:binary, ""}, state) do
-    Logger.info("Client waiting for game to join")
     {:ok, state}
   end
 
   @impl true
   def handle_frame({:binary, game_state}, state) do
     game_id = Serialization.GameState.decode(game_state).game_id
-    Logger.info("Client joining game with id: #{game_id}")
 
     case :ets.lookup(:clients, state.client_id) do
       [{client_id, _}] ->
@@ -51,16 +48,9 @@ defmodule ArenaLoadTest.SocketHandler do
 
     true = :ets.insert(:players, {state.client_id, game_id})
 
-    Process.send(pid, :move, [])
-    Process.send(pid, :attack, [])
+    Process.send(pid, :send_action, [])
 
     {:ok, state}
-  end
-
-  @impl true
-  def terminate({:remote, 1000, ""}, _state) do
-    Logger.info("Client websocket terminated with {:remote, 1000} status")
-    exit(:normal)
   end
 
   # Private
@@ -73,7 +63,9 @@ defmodule ArenaLoadTest.SocketHandler do
         "ws://localhost:4000/join/#{player_id}/#{character}/#{player_name}"
 
       target_server ->
-        "wss://#{target_server}/join/#{player_id}/#{character}/#{player_name}"
+        # TODO Replace this for a SSL connection using erlang credentials.
+        # TODO https://github.com/lambdaclass/mirra_backend/issues/493
+        "ws://#{Utils.get_server_ip(target_server)}:4000/join/#{player_id}/#{character}/#{player_name}"
     end
   end
 

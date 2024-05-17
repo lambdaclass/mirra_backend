@@ -137,11 +137,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp parse_comparator("lesser_or_equal"), do: &Kernel.<=/2
   defp parse_comparator(comparator), do: raise("Comparator not implemented yet #{comparator}")
 
-  defp acumulate_objective_progress_by_scope("day", value), do: value
-  defp acumulate_objective_progress_by_scope("match", _value), do: 1
+  defp accumulate_objective_progress_by_scope("day", value), do: value
+  defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
   defp completed_daily_quest?(%DailyQuest{quest: %Quest{} = quest}, arena_match_results) do
-    progess =
+    progress =
       Enum.filter(arena_match_results, fn arena_match_result ->
         Enum.all?(quest.conditions, fn condition ->
           type = String.to_atom(condition["match_tracking_field"])
@@ -156,11 +156,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
       |> Enum.reduce(0, fn arena_match_result, acc ->
         type = String.to_atom(quest.objective["match_tracking_field"])
 
-        acc + acumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+        acc + accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
       end)
 
     comparator = parse_comparator(quest.objective["comparison"])
 
-    comparator.(progess, quest.objective["value"])
+    comparator.(progress, quest.objective["value"])
   end
 end
