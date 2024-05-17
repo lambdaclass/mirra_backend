@@ -5,7 +5,7 @@ defmodule GameBackend.Users.Upgrade do
   """
   alias GameBackend.Units.Buffs.Buff
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Users.Upgrade.UnlockRequirement
+  alias GameBackend.Users.Upgrades.UnlockRequirement
 
   use GameBackend.Schema
   import Ecto.Changeset
@@ -19,10 +19,11 @@ defmodule GameBackend.Users.Upgrade do
 
     embeds_many(:cost, CurrencyCost)
 
-    has_many(:unlock_requirements, UnlockRequirement)
+    has_many(:unlock_requirement_unlocks, UnlockRequirement, foreign_key: :upgrade_unlocked_id)
+    has_many(:unlock_requirement_locked_by, UnlockRequirement, foreign_key: :upgrade_unlocked_id)
 
-    has_many(:unlocks, through: [:unlock_requirements, :upgrade_unlocked])
-    has_many(:locked_by, through: [:unlock_requirements, :upgrade_locking])
+    has_many(:unlocks, through: [:unlock_requirement_unlocks, :upgrade_unlocked])
+    has_many(:locked_by, through: [:unlock_requirement_locked_by, :upgrade_locking])
 
     has_many(:buffs, Buff)
 
@@ -33,27 +34,8 @@ defmodule GameBackend.Users.Upgrade do
     upgrade
     |> cast(attrs, [:game_id, :name, :description, :group])
     |> cast_embed(:cost)
+    |> cast_assoc(:unlock_requirement_unlocks)
+    |> cast_assoc(:unlock_requirement_locked_by)
     |> validate_required([:game_id, :name])
-  end
-end
-
-defmodule GameBackend.Users.Upgrade.UnlockRequirement do
-  @moduledoc """
-  Unlock requirements are used to determine which upgrades are required to unlock a new upgrade.
-  """
-  use GameBackend.Schema
-  import Ecto.Changeset
-
-  schema "upgrade_unlocks" do
-    belongs_to(:upgrade_locking, Upgrade)
-    belongs_to(:upgrade_unlocked, Upgrade)
-
-    timestamps()
-  end
-
-  def changeset(unlock_requirement, attrs \\ %{}) do
-    unlock_requirement
-    |> cast(attrs, [:upgrade_locking_id, :upgrade_unlocked_id])
-    |> validate_required([:upgrade_locking_id, :upgrade_unlocked_id])
   end
 end

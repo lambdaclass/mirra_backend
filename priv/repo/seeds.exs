@@ -332,7 +332,22 @@ _dungeon_settlement_levels =
       ]
     })
   )
-  |> IO.inspect()
+
+{:ok, sample_hp_2_upgrade} =
+  Repo.insert(
+    Upgrade.changeset(%Upgrade{}, %{
+      game_id: champions_of_mirra_id,
+      name: "HP Upgrade 2",
+      description: "This upgrade increases the health of all units by 10%.",
+      group: 1,
+      cost: [
+        %{currency_id: pearls_currency.id, amount: 10}
+      ],
+      unlock_requirement_locked_by: [
+        %{upgrade_locking_id: sample_hp_1_upgrade.id}
+      ]
+    })
+  )
 
 {:ok, _sample_hp_1_buff} =
   Repo.insert(
@@ -343,6 +358,18 @@ _dungeon_settlement_levels =
         %{attribute: "health", magnitude: 1.05, operation: "Multiply"}
       ],
       upgrade_id: sample_hp_1_upgrade.id
+    })
+  )
+
+{:ok, _sample_hp_2_buff} =
+  Repo.insert(
+    Buff.changeset(%Buff{}, %{
+      game_id: champions_of_mirra_id,
+      name: "Dungeon.SampleHP2",
+      modifiers: [
+        %{attribute: "health", magnitude: 1.1, operation: "Multiply"}
+      ],
+      upgrade_id: sample_hp_2_upgrade.id
     })
   )
 
