@@ -106,7 +106,7 @@ defmodule Gateway.ChampionsSocketHandler do
         prepare_response({:error, reason}, nil)
 
       {:ok, campaigns} ->
-        prepare_response(%{campaigns: campaigns}, :campaigns)
+        prepare_response(%{campaigns: Enum.map(campaigns, &prepare_campaign/1)}, :campaigns)
     end
   end
 
@@ -116,7 +116,9 @@ defmodule Gateway.ChampionsSocketHandler do
         prepare_response({:error, reason}, nil)
 
       {:ok, campaign} ->
-        prepare_response(campaign, :campaign)
+        campaign
+        |> prepare_campaign()
+        |> prepare_response(:campaign)
     end
   end
 
@@ -216,7 +218,7 @@ defmodule Gateway.ChampionsSocketHandler do
           level_id: super_campaign_progress.level_id,
           user_id: super_campaign_progress.user_id,
           campaign_id: super_campaign_progress.level.campaign_id,
-          super_campaign_id: super_campaign_progress.super_campaign_id
+          super_campaign_name: super_campaign_progress.super_campaign.name
         }
       end)
 
@@ -243,6 +245,15 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(unknown_request),
     do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
+
+  defp prepare_campaign(campaign) do
+    %{
+      id: campaign.id,
+      super_campaign_name: campaign.super_campaign.name,
+      campaign_number: campaign.campaign_number,
+      levels: campaign.levels
+    }
+  end
 
   defp prepare_step(step) do
     update_in(step, [:actions], fn actions ->

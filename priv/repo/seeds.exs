@@ -16,7 +16,7 @@ alias GameBackend.Users.Upgrade
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
-units_per_level = 5
+units_per_level = 6
 
 ### Champions Currencies
 
@@ -168,12 +168,20 @@ rules = [
   %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
-super_campaign = %{
+main_campaign = %{
   game_id: champions_of_mirra_id,
   name: "Main Campaign"
 }
 
-{_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
+dungeon_super_campaign = %{
+  game_id: champions_of_mirra_id,
+  name: "Dungeon"
+}
+
+{_, main_campaign} = Campaigns.insert_super_campaign(main_campaign, returning: true)
+
+{_, dungeon_super_campaign} =
+  Campaigns.insert_super_campaign(dungeon_super_campaign, returning: true)
 
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
@@ -182,7 +190,7 @@ levels =
       Campaigns.insert_campaign(
         %{
           game_id: champions_of_mirra_id,
-          super_campaign_id: super_campaign.id,
+          super_campaign_id: main_campaign.id,
           campaign_number: campaign_index
         },
         returning: true
@@ -337,3 +345,78 @@ _dungeon_settlement_levels =
       upgrade_id: sample_hp_1_upgrade.id
     })
   )
+
+dungeon_rules =
+  %{
+    base_level: 5,
+    scaler: 1.05,
+    possible_factions: ["Araban", "Kaline", "Merliot", "Otobi"],
+    length: 200
+  }
+
+# Since insert_all doesn't accept assocs, we insert the levels first and then their units
+{:ok, dungeon_campaign} =
+  Campaigns.insert_campaign(
+    %{
+      game_id: champions_of_mirra_id,
+      super_campaign_id: dungeon_super_campaign.id,
+      campaign_number: 1
+    },
+    returning: true
+  )
+
+dungeon_levels =
+  Enum.map(1..dungeon_rules.length, fn level_index ->
+    %{
+      game_id: champions_of_mirra_id,
+      campaign_id: dungeon_campaign.id,
+      level_number: level_index,
+      experience_reward: 100 * level_index,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+
+{_, levels_without_units} =
+  Repo.insert_all(Level, dungeon_levels, returning: [:id, :level_number, :campaign_id])
+
+units =
+  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
+
+    base_level = dungeon_rules.base_level
+    level_scaler = dungeon_rules.scaler
+
+    possible_characters = Units.all_characters_from_factions(dungeon_rules.possible_factions)
+
+    agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
+
+    units =
+      Enum.map(1..6, fn slot ->
+        Units.unit_params_for_level(
+          possible_characters,
+          div(agg_difficulty, units_per_level),
+          slot
+        )
+        |> Map.put(:inserted_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
+        |> Map.put(:updated_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
+      end)
+
+    # Add the remaining unit levels to match the level difficulty
+    level_units =
+      case rem(agg_difficulty, units_per_level) do
+        0 ->
+          units
+
+        missing_levels ->
+          Enum.reduce(0..missing_levels, units, fn index, units ->
+            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
+          end)
+      end
+
+    Enum.map(level_units, fn unit_attrs ->
+      Map.put(unit_attrs, :campaign_level_id, level.id)
+    end)
+  end)
+
+Repo.insert_all(Unit, units, on_conflict: :nothing)
