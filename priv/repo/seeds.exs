@@ -7,14 +7,18 @@ alias GameBackend.Campaigns.Rewards.CurrencyReward
 alias GameBackend.Gacha
 alias GameBackend.Repo
 alias GameBackend.Units
-alias GameBackend.Units.Unit
 alias GameBackend.Users
+alias GameBackend.Units.Buffs.Buff
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
+alias GameBackend.Units.Unit
+alias GameBackend.Users.Upgrade
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 units_per_level = 5
+
+### Champions Currencies
 
 {:ok, _skills} = Champions.Config.import_skill_config()
 
@@ -41,6 +45,20 @@ units_per_level = 5
     name: "Mystic Summon Scrolls"
   })
 
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, supplies_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
+
+{:ok, blueprints_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
+
+{:ok, pearls_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Pearls"})
+
+### Curse Currencies
+
 {:ok, _curse_gold} =
   Users.Currencies.insert_currency(%{
     game_id: curse_of_mirra_id,
@@ -58,15 +76,6 @@ units_per_level = 5
     game_id: curse_of_mirra_id,
     name: "Feature Tokens"
   })
-
-{:ok, _fertilizer_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
-
-{:ok, supplies_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
-
-{:ok, blueprints_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
 
 {:ok, _trophies_currency} =
   Users.Currencies.insert_currency(%{game_id: curse_of_mirra_id, name: "Trophies"})
@@ -289,3 +298,42 @@ _dungeon_settlement_levels =
 
     dungeon_settlement_level
   end)
+
+{:ok, _initial_debuff} =
+  Repo.insert(
+    Buff.changeset(%Buff{}, %{
+      game_id: champions_of_mirra_id,
+      name: "Dungeon.BaseSetting",
+      modifiers: [
+        %{attribute: "max_level", magnitude: 10, operation: "Add"},
+        %{attribute: "health", magnitude: 0.1, operation: "Multiply"},
+        %{attribute: "attack", magnitude: 0.1, operation: "Multiply"}
+      ]
+    })
+  )
+
+{:ok, sample_hp_1_upgrade} =
+  Repo.insert(
+    Upgrade.changeset(%Upgrade{}, %{
+      game_id: champions_of_mirra_id,
+      name: "HP Upgrade 1",
+      description: "This upgrade increases the health of all units by 5%.",
+      group: 1,
+      cost: [
+        %{currency_id: pearls_currency.id, amount: 5}
+      ]
+    })
+  )
+  |> IO.inspect()
+
+{:ok, _sample_hp_1_buff} =
+  Repo.insert(
+    Buff.changeset(%Buff{}, %{
+      game_id: champions_of_mirra_id,
+      name: "Dungeon.SampleHP1",
+      modifiers: [
+        %{attribute: "health", magnitude: 1.05, operation: "Multiply"}
+      ],
+      upgrade_id: sample_hp_1_upgrade.id
+    })
+  )

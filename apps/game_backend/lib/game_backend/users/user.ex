@@ -21,6 +21,7 @@ defmodule GameBackend.Users.User do
     field(:last_kaline_afk_reward_claim, :utc_datetime)
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
+    field(:unlocks, {:array, :string}, default: [])
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -47,7 +48,8 @@ defmodule GameBackend.Users.User do
       :level,
       :experience,
       :profile_picture,
-      :google_user_id
+      :google_user_id,
+      :unlocks
     ])
     |> unique_constraint([:game_id, :username])
     |> assoc_constraint(:google_user)
@@ -59,5 +61,13 @@ defmodule GameBackend.Users.User do
   def kaline_tree_level_changeset(user, attrs) do
     user
     |> cast(attrs, [:kaline_tree_level])
+  end
+
+  def unlock_changeset(user, unlocks_to_add) do
+    cast(user, %{unlocks: user.unlocks ++ unlocks_to_add}, [:unlocks])
+  end
+
+  def remove_unlock_changeset(user, unlocks_to_remove) do
+    cast(user, %{unlocks: user.unlocks -- unlocks_to_remove}, [:unlocks])
   end
 end
