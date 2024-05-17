@@ -13,13 +13,13 @@ defmodule Arena.GameLauncher do
     "SlashJava",
     "SteelBallRun",
     "Jeff",
-    "Thomas",
+    "Messi",
     "Stone Ocean",
     "Jeepers Creepers",
     "Bob",
     "El javo",
     "Alberso",
-    "Messi"
+    "Thomas"
   ]
 
   # API
