@@ -2,10 +2,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
-  alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
+  alias GameBackend.Users.GoogleUser
+  alias GameBackend.Users.User
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest
@@ -172,14 +173,27 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
+  def get_google_user_daily_quests_completed(%GoogleUser{
+        arena_match_results: arena_match_results,
+        user: %User{daily_quests: daily_quests}
+      }) do
+    Enum.reduce(daily_quests, [], fn daily_quest, acc ->
+      if completed_daily_quest?(daily_quest, arena_match_results) do
+        [daily_quest | acc]
+      else
+        acc
+      end
+    end)
+  end
+
   def reroll_quest(daily_quest_id) do
     reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
 
     daily_quest =
-      Quests.get_daily_quest(daily_quest_id)
+      get_daily_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
-      Quests.get_user_rerolled_quests(daily_quest.user_id, daily_quest.quest.type)
+      get_user_rerolled_quests(daily_quest.user_id, daily_quest.quest.type)
       |> Enum.count()
 
     reroll_costs =
@@ -240,5 +254,49 @@ defmodule GameBackend.CurseOfMirra.Quests do
             |> Repo.transaction()
         end
     end
+  end
+
+  #####################
+  #      helpers      #
+  #####################
+
+  defp parse_comparator("equal"), do: &Kernel.==/2
+  defp parse_comparator("distinct"), do: &Kernel.!=/2
+  defp parse_comparator("greater"), do: &Kernel.>/2
+  defp parse_comparator("greater_or_equal"), do: &Kernel.>=/2
+  defp parse_comparator("lesser"), do: &Kernel.</2
+  defp parse_comparator("lesser_or_equal"), do: &Kernel.<=/2
+  defp parse_comparator(comparator), do: raise("Comparator not implemented yet #{comparator}")
+
+  defp accumulate_objective_progress_by_scope("day", value), do: value
+  defp accumulate_objective_progress_by_scope("match", _value), do: 1
+
+  defp completed_daily_quest?(%DailyQuest{quest: %Quest{} = quest}, arena_match_results) do
+    progress =
+      arena_match_results
+      |> filter_results_that_meet_quest_conditions(quest.conditions)
+      |> Enum.reduce(0, fn arena_match_result, acc ->
+        type = String.to_atom(quest.objective["match_tracking_field"])
+
+        acc + accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+      end)
+
+    comparator = parse_comparator(quest.objective["comparison"])
+
+    comparator.(progress, quest.objective["value"])
+  end
+
+  defp filter_results_that_meet_quest_conditions(arena_match_results, conditions) do
+    Enum.filter(arena_match_results, fn arena_match_result ->
+      Enum.all?(conditions, fn condition ->
+        type = String.to_atom(condition["match_tracking_field"])
+        value = condition["value"]
+        arena_match_result_value = Map.get(arena_match_result, type)
+
+        comparator = parse_comparator(condition["comparison"])
+
+        comparator.(arena_match_result_value, value)
+      end)
+    end)
   end
 end

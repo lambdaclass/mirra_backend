@@ -1167,28 +1167,32 @@
       "radius": 200.0,
       "effects": [
         "golden_clock_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "magic_boots",
       "radius": 200.0,
       "effects": [
         "magic_boots_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
       "effects": [
         "mirra_blessing_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "giant",
       "radius": 200.0,
       "effects": [
         "giant_effect"
-      ]
+      ],
+      "mechanics": {}
     }
   ],
   "characters": [
@@ -1533,5 +1537,6 @@
       "vertices": [],
       "amount_of_power_ups": 1
     }
-  ]
+  ],
+  "traps": []
 }
