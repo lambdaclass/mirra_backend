@@ -25,13 +25,13 @@ defmodule Champions.Battle do
          {:super_campaign_progress, {:ok, %SuperCampaignProgress{level_id: current_level_id}}} <-
            {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, level.campaign.super_campaign_id)},
          {:level_valid, true} <- {:level_valid, current_level_id == level_id},
-         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.currency_costs)} do
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.attempt_costs)} do
       units = Units.get_selected_units(user_id)
 
       {:ok, response} =
         Multi.new()
         |> Multi.run(:substract_currencies, fn _repo, _changes ->
-          Currencies.substract_currencies(user_id, level.currency_costs)
+          Currencies.substract_currencies(user_id, level.attempt_costs)
         end)
         |> Multi.run(:run_battle, fn _repo, _changes -> run_battle(user_id, level, units) end)
         |> Repo.transaction()

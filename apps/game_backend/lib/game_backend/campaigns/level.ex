@@ -24,7 +24,7 @@ defmodule GameBackend.Campaigns.Level do
     has_many(:item_rewards, ItemReward)
     has_many(:unit_rewards, UnitReward)
 
-    embeds_many(:currency_costs, CurrencyCost)
+    embeds_many(:attempt_costs, CurrencyCost)
     timestamps()
   end
 
@@ -36,7 +36,7 @@ defmodule GameBackend.Campaigns.Level do
     |> cast_assoc(:currency_rewards)
     |> cast_assoc(:item_rewards)
     |> cast_assoc(:unit_rewards)
-    |> cast_embed(:currency_costs)
+    |> cast_embed(:attempt_costs)
     |> validate_required([:game_id, :level_number, :campaign_id])
   end
 end

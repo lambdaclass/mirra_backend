@@ -298,7 +298,7 @@ syntax = "proto3";
     repeated Unit units = 4;
     repeated CurrencyReward currency_rewards = 5;
     uint32 experience_reward = 6;    
-    repeated CurrencyCost cost = 7;
+    repeated CurrencyCost attempt_costs = 7;
   }
 
   message CurrencyReward {

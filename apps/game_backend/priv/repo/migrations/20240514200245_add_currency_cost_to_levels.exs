@@ -3,7 +3,7 @@ defmodule GameBackend.Repo.Migrations.AddCurrencyCostToLevels do
 
   def change do
     alter table(:levels) do
-      add(:currency_costs, {:array, :map})
+      add(:attempt_costs, {:array, :map})
     end
   end
 end
