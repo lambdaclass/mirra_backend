@@ -6,25 +6,62 @@ defmodule GameBackend.Matches do
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
   alias Ecto.Multi
-  alias GameBackend.Repo
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Repo
 
-  def create_arena_match_results(results) do
+  def create_arena_match_results(match_id, results) do
+    Multi.new()
+    |> create_arena_match_results(match_id, results)
+    |> add_google_users_to_multi(results)
+    |> give_trophies(results)
+    |> Repo.transaction()
+  end
+
+  ####################
+  # Multi operations #
+  ####################
+
+  defp create_arena_match_results(multi, match_id, results) do
+    Enum.reduce(results, multi, fn result, multi ->
+      attrs =
+        Map.put(result, "google_user_id", result["user_id"])
+        |> Map.put("match_id", match_id)
+
+      changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
+      Multi.insert(multi, {:insert, result["user_id"]}, changeset)
+    end)
+  end
+
+  defp add_google_users_to_multi(multi, results) do
+    Multi.run(multi, :get_google_users, fn repo, _changes_so_far ->
+      google_users =
+        Enum.map(results, fn result -> result["user_id"] end)
+        |> Users.get_google_users_with_todays_daily_quests(repo)
+
+      {:ok, google_users}
+    end)
+  end
+
+  defp give_trophies(multi, results) do
     currency_config = Application.get_env(:game_backend, :currencies_config)
 
-    Enum.reduce(results, Multi.new(), fn result, transaction_acc ->
-      changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, result)
-      {:ok, google_user} = Users.get_google_user(result["user_id"])
-
-      amount_of_trophies = Currencies.get_amount_of_currency_by_name(google_user.user.id, "Trophies")
-
-      amount =
-        get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
-
-      Multi.insert(transaction_acc, {:insert, result["user_id"]}, changeset)
-      |> Multi.run(
+    Enum.reduce(results, multi, fn result, multi ->
+      Multi.run(
+        multi,
         {:add_trophies_to, result["user_id"]},
-        fn _, _ ->
+        fn _, %{get_google_users: google_users} ->
+          google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+
+          amount_of_trophies =
+            Enum.find(google_user.user.currencies, fn user_currency -> user_currency.currency.name == "Trophies" end)
+            |> case do
+              nil -> 0
+              currency -> currency.amount
+            end
+
+          amount =
+            get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
+
           Currencies.add_currency_by_name_and_game!(
             google_user.user.id,
             "Trophies",
@@ -34,7 +71,16 @@ defmodule GameBackend.Matches do
         end
       )
     end)
-    |> Repo.transaction()
+  end
+
+  ####################
+  #      Helpers     #
+  ####################
+
+  ## TODO: Properly pre-process `currencies_config` so the keys are integers and we don't need conversion
+  ##    https://github.com/lambdaclass/mirra_backend/issues/601
+  def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) when is_integer(position) do
+    get_amount_of_trophies_to_modify(current_trophies, to_string(position), currencies_config)
   end
 
   def get_amount_of_trophies_to_modify(current_trophies, position, currencies_config) do

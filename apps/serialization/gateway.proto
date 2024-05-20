@@ -181,20 +181,22 @@ syntax = "proto3";
   }
 
   message KalineTreeLevel {
-    uint64 level = 1;
-    uint64 fertilizer_level_up_cost = 2;
-    uint64 gold_level_up_cost = 3;
-    repeated string unlock_features = 4;
-    repeated AfkRewardRate afk_reward_rates = 5;
-  }
-
-  message DungeonSettlementLevel {
-    uint64 level = 1;
-    repeated CurrencyCost upgrade_costs = 2;
-    uint64 max_dungeon = 3;
-    uint64 max_factional = 4;
-    uint64 supply_limit = 5;
+    string id = 1;
+    uint64 level = 2;
+    uint64 fertilizer_level_up_cost = 3;
+    uint64 gold_level_up_cost = 4;
+    repeated string unlock_features = 5;
     repeated AfkRewardRate afk_reward_rates = 6;
+  }
+  
+  message DungeonSettlementLevel {
+    string id = 1;
+    uint64 level = 2;
+    repeated CurrencyCost upgrade_costs = 3;
+    uint64 max_dungeon = 4;
+    uint64 max_factional = 5;
+    uint64 supply_limit = 6;
+    repeated AfkRewardRate afk_reward_rates = 7;
   }
 
   message SuperCampaignProgresses {
@@ -395,6 +397,7 @@ syntax = "proto3";
       Death death = 6;
       ExecutionReceived execution_received = 7;
       EnergyRegen energy_regen = 8;
+      StatOverride stat_override = 9;
     }
   }
 
@@ -449,4 +452,9 @@ syntax = "proto3";
     string target_id = 1;
     string skill_id = 2;
     float amount = 3;
+  }
+
+  message StatOverride {
+    string target_id = 1;
+    StatAffected stat_affected = 2;
   }
