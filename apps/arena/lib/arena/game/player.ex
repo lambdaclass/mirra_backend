@@ -238,8 +238,8 @@ defmodule Arena.Game.Player do
   end
 
   # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
-  # position in wich the player will spawn when the skill start and not when we actually execute the teleport
-  # this is also optimistic since we asume the destination will be always available
+  # position in which the player will spawn when the skill start and not when we actually execute the teleport
+  # this is also optimistic since we assume the destination will be always available
   defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
@@ -258,7 +258,7 @@ defmodule Arena.Game.Player do
 
   Receives a player that owns the damage and the damage number
 
-  to calculate the real damage we'll use the config "power_up_damage_modifier" multipling that with base damage of the
+  to calculate the real damage we'll use the config "power_up_damage_modifier" multiplying that with base damage of the
   ability and multiply that with the amount of power ups that a player has then adding that to the base damage resulting
   in the real damage
 
