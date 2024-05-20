@@ -177,7 +177,11 @@ defmodule Arena.Game.Player do
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)
-        Process.send_after(self(), {:block_movement, player.id, false}, execution_duration)
+
+        if skill.block_movement do
+          send(self(), {:block_movement, player.id, true})
+          Process.send_after(self(), {:block_movement, player.id, false}, execution_duration)
+        end
 
         action =
           %{
