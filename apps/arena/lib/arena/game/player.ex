@@ -221,16 +221,8 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action)
           |> apply_skill_cooldown(skill_key, skill)
+          |> maybe_face_player_towards_direction(skill_direction, skill.block_movement)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
-
-        player =
-          if skill.block_movement do
-            player
-            |> put_in([:direction], skill_direction |> Utils.normalize())
-            |> put_in([:is_moving], false)
-          else
-            player
-          end
 
         put_in(game_state, [:players, player.id], player)
         |> maybe_make_player_invincible(player.id, skill)
@@ -253,6 +245,14 @@ defmodule Arena.Game.Player do
   end
 
   defp maybe_add_destination(action, _, _, _, _), do: action
+
+  defp maybe_face_player_towards_direction(player, skill_direction, true) do
+    player
+    |> put_in([:direction], skill_direction |> Utils.normalize())
+    |> put_in([:is_moving], false)
+  end
+
+  defp maybe_face_player_towards_direction(player, _skill_direction, _), do: player
 
   @doc """
 
