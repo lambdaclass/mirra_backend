@@ -970,7 +970,7 @@
       "max_autoaim_range": 1600,
       "stamina_cost": 1,
       "can_pick_destination": false,
-      "block_movement": false,
+      "block_movement": true,
       "mechanics": [
         {
           "multi_shoot": {
