@@ -233,7 +233,7 @@ defmodule Arena.GameUpdater do
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{skill_direction: player.direction})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -936,7 +936,7 @@ defmodule Arena.GameUpdater do
           game_state,
           projectile,
           projectile.aditional_info.on_explode_mechanics,
-          %{}
+          %{skill_direction: projectile.direction}
         )
       else
         game_state
