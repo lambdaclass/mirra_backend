@@ -1,4 +1,3 @@
-alias GameBackend.Users.Currencies.CurrencyCost
 alias GameBackend.Utils
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Campaign
