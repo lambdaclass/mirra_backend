@@ -169,19 +169,7 @@ defmodule Arena.Game.Player do
         game_state
 
       skill ->
-        Process.send_after(
-          self(),
-          {:block_actions, player.id},
-          skill.execution_duration_ms
-        )
-
         GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
-
-        Process.send_after(
-          self(),
-          {:block_movement, player.id, false},
-          skill.execution_duration_ms
-        )
 
         {auto_aim?, skill_direction} =
           skill_params.target
@@ -189,6 +177,7 @@ defmodule Arena.Game.Player do
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)
+        Process.send_after(self(), {:block_movement, player.id, false}, execution_duration)
 
         action =
           %{
