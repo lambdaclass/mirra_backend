@@ -3,6 +3,8 @@ defmodule Arena.Entities do
   Entities manager.
   """
   alias Arena.Configuration
+  alias Arena.Game.Player
+  alias Arena.Game.Crate
 
   def new_player(id, character_name, player_name, position, direction, config, now) do
     character = Configuration.get_character_config(character_name, config)
@@ -45,13 +47,15 @@ defmodule Arena.Entities do
         power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
+        pull_immunity: false,
         effects: [],
         cooldowns: %{},
         bonus_damage: 0,
         bonus_defense: 0,
         visible_players: [],
         on_bush: false
-      }
+      },
+      collides_with: []
     }
   end
 
@@ -81,8 +85,10 @@ defmodule Arena.Entities do
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
+        pull_immunity: true,
         on_collide_effects: Map.get(config_params, :on_collide_effects)
-      }
+      },
+      collides_with: []
     }
   end
 
@@ -102,6 +108,7 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         status: :AVAILABLE,
         remove_on_collision: true,
+        pull_immunity: true,
         power_up_damage_modifier: power_up.power_up_damage_modifier,
         power_up_health_modifier: power_up.power_up_health_modifier
       }
@@ -150,8 +157,10 @@ defmodule Arena.Entities do
         effects: [],
         stat_multiplier: 0,
         duration_ms: duration_ms,
+        pull_immunity: true,
         spawn_at: spawn_at
-      }
+      },
+      collides_with: []
     }
   end
 
@@ -169,6 +178,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
+        pull_immunity: true,
         effects: config.effects
       }
     }
@@ -235,8 +245,11 @@ defmodule Arena.Entities do
       aditional_info: %{
         health: health,
         amount_of_power_ups: amount_of_power_ups,
-        status: :FINE
-      }
+        status: :FINE,
+        pull_immunity: true,
+        effects: []
+      },
+      collides_with: []
     }
   end
 
@@ -350,4 +363,31 @@ defmodule Arena.Entities do
   defp get_shape("line"), do: :line
   defp get_shape("point"), do: :point
   defp get_shape(_), do: nil
+
+  def take_damage(%{category: :player} = entity, damage), do: Player.take_damage(entity, damage)
+  def take_damage(%{category: :crate} = entity, damage), do: Crate.take_damage(entity, damage)
+
+  def alive?(%{category: :player} = entity), do: Player.alive?(entity)
+  def alive?(%{category: :crate} = entity), do: Crate.alive?(entity)
+  def alive?(%{category: :pool} = _entity), do: true
+
+  def update_entity(%{category: :player} = entity, game_state) do
+    put_in(game_state, [:players, entity.id], entity)
+  end
+
+  def update_entity(%{category: :crate} = entity, game_state) do
+    put_in(game_state, [:crates, entity.id], entity)
+  end
+
+  def update_entity(%{category: :pool} = entity, game_state) do
+    put_in(game_state, [:pools, entity.id], entity)
+  end
+
+  def refresh_stamina(%{category: :player} = entity) do
+    put_in(entity, [:aditional_info, :available_stamina], entity.aditional_info.max_stamina)
+  end
+
+  def refresh_cooldowns(%{category: :player} = entity) do
+    put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
 end
