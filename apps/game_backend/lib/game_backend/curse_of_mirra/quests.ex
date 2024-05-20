@@ -70,12 +70,30 @@ defmodule GameBackend.CurseOfMirra.Quests do
     Quest.changeset(quest, attrs)
   end
 
+  @doc """
+  Receives a DailyQuest id and returns a %DailyQuest{}
+
+  ## Examples
+
+      iex>get_daily_quest(daily_quest_id)
+      %DailyQuest{}
+
+  """
   def get_daily_quest(daily_quest_id) do
     q = from(dq in DailyQuest, preload: [:quest], where: dq.id == ^daily_quest_id)
 
     Repo.one(q)
   end
 
+  @doc """
+  Receives a User id and returns all %DailyQuest{} that belongs to that user
+
+  ## Examples
+
+      iex>get_users_daily_quests(user_id)
+      [%DailyQuest{}]
+
+  """
   def get_users_daily_quests(user_id) do
     q = from(dq in DailyQuest, preload: [:quest], where: dq.user_id == ^user_id)
 
