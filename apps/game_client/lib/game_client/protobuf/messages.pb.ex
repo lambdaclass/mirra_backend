@@ -49,6 +49,17 @@ defmodule GameClient.Protobuf.PlayerActionType do
   field(:EXECUTING_SKILL_3, 5)
 end
 
+defmodule GameClient.Protobuf.TrapStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PENDING, 0)
+  field(:PREPARED, 1)
+  field(:TRIGGERED, 2)
+  field(:USED, 3)
+end
+
 defmodule GameClient.Protobuf.Direction do
   @moduledoc false
 
@@ -318,6 +329,15 @@ defmodule GameClient.Protobuf.GameState.BushesEntry do
   field(:value, 2, type: GameClient.Protobuf.Entity)
 end
 
+defmodule GameClient.Protobuf.GameState.TrapsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: GameClient.Protobuf.Entity)
+end
+
 defmodule GameClient.Protobuf.GameState do
   @moduledoc false
 
@@ -377,6 +397,7 @@ defmodule GameClient.Protobuf.GameState do
   field(:pools, 15, repeated: true, type: GameClient.Protobuf.GameState.PoolsEntry, map: true)
   field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: GameClient.Protobuf.GameState.BushesEntry, map: true)
+  field(:traps, 18, repeated: true, type: GameClient.Protobuf.GameState.TrapsEntry, map: true)
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -405,6 +426,7 @@ defmodule GameClient.Protobuf.Entity do
   field(:pool, 17, type: GameClient.Protobuf.Pool, oneof: 0)
   field(:crate, 18, type: GameClient.Protobuf.Crate, oneof: 0)
   field(:bush, 19, type: GameClient.Protobuf.Bush, oneof: 0)
+  field(:trap, 20, type: GameClient.Protobuf.Trap, oneof: 0)
 end
 
 defmodule GameClient.Protobuf.Player.CooldownsEntry do
@@ -510,6 +532,16 @@ defmodule GameClient.Protobuf.Bush do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule GameClient.Protobuf.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
+  field(:status, 3, type: GameClient.Protobuf.TrapStatus, enum: true)
 end
 
 defmodule GameClient.Protobuf.PlayerAction do

@@ -7,6 +7,7 @@ defmodule Arena.Game.Player do
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
+  alias Arena.Game.Item
 
   def add_action(player, action) do
     Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
@@ -277,11 +278,14 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-        end)
-        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+        game_state =
+          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
+          end)
+          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+
+        Item.do_mechanics(game_state, player, item.mechanics)
     end
   end
 
@@ -325,6 +329,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :bonus_damage], 0)
     |> put_in([:aditional_info, :bonus_defense], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
+    |> put_in([:aditional_info, :pull_immunity], false)
     |> Effect.apply_stat_effects()
   end
 
@@ -431,6 +436,10 @@ defmodule Arena.Game.Player do
       one_time_application: true,
       effect_mechanics: %{
         damage_immunity: %{
+          execute_multiple_times: false,
+          effect_delay_ms: 0
+        },
+        pull_immunity: %{
           execute_multiple_times: false,
           effect_delay_ms: 0
         }

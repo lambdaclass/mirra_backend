@@ -78,7 +78,8 @@ defmodule GameClientWeb.BoardLive.Show do
         game_state.obstacles,
         game_state.pools,
         game_state.bushes,
-        game_state.crates
+        game_state.crates,
+        game_state.traps
       ])
       |> Enum.map(&transform_entity_entry/1)
 

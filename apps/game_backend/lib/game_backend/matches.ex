@@ -2,6 +2,10 @@ defmodule GameBackend.Matches do
   @moduledoc """
   Matches
   """
+  alias GameBackend.CurseOfMirra.Quests
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Utils
   alias GameBackend.Users
   alias Ecto.Multi
   alias GameBackend.Matches.ArenaMatchResult
@@ -13,6 +17,7 @@ defmodule GameBackend.Matches do
     |> create_arena_match_results(match_id, results)
     |> add_google_users_to_multi(results)
     |> give_prestige(results)
+    |> maybe_complete_quests()
     |> Repo.transaction()
   end
 
@@ -58,6 +63,44 @@ defmodule GameBackend.Matches do
     end)
   end
 
+  defp maybe_complete_quests(multi) do
+    Multi.run(multi, :insert_completed_quests_result, fn repo,
+                                                         %{
+                                                           get_google_users: google_users
+                                                         } ->
+      correctly_updated_list =
+        Enum.map(google_users, fn
+          google_user ->
+            Quests.get_google_user_daily_quests_completed(google_user)
+            |> Enum.map(fn %DailyQuest{quest: quest} = daily_quest ->
+              updated_match =
+                DailyQuest.changeset(daily_quest, %{
+                  completed: true,
+                  completed_at: DateTime.utc_now()
+                })
+                |> repo.update()
+
+              inserted_currency =
+                Currencies.add_currency_by_name_and_game(
+                  google_user.user.id,
+                  quest.reward["currency"],
+                  Utils.get_game_id(:curse_of_mirra),
+                  quest.reward["amount"]
+                )
+
+              get_operation_result(updated_match, inserted_currency)
+            end)
+        end)
+        |> List.flatten()
+
+      if Enum.empty?(correctly_updated_list) or Enum.all?(correctly_updated_list, fn {result, _} -> result == :ok end) do
+        {:ok, nil}
+      else
+        {:error, nil}
+      end
+    end)
+  end
+
   ####################
   #      Helpers     #
   ####################
@@ -98,4 +141,7 @@ defmodule GameBackend.Matches do
     CharacterPrestige.update_changeset(prestige, changes)
     |> repo.update()
   end
+
+  defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
+  defp get_operation_result(_, _), do: {:error, nil}
 end
