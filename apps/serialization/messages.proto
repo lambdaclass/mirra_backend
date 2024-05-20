@@ -112,6 +112,7 @@ message GameState {
   map<uint64, Entity> pools = 15;
   map<uint64, Entity> crates = 16;
   map<uint64, Entity> bushes = 17;
+  map<uint64, Entity> traps = 18;
 }
 
 enum GameStatus {
@@ -155,6 +156,7 @@ message Entity {
     Pool pool = 17;
     Crate crate = 18;
     Bush bush = 19;
+    Trap trap = 20;
   }
 }
 
@@ -229,6 +231,12 @@ message Pool {
 message Bush {
 }
 
+message Trap {
+  uint64 owner_id = 1;
+  string name = 2;
+  TrapStatus status = 3;
+}
+
 message PlayerAction {
     PlayerActionType action = 1;
     uint64 duration = 2;
@@ -242,6 +250,13 @@ enum PlayerActionType {
     EXECUTING_SKILL_1 = 3;
     EXECUTING_SKILL_2 = 4;
     EXECUTING_SKILL_3 = 5;
+}
+
+enum TrapStatus{
+  PENDING = 0;
+  PREPARED = 1;
+  TRIGGERED = 2;
+  USED = 3;
 }
 
 /*

@@ -178,8 +178,9 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
-        pull_immunity: true,
-        effects: config.effects
+        effects: config.effects,
+        mechanics: config.mechanics,
+        pull_immunity: true
       }
     }
   end
@@ -250,6 +251,35 @@ defmodule Arena.Entities do
         effects: []
       },
       collides_with: []
+    }
+  end
+
+  def new_trap(
+        id,
+        owner_id,
+        position,
+        config
+      ) do
+    %{
+      id: id,
+      category: :trap,
+      shape: :circle,
+      name: "Trap" <> Integer.to_string(id),
+      position: position,
+      radius: config.radius,
+      vertices: config.vertices,
+      speed: 0.0,
+      direction: %{x: 0.0, y: 0.0},
+      is_moving: false,
+      aditional_info: %{
+        name: config.name,
+        mechanics: config.mechanics,
+        preparation_delay_ms: config.preparation_delay_ms,
+        activation_delay_ms: config.activation_delay_ms,
+        owner_id: owner_id,
+        activate_on_proximity: config.activate_on_proximity,
+        status: :PENDING
+      }
     }
   end
 
