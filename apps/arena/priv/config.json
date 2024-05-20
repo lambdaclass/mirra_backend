@@ -1198,23 +1198,7 @@
       "name": "fake_item",
       "radius": 200.0,
       "effects": [],
-      "mechanics": {
-        "spawn_bomb": {
-          "name": "bomb",
-          "radius": 200.0,
-          "preparation_delay_ms": 2000,
-          "activation_delay_ms": 3000,
-          "vertices": [],
-          "activate_on_proximity": true,
-          "mechanics": {
-            "circle_hit": {
-              "damage": 64,
-              "range": 380.0,
-              "offset": 400
-            }
-          }
-        }
-      }
+      "mechanics": {}
     }
   ],
   "characters": [
