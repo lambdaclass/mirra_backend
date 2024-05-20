@@ -102,14 +102,14 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   @doc """
   Receives a user id and a daily quest type.
-  Returns a list of DailyQuest for the given user and type that were inserted today an their status are :rerolled.
+  Returns a list of DailyQuest for the given user where the status is :rerolled.
 
   ## Examples
 
-      iex>get_user_today_rerolled_daily_quests_by_type(user_id, "daily")
-      [%Quest{type: "daily"}]
+      iex>get_user_rerolled_quests(user_id, "daily")
+      [%DailyQuest{}]
   """
-  def get_user_today_rerolled_daily_quests_by_type(user_id, type) do
+  def get_user_rerolled_quests(user_id, "daily") do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
@@ -120,7 +120,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         preload: [:quest],
         where:
           dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and
-            dq.status == ^"rerolled" and q.type == ^type
+            dq.status == ^"rerolled" and q.type == ^"daily"
       )
 
     Repo.all(q)
@@ -179,7 +179,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
       Quests.get_daily_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
-      Quests.get_user_today_rerolled_daily_quests_by_type(daily_quest.user_id, daily_quest.quest.type)
+      Quests.get_user_rerolled_quests(daily_quest.user_id, daily_quest.quest.type)
       |> Enum.count()
 
     reroll_costs =
@@ -232,13 +232,10 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
           true ->
             Multi.new()
-            # Deduct currency
             |> Multi.run(:deduct_currencies, fn _, _ ->
               Currencies.substract_currencies(daily_quest.user_id, reroll_costs)
             end)
-            # Update old daily quest
             |> Multi.update(:change_previous_quest, finish_previous_quest_changeset)
-            # Add new daily quest
             |> Multi.insert(:insert_quest, new_quest_changeset)
             |> Repo.transaction()
         end
