@@ -243,7 +243,7 @@ defmodule Arena.Game.Skill do
         last_id,
         get_position_with_offset(
           entity_player_owner.position,
-          entity_player_owner.direction,
+          skill_direction,
           simple_shoot.projectile_offset
         ),
         skill_direction,
@@ -377,6 +377,7 @@ defmodule Arena.Game.Skill do
       true ->
         nearest_entity_position_in_range =
           Physics.nearest_entity_position_in_range(player, entities, skill.max_autoaim_range)
+          |> maybe_normalize(not skill.can_pick_destination)
 
         {nearest_entity_position_in_range != player.direction, nearest_entity_position_in_range}
 
