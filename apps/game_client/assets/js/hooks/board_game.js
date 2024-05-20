@@ -22,6 +22,8 @@ export const BoardGame = function () {
     colliding: 0xff0000,
     projectile: 0x0000ff,
     item: 0x238636,
+    trap: 0x6600cc,
+    crate: 0xcc9900
   };
   let player_id;
 
@@ -139,6 +141,7 @@ export const BoardGame = function () {
 
       newEntity.boardObject.beginFill(0xffffff);
 
+
       // Use the correct draw functions based on the shape
       switch (newEntity.shape) {
         case "circle":
@@ -162,6 +165,12 @@ export const BoardGame = function () {
           break;
         case "item":
           newEntity.boardObject.zIndex = 20;
+          break;
+        case "trap":
+          newEntity.boardObject.zIndex = 5;
+          break;
+        case "crate":
+          newEntity.boardObject.zIndex = 5;
           break;
       }
 
@@ -209,6 +218,12 @@ export const BoardGame = function () {
             break;
           case "item":
             color = colors.item;
+            break;
+          case "crate":
+            color = colors.crate;
+            break;
+          case "trap":
+            color = colors.trap;
             break;
         }
       }
