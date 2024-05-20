@@ -46,6 +46,7 @@ defmodule Champions.Battle do
       {:level, {:error, :not_found}} -> {:error, :level_not_found}
       {:super_campaign_progress, {:error, :not_found}} -> {:error, :super_campaign_progress_not_found}
       {:level_valid, false} -> {:error, :level_invalid}
+      {:can_afford, false} -> {:error, :cant_afford}
     end
   end
 
