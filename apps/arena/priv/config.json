@@ -1193,12 +1193,6 @@
         "giant_effect"
       ],
       "mechanics": {}
-    },
-    {
-      "name": "fake_item",
-      "radius": 200.0,
-      "effects": [],
-      "mechanics": {}
     }
   ],
   "characters": [
