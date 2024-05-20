@@ -83,7 +83,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   @doc """
-  Get all %DailyQuest{} for the user_id that were inserted today and were rerolled
+  Receives a user id and a daily quest type.
+  Returns a list of DailyQuest for the given user and type that were inserted today an their status are :rerolled.
 
   ## Examples
 
