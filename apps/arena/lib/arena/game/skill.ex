@@ -399,6 +399,12 @@ defmodule Arena.Game.Skill do
        }),
        do: get_in(game_state, [:players, owner_id])
 
+  defp get_entity_player_owner(game_state, %{
+         category: :trap,
+         aditional_info: %{owner_id: owner_id}
+       }),
+       do: get_in(game_state, [:players, owner_id])
+
   defp maybe_move_player(game_state, %{category: :player} = player, move_by)
        when not is_nil(move_by) do
     player_for_moving = %{player | is_moving: true, speed: move_by}

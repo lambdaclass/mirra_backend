@@ -3,9 +3,11 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.GameTracker
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
+  alias Arena.Game.Item
 
   def add_action(player, action) do
     Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
@@ -276,11 +278,14 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-        end)
-        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+        game_state =
+          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
+          end)
+          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+
+        Item.do_mechanics(game_state, player, item.mechanics)
     end
   end
 
@@ -324,6 +329,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :bonus_damage], 0)
     |> put_in([:aditional_info, :bonus_defense], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
+    |> put_in([:aditional_info, :pull_immunity], false)
     |> Effect.apply_stat_effects()
   end
 
@@ -352,11 +358,14 @@ defmodule Arena.Game.Player do
     case heal_interval? and damage_interval? and use_skill_interval? do
       true ->
         heal_amount = floor(player.aditional_info.max_health * 0.1)
+        new_health = min(player.aditional_info.health + heal_amount, player.aditional_info.max_health)
+
+        GameTracker.push_event(self(), {:heal, player.id, new_health - player.aditional_info.health})
 
         Map.update!(player, :aditional_info, fn info ->
           %{
             info
-            | health: min(info.health + heal_amount, info.max_health),
+            | health: new_health,
               last_natural_healing_update: now
           }
         end)
@@ -427,6 +436,10 @@ defmodule Arena.Game.Player do
       one_time_application: true,
       effect_mechanics: %{
         damage_immunity: %{
+          execute_multiple_times: false,
+          effect_delay_ms: 0
+        },
+        pull_immunity: %{
           execute_multiple_times: false,
           effect_delay_ms: 0
         }

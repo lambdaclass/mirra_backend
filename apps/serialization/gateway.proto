@@ -207,7 +207,7 @@ syntax = "proto3";
     string user_id = 1;
     string campaign_id = 2;
     string level_id = 3;
-    string super_campaign_id = 4;
+    string super_campaign_name = 4;
   }
 
   message AfkRewardRate {
@@ -286,7 +286,7 @@ syntax = "proto3";
 
   message Campaign {
     string id = 1;
-    string super_campaign_id = 2;
+    string super_campaign_name = 2;
     uint32 campaign_number = 3;
     repeated Level levels = 4;
   }
@@ -398,6 +398,7 @@ syntax = "proto3";
       Death death = 6;
       ExecutionReceived execution_received = 7;
       EnergyRegen energy_regen = 8;
+      StatOverride stat_override = 9;
     }
   }
 
@@ -452,4 +453,9 @@ syntax = "proto3";
     string target_id = 1;
     string skill_id = 2;
     float amount = 3;
+  }
+
+  message StatOverride {
+    string target_id = 1;
+    StatAffected stat_affected = 2;
   }

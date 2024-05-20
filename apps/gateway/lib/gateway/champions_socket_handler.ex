@@ -19,7 +19,8 @@ defmodule Gateway.ChampionsSocketHandler do
     SkillAction,
     WebSocketResponse,
     ExecutionReceived,
-    EnergyRegen
+    EnergyRegen,
+    StatOverride
   }
 
   alias Champions.{Battle, Campaigns, Gacha, Items, Users, Units}
@@ -105,7 +106,7 @@ defmodule Gateway.ChampionsSocketHandler do
         prepare_response({:error, reason}, nil)
 
       {:ok, campaigns} ->
-        prepare_response(%{campaigns: campaigns}, :campaigns)
+        prepare_response(%{campaigns: Enum.map(campaigns, &prepare_campaign/1)}, :campaigns)
     end
   end
 
@@ -115,7 +116,9 @@ defmodule Gateway.ChampionsSocketHandler do
         prepare_response({:error, reason}, nil)
 
       {:ok, campaign} ->
-        prepare_response(campaign, :campaign)
+        campaign
+        |> prepare_campaign()
+        |> prepare_response(:campaign)
     end
   end
 
@@ -215,7 +218,7 @@ defmodule Gateway.ChampionsSocketHandler do
           level_id: super_campaign_progress.level_id,
           user_id: super_campaign_progress.user_id,
           campaign_id: super_campaign_progress.level.campaign_id,
-          super_campaign_id: super_campaign_progress.super_campaign_id
+          super_campaign_name: super_campaign_progress.super_campaign.name
         }
       end)
 
@@ -243,56 +246,117 @@ defmodule Gateway.ChampionsSocketHandler do
   defp handle(unknown_request),
     do: Logger.warning("[Gateway.ChampionsSocketHandler] Received unknown request #{unknown_request}")
 
+  defp prepare_campaign(campaign) do
+    %{
+      id: campaign.id,
+      super_campaign_name: campaign.super_campaign.name,
+      campaign_number: campaign.campaign_number,
+      levels: campaign.levels
+    }
+  end
+
   defp prepare_step(step) do
     update_in(step, [:actions], fn actions ->
       Enum.map(actions, &prepare_action/1)
     end)
   end
 
-  defp prepare_action(%{action_type: {type, action}}) do
+  defp prepare_action(%{action_type: {:skill_action, action}}) do
     %{
       action_type:
-        case type do
-          :skill_action ->
-            {type,
-             Kernel.struct(
-               SkillAction,
-               action
-             )}
+        {:skill_action,
+         Kernel.struct(
+           SkillAction,
+           action
+         )}
+    }
+  end
 
-          :modifier_received ->
-            {type,
-             Kernel.struct(
-               ModifierReceived,
-               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
-             )}
+  defp prepare_action(%{action_type: {:modifier_received, action}}) do
+    %{
+      action_type:
+        {:modifier_received,
+         Kernel.struct(
+           ModifierReceived,
+           update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+         )}
+    }
+  end
 
-          :tag_received ->
-            {type, Kernel.struct(TagReceived, action)}
+  defp prepare_action(%{action_type: {:tag_received, action}}) do
+    %{
+      action_type:
+        {:tag_received,
+         Kernel.struct(
+           TagReceived,
+           action
+         )}
+    }
+  end
 
-          :tag_expired ->
-            {type, Kernel.struct(TagExpired, action)}
+  defp prepare_action(%{action_type: {:tag_expired, action}}) do
+    %{
+      action_type:
+        {:tag_expired,
+         Kernel.struct(
+           TagExpired,
+           action
+         )}
+    }
+  end
 
-          :modifier_expired ->
-            {type,
-             Kernel.struct(
-               ModifierExpired,
-               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
-             )}
+  defp prepare_action(%{action_type: {:modifier_expired, action}}) do
+    %{
+      action_type:
+        {:modifier_expired,
+         Kernel.struct(
+           ModifierExpired,
+           update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+         )}
+    }
+  end
 
-          :death ->
-            {type, Kernel.struct(Death, action)}
+  defp prepare_action(%{action_type: {:death, action}}) do
+    %{
+      action_type:
+        {:death,
+         Kernel.struct(
+           Death,
+           action
+         )}
+    }
+  end
 
-          :execution_received ->
-            {type,
-             Kernel.struct(
-               ExecutionReceived,
-               update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
-             )}
+  defp prepare_action(%{action_type: {:execution_received, action}}) do
+    %{
+      action_type:
+        {:execution_received,
+         Kernel.struct(
+           ExecutionReceived,
+           update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+         )}
+    }
+  end
 
-          :energy_regen ->
-            {type, Kernel.struct(EnergyRegen, action)}
-        end
+  defp prepare_action(%{action_type: {:energy_regen, action}}) do
+    %{
+      action_type:
+        {:energy_regen,
+         Kernel.struct(
+           EnergyRegen,
+           action
+         )}
+    }
+  end
+
+  defp prepare_action(%{action_type: {:stat_override, action}}) do
+    %{
+      action_type:
+        {:stat_override,
+         Kernel.struct(
+           StatOverride,
+           update_in(action, [:stat_affected], &Kernel.struct(StatAffected, &1))
+         )}
     }
   end
 

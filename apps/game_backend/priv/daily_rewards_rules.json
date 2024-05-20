@@ -1,0 +1,39 @@
+{
+    "reward_per_day": {
+        "day_1": {
+            "currency": "Gold",
+            "amount": 50,
+            "next_reward": "day_2"
+        },
+        "day_2": {
+            "currency": "Gold",
+            "amount": 100,
+            "next_reward": "day_3"
+        },
+        "day_3": {
+            "currency": "Gold",
+            "amount": 150,
+            "next_reward": "day_4"
+        },
+        "day_4": {
+            "currency": "Gold",
+            "amount": 200,
+            "next_reward": "day_5"
+        },
+        "day_5": {
+            "currency": "Gold",
+            "amount": 250,
+            "next_reward": "day_6"
+        },
+        "day_6": {
+            "currency": "Gold",
+            "amount": 300,
+            "next_reward": "day_7"
+        },
+        "day_7": {
+            "currency": "Gems",
+            "amount": 200,
+            "next_reward": "day_1"
+        }
+    }
+}
