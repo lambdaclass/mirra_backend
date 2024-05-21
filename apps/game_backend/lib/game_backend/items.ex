@@ -213,4 +213,12 @@ defmodule GameBackend.Items do
       item_template -> {:ok, item_template}
     end
   end
+
+  @doc """
+  Get a user's item associated to the given item name.
+  Fails if there are more than one item of the same name. Returns nil if there are none.
+  """
+  def get_item_by_name(item_name, user_id) do
+    Repo.one(from(item in Item, where: item.name == ^item_name and item.user_id == ^user_id))
+  end
 end

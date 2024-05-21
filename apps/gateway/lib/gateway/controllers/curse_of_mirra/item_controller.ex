@@ -5,13 +5,15 @@ defmodule Gateway.Controllers.CurseOfMirra.ItemController do
   use Gateway, :controller
   alias GameBackend.Items
   alias GameBackend.Utils
+  alias GameBackend.Units
 
   action_fallback Gateway.Controllers.FallbackController
 
   def equip(conn, params) do
-    case Items.equip_item(params["user_id"], params["item_id"], params["unit_id"]) do
-      {:ok, item} -> send_resp(conn, 200, Jason.encode!(item.id))
-      error -> error
+    with unit <- Units.get_unit_by_character_name(params["character_name"], params["user_id"]),
+         item <- Items.get_item_by_name(params["item_name"], params["user_id"]),
+         {:ok, item} <- Items.equip_item(params["user_id"], item.id, unit.id) do
+      send_resp(conn, 200, Jason.encode!(item.id))
     end
   end
 
