@@ -11,6 +11,7 @@ defmodule GameBackend.Quests.DailyQuest do
 
   schema "daily_quest" do
     field(:completed_at, :utc_datetime)
+    field(:status, :string)
     belongs_to(:quest, Quest)
     belongs_to(:user, User)
 
@@ -19,7 +20,8 @@ defmodule GameBackend.Quests.DailyQuest do
 
   @required [
     :quest_id,
-    :user_id
+    :user_id,
+    :status
   ]
 
   @permitted [:completed_at] ++ @required
@@ -28,5 +30,6 @@ defmodule GameBackend.Quests.DailyQuest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
+    |> validate_inclusion(:status, ["available", "completed", "rerolled"])
   end
 end
