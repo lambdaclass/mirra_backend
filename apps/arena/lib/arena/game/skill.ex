@@ -13,8 +13,8 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, _skill_params) do
-    circle_center_position = get_position_with_offset(entity.position, entity.direction, circle_hit.offset)
+  def do_mechanic(game_state, entity, {:circle_hit, circle_hit}, %{skill_direction: skill_direction} = _skill_params) do
+    circle_center_position = get_position_with_offset(entity.position, skill_direction, circle_hit.offset)
     circular_damage_area = Entities.make_circular_area(entity.id, circle_center_position, circle_hit.range)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
@@ -63,11 +63,11 @@ defmodule Arena.Game.Skill do
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
-  def do_mechanic(game_state, entity, {:cone_hit, cone_hit}, _skill_params) do
+  def do_mechanic(game_state, entity, {:cone_hit, cone_hit}, %{skill_direction: skill_direction} = _skill_params) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         entity.position,
-        entity.direction,
+        skill_direction,
         cone_hit.range,
         cone_hit.angle
       )
@@ -145,7 +145,12 @@ defmodule Arena.Game.Skill do
     do_mechanic(game_state, entity, {:circle_hit, multi_circle_hit}, skill_params)
   end
 
-  def do_mechanic(game_state, entity, {:dash, %{speed: speed, duration: duration}}, _skill_params) do
+  def do_mechanic(
+        game_state,
+        entity,
+        {:dash, %{speed: speed, duration: duration}},
+        %{skill_direction: skill_direction} = _skill_params
+      ) do
     Process.send_after(self(), {:stop_dash, entity.id, entity.aditional_info.base_speed}, duration)
 
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
@@ -154,6 +159,7 @@ defmodule Arena.Game.Skill do
       entity
       |> Map.put(:is_moving, true)
       |> put_in([:aditional_info, :base_speed], speed)
+      |> put_in([:aditional_info, :direction], skill_direction)
       |> put_in([:aditional_info, :forced_movement], true)
 
     players = Map.put(game_state.players, entity.id, entity)
@@ -199,10 +205,10 @@ defmodule Arena.Game.Skill do
     |> put_in([:projectiles, projectile.id], projectile)
   end
 
-  def do_mechanic(game_state, entity, {:multi_shoot, multishot}, skill_params) do
+  def do_mechanic(game_state, entity, {:multi_shoot, multishot}, %{skill_direction: skill_direction} = skill_params) do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    calculate_angle_directions(multishot.amount, multishot.angle_between, entity.direction)
+    calculate_angle_directions(multishot.amount, multishot.angle_between, skill_direction)
     |> Enum.reduce(game_state, fn direction, game_state_acc ->
       last_id = game_state_acc.last_id + 1
 
@@ -211,7 +217,7 @@ defmodule Arena.Game.Skill do
           last_id,
           get_position_with_offset(
             entity_player_owner.position,
-            entity_player_owner.direction,
+            skill_direction,
             multishot.projectile_offset
           ),
           direction,
@@ -228,7 +234,7 @@ defmodule Arena.Game.Skill do
     end)
   end
 
-  def do_mechanic(game_state, entity, {:simple_shoot, simple_shoot}, skill_params) do
+  def do_mechanic(game_state, entity, {:simple_shoot, simple_shoot}, %{skill_direction: skill_direction} = skill_params) do
     last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
@@ -237,10 +243,10 @@ defmodule Arena.Game.Skill do
         last_id,
         get_position_with_offset(
           entity_player_owner.position,
-          entity_player_owner.direction,
+          skill_direction,
           simple_shoot.projectile_offset
         ),
-        entity.direction,
+        skill_direction,
         entity_player_owner.id,
         skill_params.skill_key,
         simple_shoot
@@ -371,6 +377,7 @@ defmodule Arena.Game.Skill do
       true ->
         nearest_entity_position_in_range =
           Physics.nearest_entity_position_in_range(player, entities, skill.max_autoaim_range)
+          |> maybe_normalize(not skill.can_pick_destination)
 
         {nearest_entity_position_in_range != player.direction, nearest_entity_position_in_range}
 

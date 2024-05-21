@@ -239,7 +239,7 @@ defmodule Arena.GameUpdater do
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{skill_direction: player.direction})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -453,6 +453,11 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:block_movement, player_id, value}, state) do
+    broadcast_player_block_movement(state.game_state.game_id, player_id, value)
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -463,6 +468,10 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_player_block_actions(game_id, player_id, value) do
     PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
+  end
+
+  def broadcast_player_block_movement(game_id, player_id, value) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:block_movement, player_id, value})
   end
 
   # Broadcast game update to all players
@@ -1005,7 +1014,7 @@ defmodule Arena.GameUpdater do
           game_state,
           projectile,
           projectile.aditional_info.on_explode_mechanics,
-          %{}
+          %{skill_direction: projectile.direction}
         )
       else
         game_state
