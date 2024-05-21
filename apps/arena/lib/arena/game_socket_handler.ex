@@ -33,6 +33,7 @@ defmodule Arena.GameSocketHandler do
       Map.put(state, :player_id, player_id)
       |> Map.put(:enable, game_status == :RUNNING)
       |> Map.put(:block_actions, false)
+      |> Map.put(:block_movement, false)
       |> Map.put(:game_finished, game_status == :ENDED)
       |> Map.put(:player_alive, true)
 
@@ -48,11 +49,6 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_handle(_, %{enable: false} = state) do
-    {:ok, state}
-  end
-
-  @impl true
-  def websocket_handle(_, %{block_actions: true} = state) do
     {:ok, state}
   end
 
@@ -75,21 +71,27 @@ defmodule Arena.GameSocketHandler do
     {:reply, {:pong, ""}, state}
   end
 
-  def websocket_handle({:binary, message}, state) do
+  def websocket_handle({:binary, message}, %{block_actions: block_actions, block_movement: block_movement} = state) do
     case Serialization.GameAction.decode(message) do
       %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
-        GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+        unless block_actions do
+          GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+        end
 
       %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+        unless block_actions do
+          GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+        end
 
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        GameUpdater.move(
-          state.game_pid,
-          state.player_id,
-          {direction.x, direction.y},
-          timestamp
-        )
+        unless block_movement do
+          GameUpdater.move(
+            state.game_pid,
+            state.player_id,
+            {direction.x, direction.y},
+            timestamp
+          )
+        end
 
       _ ->
         {}
@@ -147,6 +149,15 @@ defmodule Arena.GameSocketHandler do
   def websocket_info({:block_actions, player_id, value}, state) do
     if state.player_id == player_id do
       {:ok, Map.put(state, :block_actions, value)}
+    else
+      {:ok, state}
+    end
+  end
+
+  @impl true
+  def websocket_info({:block_movement, player_id, value}, state) do
+    if state.player_id == player_id do
+      {:ok, Map.put(state, :block_movement, value)}
     else
       {:ok, state}
     end

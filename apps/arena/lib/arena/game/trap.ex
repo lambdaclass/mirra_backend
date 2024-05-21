@@ -18,6 +18,6 @@ defmodule Arena.Game.Trap do
   """
   def do_mechanic(game_state, entity, {:circle_hit, circle_hit}) do
     # We will be using the skill mechanic here until we abstract the attacks
-    Skill.do_mechanic(game_state, entity, {:circle_hit, circle_hit}, %{})
+    Skill.do_mechanic(game_state, entity, {:circle_hit, circle_hit}, %{skill_direction: entity.direction})
   end
 end

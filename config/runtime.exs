@@ -185,6 +185,12 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
   config :game_backend, :arena_prestige,
     ranks: arena_prestige_ranks,
     rewards: arena_prestige_rewards
+
+  {:ok, quest_prices_attrs} =
+    Application.app_dir(:game_backend, "priv/curse_of_mirra/quest_reroll_configuration.json")
+    |> File.read()
+
+  config :game_backend, :quest_reroll_config, Jason.decode!(quest_prices_attrs, [{:keys, :atoms}])
 end
 
 ##################################
