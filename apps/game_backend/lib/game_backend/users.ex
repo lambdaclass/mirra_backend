@@ -11,15 +11,12 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Quests.DailyQuest
   alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
   alias GameBackend.Repo
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users.User
-  alias GameBackend.Users.GoogleUser
+  alias GameBackend.Users.{Currencies, User, GoogleUser, Upgrade}
   alias GameBackend.Utils
 
   @doc """
@@ -344,4 +341,8 @@ defmodule GameBackend.Users do
         units: [:character, :items],
         currencies: :currency
       )
+
+  def get_upgrade_by_name(name) do
+    Repo.get_by(Upgrade, name: name)
+  end
 end

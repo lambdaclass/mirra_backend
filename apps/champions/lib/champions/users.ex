@@ -26,6 +26,7 @@ defmodule Champions.Users do
   def register(username) do
     kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
     dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level(1)
+    dungeon_base_setting = Users.get_upgrade_by_name("Dungeon.BaseSetting")
 
     case Users.register_user(%{
            username: username,
@@ -34,7 +35,7 @@ defmodule Champions.Users do
            experience: 0,
            kaline_tree_level_id: kaline_tree_level.id,
            dungeon_settlement_level_id: dungeon_settlement_level.id,
-           unlocks: ["Dungeon.BaseSetting"]
+           unlocks: [%{upgrade_id: dungeon_base_setting.id, name: dungeon_base_setting.name}]
          }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.

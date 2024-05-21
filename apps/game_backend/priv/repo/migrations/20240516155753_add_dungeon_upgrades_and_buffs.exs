@@ -32,7 +32,18 @@ defmodule GameBackend.Repo.Migrations.AddDungeonUpgradesAndBuffs do
       timestamps()
     end
 
+    create(table(:unlocks)) do
+      add(:name, :string)
+      add(:user_id, references(:users, on_delete: :delete_all))
+      add(:upgrade_id, references(:upgrades, on_delete: :delete_all))
+
+      timestamps()
+    end
+
+    create(unique_index(:unlocks, [:user_id, :name]))
+    create(unique_index(:unlocks, [:user_id, :upgrade_id]))
     create(unique_index(:upgrades, [:name]))
     create(unique_index(:buffs, [:name]))
+    create(unique_index(:upgrade_unlocks, [:upgrade_locking_id, :upgrade_unlocked_id]))
   end
 end
