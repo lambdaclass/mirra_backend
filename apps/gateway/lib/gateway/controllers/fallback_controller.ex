@@ -20,6 +20,18 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "invalid reward"}))
   end
 
+  def call(conn, {:error, :item_not_found}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "item not found"}))
+  end
+
+  def call(conn, {:error, :item_not_owned}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "item not owned"}))
+  end
+
+  def call(conn, {:error, :unit_not_owned}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "unit not owned"}))
+  end
+
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) when is_binary(failed_operation) do
     send_resp(conn, 400, Jason.encode!(%{"error" => failed_operation}))
   end
