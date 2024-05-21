@@ -2,7 +2,7 @@
 
 ## Non-Changeable Attributes
 
-- `id`: Unique identifier for the projectile
+- `id`: Unique identifier for the trap
 - `category`: The category of this entity
 - `name`: Name of the trap used to instantiate it
 - `position`: Position of the trap
@@ -22,3 +22,24 @@
   - `PREPARED`: The trap is waiting to be triggered
   - `TRIGGERED`: The trap is already triggered and is going to activate its mechanic, depending on the fields `activation_delay_ms` and `activate_on_proximity`
   - `USED`: This status is set once the trap has finished its operations/mechanics, indicating it can be deleted from the game state
+
+
+## Example
+
+```json
+{
+  "name": "bomb",
+  "radius": 200.0,
+  "activation_delay_ms": 3000,
+  "preparation_delay_ms": 3000,
+  "activate_on_proximity": true,
+  "vertices": [],
+  "mechanics": {
+    "circle_hit": {
+      "damage": 64,
+      "range": 380.0,
+      "offset": 400
+    }
+  }
+}
+```
