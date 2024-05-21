@@ -3,10 +3,12 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.GameUpdater
   alias Arena.GameTracker
   alias Arena.Utils
   alias Arena.Game.Effect
   alias Arena.Game.Skill
+  alias Arena.Game.Item
 
   def add_action(player, action) do
     Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
@@ -168,6 +170,8 @@ defmodule Arena.Game.Player do
         game_state
 
       skill ->
+        GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
+
         {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
@@ -175,10 +179,16 @@ defmodule Arena.Game.Player do
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)
 
+        if skill.block_movement do
+          send(self(), {:block_movement, player.id, true})
+          Process.send_after(self(), {:block_movement, player.id, false}, execution_duration)
+        end
+
         action =
           %{
             action: skill_key_execution_action(skill_key),
-            duration: execution_duration + skill.activation_delay_ms
+            duration: execution_duration + skill.activation_delay_ms,
+            direction: skill_direction
           }
           |> maybe_add_destination(game_state, player, skill_direction, skill)
 
@@ -205,8 +215,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action)
           |> apply_skill_cooldown(skill_key, skill)
-          |> put_in([:direction], skill_direction |> Utils.normalize())
-          |> put_in([:is_moving], false)
+          |> maybe_face_player_towards_direction(skill_direction, skill.block_movement)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
 
         put_in(game_state, [:players, player.id], player)
@@ -215,8 +224,8 @@ defmodule Arena.Game.Player do
   end
 
   # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
-  # position in wich the player will spawn when the skill start and not when we actually execute the teleport
-  # this is also optimistic since we asume the destination will be always available
+  # position in which the player will spawn when the skill start and not when we actually execute the teleport
+  # this is also optimistic since we assume the destination will be always available
   defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
@@ -231,11 +240,19 @@ defmodule Arena.Game.Player do
 
   defp maybe_add_destination(action, _, _, _, _), do: action
 
+  defp maybe_face_player_towards_direction(player, skill_direction, true) do
+    player
+    |> put_in([:direction], skill_direction |> Utils.normalize())
+    |> put_in([:is_moving], false)
+  end
+
+  defp maybe_face_player_towards_direction(player, _skill_direction, _), do: player
+
   @doc """
 
   Receives a player that owns the damage and the damage number
 
-  to calculate the real damage we'll use the config "power_up_damage_modifier" multipling that with base damage of the
+  to calculate the real damage we'll use the config "power_up_damage_modifier" multiplying that with base damage of the
   ability and multiply that with the amount of power ups that a player has then adding that to the base damage resulting
   in the real damage
 
@@ -277,11 +294,14 @@ defmodule Arena.Game.Player do
         game_state
 
       item ->
-        Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-          effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-          Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-        end)
-        |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+        game_state =
+          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
+          end)
+          |> put_in([:players, player.id, :aditional_info, :inventory], nil)
+
+        Item.do_mechanics(game_state, player, item.mechanics)
     end
   end
 
@@ -325,6 +345,7 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :bonus_damage], 0)
     |> put_in([:aditional_info, :bonus_defense], 0)
     |> put_in([:aditional_info, :damage_immunity], false)
+    |> put_in([:aditional_info, :pull_immunity], false)
     |> Effect.apply_stat_effects()
   end
 
@@ -431,6 +452,10 @@ defmodule Arena.Game.Player do
       one_time_application: true,
       effect_mechanics: %{
         damage_immunity: %{
+          execute_multiple_times: false,
+          effect_delay_ms: 0
+        },
+        pull_immunity: %{
           execute_multiple_times: false,
           effect_delay_ms: 0
         }
