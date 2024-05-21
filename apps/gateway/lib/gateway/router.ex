@@ -23,6 +23,7 @@ defmodule Gateway.Router do
 
       scope "/items" do
         put "/:user_id/:item_id/:unit_id/equip", ItemController, :equip
+        put "/:user_id/buy/:item_name", ItemController, :buy
       end
     end
   end
