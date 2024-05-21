@@ -107,10 +107,10 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   ## Examples
 
-      iex>get_user_rerolled_quests(user_id, "daily")
+      iex>get_user_today_rerolled_daily_quests(user_id)
       [%DailyQuest{}]
   """
-  def get_user_rerolled_quests(user_id, "daily") do
+  def get_user_today_rerolled_daily_quests(user_id) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
@@ -121,7 +121,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         preload: [:quest],
         where:
           dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and
-            dq.status == ^"rerolled" and q.type == ^"daily"
+            dq.status == ^"rerolled"
       )
 
     Repo.all(q)
@@ -193,7 +193,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
       get_daily_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
-      get_user_rerolled_quests(daily_quest.user_id, daily_quest.quest.type)
+      get_user_today_rerolled_daily_quests(daily_quest.user_id)
       |> Enum.count()
 
     reroll_costs =
