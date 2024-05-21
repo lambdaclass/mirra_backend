@@ -158,6 +158,12 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
   config :game_backend,
          :characters_config,
          Jason.decode!(characters_config_json, [{:keys, :atoms}])
+
+  {:ok, items_config_json} =
+    Application.app_dir(:game_backend, "priv/items_templates.json")
+    |> File.read()
+
+  config :game_backend, :items_config, Jason.decode!(items_config_json, [{:keys, :atoms}])
 end
 
 ##################################

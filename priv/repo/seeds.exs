@@ -9,6 +9,7 @@ alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
 alias GameBackend.Units.Characters
+alias GameBackend.Items
 alias GameBackend.Users
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
@@ -381,6 +382,13 @@ Utils.get_characters_config()
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")
   |> Characters.insert_character()
+end)
+
+# Insert items templates
+Utils.get_items_templates_config()
+|> Enum.each(fn item_template ->
+  Map.put(item_template, :game_id, curse_of_mirra_id)
+  |> Items.insert_item_template()
 end)
 
 ################### END CURSE OF MIRRA ###################
