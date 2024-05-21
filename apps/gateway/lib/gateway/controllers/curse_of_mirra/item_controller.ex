@@ -1,6 +1,6 @@
 defmodule Gateway.Controllers.CurseOfMirra.ItemController do
   @moduledoc """
-  Controller for User modifications.
+  Controller for Item modifications.
   """
   use Gateway, :controller
   alias GameBackend.Items
