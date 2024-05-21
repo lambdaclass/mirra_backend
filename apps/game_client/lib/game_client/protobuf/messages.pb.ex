@@ -552,6 +552,7 @@ defmodule GameClient.Protobuf.PlayerAction do
   field(:action, 1, type: GameClient.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
   field(:destination, 3, type: GameClient.Protobuf.Position)
+  field(:direction, 4, type: GameClient.Protobuf.Position)
 end
 
 defmodule GameClient.Protobuf.Move do
