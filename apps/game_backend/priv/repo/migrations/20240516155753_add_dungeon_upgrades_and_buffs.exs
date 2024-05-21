@@ -36,7 +36,7 @@ defmodule GameBackend.Repo.Migrations.AddDungeonUpgradesAndBuffs do
       add(:name, :string)
       add(:user_id, references(:users, on_delete: :delete_all))
       add(:upgrade_id, references(:upgrades, on_delete: :delete_all))
-
+      add(:type, :string)
       timestamps()
     end
 

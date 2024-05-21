@@ -15,11 +15,13 @@ defmodule GameBackend.Users.Unlock do
     field(:name, :string)
     belongs_to(:upgrade, Upgrade)
 
+    field(:type, :string)
+
     timestamps()
   end
 
   @doc false
   def changeset(unlock, attrs) do
-    cast(unlock, attrs, [:user_id, :name, :upgrade_id])
+    cast(unlock, attrs, [:user_id, :name, :upgrade_id, :type])
   end
 end

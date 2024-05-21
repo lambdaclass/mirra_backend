@@ -35,7 +35,7 @@ defmodule Champions.Users do
            experience: 0,
            kaline_tree_level_id: kaline_tree_level.id,
            dungeon_settlement_level_id: dungeon_settlement_level.id,
-           unlocks: [%{upgrade_id: dungeon_base_setting.id, name: dungeon_base_setting.name}]
+           unlocks: [%{upgrade_id: dungeon_base_setting.id, name: dungeon_base_setting.name, type: "Dungeon"}]
          }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
