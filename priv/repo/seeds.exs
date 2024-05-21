@@ -8,6 +8,7 @@ alias GameBackend.Gacha
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
+alias GameBackend.Units.Characters
 alias GameBackend.Users
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
@@ -372,3 +373,14 @@ units =
   end)
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
+
+##################### CURSE OF MIRRA #####################
+# Insert characters
+Utils.get_characters_config()
+|> Enum.each(fn char_params ->
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
+end)
+
+################### END CURSE OF MIRRA ###################
