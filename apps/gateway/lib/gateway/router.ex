@@ -12,9 +12,15 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
-    put "/users/:user_id/currency", CurrencyController, :modify_currency
-    get "/users/:user_id/claim_daily_reward", UserController, :claim_daily_reward
-    get "/users/:user_id/get_daily_reward_status", UserController, :get_daily_reward_status
+    scope "/users" do
+      put "/:user_id/currency", CurrencyController, :modify_currency
+      get "/:user_id/claim_daily_reward", UserController, :claim_daily_reward
+      get "/:user_id/get_daily_reward_status", UserController, :get_daily_reward_status
+
+      scope "/items" do
+        put "/:user_id/:item_id/:unit_id/equip", ItemController, :equip
+      end
+    end
   end
 
   scope "/arena", Gateway.Controllers.Arena do
