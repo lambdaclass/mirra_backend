@@ -5,9 +5,12 @@ defmodule Champions.Battle do
 
   require Logger
 
+  alias Ecto.Multi
+  alias GameBackend.Users.Currencies
   alias Champions.Battle.Simulator
   alias GameBackend.Campaigns
   alias GameBackend.Campaigns.{Campaign, Level, SuperCampaign, SuperCampaignProgress}
+  alias GameBackend.Repo
   alias GameBackend.Units
   alias GameBackend.Users
   alias GameBackend.Users.DungeonSettlementLevel
@@ -27,7 +30,8 @@ defmodule Champions.Battle do
            {:super_campaign_progress, Campaigns.get_super_campaign_progress(user_id, level.campaign.super_campaign_id)},
          {:level_valid, true} <- {:level_valid, level_valid?(level, current_level_id, user)},
          units <- Units.get_selected_units(user_id),
-         {:max_units_met, true} <- {:max_units_met, Enum.count(units) <= (level.max_units || @default_max_units)} do
+         {:max_units_met, true} <- {:max_units_met, Enum.count(units) <= (level.max_units || @default_max_units)},
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.attempt_cost)} do
       units =
         if level.campaign.super_campaign.name == "Dungeon" do
           apply_buffs(units, user_id)
@@ -35,30 +39,40 @@ defmodule Champions.Battle do
           units
         end
 
-      response =
-        case Simulator.run_battle(units, level.units) do
-          %{result: "team_1"} = result ->
-            # TODO: add rewards to response [CHoM-191]
-            case Champions.Campaigns.advance_level(user_id, level.campaign.super_campaign_id) do
-              {:ok, _changes} -> result
-              _error -> {:error, :failed_to_advance}
-            end
-
-          result ->
-            result
-        end
+      {:ok, response} =
+        Multi.new()
+        |> Multi.run(:substract_currencies, fn _repo, _changes ->
+          Currencies.substract_currencies(user_id, level.attempt_cost)
+        end)
+        |> Multi.run(:run_battle, fn _repo, _changes -> run_battle(user_id, level, units) end)
+        |> Repo.transaction()
 
       end_time = :os.system_time(:millisecond)
 
       Logger.info("Battle took #{end_time - start_time} miliseconds")
 
-      response
+      {:ok, response.run_battle}
     else
       {:user_exists, _} -> {:error, :user_not_found}
       {:level, {:error, :not_found}} -> {:error, :level_not_found}
       {:super_campaign_progress, {:error, :not_found}} -> {:error, :super_campaign_progress_not_found}
       {:level_valid, false} -> {:error, :level_invalid}
       {:max_units_met, false} -> {:error, :max_units_exceeded}
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  defp run_battle(user_id, level, units) do
+    case Simulator.run_battle(units, level.units) do
+      %{result: "team_1"} = result ->
+        # TODO: add rewards to response [CHoM-191]
+        case Champions.Campaigns.advance_level(user_id, level.campaign.super_campaign_id) do
+          {:ok, _changes} -> {:ok, result}
+          _error -> {:error, :failed_to_advance}
+        end
+
+      result ->
+        {:ok, result}
     end
   end
 
