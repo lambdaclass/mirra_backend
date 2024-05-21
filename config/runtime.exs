@@ -150,6 +150,14 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
     |> File.read()
 
   config :game_backend, :daily_rewards_config, Jason.decode!(daily_rewards_json)
+
+  {:ok, characters_config_json} =
+    Application.app_dir(:game_backend, "priv/characters_config.json")
+    |> File.read()
+
+  config :game_backend,
+         :characters_config,
+         Jason.decode!(characters_config_json, [{:keys, :atoms}])
 end
 
 ##################################
