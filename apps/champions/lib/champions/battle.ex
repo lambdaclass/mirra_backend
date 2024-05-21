@@ -31,7 +31,7 @@ defmodule Champions.Battle do
          {:level_valid, true} <- {:level_valid, level_valid?(level, current_level_id, user)},
          units <- Units.get_selected_units(user_id),
          {:max_units_met, true} <- {:max_units_met, Enum.count(units) <= (level.max_units || @default_max_units)},
-         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.attempt_costs)} do
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.attempt_cost)} do
       units =
         if level.campaign.super_campaign.name == "Dungeon" do
           apply_buffs(units, user_id)
@@ -42,7 +42,7 @@ defmodule Champions.Battle do
       {:ok, response} =
         Multi.new()
         |> Multi.run(:substract_currencies, fn _repo, _changes ->
-          Currencies.substract_currencies(user_id, level.attempt_costs)
+          Currencies.substract_currencies(user_id, level.attempt_cost)
         end)
         |> Multi.run(:run_battle, fn _repo, _changes -> run_battle(user_id, level, units) end)
         |> Repo.transaction()

@@ -639,10 +639,10 @@ defmodule Gateway.Serialization.Level do
 
   field(:experience_reward, 6, type: :uint32, json_name: "experienceReward")
 
-  field(:attempt_costs, 7,
+  field(:attempt_cost, 7,
     repeated: true,
     type: Gateway.Serialization.CurrencyCost,
-    json_name: "attemptCosts"
+    json_name: "attemptCost"
   )
 end
 
