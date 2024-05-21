@@ -1,0 +1,15 @@
+<.form for={@data}>
+  <div class="flex">
+    <%= for key <- @keys do %>
+      <span
+        phx-click={:select_key}
+        phx-value-key={key}
+        class={"p-2 text-xl border rounded-t-md #{if @selected_key == key, do: 'bg-indigo-500 text-white'}"}
+      >
+        <%= String.capitalize(key) %>
+      </span>
+    <% end %>
+  </div>
+
+  <%= render_field(@data[@selected_key]) %>
+</.form>
