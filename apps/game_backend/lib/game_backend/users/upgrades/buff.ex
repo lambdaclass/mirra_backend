@@ -1,4 +1,4 @@
-defmodule GameBackend.Units.Buffs.Buff do
+defmodule GameBackend.Users.Upgrades.Buff do
   @moduledoc """
   Buffs encompass positive and negative effects that can be applied to a unit before battles begin.
   These are typically applied by dungeon upgrades.
@@ -19,9 +19,6 @@ defmodule GameBackend.Units.Buffs.Buff do
   alias GameBackend.Units.Skills.Mechanics.Effects.Modifier
 
   schema "buffs" do
-    field(:game_id, :integer)
-    field(:name, :string)
-
     embeds_many(:modifiers, Modifier)
 
     # Unimplemented until we have passive effects.
@@ -34,9 +31,8 @@ defmodule GameBackend.Units.Buffs.Buff do
 
   def changeset(buff, attrs \\ %{}) do
     buff
-    |> cast(attrs, [:game_id, :name, :upgrade_id])
+    |> cast(attrs, [:upgrade_id, :upgrade_id])
     |> cast_embed(:modifiers)
     |> cast_assoc(:skills)
-    |> validate_required([:game_id, :name])
   end
 end

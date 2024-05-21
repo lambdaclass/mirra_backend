@@ -8,7 +8,6 @@ alias GameBackend.Gacha
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Users
-alias GameBackend.Units.Buffs.Buff
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
 alias GameBackend.Units.Unit
@@ -309,18 +308,24 @@ _dungeon_settlement_levels =
 
 {:ok, _initial_debuff} =
   Repo.insert(
-    Buff.changeset(%Buff{}, %{
+    Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
       name: "Dungeon.BaseSetting",
-      modifiers: [
-        %{attribute: "max_level", magnitude: 10, operation: "Add"},
-        %{attribute: "health", magnitude: 0.1, operation: "Multiply"},
-        %{attribute: "attack", magnitude: 0.1, operation: "Multiply"}
+      description: "This upgrade sets the base settings for the dungeon.",
+      group: -1,
+      buffs: [
+        %{
+          modifiers: [
+            %{attribute: "max_level", magnitude: 10, operation: "Add"},
+            %{attribute: "health", magnitude: 0.1, operation: "Multiply"},
+            %{attribute: "attack", magnitude: 0.1, operation: "Multiply"}
+          ]
+        }
       ]
     })
   )
 
-{:ok, sample_hp_1_upgrade} =
+{:ok, sample_hp_1} =
   Repo.insert(
     Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
@@ -329,11 +334,18 @@ _dungeon_settlement_levels =
       group: 1,
       cost: [
         %{currency_id: pearls_currency.id, amount: 5}
+      ],
+      buffs: [
+        %{
+          modifiers: [
+            %{attribute: "health", magnitude: 1.05, operation: "Multiply"}
+          ]
+        }
       ]
     })
   )
 
-{:ok, sample_hp_2_upgrade} =
+{:ok, _sample_hp_2} =
   Repo.insert(
     Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
@@ -344,32 +356,15 @@ _dungeon_settlement_levels =
         %{currency_id: pearls_currency.id, amount: 10}
       ],
       unlock_requirement_locked_by: [
-        %{upgrade_locking_id: sample_hp_1_upgrade.id}
+        %{upgrade_locking_id: sample_hp_1.id}
+      ],
+      buffs: [
+        %{
+          modifiers: [
+            %{attribute: "health", magnitude: 1.1, operation: "Multiply"}
+          ]
+        }
       ]
-    })
-  )
-
-{:ok, _sample_hp_1_buff} =
-  Repo.insert(
-    Buff.changeset(%Buff{}, %{
-      game_id: champions_of_mirra_id,
-      name: "Dungeon.SampleHP1",
-      modifiers: [
-        %{attribute: "health", magnitude: 1.05, operation: "Multiply"}
-      ],
-      upgrade_id: sample_hp_1_upgrade.id
-    })
-  )
-
-{:ok, _sample_hp_2_buff} =
-  Repo.insert(
-    Buff.changeset(%Buff{}, %{
-      game_id: champions_of_mirra_id,
-      name: "Dungeon.SampleHP2",
-      modifiers: [
-        %{attribute: "health", magnitude: 1.1, operation: "Multiply"}
-      ],
-      upgrade_id: sample_hp_2_upgrade.id
     })
   )
 
@@ -409,8 +404,6 @@ dungeon_levels =
 
 units =
   Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
-
     base_level = dungeon_rules.base_level
     level_scaler = dungeon_rules.scaler
 

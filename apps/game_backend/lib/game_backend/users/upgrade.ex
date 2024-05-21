@@ -3,9 +3,8 @@ defmodule GameBackend.Users.Upgrade do
   Upgrades can be bought by players for a cost, and in return unlock new features or buffs.
   These are represented by strings in the User schema.
   """
-  alias GameBackend.Units.Buffs.Buff
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Users.Upgrades.UnlockRequirement
+  alias GameBackend.Users.Upgrades.{Buff, UnlockRequirement}
 
   use GameBackend.Schema
   import Ecto.Changeset
@@ -34,6 +33,7 @@ defmodule GameBackend.Users.Upgrade do
     upgrade
     |> cast(attrs, [:game_id, :name, :description, :group])
     |> cast_embed(:cost)
+    |> cast_assoc(:buffs)
     |> cast_assoc(:unlock_requirement_unlocks)
     |> cast_assoc(:unlock_requirement_locked_by)
     |> validate_required([:game_id, :name])
