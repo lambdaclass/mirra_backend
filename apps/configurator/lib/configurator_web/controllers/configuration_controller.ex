@@ -16,8 +16,7 @@ defmodule ConfiguratorWeb.ConfigurationController do
         id -> Configure.get_configuration!(id)
       end
 
-    changeset = Configure.change_configuration(%Configuration{data: config.data})
-    render(conn, :new, changeset: changeset)
+    render(conn, :new, config: config)
   end
 
   def create(conn, %{"configuration" => configuration_params}) do
