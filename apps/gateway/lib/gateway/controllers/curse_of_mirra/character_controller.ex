@@ -3,7 +3,7 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
   Controller for Character modifications.
   """
   use Gateway, :controller
-  alias GameBackend.Config
+  alias GameBackend.CurseOfMirra.Config
 
   action_fallback Gateway.Controllers.FallbackController
 
