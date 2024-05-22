@@ -979,6 +979,71 @@ defmodule Champions.Test.BattleTest do
       assert "team_2" ==
                Champions.Battle.Simulator.run_battle([self_damage_unit], [target_dummy], maximum_steps: maximum_steps).result
     end
+
+    test "Lowest Health" do
+      maximum_steps = 1
+
+      # Create a character with a basic skill that will deal 10 damage to all the enemies
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "DealDamage Lowest HP Enemy",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "lowest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: maximum_steps * @miliseconds_per_step - 1
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "All Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "All Empty Skill"}),
+          base_attack: 10,
+          base_health: 20
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      # Create 2 target dummies for enemy team, with different HP
+      target_dummies =
+        Enum.map(1..2, fn slot ->
+          {:ok, target_dummy} =
+            %{character_id: target_dummy_character.id, slot: slot} |> TestUtils.build_unit() |> Units.insert_unit()
+
+          {:ok, target_dummy} = Units.get_unit(target_dummy.id)
+          target_dummy
+        end)
+
+      # Battle is won after only 1 skill execution
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle(
+                 [unit],
+                 target_dummies,
+                 maximum_steps: maximum_steps
+               ).result
+    end
   end
 
   describe "Items" do

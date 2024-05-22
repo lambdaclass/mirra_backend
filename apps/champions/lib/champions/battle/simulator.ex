@@ -24,11 +24,11 @@ defmodule Champions.Battle.Simulator do
   [x] Frontline - Heroes in slots 1 and 2
   [x] Backline - Heroes in slots 2 to 4
   [x] All
-  [ ] Self
+  [x] Self
   [ ] Factions
   [ ] Classes
-  [ ] Min (STAT)
-  [ ] Max (STAT)
+  [x] Lowest (STAT)
+  [x] Highest (STAT)
 
   It can also be chosen how many targets are affected by the effect, and if they are allies or enemies.
 
@@ -614,6 +614,26 @@ defmodule Champions.Battle.Simulator do
 
   defp choose_targets(caster, %{type: "self"}, _state) do
     [caster.id]
+  end
+
+  defp choose_targets(caster, %{type: "lowest", stat: stat, target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    target =
+      Enum.min_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, stat) end)
+
+    [target.id]
+  end
+
+  defp choose_targets(caster, %{type: "highest", stat: stat, target_allies: target_allies}, state) do
+    target_team =
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    target =
+      Enum.max_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, stat) end)
+
+    [target.id]
   end
 
   defp find_by_proximity(units, slots_priorities, amount) do
