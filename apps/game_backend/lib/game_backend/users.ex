@@ -16,7 +16,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
   alias GameBackend.Repo
-  alias GameBackend.Users.{Currencies, User, GoogleUser, Upgrade}
+  alias GameBackend.Users.{Currencies, User, GoogleUser, Unlock, Upgrade}
   alias GameBackend.Utils
 
   @doc """
@@ -342,7 +342,36 @@ defmodule GameBackend.Users do
         currencies: :currency
       )
 
+  @doc """
+  Get the upgrade with the given name.
+
+  ## Examples
+
+      iex> get_upgrade_by_name("upgrade_name")
+      %Upgrade{name: "upgrade_name"}
+  """
   def get_upgrade_by_name(name) do
     Repo.get_by(Upgrade, name: name)
+  end
+
+  @doc """
+  Insert an Unlock.
+  """
+  def insert_unlock(attrs) do
+    %Unlock{}
+    |> Unlock.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get all User's unlocks with a specific type.
+
+  ## Examples
+
+      iex> get_unlocks_with_type("user_id", "type")
+      [%Unlock{}]
+  """
+  def get_unlocks_with_type(user_id, type) do
+    Repo.all(from(u in Unlock, where: u.user_id == ^user_id and u.type == ^type, preload: [upgrade: :buffs]))
   end
 end

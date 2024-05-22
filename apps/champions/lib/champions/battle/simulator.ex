@@ -68,6 +68,8 @@ defmodule Champions.Battle.Simulator do
   @doc """
   Runs a battle between two teams.
   Teams are expected to be lists of units with their character and their skills preloaded.
+  Optionally, they can come together in a tuple with a list of initial modifiers that might affect them.
+  Either all of them are affected by initial modifiers (modifiers list can be empty, but the tuple format must be followed), or none are.
 
   Returns a map with the the initial state of the battle, the development of the battle for animation, and the result of the battle.
 
@@ -78,23 +80,76 @@ defmodule Champions.Battle.Simulator do
 
   ## Examples
 
-      iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
-      iex> team_2 = Enum.map(user2.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
+      iex> team_1 = Enum.map(Enum.map(user1.units, &{&1, []}), GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
+      iex> team_2 = Enum.map(Enum.map(user2.units, &{&1, []}), GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
       iex> run_battle(team_1, team_2)
       %{initial_state: %{}, steps: [%{actions: [], step_number: 1}, ...], result: :team_1}
   """
-  def run_battle(team_1, team_2, options \\ []) do
+  def run_battle(team_1, team_2, options \\ [])
+
+  def run_battle([{_unit, _initial_modifiers} | _] = team_1, team_2, options) do
+    IO.inspect("Running battle with modifiers")
+
+    team_1_with_level_cap_and_modifiers =
+      Enum.map(team_1, fn {unit, modifiers} ->
+        case Map.get(modifiers, {"max_level", "Add"}, 0) do
+          0 ->
+            {unit, Map.drop(modifiers, [{"max_level", "Add"}])}
+
+          max_level ->
+            IO.inspect("Max level: #{max_level}")
+            {%Unit{unit | level: min(unit.level, max_level)}, Map.drop(modifiers, [{"max_level", "Add"}])}
+        end
+      end)
+
+    team_1_before_modifiers =
+      Enum.map(team_1_with_level_cap_and_modifiers, fn {unit, modifiers} ->
+        {create_unit_map(unit, 1), modifiers}
+      end)
+
+    new_team_1 =
+      Enum.into(team_1_before_modifiers, %{}, fn {{id, unit}, modifiers} ->
+        unit_after_additive_modifiers =
+          modifiers
+          |> Enum.filter(fn {{_attribute, operation}, _value} ->
+            operation == "Add"
+          end)
+          |> Enum.reduce(unit, fn {{attribute, _operation}, value}, unit_acc ->
+            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+          end)
+
+        unit_after_multiplicative_modifiers =
+          modifiers
+          |> Enum.filter(fn {{_attribute, operation}, _value} ->
+            operation == "Multiply"
+          end)
+          |> Enum.reduce(unit_after_additive_modifiers, fn {{attribute, _operation}, value}, unit_acc ->
+            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 * value))
+          end)
+
+        {id, unit_after_multiplicative_modifiers |> IO.inspect(label: "Unit after modifiers")}
+      end)
+
+    team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
+
+    simulate_battle(new_team_1, team_2, options)
+  end
+
+  def run_battle(team_1, team_2, options) do
+    team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
+    team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
+
+    simulate_battle(team_1, team_2, options)
+  end
+
+  defp simulate_battle(team_1, team_2, options) do
     maximum_steps = options[:maximum_steps] || @default_maximum_steps
     seed = options[:seed] || @default_seed
 
     :rand.seed(:default, seed)
     Logger.info("Running battle with seed: #{seed}")
 
-    team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
-    team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
-    units = Map.merge(team_1, team_2)
-
-    initial_state = %{units: units, skills_being_cast: [], pending_effects: []}
+    initial_state = %{units: Map.merge(team_1, team_2), skills_being_cast: [], pending_effects: []}
 
     # The initial_step_state is what allows the battle to be simultaneous. If we refreshed the accum on every action,
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
@@ -1173,6 +1228,10 @@ defmodule Champions.Battle.Simulator do
   defp string_to_atom("period"), do: :period
   defp string_to_atom("instant"), do: :instant
   defp string_to_atom("permanent"), do: :permanent
+
+  defp string_to_atom("attack"), do: :attack
+  defp string_to_atom("health"), do: :health
+  defp string_to_atom("armor"), do: :armor
 
   defp string_to_atom("ATTACK"), do: :ATTACK
   defp string_to_atom("DEFENSE"), do: :DEFENSE

@@ -22,6 +22,6 @@ defmodule GameBackend.Users.Unlock do
 
   @doc false
   def changeset(unlock, attrs) do
-    cast(unlock, attrs, [:user_id, :name, :upgrade_id, :type])
+    unlock |> cast(attrs, [:user_id, :name, :upgrade_id, :type]) |> cast_assoc(:upgrade)
   end
 end
