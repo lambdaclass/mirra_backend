@@ -388,6 +388,8 @@ end)
 Utils.get_items_templates_config()
 |> Enum.each(fn item_template ->
   Map.put(item_template, :game_id, curse_of_mirra_id)
+  |> Map.put(:rarity, 0)
+  |> Map.put(:config_id, item_template.name)
   |> Items.insert_item_template()
 end)
 

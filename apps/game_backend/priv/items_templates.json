@@ -7,7 +7,7 @@
             "purchasable?": true
         },
         {
-            "currency": "H4ck Silver",
+            "name": "H4ck Silver",
             "characters": ["h4ck"],
             "type": "skin",
             "purchasable?": false
