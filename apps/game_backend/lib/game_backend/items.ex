@@ -230,6 +230,10 @@ defmodule GameBackend.Items do
     end
   end
 
+  @doc """
+  Returns {:ok, :character_can_equip} if the item is for the unit's character.
+  If not, returns {:error, :character_cannot_equip}
+  """
   def character_can_equip(unit, item) do
     unit = Repo.preload(unit, :character)
     item = Repo.preload(item, :template)
