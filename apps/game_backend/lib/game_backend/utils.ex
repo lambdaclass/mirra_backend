@@ -8,8 +8,4 @@ defmodule GameBackend.Utils do
 
   def get_daily_rewards_config(),
     do: Application.get_env(:game_backend, :daily_rewards_config) |> Map.get("reward_per_day")
-
-  def get_characters_config(), do: Application.get_env(:game_backend, :characters_config) |> Map.get(:characters)
-
-  def get_items_templates_config(), do: Application.get_env(:game_backend, :items_config) |> Map.get(:items)
 end
