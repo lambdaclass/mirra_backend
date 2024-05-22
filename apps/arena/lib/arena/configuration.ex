@@ -21,7 +21,7 @@ defmodule Arena.Configuration do
   end
 
   defp get_characters_config() do
-    gateway_url = Application.get_env(:game_client, :gateway_url)
+    gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =
       Finch.build(:get, "#{gateway_url}/curse/characters/configuration", [{"content-type", "application/json"}])
