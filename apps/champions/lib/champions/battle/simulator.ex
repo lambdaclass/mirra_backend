@@ -557,16 +557,27 @@ defmodule Champions.Battle.Simulator do
   # Check if the unit can cast their basic skill this step.
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
 
+  defp choose_targets(caster, targeting_strategy, state) do
+    targeteable_units =
+      state.units
+      |> Enum.filter(fn {_, unit} -> not Enum.any?(unit.tags, &(&1.tag == "Untargetable")) end)
+
+    state_with_targeteable_units =
+      Map.put(state, :units, targeteable_units)
+
+    choose_targets_by_strategy(caster, targeting_strategy, state_with_targeteable_units)
+  end
+
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
-  defp choose_targets(caster, %{count: count, type: "random", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{count: count, type: "random", target_allies: target_allies}, state),
     do:
       state.units
       |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
       |> Enum.take_random(count)
       |> Enum.map(fn {id, _unit} -> id end)
 
-  defp choose_targets(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
     config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
@@ -579,7 +590,7 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
     config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
@@ -592,29 +603,29 @@ defmodule Champions.Battle.Simulator do
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets(caster, %{type: "all", target_allies: target_allies}, state),
-    do:
-      state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
-      |> Enum.map(fn {id, _unit} -> id end)
-
-  defp choose_targets(caster, %{type: "backline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "backline", target_allies: target_allies}, state) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
     take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
   end
 
-  defp choose_targets(caster, %{type: "frontline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "frontline", target_allies: target_allies}, state) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
     take_unit_ids_by_slots(target_team, [1, 2])
   end
 
-  defp choose_targets(caster, %{type: "self"}, _state) do
+  defp choose_targets_by_strategy(caster, %{type: "self"}, _state) do
     [caster.id]
   end
+
+  defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
+    do:
+      state.units
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.map(fn {id, _unit} -> id end)
 
   defp find_by_proximity(units, slots_priorities, amount) do
     sorted_units =
