@@ -10,8 +10,9 @@ defmodule Gateway.Controllers.CurseOfMirra.ItemController do
   action_fallback Gateway.Controllers.FallbackController
 
   def equip(conn, params) do
-    with unit <- Units.get_unit_by_character_name(params["character_name"], params["user_id"]),
-         item <- Items.get_item_by_name(params["item_name"], params["user_id"]),
+    with {:ok, unit} <- Units.get_unit_by_character_name(params["character_name"], params["user_id"]),
+         {:ok, item} <- Items.get_item_by_name(params["item_name"], params["user_id"]),
+         {:ok, :character_can_equip} <- Items.character_can_equip(unit, item),
          {:ok, item} <- Items.equip_item(params["user_id"], item.id, unit.id) do
       send_resp(conn, 200, Jason.encode!(item.id))
     end
