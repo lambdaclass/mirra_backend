@@ -138,52 +138,51 @@ defmodule Arena.GameLauncher do
     end)
   end
 
+  ## TODO: actually fetch prestige
   defp get_prestige(_, _) do
     Enum.random(100..200)
   end
 
   ## TODO: make private
-  def put_in_queue(queues, client_id, prestige) do
+  defp put_in_queue(queues, client_id, prestige) do
     put_in_queue(queues, [], client_id, prestige)
   end
 
-  def put_in_queue([%{first: first, last: last} = queue | rest], seen_q, client_id, prestige) when first <= prestige and prestige <= last do
+  defp put_in_queue([%{first: first, last: last} = queue | rest], seen_q, client_id, prestige) when first <= prestige and prestige <= last do
     queue = %{queue | clients: [client_id | queue.clients]}
     seen_q ++ [queue | rest]
   end
 
-  def put_in_queue([%{last: current_last} = current_queue, %{first: next_first} = next_queue | rest], seen_q, client_id, prestige) when current_last < prestige and prestige < next_first do
+  defp put_in_queue([%{last: current_last} = current_queue, %{first: next_first} = next_queue | rest], seen_q, client_id, prestige) when current_last < prestige and prestige < next_first do
     new_queue = new_queue(client_id, current_queue.clients, prestige)
     seen_q ++ [current_queue, new_queue, next_queue | rest]
   end
 
-  def put_in_queue([], seen_q, client_id, prestige) do
+  defp put_in_queue([], seen_q, client_id, prestige) do
     new_queue = new_queue(client_id, prestige)
     seen_q ++ [new_queue]
   end
 
-  def put_in_queue([current_queue | rest], seen_q, client_id, prestige) do
+  defp put_in_queue([current_queue | rest], seen_q, client_id, prestige) do
     seen_q = seen_q ++ [current_queue]
     put_in_queue(rest, seen_q, client_id, prestige)
   end
 
   defp new_queue(client_id, clients \\ [], base) do
     created_at = System.monotonic_time(:millisecond)
-    ## TODO: this has to be fixed and a more granular approach taken
-    ##  for example current prestige below 10 will have 0 margin and thus no range for the queue
-    ##  we probably want something more like
-    ##    - if < 100 -> 10
-    ##    - if < 500 -> %10
-    ##    - else -> %5
-    margin = div(base, 10)
+    margin = calculate_margin(base)
     %{clients: [client_id | clients], first: base - margin, last: base + margin, created_at: created_at}
   end
 
-  def merge_queues(queues) do
+  defp calculate_margin(base) when base < 100, do: 10
+  defp calculate_margin(base) when base < 500, do: trunc(base * 0.1)
+  defp calculate_margin(base), do: trunc(base * 0.05)
+
+  defp merge_queues(queues) do
     merge_queues(queues, [])
   end
 
-  def merge_queues([current_q, next_q | rest], acc) do
+  defp merge_queues([current_q, next_q | rest], acc) do
     range_1 = Range.new(current_q.first, current_q.last)
     range_2 = Range.new(next_q.first, next_q.last)
     case Range.disjoint?(range_1, range_2) do
@@ -191,16 +190,18 @@ defmodule Arena.GameLauncher do
         merge_queues([next_q | rest], acc ++ [current_q])
 
       false ->
-        merged = %{clients: current_q.clients ++ next_q.clients, first: current_q.first, last: next_q.last}
+        clients = current_q.clients ++ next_q.clients
+        created_at = min(current_q.created_at, next_q.created_at)
+        merged = %{clients: clients, first: current_q.first, last: next_q.last, created_at: created_at}
         merge_queues(rest, acc ++ [merged])
     end
   end
 
-  def merge_queues(rest, acc) do
+  defp merge_queues(rest, acc) do
     acc ++ rest
   end
 
-  def take_ready_queues(queues, players_needed) do
+  defp take_ready_queues(queues, players_needed) do
     Enum.reduce(queues, {[], []}, fn queue, {remaining_queues, taken_clients} ->
       now = System.monotonic_time(:millisecond)
       queue_size = length(queue.clients)
@@ -221,7 +222,7 @@ defmodule Arena.GameLauncher do
     end)
   end
 
-  def expand_queues(queues) do
+  defp expand_queues(queues) do
     Enum.map(queues, fn queue ->
       margin = div(queue.last - queue.first, 2)
       %{queue | first: queue.first - margin, last: queue.last + margin}
