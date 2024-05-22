@@ -16,12 +16,13 @@ defmodule Gateway.Router do
       get "/configuration", CharacterController, :get_characters_config
     end
 
-    scope "/users" do
-      put "/:user_id/currency", CurrencyController, :modify_currency
-      get "/:user_id/claim_daily_reward", UserController, :claim_daily_reward
-      get "/:user_id/get_daily_reward_status", UserController, :get_daily_reward_status
+    scope "/users/:user_id/" do
+      put "/currency", CurrencyController, :modify_currency
+      get "/claim_daily_reward", UserController, :claim_daily_reward
+      get "/get_daily_reward_status", UserController, :get_daily_reward_status
+      get "/quest/:quest_id/reroll_quest", QuestController, :reroll_quest
 
-      scope "/:user_id/items" do
+      scope "/items" do
         put "/equip", ItemController, :equip
         put "/buy", ItemController, :buy
       end

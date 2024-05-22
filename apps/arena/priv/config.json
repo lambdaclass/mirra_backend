@@ -868,6 +868,7 @@
       "max_autoaim_range": 800,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "circle_hit": {
@@ -889,6 +890,7 @@
       "autoaim": true,
       "max_autoaim_range": 1500,
       "can_pick_destination": true,
+      "block_movement": true,
       "mechanics": [
         {
           "spawn_pool": {
@@ -914,6 +916,7 @@
       "autoaim": true,
       "max_autoaim_range": 1500,
       "can_pick_destination": true,
+      "block_movement": true,
       "mechanics": [
         {
           "leap": {
@@ -941,6 +944,7 @@
       "autoaim": true,
       "max_autoaim_range": 1500,
       "can_pick_destination": true,
+      "block_movement": true,
       "mechanics": [
         {
           "spawn_pool": {
@@ -966,6 +970,7 @@
       "max_autoaim_range": 1600,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "multi_shoot": {
@@ -992,6 +997,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1011,6 +1017,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1030,6 +1037,7 @@
       "max_autoaim_range": 800,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "multi_circle_hit": {
@@ -1054,6 +1062,7 @@
       "autoaim": true,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "circle_hit": {
@@ -1077,6 +1086,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1098,6 +1108,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": true,
+      "block_movement": true,
       "stamina_cost": 1,
       "mechanics": [
         {
@@ -1119,6 +1130,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1139,6 +1151,7 @@
       "max_autoaim_range": 1600,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "simple_shoot": {

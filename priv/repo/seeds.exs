@@ -201,11 +201,11 @@ levels =
     end)
   end)
 
-{_, levels_without_units} =
+{_, levels_without_embeds} =
   Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign_id])
 
 units =
-  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+  Enum.flat_map(Enum.with_index(levels_without_embeds, 0), fn {level, level_index} ->
     campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
     campaign_rules = Enum.at(rules, campaign_number - 1)
 
@@ -249,19 +249,15 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 # Add the rewards of each level.
 # The calculation of the `amount` field is done following the specification found in https://docs.google.com/spreadsheets/d/177mvJS75LecaAEpyYotQEcrmhGJWI424UnkE2JHLmyY
 currency_rewards =
-  Enum.map(levels_without_units, fn level ->
-    %{
-      level_id: level.id,
-      amount: 10 * (20 + level.level_number),
-      currency_id: gold_currency.id,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
-
-currency_rewards =
-  currency_rewards ++
-    Enum.map(levels_without_units, fn level ->
+  Enum.flat_map(levels_without_embeds, fn level ->
+    [
+      %{
+        level_id: level.id,
+        amount: 10 * (20 + level.level_number),
+        currency_id: gold_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
       %{
         level_id: level.id,
         amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
@@ -269,7 +265,8 @@ currency_rewards =
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-    end)
+    ]
+  end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
