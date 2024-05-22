@@ -21,9 +21,9 @@ defmodule Gateway.Router do
       get "/:user_id/claim_daily_reward", UserController, :claim_daily_reward
       get "/:user_id/get_daily_reward_status", UserController, :get_daily_reward_status
 
-      scope "/items" do
-        put "/:user_id/:item_id/:unit_id/equip", ItemController, :equip
-        put "/:user_id/buy/:item_name", ItemController, :buy
+      scope "/:user_id/items" do
+        put "/equip", ItemController, :equip
+        put "/buy", ItemController, :buy
       end
     end
   end
