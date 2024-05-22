@@ -5,9 +5,9 @@ defmodule Arena.GameLauncher do
 
   use GenServer
 
-  # Time to wait to start game with any amount of clients
-  @start_timeout_ms 10_000
+  # How long a queue can exist for before we launch and fill slots with bots
   @queue_lifetime_ms 10_000
+
   # The available names for bots to enter a match, we should change this in the future
   @bot_names [
     "TheBlackSwordman",
@@ -70,8 +70,6 @@ defmodule Arena.GameLauncher do
   @impl true
   def handle_info(:launch_matches, state) do
     Process.send_after(self(), :launch_matches, 1000)
-    ## TODO: time based launch
-    # diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
     {queues, client_groups} = take_ready_queues(state.queues, Application.get_env(:arena, :players_needed_in_match))
 
@@ -89,13 +87,6 @@ defmodule Arena.GameLauncher do
       |> merge_queues()
 
     {:noreply, %{state | queues: queues, clients: clients}}
-  end
-
-  def handle_info(:start_game, state) do
-    {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :players_needed_in_match))
-    create_game_for_clients(game_clients)
-
-    {:noreply, %{state | clients: remaining_clients}}
   end
 
   def handle_info({:spawn_bot_for_player, bot_client, game_id}, state) do
@@ -211,16 +202,20 @@ defmodule Arena.GameLauncher do
 
   def take_ready_queues(queues, players_needed) do
     Enum.reduce(queues, {[], []}, fn queue, {remaining_queues, taken_clients} ->
-      case length(queue.clients) do
-        amount when amount > players_needed ->
-          clients = Enum.take(queue.clients, players_needed)
-          queue = %{queue | clients: Enum.drop(queue.clients, players_needed)}
-          {remaining_queues ++ [queue], [clients | taken_clients]}
+      now = System.monotonic_time(:millisecond)
+      queue_size = length(queue.clients)
+      queue_time = now - queue.created_at
 
-        amount when amount == players_needed ->
+      cond do
+        queue_size > players_needed ->
+          {matched_clients, remaining_clients} = Enum.split(queue.clients, players_needed)
+          queue = %{queue | clients: remaining_clients, created_at: now}
+          {remaining_queues ++ [queue], [matched_clients | taken_clients]}
+
+        queue_size == players_needed or queue_time >= @queue_lifetime_ms ->
           {remaining_queues, [queue.clients | taken_clients]}
 
-        _ ->
+        true ->
           {remaining_queues ++ [queue], taken_clients}
       end
     end)
