@@ -1017,7 +1017,7 @@ defmodule Champions.Test.BattleTest do
         TestUtils.build_character(%{
           name: "All Character",
           basic_skill: basic_skill_params,
-          ultimate_skill: TestUtils.build_skill(%{name: "All Empty Skill"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "Lowest target Skill"}),
           base_attack: 10,
           base_health: 20
         })
