@@ -159,17 +159,23 @@ defmodule Arena.GameLauncher do
     end
   end
 
-  ## TODO: make private
   defp put_in_queue(queues, client_id, prestige) do
     put_in_queue(queues, [], client_id, prestige)
   end
 
-  defp put_in_queue([%{first: first, last: last} = queue | rest], seen_q, client_id, prestige) when first <= prestige and prestige <= last do
+  defp put_in_queue([%{first: first, last: last} = queue | rest], seen_q, client_id, prestige)
+       when first <= prestige and prestige <= last do
     queue = %{queue | clients: [client_id | queue.clients]}
     seen_q ++ [queue | rest]
   end
 
-  defp put_in_queue([%{last: current_last} = current_queue, %{first: next_first} = next_queue | rest], seen_q, client_id, prestige) when current_last < prestige and prestige < next_first do
+  defp put_in_queue(
+         [%{last: current_last} = current_queue, %{first: next_first} = next_queue | rest],
+         seen_q,
+         client_id,
+         prestige
+       )
+       when current_last < prestige and prestige < next_first do
     new_queue = new_queue(client_id, current_queue.clients, prestige)
     seen_q ++ [current_queue, new_queue, next_queue | rest]
   end
@@ -201,6 +207,7 @@ defmodule Arena.GameLauncher do
   defp merge_queues([current_q, next_q | rest], acc) do
     range_1 = Range.new(current_q.first, current_q.last)
     range_2 = Range.new(next_q.first, next_q.last)
+
     case Range.disjoint?(range_1, range_2) do
       true ->
         merge_queues([next_q | rest], acc ++ [current_q])
