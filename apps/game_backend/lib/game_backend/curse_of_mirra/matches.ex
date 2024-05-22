@@ -129,6 +129,10 @@ defmodule GameBackend.CurseOfMirra.Matches do
     end)
   end
 
+  def get_prestige(user_id, character) do
+    Repo.get_by(CharacterPrestige, user_id: user_id, character: character)
+  end
+
   ####################
   #      Helpers     #
   ####################

@@ -3,6 +3,7 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
   Controller for CurseOfMirra.User modifications.
   """
   use Gateway, :controller
+  alias GameBackend.Matches
   alias GameBackend.Users
   alias GameBackend.Rewards
   alias GameBackend.Utils
@@ -25,6 +26,13 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
         |> Rewards.mark_user_daily_rewards_as_completed(user)
 
       send_resp(conn, 200, Jason.encode!(user_daily_reward_status))
+    end
+  end
+
+  def get_prestige(conn, %{"user_id" => user_id, "character" => character}) do
+    case Matches.get_prestige(user_id, character) do
+      nil -> send_resp(conn, 200, Jason.encode!(%{prestige: 0}))
+      prestige -> send_resp(conn, 200, Jason.encode!(%{prestige: prestige.amount}))
     end
   end
 end

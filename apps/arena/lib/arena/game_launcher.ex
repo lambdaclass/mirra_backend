@@ -138,9 +138,25 @@ defmodule Arena.GameLauncher do
     end)
   end
 
-  ## TODO: actually fetch prestige
-  defp get_prestige(_, _) do
-    Enum.random(100..200)
+  ## TODO: this is actually broken (will always be 0) because client_id is google_user_id and CharacterPrestige expects user_id
+  ##  No point in fixing this right now, it should be addressed as part of https://github.com/lambdaclass/mirra_backend/issues/640
+  defp get_prestige(client_id, character) do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+    path = "/curse/users/#{client_id}/prestige/#{character}"
+
+    result =
+      Finch.build(:get, "#{gateway_url}#{path}", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    case result do
+      {:ok, %{status: 200, body: body}} ->
+        response = Jason.decode!(body)
+        response["prestige"]
+
+      _ ->
+        ## TODO: we probably want to log something here
+        0
+    end
   end
 
   ## TODO: make private
