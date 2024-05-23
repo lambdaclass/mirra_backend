@@ -9,10 +9,15 @@ defmodule Gateway.Router do
     pipe_through :api
   end
 
-  scope "/curse", Gateway.Curse do
+  scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
-    put "/users/:user_id/currency", Controllers.Users.CurrencyController, :modify_currency
+    scope "/users/:user_id/" do
+      put "/currency", CurrencyController, :modify_currency
+      get "/claim_daily_reward", UserController, :claim_daily_reward
+      get "/get_daily_reward_status", UserController, :get_daily_reward_status
+      get "/quest/:quest_id/reroll_quest", QuestController, :reroll_quest
+    end
   end
 
   scope "/arena", Gateway.Controllers.Arena do

@@ -57,6 +57,7 @@ pub enum Category {
     Item,
     Bush,
     Crate,
+    Trap,
 }
 
 impl Position {

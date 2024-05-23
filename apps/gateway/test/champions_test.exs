@@ -328,8 +328,15 @@ defmodule Gateway.Test.Champions do
       # Register user
       {:ok, user} = Users.register("battle_user")
 
-      # Get user's first SuperCampaignProgress
-      [super_campaign_progress | _] = user.super_campaign_progresses
+      # Get user's Main Campaign progress
+      main_super_campaign =
+        GameBackend.Campaigns.get_super_campaign_by_name_and_game(
+          "Main Campaign",
+          Utils.get_game_id(:champions_of_mirra)
+        )
+
+      {:ok, super_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, main_super_campaign.id)
 
       # Get the SuperCampaignProgress' Level
       level_id = super_campaign_progress.level_id
@@ -357,8 +364,15 @@ defmodule Gateway.Test.Champions do
         GameBackend.Units.update_unit(unit, %{level: 9999})
       end)
 
-      # Get user's first SuperCampaignProgress
-      [super_campaign_progress | _] = user.super_campaign_progresses
+      # Get user's progress in the main SuperCampaign
+      main_super_campaign =
+        GameBackend.Campaigns.get_super_campaign_by_name_and_game(
+          "Main Campaign",
+          Utils.get_game_id(:champions_of_mirra)
+        )
+
+      {:ok, super_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, main_super_campaign.id)
 
       # Get the SuperCampaignProgress' Level
       level_id = super_campaign_progress.level_id
@@ -376,7 +390,8 @@ defmodule Gateway.Test.Champions do
 
       {:ok, advanced_user} = Users.get_user(user.id)
 
-      [advanced_super_campaign_progress | _] = advanced_user.super_campaign_progresses
+      {:ok, advanced_super_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, main_super_campaign.id)
 
       assert user.id == advanced_user.id
       assert advanced_super_campaign_progress.level_id != level_id
@@ -389,10 +404,16 @@ defmodule Gateway.Test.Champions do
       # Register user
       {:ok, user} = Users.register("invalid_battle_user")
 
-      # Get user's first SuperCampaignProgress
-      [super_campaign_progress | _] = user.super_campaign_progresses
+      # Get user's Main Campaign progress
+      main_super_campaign =
+        GameBackend.Campaigns.get_super_campaign_by_name_and_game(
+          "Main Campaign",
+          Utils.get_game_id(:champions_of_mirra)
+        )
 
-      # Get the level of the SuperCampaignProgress
+      {:ok, super_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, main_super_campaign.id)
+
       next_level_id = super_campaign_progress.level_id
 
       # Get a Level that is not the next one in the SuperCampaignProgress
