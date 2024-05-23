@@ -438,8 +438,12 @@
             "y": -4450.0
           },
           {
-            "x": 1150.0,
-            "y": -5470.0
+            "x": 1300.0,
+            "y": -6500.0
+          },
+          {
+            "x": 360.0,
+            "y": -6500.0
           },
           {
             "x": 360.0,
@@ -496,8 +500,12 @@
             "y": 4900.0
           },
           {
-            "x": -748.0,
-            "y": 5674.0
+            "x": -1120.0,
+            "y": 6500.0
+          },
+          {
+            "x": -135.0,
+            "y": 6500.0
           },
           {
             "x": -135.0,
@@ -848,7 +856,7 @@
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,
     "natural_healing_interval_ms": 300,
-    "zone_shrink_start_ms": 35000,
+    "zone_shrink_start_ms": 9999999,
     "zone_shrink_radius_by": 10,
     "zone_shrink_interval": 100,
     "zone_stop_interval_ms": 13000,
