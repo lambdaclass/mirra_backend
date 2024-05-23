@@ -3,6 +3,6 @@
   <:subtitle>Use this form to manage configuration records in your database.</:subtitle>
 </.header>
 
-<%= live_render(@conn, ConfiguratorWeb.ConfigurationLive.Configuration, session: %{"config" => @config}) %>
+<.configuration_form changeset={@changeset} action={~p"/configurations"} />
 
 <.back navigate={~p"/configurations"}>Back to configurations</.back>
