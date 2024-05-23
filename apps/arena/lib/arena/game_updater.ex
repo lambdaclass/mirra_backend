@@ -592,16 +592,6 @@ defmodule Arena.GameUpdater do
 
   # Initialize obstacles
   defp initialize_obstacles(obstacles, last_id) do
-    obstacles =
-      obstacles
-      |> Enum.map(fn obstacle ->
-        Entities.new_obstacle(
-          1,
-          obstacle
-        )
-      end)
-      |> Physics.process_polygon_triangulation()
-
     Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
       last_id = last_id + 1
 
@@ -609,7 +599,10 @@ defmodule Arena.GameUpdater do
         Map.put(
           obstacles_acc,
           last_id,
-          Map.put(obstacle, :id, last_id)
+          Entities.new_obstacle(
+            last_id,
+            obstacle
+          )
         )
 
       {obstacles_acc, last_id}
