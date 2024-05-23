@@ -6,6 +6,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ItemController do
   alias GameBackend.Items
   alias GameBackend.Utils
   alias GameBackend.Units
+  alias GameBackend.Users.Currencies
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -25,8 +26,11 @@ defmodule Gateway.Controllers.CurseOfMirra.ItemController do
              params["item_name"],
              Utils.get_game_id(:curse_of_mirra)
            ),
-         {:ok, item} <- Items.insert_item(%{user_id: params["user_id"], template_id: item_template_id}) do
-      send_resp(conn, 200, Jason.encode!(item.id))
+         {:ok, item_cost} <-
+           Items.get_item_cost_by_name(params["cost_name"], item_template_id),
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(params["user_id"], item_cost.currency_costs)},
+         {:ok, item_updates_map} <- Items.buy_item(params["user_id"], item_template_id, item_cost.currency_costs) do
+      send_resp(conn, 200, Jason.encode!(item_updates_map.item.id))
     end
   end
 end

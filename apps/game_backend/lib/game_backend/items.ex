@@ -11,6 +11,8 @@ defmodule GameBackend.Items do
   alias Ecto.Multi
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
+  alias GameBackend.Items.ItemCost
+  alias GameBackend.Users.Currencies
   alias GameBackend.Repo
   alias GameBackend.Units
 
@@ -243,5 +245,38 @@ defmodule GameBackend.Items do
     else
       {:error, :character_cannot_equip}
     end
+  end
+
+  @doc """
+  Gets one ItemCost by given name and item_template_id.
+  Returns {:ok, %ItemCost{}} if found one.
+  Returns {:error, :not_found} if there are none.
+  Fails if there are more than one.
+  """
+  def get_item_cost_by_name(cost_name, item_template_id) do
+    case Repo.one(
+           from(cost in ItemCost,
+             where: cost.name == ^cost_name and cost.item_template_id == ^item_template_id
+           )
+         ) do
+      nil -> {:error, :not_found}
+      item_cost -> {:ok, item_cost}
+    end
+  end
+
+  @doc """
+  Receives a user_id, an item_template_id and a list of CurrencyCosts.
+  Inserts new Item from given ItemTemplate for given User.
+  Substract the amount of Currency to User by given params.
+  Returns {:ok, map_of_ran_operations} in case of success.
+  Returns {:error, failed_operation, failed_value, changes_so_far} if one of the operations fail.
+  """
+  def buy_item(user_id, template_id, currency_costs_list) do
+    Multi.new()
+    |> Multi.run(:item, fn _, _ -> insert_item(%{user_id: user_id, template_id: template_id}) end)
+    |> Multi.run(:currencies, fn _, _ ->
+      Currencies.substract_currencies(user_id, currency_costs_list)
+    end)
+    |> Repo.transaction()
   end
 end
