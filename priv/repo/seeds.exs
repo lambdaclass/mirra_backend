@@ -13,6 +13,7 @@ alias GameBackend.Items
 alias GameBackend.Users
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
+alias GameBackend.Users.Currencies.Currency
 alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
@@ -385,9 +386,26 @@ end)
 # Insert items templates
 Config.get_items_templates_config()
 |> Enum.each(fn item_template ->
+  item_costs =
+    Enum.map(item_template.item_costs, fn item_cost ->
+      Map.put(
+        item_cost,
+        :currency_costs,
+        Enum.map(item_cost.currency_costs, fn currency_cost ->
+          Map.put(
+            currency_cost,
+            :currency_id,
+            Repo.get_by!(Currency, name: currency_cost.currency, game_id: curse_of_mirra_id)
+            |> Map.get(:id)
+          )
+        end)
+      )
+    end)
+
   Map.put(item_template, :game_id, curse_of_mirra_id)
   |> Map.put(:rarity, 0)
   |> Map.put(:config_id, item_template.name)
+  |> Map.put(:item_costs, item_costs)
   |> Items.insert_item_template()
 end)
 
