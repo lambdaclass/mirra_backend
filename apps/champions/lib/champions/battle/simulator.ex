@@ -124,7 +124,27 @@ defmodule Champions.Battle.Simulator do
             operation == "Multiply"
           end)
           |> Enum.reduce(unit_after_additive_modifiers, fn {{attribute, _operation}, value}, unit_acc ->
-            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 * value))
+            if attribute == "health" do
+              # We update both :health and :max_health
+              Map.update(
+                unit_acc,
+                :health,
+                value,
+                &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
+              )
+              |> Map.update(
+                :max_health,
+                value,
+                &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
+              )
+            else
+              Map.update(
+                unit_acc,
+                string_to_atom(attribute),
+                value,
+                &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
+              )
+            end
           end)
 
         {id, unit_after_multiplicative_modifiers |> IO.inspect(label: "Unit after modifiers")}
