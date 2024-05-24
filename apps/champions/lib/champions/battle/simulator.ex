@@ -80,8 +80,8 @@ defmodule Champions.Battle.Simulator do
 
   ## Examples
 
-      iex> team_1 = Enum.map(Enum.map(user1.units, &{&1, []}), GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
-      iex> team_2 = Enum.map(Enum.map(user2.units, &{&1, []}), GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
+      iex> team_1 = Enum.map(user1.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
+      iex> team_2 = Enum.map(user2.units, GameBackend.Repo.preload([character: [:basic_skill, :ultimate_skill]]))
       iex> run_battle(team_1, team_2)
       %{initial_state: %{}, steps: [%{actions: [], step_number: 1}, ...], result: :team_1}
   """
