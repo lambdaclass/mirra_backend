@@ -22,7 +22,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ItemController do
   # This is a placeholder and will be developed properly in https://github.com/lambdaclass/mirra_backend/issues/638
   def buy(conn, params) do
     with {:ok, item_template} <-
-           Items.get_purchasable_template_by_name_and_game_id(
+           Items.get_template_by_name_and_game_id(
              params["item_name"],
              Utils.get_game_id(:curse_of_mirra)
            ),
