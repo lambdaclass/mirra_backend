@@ -16,9 +16,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
   alias GameBackend.Transaction
-  alias GameBackend.Users.DungeonSettlementLevel
-  alias GameBackend.Users.KalineTreeLevel
-  alias GameBackend.Users.{Currencies, User, GoogleUser, Unlock, Upgrade}
+  alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
   alias GameBackend.Utils
 
   @doc """
