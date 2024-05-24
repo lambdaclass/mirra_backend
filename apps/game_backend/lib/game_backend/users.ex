@@ -89,8 +89,8 @@ defmodule GameBackend.Users do
         preload: [
           arena_match_results: ^arena_match_result_subquery,
           user: [
-            :character_prestiges,
             currencies: :currency,
+            units: :character,
             daily_quests: ^daily_quest_subquery
           ]
         ]
