@@ -620,8 +620,8 @@ defmodule Champions.Battle.Simulator do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    target =
-      Enum.min_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, stat) end)
+    {_, target} =
+      Enum.min_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end)
 
     [target.id]
   end
@@ -630,8 +630,8 @@ defmodule Champions.Battle.Simulator do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    target =
-      Enum.max_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, stat) end)
+    {_, target} =
+      Enum.max_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end)
 
     [target.id]
   end
@@ -1084,16 +1084,23 @@ defmodule Champions.Battle.Simulator do
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
+    targeting_strategy_type = mechanic.apply_effects_to.targeting_strategy.type
+
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
         # TODO: replace random for the corresponding target type name (CHoM #325)
         # type: mechanic.apply_effects_to.targeting_strategy.type,
         type:
-          if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
-            mechanic.apply_effects_to.targeting_strategy.type
-          else
-            "random"
+          cond do
+            is_binary(targeting_strategy_type) && targeting_strategy_type in @implemented_targeting_strategies ->
+              targeting_strategy_type
+
+            hd(Map.keys(targeting_strategy_type)) in @implemented_targeting_strategies ->
+              targeting_strategy_type
+
+            true ->
+              "random"
           end,
         count: mechanic.apply_effects_to.targeting_strategy.count || 1,
         target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies || false

@@ -1013,7 +1013,6 @@ defmodule Champions.Test.BattleTest do
                   ],
                   targeting_strategy: %{
                     type: %{"lowest" => "health"},
-                    stat: "health",
                     target_allies: false
                   }
                 })
@@ -1114,7 +1113,6 @@ defmodule Champions.Test.BattleTest do
                   ],
                   targeting_strategy: %{
                     type: %{"highest" => "health"},
-                    stat: "health",
                     target_allies: false
                   }
                 })
