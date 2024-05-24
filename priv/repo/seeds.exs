@@ -1,17 +1,8 @@
-alias GameBackend.Utils
-alias GameBackend.Campaigns
-alias GameBackend.Campaigns.Campaign
-alias GameBackend.Campaigns.Level
-alias GameBackend.Campaigns.Rewards.AfkRewardRate
-alias GameBackend.Campaigns.Rewards.CurrencyReward
-alias GameBackend.Gacha
-alias GameBackend.Repo
-alias GameBackend.Units
-alias GameBackend.Users
-alias GameBackend.Users.DungeonSettlementLevel
-alias GameBackend.Users.KalineTreeLevel
-alias GameBackend.Units.Unit
-alias GameBackend.Users.Upgrade
+alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
+alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
+alias GameBackend.Users.{DungeonSettlementLevel, KalineTreeLevel, Upgrade}
+alias GameBackend.Units.{Characters, Unit}
+alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
@@ -437,3 +428,23 @@ units =
   end)
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
+
+##################### CURSE OF MIRRA #####################
+# Insert characters
+Config.get_characters_config()
+|> Enum.each(fn char_params ->
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
+end)
+
+# Insert items templates
+Config.get_items_templates_config()
+|> Enum.each(fn item_template ->
+  Map.put(item_template, :game_id, curse_of_mirra_id)
+  |> Map.put(:rarity, 0)
+  |> Map.put(:config_id, item_template.name)
+  |> Items.insert_item_template()
+end)
+
+################### END CURSE OF MIRRA ###################
