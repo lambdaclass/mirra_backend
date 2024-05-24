@@ -383,7 +383,7 @@ defmodule GameBackend.Users do
     with {:user, true} <- {:user, exists?(user_id)},
          {:upgrade, {:ok, upgrade}} <- {:upgrade, get_upgrade(upgrade_id)},
          {:upgrade_owned, false} <- {:upgrade_owned, user_has_unlock?(user_id, upgrade.name)},
-         # TODO: Check the upgrade can be bought (unlock requirements)
+         # TODO: Check the upgrade can be bought (unlock requirements) [#CHOM-471]
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, upgrade.cost)} do
       Multi.new()
       |> Multi.run(:upgrade, fn _, _ ->
