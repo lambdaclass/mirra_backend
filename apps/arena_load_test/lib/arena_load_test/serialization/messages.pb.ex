@@ -49,6 +49,17 @@ defmodule ArenaLoadTest.Serialization.PlayerActionType do
   field(:EXECUTING_SKILL_3, 5)
 end
 
+defmodule ArenaLoadTest.Serialization.TrapStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PENDING, 0)
+  field(:PREPARED, 1)
+  field(:TRIGGERED, 2)
+  field(:USED, 3)
+end
+
 defmodule ArenaLoadTest.Serialization.Direction do
   @moduledoc false
 
@@ -343,6 +354,15 @@ defmodule ArenaLoadTest.Serialization.GameState.BushesEntry do
   field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
 end
 
+defmodule ArenaLoadTest.Serialization.GameState.TrapsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: ArenaLoadTest.Serialization.Entity)
+end
+
 defmodule ArenaLoadTest.Serialization.GameState do
   @moduledoc false
 
@@ -426,6 +446,12 @@ defmodule ArenaLoadTest.Serialization.GameState do
     type: ArenaLoadTest.Serialization.GameState.BushesEntry,
     map: true
   )
+
+  field(:traps, 18,
+    repeated: true,
+    type: ArenaLoadTest.Serialization.GameState.TrapsEntry,
+    map: true
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Entity do
@@ -454,6 +480,7 @@ defmodule ArenaLoadTest.Serialization.Entity do
   field(:pool, 17, type: ArenaLoadTest.Serialization.Pool, oneof: 0)
   field(:crate, 18, type: ArenaLoadTest.Serialization.Crate, oneof: 0)
   field(:bush, 19, type: ArenaLoadTest.Serialization.Bush, oneof: 0)
+  field(:trap, 20, type: ArenaLoadTest.Serialization.Trap, oneof: 0)
 end
 
 defmodule ArenaLoadTest.Serialization.Player.CooldownsEntry do
@@ -567,6 +594,16 @@ defmodule ArenaLoadTest.Serialization.Bush do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule ArenaLoadTest.Serialization.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
+  field(:status, 3, type: ArenaLoadTest.Serialization.TrapStatus, enum: true)
+end
+
 defmodule ArenaLoadTest.Serialization.PlayerAction do
   @moduledoc false
 
@@ -575,6 +612,7 @@ defmodule ArenaLoadTest.Serialization.PlayerAction do
   field(:action, 1, type: ArenaLoadTest.Serialization.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
   field(:destination, 3, type: ArenaLoadTest.Serialization.Position)
+  field(:direction, 4, type: ArenaLoadTest.Serialization.Position)
 end
 
 defmodule ArenaLoadTest.Serialization.Move do

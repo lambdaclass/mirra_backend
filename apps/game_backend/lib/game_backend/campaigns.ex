@@ -14,7 +14,7 @@ defmodule GameBackend.Campaigns do
     campaigns =
       Repo.all(
         from(c in Campaign,
-          preload: [levels: ^level_preload_query()],
+          preload: [:super_campaign, levels: ^level_preload_query()],
           order_by: [asc: c.campaign_number]
         )
       )
@@ -26,7 +26,9 @@ defmodule GameBackend.Campaigns do
   Get a campaign by id.
   """
   def get_campaign(campaign_id) do
-    case Repo.one(from(c in Campaign, where: c.id == ^campaign_id, preload: [levels: ^level_preload_query()])) do
+    case Repo.one(
+           from(c in Campaign, where: c.id == ^campaign_id, preload: [:super_campaign, levels: ^level_preload_query()])
+         ) do
       nil -> {:error, :not_found}
       campaign -> {:ok, Map.put(campaign, :levels, Enum.sort_by(campaign.levels, & &1.level_number))}
     end
@@ -84,8 +86,8 @@ defmodule GameBackend.Campaigns do
     level =
       Repo.get(Level, level_id)
       |> Repo.preload([
-        :campaign,
         :currency_rewards,
+        campaign: :super_campaign,
         units: [
           :items,
           character: [basic_skill: [mechanics: :apply_effects_to], ultimate_skill: [mechanics: :apply_effects_to]]
@@ -99,7 +101,21 @@ defmodule GameBackend.Campaigns do
   Get all of a User's SuperCampaignProgresses.
   """
   def get_user_super_campaign_progresses(user_id),
-    do: Repo.all(from(cp in SuperCampaignProgress, where: cp.user_id == ^user_id, preload: [:level]))
+    do: Repo.all(from(cp in SuperCampaignProgress, where: cp.user_id == ^user_id, preload: [:level, :super_campaign]))
+
+  @doc """
+  Get a super campaign by id.
+  """
+  def get_super_campaign(super_campaign_id) do
+    Repo.get(SuperCampaign, super_campaign_id)
+  end
+
+  @doc """
+  Get a super campaign by name and game_id.
+  """
+  def get_super_campaign_by_name_and_game(name, game_id) do
+    Repo.get_by(SuperCampaign, name: name, game_id: game_id)
+  end
 
   @doc """
   Get a campaign progress by user id and campaign id.

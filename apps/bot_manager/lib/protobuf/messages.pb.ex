@@ -49,6 +49,17 @@ defmodule BotManager.Protobuf.PlayerActionType do
   field(:EXECUTING_SKILL_3, 5)
 end
 
+defmodule BotManager.Protobuf.TrapStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PENDING, 0)
+  field(:PREPARED, 1)
+  field(:TRIGGERED, 2)
+  field(:USED, 3)
+end
+
 defmodule BotManager.Protobuf.Direction do
   @moduledoc false
 
@@ -339,6 +350,15 @@ defmodule BotManager.Protobuf.GameState.BushesEntry do
   field(:value, 2, type: BotManager.Protobuf.Entity)
 end
 
+defmodule BotManager.Protobuf.GameState.TrapsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: BotManager.Protobuf.Entity)
+end
+
 defmodule BotManager.Protobuf.GameState do
   @moduledoc false
 
@@ -398,6 +418,7 @@ defmodule BotManager.Protobuf.GameState do
   field(:pools, 15, repeated: true, type: BotManager.Protobuf.GameState.PoolsEntry, map: true)
   field(:crates, 16, repeated: true, type: BotManager.Protobuf.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: BotManager.Protobuf.GameState.BushesEntry, map: true)
+  field(:traps, 18, repeated: true, type: BotManager.Protobuf.GameState.TrapsEntry, map: true)
 end
 
 defmodule BotManager.Protobuf.Entity do
@@ -426,6 +447,7 @@ defmodule BotManager.Protobuf.Entity do
   field(:pool, 17, type: BotManager.Protobuf.Pool, oneof: 0)
   field(:crate, 18, type: BotManager.Protobuf.Crate, oneof: 0)
   field(:bush, 19, type: BotManager.Protobuf.Bush, oneof: 0)
+  field(:trap, 20, type: BotManager.Protobuf.Trap, oneof: 0)
 end
 
 defmodule BotManager.Protobuf.Player.CooldownsEntry do
@@ -533,6 +555,16 @@ defmodule BotManager.Protobuf.Bush do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule BotManager.Protobuf.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
+  field(:status, 3, type: BotManager.Protobuf.TrapStatus, enum: true)
+end
+
 defmodule BotManager.Protobuf.PlayerAction do
   @moduledoc false
 
@@ -541,6 +573,7 @@ defmodule BotManager.Protobuf.PlayerAction do
   field(:action, 1, type: BotManager.Protobuf.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
   field(:destination, 3, type: BotManager.Protobuf.Position)
+  field(:direction, 4, type: BotManager.Protobuf.Position)
 end
 
 defmodule BotManager.Protobuf.Move do

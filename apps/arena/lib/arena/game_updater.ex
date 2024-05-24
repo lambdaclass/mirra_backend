@@ -13,6 +13,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Serialization.{GameEvent, GameState, GameFinished}
   alias Phoenix.PubSub
   alias Arena.Utils
+  alias Arena.Game.Trap
 
   ##########################
   # API
@@ -151,6 +152,11 @@ defmodule Arena.GameUpdater do
       # Crates
       |> handle_destroyed_crates(state.game_config)
       |> Map.put(:server_timestamp, now)
+      # Traps
+      |> remove_activated_traps()
+      |> prepare_traps()
+      |> handle_trap_collisions()
+      |> activate_trap_mechanics()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -233,7 +239,7 @@ defmodule Arena.GameUpdater do
 
     game_state =
       put_in(state.game_state, [:players, player_id], player)
-      |> Skill.do_mechanic(player, on_arrival_mechanic, %{})
+      |> Skill.do_mechanic(player, on_arrival_mechanic, %{skill_direction: player.direction})
 
     {:noreply, %{state | game_state: game_state}}
   end
@@ -447,6 +453,11 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:block_movement, player_id, value}, state) do
+    broadcast_player_block_movement(state.game_state.game_id, player_id, value)
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -457,6 +468,10 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_player_block_actions(game_id, player_id, value) do
     PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
+  end
+
+  def broadcast_player_block_movement(game_id, player_id, value) do
+    PubSub.broadcast(Arena.PubSub, game_id, {:block_movement, player_id, value})
   end
 
   # Broadcast game update to all players
@@ -490,7 +505,8 @@ defmodule Arena.GameUpdater do
              status: state.status,
              start_game_timestamp: state.start_game_timestamp,
              obstacles: complete_entities(state.obstacles),
-             crates: complete_entities(state.crates)
+             crates: complete_entities(state.crates),
+             traps: complete_entities(state.traps)
            }}
       })
 
@@ -562,6 +578,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
       |> Map.put(:positions, %{})
+      |> Map.put(:traps, %{})
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -670,6 +687,74 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
+  defp activate_trap_mechanics(game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    activated_traps =
+      Enum.filter(game_state.traps, fn {_trap_id, trap} ->
+        trap_activated?(trap, now)
+      end)
+
+    Enum.reduce(activated_traps, game_state, fn {_trap_id, trap}, game_state_acc ->
+      game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
+      trap = put_in(trap, [:aditional_info, :status], :USED)
+      update_entity_in_game_state(game_state, trap)
+    end)
+  end
+
+  defp remove_activated_traps(game_state) do
+    remaining_traps =
+      Enum.filter(game_state.traps, fn {_trap_id, trap} ->
+        trap.aditional_info.status != :USED
+      end)
+      |> Map.new()
+
+    put_in(game_state, [:traps], remaining_traps)
+  end
+
+  def handle_trap_collisions(game_state) do
+    players = game_state.players
+    traps = game_state.traps |> Enum.filter(fn {_trap_id, trap} -> trap.aditional_info.status == :PREPARED end)
+
+    Enum.reduce(players, game_state, fn {_player_id, player}, game_state_acc ->
+      Enum.reduce(traps, game_state_acc, fn {trap_id, trap}, game_state_acc ->
+        if trap_id in player.collides_with && trap.aditional_info.activate_on_proximity do
+          now = System.monotonic_time(:millisecond)
+
+          trap =
+            trap
+            |> put_in([:aditional_info, :status], :TRIGGERED)
+            |> Map.put(:activate_at, now + trap.aditional_info.activation_delay_ms)
+
+          update_entity_in_game_state(game_state_acc, trap)
+        else
+          game_state_acc
+        end
+      end)
+    end)
+  end
+
+  def prepare_traps(game_state) do
+    now = System.monotonic_time(:millisecond)
+
+    Enum.reduce(game_state.traps, game_state, fn {_trap_id, trap}, game_state_acc ->
+      if trap_ready?(trap, now) do
+        trap = put_in(trap, [:aditional_info, :status], :PREPARED)
+        update_entity_in_game_state(game_state_acc, trap)
+      else
+        game_state_acc
+      end
+    end)
+  end
+
+  defp trap_activated?(trap, now) do
+    Map.has_key?(trap, :activate_at) && trap.activate_at < now && trap.aditional_info.status == :TRIGGERED
+  end
+
+  defp trap_ready?(trap, now) do
+    trap.aditional_info.status == :PENDING && trap.prepare_at < now
+  end
+
   defp remove_effects_on_action(game_state) do
     players =
       Map.new(game_state.players, fn {player_id, player} ->
@@ -716,10 +801,12 @@ defmodule Arena.GameUpdater do
            power_ups: power_ups,
            pools: pools,
            items: items,
+           traps: traps,
            crates: crates
          } = game_state
        ) do
-    entities_to_collide = Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes) |> Map.merge(crates)
+    entities_to_collide =
+      Map.merge(power_ups, pools) |> Map.merge(items) |> Map.merge(bushes) |> Map.merge(crates) |> Map.merge(traps)
 
     moved_players =
       players
@@ -927,7 +1014,7 @@ defmodule Arena.GameUpdater do
           game_state,
           projectile,
           projectile.aditional_info.on_explode_mechanics,
-          %{}
+          %{skill_direction: projectile.direction}
         )
       else
         game_state
@@ -1408,6 +1495,7 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :power_up}), do: :power_ups
   defp get_entity_path(%{category: :projectile}), do: :projectiles
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
+  defp get_entity_path(%{category: :trap}), do: :traps
   defp get_entity_path(%{category: :crate}), do: :crates
 
   def get_effects_from_config([], _game_config), do: []
