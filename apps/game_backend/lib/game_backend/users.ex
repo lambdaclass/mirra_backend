@@ -11,7 +11,7 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
@@ -78,8 +78,10 @@ defmodule GameBackend.Users do
       )
 
     daily_quest_subquery =
-      from(dq in DailyQuest,
-        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at),
+      from(dq in UserQuest,
+        where:
+          dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at) and
+            dq.status == ^"available",
         preload: [:quest]
       )
 

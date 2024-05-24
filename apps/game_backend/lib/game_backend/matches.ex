@@ -3,7 +3,7 @@ defmodule GameBackend.Matches do
   Matches
   """
   alias GameBackend.CurseOfMirra.Quests
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Utils
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
@@ -15,8 +15,9 @@ defmodule GameBackend.Matches do
     Multi.new()
     |> create_arena_match_results(match_id, results)
     |> add_google_users_to_multi(results)
-    |> give_trophies(results)
     |> maybe_complete_quests()
+    |> give_trophies(results)
+    |> lose_uncompleted_bounties(results)
     |> Repo.transaction()
   end
 
@@ -77,7 +78,7 @@ defmodule GameBackend.Matches do
   end
 
   defp maybe_complete_quests(multi) do
-    Multi.run(multi, :insert_completed_quests_result, fn repo,
+    Multi.run(multi, :insert_completed_quests_result, fn _,
                                                          %{
                                                            get_google_users: google_users
                                                          } ->
@@ -85,23 +86,8 @@ defmodule GameBackend.Matches do
         Enum.map(google_users, fn
           google_user ->
             Quests.get_google_user_daily_quests_completed(google_user)
-            |> Enum.map(fn %DailyQuest{quest: quest} = daily_quest ->
-              updated_match =
-                DailyQuest.changeset(daily_quest, %{
-                  completed: true,
-                  completed_at: DateTime.utc_now()
-                })
-                |> repo.update()
-
-              inserted_currency =
-                Currencies.add_currency_by_name_and_game(
-                  google_user.user.id,
-                  quest.reward["currency"],
-                  Utils.get_game_id(:curse_of_mirra),
-                  quest.reward["amount"]
-                )
-
-              get_operation_result(updated_match, inserted_currency)
+            |> Enum.map(fn %UserQuest{} = daily_quest ->
+              complete_quest_and_insert_currency(daily_quest, google_user.user.id)
             end)
         end)
         |> List.flatten()
@@ -111,6 +97,42 @@ defmodule GameBackend.Matches do
       else
         {:error, nil}
       end
+    end)
+  end
+
+  defp lose_uncompleted_bounties(multi, results) do
+    Enum.reduce(results, multi, fn result, multi ->
+      user_id = result["user_id"]
+
+      Multi.run(multi, {:lose_uncompleted_bounty, user_id}, fn repo,
+                                                               %{
+                                                                 {:insert, ^user_id} => arena_match_result,
+                                                                 get_google_users: google_users
+                                                               } ->
+        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+
+        correctly_updated_list =
+          google_user.user.daily_quests
+          |> Enum.filter(fn daily_quest -> daily_quest.quest.type == "bounty" and daily_quest.status == "available" end)
+          |> Enum.map(fn uncompleted_bounty ->
+            if Quests.completed_daily_quest?(uncompleted_bounty, [arena_match_result]) do
+              complete_quest_and_insert_currency(uncompleted_bounty, google_user.user.id)
+            else
+              changeset =
+                UserQuest.changeset(uncompleted_bounty, %{
+                  status: "lost"
+                })
+
+              repo.update(changeset)
+            end
+          end)
+
+        if Enum.empty?(correctly_updated_list) or Enum.all?(correctly_updated_list, fn {result, _} -> result == :ok end) do
+          {:ok, nil}
+        else
+          {:error, nil}
+        end
+      end)
     end)
   end
 
@@ -138,4 +160,24 @@ defmodule GameBackend.Matches do
 
   defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
   defp get_operation_result(_, _), do: {:error, nil}
+
+  defp complete_quest_and_insert_currency(daily_quest, user_id) do
+    updated_match =
+      UserQuest.changeset(daily_quest, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed"
+      })
+      |> Repo.update()
+
+    inserted_currency =
+      Currencies.add_currency_by_name_and_game(
+        user_id,
+        daily_quest.quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        daily_quest.quest.reward["amount"]
+      )
+
+    get_operation_result(updated_match, inserted_currency)
+  end
 end
