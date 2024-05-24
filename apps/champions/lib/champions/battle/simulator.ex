@@ -1251,7 +1251,7 @@ defmodule Champions.Battle.Simulator do
 
   defp string_to_atom("attack"), do: :attack
   defp string_to_atom("health"), do: :health
-  defp string_to_atom("armor"), do: :armor
+  defp string_to_atom("defense"), do: :defense
 
   defp string_to_atom("ATTACK"), do: :ATTACK
   defp string_to_atom("DEFENSE"), do: :DEFENSE
