@@ -290,4 +290,11 @@ defmodule Champions.Users do
         amount: user.kaline_tree_level.gold_level_up_cost
       }
     ]
+
+  @doc """
+  Purchase a Dungeon upgrade for a user.
+  """
+  def purchase_dungeon_upgrade(user_id, upgrade_id) do
+    Users.purchase_upgrade(user_id, upgrade_id, "Dungeon")
+  end
 end
