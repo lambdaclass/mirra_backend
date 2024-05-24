@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   @moduledoc """
   Matches
   """
+  import Ecto.Query
   alias GameBackend.Units.Unit
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Users.Currencies
@@ -130,7 +131,15 @@ defmodule GameBackend.CurseOfMirra.Matches do
   end
 
   def get_prestige(user_id, character) do
-    Repo.get_by(CharacterPrestige, user_id: user_id, character: character)
+    q =
+      from(u in Unit,
+        join: c in Character,
+        on: u.character_id == c.id,
+        where: u.user_id == ^user_id and c.name == ^character,
+        select: u.level
+      )
+
+    Repo.one(q)
   end
 
   ####################
