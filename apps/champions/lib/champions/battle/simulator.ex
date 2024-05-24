@@ -126,8 +126,8 @@ defmodule Champions.Battle.Simulator do
           |> Enum.reduce(unit_after_additive_modifiers, fn {{attribute, _operation}, value}, unit_acc ->
             if attribute == "health" do
               # We update both :health and :max_health
-              Map.update(
-                unit_acc,
+              unit_acc
+              |> Map.update(
                 :health,
                 value,
                 &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
