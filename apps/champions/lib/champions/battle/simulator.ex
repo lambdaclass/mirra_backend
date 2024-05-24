@@ -1181,8 +1181,6 @@ defmodule Champions.Battle.Simulator do
           {"duration", duration} -> {:duration, div(duration, @miliseconds_per_step)}
         end),
       delay: div(effect.initial_delay, @miliseconds_per_step),
-      # TODO: replace random for the corresponding target strategy name (CHoM #325)
-      # target_strategy: effect.target_strategy,
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
