@@ -97,8 +97,8 @@ defmodule Champions.Battle.Simulator do
             {unit, Map.drop(modifiers, [{"max_level", "Add"}])}
 
           max_level ->
-            IO.inspect("Max level: #{max_level}")
-            {%Unit{unit | level: min(unit.level, max_level)}, Map.drop(modifiers, [{"max_level", "Add"}])}
+            IO.inspect("Max level: #{round(max_level)}")
+            {%Unit{unit | level: min(unit.level, round(max_level))}, Map.drop(modifiers, [{"max_level", "Add"}])}
         end
       end)
 
