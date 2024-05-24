@@ -600,6 +600,270 @@ defmodule Champions.Test.BattleTest do
     end
   end
 
+  describe "Components" do
+    test "Untargetable tag is applied" do
+      # We will set up a battle between a unit with an untargetable skill and a unit that targets the nearest enemy, performing a DealDamage execution.
+      # The first unit will attack and tag the second unit as untargeteable each time it hits, so the second unit will only be hit once.
+      # The second unit is very weak, but the first unit will never be able to hit it, so the battle will end in a victory for the second unit.
+
+      skill_cooldown = 5
+
+      untargetable_params =
+        TestUtils.build_skill(%{
+          name: "Untargetable",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{"type" => "duration", "duration" => 5000},
+                      components: [
+                        %{
+                          type: "ApplyTags",
+                          tags: [
+                            "Untargetable"
+                          ]
+                        }
+                      ],
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: skill_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, loser_character} =
+        TestUtils.build_character(%{
+          name: "Loser Character",
+          basic_skill: untargetable_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Untargetable Empty Skill"}),
+          base_attack: 5,
+          base_health: 5
+        })
+        |> Characters.insert_character()
+
+      {:ok, loser_unit} = TestUtils.build_unit(%{character_id: loser_character.id}) |> Units.insert_unit()
+
+      {:ok, loser_unit} = Units.get_unit(loser_unit.id)
+
+      damage_params =
+        TestUtils.build_skill(%{
+          name: "Untargetable Test - Damage",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    # Nearest so that he hits the target dummy
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: skill_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, winner_character} =
+        TestUtils.build_character(%{
+          name: "Winner Character",
+          basic_skill: damage_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Test-Untargetable Empty Skill"}),
+          base_attack: 1
+        })
+        |> Characters.insert_character()
+
+      {:ok, winner_unit} =
+        TestUtils.build_unit(%{character_id: winner_character.id}) |> Units.insert_unit()
+
+      {:ok, winner_unit} = Units.get_unit(winner_unit.id)
+
+      needed_steps = skill_cooldown * (1 + div(loser_character.base_health, winner_character.base_attack))
+
+      assert "team_2" ==
+               Champions.Battle.Simulator.run_battle([loser_unit], [winner_unit], maximum_steps: needed_steps).result
+    end
+
+    test "Nearest target is untargetable, so unit picks another target" do
+      # We will set up a battle between a two units team vs a one unit team.
+      # Team 1 will have a unit that tags theirself as untargetable, and another unit that can kill their target in one hit.
+      # Team 2 will have a unit that can kill their nearest target in one hit. Team 1 untargetable unit will be the nearest target, so that we can test that the untargetable tag works.
+      # The cooldowns are set up so that the untargetable tag is applied before the Team 2 attack is executed, and the other Team 1 unit has a longer cooldown than the Team 2 unit.
+      # The battle should end in a victory in timeout, as the Team 1 targetable unit will be killed before it is able to perform an attack, and the untargetable unit will never be attacked.
+      # If the untargetable tag wouldn't work, it would be a victory for Team 2.
+
+      skill_cooldown = 5
+
+      untargetable_params =
+        TestUtils.build_skill(%{
+          name: "Untargetable Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{"type" => "duration", "duration" => 5000},
+                      components: [
+                        %{
+                          type: "ApplyTags",
+                          tags: [
+                            "Untargetable"
+                          ]
+                        }
+                      ],
+                      executions: []
+                    })
+                  ],
+                  targeting_strategy: %{
+                    type: "self"
+                  }
+                })
+            }
+          ],
+          cooldown: skill_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, team_1_untargetable} =
+        TestUtils.build_character(%{
+          name: "Team 1 untargetable Character",
+          basic_skill: untargetable_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Untargetable Empty"})
+        })
+        |> Characters.insert_character()
+
+      {:ok, team_1_untargetable_unit} =
+        TestUtils.build_unit(%{character_id: team_1_untargetable.id, slot: 1}) |> Units.insert_unit()
+
+      {:ok, team_1_untargetable_unit} = Units.get_unit(team_1_untargetable_unit.id)
+
+      team_1_furthest_params =
+        TestUtils.build_skill(%{
+          name: "Team 1 furthest",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "random",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: (skill_cooldown + 2) * @miliseconds_per_step
+        })
+
+      {:ok, team_1_furthest} =
+        TestUtils.build_character(%{
+          name: "Team 1 furthest Character",
+          basic_skill: team_1_furthest_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Test-Untargetable Empty"}),
+          base_attack: 100
+        })
+        |> Characters.insert_character()
+
+      {:ok, team_1_furthest_unit} =
+        TestUtils.build_unit(%{character_id: team_1_furthest.id, slot: 6}) |> Units.insert_unit()
+
+      {:ok, team_1_furthest_unit} = Units.get_unit(team_1_furthest_unit.id)
+
+      team_2_params =
+        TestUtils.build_skill(%{
+          name: "Team 2 skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: (skill_cooldown + 1) * @miliseconds_per_step
+        })
+
+      {:ok, team_2} =
+        TestUtils.build_character(%{
+          name: "Team 2 Character",
+          basic_skill: team_2_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Team 2 Empty Skill"}),
+          base_attack: 100
+        })
+        |> Characters.insert_character()
+
+      {:ok, team_2_unit} =
+        TestUtils.build_unit(%{character_id: team_2.id, slot: 1}) |> Units.insert_unit()
+
+      {:ok, team_2_unit} = Units.get_unit(team_2_unit.id)
+
+      # Battle result is timeout if team_1_furthest doesn't get to attack.
+      # This means that team_1_untargetable applied the untargetable tag in time and team_2_unit attacked team_1_furthest.
+      # We set an exaggerated amount of steps to make sure that the battle ends in timeout.
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([team_1_untargetable_unit, team_1_furthest_unit], [team_2_unit],
+                 maximum_steps: skill_cooldown + 1000
+               ).result
+    end
+  end
+
   describe "Targeting Strategies" do
     test "Frontline", %{target_dummy_character: target_dummy_character} do
       maximum_steps = 5
