@@ -88,8 +88,6 @@ defmodule Champions.Battle.Simulator do
   def run_battle(team_1, team_2, options \\ [])
 
   def run_battle([{_unit, _initial_modifiers} | _] = team_1, team_2, options) do
-    IO.inspect("Running battle with modifiers")
-
     team_1_with_level_cap_and_modifiers =
       Enum.map(team_1, fn {unit, modifiers} ->
         case Map.get(modifiers, {"max_level", "Add"}, 0) do
@@ -97,7 +95,6 @@ defmodule Champions.Battle.Simulator do
             {unit, Map.drop(modifiers, [{"max_level", "Add"}])}
 
           max_level ->
-            IO.inspect("Max level: #{round(max_level)}")
             {%Unit{unit | level: min(unit.level, round(max_level))}, Map.drop(modifiers, [{"max_level", "Add"}])}
         end
       end)
@@ -147,7 +144,7 @@ defmodule Champions.Battle.Simulator do
             end
           end)
 
-        {id, unit_after_multiplicative_modifiers |> IO.inspect(label: "Unit after modifiers")}
+        {id, unit_after_multiplicative_modifiers}
       end)
 
     team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)

@@ -88,16 +88,12 @@ defmodule Champions.Battle do
   end
 
   defp apply_buffs(units, user_id, "Dungeon") do
-    IO.inspect("Applying buffs")
-
     buff_modifiers =
       user_id
       |> Users.get_unlocks_with_type("Dungeon")
-      |> IO.inspect(label: :buffs)
       |> Enum.map(fn unlock -> Enum.map(unlock.upgrade.buffs, & &1.modifiers) end)
       |> List.flatten()
       |> sum_modifiers()
-      |> IO.inspect(label: :sum_modifiers)
 
     Enum.map(units, &{&1, buff_modifiers})
   end
