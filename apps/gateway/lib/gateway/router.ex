@@ -29,6 +29,8 @@ defmodule Gateway.Router do
   scope "/", Gateway do
     pipe_through :api
 
+    get "/api/health", Controllers.HealthController, :check
+
     get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
 
     put "/users/:user_id", Controllers.UserController, :update
