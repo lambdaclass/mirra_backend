@@ -12,8 +12,9 @@ defmodule GameBackend.Users do
   import Ecto.Query, warn: false
 
   alias Ecto.Multi
-  alias GameBackend.Repo
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
