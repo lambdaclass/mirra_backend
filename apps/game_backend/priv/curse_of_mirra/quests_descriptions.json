@@ -63,5 +63,27 @@
             "currency": "Gold",
             "amount": 444
         }
+    },
+    {
+        "config_id": 4,
+        "description": "Get 3 kills",
+        "type": "bounty",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "kills",
+                "value": 3,
+                "comparison": "greater_or_equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 4
+        }
     }
 ]
