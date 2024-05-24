@@ -12,6 +12,10 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
+    scope "/characters" do
+      get "/configuration", CharacterController, :get_characters_config
+    end
+
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
@@ -20,6 +24,11 @@ defmodule Gateway.Router do
       scope "/quest" do
         get "/:quest_id/add_bounty", QuestController, :add_bounty
         get "/:quest_id/reroll_quest", QuestController, :reroll_quest
+      end
+
+      scope "/items" do
+        put "/equip", ItemController, :equip
+        put "/buy", ItemController, :buy
       end
     end
   end
@@ -32,6 +41,8 @@ defmodule Gateway.Router do
 
   scope "/", Gateway do
     pipe_through :api
+
+    get "/api/health", Controllers.HealthController, :check
 
     get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
 

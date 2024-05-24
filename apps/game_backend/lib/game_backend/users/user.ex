@@ -58,6 +58,7 @@ defmodule GameBackend.Users.User do
     |> unique_constraint([:game_id, :username])
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
+    |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])

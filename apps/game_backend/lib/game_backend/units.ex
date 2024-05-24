@@ -131,15 +131,18 @@ defmodule GameBackend.Units do
   Get a user's unit associated to the given character.
   Fails if there are more than one unit of the same character. Returns nil if there are none.
   """
-  def get_unit_by_character_name(character_name, user_id),
-    do:
-      Repo.one(
-        from(unit in user_units_query(user_id),
-          join: character in Character,
-          on: unit.character_id == character.id,
-          where: character.name == ^character_name
-        )
-      )
+  def get_unit_by_character_name(character_name, user_id) do
+    case Repo.one(
+           from(unit in user_units_query(user_id),
+             join: character in Character,
+             on: unit.character_id == character.id,
+             where: character.name == ^character_name
+           )
+         ) do
+      nil -> {:error, :not_found}
+      unit -> {:ok, unit}
+    end
+  end
 
   @doc """
   Deletes a unit.
