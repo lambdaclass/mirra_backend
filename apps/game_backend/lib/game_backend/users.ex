@@ -18,7 +18,6 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
-  alias GameBackend.Utils
 
   @doc """
   Registers a user.
