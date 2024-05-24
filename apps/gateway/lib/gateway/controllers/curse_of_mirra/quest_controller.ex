@@ -6,20 +6,19 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
   GameBackend.Users.Currencies
   use Gateway, :controller
 
+  action_fallback Gateway.Controllers.FallbackController
+
   def reroll_quest(conn, %{"quest_id" => daily_quest_id}) do
-    case Quests.reroll_quest(daily_quest_id) do
-      {:ok, %{insert_quest: daily_quest}} ->
-        conn
-        |> send_resp(200, daily_quest.id)
+    {:ok, %{insert_quest: daily_quest}} = Quests.reroll_quest(daily_quest_id)
 
-      {:error, :cant_afford} ->
-        send_resp(conn, 400, "You can't afford this reroll")
+    conn
+    |> send_resp(200, daily_quest.id)
+  end
 
-      {:error, :quest_rerolled} ->
-        send_resp(conn, 400, "Quest already rerolled")
+  def add_bounty(conn, %{"user_id" => user_id, "quest_id" => quest_id}) do
+    {:ok, daily_quest} = Quests.add_quest_to_user(user_id, quest_id)
 
-      _ ->
-        send_resp(conn, 400, "Error rerolling quest")
-    end
+    conn
+    |> send_resp(200, daily_quest.id)
   end
 end
