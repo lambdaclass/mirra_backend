@@ -203,10 +203,10 @@ defmodule GameBackend.Items do
   Receives an item template name and a game id.
   Returns {:ok, item_template} if found or {:error, :not_found} otherwise.
   """
-  def get_purchasable_template_by_name_and_game_id(name, game_id) do
+  def get_template_by_name_and_game_id(name, game_id) do
     case Repo.one(
            from(it in ItemTemplate,
-             where: it.name == ^name and it.game_id == ^game_id and it.purchasable?
+             where: it.name == ^name and it.game_id == ^game_id,
            )
          ) do
       nil -> {:error, :not_found}
