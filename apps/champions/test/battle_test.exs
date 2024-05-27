@@ -1552,6 +1552,122 @@ defmodule Champions.Test.BattleTest do
   end
 
   describe "Initial Modifiers" do
+    test "Initial Modifiers modify stats correctly" do
+      # We will run a battle with a unit that has some modifications to its stats.
+      # Its initial state for "health" would have been 5 due to its character's stats, but it will be buffed up to 10.
+      # It will fight a unit that will deal 5 damage to it. Without the modifications, it would die.
+      # After surviving an attack, it will deal 100% ATK damage to the enemy, that also has 10 health.
+      # Because of the attack buff, which brings hist total ATK to 10, he will kill the enemy in one hit, and battle won't end on a timeout.
+
+      team2_base_attack = 5
+      team2_base_health = 10
+      team2_cooldown = 3
+
+      team1_base_attack = team1_base_health = 5
+      team1_cooldown = team2_cooldown + 1
+
+      maximum_steps = team1_cooldown + 1
+
+      team_1_skill_params =
+        TestUtils.build_skill(%{
+          name: "Initial Modifiers Stats - Team1 DealDamage Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ],
+          cooldown: team1_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, team1_character} =
+        TestUtils.build_character(%{
+          name: "Initial Modifiers Stats - Team1 Character",
+          basic_skill: team_1_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Initial Modifiers Stats - Team1 Empty Ultimate"}),
+          base_health: team1_base_health,
+          base_attack: team1_base_attack
+        })
+        |> Characters.insert_character()
+
+      team_2_skill_params =
+        TestUtils.build_skill(%{
+          name: "Initial Modifiers Stats - Team2 DealDamage Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ],
+          cooldown: team2_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, team2_character} =
+        TestUtils.build_character(%{
+          name: "Initial Modifiers Stats - Team2 Character",
+          basic_skill: team_2_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Initial Modifiers Stats - Team2 Empty Ultimate"}),
+          base_health: team2_base_health,
+          base_attack: team2_base_attack
+        })
+        |> Characters.insert_character()
+
+      {:ok, team1_unit} =
+        TestUtils.build_unit(%{character_id: team1_character.id})
+        |> Units.insert_unit()
+        |> then(fn {:ok, unit} -> Units.get_unit(unit.id) end)
+
+      {:ok, team2_unit} =
+        TestUtils.build_unit(%{character_id: team2_character.id})
+        |> Units.insert_unit()
+        |> then(fn {:ok, unit} -> Units.get_unit(unit.id) end)
+
+      modifiers = %{{"attack", "Add"} => 5, {"health", "Add"} => 5}
+
+      assert "team_2" =
+               Champions.Battle.Simulator.run_battle([team1_unit], [team2_unit], maximum_steps: maximum_steps).result
+
+      assert "team_1" =
+               Champions.Battle.Simulator.run_battle([{team1_unit, modifiers}], [team2_unit],
+                 maximum_steps: maximum_steps
+               ).result
+
+      # Same result can be obtained by a combination of modifiers.
+      # We first substract 3 to the health, and then multiply it by 5: (5-3) * 5 = 10
+      modifiers = %{{"health", "Multiply"} => 10.0, {"attack", "Add"} => 5, {"health", "Add"} => -3}
+
+      assert "team_1" =
+               Champions.Battle.Simulator.run_battle([{team1_unit, modifiers}], [team2_unit],
+                 maximum_steps: maximum_steps
+               ).result
+    end
+
     test "Initial Modifiers lock level correctly", %{target_dummy: target_dummy} do
       # We will run a battle with a unit that has an initial modifier that locks its level to 1.
       # Its initial state for "health" would have been higher due to its level, but it will be locked to 1000.
