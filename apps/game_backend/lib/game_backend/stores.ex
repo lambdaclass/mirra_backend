@@ -3,7 +3,9 @@ defmodule GameBackend.Stores do
   Store operations.
   """
   alias GameBackend.Stores.Store
+  alias GameBackend.Items.ItemTemplate
   alias GameBackend.Repo
+  import Ecto.Query
 
   @doc """
   Inserts a Store.
@@ -51,5 +53,16 @@ defmodule GameBackend.Stores do
         }
       end)
     end)
+  end
+
+  def item_in_store(item_name, store_id, game_id) do
+    case Repo.exists?(
+           from(it in ItemTemplate,
+             where: it.name == ^item_name and it.store_id == ^store_id and it.game_id == ^game_id
+           )
+         ) do
+      false -> {:error, :not_found}
+      true -> {:ok, :item_in_store}
+    end
   end
 end
