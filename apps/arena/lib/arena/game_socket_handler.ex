@@ -26,7 +26,7 @@ defmodule Arena.GameSocketHandler do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
-    {:ok, %{player_id: player_id, game_config: config, game_status: game_status}} =
+    {:ok, %{player_id: player_id, game_config: config, game_status: game_status, bounties: bounties}} =
       GameUpdater.join(state.game_pid, state.client_id)
 
     state =
@@ -39,7 +39,7 @@ defmodule Arena.GameSocketHandler do
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config)}}
+        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -73,6 +73,9 @@ defmodule Arena.GameSocketHandler do
 
   def websocket_handle({:binary, message}, %{block_actions: block_actions, block_movement: block_movement} = state) do
     case Serialization.GameAction.decode(message) do
+      %{action_type: {:pick_quest, %{quest_id: quest_id}}} ->
+        GameUpdater.pick_quest(state.game_pid, state.player_id, quest_id)
+
       %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
         unless block_actions do
           GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
