@@ -852,7 +852,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "start_game_time_ms": 10000,
+    "start_game_time_ms": 15000,
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,
     "natural_healing_interval_ms": 300,
