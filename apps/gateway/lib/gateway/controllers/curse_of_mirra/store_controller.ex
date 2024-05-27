@@ -11,9 +11,8 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
   action_fallback Gateway.Controllers.FallbackController
 
   def list_items(conn, params) do
-    with {:ok, store} <- Stores.get_store_by_name(params["store_name"]),
-         {:ok, items_with_prices} <- Stores.list_items_with_prices(store) do
-      send_resp(conn, 200, Jason.encode!(items_with_prices))
+    with {:ok, store} <- Stores.get_store_by_name(params["store_name"]) do
+      send_resp(conn, 200, Jason.encode!(Stores.list_items_with_prices(store)))
     end
   end
 

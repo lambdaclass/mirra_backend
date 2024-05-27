@@ -43,8 +43,12 @@ defmodule GameBackend.Stores do
 
     Enum.flat_map(store.items, fn item ->
       Enum.map(item.item_costs, fn item_cost ->
-        {item.name,
-         Enum.map(item_cost.currency_costs, fn currency_cost -> {currency_cost.currency.name, currency_cost.amount} end)}
+        %{
+          item.name =>
+            Enum.reduce(item_cost.currency_costs, %{}, fn currency_cost, acc ->
+              Map.put(acc, currency_cost.currency.name, currency_cost.amount)
+            end)
+        }
       end)
     end)
   end
