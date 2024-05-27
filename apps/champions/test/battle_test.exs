@@ -1321,11 +1321,7 @@ defmodule Champions.Test.BattleTest do
 
       {:ok, unit} = Units.get_unit(unit.id)
 
-      unit =
-        GameBackend.Repo.preload(
-          unit,
-          [:user, items: :template, character: [:basic_skill, :ultimate_skill]]
-        )
+      unit = GameBackend.Repo.preload(unit, [:user, items: :template, character: [:basic_skill, :ultimate_skill]])
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
@@ -1552,6 +1548,52 @@ defmodule Champions.Test.BattleTest do
       # If battle lasted 1 step longer, speeder dies
       assert "team_2" ==
                Champions.Battle.Simulator.run_battle([speeder], [damager], maximum_steps: maximum_steps + 1).result
+    end
+  end
+
+  describe "Initial Modifiers" do
+    test "Initial Modifiers lock level correctly", %{target_dummy: target_dummy} do
+      # We will run a battle with a unit that has an initial modifier that locks its level to 1.
+      # Its initial state for "health" would have been higher due to its level, but it will be locked to 1000.
+
+      base_health = 1000
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "Initial Modifiers Character",
+          basic_skill: TestUtils.build_skill(%{name: "Initial Modifiers Empty Basic"}),
+          ultimate_skill: TestUtils.build_skill(%{name: "Initial Modifiers Empty Ultimate"}),
+          # High so we don't get any rounding false positives
+          base_health: base_health
+        })
+        |> Characters.insert_character()
+
+      # Tier locking has not been implemented yet
+      # A level 100 unit should have a tier of 5 or 6, which also gets cut down to 1 by the modifiers
+      # For now we just mock this impossible unit
+      {:ok, unit} =
+        TestUtils.build_unit(%{character_id: character.id, level: 100, tier: 1, rank: 1})
+        |> Units.insert_unit()
+
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      modifiers = %{{"max_level", "Add"} => 1}
+
+      unit_initial_state_without_modifiers =
+        Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 1).initial_state
+        |> Enum.find(fn {state_type, _state} -> state_type == :units end)
+        |> then(fn {_, units} -> units end)
+        |> Enum.find(fn unit_state -> unit_state.id == unit.id end)
+
+      assert unit_initial_state_without_modifiers.health == Champions.Units.get_health(unit)
+
+      unit_initial_state_with_modifiers =
+        Champions.Battle.Simulator.run_battle([{unit, modifiers}], [target_dummy], maximum_steps: 1).initial_state
+        |> Enum.find(fn {state_type, _state} -> state_type == :units end)
+        |> then(fn {_, units} -> units end)
+        |> Enum.find(fn unit_state -> unit_state.id == unit.id end)
+
+      assert unit_initial_state_with_modifiers.base_health == base_health
     end
   end
 end
