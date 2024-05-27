@@ -18,8 +18,9 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
 
   def buy_item(conn, params) do
     with {:ok, store} <- Stores.get_store_by_name(params["store_name"]),
-         {:ok, :item_in_store} <- Stores.item_in_store(params["item_name"], store),
          {:ok, :active} <- Stores.is_active(store),
+         {:ok, :item_in_store} <-
+           Stores.item_in_store(params["item_name"], store.id, Utils.get_game_id(:curse_of_mirra)),
          {:ok, item_template_id} <-
            Items.get_template_id_by_name_and_game_id(
              params["item_name"],
