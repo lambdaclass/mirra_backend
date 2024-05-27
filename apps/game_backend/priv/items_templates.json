@@ -1,0 +1,16 @@
+{
+    "items": [
+        {
+            "name": "Muflus Gold",
+            "characters": ["muflus"],
+            "type": "skin",
+            "purchasable?": true
+        },
+        {
+            "name": "H4ck Silver",
+            "characters": ["h4ck"],
+            "type": "skin",
+            "purchasable?": false
+        }
+    ]
+}

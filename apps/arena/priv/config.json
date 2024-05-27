@@ -438,8 +438,12 @@
             "y": -4450.0
           },
           {
-            "x": 1150.0,
-            "y": -5470.0
+            "x": 1300.0,
+            "y": -6500.0
+          },
+          {
+            "x": 360.0,
+            "y": -6500.0
           },
           {
             "x": 360.0,
@@ -496,8 +500,12 @@
             "y": 4900.0
           },
           {
-            "x": -748.0,
-            "y": 5674.0
+            "x": -1120.0,
+            "y": 6500.0
+          },
+          {
+            "x": -135.0,
+            "y": 6500.0
           },
           {
             "x": -135.0,
@@ -1206,76 +1214,6 @@
         "giant_effect"
       ],
       "mechanics": {}
-    }
-  ],
-  "characters": [
-    {
-      "name": "muflus",
-      "active": true,
-      "base_speed": 27.0,
-      "base_size": 110.0,
-      "base_health": 440,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "muflus_crush",
-        "2": "muflus_leap",
-        "3": "muflus_dash"
-      }
-    },
-    {
-      "name": "h4ck",
-      "active": true,
-      "base_speed": 30.0,
-      "base_size": 90.0,
-      "base_health": 400,
-      "base_stamina": 3,
-      "stamina_interval": 1800,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "h4ck_slingshot",
-        "2": "h4ck_denial_of_service",
-        "3": "h4ck_dash"
-      }
-    },
-    {
-      "name": "uma",
-      "active": true,
-      "base_speed": 28.0,
-      "base_size": 95.0,
-      "base_health": 400,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "uma_avenge",
-        "2": "uma_veil_radiance",
-        "3": "uma_sneak"
-      }
-    },
-    {
-      "name": "valtimer",
-      "active": false,
-      "base_speed": 29.0,
-      "base_size": 100.0,
-      "base_health": 400,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "valt_antimatter",
-        "2": "valt_singularity",
-        "3": "valt_warp"
-      }
     }
   ],
   "power_ups": {
