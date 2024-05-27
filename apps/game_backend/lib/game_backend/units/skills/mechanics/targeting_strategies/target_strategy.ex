@@ -18,8 +18,8 @@ defmodule GameBackend.Units.Skills.Mechanics.TargetingStrategies.Type do
 
   def cast(%{factions: factions}), do: {:ok, %{factions: factions}}
   def cast(%{classes: classes}), do: {:ok, %{classes: classes}}
-  def cast(%{lowest: attribute}), do: {:ok, %{"lowest" => attribute}}
-  def cast(%{highest: attribute}), do: {:ok, %{"highest" => attribute}}
+  def cast(%{lowest: attribute}), do: {:ok, %{lowest: attribute}}
+  def cast(%{highest: attribute}), do: {:ok, %{highest: attribute}}
 
   # Needed for the case in which we decode from the DB (Further explanation in: https://hexdocs.pm/ecto/Ecto.Schema.html#embeds_one/3-encoding-and-decoding)
   def cast(%{"factions" => factions}), do: {:ok, {"factions", factions}}
