@@ -1593,7 +1593,20 @@ defmodule Champions.Test.BattleTest do
         |> then(fn {_, units} -> units end)
         |> Enum.find(fn unit_state -> unit_state.id == unit.id end)
 
-      assert unit_initial_state_with_modifiers.base_health == base_health
+      assert unit_initial_state_with_modifiers.health == base_health
+
+      # Works correctly with level by first locking the level, and then applying any buffs
+
+      health_multiplier = 2.0
+      modifiers = %{{"health", "Multiply"} => health_multiplier, {"max_level", "Add"} => 1}
+
+      unit_initial_state_with_modifiers =
+        Champions.Battle.Simulator.run_battle([{unit, modifiers}], [target_dummy], maximum_steps: 1).initial_state
+        |> Enum.find(fn {state_type, _state} -> state_type == :units end)
+        |> then(fn {_, units} -> units end)
+        |> Enum.find(fn unit_state -> unit_state.id == unit.id end)
+
+      assert unit_initial_state_with_modifiers.health == base_health * health_multiplier
     end
   end
 end
