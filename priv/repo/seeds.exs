@@ -8,13 +8,16 @@ alias GameBackend.Gacha
 alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
+alias GameBackend.Units.Characters
+alias GameBackend.Items
 alias GameBackend.Users
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
+alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
-units_per_level = 5
+units_per_level = 6
 
 {:ok, _skills} = Champions.Config.import_skill_config()
 
@@ -159,12 +162,20 @@ rules = [
   %{base_level: 50, scaler: 1.3, possible_factions: ["Merliot", "Otobi"], length: 20}
 ]
 
-super_campaign = %{
+main_campaign = %{
   game_id: champions_of_mirra_id,
   name: "Main Campaign"
 }
 
-{_, super_campaign} = Campaigns.insert_super_campaign(super_campaign, returning: true)
+dungeon_super_campaign = %{
+  game_id: champions_of_mirra_id,
+  name: "Dungeon"
+}
+
+{_, main_campaign} = Campaigns.insert_super_campaign(main_campaign, returning: true)
+
+{_, dungeon_super_campaign} =
+  Campaigns.insert_super_campaign(dungeon_super_campaign, returning: true)
 
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
 levels =
@@ -173,7 +184,7 @@ levels =
       Campaigns.insert_campaign(
         %{
           game_id: champions_of_mirra_id,
-          super_campaign_id: super_campaign.id,
+          super_campaign_id: main_campaign.id,
           campaign_number: campaign_index
         },
         returning: true
@@ -191,11 +202,11 @@ levels =
     end)
   end)
 
-{_, levels_without_units} =
+{_, levels_without_embeds} =
   Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign_id])
 
 units =
-  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+  Enum.flat_map(Enum.with_index(levels_without_embeds, 0), fn {level, level_index} ->
     campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
     campaign_rules = Enum.at(rules, campaign_number - 1)
 
@@ -239,19 +250,15 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 # Add the rewards of each level.
 # The calculation of the `amount` field is done following the specification found in https://docs.google.com/spreadsheets/d/177mvJS75LecaAEpyYotQEcrmhGJWI424UnkE2JHLmyY
 currency_rewards =
-  Enum.map(levels_without_units, fn level ->
-    %{
-      level_id: level.id,
-      amount: 10 * (20 + level.level_number),
-      currency_id: gold_currency.id,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
-
-currency_rewards =
-  currency_rewards ++
-    Enum.map(levels_without_units, fn level ->
+  Enum.flat_map(levels_without_embeds, fn level ->
+    [
+      %{
+        level_id: level.id,
+        amount: 10 * (20 + level.level_number),
+        currency_id: gold_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
       %{
         level_id: level.id,
         amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
@@ -259,7 +266,8 @@ currency_rewards =
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-    end)
+    ]
+  end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
@@ -289,3 +297,98 @@ _dungeon_settlement_levels =
 
     dungeon_settlement_level
   end)
+
+dungeon_rules =
+  %{
+    base_level: 5,
+    scaler: 1.05,
+    possible_factions: ["Araban", "Kaline", "Merliot", "Otobi"],
+    length: 200
+  }
+
+# Since insert_all doesn't accept assocs, we insert the levels first and then their units
+{:ok, dungeon_campaign} =
+  Campaigns.insert_campaign(
+    %{
+      game_id: champions_of_mirra_id,
+      super_campaign_id: dungeon_super_campaign.id,
+      campaign_number: 1
+    },
+    returning: true
+  )
+
+dungeon_levels =
+  Enum.map(1..dungeon_rules.length, fn level_index ->
+    %{
+      game_id: champions_of_mirra_id,
+      campaign_id: dungeon_campaign.id,
+      level_number: level_index,
+      experience_reward: 100 * level_index,
+      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+    }
+  end)
+
+{_, levels_without_units} =
+  Repo.insert_all(Level, dungeon_levels, returning: [:id, :level_number, :campaign_id])
+
+units =
+  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
+
+    base_level = dungeon_rules.base_level
+    level_scaler = dungeon_rules.scaler
+
+    possible_characters = Units.all_characters_from_factions(dungeon_rules.possible_factions)
+
+    agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
+
+    units =
+      Enum.map(1..6, fn slot ->
+        Units.unit_params_for_level(
+          possible_characters,
+          div(agg_difficulty, units_per_level),
+          slot
+        )
+        |> Map.put(:inserted_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
+        |> Map.put(:updated_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
+      end)
+
+    # Add the remaining unit levels to match the level difficulty
+    level_units =
+      case rem(agg_difficulty, units_per_level) do
+        0 ->
+          units
+
+        missing_levels ->
+          Enum.reduce(0..missing_levels, units, fn index, units ->
+            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
+          end)
+      end
+
+    Enum.map(level_units, fn unit_attrs ->
+      Map.put(unit_attrs, :campaign_level_id, level.id)
+    end)
+  end)
+
+Repo.insert_all(Unit, units, on_conflict: :nothing)
+
+##################### CURSE OF MIRRA #####################
+# Insert characters
+Config.get_characters_config()
+|> Enum.each(fn char_params ->
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
+end)
+
+# Insert items templates
+Config.get_items_templates_config()
+|> Enum.each(fn item_template ->
+  Map.put(item_template, :game_id, curse_of_mirra_id)
+  |> Map.put(:rarity, 0)
+  |> Map.put(:config_id, item_template.name)
+  |> Items.insert_item_template()
+end)
+
+################### END CURSE OF MIRRA ###################

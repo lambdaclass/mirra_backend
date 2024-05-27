@@ -1,4 +1,4 @@
-defmodule Gateway.Curse.Controllers.Users.CurrencyController do
+defmodule Gateway.Controllers.CurseOfMirra.CurrencyController do
   @moduledoc """
     Controller to control currency changes in users
   """

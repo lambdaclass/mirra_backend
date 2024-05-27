@@ -438,8 +438,12 @@
             "y": -4450.0
           },
           {
-            "x": 1150.0,
-            "y": -5470.0
+            "x": 1300.0,
+            "y": -6500.0
+          },
+          {
+            "x": 360.0,
+            "y": -6500.0
           },
           {
             "x": 360.0,
@@ -496,8 +500,12 @@
             "y": 4900.0
           },
           {
-            "x": -748.0,
-            "y": 5674.0
+            "x": -1120.0,
+            "y": 6500.0
+          },
+          {
+            "x": -135.0,
+            "y": 6500.0
           },
           {
             "x": -135.0,
@@ -868,6 +876,7 @@
       "max_autoaim_range": 800,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "circle_hit": {
@@ -889,6 +898,7 @@
       "autoaim": true,
       "max_autoaim_range": 1500,
       "can_pick_destination": true,
+      "block_movement": true,
       "mechanics": [
         {
           "spawn_pool": {
@@ -914,6 +924,7 @@
       "autoaim": true,
       "max_autoaim_range": 1500,
       "can_pick_destination": true,
+      "block_movement": true,
       "mechanics": [
         {
           "leap": {
@@ -941,6 +952,7 @@
       "autoaim": true,
       "max_autoaim_range": 1500,
       "can_pick_destination": true,
+      "block_movement": true,
       "mechanics": [
         {
           "spawn_pool": {
@@ -966,6 +978,7 @@
       "max_autoaim_range": 1600,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "multi_shoot": {
@@ -992,6 +1005,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1011,6 +1025,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1030,6 +1045,7 @@
       "max_autoaim_range": 800,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "multi_circle_hit": {
@@ -1054,6 +1070,7 @@
       "autoaim": true,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "circle_hit": {
@@ -1077,6 +1094,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1098,6 +1116,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": true,
+      "block_movement": true,
       "stamina_cost": 1,
       "mechanics": [
         {
@@ -1119,6 +1138,7 @@
       "autoaim": false,
       "max_autoaim_range": 0,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "dash": {
@@ -1139,6 +1159,7 @@
       "max_autoaim_range": 1600,
       "stamina_cost": 1,
       "can_pick_destination": false,
+      "block_movement": true,
       "mechanics": [
         {
           "simple_shoot": {
@@ -1167,98 +1188,32 @@
       "radius": 200.0,
       "effects": [
         "golden_clock_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "magic_boots",
       "radius": 200.0,
       "effects": [
         "magic_boots_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
       "effects": [
         "mirra_blessing_effect"
-      ]
+      ],
+      "mechanics": {}
     },
     {
       "name": "giant",
       "radius": 200.0,
       "effects": [
         "giant_effect"
-      ]
-    }
-  ],
-  "characters": [
-    {
-      "name": "muflus",
-      "active": true,
-      "base_speed": 27.0,
-      "base_size": 110.0,
-      "base_health": 440,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "muflus_crush",
-        "2": "muflus_leap",
-        "3": "muflus_dash"
-      }
-    },
-    {
-      "name": "h4ck",
-      "active": true,
-      "base_speed": 30.0,
-      "base_size": 90.0,
-      "base_health": 400,
-      "base_stamina": 3,
-      "stamina_interval": 1800,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "h4ck_slingshot",
-        "2": "h4ck_denial_of_service",
-        "3": "h4ck_dash"
-      }
-    },
-    {
-      "name": "uma",
-      "active": true,
-      "base_speed": 28.0,
-      "base_size": 95.0,
-      "base_health": 400,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "uma_avenge",
-        "2": "uma_veil_radiance",
-        "3": "uma_sneak"
-      }
-    },
-    {
-      "name": "valtimer",
-      "active": false,
-      "base_speed": 29.0,
-      "base_size": 100.0,
-      "base_health": 400,
-      "base_stamina": 3,
-      "stamina_interval": 2000,
-      "max_inventory_size": 1,
-      "natural_healing_interval": 1000,
-      "natural_healing_damage_interval": 3500,
-      "skills": {
-        "1": "valt_antimatter",
-        "2": "valt_singularity",
-        "3": "valt_warp"
-      }
+      ],
+      "mechanics": {}
     }
   ],
   "power_ups": {
@@ -1533,5 +1488,6 @@
       "vertices": [],
       "amount_of_power_ups": 1
     }
-  ]
+  ],
+  "traps": []
 }

@@ -12,12 +12,15 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
   alias GameBackend.Users.GoogleUser
+  alias GameBackend.Quests.DailyQuest
 
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
     field(:level, :integer)
     field(:experience, :integer)
+    field(:last_daily_reward_claim_at, :utc_datetime)
+    field(:last_daily_reward_claim, :string)
     field(:last_kaline_afk_reward_claim, :utc_datetime)
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
@@ -29,6 +32,7 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)
+    has_many(:daily_quests, DailyQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
 
     timestamps()
@@ -40,6 +44,8 @@ defmodule GameBackend.Users.User do
     |> cast(attrs, [
       :game_id,
       :username,
+      :last_daily_reward_claim_at,
+      :last_daily_reward_claim,
       :last_kaline_afk_reward_claim,
       :last_dungeon_afk_reward_claim,
       :dungeon_settlement_level_id,
@@ -52,6 +58,7 @@ defmodule GameBackend.Users.User do
     |> unique_constraint([:game_id, :username])
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
+    |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])

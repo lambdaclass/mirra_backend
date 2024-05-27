@@ -144,6 +144,18 @@ if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
     |> File.read()
 
   config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
+
+  {:ok, daily_rewards_json} =
+    Application.app_dir(:game_backend, "priv/daily_rewards_rules.json")
+    |> File.read()
+
+  config :game_backend, :daily_rewards_config, Jason.decode!(daily_rewards_json)
+
+  {:ok, quest_prices_attrs} =
+    Application.app_dir(:game_backend, "priv/curse_of_mirra/quest_reroll_configuration.json")
+    |> File.read()
+
+  config :game_backend, :quest_reroll_config, Jason.decode!(quest_prices_attrs, [{:keys, :atoms}])
 end
 
 ##################################

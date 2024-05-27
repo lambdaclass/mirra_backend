@@ -49,6 +49,17 @@ defmodule Arena.Serialization.PlayerActionType do
   field(:EXECUTING_SKILL_3, 5)
 end
 
+defmodule Arena.Serialization.TrapStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:PENDING, 0)
+  field(:PREPARED, 1)
+  field(:TRIGGERED, 2)
+  field(:USED, 3)
+end
+
 defmodule Arena.Serialization.Direction do
   @moduledoc false
 
@@ -318,6 +329,15 @@ defmodule Arena.Serialization.GameState.BushesEntry do
   field(:value, 2, type: Arena.Serialization.Entity)
 end
 
+defmodule Arena.Serialization.GameState.TrapsEntry do
+  @moduledoc false
+
+  use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:key, 1, type: :uint64)
+  field(:value, 2, type: Arena.Serialization.Entity)
+end
+
 defmodule Arena.Serialization.GameState do
   @moduledoc false
 
@@ -377,6 +397,7 @@ defmodule Arena.Serialization.GameState do
   field(:pools, 15, repeated: true, type: Arena.Serialization.GameState.PoolsEntry, map: true)
   field(:crates, 16, repeated: true, type: Arena.Serialization.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: Arena.Serialization.GameState.BushesEntry, map: true)
+  field(:traps, 18, repeated: true, type: Arena.Serialization.GameState.TrapsEntry, map: true)
 end
 
 defmodule Arena.Serialization.Entity do
@@ -405,6 +426,7 @@ defmodule Arena.Serialization.Entity do
   field(:pool, 17, type: Arena.Serialization.Pool, oneof: 0)
   field(:crate, 18, type: Arena.Serialization.Crate, oneof: 0)
   field(:bush, 19, type: Arena.Serialization.Bush, oneof: 0)
+  field(:trap, 20, type: Arena.Serialization.Trap, oneof: 0)
 end
 
 defmodule Arena.Serialization.Player.CooldownsEntry do
@@ -512,6 +534,16 @@ defmodule Arena.Serialization.Bush do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule Arena.Serialization.Trap do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:name, 2, type: :string)
+  field(:status, 3, type: Arena.Serialization.TrapStatus, enum: true)
+end
+
 defmodule Arena.Serialization.PlayerAction do
   @moduledoc false
 
@@ -520,6 +552,7 @@ defmodule Arena.Serialization.PlayerAction do
   field(:action, 1, type: Arena.Serialization.PlayerActionType, enum: true)
   field(:duration, 2, type: :uint64)
   field(:destination, 3, type: Arena.Serialization.Position)
+  field(:direction, 4, type: Arena.Serialization.Position)
 end
 
 defmodule Arena.Serialization.Move do

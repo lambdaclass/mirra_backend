@@ -11,6 +11,8 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Users.DungeonSettlementLevel
   alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
@@ -18,7 +20,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Users.Currencies
   alias GameBackend.Users.User
   alias GameBackend.Users.GoogleUser
-  alias GameBackend.Utils
+  alias GameBackend.CurseOfMirra.Users, as: CurseUsers
 
   @doc """
   Registers a user.
@@ -54,6 +56,46 @@ defmodule GameBackend.Users do
   def get_user(id) do
     user = Repo.get(User, id) |> preload()
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
+  Get a list of GoogleUser based on their id with the necessary preloads
+  to process daily quests.
+
+  ## Examples
+
+      iex> get_google_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      [%GoogleUser{}]
+  """
+  def get_google_users_with_todays_daily_quests(ids, repo \\ Repo) do
+    naive_today = NaiveDateTime.utc_now()
+    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
+    end_of_date = NaiveDateTime.end_of_day(naive_today)
+
+    arena_match_result_subquery =
+      from(amr in ArenaMatchResult,
+        where: amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date
+      )
+
+    daily_quest_subquery =
+      from(dq in DailyQuest,
+        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at),
+        preload: [:quest]
+      )
+
+    q =
+      from(u in GoogleUser,
+        where: u.id in ^ids,
+        preload: [
+          arena_match_results: ^arena_match_result_subquery,
+          user: [
+            currencies: :currency,
+            daily_quests: ^daily_quest_subquery
+          ]
+        ]
+      )
+
+    repo.all(q)
   end
 
   @doc """
@@ -134,22 +176,9 @@ defmodule GameBackend.Users do
   end
 
   defp create_google_user_by_email(email) do
-    # TODO delete the following in a future refactor -> https://github.com/lambdaclass/mirra_backend/issues/557
-    level = 1
-    experience = 1
-    amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
-    username = "User_#{amount_of_users + 1}"
-    ##################################################################
-    game_id = Utils.get_game_id(:curse_of_mirra)
-
     GoogleUser.changeset(%GoogleUser{}, %{
       email: email,
-      user: %{
-        game_id: game_id,
-        username: username,
-        level: level,
-        experience: experience
-      }
+      user: CurseUsers.create_user_params()
     })
     |> Repo.insert()
   end

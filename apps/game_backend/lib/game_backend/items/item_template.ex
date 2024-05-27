@@ -30,6 +30,8 @@ defmodule GameBackend.Items.ItemTemplate do
     field(:name, :string)
     field(:rarity, :integer)
     field(:type, :string)
+    field(:purchasable?, :boolean)
+    field(:characters, {:array, :string})
     embeds_many(:modifiers, Modifier, on_replace: :delete)
 
     # Used to reference the ItemTemplate in the game's configuration
@@ -46,7 +48,17 @@ defmodule GameBackend.Items.ItemTemplate do
   @doc false
   def changeset(item_template, attrs) do
     item_template
-    |> cast(attrs, [:game_id, :name, :rarity, :type, :config_id, :upgrades_from_config_id, :upgrades_from_quantity])
+    |> cast(attrs, [
+      :game_id,
+      :name,
+      :rarity,
+      :type,
+      :config_id,
+      :upgrades_from_config_id,
+      :upgrades_from_quantity,
+      :purchasable?,
+      :characters
+    ])
     |> validate_required([:game_id, :name, :rarity, :type, :config_id])
     |> cast_embed(:modifiers)
     |> cast_embed(:upgrade_costs)
