@@ -6,6 +6,7 @@ defmodule ArenaLoadTest.Serialization.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
+  field(:PICKING_QUEST, 3)
 end
 
 defmodule ArenaLoadTest.Serialization.ProjectileStatus do
@@ -160,6 +161,7 @@ defmodule ArenaLoadTest.Serialization.GameJoined do
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: ArenaLoadTest.Serialization.Configuration)
+  field(:bounties, 3, repeated: true, type: ArenaLoadTest.Serialization.BountyInfo)
 end
 
 defmodule ArenaLoadTest.Serialization.Configuration do
@@ -623,6 +625,14 @@ defmodule ArenaLoadTest.Serialization.UseItem do
   field(:item, 1, type: :uint64)
 end
 
+defmodule ArenaLoadTest.Serialization.PickQuest do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:quest_id, 1, type: :string, json_name: "questId")
+end
+
 defmodule ArenaLoadTest.Serialization.GameAction do
   @moduledoc false
 
@@ -633,6 +643,13 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:move, 1, type: ArenaLoadTest.Serialization.Move, oneof: 0)
   field(:attack, 2, type: ArenaLoadTest.Serialization.Attack, oneof: 0)
   field(:use_item, 4, type: ArenaLoadTest.Serialization.UseItem, json_name: "useItem", oneof: 0)
+
+  field(:pick_quest, 5,
+    type: ArenaLoadTest.Serialization.PickQuest,
+    json_name: "pickQuest",
+    oneof: 0
+  )
+
   field(:timestamp, 3, type: :int64)
 end
 
@@ -654,4 +671,24 @@ defmodule ArenaLoadTest.Serialization.KillEntry do
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
+end
+
+defmodule ArenaLoadTest.Serialization.BountyInfo do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:title, 2, type: :string)
+  field(:description, 3, type: :string)
+  field(:reward, 4, type: ArenaLoadTest.Serialization.CurrencyReward)
+end
+
+defmodule ArenaLoadTest.Serialization.CurrencyReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: :string)
+  field(:amount, 2, type: :int64)
 end

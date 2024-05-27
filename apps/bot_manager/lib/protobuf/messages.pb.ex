@@ -6,6 +6,7 @@ defmodule BotManager.Protobuf.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
+  field(:PICKING_QUEST, 3)
 end
 
 defmodule BotManager.Protobuf.ProjectileStatus do
@@ -160,6 +161,7 @@ defmodule BotManager.Protobuf.GameJoined do
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: BotManager.Protobuf.Configuration)
+  field(:bounties, 3, repeated: true, type: BotManager.Protobuf.BountyInfo)
 end
 
 defmodule BotManager.Protobuf.Configuration do
@@ -588,6 +590,14 @@ defmodule BotManager.Protobuf.UseItem do
   field(:item, 1, type: :uint64)
 end
 
+defmodule BotManager.Protobuf.PickQuest do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:quest_id, 1, type: :string, json_name: "questId")
+end
+
 defmodule BotManager.Protobuf.GameAction do
   @moduledoc false
 
@@ -598,6 +608,7 @@ defmodule BotManager.Protobuf.GameAction do
   field(:move, 1, type: BotManager.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: BotManager.Protobuf.Attack, oneof: 0)
   field(:use_item, 4, type: BotManager.Protobuf.UseItem, json_name: "useItem", oneof: 0)
+  field(:pick_quest, 5, type: BotManager.Protobuf.PickQuest, json_name: "pickQuest", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
@@ -619,4 +630,24 @@ defmodule BotManager.Protobuf.KillEntry do
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
+end
+
+defmodule BotManager.Protobuf.BountyInfo do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:title, 2, type: :string)
+  field(:description, 3, type: :string)
+  field(:reward, 4, type: BotManager.Protobuf.CurrencyReward)
+end
+
+defmodule BotManager.Protobuf.CurrencyReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: :string)
+  field(:amount, 2, type: :int64)
 end
