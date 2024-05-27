@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.BountyUpdater
   alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
@@ -34,6 +35,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:use_item, player_id, timestamp})
   end
 
+  def pick_quest(game_pid, player_id, quest_id) do
+    GenServer.cast(game_pid, {:pick_quest, player_id, quest_id})
+  end
+
   ##########################
   # END API
   ##########################
@@ -45,7 +50,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    Process.send_after(self(), :pick_quest, game_config.game.start_game_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -72,7 +77,17 @@ defmodule Arena.GameUpdater do
         {:reply, :not_a_client, state}
 
       player_id ->
-        response = %{player_id: player_id, game_config: state.game_config, game_status: state.game_state.status}
+        bounties =
+          BountyUpdater.get_bounties()
+          |> IO.inspect(label: "aber bounties")
+
+        response = %{
+          player_id: player_id,
+          game_config: state.game_config,
+          game_status: state.game_state.status,
+          bounties: bounties
+        }
+
         {:reply, {:ok, response}, state}
     end
   end
@@ -108,6 +123,11 @@ defmodule Arena.GameUpdater do
       |> Player.use_item(state.game_state, state.game_config)
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:pick_quest, player_id, quest_id}, state) do
+    GameTracker.push_event(self(), {:pick_quest, player_id, quest_id})
+    {:noreply, state}
   end
 
   ##########################
@@ -162,6 +182,13 @@ defmodule Arena.GameUpdater do
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_info(:pick_quest, state) do
+    broadcast_enable_incomming_messages(state.game_state.game_id)
+    Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
+
+    {:noreply, put_in(state, [:game_state, :status], :PICKING_QUEST)}
   end
 
   def handle_info(:game_start, state) do

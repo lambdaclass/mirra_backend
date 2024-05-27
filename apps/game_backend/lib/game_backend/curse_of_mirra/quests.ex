@@ -27,6 +27,24 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   @doc """
+  Get a list of %Quest{} by the type field
+
+  ## Examples
+
+      iex>get_quest_by_config_id("bounty")
+      [%Quest{type: "bounty"}]
+
+  """
+  def get_quest_by_type(type) do
+    q =
+      from(q in Quest,
+        where: q.type == ^type
+      )
+
+    Repo.all(q)
+  end
+
+  @doc """
   Get all %Quest{} by the type field that doesn't have a valid daily quest
 
   a valid daily quest means:

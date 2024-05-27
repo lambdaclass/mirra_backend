@@ -15,10 +15,18 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
     |> send_resp(200, daily_quest.id)
   end
 
-  def add_bounty(conn, %{"user_id" => user_id, "quest_id" => quest_id}) do
-    {:ok, daily_quest} = Quests.add_quest_to_user(user_id, quest_id)
+  def get_bounties(conn, _) do
+    bounties =
+      Quests.get_quest_by_type("bounty")
+      |> Enum.map(fn bounty ->
+        %{
+          description: bounty.description,
+          id: bounty.id,
+          reward: bounty.reward
+        }
+      end)
 
     conn
-    |> send_resp(200, daily_quest.id)
+    |> send_resp(200, Jason.encode!(bounties))
   end
 end

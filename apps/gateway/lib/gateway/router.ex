@@ -12,6 +12,8 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
+    get "/get_bounties", QuestController, :get_bounties
+
     scope "/characters" do
       get "/configuration", CharacterController, :get_characters_config
     end
@@ -22,7 +24,6 @@ defmodule Gateway.Router do
       get "/get_daily_reward_status", UserController, :get_daily_reward_status
 
       scope "/quest" do
-        get "/:quest_id/add_bounty", QuestController, :add_bounty
         get "/:quest_id/reroll_quest", QuestController, :reroll_quest
       end
 
