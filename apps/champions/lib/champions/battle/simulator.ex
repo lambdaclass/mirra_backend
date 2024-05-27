@@ -621,24 +621,30 @@ defmodule Champions.Battle.Simulator do
     [caster.id]
   end
 
-  defp choose_targets_by_strategy(caster, %{type: %{"lowest" => stat}, target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(
+         caster,
+         %{type: %{"lowest" => stat}, target_allies: target_allies, count: count},
+         state
+       ) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    {_, target} =
-      Enum.min_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end)
-
-    [target.id]
+    Enum.sort_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end)
+    |> Enum.take(count)
+    |> Enum.map(fn {id, _unit} -> id end)
   end
 
-  defp choose_targets_by_strategy(caster, %{type: %{"highest" => stat}, target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(
+         caster,
+         %{type: %{"highest" => stat}, target_allies: target_allies, count: count},
+         state
+       ) do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    {_, target} =
-      Enum.max_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end)
-
-    [target.id]
+    Enum.sort_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end, :desc)
+    |> Enum.take(count)
+    |> Enum.map(fn {id, _unit} -> id end)
   end
 
   defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
