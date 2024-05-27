@@ -1245,15 +1245,15 @@ defmodule Champions.Test.BattleTest do
     end
 
     test "Lowest Health" do
-      # This test pairs a unit with a basic skill that deals damage to the enemy with the lowest health, against two target dummies.
-      # The first target dummy has 10 health points and the second one has 9 health points. The dummy with lowest health can kill the opponent in one hit, so if the lowest health targeting strategy fails, the battle will end in a victory for the team_2.
-      # The second dummy will hit team_1 unit once, for half of its health points, so if it hits twice the battle will end in a victory for the team_2.
+      # This test pairs a unit with a basic skill that deals damage to the enemy with the lowest health, against two targets.
+      # The first target has 10 health points and the second one has 9 health points. The enemy with lowest health can kill the opponent in one hit, so if the lowest health targeting strategy fails, the battle will end in a victory for the team_2.
+      # The second enemy will hit team_1 unit once, for half of its health points, so if it hits twice the battle will end in a victory for the team_2.
 
       attacker_cooldown = 1
       attacking_character_hp = 20
       attacking_character_base_attack = 10
-      highest_hp_target_dummy_hp = attacking_character_base_attack
-      lowest_hp_target_dummy_hp = attacking_character_base_attack - 1
+      highest_enemy_hp = attacking_character_base_attack
+      lowest_enemy_hp = attacking_character_base_attack - 1
 
       # Create a character with a basic skill that will deal 10 damage to all the enemies
       basic_skill_params =
@@ -1299,62 +1299,62 @@ defmodule Champions.Test.BattleTest do
       {:ok, attacking_unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
       {:ok, attacking_unit} = Units.get_unit(attacking_unit.id)
 
-      {:ok, target_dummy_character_lowest_health} =
+      {:ok, enemy_character_lowest_health} =
         TestUtils.build_character(%{
-          base_health: lowest_hp_target_dummy_hp,
+          base_health: lowest_enemy_hp,
           base_attack: attacking_character_hp,
-          name: "Lowest HP Target Dummy",
+          name: "Lowest HP Target Enemy",
           basic_skill:
             TestUtils.build_skill(%{
-              name: "Lowest HP Target Dummy Basic",
+              name: "Lowest HP Target Enemy Basic",
               cooldown: 1 + attacker_cooldown * @miliseconds_per_step
             }),
-          ultimate_skill: TestUtils.build_skill(%{name: "Lowest HP Target Dummy Ultimate"})
+          ultimate_skill: TestUtils.build_skill(%{name: "Lowest HP Target Enemy Ultimate"})
         })
         |> Characters.insert_character()
 
-      {:ok, target_dummy_lowest_health} =
-        TestUtils.build_unit(%{character_id: target_dummy_character_lowest_health.id}) |> Units.insert_unit()
+      {:ok, enemy_lowest_health} =
+        TestUtils.build_unit(%{character_id: enemy_character_lowest_health.id}) |> Units.insert_unit()
 
-      {:ok, target_dummy_lowest_health} = Units.get_unit(target_dummy_lowest_health.id)
+      {:ok, enemy_lowest_health} = Units.get_unit(enemy_lowest_health.id)
 
-      {:ok, target_dummy_character_highest_health} =
+      {:ok, enemy_character_highest_health} =
         TestUtils.build_character(%{
-          base_health: highest_hp_target_dummy_hp,
+          base_health: highest_enemy_hp,
           base_attack: trunc(attacking_character_hp / 2),
-          name: "Highest HP Target Dummy",
+          name: "Highest HP Target Enemy",
           basic_skill:
             TestUtils.build_skill(%{
-              name: "Highest HP Target Dummy Basic",
+              name: "Highest HP Target Enemy Basic",
               cooldown: 1 + attacker_cooldown * @miliseconds_per_step
             }),
-          ultimate_skill: TestUtils.build_skill(%{name: "Highest HP Target Dummy Ultimate"})
+          ultimate_skill: TestUtils.build_skill(%{name: "Highest HP Target Enemy Ultimate"})
         })
         |> Characters.insert_character()
 
-      {:ok, target_dummy_highest_health} =
-        TestUtils.build_unit(%{character_id: target_dummy_character_highest_health.id}) |> Units.insert_unit()
+      {:ok, enemy_highest_health} =
+        TestUtils.build_unit(%{character_id: enemy_character_highest_health.id}) |> Units.insert_unit()
 
-      {:ok, target_dummy_highest_health} = Units.get_unit(target_dummy_highest_health.id)
+      {:ok, enemy_highest_health} = Units.get_unit(enemy_highest_health.id)
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle(
                  [attacking_unit],
-                 [target_dummy_lowest_health, target_dummy_highest_health],
+                 [enemy_lowest_health, enemy_highest_health],
                  maximum_steps: 5
                ).result
     end
 
     test "Highest Health" do
-      # This test pairs a unit with a basic skill that deals damage to the enemy with the highest health, against two target dummies.
-      # The first target dummy has 10 health points and the second one has 9 health points. The dummy with highest health can kill the opponent in one hit, so if the highest health targeting strategy fails, the battle will end in a victory for the team_2.
-      # The second dummy will hit team_1 unit once, for half of its health points, so if it hits twice the battle will end in a victory for the team_2.
+      # This test pairs a unit with a basic skill that deals damage to the enemy with the highest health, against two targets.
+      # The first target has 10 health points and the second one has 9 health points. The enemy with highest health can kill the opponent in one hit, so if the highest health targeting strategy fails, the battle will end in a victory for the team_2.
+      # The second enemy will hit team_1 unit once, for half of its health points, so if it hits twice the battle will end in a victory for the team_2.
 
       attacker_cooldown = 1
       attacking_character_hp = 20
       attacking_character_base_attack = 10
-      highest_hp_target_dummy_hp = attacking_character_base_attack
-      lowest_hp_target_dummy_hp = attacking_character_base_attack - 1
+      highest_enemy_hp = attacking_character_base_attack
+      lowest_enemy_hp = attacking_character_base_attack - 1
 
       # Create a character with a basic skill that will deal 10 damage to all the enemies
       basic_skill_params =
@@ -1399,48 +1399,48 @@ defmodule Champions.Test.BattleTest do
       {:ok, attacking_unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
       {:ok, attacking_unit} = Units.get_unit(attacking_unit.id)
 
-      {:ok, target_dummy_character_lowest_health} =
+      {:ok, enemy_character_lowest_health} =
         TestUtils.build_character(%{
-          base_health: lowest_hp_target_dummy_hp,
+          base_health: lowest_enemy_hp,
           base_attack: trunc(attacking_character_hp / 2),
-          name: "Lowest HP Dummy",
+          name: "Lowest HP Enemy",
           basic_skill:
             TestUtils.build_skill(%{
-              name: "Lowest HP Dummy Basic",
+              name: "Lowest HP Enemy Basic",
               cooldown: 1 + attacker_cooldown * @miliseconds_per_step
             }),
-          ultimate_skill: TestUtils.build_skill(%{name: "Lowest HP Dummy Ultimate"})
+          ultimate_skill: TestUtils.build_skill(%{name: "Lowest HP Enemy Ultimate"})
         })
         |> Characters.insert_character()
 
-      {:ok, target_dummy_lowest_health} =
-        TestUtils.build_unit(%{character_id: target_dummy_character_lowest_health.id}) |> Units.insert_unit()
+      {:ok, enemy_lowest_health} =
+        TestUtils.build_unit(%{character_id: enemy_character_lowest_health.id}) |> Units.insert_unit()
 
-      {:ok, target_dummy_lowest_health} = Units.get_unit(target_dummy_lowest_health.id)
+      {:ok, enemy_lowest_health} = Units.get_unit(enemy_lowest_health.id)
 
-      {:ok, target_dummy_character_highest_health} =
+      {:ok, enemy_character_highest_health} =
         TestUtils.build_character(%{
-          base_health: highest_hp_target_dummy_hp,
+          base_health: highest_enemy_hp,
           base_attack: attacking_character_hp,
-          name: "Highest HP Dummy",
+          name: "Highest HP Enemy",
           basic_skill:
             TestUtils.build_skill(%{
-              name: "Highest HP Dummy Basic",
+              name: "Highest HP Enemy Basic",
               cooldown: 1 + attacker_cooldown * @miliseconds_per_step
             }),
-          ultimate_skill: TestUtils.build_skill(%{name: "Highest HP Dummy Ultimate"})
+          ultimate_skill: TestUtils.build_skill(%{name: "Highest HP Enemy Ultimate"})
         })
         |> Characters.insert_character()
 
-      {:ok, target_dummy_highest_health} =
-        TestUtils.build_unit(%{character_id: target_dummy_character_highest_health.id}) |> Units.insert_unit()
+      {:ok, enemy_highest_health} =
+        TestUtils.build_unit(%{character_id: enemy_character_highest_health.id}) |> Units.insert_unit()
 
-      {:ok, target_dummy_highest_health} = Units.get_unit(target_dummy_highest_health.id)
+      {:ok, enemy_highest_health} = Units.get_unit(enemy_highest_health.id)
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle(
                  [attacking_unit],
-                 [target_dummy_lowest_health, target_dummy_highest_health],
+                 [enemy_lowest_health, enemy_highest_health],
                  maximum_steps: 5
                ).result
     end
