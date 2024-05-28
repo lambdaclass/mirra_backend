@@ -9,7 +9,7 @@ defmodule GameBackend.Quests.UserQuest do
   alias GameBackend.Quests.Quest
   alias GameBackend.Users.User
 
-  schema "user_quest" do
+  schema "user_quests" do
     field(:completed_at, :utc_datetime)
     field(:status, :string)
     belongs_to(:quest, Quest)
