@@ -629,9 +629,10 @@ defmodule Champions.Battle.Simulator do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    Enum.sort_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end)
+    Enum.map(target_team, fn {_id, unit} -> unit end)
+    |> sort_units_by_stat(stat, true)
     |> Enum.take(count)
-    |> Enum.map(fn {id, _unit} -> id end)
+    |> Enum.map(fn unit -> unit.id end)
   end
 
   defp choose_targets_by_strategy(
@@ -642,9 +643,10 @@ defmodule Champions.Battle.Simulator do
     target_team =
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
-    Enum.sort_by(target_team, fn {_id, unit} -> calculate_unit_stat(unit, String.to_atom(stat)) end, :desc)
+    Enum.map(target_team, fn {_id, unit} -> unit end)
+    |> sort_units_by_stat(stat, false)
     |> Enum.take(count)
-    |> Enum.map(fn {id, _unit} -> id end)
+    |> Enum.map(fn unit -> unit.id end)
   end
 
   defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
@@ -1201,6 +1203,22 @@ defmodule Champions.Battle.Simulator do
           Map.take(unit, [:id, :health, :slot, :character_id, :team])
         end)
     }
+  end
+
+  defp sort_units_by_stat(units, stat, desc) do
+    Enum.sort(
+      units,
+      &cond do
+        calculate_unit_stat(&1, String.to_atom(stat)) > calculate_unit_stat(&2, String.to_atom(stat)) ->
+          if desc, do: false, else: true
+
+        calculate_unit_stat(&1, String.to_atom(stat)) == calculate_unit_stat(&2, String.to_atom(stat)) ->
+          if Enum.random([true, false]), do: true, else: false
+
+        true ->
+          if desc, do: true, else: false
+      end
+    )
   end
 
   defp string_to_atom("type"), do: :type
