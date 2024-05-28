@@ -17,6 +17,22 @@ import Config
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
 
+load_env_or_file! = fn application, env_key, priv_file_path ->
+  case {config_env(), System.get_env(env_key)} do
+    {:prod, nil} ->
+      raise "Missing env variable #{env_key}"
+
+    {_, value} when not is_nil(value) ->
+      value
+
+    _ ->
+      :code.priv_dir(application)
+      |> Path.join(priv_file_path)
+      |> File.read!()
+  end
+  |> String.trim()
+end
+
 ##########################
 # General configurations #
 ##########################
@@ -252,6 +268,9 @@ end
 ##############################
 # App configuration: gateway #
 ##############################
+config :gateway, Gateway.Auth.Guardian,
+  jwt_private_key:
+    load_env_or_file!.(:gateway, "JWT_PRIVATE_KEY", "guardian/dev_mirra_gateway_ed25519")
 
 ###################################
 # App configuration: configurator #

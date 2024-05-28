@@ -181,6 +181,12 @@ config :gateway, Gateway.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4001, dispatch: dispatch],
   server: true
 
+config :gateway, Gateway.Auth.Guardian,
+  issuer: "mirra_gateway",
+  allowed_algos: ["Ed25519"],
+  ttl: {1, :day},
+  secret_fetcher: Gateway.Auth.GuardianSecretFetcher
+
 ###################################
 # App configuration: configurator #
 ###################################
