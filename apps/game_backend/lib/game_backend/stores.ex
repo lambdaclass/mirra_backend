@@ -41,16 +41,11 @@ defmodule GameBackend.Stores do
   end
 
   def list_items_with_prices(store) do
-    store = Repo.preload(store, items: [item_costs: [currency_costs: :currency]])
+    store = Repo.preload(store, items: [purchase_costs: :currency])
 
     Enum.flat_map(store.items, fn item ->
-      Enum.map(item.item_costs, fn item_cost ->
-        %{
-          item.name =>
-            Enum.reduce(item_cost.currency_costs, %{}, fn currency_cost, acc ->
-              Map.put(acc, currency_cost.currency.name, currency_cost.amount)
-            end)
-        }
+      Enum.map(item.purchase_costs, fn purchase_cost ->
+        %{item.name => %{purchase_cost.currency.name => purchase_cost.amount}}
       end)
     end)
   end
