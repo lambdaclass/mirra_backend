@@ -326,7 +326,7 @@ _dungeon_settlement_levels =
       buffs: [
         %{
           modifiers: [
-            %{attribute: "health", magnitude: 1.05, operation: "Multiply"}
+            %{attribute: "health", magnitude: 0.05, operation: "Multiply"}
           ]
         }
       ]
