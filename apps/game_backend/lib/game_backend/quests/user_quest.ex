@@ -30,6 +30,6 @@ defmodule GameBackend.Quests.UserQuest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
-    |> validate_inclusion(:status, ["available", "completed", "rerolled", "lost"])
+    |> validate_inclusion(:status, ["available", "completed", "rerolled", "failed"])
   end
 end

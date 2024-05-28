@@ -123,7 +123,7 @@ defmodule GameBackend.Matches do
         if Quests.completed_daily_quest?(user_quest, [result]) do
           complete_quest_and_insert_currency(user_quest, google_user.user.id)
         else
-          UserQuest.changeset(user_quest, %{status: "lost"})
+          UserQuest.changeset(user_quest, %{status: "failed"})
           |> repo.update()
         end
       end)
