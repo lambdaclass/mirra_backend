@@ -17,7 +17,7 @@ defmodule GameBackend.Matches do
     |> add_google_users_to_multi(results)
     |> maybe_complete_quests()
     |> give_trophies(results)
-    |> lose_uncompleted_bounties(results)
+    |> process_bounties(results)
     |> Repo.transaction()
   end
 
@@ -100,37 +100,31 @@ defmodule GameBackend.Matches do
     end)
   end
 
-  defp lose_uncompleted_bounties(multi, results) do
-    Enum.reduce(results, multi, fn result, multi ->
-      user_id = result["user_id"]
+  defp process_bounties(multi, results) do
+    Enum.filter(results, fn result -> result["bounty_quest_id"] != "" end)
+    |> Enum.map(fn result -> Utils.convert_map_keys_to_atoms(result) end)
+    |> Enum.reduce(multi, fn result, multi ->
+      Multi.run(multi, {:process_bounty, result.user_id}, fn repo, %{get_google_users: google_users} ->
+        google_user = Enum.find(google_users, fn google_user -> google_user.id == result.user_id end)
 
-      Multi.run(multi, {:lose_uncompleted_bounty, user_id}, fn repo,
-                                                               %{
-                                                                 {:insert, ^user_id} => arena_match_result,
-                                                                 get_google_users: google_users
-                                                               } ->
-        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+        user_quest_attrs =
+          %{
+            quest_id: result.bounty_quest_id,
+            user_id: google_user.user.id,
+            status: "available"
+          }
 
-        correctly_updated_list =
-          google_user.user.daily_quests
-          |> Enum.filter(fn daily_quest -> daily_quest.quest.type == "bounty" and daily_quest.status == "available" end)
-          |> Enum.map(fn uncompleted_bounty ->
-            if Quests.completed_daily_quest?(uncompleted_bounty, [arena_match_result]) do
-              complete_quest_and_insert_currency(uncompleted_bounty, google_user.user.id)
-            else
-              changeset =
-                UserQuest.changeset(uncompleted_bounty, %{
-                  status: "lost"
-                })
+        user_quest_changeset = UserQuest.changeset(%UserQuest{}, user_quest_attrs)
 
-              repo.update(changeset)
-            end
-          end)
+        user_quest =
+          repo.insert!(user_quest_changeset)
+          |> repo.preload([:quest])
 
-        if Enum.empty?(correctly_updated_list) or Enum.all?(correctly_updated_list, fn {result, _} -> result == :ok end) do
-          {:ok, nil}
+        if Quests.completed_daily_quest?(user_quest, [result]) do
+          complete_quest_and_insert_currency(user_quest, google_user.user.id)
         else
-          {:error, nil}
+          UserQuest.changeset(user_quest, %{status: "lost"})
+          |> repo.update()
         end
       end)
     end)
