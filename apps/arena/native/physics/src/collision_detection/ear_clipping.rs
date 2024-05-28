@@ -158,7 +158,7 @@ fn get_cross_product_scalar(first_vector: &Position, second_vector: &Position) -
     first_vector.x * second_vector.y - first_vector.y * second_vector.x
 }
 
-// A polygon concave means that every inner angle doesn't have more then
+// A convex polygon means that every inner angle doesn't have more than
 // 180 degrees
 fn is_polygon_convex(polygon: &Entity) -> bool {
     let mut result = true;
