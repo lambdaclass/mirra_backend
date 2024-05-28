@@ -8547,7 +8547,7 @@ proto.PickBounty.prototype.toObject = function(opt_includeInstance) {
  */
 proto.PickBounty.toObject = function(includeInstance, msg) {
   var f, obj = {
-    questId: jspb.Message.getFieldWithDefault(msg, 1, "")
+    bountyQuestId: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
 
   if (includeInstance) {
@@ -8586,7 +8586,7 @@ proto.PickBounty.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setQuestId(value);
+      msg.setBountyQuestId(value);
       break;
     default:
       reader.skipField();
@@ -8617,7 +8617,7 @@ proto.PickBounty.prototype.serializeBinary = function() {
  */
 proto.PickBounty.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getQuestId();
+  f = message.getBountyQuestId();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -8628,10 +8628,10 @@ proto.PickBounty.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string quest_id = 1;
+ * optional string bounty_quest_id = 1;
  * @return {string}
  */
-proto.PickBounty.prototype.getQuestId = function() {
+proto.PickBounty.prototype.getBountyQuestId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
@@ -8640,7 +8640,7 @@ proto.PickBounty.prototype.getQuestId = function() {
  * @param {string} value
  * @return {!proto.PickBounty} returns this
  */
-proto.PickBounty.prototype.setQuestId = function(value) {
+proto.PickBounty.prototype.setBountyQuestId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -8664,7 +8664,7 @@ proto.GameAction.ActionTypeCase = {
   MOVE: 1,
   ATTACK: 2,
   USE_ITEM: 4,
-  PICK_BOUNTY: 5
+  SELECT_BOUNTY: 5
 };
 
 /**
@@ -8708,7 +8708,7 @@ proto.GameAction.toObject = function(includeInstance, msg) {
     move: (f = msg.getMove()) && proto.Move.toObject(includeInstance, f),
     attack: (f = msg.getAttack()) && proto.Attack.toObject(includeInstance, f),
     useItem: (f = msg.getUseItem()) && proto.UseItem.toObject(includeInstance, f),
-    pickBounty: (f = msg.getPickBounty()) && proto.PickBounty.toObject(includeInstance, f),
+    selectBounty: (f = msg.getSelectBounty()) && proto.PickBounty.toObject(includeInstance, f),
     timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
@@ -8764,7 +8764,7 @@ proto.GameAction.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = new proto.PickBounty;
       reader.readMessage(value,proto.PickBounty.deserializeBinaryFromReader);
-      msg.setPickBounty(value);
+      msg.setSelectBounty(value);
       break;
     case 3:
       var value = /** @type {number} */ (reader.readInt64());
@@ -8823,7 +8823,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
       proto.UseItem.serializeBinaryToWriter
     );
   }
-  f = message.getPickBounty();
+  f = message.getSelectBounty();
   if (f != null) {
     writer.writeMessage(
       5,
@@ -8953,10 +8953,10 @@ proto.GameAction.prototype.hasUseItem = function() {
 
 
 /**
- * optional PickBounty pick_bounty = 5;
+ * optional PickBounty select_bounty = 5;
  * @return {?proto.PickBounty}
  */
-proto.GameAction.prototype.getPickBounty = function() {
+proto.GameAction.prototype.getSelectBounty = function() {
   return /** @type{?proto.PickBounty} */ (
     jspb.Message.getWrapperField(this, proto.PickBounty, 5));
 };
@@ -8966,7 +8966,7 @@ proto.GameAction.prototype.getPickBounty = function() {
  * @param {?proto.PickBounty|undefined} value
  * @return {!proto.GameAction} returns this
 */
-proto.GameAction.prototype.setPickBounty = function(value) {
+proto.GameAction.prototype.setSelectBounty = function(value) {
   return jspb.Message.setOneofWrapperField(this, 5, proto.GameAction.oneofGroups_[0], value);
 };
 
@@ -8975,8 +8975,8 @@ proto.GameAction.prototype.setPickBounty = function(value) {
  * Clears the message field making it undefined.
  * @return {!proto.GameAction} returns this
  */
-proto.GameAction.prototype.clearPickBounty = function() {
-  return this.setPickBounty(undefined);
+proto.GameAction.prototype.clearSelectBounty = function() {
+  return this.setSelectBounty(undefined);
 };
 
 
@@ -8984,7 +8984,7 @@ proto.GameAction.prototype.clearPickBounty = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasPickBounty = function() {
+proto.GameAction.prototype.hasSelectBounty = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -9795,7 +9795,7 @@ proto.GameStatus = {
   PREPARING: 0,
   RUNNING: 1,
   ENDED: 2,
-  PICKING_BOUNTY: 3
+  SELECTING_BOUNTY: 3
 };
 
 /**

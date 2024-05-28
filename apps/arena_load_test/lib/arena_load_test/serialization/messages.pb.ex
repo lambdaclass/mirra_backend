@@ -6,7 +6,7 @@ defmodule ArenaLoadTest.Serialization.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
-  field(:PICKING_BOUNTY, 3)
+  field(:SELECTING_BOUNTY, 3)
 end
 
 defmodule ArenaLoadTest.Serialization.ProjectileStatus do
@@ -630,7 +630,7 @@ defmodule ArenaLoadTest.Serialization.PickBounty do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:quest_id, 1, type: :string, json_name: "questId")
+  field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
 defmodule ArenaLoadTest.Serialization.GameAction do
@@ -644,9 +644,9 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:attack, 2, type: ArenaLoadTest.Serialization.Attack, oneof: 0)
   field(:use_item, 4, type: ArenaLoadTest.Serialization.UseItem, json_name: "useItem", oneof: 0)
 
-  field(:pick_bounty, 5,
+  field(:select_bounty, 5,
     type: ArenaLoadTest.Serialization.PickBounty,
-    json_name: "pickBounty",
+    json_name: "selectBounty",
     oneof: 0
   )
 

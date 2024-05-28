@@ -35,8 +35,8 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:use_item, player_id, timestamp})
   end
 
-  def pick_bounty(game_pid, player_id, bounty_quest_id) do
-    GenServer.cast(game_pid, {:pick_bounty, player_id, bounty_quest_id})
+  def select_bounty(game_pid, player_id, bounty_quest_id) do
+    GenServer.cast(game_pid, {:select_bounty, player_id, bounty_quest_id})
   end
 
   ##########################
@@ -127,8 +127,8 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_cast({:pick_bounty, player_id, bounty_quest_id}, state) do
-    GameTracker.push_event(self(), {:pick_bounty, player_id, bounty_quest_id})
+  def handle_cast({:select_bounty, player_id, bounty_quest_id}, state) do
+    GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
 
     state =
       put_in(state, [:game_state, :players, player_id, :picked_bounty?], true)
@@ -193,7 +193,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:picking_bounty, state) do
     Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
 
-    {:noreply, put_in(state, [:game_state, :status], :PICKING_BOUNTY)}
+    {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
 
   def handle_info(:game_start, state) do
@@ -496,7 +496,7 @@ defmodule Arena.GameUpdater do
       if not player.aditional_info.picked_bounty and not Enum.empty?(player.aditional_info.bounties) do
         bounty = Enum.random(player.aditional_info.bounties)
 
-        GameTracker.push_event(self(), {:pick_bounty, player_id, bounty.id})
+        GameTracker.push_event(self(), {:select_bounty, player_id, bounty.id})
       end
     end)
 

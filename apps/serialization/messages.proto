@@ -120,7 +120,7 @@ enum GameStatus {
   PREPARING = 0;
   RUNNING = 1;
   ENDED = 2;
-  PICKING_BOUNTY = 3;
+  SELECTING_BOUNTY = 3;
 }
 
 /*
@@ -282,7 +282,7 @@ message UseItem {
   uint64 item = 1;
 }
 
-message PickBounty {
+message SelectBounty {
   string bounty_quest_id = 1;
 }
 
@@ -291,7 +291,7 @@ message GameAction {
     Move move = 1;
     Attack attack = 2;
     UseItem use_item = 4;
-    PickBounty pick_bounty = 5;
+    SelectBounty select_bounty = 5;
   }
   int64 timestamp = 3;
 }

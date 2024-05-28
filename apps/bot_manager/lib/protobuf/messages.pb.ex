@@ -6,7 +6,7 @@ defmodule BotManager.Protobuf.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
-  field(:PICKING_BOUNTY, 3)
+  field(:SELECTING_BOUNTY, 3)
 end
 
 defmodule BotManager.Protobuf.ProjectileStatus do
@@ -595,7 +595,7 @@ defmodule BotManager.Protobuf.PickBounty do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:quest_id, 1, type: :string, json_name: "questId")
+  field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
 defmodule BotManager.Protobuf.GameAction do
@@ -608,7 +608,13 @@ defmodule BotManager.Protobuf.GameAction do
   field(:move, 1, type: BotManager.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: BotManager.Protobuf.Attack, oneof: 0)
   field(:use_item, 4, type: BotManager.Protobuf.UseItem, json_name: "useItem", oneof: 0)
-  field(:pick_bounty, 5, type: BotManager.Protobuf.PickBounty, json_name: "pickBounty", oneof: 0)
+
+  field(:select_bounty, 5,
+    type: BotManager.Protobuf.PickBounty,
+    json_name: "selectBounty",
+    oneof: 0
+  )
+
   field(:timestamp, 3, type: :int64)
 end
 
