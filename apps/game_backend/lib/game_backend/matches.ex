@@ -104,7 +104,7 @@ defmodule GameBackend.Matches do
     Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
     |> Enum.map(fn result -> Utils.convert_map_keys_to_atoms(result) end)
     |> Enum.reduce(multi, fn result, multi ->
-      Multi.run(multi, {:process_bounty, result.user_id}, fn repo, %{get_google_users: google_users} ->
+      Multi.run(multi, {:complete_of_fail_bounty, result.user_id}, fn repo, %{get_google_users: google_users} ->
         google_user = Enum.find(google_users, fn google_user -> google_user.id == result.user_id end)
 
         user_quest_attrs =
