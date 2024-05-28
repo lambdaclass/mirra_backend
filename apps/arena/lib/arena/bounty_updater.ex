@@ -35,7 +35,7 @@ defmodule Arena.BountyUpdater do
         {:ok, %{status: 200, body: body}} ->
           Jason.decode!(body, [{:keys, :atoms}])
 
-        {:error, _} ->
+        _ ->
           []
       end
 
