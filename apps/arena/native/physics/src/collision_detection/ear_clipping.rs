@@ -24,9 +24,9 @@ pub(crate) fn maybe_triangulate_polygon(mut polygon: Entity) -> Vec<Entity> {
     triangulate_polygon(&polygon)
 }
 
-// Here we'll remove any vertices are shouldn't be part of the polygon or are useless
-// - If three vertices are in a line that's a useless connections that we should remove
-fn clean_extra_vertices(polygon: &mut Entity) {
+// Remove redundant vertices.
+// A redundant vertex is one that is in the middle of a straight line drawn by two other vertices.
+fn remove_redundant_vertices(polygon: &mut Entity) {
     let mut cleaned_vertices = vec![];
     for current_vertex_index in 0..polygon.vertices.len() {
         let previous_vertex_index =
