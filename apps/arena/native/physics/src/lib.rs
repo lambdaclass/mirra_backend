@@ -177,7 +177,7 @@ fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
 }
 
 #[rustler::nif()]
-fn process_polygon_triangulation(obstacles: Vec<Entity>) -> Vec<Entity> {
+fn maybe_triangulate_concave_entities(obstacles: Vec<Entity>) -> Vec<Entity> {
     let mut result = vec![];
     for obstacle in obstacles {
         let mut triangulated_polygons = ear_clipping::maybe_triangulate_polygon(obstacle);
@@ -238,6 +238,6 @@ rustler::init!(
         distance_between_entities,
         nearest_entity_position_in_range,
         get_closest_available_position,
-        process_polygon_triangulation
+        maybe_triangulate_concave_entities
     ]
 );
