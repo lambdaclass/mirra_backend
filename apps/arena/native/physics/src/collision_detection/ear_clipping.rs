@@ -70,11 +70,10 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
             let previous_vertex = positions[previous_vertex_index];
             let current_vertex = positions[current_vertex_index];
             let next_vertex = positions[next_vertex_index];
-
-            if is_position_ear(current_vertex, previous_vertex, next_vertex, &positions) {
+            let candidate_triangle =
+                Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
+            if is_triangle_ear(&candidate_triangle, &positions) {
                 ear_found = true;
-                let triangle_vertex = vec![current_vertex, next_vertex, previous_vertex];
-                let candidate_triangle = Entity::new_polygon(1, triangle_vertex);
                 result.push(candidate_triangle);
                 positions.retain(|pos| pos != &current_vertex);
                 break;
@@ -89,8 +88,8 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     let current_vertex = positions[1];
     let next_vertex = positions[2];
 
-    let triangle_vertex = vec![current_vertex, next_vertex, previous_vertex];
-    let candidate_triangle = Entity::new_polygon(1, triangle_vertex);
+    let candidate_triangle =
+        Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
     result.push(candidate_triangle);
 
     // This algorithm should always result n - 2 triangles where n is the amount of vertex
@@ -105,20 +104,15 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
 // Check if the three vertex are a valid ear, this means
 // 1. The inner angle formed by the three vertex isn't greater that 180 degrees
 // 2. There isn't any vertex inside the triangle area
-fn is_position_ear(
-    current_vertex: Position,
-    previous_vertex: Position,
-    next_vertex: Position,
-    vertices: &Vec<Position>,
-) -> bool {
-    let triangle_vertex = vec![previous_vertex, current_vertex, next_vertex];
-
-    let candidate_triangle = Entity::new_polygon(1, triangle_vertex);
+fn is_triangle_ear(triangle: &Entity, vertices: &Vec<Position>) -> bool {
+    let previous_vertex = triangle.vertices[0];
+    let current_vertex = triangle.vertices[1];
+    let next_vertex = triangle.vertices[2];
 
     let first_vector = Position::sub(&previous_vertex, &current_vertex);
     let second_vector = Position::sub(&next_vertex, &current_vertex);
 
-    let triangle_has_point_inside = triangle_has_point_inside(&candidate_triangle, vertices);
+    let triangle_has_point_inside = triangle_has_point_inside(triangle, vertices);
 
     get_cross_product_scalar(&first_vector, &second_vector) > 0.0 && !triangle_has_point_inside
 }
