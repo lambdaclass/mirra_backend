@@ -16,6 +16,8 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
     end
   end
 
+  # TODO Add stock and amount check for store buyables and also
+  # TODO allow to buy currencies. https://github.com/lambdaclass/mirra_backend/issues/661
   def buy_item(conn, params) do
     with {:ok, store} <- Stores.get_store_by_name(params["store_name"]),
          {:ok, :active} <- Stores.is_active(store),
