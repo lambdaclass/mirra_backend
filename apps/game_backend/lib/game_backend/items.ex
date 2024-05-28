@@ -11,7 +11,6 @@ defmodule GameBackend.Items do
   alias Ecto.Multi
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
-  alias GameBackend.Items.ItemCost
   alias GameBackend.Users.Currencies
   alias GameBackend.Repo
   alias GameBackend.Units
@@ -204,15 +203,14 @@ defmodule GameBackend.Items do
   Receives an item template name and a game id.
   Returns {:ok, item_template} if found or {:error, :not_found} otherwise.
   """
-  def get_purchasable_template_id_by_name_and_game_id(name, game_id) do
+  def get_purchasable_template_by_name_and_game_id(name, game_id) do
     case Repo.one(
            from(it in ItemTemplate,
-             where: it.name == ^name and it.game_id == ^game_id and it.purchasable?,
-             select: it.id
+             where: it.name == ^name and it.game_id == ^game_id and it.purchasable?
            )
          ) do
       nil -> {:error, :not_found}
-      item_template_id -> {:ok, item_template_id}
+      item_template -> {:ok, item_template}
     end
   end
 
@@ -253,14 +251,14 @@ defmodule GameBackend.Items do
   Returns {:error, :not_found} if there are none.
   Fails if there are more than one.
   """
-  def get_item_cost_by_name(cost_name, item_template_id) do
-    case Repo.one(
-           from(cost in ItemCost,
-             where: cost.name == ^cost_name and cost.item_template_id == ^item_template_id
-           )
-         ) do
+  def get_purchase_cost_by_currency(currency_id, item_template) do
+    purchase_cost =
+      Map.get(item_template, :purchase_costs)
+      |> Enum.find(fn purchase_cost -> purchase_cost.currency_id == currency_id end)
+
+    case purchase_cost do
       nil -> {:error, :not_found}
-      item_cost -> {:ok, item_cost}
+      purchase_cost -> {:ok, purchase_cost}
     end
   end
 
@@ -271,12 +269,10 @@ defmodule GameBackend.Items do
   Returns {:ok, map_of_ran_operations} in case of success.
   Returns {:error, failed_operation, failed_value, changes_so_far} if one of the operations fail.
   """
-  def buy_item(user_id, template_id, currency_costs_list) do
+  def buy_item(user_id, template_id, purchase_costs_list) do
     Multi.new()
     |> Multi.run(:item, fn _, _ -> insert_item(%{user_id: user_id, template_id: template_id}) end)
-    |> Multi.run(:currencies, fn _, _ ->
-      Currencies.substract_currencies(user_id, currency_costs_list)
-    end)
+    |> Multi.run(:currencies, fn _, _ -> Currencies.substract_currencies(user_id, purchase_costs_list) end)
     |> Repo.transaction()
   end
 end
