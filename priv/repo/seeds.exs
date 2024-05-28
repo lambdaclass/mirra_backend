@@ -1,4 +1,3 @@
-alias GameBackend.Stores.Store
 alias GameBackend.Utils
 alias GameBackend.Campaigns
 alias GameBackend.Campaigns.Campaign
@@ -10,11 +9,9 @@ alias GameBackend.Repo
 alias GameBackend.Units
 alias GameBackend.Units.Unit
 alias GameBackend.Units.Characters
-alias GameBackend.Items
 alias GameBackend.Users
 alias GameBackend.Users.DungeonSettlementLevel
 alias GameBackend.Users.KalineTreeLevel
-alias GameBackend.Users.Currencies.Currency
 alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
@@ -336,7 +333,7 @@ dungeon_levels =
 
 units =
   Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
+    _campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
 
     base_level = dungeon_rules.base_level
     level_scaler = dungeon_rules.scaler
@@ -383,4 +380,5 @@ Config.get_characters_config()
   |> Map.put(:faction, "none")
   |> Characters.insert_character()
 end)
+
 ################### END CURSE OF MIRRA ###################
