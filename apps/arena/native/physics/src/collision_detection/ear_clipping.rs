@@ -11,7 +11,7 @@ The logic of the algorithm goes like this:
    - Start again with the cleaned up vertex list until the list length is 3
 3. Make a final triangle with the 3 remaining vertices
 
-Even tho the resolution is different the logic is the same as the following article:
+Even though the resolution is different, the logic is the same as the following article:
 - [Geometric tools article](https://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf)
 
 */
