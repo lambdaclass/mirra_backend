@@ -1554,4 +1554,60 @@ defmodule Champions.Test.BattleTest do
                Champions.Battle.Simulator.run_battle([speeder], [damager], maximum_steps: maximum_steps + 1).result
     end
   end
+
+  describe "Executions over time" do
+    test "DealDamage over time", %{target_dummy: target_dummy} do
+      # We will create a battle between a damaging unit and a target dummy.
+      # The unit's basic skill will deal 4 points of damage to the target dummy over 3 steps, killing it in the third one.
+      # The battle should finish with a victory for team_1 after the third step, or in timeout if the steps are less than 3.
+      maximum_steps = 3
+
+      deal_damage_over_time_params =
+        TestUtils.build_skill(%{
+          name: "DealDamageOverTime",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions_over_time: [
+                        %{
+                          type: "DealDamageOverTime",
+                          attack_ratio: 1,
+                          apply_tags: ["Burn"],
+                          interval: 3 * @miliseconds_per_step
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: 0
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "DealDamageOverTime Character",
+          basic_skill: deal_damage_over_time_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "DealDamageOverTime Empty Skill"}),
+          base_attack: 4
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+    end
+  end
 end

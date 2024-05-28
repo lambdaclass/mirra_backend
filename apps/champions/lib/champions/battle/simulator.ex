@@ -7,7 +7,7 @@ defmodule Champions.Battle.Simulator do
   The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
   Skills possess many mechanics. The only implemented mechanic right now is `ApplyEffectsTo`, which is composed of many effects
-  and a targeting strategy. Effects are composed of `Components`, `Modifiers` and `Executions` (check module docs for more info on each).
+  and a targeting strategy. Effects are composed of `Components`, `Modifiers`, `Executions` and `ExecutionsOverTime` (check docs for more info on each).
 
   ### ApplyEffectsTo mechanics
 
@@ -377,6 +377,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_step_for_skills({current_state, history}, initial_step_state) do
+    IO.inspect(current_state.skills_being_cast)
     Enum.reduce(current_state.skills_being_cast, {current_state, history}, fn skill, {current_state, history_acc} ->
       Logger.info(
         "Process step #{current_state.step_number} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"

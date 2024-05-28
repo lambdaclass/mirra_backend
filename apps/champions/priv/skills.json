@@ -1027,8 +1027,8 @@
                 {
                   "type": "DealDamageOverTime",
                   "attack_ratio": 0.24,
-                  "energy_recharge": 50,
-                  "dot_type": "Burn"
+                  "apply_tags": ["Burn"],
+                  "interval": 2000
                 }
               ]
             }
@@ -1958,8 +1958,8 @@
                 {
                   "type": "DealDamageOverTime",
                   "attack_ratio": 0.32,
-                  "energy_recharge": 50,
-                  "dot_type": "Burn"
+                  "apply_tags": ["Burn"],
+                  "interval": 10000
                 }
               ]
             }
@@ -2252,7 +2252,8 @@
               "executions_over_time": [
                 {
                   "type": "HealOverTime",
-                  "attack_ratio": 0.17
+                  "attack_ratio": 0.17,
+                  "interval": 5000
                 }
               ]
             }

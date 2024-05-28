@@ -86,14 +86,15 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
       %{
         type: "DealDamageOverTime",
         attack_ratio: _attack_ratio,
-        energy_recharge: _energy_recharge,
-        dot_type: _dot_type
+        apply_tags: _apply_tags,
+        interval: _interval
       } ->
         true
 
       %{
         type: "HealOverTime",
-        attack_ratio: _attack_ratio
+        attack_ratio: _attack_ratio,
+        interval: _interval
       } ->
         true
 
