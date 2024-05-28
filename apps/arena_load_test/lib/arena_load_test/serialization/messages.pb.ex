@@ -625,7 +625,7 @@ defmodule ArenaLoadTest.Serialization.UseItem do
   field(:item, 1, type: :uint64)
 end
 
-defmodule ArenaLoadTest.Serialization.PickQuest do
+defmodule ArenaLoadTest.Serialization.PickBounty do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -644,9 +644,9 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:attack, 2, type: ArenaLoadTest.Serialization.Attack, oneof: 0)
   field(:use_item, 4, type: ArenaLoadTest.Serialization.UseItem, json_name: "useItem", oneof: 0)
 
-  field(:pick_quest, 5,
-    type: ArenaLoadTest.Serialization.PickQuest,
-    json_name: "pickQuest",
+  field(:pick_bounty, 5,
+    type: ArenaLoadTest.Serialization.PickBounty,
+    json_name: "pickBounty",
     oneof: 0
   )
 
