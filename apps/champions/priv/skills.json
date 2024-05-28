@@ -993,7 +993,9 @@
                   "type": "DealDamage",
                   "attack_ratio": 1.16,
                   "energy_recharge": 50
-                },
+                }                
+              ],
+              "executions_over_time": [
                 {
                   "type": "DealDamageOverTime",
                   "attack_ratio": 0.24,
@@ -1898,7 +1900,9 @@
                   "attack_ratio": 0.73,
                   "energy_recharge": 50,
                   "delay": 0
-                },
+                }
+              ],
+              "executions_over_time": [
                 {
                   "type": "DealDamageOverTime",
                   "attack_ratio": 0.32,
@@ -2185,7 +2189,8 @@
                   "magnitude": 1.07
                 }
               ],
-              "executions": [
+              "executions": [],
+              "executions_over_time": [
                 {
                   "type": "HealOverTime",
                   "attack_ratio": 0.17
