@@ -85,5 +85,32 @@
             "currency": "Gold",
             "amount": 4
         }
+    },
+    {
+        "config_id": 5,
+        "description": "Skill Issue",
+        "type": "bounty",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "deaths",
+                "value": 1,
+                "comparison": "greater_or_equal"
+            },
+            {
+                "match_tracking_field": "kills",
+                "value": 0,
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 4
+        }
     }
 ]
