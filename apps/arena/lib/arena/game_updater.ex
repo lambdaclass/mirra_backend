@@ -5,7 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
-  alias Arena.BountyUpdater
+  alias Arena.GameBountyCache
   alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
@@ -78,7 +78,7 @@ defmodule Arena.GameUpdater do
 
       player_id ->
         bounties =
-          BountyUpdater.get_bounties()
+          GameBountyCache.get_bounties()
 
         response = %{
           player_id: player_id,
