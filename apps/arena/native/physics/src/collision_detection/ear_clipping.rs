@@ -18,7 +18,7 @@ Even though the resolution is different, the logic is the same as the following 
 
 pub(crate) fn maybe_triangulate_polygon(mut polygon: Entity) -> Vec<Entity> {
     clean_extra_vertices(&mut polygon);
-    if is_polygon_concave(&polygon) {
+    if is_polygon_convex(&polygon) {
         return vec![polygon.clone()];
     }
     triangulate_polygon(&polygon)
@@ -160,7 +160,7 @@ fn get_cross_product_scalar(first_vector: &Position, second_vector: &Position) -
 
 // A polygon concave means that every inner angle doesn't have more then
 // 180 degrees
-fn is_polygon_concave(polygon: &Entity) -> bool {
+fn is_polygon_convex(polygon: &Entity) -> bool {
     let mut result = true;
     for current_vertex_index in 0..polygon.vertices.len() {
         let previous_vertex_index =
