@@ -184,9 +184,8 @@ defmodule Arena.GameSocketHandler do
 
   defp handle_decoded_message(
          _,
-         %{enable: enable} = _state
-       )
-       when not enable,
+         %{enable: false} = _state
+       ),
        do: nil
 
   defp handle_decoded_message(
