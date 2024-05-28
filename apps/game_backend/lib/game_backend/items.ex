@@ -206,7 +206,7 @@ defmodule GameBackend.Items do
   def get_template_by_name_and_game_id(name, game_id) do
     case Repo.one(
            from(it in ItemTemplate,
-             where: it.name == ^name and it.game_id == ^game_id,
+             where: it.name == ^name and it.game_id == ^game_id
            )
          ) do
       nil -> {:error, :not_found}

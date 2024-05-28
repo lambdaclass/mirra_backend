@@ -438,4 +438,5 @@ Config.get_characters_config()
   |> Map.put(:faction, "none")
   |> Characters.insert_character()
 end)
+
 ################### END CURSE OF MIRRA ###################

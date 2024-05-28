@@ -70,5 +70,6 @@ defmodule GameBackend.CurseOfMirra.Config do
     {:ok, datetime, _offset} = DateTime.from_iso8601(string_date)
     datetime
   end
+
   #############################################
 end
