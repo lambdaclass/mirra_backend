@@ -17,7 +17,7 @@ Even though the resolution is different, the logic is the same as the following 
 */
 
 pub(crate) fn maybe_triangulate_polygon(mut polygon: Entity) -> Vec<Entity> {
-    clean_extra_vertices(&mut polygon);
+    remove_redundant_vertices(&mut polygon);
     if is_polygon_convex(&polygon) {
         return vec![polygon.clone()];
     }
@@ -50,32 +50,32 @@ fn is_vertex_consecutive(
     current_vertex: &Position,
     next_vertex: &Position,
 ) -> bool {
-    let first_vector = Position::sub(previous_vertex, current_vertex);
-    let second_vector = Position::sub(next_vertex, current_vertex);
+    let current_to_previous_vector = Position::sub(previous_vertex, current_vertex);
+    let current_to_next_vector = Position::sub(next_vertex, current_vertex);
 
-    get_cross_product_scalar(&first_vector, &second_vector) == 0.0
+    get_cross_product_value(&current_to_previous_vector, &current_to_next_vector) == 0.0
 }
 
 fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     let mut result: Vec<Entity> = vec![];
-    let mut positions = polygon.vertices.clone();
+    let mut vertices = polygon.vertices.clone();
     let mut ear_found: bool;
 
-    while positions.len() > 3 {
+    while vertices.len() > 3 {
         ear_found = false;
-        for current_vertex_index in 0..positions.len() {
-            let previous_vertex_index = get_previous_cyclic_index(current_vertex_index, &positions);
-            let next_vertex_index = get_next_cyclic_index(current_vertex_index, &positions);
+        for current_vertex_index in 0..vertices.len() {
+            let previous_vertex_index = get_previous_cyclic_index(current_vertex_index, &vertices);
+            let next_vertex_index = get_next_cyclic_index(current_vertex_index, &vertices);
 
-            let previous_vertex = positions[previous_vertex_index];
-            let current_vertex = positions[current_vertex_index];
-            let next_vertex = positions[next_vertex_index];
+            let previous_vertex = vertices[previous_vertex_index];
+            let current_vertex = vertices[current_vertex_index];
+            let next_vertex = vertices[next_vertex_index];
             let candidate_triangle =
                 Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
-            if is_triangle_ear(&candidate_triangle, &positions) {
+            if is_triangle_ear(&candidate_triangle, &vertices) {
                 ear_found = true;
                 result.push(candidate_triangle);
-                positions.retain(|pos| pos != &current_vertex);
+                vertices.retain(|pos| pos != &current_vertex);
                 break;
             }
         }
@@ -84,9 +84,9 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
             panic!("No ear detected, polygon invalid")
         }
     }
-    let previous_vertex = positions[0];
-    let current_vertex = positions[1];
-    let next_vertex = positions[2];
+    let previous_vertex = vertices[0];
+    let current_vertex = vertices[1];
+    let next_vertex = vertices[2];
 
     let candidate_triangle =
         Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
@@ -101,20 +101,21 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     result
 }
 
-// Check if the three vertex are a valid ear, this means
-// 1. The inner angle formed by the three vertex isn't greater that 180 degrees
+// Check if the three vertices are a valid ear, this means
+// 1. The inner angle formed by the three vertices aren't greater than 180 degrees
 // 2. There isn't any vertex inside the triangle area
 fn is_triangle_ear(triangle: &Entity, vertices: &Vec<Position>) -> bool {
     let previous_vertex = triangle.vertices[0];
     let current_vertex = triangle.vertices[1];
     let next_vertex = triangle.vertices[2];
 
-    let first_vector = Position::sub(&previous_vertex, &current_vertex);
-    let second_vector = Position::sub(&next_vertex, &current_vertex);
+    let current_to_previous_vector = Position::sub(&previous_vertex, &current_vertex);
+    let current_to_next_vector = Position::sub(&next_vertex, &current_vertex);
 
     let triangle_has_point_inside = triangle_has_point_inside(triangle, vertices);
 
-    get_cross_product_scalar(&first_vector, &second_vector) > 0.0 && !triangle_has_point_inside
+    get_cross_product_value(&current_to_previous_vector, &current_to_next_vector) > 0.0
+        && !triangle_has_point_inside
 }
 
 // Check if any vertex beside the one that belongs to the triangle is inside the triangle area
@@ -133,9 +134,12 @@ fn triangle_has_point_inside(triangle: &Entity, vertex: &Vec<Position>) -> bool 
         let vector_b_to_v = Position::sub(v, &triangle.vertices[1]);
         let vector_c_to_v = Position::sub(v, &triangle.vertices[2]);
 
-        let first_cross_product = get_cross_product_scalar(&vector_from_a_to_b, &vector_a_to_v);
-        let second_cross_product = get_cross_product_scalar(&vector_from_b_to_c, &vector_b_to_v);
-        let third_cross_product = get_cross_product_scalar(&vector_from_c_to_a, &vector_c_to_v);
+        // Cross product between A->B with A->V
+        let first_cross_product = get_cross_product_value(&vector_from_a_to_b, &vector_a_to_v);
+        // Cross product between B->C with B->V
+        let second_cross_product = get_cross_product_value(&vector_from_b_to_c, &vector_b_to_v);
+        // Cross product between C->A with C->V
+        let third_cross_product = get_cross_product_value(&vector_from_c_to_a, &vector_c_to_v);
 
         result = result
             || (first_cross_product < 0.0
@@ -148,7 +152,7 @@ fn triangle_has_point_inside(triangle: &Entity, vertex: &Vec<Position>) -> bool 
 
 // Usually cross product results in another vector but since this is a two dimensional vector and
 // We just wanna use the value from this result we're going to return a numerical value
-fn get_cross_product_scalar(first_vector: &Position, second_vector: &Position) -> f32 {
+fn get_cross_product_value(first_vector: &Position, second_vector: &Position) -> f32 {
     first_vector.x * second_vector.y - first_vector.y * second_vector.x
 }
 
@@ -168,7 +172,7 @@ fn is_polygon_convex(polygon: &Entity) -> bool {
         let first_vector = Position::sub(&previous_vertex, &current_vertex);
         let second_vector = Position::sub(&next_vertex, &current_vertex);
 
-        result = result && get_cross_product_scalar(&first_vector, &second_vector) >= 0.0;
+        result = result && get_cross_product_value(&first_vector, &second_vector) >= 0.0;
     }
 
     result
