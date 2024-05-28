@@ -6,7 +6,7 @@ defmodule GameClient.Protobuf.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
-  field(:PICKING_QUEST, 3)
+  field(:PICKING_BOUNTY, 3)
 end
 
 defmodule GameClient.Protobuf.ProjectileStatus do

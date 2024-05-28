@@ -50,7 +50,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-    Process.send_after(self(), :picking_quest, game_config.game.start_game_time_ms)
+    Process.send_after(self(), :picking_bounty, game_config.game.start_game_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -190,10 +190,10 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_info(:picking_quest, state) do
+  def handle_info(:picking_bounty, state) do
     Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
 
-    {:noreply, put_in(state, [:game_state, :status], :PICKING_QUEST)}
+    {:noreply, put_in(state, [:game_state, :status], :PICKING_BOUNTY)}
   end
 
   def handle_info(:game_start, state) do

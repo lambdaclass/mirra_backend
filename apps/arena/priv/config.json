@@ -844,7 +844,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "quest_pick_time_ms": 10000,
+    "quest_pick_time_ms": 0,
     "start_game_time_ms": 10000,
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,

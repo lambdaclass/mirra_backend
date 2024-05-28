@@ -9795,7 +9795,7 @@ proto.GameStatus = {
   PREPARING: 0,
   RUNNING: 1,
   ENDED: 2,
-  PICKING_QUEST: 3
+  PICKING_BOUNTY: 3
 };
 
 /**
