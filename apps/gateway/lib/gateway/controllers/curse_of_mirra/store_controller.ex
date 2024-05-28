@@ -21,15 +21,15 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
          {:ok, :active} <- Stores.is_active(store),
          {:ok, :item_in_store} <-
            Stores.item_in_store(params["item_name"], store.id, Utils.get_game_id(:curse_of_mirra)),
-         {:ok, currency} <-
-           Currencies.get_currency_by_name_and_game(params["currency_name"], Utils.get_game_id(:curse_of_mirra)),
          {:ok, item_template} <-
            Items.get_template_by_name_and_game_id(
              params["item_name"],
              Utils.get_game_id(:curse_of_mirra)
            ),
+         {:ok, currency} <-
+           Currencies.get_currency_by_name_and_game(params["currency_name"], Utils.get_game_id(:curse_of_mirra)),
          {:ok, purchase_cost} <-
-           Items.get_purchase_cost_by_currency(currency.id, item_template.id),
+           Items.get_purchase_cost_by_currency(currency.id, item_template),
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(params["user_id"], [purchase_cost])},
          {:ok, item_updates_map} <- Items.buy_item(params["user_id"], item_template.id, [purchase_cost]) do
       send_resp(conn, 200, Jason.encode!(item_updates_map.item.id))
