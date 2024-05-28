@@ -1,15 +1,28 @@
-<.form for={@data}>
+<.form for={@form} phx-change="validate" phx-submit="save">
   <div class="flex">
     <%= for key <- @keys do %>
       <span
         phx-click={:select_key}
         phx-value-key={key}
-        class={"p-2 text-xl border rounded-t-md #{if @selected_key == key, do: 'bg-indigo-500 text-white'}"}
+        class={"p-2 text-xl border rounded-t-md #{if @selected_key == key, do: 'bg-[#615EFC] text-white'}"}
       >
         <%= String.capitalize(key) %>
       </span>
     <% end %>
   </div>
 
-  <%= render_field(@data[@selected_key]) %>
+  <%= case @selected_key do %>
+
+  <% "game" -> %>
+    <.render_game_form data={@data} form={@form} selected_key={@selected_key}/>
+
+  <% "effects" -> %>
+    <.render_effects_form data={@data} form={@form} selected_key={@selected_key}/>
+
+  <% end %>
+
+
+  <button class="p-1 bg-indigo-500 text-white rounded-md">
+    Save Configuration
+  </button>
 </.form>
