@@ -50,7 +50,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-    Process.send_after(self(), :pick_quest, game_config.game.start_game_time_ms)
+    Process.send_after(self(), :picking_quest, game_config.game.start_game_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -79,7 +79,6 @@ defmodule Arena.GameUpdater do
       player_id ->
         bounties =
           BountyUpdater.get_bounties()
-          |> IO.inspect(label: "aber bounties")
 
         response = %{
           player_id: player_id,
@@ -87,6 +86,9 @@ defmodule Arena.GameUpdater do
           game_status: state.game_state.status,
           bounties: bounties
         }
+
+        state =
+          put_in(state, [:game_state, :players, player_id, :bounties], bounties)
 
         {:reply, {:ok, response}, state}
     end
@@ -127,6 +129,10 @@ defmodule Arena.GameUpdater do
 
   def handle_cast({:pick_quest, player_id, quest_id}, state) do
     GameTracker.push_event(self(), {:pick_quest, player_id, quest_id})
+
+    state =
+      put_in(state, [:game_state, :players, player_id, :picked_bounty?], true)
+
     {:noreply, state}
   end
 
@@ -184,8 +190,7 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_info(:pick_quest, state) do
-    broadcast_enable_incomming_messages(state.game_state.game_id)
+  def handle_info(:picking_quest, state) do
     Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
 
     {:noreply, put_in(state, [:game_state, :status], :PICKING_QUEST)}
@@ -195,6 +200,7 @@ defmodule Arena.GameUpdater do
     broadcast_enable_incomming_messages(state.game_state.game_id)
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    send(self(), :pick_default_bouty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
@@ -482,6 +488,18 @@ defmodule Arena.GameUpdater do
 
   def handle_info({:block_movement, player_id, value}, state) do
     broadcast_player_block_movement(state.game_state.game_id, player_id, value)
+    {:noreply, state}
+  end
+
+  def handle_info(:pick_default_bouty_for_missing_players, state) do
+    Enum.each(state.game_state.players, fn {player_id, player} ->
+      if not player.picked_bounty and not Enum.empty?(player.bounties) do
+        bounty = Enum.random(player.bounties)
+
+        GameTracker.push_event(self(), {:pick_quest, player_id, bounty.id})
+      end
+    end)
+
     {:noreply, state}
   end
 
