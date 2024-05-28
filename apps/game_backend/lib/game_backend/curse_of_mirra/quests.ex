@@ -163,18 +163,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def add_quest_to_user(user_id, quest_id) do
-    attrs = %{
-      user_id: user_id,
-      quest_id: quest_id,
-      status: "available"
-    }
-
-    changeset = UserQuest.changeset(%UserQuest{}, attrs)
-
-    Repo.insert(changeset)
-  end
-
   def add_daily_quests_to_user_id(user_id, amount, type) do
     available_quests =
       get_user_missing_quests_by_type(user_id, type)
