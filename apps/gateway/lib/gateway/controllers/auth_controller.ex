@@ -18,4 +18,14 @@ defmodule Gateway.Controllers.AuthController do
         send_resp(conn, 400, Jason.encode!(Map.new(error)))
     end
   end
+
+  def public_key(conn, _params) do
+    {_, jwk} =
+      Application.get_env(:gateway, Gateway.Auth.Guardian)[:jwt_private_key]
+      |> JOSE.JWK.from_openssh_key()
+      |> JOSE.JWK.to_public()
+      |> JOSE.JWK.to_map()
+
+    json(conn, %{jwk: jwk})
+  end
 end
