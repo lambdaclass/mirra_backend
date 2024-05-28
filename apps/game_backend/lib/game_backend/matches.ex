@@ -101,7 +101,7 @@ defmodule GameBackend.Matches do
   end
 
   defp process_bounties(multi, results) do
-    Enum.filter(results, fn result -> result["bounty_quest_id"] != "" end)
+    Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
     |> Enum.map(fn result -> Utils.convert_map_keys_to_atoms(result) end)
     |> Enum.reduce(multi, fn result, multi ->
       Multi.run(multi, {:process_bounty, result.user_id}, fn repo, %{get_google_users: google_users} ->
