@@ -5,28 +5,14 @@
             "characters": ["muflus"],
             "type": "skin",
             "purchasable?": true,
-            "item_costs": [
+            "purchase_costs": [
                 {
-                    "name": "gold_gems",
-                    "currency_costs": [
-                        {
-                            "currency": "Gold",
-                            "amount": 500
-                        },
-                        {
-                            "currency": "Gems",
-                            "amount": 100
-                        }
-                    ]
+                    "currency": "Gems",
+                    "amount": 100
                 },
                 {
-                    "name": "gold",
-                    "currency_costs": [
-                        {
-                            "currency": "Gold",
-                            "amount": 2500
-                        }
-                    ]
+                    "currency": "Gold",
+                    "amount": 1000
                 }
             ]
         },
@@ -35,7 +21,7 @@
             "characters": ["h4ck"],
             "type": "skin",
             "purchasable?": false,
-            "item_costs": []
+            "purchase_costs": []
         }
     ]
 }
