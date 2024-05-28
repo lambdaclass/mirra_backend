@@ -48,11 +48,6 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def websocket_handle(_, %{enable: false} = state) do
-    {:ok, state}
-  end
-
-  @impl true
   def websocket_handle(:pong, state) do
     last_ping_time = state.last_ping_time
     time_now = Time.utc_now()
@@ -77,17 +72,17 @@ defmodule Arena.GameSocketHandler do
         GameUpdater.pick_quest(state.game_pid, state.player_id, quest_id)
 
       %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
-        unless block_actions do
+        if state.enable and not block_actions do
           GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
         end
 
       %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        unless block_actions do
+        if state.enable and not block_actions do
           GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
         end
 
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        unless block_movement do
+        if state.enable and not block_movement do
           GameUpdater.move(
             state.game_pid,
             state.player_id,
