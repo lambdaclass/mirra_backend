@@ -40,6 +40,15 @@ defmodule GameBackend.Stores do
     end
   end
 
+  @doc """
+  Returns a list of maps containing each combination of {item, purchase_cost} for given store.
+
+  ## Examples
+
+      iex> list_items_with_prices(%Store{})
+      [%{"some_item" => %{"Gold" => 1000}}, %{"some_item" => %{"Gems" => 20}}, ...]
+
+  """
   def list_items_with_prices(store) do
     store = Repo.preload(store, items: [purchase_costs: :currency])
 
@@ -50,6 +59,20 @@ defmodule GameBackend.Stores do
     end)
   end
 
+  @doc """
+  Receives an item_name, a store_id and a game_id.
+  Returns {:ok, :item_in_store} if there's an item template with given name for given store and game.
+  Returns {:error, :not_found} otherwise.
+
+  ## Examples
+
+      iex> item_in_store("muflus_gold", "some_store_id", "some_game_id")
+      {:ok, :item_in_store}
+
+      iex> item_in_store("sonic_silver", "some_store_id", "some_game_id")
+      {:error, :not_found}
+
+  """
   def item_in_store(item_name, store_id, game_id) do
     case Repo.exists?(
            from(it in ItemTemplate,
