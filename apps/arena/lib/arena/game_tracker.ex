@@ -21,7 +21,7 @@ defmodule Arena.GameTracker do
   end
 
   @type player_id :: pos_integer()
-  @type quest_id :: binary()
+  @type bounty_quest_id :: binary()
   @type player :: %{id: player_id(), character_name: binary()}
   @type event ::
           {:kill, player(), player()}
@@ -29,7 +29,7 @@ defmodule Arena.GameTracker do
           | {:damage_done, player_id(), non_neg_integer()}
           | {:heal, player_id(), non_neg_integer()}
           | {:kill_by_zone, player_id()}
-          | {:pick_quest, player_id(), quest_id()}
+          | {:pick_bounty, player_id(), bounty_quest_id()}
 
   @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
@@ -136,8 +136,8 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :health_healed], fn health_healed -> health_healed + amount end)
   end
 
-  defp update_data(data, {:pick_quest, player_id, quest_id}) do
-    put_in(data, [:players, player_id, :bounty_quest_id], quest_id)
+  defp update_data(data, {:pick_bounty, player_id, bounty_quest_id}) do
+    put_in(data, [:players, player_id, :bounty_quest_id], bounty_quest_id)
   end
 
   defp generate_results(match_data, winner_id) do

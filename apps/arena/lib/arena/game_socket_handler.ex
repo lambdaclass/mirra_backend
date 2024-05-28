@@ -68,8 +68,8 @@ defmodule Arena.GameSocketHandler do
 
   def websocket_handle({:binary, message}, %{block_actions: block_actions, block_movement: block_movement} = state) do
     case Serialization.GameAction.decode(message) do
-      %{action_type: {:pick_quest, %{quest_id: quest_id}}} ->
-        GameUpdater.pick_quest(state.game_pid, state.player_id, quest_id)
+      %{action_type: {:pick_bounty, %{bounty_quest_id: bounty_quest_id}}} ->
+        GameUpdater.pick_bounty(state.game_pid, state.player_id, bounty_quest_id)
 
       %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
         if state.enable and not block_actions do

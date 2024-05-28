@@ -35,8 +35,8 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:use_item, player_id, timestamp})
   end
 
-  def pick_quest(game_pid, player_id, quest_id) do
-    GenServer.cast(game_pid, {:pick_quest, player_id, quest_id})
+  def pick_bounty(game_pid, player_id, bounty_quest_id) do
+    GenServer.cast(game_pid, {:pick_bounty, player_id, bounty_quest_id})
   end
 
   ##########################
@@ -50,7 +50,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-    Process.send_after(self(), :picking_bounty, game_config.game.start_game_time_ms)
+    Process.send_after(self(), :picking_bounty, game_config.game.bounty_pick_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -88,7 +88,7 @@ defmodule Arena.GameUpdater do
         }
 
         state =
-          put_in(state, [:game_state, :players, player_id, :bounties], bounties)
+          put_in(state, [:game_state, :players, player_id, :aditional_info, :bounties], bounties)
 
         {:reply, {:ok, response}, state}
     end
@@ -127,8 +127,8 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
-  def handle_cast({:pick_quest, player_id, quest_id}, state) do
-    GameTracker.push_event(self(), {:pick_quest, player_id, quest_id})
+  def handle_cast({:pick_bounty, player_id, bounty_quest_id}, state) do
+    GameTracker.push_event(self(), {:pick_bounty, player_id, bounty_quest_id})
 
     state =
       put_in(state, [:game_state, :players, player_id, :picked_bounty?], true)
@@ -493,10 +493,10 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:pick_default_bouty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
-      if not player.picked_bounty and not Enum.empty?(player.bounties) do
-        bounty = Enum.random(player.bounties)
+      if not player.aditional_info.picked_bounty and not Enum.empty?(player.aditional_info.bounties) do
+        bounty = Enum.random(player.aditional_info.bounties)
 
-        GameTracker.push_event(self(), {:pick_quest, player_id, bounty.id})
+        GameTracker.push_event(self(), {:pick_bounty, player_id, bounty.id})
       end
     end)
 
