@@ -17,7 +17,7 @@ defmodule GameBackend.Matches do
     |> add_google_users_to_multi(results)
     |> maybe_complete_quests()
     |> give_trophies(results)
-    |> process_bounties(results)
+    |> complete_or_fail_bounties(results)
     |> Repo.transaction()
   end
 
@@ -100,7 +100,7 @@ defmodule GameBackend.Matches do
     end)
   end
 
-  defp process_bounties(multi, results) do
+  defp complete_or_fail_bounties(multi, results) do
     Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
     |> Enum.map(fn result -> Utils.convert_map_keys_to_atoms(result) end)
     |> Enum.reduce(multi, fn result, multi ->
