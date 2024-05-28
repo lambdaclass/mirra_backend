@@ -1208,15 +1208,15 @@ defmodule Champions.Battle.Simulator do
   defp sort_units_by_stat(units, stat, desc) do
     Enum.sort(
       units,
-      &cond do
-        calculate_unit_stat(&1, String.to_atom(stat)) > calculate_unit_stat(&2, String.to_atom(stat)) ->
-          if desc, do: false, else: true
+      fn unit_1, unit_2 ->
+        unit_1_stat = calculate_unit_stat(unit_1, String.to_atom(stat))
+        unit_2_stat = calculate_unit_stat(unit_2, String.to_atom(stat))
 
-        calculate_unit_stat(&1, String.to_atom(stat)) == calculate_unit_stat(&2, String.to_atom(stat)) ->
-          if Enum.random([true, false]), do: true, else: false
-
-        true ->
-          if desc, do: true, else: false
+        cond do
+          unit_1_stat > unit_2_stat -> if desc, do: false, else: true
+          unit_1_stat == unit_2_stat -> if Enum.random([true, false]), do: true, else: false
+          true -> if desc, do: true, else: false
+        end
       end
     )
   end
