@@ -2,6 +2,8 @@ defmodule Arena.BountyUpdater do
   @moduledoc false
   use GenServer
 
+  @update_interval_ms 30000
+
   # API
   def start_link(_) do
     GenServer.start_link(__MODULE__, [], name: __MODULE__)
@@ -37,7 +39,7 @@ defmodule Arena.BountyUpdater do
           []
       end
 
-    Process.send_after(__MODULE__, :update_bounties, 5000)
+    Process.send_after(__MODULE__, :update_bounties, @update_interval_ms)
     {:noreply, Map.put(state, :bounties, bounties)}
   end
 
