@@ -3,6 +3,8 @@ defmodule Champions.Config do
   Configuration utilities.
   """
 
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Campaigns
   alias Champions.Units
   alias GameBackend.Items
   alias GameBackend.Units.Characters
@@ -131,6 +133,45 @@ defmodule Champions.Config do
         },
         persistent: true
       )
+    end)
+  end
+
+  def import_dungeon_campaign_levels() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, dungeon_campaign_json} =
+      Application.app_dir(:champions, "priv/dungeon_campaign.json")
+      |> File.read()
+
+    dungeon_super_campaign =
+      Campaigns.get_super_campaign_by_name_and_game("Dungeon", game_id)
+
+    [dungeon_campaign] = dungeon_super_campaign.campaigns
+
+    supplies = Users.Currencies.get_currency_by_name_and_game("Supplies", game_id)
+
+    Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
+    |> Enum.map(fn campaign ->
+      campaign
+      |> Map.put(
+        :units,
+        campaign.characters
+        |> Enum.with_index()
+        |> Enum.map(fn {character, index} ->
+          %{
+            level: campaign.lineup_level + Enum.random(-campaign.lineup_level_variance..campaign.lineup_level_variance),
+            tier: 1,
+            rank: 1,
+            selected: true,
+            slot: index,
+            character_id:
+              Characters.get_character_id_by_name_and_game_id(character, Utils.get_game_id(:champions_of_mirra))
+          }
+        end)
+      )
+      |> Map.put(:game_id, game_id)
+      |> Map.put(:campaign_id, dungeon_campaign.id)
+      |> Map.put(:attempt_cost, %CurrencyCost{currency_id: supplies, amount: 1})
     end)
   end
 end

@@ -1,0 +1,852 @@
+[
+    {
+        "level_number": 1,
+        "max_units": 1,
+        "lineup_level": 21,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Elix1r"
+        ],
+        "currency_rewards": {
+            "gold": 2000,
+            "arcane_crystal": 20,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 2,
+        "max_units": 1,
+        "lineup_level": 22,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "gold": 2000,
+            "arcane_crystal": 20,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 3,
+        "max_units": 1,
+        "lineup_level": 23,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Obure"
+        ],
+        "currency_rewards": {
+            "gold": 2000,
+            "arcane_crystal": 20,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 4,
+        "max_units": 2,
+        "lineup_level": 24,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Romulo",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "gold": 4000,
+            "arcane_crystal": 40,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 5,
+        "max_units": 2,
+        "lineup_level": 25,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zanochi",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "gold": 4000,
+            "arcane_crystal": 40,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 6,
+        "max_units": 2,
+        "lineup_level": 25,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zil'kan",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "gold": 4000,
+            "arcane_crystal": 40,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 7,
+        "max_units": 2,
+        "lineup_level": 26,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Jayson",
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "gold": 4000,
+            "arcane_crystal": 40,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 8,
+        "max_units": 2,
+        "lineup_level": 27,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Elix1r",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "gold": 4000,
+            "arcane_crystal": 40,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 9,
+        "max_units": 3,
+        "lineup_level": 28,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Boy Kampf",
+            "H4ck",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 10,
+        "max_units": 3,
+        "lineup_level": 29,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kura'bara",
+            "Elix1r",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 11,
+        "max_units": 3,
+        "lineup_level": 30,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Kura'bara",
+            "Uma"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 12,
+        "max_units": 3,
+        "lineup_level": 31,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Jayson",
+            "Obure"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 13,
+        "max_units": 3,
+        "lineup_level": 32,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Muflus",
+            "Valtimer",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 14,
+        "max_units": 3,
+        "lineup_level": 33,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Valtimer",
+            "Elix1r",
+            "Kenzu"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 15,
+        "max_units": 3,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Uren",
+            "Kura'bara"
+        ],
+        "currency_rewards": {
+            "gold": 6000,
+            "arcane_crystal": 60,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 16,
+        "max_units": 4,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "D'agna",
+            "H4ck",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 17,
+        "max_units": 4,
+        "lineup_level": 35,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Otix",
+            "Zanochi",
+            "Fetra",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 18,
+        "max_units": 4,
+        "lineup_level": 36,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Muflus",
+            "Kenzu",
+            "Boy Kampf",
+            "Obure"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 19,
+        "max_units": 4,
+        "lineup_level": 37,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Kura'bara",
+            "Otix",
+            "H4ck"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 20,
+        "max_units": 4,
+        "lineup_level": 38,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Otix",
+            "Elix1r",
+            "Rust",
+            "Kura'bara"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 21,
+        "max_units": 4,
+        "lineup_level": 39,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Boy Kampf",
+            "Uma",
+            "Kampako",
+            "Obure"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 22,
+        "max_units": 4,
+        "lineup_level": 40,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Obure",
+            "Zil'kan",
+            "Fetra",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 23,
+        "max_units": 4,
+        "lineup_level": 41,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Jayson",
+            "Rust",
+            "Jayson",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 24,
+        "max_units": 4,
+        "lineup_level": 42,
+        "lineup_level_variance": 1,
+        "characters": [
+            "H4ck",
+            "Zil'kan",
+            "Kura'bara",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "gold": 8000,
+            "arcane_crystal": 80,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 25,
+        "max_units": 5,
+        "lineup_level": 43,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Uren",
+            "Kenzu",
+            "D'agna",
+            "Otix",
+            "Muflus"
+        ],
+        "currency_rewards": {
+            "gold": 10000,
+            "arcane_crystal": 100,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 26,
+        "max_units": 5,
+        "lineup_level": 43,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Elix1r",
+            "Uren",
+            "Zil'kan",
+            "Rust"
+        ],
+        "currency_rewards": {
+            "gold": 10000,
+            "arcane_crystal": 100,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 27,
+        "max_units": 5,
+        "lineup_level": 44,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Obure",
+            "Kura'bara",
+            "Jayson",
+            "Valtimer",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "gold": 10000,
+            "arcane_crystal": 100,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 28,
+        "max_units": 5,
+        "lineup_level": 45,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zil'kan",
+            "Obure",
+            "Elix1r",
+            "Jayson",
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "gold": 10000,
+            "arcane_crystal": 100,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 29,
+        "max_units": 5,
+        "lineup_level": 46,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Kampako",
+            "Rust",
+            "Zanochi",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "gold": 10000,
+            "arcane_crystal": 100,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 30,
+        "max_units": 5,
+        "lineup_level": 47,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Rust",
+            "Kenzu",
+            "Uren",
+            "Jayson",
+            "Kenzu"
+        ],
+        "currency_rewards": {
+            "gold": 10000,
+            "arcane_crystal": 100,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 31,
+        "max_units": 5,
+        "lineup_level": 48,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Obure",
+            "Kura'bara",
+            "D'agna",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "gold": 15000,
+            "arcane_crystal": 150,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 32,
+        "max_units": 5,
+        "lineup_level": 49,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Fetra",
+            "Kampako",
+            "Otix",
+            "Valtimer",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "gold": 15000,
+            "arcane_crystal": 150,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 33,
+        "max_units": 5,
+        "lineup_level": 50,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "Grimstein",
+            "D'agna",
+            "Zil'kan",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "gold": 15000,
+            "arcane_crystal": 150,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 34,
+        "max_units": 5,
+        "lineup_level": 51,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Otix",
+            "Uma",
+            "Rust",
+            "D'agna",
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "gold": 15000,
+            "arcane_crystal": 150,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 35,
+        "max_units": 5,
+        "lineup_level": 52,
+        "lineup_level_variance": 1,
+        "characters": [
+            "H4ck",
+            "Muflus",
+            "Fetra",
+            "D'agna",
+            "Jayson"
+        ],
+        "currency_rewards": {
+            "gold": 15000,
+            "arcane_crystal": 150,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 36,
+        "max_units": 5,
+        "lineup_level": 52,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Fetra",
+            "Uma",
+            "Zil'kan",
+            "Uma",
+            "Muflus"
+        ],
+        "currency_rewards": {
+            "gold": 20000,
+            "arcane_crystal": 200,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 37,
+        "max_units": 5,
+        "lineup_level": 53,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Rust",
+            "Grimstein",
+            "Jayson",
+            "Otix",
+            "Elix1r"
+        ],
+        "currency_rewards": {
+            "gold": 20000,
+            "arcane_crystal": 200,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 38,
+        "max_units": 5,
+        "lineup_level": 54,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "H4ck",
+            "Muflus",
+            "Uren",
+            "D'agna"
+        ],
+        "currency_rewards": {
+            "gold": 20000,
+            "arcane_crystal": 200,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 39,
+        "max_units": 5,
+        "lineup_level": 55,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Uma",
+            "Rust",
+            "Uma",
+            "H4ck",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "gold": 20000,
+            "arcane_crystal": 200,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 40,
+        "max_units": 5,
+        "lineup_level": 56,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Muflus",
+            "Boy Kampf",
+            "Valtimer",
+            "Romulo",
+            "Rust"
+        ],
+        "currency_rewards": {
+            "gold": 20000,
+            "arcane_crystal": 200,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 41,
+        "max_units": 5,
+        "lineup_level": 57,
+        "lineup_level_variance": 1,
+        "characters": [
+            "H4ck",
+            "Kenzu",
+            "Jayson",
+            "Kura'bara",
+            "Kampako"
+        ],
+        "currency_rewards": {
+            "gold": 25000,
+            "arcane_crystal": 250,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 42,
+        "max_units": 5,
+        "lineup_level": 58,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Otix",
+            "Muflus",
+            "Rust",
+            "D'agna",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "gold": 25000,
+            "arcane_crystal": 250,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 43,
+        "max_units": 5,
+        "lineup_level": 59,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Romulo",
+            "Uma",
+            "Boy Kampf",
+            "Otix"
+        ],
+        "currency_rewards": {
+            "gold": 25000,
+            "arcane_crystal": 250,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 44,
+        "max_units": 5,
+        "lineup_level": 60,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Muflus",
+            "Otix",
+            "H4ck",
+            "Kenzu",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "gold": 25000,
+            "arcane_crystal": 250,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 45,
+        "max_units": 5,
+        "lineup_level": 61,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "Kampako",
+            "Zanochi",
+            "D'agna",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "gold": 25000,
+            "arcane_crystal": 250,
+            "5_shards": 15
+        }
+    },
+    {
+        "level_number": 46,
+        "max_units": 5,
+        "lineup_level": 61,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Fetra",
+            "Zil'kan",
+            "Kampako",
+            "Elix1r",
+            "Uma"
+        ],
+        "currency_rewards": {
+            "gold": 30000,
+            "arcane_crystal": 300,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 47,
+        "max_units": 5,
+        "lineup_level": 62,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "Muflus",
+            "Zil'kan",
+            "Kampako",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "gold": 30000,
+            "arcane_crystal": 300,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 48,
+        "max_units": 5,
+        "lineup_level": 63,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Romulo",
+            "Uma",
+            "Zanochi",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "gold": 30000,
+            "arcane_crystal": 300,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 49,
+        "max_units": 5,
+        "lineup_level": 64,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Boy Kampf",
+            "Grimstein",
+            "D'agna",
+            "Valtimer",
+            "Elix1r"
+        ],
+        "currency_rewards": {
+            "gold": 30000,
+            "arcane_crystal": 300,
+            "4_shards": 30
+        }
+    },
+    {
+        "level_number": 50,
+        "max_units": 5,
+        "lineup_level": 65,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zanochi",
+            "Uren",
+            "H4ck",
+            "Obure",
+            "Kura'bara"
+        ],
+        "currency_rewards": {
+            "gold": 30000,
+            "arcane_crystal": 300,
+            "5_shards": 15
+        }
+    }
+]
