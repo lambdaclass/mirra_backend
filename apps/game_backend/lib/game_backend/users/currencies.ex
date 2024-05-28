@@ -48,8 +48,8 @@ defmodule GameBackend.Users.Currencies do
 
   @doc """
   Gets a single currency.
-
-  Returns nil if the Currency does not exist.
+  Returns {:ok, currency} if query succeeds.
+  Returns {:error, :not_found} if the Currency does not exist.
 
   ## Examples
 

@@ -246,8 +246,8 @@ defmodule GameBackend.Items do
   end
 
   @doc """
-  Gets one ItemCost by given name and item_template_id.
-  Returns {:ok, %ItemCost{}} if found one.
+  Gets Item's purchase cost by given currency and item_template.
+  Returns {:ok, purchase_cost} if found one.
   Returns {:error, :not_found} if there are none.
   Fails if there are more than one.
   """
