@@ -321,7 +321,7 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
-        unlocks: [upgrade: [:buffs, cost: :currency]],
+        unblocks: [upgrade: [:buffs, cost: :currency]],
         kaline_tree_level: [afk_reward_rates: :currency],
         dungeon_settlement_level: [afk_reward_rates: :currency, level_up_costs: :currency],
         super_campaign_progresses: :level,
