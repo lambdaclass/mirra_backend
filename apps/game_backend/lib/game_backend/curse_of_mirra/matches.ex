@@ -19,7 +19,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> give_prestige(results)
     |> maybe_complete_quests()
     |> Repo.transaction()
-    |> IO.inspect(label: "aber transaction")
   end
 
   ####################
