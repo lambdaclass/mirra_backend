@@ -55,7 +55,7 @@ defmodule Arena.Entities do
         visible_players: [],
         on_bush: false,
         bounties: [],
-        picked_bounty: false
+        bounty_selected: false
       },
       collides_with: []
     }
