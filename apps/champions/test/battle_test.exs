@@ -331,7 +331,7 @@ defmodule Champions.Test.BattleTest do
       {:ok, target_dummy} = %{character_id: target_dummy_character.id} |> TestUtils.build_unit() |> Units.insert_unit()
       {:ok, target_dummy} = Units.get_unit(target_dummy.id)
 
-      # Create a character with a basic skill that would deal 10 damage against no armor
+      # Create a character with a basic skill that would deal 10 damage against no defense
       basic_skill_params =
         TestUtils.build_skill(%{
           name: "DealDamage Defense",
