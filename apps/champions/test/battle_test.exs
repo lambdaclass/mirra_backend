@@ -225,7 +225,7 @@ defmodule Champions.Test.BattleTest do
                             attack_ratio: 0.5,
                             energy_recharge: 50
                           }
-                        ],
+                        ]
                       })
                     ]
                   })
@@ -1574,7 +1574,8 @@ defmodule Champions.Test.BattleTest do
                     TestUtils.build_effect(%{
                       type: %{
                         "type" => "duration",
-                        "duration" => 3 * @miliseconds_per_step
+                        "duration" => 3 * @miliseconds_per_step,
+                        "period" => 400
                       },
                       executions_over_time: [
                         %{

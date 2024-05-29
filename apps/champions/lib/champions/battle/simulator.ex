@@ -280,7 +280,6 @@ defmodule Champions.Battle.Simulator do
 
     # Reduce tags remaining timers & remove expired ones
     {new_tags, new_history} = reduce_tag_timers(unit, new_history)
-    IO.inspect(new_tags)
 
     # Reduce basic skill cooldown
     new_state =
@@ -735,12 +734,17 @@ defmodule Champions.Battle.Simulator do
           else: {target, history}
       end)
 
-    {target_after_executions, new_history} = Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
-      process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
-    end)
+    {target_after_executions, new_history} =
+      Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
+        process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
+      end)
 
-    Enum.reduce(effect.executions_over_time, {target_after_executions, new_history}, fn execution_over_time, {target_acc, history_acc} ->
-      process_execution_over_time(execution_over_time, target_acc, caster, history_acc, effect)
+    Enum.reduce(effect.executions_over_time, {target_after_executions, new_history}, fn execution_over_time,
+                                                                                        {target_acc, _history_acc} ->
+      #process_execution_over_time(execution_over_time, target_acc, caster, history_acc, effect)
+      # TODO: Check period
+      update_in(target_acc, [:executions_over_time], fn current_executions -> [%{execution_over_time: execution_over_time, remaining_duration: get_duration(effect.type), remaining_period: effect.period} | current_executions]end)
+      |> apply_tags(apply_tags, effect, new_history)
     end)
   end
 
@@ -973,6 +977,11 @@ defmodule Champions.Battle.Simulator do
          effect
        ) do
 
+    # Is it moment to apply the damage?
+    # Such as modifiers but without period
+
+
+    # apply_eot() ->
     # Calculate the damage to be dealt in every step. Save it, because we'll need to apply it in every step and it mustn't be affected by modifiers, buffs, debuffs, etc.
     # Process the execution for the first time, and repeat it for the remaining steps.
     damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
@@ -1001,9 +1010,6 @@ defmodule Champions.Battle.Simulator do
     new_target =
       target
       |> Map.put(:health, target.health - damage_after_defense)
-
-    apply_tags(new_target, apply_tags, effect, new_history)
-
   end
 
   defp process_execution_over_time(
@@ -1105,6 +1111,7 @@ defmodule Champions.Battle.Simulator do
            multiplicatives: [],
            overrides: []
          },
+         effects_over_time: [],
          tags: []
        }}
 
