@@ -1,5 +1,5 @@
 <.form for={@form} phx-change="validate" phx-submit="save">
-  <div class="flex">
+  <div class="flex m-1">
     <%= for key <- @keys do %>
       <span
         phx-click={:select_key}
@@ -12,15 +12,11 @@
   </div>
 
   <%= case @selected_key do %>
-
-  <% "game" -> %>
-    <.render_game_form data={@data} form={@form} selected_key={@selected_key}/>
-
-  <% "effects" -> %>
-    <.render_effects_form data={@data} form={@form} selected_key={@selected_key}/>
-
+    <% "game" -> %>
+      <.render_game_form data={@data} form={@form} selected_key={@selected_key} />
+    <% "effects" -> %>
+      <.render_effects_form data={@data} form={@form} selected_key={@selected_key} />
   <% end %>
-
 
   <button class="p-1 bg-indigo-500 text-white rounded-md">
     Save Configuration
