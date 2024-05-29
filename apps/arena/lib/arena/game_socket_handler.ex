@@ -189,32 +189,41 @@ defmodule Arena.GameSocketHandler do
        do: nil
 
   defp handle_decoded_message(
-         message,
-         %{block_actions: block_actions, block_movement: block_movement} = state
-       ) do
+         %{action_type: {action, _}} = message,
+         %{block_movement: false} = state
+       )
+       when action in [:move] do
     case message do
-      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
-        unless block_actions do
-          GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
-        end
-
-      %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        unless block_actions do
-          GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
-        end
-
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        unless block_movement do
-          GameUpdater.move(
-            state.game_pid,
-            state.player_id,
-            {direction.x, direction.y},
-            timestamp
-          )
-        end
+        GameUpdater.move(
+          state.game_pid,
+          state.player_id,
+          {direction.x, direction.y},
+          timestamp
+        )
 
       _ ->
-        {}
+        nil
     end
   end
+
+  defp handle_decoded_message(
+         %{action_type: {action, _}} = message,
+         %{block_actions: false} = state
+       )
+       when action in [:attack, :use_item] do
+    case message do
+      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
+        GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+
+      %{action_type: {:use_item, _}, timestamp: timestamp} ->
+        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+
+      _ ->
+        nil
+    end
+  end
+
+  defp handle_decoded_message(_, _),
+    do: nil
 end
