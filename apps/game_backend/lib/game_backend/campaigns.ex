@@ -77,7 +77,10 @@ defmodule GameBackend.Campaigns do
 
   defp upsert_level(attrs) do
     case Repo.one(
-           from(l in Level, where: l.campaign_id == ^attrs.campaign_id and l.level_number == ^attrs.level_number)
+           from(l in Level,
+             where: l.campaign_id == ^attrs.campaign_id and l.level_number == ^attrs.level_number,
+             preload: [:units, :currency_rewards, attempt_cost: :currency]
+           )
          ) do
       nil -> insert_level(attrs)
       level -> update_level(level, attrs)
