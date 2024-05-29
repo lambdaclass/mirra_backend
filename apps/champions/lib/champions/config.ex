@@ -136,7 +136,7 @@ defmodule Champions.Config do
     end)
   end
 
-  def import_dungeon_campaign_levels() do
+  def import_dungeon_levels_config() do
     game_id = Utils.get_game_id(:champions_of_mirra)
 
     {:ok, dungeon_campaign_json} =
