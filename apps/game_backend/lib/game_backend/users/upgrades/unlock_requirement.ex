@@ -1,20 +1,20 @@
-defmodule GameBackend.Users.Upgrades.UnlockRequirement do
+defmodule GameBackend.Users.Upgrades.UpgradeDependency do
   @moduledoc """
-  Unlock requirements are used to determine which upgrades are required to unlock a new upgrade.
+  UpgradeDependencies are used to determine which upgrades are required for a user in order to unlock a new upgrade.
   """
   use GameBackend.Schema
   import Ecto.Changeset
   alias GameBackend.Users.Upgrade
 
-  schema "upgrade_unlocks" do
-    belongs_to(:upgrade_locking, Upgrade)
-    belongs_to(:upgrade_unlocked, Upgrade)
+  schema "upgrade_dependencies" do
+    belongs_to(:blocked_upgrade, Upgrade)
+    belongs_to(:depends_on, Upgrade)
 
     timestamps()
   end
 
-  def changeset(unlock_requirement, attrs \\ %{}) do
-    unlock_requirement
-    |> cast(attrs, [:upgrade_locking_id, :upgrade_unlocked_id])
+  def changeset(upgrade_dependency, attrs \\ %{}) do
+    upgrade_dependency
+    |> cast(attrs, [:blocked_upgrade_id, :depends_on_id])
   end
 end

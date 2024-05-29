@@ -4,7 +4,7 @@ defmodule GameBackend.Users.Upgrade do
   These are represented by strings in the User schema.
   """
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Users.Upgrades.{Buff, UnlockRequirement}
+  alias GameBackend.Users.Upgrades.{Buff, UpgradeDependency}
 
   use GameBackend.Schema
   import Ecto.Changeset
@@ -18,11 +18,12 @@ defmodule GameBackend.Users.Upgrade do
 
     embeds_many(:cost, CurrencyCost)
 
-    has_many(:unlock_requirement_unlocks, UnlockRequirement, foreign_key: :upgrade_unlocked_id)
-    has_many(:unlock_requirement_locked_by, UnlockRequirement, foreign_key: :upgrade_unlocked_id)
+    # These relations are used to determine dependencies between upgrades. Check the UpgradeDependency schema for more information.
+    has_many(:upgrade_dependency_blocks, UpgradeDependency, foreign_key: :depends_on_id)
+    has_many(:upgrade_dependency_depends_on, UpgradeDependency, foreign_key: :blocked_upgrade_id)
 
-    has_many(:unlocks, through: [:unlock_requirement_unlocks, :upgrade_unlocked])
-    has_many(:locked_by, through: [:unlock_requirement_locked_by, :upgrade_locking])
+    has_many(:unblocks, through: [:upgrade_dependency_blocks, :blocked_upgrade])
+    has_many(:depends_on, through: [:upgrade_dependency_depends_on, :depends_on])
 
     has_many(:buffs, Buff)
 
@@ -34,8 +35,8 @@ defmodule GameBackend.Users.Upgrade do
     |> cast(attrs, [:game_id, :name, :description, :group])
     |> cast_embed(:cost)
     |> cast_assoc(:buffs)
-    |> cast_assoc(:unlock_requirement_unlocks)
-    |> cast_assoc(:unlock_requirement_locked_by)
+    |> cast_assoc(:upgrade_dependency_blocks)
+    |> cast_assoc(:upgrade_dependency_depends_on)
     |> validate_required([:game_id, :name])
   end
 end

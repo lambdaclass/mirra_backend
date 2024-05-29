@@ -343,8 +343,8 @@ _dungeon_settlement_levels =
       cost: [
         %{currency_id: pearls_currency.id, amount: 10}
       ],
-      unlock_requirement_locked_by: [
-        %{upgrade_locking_id: sample_hp_1.id}
+      upgrade_dependency_depends_on: [
+        %{depends_on_id: sample_hp_1.id}
       ],
       buffs: [
         %{

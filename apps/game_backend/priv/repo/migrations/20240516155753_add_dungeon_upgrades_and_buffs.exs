@@ -25,9 +25,9 @@ defmodule GameBackend.Repo.Migrations.AddDungeonUpgradesAndBuffs do
       add(:buff_id, references(:buffs, on_delete: :delete_all))
     end
 
-    create(table(:upgrade_unlocks)) do
-      add(:upgrade_locking_id, references(:upgrades, on_delete: :delete_all), null: false, primary_key: true)
-      add(:upgrade_unlocked_id, references(:upgrades, on_delete: :delete_all), null: false, primary_key: true)
+    create(table(:upgrade_dependencies)) do
+      add(:blocked_upgrade_id, references(:upgrades, on_delete: :delete_all), null: false, primary_key: true)
+      add(:depends_on_id, references(:upgrades, on_delete: :delete_all), null: false, primary_key: true)
 
       timestamps()
     end
@@ -44,6 +44,6 @@ defmodule GameBackend.Repo.Migrations.AddDungeonUpgradesAndBuffs do
     create(unique_index(:unlocks, [:user_id, :upgrade_id]))
     create(unique_index(:upgrades, [:name]))
     create(unique_index(:buffs, [:name]))
-    create(unique_index(:upgrade_unlocks, [:upgrade_locking_id, :upgrade_unlocked_id]))
+    create(unique_index(:upgrade_dependencies, [:depends_on_id, :blocked_upgrade_id]))
   end
 end
