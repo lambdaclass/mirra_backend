@@ -321,7 +321,7 @@ _dungeon_settlement_levels =
     returning: true
   )
 
-Champions.Config.import_dungeon_campaign_levels()
+Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 # Insert characters
