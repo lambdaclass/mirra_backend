@@ -292,7 +292,7 @@ defmodule GameBackend.Users do
   Returns the updated user if the operation was successful.
   """
   def level_up_dungeon_settlement(user_id, level_up_costs) do
-    {:ok, _result} =
+    result =
       Multi.new()
       |> Multi.run(:user, fn _, _ -> increment_settlement_level(user_id) end)
       |> Multi.run(:user_currency, fn _, _ ->
@@ -300,17 +300,25 @@ defmodule GameBackend.Users do
       end)
       |> Repo.transaction()
 
-    get_user(user_id)
+    case result do
+      {:error, reason} -> {:error, reason}
+      {:error, _, _, _} -> {:error, :transaction}
+      {:ok, _} -> get_user(user_id)
+    end
   end
 
   defp increment_settlement_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
-        next_level = get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1)
+        case get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1) do
+          nil ->
+            {:error, :dungeon_settlement_level_not_found}
 
-        user
-        |> User.changeset(%{dungeon_settlement_level_id: next_level.id})
-        |> Repo.update()
+          next_level ->
+            user
+            |> User.changeset(%{dungeon_settlement_level_id: next_level.id})
+            |> Repo.update()
+        end
 
       error ->
         error
@@ -321,7 +329,7 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
-        unblocks: [upgrade: [:buffs, cost: :currency]],
+        unlocks: [upgrade: [:buffs, cost: :currency]],
         kaline_tree_level: [afk_reward_rates: :currency],
         dungeon_settlement_level: [afk_reward_rates: :currency, level_up_costs: :currency],
         super_campaign_progresses: :level,

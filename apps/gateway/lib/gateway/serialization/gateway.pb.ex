@@ -459,10 +459,10 @@ defmodule Gateway.Serialization.DungeonSettlementLevel do
   field(:id, 1, type: :string)
   field(:level, 2, type: :uint64)
 
-  field(:upgrade_costs, 3,
+  field(:level_up_costs, 3,
     repeated: true,
     type: Gateway.Serialization.CurrencyCost,
-    json_name: "upgradeCosts"
+    json_name: "levelUpCosts"
   )
 
   field(:max_dungeon, 4, type: :uint64, json_name: "maxDungeon")

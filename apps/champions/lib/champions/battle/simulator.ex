@@ -93,7 +93,7 @@ defmodule Champions.Battle.Simulator do
       Enum.map(team_1, fn {unit, modifiers} ->
         case Map.get(modifiers, {"max_level", "Add"}, 0) do
           0 ->
-            {unit, modifiers}
+            {unit, Map.drop(modifiers, [{"max_level", "Add"}])}
 
           max_level ->
             {%Unit{unit | level: min(unit.level, round(max_level))}, Map.drop(modifiers, [{"max_level", "Add"}])}
@@ -415,7 +415,7 @@ defmodule Champions.Battle.Simulator do
         # Modifier still going, reduce its timer by one
         remaining ->
           Logger.info(
-            "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)}."
+            "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)} to #{remaining - 1}."
           )
 
           {[Map.put(modifier, :remaining_steps, remaining - 1) | acc], history_acc}
@@ -449,7 +449,7 @@ defmodule Champions.Battle.Simulator do
 
         # Tag still going, reduce its timer by one
         remaining ->
-          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)}.")
+          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)} to #{remaining - 1}.")
 
           {[Map.put(tag, :remaining_steps, remaining - 1) | acc], history}
       end
@@ -622,7 +622,7 @@ defmodule Champions.Battle.Simulator do
         Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is casting another skill")
         false
 
-      Enum.any?(unit.tags, &(&1.tag == "Stun")) ->
+      Enum.any?(unit.tags, &(&1.tag == "ControlEffect.Stun")) ->
         Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is stunned")
         false
 
@@ -632,7 +632,19 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Check if the unit can cast their ultimate skill this step.
-  defp can_cast_ultimate_skill(unit), do: unit.energy >= @ultimate_energy_cost
+  defp can_cast_ultimate_skill(unit) do
+    cond do
+      unit.energy < @ultimate_energy_cost ->
+        false
+
+      Enum.any?(unit.tags, fn %{tag: tag} -> tag == "ControlEffect.Silence" end) ->
+        Logger.info("Unit #{format_unit_name(unit)} cannot cast its ultimate skill because it is silenced.")
+        false
+
+      true ->
+        true
+    end
+  end
 
   # Check if the unit can cast their basic skill this step.
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
@@ -837,7 +849,15 @@ defmodule Champions.Battle.Simulator do
     {target, new_history}
   end
 
-  defp get_duration(%{duration: duration}), do: duration
+  # We substract a step because the modifier/tag is removed on the step when its' *initial* remaining value is 0.
+  # For a 2-step duration, this looks like:
+  # Step 0: Applied. steps_remaining = 2-1 = 1. Will be effective starting next step.
+  # Step 1: steps_remaining = 1. Modifier is effective. steps_remaining != 0 so we substract 1. Next steps_remaining = 1-1 = 0.
+  # Step 2: steps_remaining = 0. Modifier is effective. steps_remaining == 0 so we remove it from the modifiers list for next step.
+  # Step 3: Modifier has been removed, and is no longer effective.
+  defp get_duration(%{duration: duration}), do: duration - 1
+
+  # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
 
   # Return whether an effect hits.
@@ -879,9 +899,11 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp apply_tags(target, tags_to_apply, effect, history) do
+    steps = get_duration(effect.type)
+
     {new_tags, new_history} =
       Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
-        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
+        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)} for #{steps} steps.")
 
         new_history =
           add_to_history(
@@ -894,8 +916,7 @@ defmodule Champions.Battle.Simulator do
             :tag_received
           )
 
-        {[%{tag: tag, remaining_steps: Map.get(effect.type, "duration", -1) - 1, skill_id: effect.skill_id} | acc],
-         new_history}
+        {[%{tag: tag, remaining_steps: steps, skill_id: effect.skill_id} | acc], new_history}
       end)
 
     new_target =

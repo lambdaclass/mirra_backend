@@ -4,7 +4,7 @@ defmodule GameBackend.Units.Skills.Skill do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  alias GameBackend.Units.Buffs.Buff
+  alias GameBackend.Users.Upgrades.Buff
   alias GameBackend.Units.Skills.Mechanic
 
   schema "skills" do
