@@ -226,19 +226,31 @@ defmodule ArenaLoadTest.Serialization.ClientConfig do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:lag_spikes, 1, type: ArenaLoadTest.Serialization.ConfigLagSpikes, json_name: "lagSpikes")
+  field(:server_update, 1,
+    type: ArenaLoadTest.Serialization.ConfigServerUpdate,
+    json_name: "serverUpdate"
+  )
 end
 
-defmodule ArenaLoadTest.Serialization.ConfigLagSpikes do
+defmodule ArenaLoadTest.Serialization.ConfigServerUpdate do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:spike_value_threshold, 1, type: :uint64, json_name: "spikeValueThreshold")
-  field(:spikes_amount_threshold, 2, type: :uint64, json_name: "spikesAmountThreshold")
-  field(:spikes_until_warning, 3, type: :uint64, json_name: "spikesUntilWarning")
-  field(:timestamps_max_length, 4, type: :uint64, json_name: "timestampsMaxLength")
-  field(:max_ms_between_events, 5, type: :uint64, json_name: "maxMsBetweenEvents")
+  field(:timestamp_difference_samples_to_check_warning, 1,
+    type: :uint64,
+    json_name: "timestampDifferenceSamplesToCheckWarning"
+  )
+
+  field(:timestamp_differences_samples_max_length, 2,
+    type: :uint64,
+    json_name: "timestampDifferencesSamplesMaxLength"
+  )
+
+  field(:show_warning_threshold, 3, type: :uint64, json_name: "showWarningThreshold")
+  field(:stop_warning_threshold, 4, type: :uint64, json_name: "stopWarningThreshold")
+  field(:ms_without_update_show_warning, 5, type: :uint64, json_name: "msWithoutUpdateShowWarning")
+  field(:ms_without_update_disconnect, 6, type: :uint64, json_name: "msWithoutUpdateDisconnect")
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigSkill do
