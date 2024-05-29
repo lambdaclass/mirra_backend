@@ -557,7 +557,7 @@ defmodule Champions.Battle.Simulator do
       unit.energy < @ultimate_energy_cost ->
         false
 
-      "ControlEffect.Silence" in Enum.map(unit.tags, fn %{tag: tag} -> tag end) ->
+      Enum.any?(unit.tags, fn %{tag: tag} -> tag == "ControlEffect.Silence" end) ->
         Logger.info("Unit #{format_unit_name(unit)} cannot cast its ultimate skill because it is silenced.")
         false
 
