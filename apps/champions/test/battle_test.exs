@@ -1332,6 +1332,133 @@ defmodule Champions.Test.BattleTest do
     end
   end
 
+  describe "Status Effects" do
+    test "Silence" do
+      # Unit A will give enemy unit B a silence status effect that will last for 2 turns.
+      # Then, Unit B will cast its' basic skill, giving itself 500 energy.
+      # Afterwards, Unit B will try to cast its ultimate, which would kill Unit A, but it will fail because of the silence.
+      # Thus, the battle will end in a timeout.
+
+      # Steps will look like this (S = Silence, E = Energy, U = Ultimate)
+      # _ _ _ S E U
+      maximum_steps = 6
+      silence_cooldown_steps = 3
+      give_energy_cooldown_steps = silence_cooldown_steps + 1
+
+      # Create the silencing unit
+      silence_skill_params =
+        TestUtils.build_skill(%{
+          name: "Silence - Silencing Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{type: "duration", duration: 2 * @miliseconds_per_step},
+                      components: [
+                        %{
+                          type: "ApplyTags",
+                          tags: ["ControlEffect.Silence"]
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ],
+          cooldown: silence_cooldown_steps * @miliseconds_per_step
+        })
+
+      {:ok, silence_character} =
+        TestUtils.build_character(%{
+          name: "Silence - Silencing Character",
+          basic_skill: silence_skill_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "Silence - Empty Skill"}),
+          base_health: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, silencing_unit} = TestUtils.build_unit(%{character_id: silence_character.id}) |> Units.insert_unit()
+      {:ok, silencing_unit} = Units.get_unit(silencing_unit.id)
+
+      # Create the attacking unit
+
+      # If it hit, it would deal 10 damage, which would be enough to kill the target dummy and end the battle
+      give_energy_params =
+        TestUtils.build_skill(%{
+          name: "Silence - GiveEnergy Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "AddEnergy",
+                          amount: 500
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{type: "self"}
+                })
+            }
+          ],
+          cooldown: give_energy_cooldown_steps * @miliseconds_per_step
+        })
+
+      deal_damage_params =
+        TestUtils.build_skill(%{
+          name: "Silence - DealDamage Skill",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ]
+                })
+            }
+          ]
+        })
+
+      {:ok, damaging_character} =
+        TestUtils.build_character(%{
+          name: "Silence - Damaging Character",
+          basic_skill: give_energy_params,
+          ultimate_skill: deal_damage_params,
+          base_attack: 10
+        })
+        |> Characters.insert_character()
+
+      {:ok, damaging_unit} = TestUtils.build_unit(%{character_id: damaging_character.id}) |> Units.insert_unit()
+      {:ok, damaging_unit} = Units.get_unit(damaging_unit.id)
+
+      # Check that the battle ends in timeout when the unit has no damage
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([silencing_unit], [damaging_unit], maximum_steps: maximum_steps).result
+
+      # If the battle lasts 1 step more, the silence runs out and Unit B wins
+      assert "team_2" ==
+               Champions.Battle.Simulator.run_battle([silencing_unit], [damaging_unit],
+                 maximum_steps: maximum_steps + 1
+               ).result
+    end
+  end
+
   describe "Speed" do
     test "Positive speed makes cooldowns shorter", %{target_dummy: target_dummy} do
       # We will create a team with two units (A speed buffing unit and a damaging unit) against a target dummy
