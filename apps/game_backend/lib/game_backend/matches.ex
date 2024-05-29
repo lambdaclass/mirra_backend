@@ -102,14 +102,18 @@ defmodule GameBackend.Matches do
 
   defp complete_or_fail_bounties(multi, results) do
     Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
-    |> Enum.map(fn result -> Utils.convert_map_keys_to_atoms(result) end)
     |> Enum.reduce(multi, fn result, multi ->
-      Multi.run(multi, {:complete_of_fail_bounty, result.user_id}, fn repo, %{get_google_users: google_users} ->
-        google_user = Enum.find(google_users, fn google_user -> google_user.id == result.user_id end)
+      Multi.run(multi, {:complete_of_fail_bounty, result["user_id"]}, fn repo,
+                                                                         %{get_google_users: google_users} =
+                                                                           changes_so_far ->
+        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+
+        inserted_result =
+          Map.get(changes_so_far, {:insert, result["user_id"]})
 
         user_quest_attrs =
           %{
-            quest_id: result.bounty_quest_id,
+            quest_id: result["bounty_quest_id"],
             user_id: google_user.user.id,
             status: "available"
           }
@@ -120,7 +124,7 @@ defmodule GameBackend.Matches do
           repo.insert!(user_quest_changeset)
           |> repo.preload([:quest])
 
-        if Quests.completed_daily_quest?(user_quest, [result]) do
+        if Quests.completed_daily_quest?(user_quest, [inserted_result]) do
           complete_quest_and_insert_currency(user_quest, google_user.user.id)
         else
           UserQuest.changeset(user_quest, %{status: "failed"})
