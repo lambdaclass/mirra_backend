@@ -14,19 +14,19 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
     json_decoded = Jason.decode!(json_string)
     config_keys = process_keys(json_decoded)
 
-    json_decoded =
-      Enum.reduce(json_decoded, %{}, fn {key, value}, acc ->
-        if is_list(value) do
-          new_effects_map =
-            Enum.into(Enum.with_index(value), %{}, fn {effect, index} ->
-              {"#{index}", effect}
-            end)
+    # json_decoded =
+    #   Enum.reduce(json_decoded, %{}, fn {key, value}, acc ->
+    #     if is_list(value) do
+    #       new_effects_map =
+    #         Enum.into(Enum.with_index(value), %{}, fn {effect, index} ->
+    #           {"#{index}", effect}
+    #         end)
 
-          Map.put(acc, key, new_effects_map)
-        else
-          Map.put(acc, key, value)
-        end
-      end)
+    #       Map.put(acc, key, new_effects_map)
+    #     else
+    #       Map.put(acc, key, value)
+    #     end
+    #   end)
 
     socket =
       socket
@@ -132,28 +132,21 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
   def render_effects_form(assigns) do
     ~H"""
     <.inputs_for :let={effects_form} field={@form[@selected_key]} } as={@selected_key} id={@selected_key}>
-      <%= for index <- 1..(Enum.count(@data[@selected_key])-1) do %>
-        <.inputs_for
-          :let={effect_form}
-          field={effects_form["#{index}"]}
-          id={"#{@selected_key}_#{index}"}
-          as={String.to_atom("#{@selected_key}_#{index}")}
-        >
+      <%= for {effect_key, effect_data} <- @data[@selected_key] do %>
+        <.inputs_for :let={effect_form} field={effects_form[effect_key]}>
           <div class="border rounded-md p-1 m-1 bg-green-300">
-            <%= for {key, value} <- @data[@selected_key]["#{index}"] do %>
-              <%= unless is_map(value) do %>
+            <%= for {effect_data_key, effect_data_value} <- effect_data do %>
+              <%= unless is_map(effect_data_value) do %>
                 <div class="flex items-center">
-                  <.label for={key}><%= key %></.label>
-                  <.input type={type(value)} field={effect_form[key]} value{@data[@selected_key][#index][]} />
+                  <.label for={effect_data_key}><%= effect_data_key %></.label>
+                  <.input
+                    type={type(effect_data_value)}
+                    field={effect_form[effect_data_key]}
+                    value={@data[@selected_key][effect_data_key]}
+                  />
                 </div>
               <% else %>
-                <.render_effect_mechanics_form
-                  effect_form={effect_form}
-                  data={@data}
-                  data={@data[@selected_key]["#{index}"]}
-                  selected_key={@selected_key}
-                  index={"#{index}"}
-                />
+                <.render_effect_mechanics_form data={effect_data_value} effect_form={effect_form} />
               <% end %>
             <% end %>
           </div>
@@ -165,15 +158,15 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
 
   def render_effect_mechanics_form(assigns) do
     ~H"""
-    <.inputs_for :let={effects_mechanics_form} field={@effect_form["effects_mechanics"]}>
-      <%= for key <- Map.keys(@data["effect_mechanics"]) do %>
-        <.inputs_for :let={effect_mechanics_form} field={effects_mechanics_form[key]}>
+    <.inputs_for :let={effects_mechanics_form} field={@effect_form["effect_mechanics"]}>
+      <%= for {effect_mechanic_name, effect_mechanic_values} <- @data do %>
+        <.inputs_for :let={effect_mechanics_form} field={effects_mechanics_form[effect_mechanic_name]}>
           <div class="border rounded-md bg-blue-100 p-1 m-1">
-            <span><%= "Effect mechanic #{String.capitalize(key)}" %></span>
-            <%= for {key, value} <- @data["effect_mechanics"][key] do %>
+            <span><%= "Effect mechanic #{String.capitalize(effect_mechanic_name)}" %></span>
+            <%= for {effect_mechanic_data_key, effect_mechanic_data_value} <- @data[effect_mechanic_name] do %>
               <div class="flex items-center">
-                <.label for={key}><%= key %></.label>
-                <.input type={type(value)} field={effect_mechanics_form[key]} value{value} />
+                <.label for={effect_mechanic_data_key}><%= effect_mechanic_data_key %></.label>
+                <.input type={type(effect_mechanic_data_value)} field={effect_mechanics_form[effect_mechanic_data_key]} />
               </div>
             <% end %>
           </div>

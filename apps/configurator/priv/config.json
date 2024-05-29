@@ -14,9 +14,8 @@
     "zone_damage": 40,
     "item_spawn_interval_ms": 15000
   },
-  "effects": [
-    {
-      "name": "invisible",
+  "effects": {
+    "invisible": {
       "duration_ms": 3500,
       "remove_on_action": true,
       "one_time_application": false,
@@ -27,8 +26,7 @@
         }
       }
     },
-    {
-      "name": "singularity",
+    "singularity": {
       "remove_on_action": false,
       "one_time_application": true,
       "effect_mechanics": {
@@ -44,8 +42,7 @@
         }
       }
     },
-    {
-      "name": "buff_singularity",
+    "buff_singularity": {
       "remove_on_action": false,
       "one_time_application": true,
       "consume_projectile": true,
@@ -58,8 +55,7 @@
         }
       }
     },
-    {
-      "name": "golden_clock_effect",
+    "golden_clock_effect": {
       "duration_ms": 9000,
       "remove_on_action": false,
       "one_time_application": true,
@@ -84,8 +80,7 @@
         }
       }
     },
-    {
-      "name": "magic_boots_effect",
+    "magic_boots_effect": {
       "duration_ms": 8000,
       "remove_on_action": false,
       "one_time_application": true,
@@ -97,8 +92,7 @@
         }
       }
     },
-    {
-      "name": "mirra_blessing_effect",
+    "mirra_blessing_effect": {
       "duration_ms": 7000,
       "remove_on_action": false,
       "one_time_application": true,
@@ -109,8 +103,7 @@
         }
       }
     },
-    {
-      "name": "denial_of_service",
+    "denial_of_service": {
       "remove_on_action": false,
       "one_time_application": true,
       "effect_mechanics": {
@@ -121,8 +114,7 @@
         }
       }
     },
-    {
-      "name": "giant_effect",
+    "giant_effect": {
       "duration_ms": 8000,
       "remove_on_action": false,
       "one_time_application": true,
@@ -149,5 +141,35 @@
         }
       }
     }
-  ]
+  },
+  "items": {
+    "golden_clock": {
+      "radius": 200.0,
+      "effects": [
+        "golden_clock_effect"
+      ],
+      "mechanics": {}
+    },
+    "magic_boots": {
+      "radius": 200.0,
+      "effects": [
+        "magic_boots_effect"
+      ],
+      "mechanics": {}
+    },
+    "mirra_blessing": {
+      "radius": 200.0,
+      "effects": [
+        "mirra_blessing_effect"
+      ],
+      "mechanics": {}
+    },
+    "giant": {
+      "radius": 200.0,
+      "effects": [
+        "giant_effect"
+      ],
+      "mechanics": {}
+    }
+  }
 }
