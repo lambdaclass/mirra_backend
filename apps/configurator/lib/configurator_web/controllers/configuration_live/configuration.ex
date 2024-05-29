@@ -54,7 +54,6 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
   # end
 
   def handle_event("validate", params, socket) do
-    IO.inspect(params)
     {:noreply, socket}
   end
 
@@ -84,10 +83,6 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
       [key | acc]
     end)
   end
-
-  def type(type) when is_integer(type) or is_float(type), do: "number"
-  def type(type) when is_boolean(type), do: "checkbox"
-  def type(_type), do: "text"
 
   def render_game_form(assigns) do
     ~H"""
@@ -136,36 +131,30 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
 
   def render_effects_form(assigns) do
     ~H"""
-    <.inputs_for :let={effects_form} field={@form[@selected_key]} id={"#{@selected_key}"} as={"#{@selected_key}"}>
+    <.inputs_for :let={effects_form} field={@form[@selected_key]} } as={@selected_key} id={@selected_key}>
       <%= for index <- 1..(Enum.count(@data[@selected_key])-1) do %>
         <.inputs_for
           :let={effect_form}
           field={effects_form["#{index}"]}
           id={"#{@selected_key}_#{index}"}
-          as={"#{@selected_key}_#{index}"}
+          as={String.to_atom("#{@selected_key}_#{index}")}
         >
-          <div class="border rounded-md p-1 m-1">
-            <.label for="name">Name</.label>
-            <.input type="text" field={effect_form["name"]} />
-
-            <.label for="duration_ms">Duration (ms)</.label>
-            <.input type="number" field={effect_form["duration_ms"]} />
-
-            <div class="flex items-center gap-1">
-              <.label for="remove_on_action">Remove on Action</.label>
-              <.input type="checkbox" field={effect_form["remove_on_action"]} />
-            </div>
-
-            <.label for="one_time_application">One Time Application</.label>
-            <.input type="text" field={effect_form["one_time_application"]} />
-
-            <%= if Map.has_key?(@data[@selected_key]["#{index}"], "effect_mechanics") do %>
-              <.render_effect_mechanics_form
-                data={@data}
-                effect_form={effect_form}
-                index={"#{index}"}
-                selected_key={@selected_key}
-              />
+          <div class="border rounded-md p-1 m-1 bg-green-300">
+            <%= for {key, value} <- @data[@selected_key]["#{index}"] do %>
+              <%= unless is_map(value) do %>
+                <div class="flex items-center">
+                  <.label for={key}><%= key %></.label>
+                  <.input type={type(value)} field={effect_form[key]} value{@data[@selected_key][#index][]} />
+                </div>
+              <% else %>
+                <.render_effect_mechanics_form
+                  effect_form={effect_form}
+                  data={@data}
+                  data={@data[@selected_key]["#{index}"]}
+                  selected_key={@selected_key}
+                  index={"#{index}"}
+                />
+              <% end %>
             <% end %>
           </div>
         </.inputs_for>
@@ -177,38 +166,24 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
   def render_effect_mechanics_form(assigns) do
     ~H"""
     <.inputs_for :let={effects_mechanics_form} field={@effect_form["effects_mechanics"]}>
-      <%= for key<- Map.keys(@data[@selected_key][@index]["effect_mechanics"]) do %>
+      <%= for key <- Map.keys(@data["effect_mechanics"]) do %>
         <.inputs_for :let={effect_mechanics_form} field={effects_mechanics_form[key]}>
-          <div class="border rounded-md p-1 m-1">
-            <div class="flex items-center gap-1">
-              <.label for="execute_multiple_times">Execute Multiple Times</.label>
-              <.input type="checkbox" field={effect_mechanics_form["execute_multiple_times"]} />
-            </div>
-
-            <.label for="effect_delay_ms">Effect Delay (ms)</.label>
-            <.input type="number" field={effect_mechanics_form["effect_delay_ms"]} />
-
-            <.label for="force">Force</.label>
-            <.input type="number" field={effect_mechanics_form["force"]} />
-
-            <.label for="damage">Damage</.label>
-            <.input type="number" field={effect_mechanics_form["damage"]} />
-
-            <.label for="stat_multiplier">Stat Multiplier</.label>
-            <.input type="number" field={effect_mechanics_form["stat_multiplier"]} />
-
-            <.label for="additive_duration_add_ms">Additive Duration Add (ms)</.label>
-            <.input type="number" field={effect_mechanics_form["additive_duration_add_ms"]} />
-
-            <.label for="decrease_by">Decrease by</.label>
-            <.input type="number" field={effect_mechanics_form["decrease_by"]} />
-
-            <.label for="multiplier">Multiplier</.label>
-            <.input type="number" field={effect_mechanics_form["multiplier"]} />
+          <div class="border rounded-md bg-blue-100 p-1 m-1">
+            <span><%= "Effect mechanic #{String.capitalize(key)}" %></span>
+            <%= for {key, value} <- @data["effect_mechanics"][key] do %>
+              <div class="flex items-center">
+                <.label for={key}><%= key %></.label>
+                <.input type={type(value)} field={effect_mechanics_form[key]} value{value} />
+              </div>
+            <% end %>
           </div>
         </.inputs_for>
       <% end %>
     </.inputs_for>
     """
   end
+
+  def type(type) when is_integer(type) or is_float(type), do: "number"
+  def type(type) when is_boolean(type), do: "checkbox"
+  def type(_type), do: "text"
 end

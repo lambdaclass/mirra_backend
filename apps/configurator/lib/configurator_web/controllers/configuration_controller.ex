@@ -10,11 +10,12 @@ defmodule ConfiguratorWeb.ConfigurationController do
   end
 
   def new(conn, params) do
-    config =
-      case params["id"] do
-        nil -> Configure.get_default_configuration!()
-        id -> Configure.get_configuration!(id)
-      end
+    # config =
+    #   case params["id"] do
+    #     nil -> Configure.get_default_configuration!()
+    #     id -> Configure.get_configuration!(id)
+    #   end
+    config = Configure.get_default_configuration!()
 
     render(conn, :new, config: config)
   end
