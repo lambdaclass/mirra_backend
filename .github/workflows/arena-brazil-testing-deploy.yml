@@ -48,6 +48,7 @@ jobs:
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.HOST }}
           PORT: ${{ vars.ARENA_PORT }}
+          GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
           BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -65,6 +66,7 @@ jobs:
                 PHX_HOST=${PHX_HOST} \
                 BOT_MANAGER_HOST=${BOT_MANAGER_HOST} \
                 PORT=${PORT} \
+                GATEWAY_URL=${GATEWAY_URL} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \

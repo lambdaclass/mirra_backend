@@ -197,4 +197,51 @@ defmodule GameBackend.Items do
   Deletes all items in a list by ids.
   """
   def delete_items(item_ids), do: Repo.delete_all(from(u in Item, where: u.id in ^item_ids))
+
+  @doc """
+  Receives an item template name and a game id.
+  Returns {:ok, item_template} if found or {:error, :not_found} otherwise.
+  """
+  def get_purchasable_template_id_by_name_and_game_id(name, game_id) do
+    case Repo.one(
+           from(it in ItemTemplate,
+             where: it.name == ^name and it.game_id == ^game_id and it.purchasable?,
+             select: it.id
+           )
+         ) do
+      nil -> {:error, :not_found}
+      item_template_id -> {:ok, item_template_id}
+    end
+  end
+
+  @doc """
+  Get a user's item associated to the given item name.
+  Fails if there are more than one item of the same name. Returns nil if there are none.
+  """
+  def get_item_by_name(item_name, user_id) do
+    case Repo.one(
+           from(item in Item,
+             join: t in assoc(item, :template),
+             where: t.name == ^item_name and item.user_id == ^user_id
+           )
+         ) do
+      nil -> {:error, :not_found}
+      item -> {:ok, item}
+    end
+  end
+
+  @doc """
+  Returns {:ok, :character_can_equip} if the item is for the unit's character.
+  If not, returns {:error, :character_cannot_equip}
+  """
+  def character_can_equip(unit, item) do
+    unit = Repo.preload(unit, :character)
+    item = Repo.preload(item, :template)
+
+    if unit.character.name in item.template.characters do
+      {:ok, :character_can_equip}
+    else
+      {:error, :character_cannot_equip}
+    end
+  end
 end
