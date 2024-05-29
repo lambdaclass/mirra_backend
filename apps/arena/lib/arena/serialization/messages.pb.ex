@@ -590,7 +590,7 @@ defmodule Arena.Serialization.UseItem do
   field(:item, 1, type: :uint64)
 end
 
-defmodule Arena.Serialization.PickBounty do
+defmodule Arena.Serialization.SelectBounty do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -610,7 +610,7 @@ defmodule Arena.Serialization.GameAction do
   field(:use_item, 4, type: Arena.Serialization.UseItem, json_name: "useItem", oneof: 0)
 
   field(:select_bounty, 5,
-    type: Arena.Serialization.PickBounty,
+    type: Arena.Serialization.SelectBounty,
     json_name: "selectBounty",
     oneof: 0
   )

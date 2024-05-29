@@ -590,7 +590,7 @@ defmodule BotManager.Protobuf.UseItem do
   field(:item, 1, type: :uint64)
 end
 
-defmodule BotManager.Protobuf.PickBounty do
+defmodule BotManager.Protobuf.SelectBounty do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -610,7 +610,7 @@ defmodule BotManager.Protobuf.GameAction do
   field(:use_item, 4, type: BotManager.Protobuf.UseItem, json_name: "useItem", oneof: 0)
 
   field(:select_bounty, 5,
-    type: BotManager.Protobuf.PickBounty,
+    type: BotManager.Protobuf.SelectBounty,
     json_name: "selectBounty",
     oneof: 0
   )
