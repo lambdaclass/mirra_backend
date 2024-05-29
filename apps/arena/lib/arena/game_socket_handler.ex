@@ -10,7 +10,7 @@ defmodule Arena.GameSocketHandler do
 
   @behaviour :cowboy_websocket
 
-  @ping_interval_ms 500
+  @ping_interval_ms 50
 
   @impl true
   def init(req, _opts) do
