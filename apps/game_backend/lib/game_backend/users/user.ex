@@ -8,10 +8,7 @@ defmodule GameBackend.Users.User do
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
-  alias GameBackend.Users.Currencies.UserCurrency
-  alias GameBackend.Users.DungeonSettlementLevel
-  alias GameBackend.Users.KalineTreeLevel
-  alias GameBackend.Users.GoogleUser
+  alias GameBackend.Users.{Currencies.UserCurrency, DungeonSettlementLevel, KalineTreeLevel, GoogleUser, Unlock}
   alias GameBackend.Quests.UserQuest
 
   schema "users" do
@@ -34,6 +31,7 @@ defmodule GameBackend.Users.User do
     has_many(:items, Item)
     has_many(:daily_quests, UserQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
+    has_many(:unlocks, Unlock)
 
     timestamps()
   end
@@ -56,6 +54,7 @@ defmodule GameBackend.Users.User do
       :google_user_id
     ])
     |> unique_constraint([:game_id, :username])
+    |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
