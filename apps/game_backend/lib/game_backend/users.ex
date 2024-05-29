@@ -11,16 +11,13 @@ defmodule GameBackend.Users do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Quests.DailyQuest
-  alias GameBackend.Matches.ArenaMatchResult
-  alias GameBackend.Users.DungeonSettlementLevel
-  alias GameBackend.Users.KalineTreeLevel
   alias Ecto.Multi
+  alias GameBackend.CurseOfMirra.Users, as: CurseUsers
+  alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users.User
-  alias GameBackend.Users.GoogleUser
-  alias GameBackend.Utils
+  alias GameBackend.Transaction
+  alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
 
   @doc """
   Registers a user.
@@ -176,22 +173,9 @@ defmodule GameBackend.Users do
   end
 
   defp create_google_user_by_email(email) do
-    # TODO delete the following in a future refactor -> https://github.com/lambdaclass/mirra_backend/issues/557
-    level = 1
-    experience = 1
-    amount_of_users = Repo.aggregate(GameBackend.Users.User, :count)
-    username = "User_#{amount_of_users + 1}"
-    ##################################################################
-    game_id = Utils.get_game_id(:curse_of_mirra)
-
     GoogleUser.changeset(%GoogleUser{}, %{
       email: email,
-      user: %{
-        game_id: game_id,
-        username: username,
-        level: level,
-        experience: experience
-      }
+      user: CurseUsers.create_user_params()
     })
     |> Repo.insert()
   end
@@ -308,7 +292,7 @@ defmodule GameBackend.Users do
   Returns the updated user if the operation was successful.
   """
   def level_up_dungeon_settlement(user_id, level_up_costs) do
-    {:ok, _result} =
+    result =
       Multi.new()
       |> Multi.run(:user, fn _, _ -> increment_settlement_level(user_id) end)
       |> Multi.run(:user_currency, fn _, _ ->
@@ -316,17 +300,25 @@ defmodule GameBackend.Users do
       end)
       |> Repo.transaction()
 
-    get_user(user_id)
+    case result do
+      {:error, reason} -> {:error, reason}
+      {:error, _, _, _} -> {:error, :transaction}
+      {:ok, _} -> get_user(user_id)
+    end
   end
 
   defp increment_settlement_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
-        next_level = get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1)
+        case get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1) do
+          nil ->
+            {:error, :dungeon_settlement_level_not_found}
 
-        user
-        |> User.changeset(%{dungeon_settlement_level_id: next_level.id})
-        |> Repo.update()
+          next_level ->
+            user
+            |> User.changeset(%{dungeon_settlement_level_id: next_level.id})
+            |> Repo.update()
+        end
 
       error ->
         error
@@ -344,4 +336,84 @@ defmodule GameBackend.Users do
         units: [:character, :items],
         currencies: :currency
       )
+
+  @doc """
+  Get the upgrade with the given id.
+
+  ## Examples
+
+      iex> get_upgrade(upgrade_id)
+      {:ok, %Upgrade{id: ^upgrade_id}}
+  """
+  def get_upgrade(id) do
+    case Repo.get(Upgrade, id) do
+      nil -> {:error, :not_found}
+      upgrade -> {:ok, upgrade}
+    end
+  end
+
+  @doc """
+  Get the upgrade with the given name.
+
+  ## Examples
+
+      iex> get_upgrade_by_name("upgrade_name")
+      {:ok, %Upgrade{name: "upgrade_name"}}
+  """
+  def get_upgrade_by_name(name) do
+    case Repo.get_by(Upgrade, name: name) do
+      nil -> {:error, :not_found}
+      upgrade -> {:ok, upgrade}
+    end
+  end
+
+  def user_has_unlock?(user_id, unlock_name) do
+    Repo.exists?(from(u in Unlock, where: u.user_id == ^user_id and u.name == ^unlock_name))
+  end
+
+  @doc """
+  Purchase an upgrade for a user. Adds it to the user's unlocks and substracts the cost from the user's currencies.
+  """
+  def purchase_upgrade(user_id, upgrade_id, type) do
+    with {:user, true} <- {:user, exists?(user_id)},
+         {:upgrade, {:ok, upgrade}} <- {:upgrade, get_upgrade(upgrade_id)},
+         {:upgrade_owned, false} <- {:upgrade_owned, user_has_unlock?(user_id, upgrade.name)},
+         # TODO: Check the upgrade can be bought (unlock requirements) [#CHOM-471]
+         {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, upgrade.cost)} do
+      Multi.new()
+      |> Multi.run(:upgrade, fn _, _ ->
+        insert_unlock(%{user_id: user_id, upgrade_id: upgrade_id, name: upgrade.name, type: type})
+      end)
+      |> Multi.run(:substract_currencies, fn _, _ ->
+        Currencies.substract_currencies(user_id, upgrade.cost)
+      end)
+      |> Transaction.run()
+    else
+      {:user, false} -> {:error, :user_not_found}
+      {:upgrade, _} -> {:error, :upgrade_not_found}
+      {:upgrade_owned, true} -> {:error, :upgrade_already_owned}
+      {:can_afford, false} -> {:error, :cant_afford}
+    end
+  end
+
+  @doc """
+  Insert an Unlock.
+  """
+  def insert_unlock(attrs) do
+    %Unlock{}
+    |> Unlock.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get all User's unlocks with a specific type.
+
+  ## Examples
+
+      iex> get_unlocks_with_type("user_id", "type")
+      [%Unlock{}]
+  """
+  def get_unlocks_with_type(user_id, type) do
+    Repo.all(from(u in Unlock, where: u.user_id == ^user_id and u.type == ^type, preload: [upgrade: :buffs]))
+  end
 end

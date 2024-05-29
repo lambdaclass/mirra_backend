@@ -367,7 +367,7 @@ defmodule Champions.Units do
   @doc """
   Get a unit's health stat for battle, including modifiers from items.
 
-  Character and ItemTemplate must be preloaded.
+  Character, Items and ItemTemplates must be preloaded.
 
   ## Examples
 
@@ -380,7 +380,7 @@ defmodule Champions.Units do
   @doc """
   Get a unit's attack stat for battle, including modifiers from items.
 
-  Character and ItemTemplate must be preloaded.
+  Character, Items and ItemTemplates must be preloaded.
 
   ## Examples
 
@@ -393,7 +393,7 @@ defmodule Champions.Units do
   @doc """
   Get a unit's defense stat for battle, including modifiers from items.
 
-  Character and ItemTemplate must be preloaded.
+  Character, Items and ItemTemplates must be preloaded.
 
   ## Examples
 
@@ -402,6 +402,20 @@ defmodule Champions.Units do
       100
   """
   def get_defense(unit), do: calculate_stat(unit.character.base_defense, unit, "defense")
+
+  @doc """
+  Get a unit's speed stat for battle, including modifiers from items.
+  Unlike other stats, speed is not affected by the unit's level, tier or rank.
+
+  Items and Templates must be preloaded.
+
+  ## Examples
+
+      iex> {:ok, unit} = Champions.Units.get_unit(unit_id)
+      iex> Champions.Units.get_speed(unit)
+      100
+  """
+  def get_speed(unit), do: factor_items(Decimal.new(0), unit.items, "speed")
 
   defp calculate_stat(base_stat, unit, stat_name),
     do:
@@ -459,17 +473,13 @@ defmodule Champions.Units do
   end
 
   defp get_additive_and_multiplicative_modifiers(items, attribute) do
-    item_modifiers =
-      Enum.flat_map(items, & &1.template.modifiers)
+    item_modifiers = Enum.flat_map(items, & &1.template.modifiers)
 
-    attribute_modifiers =
-      Enum.filter(item_modifiers, &(&1.attribute == attribute))
+    attribute_modifiers = Enum.filter(item_modifiers, &(&1.attribute == attribute))
 
-    additive_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
+    additive_modifiers = Enum.filter(attribute_modifiers, &(&1.operation == "Add"))
 
-    multiplicative_modifiers =
-      Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
+    multiplicative_modifiers = Enum.filter(attribute_modifiers, &(&1.operation == "Multiply"))
 
     {additive_modifiers, multiplicative_modifiers}
   end

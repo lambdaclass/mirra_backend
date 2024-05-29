@@ -33,6 +33,11 @@ defmodule BotManager.Endpoint do
     |> send_resp(200, Jason.encode!(bot_pid |> :erlang.term_to_binary() |> Base58.encode()))
   end
 
+  get "/api/health" do
+    conn
+    |> send_resp(200, "ok")
+  end
+
   # A catchall route, 'match' will match no matter the request method,
   # so a response is always returned, even if there is no route to match.
   match _ do

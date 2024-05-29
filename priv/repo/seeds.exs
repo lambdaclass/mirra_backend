@@ -1,20 +1,14 @@
-alias GameBackend.Utils
-alias GameBackend.Campaigns
-alias GameBackend.Campaigns.Campaign
-alias GameBackend.Campaigns.Level
-alias GameBackend.Campaigns.Rewards.AfkRewardRate
-alias GameBackend.Campaigns.Rewards.CurrencyReward
-alias GameBackend.Gacha
-alias GameBackend.Repo
-alias GameBackend.Units
-alias GameBackend.Units.Unit
-alias GameBackend.Users
-alias GameBackend.Users.DungeonSettlementLevel
-alias GameBackend.Users.KalineTreeLevel
+alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
+alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
+alias GameBackend.Users.{DungeonSettlementLevel, KalineTreeLevel, Upgrade}
+alias GameBackend.Units.{Characters, Unit}
+alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 units_per_level = 6
+
+### Champions Currencies
 
 {:ok, _skills} = Champions.Config.import_skill_config()
 
@@ -41,6 +35,20 @@ units_per_level = 6
     name: "Mystic Summon Scrolls"
   })
 
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, supplies_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
+
+{:ok, blueprints_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
+
+{:ok, pearls_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Pearls"})
+
+### Curse Currencies
+
 {:ok, _curse_gold} =
   Users.Currencies.insert_currency(%{
     game_id: curse_of_mirra_id,
@@ -58,15 +66,6 @@ units_per_level = 6
     game_id: curse_of_mirra_id,
     name: "Feature Tokens"
   })
-
-{:ok, _fertilizer_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
-
-{:ok, supplies_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
-
-{:ok, blueprints_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
 
 {:ok, _trophies_currency} =
   Users.Currencies.insert_currency(%{game_id: curse_of_mirra_id, name: "Trophies"})
@@ -199,11 +198,11 @@ levels =
     end)
   end)
 
-{_, levels_without_units} =
+{_, levels_without_embeds} =
   Repo.insert_all(Level, levels, returning: [:id, :level_number, :campaign_id])
 
 units =
-  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
+  Enum.flat_map(Enum.with_index(levels_without_embeds, 0), fn {level, level_index} ->
     campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
     campaign_rules = Enum.at(rules, campaign_number - 1)
 
@@ -247,19 +246,15 @@ Repo.insert_all(Unit, units, on_conflict: :nothing)
 # Add the rewards of each level.
 # The calculation of the `amount` field is done following the specification found in https://docs.google.com/spreadsheets/d/177mvJS75LecaAEpyYotQEcrmhGJWI424UnkE2JHLmyY
 currency_rewards =
-  Enum.map(levels_without_units, fn level ->
-    %{
-      level_id: level.id,
-      amount: 10 * (20 + level.level_number),
-      currency_id: gold_currency.id,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
-
-currency_rewards =
-  currency_rewards ++
-    Enum.map(levels_without_units, fn level ->
+  Enum.flat_map(levels_without_embeds, fn level ->
+    [
+      %{
+        level_id: level.id,
+        amount: 10 * (20 + level.level_number),
+        currency_id: gold_currency.id,
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
+        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+      },
       %{
         level_id: level.id,
         amount: (10 * (15 + level.level_number - 1) * 1.025) |> round(),
@@ -267,7 +262,8 @@ currency_rewards =
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
-    end)
+    ]
+  end)
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
@@ -297,6 +293,68 @@ _dungeon_settlement_levels =
 
     dungeon_settlement_level
   end)
+
+{:ok, _initial_debuff} =
+  Repo.insert(
+    Upgrade.changeset(%Upgrade{}, %{
+      game_id: champions_of_mirra_id,
+      name: "Dungeon.BaseSetting",
+      description: "This upgrade sets the base settings for the dungeon.",
+      group: -1,
+      buffs: [
+        %{
+          modifiers: [
+            %{attribute: "max_level", magnitude: 10, operation: "Add"},
+            %{attribute: "health", magnitude: 0.1, operation: "Multiply"},
+            %{attribute: "attack", magnitude: 0.1, operation: "Multiply"}
+          ]
+        }
+      ]
+    })
+  )
+
+{:ok, sample_hp_1} =
+  Repo.insert(
+    Upgrade.changeset(%Upgrade{}, %{
+      game_id: champions_of_mirra_id,
+      name: "HP Upgrade 1",
+      description: "This upgrade increases the health of all units by 5%.",
+      group: 1,
+      cost: [
+        %{currency_id: pearls_currency.id, amount: 5}
+      ],
+      buffs: [
+        %{
+          modifiers: [
+            %{attribute: "health", magnitude: 0.05, operation: "Multiply"}
+          ]
+        }
+      ]
+    })
+  )
+
+{:ok, _sample_hp_2} =
+  Repo.insert(
+    Upgrade.changeset(%Upgrade{}, %{
+      game_id: champions_of_mirra_id,
+      name: "HP Upgrade 2",
+      description: "This upgrade increases the health of all units by 10%.",
+      group: 1,
+      cost: [
+        %{currency_id: pearls_currency.id, amount: 10}
+      ],
+      upgrade_dependency_depends_on: [
+        %{depends_on_id: sample_hp_1.id}
+      ],
+      buffs: [
+        %{
+          modifiers: [
+            %{attribute: "health", magnitude: 1.1, operation: "Multiply"}
+          ]
+        }
+      ]
+    })
+  )
 
 dungeon_rules =
   %{
@@ -334,8 +392,6 @@ dungeon_levels =
 
 units =
   Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    campaign_number = Repo.get!(Campaign, level.campaign_id).campaign_number
-
     base_level = dungeon_rules.base_level
     level_scaler = dungeon_rules.scaler
 
@@ -372,3 +428,23 @@ units =
   end)
 
 Repo.insert_all(Unit, units, on_conflict: :nothing)
+
+##################### CURSE OF MIRRA #####################
+# Insert characters
+Config.get_characters_config()
+|> Enum.each(fn char_params ->
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
+end)
+
+# Insert items templates
+Config.get_items_templates_config()
+|> Enum.each(fn item_template ->
+  Map.put(item_template, :game_id, curse_of_mirra_id)
+  |> Map.put(:rarity, 0)
+  |> Map.put(:config_id, item_template.name)
+  |> Items.insert_item_template()
+end)
+
+################### END CURSE OF MIRRA ###################

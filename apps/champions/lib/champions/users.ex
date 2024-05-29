@@ -26,6 +26,7 @@ defmodule Champions.Users do
   def register(username) do
     kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
     dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level(1)
+    {:ok, dungeon_base_setting} = Users.get_upgrade_by_name("Dungeon.BaseSetting")
 
     case Users.register_user(%{
            username: username,
@@ -33,7 +34,8 @@ defmodule Champions.Users do
            level: 1,
            experience: 0,
            kaline_tree_level_id: kaline_tree_level.id,
-           dungeon_settlement_level_id: dungeon_settlement_level.id
+           dungeon_settlement_level_id: dungeon_settlement_level.id,
+           unlocks: [%{upgrade_id: dungeon_base_setting.id, name: dungeon_base_setting.name, type: "Dungeon"}]
          }) do
       {:ok, user} ->
         # For testing purposes, we assign some things to our user.
@@ -132,6 +134,12 @@ defmodule Champions.Users do
       user.id,
       Currencies.get_currency_by_name_and_game!("Hero Souls", Utils.get_game_id(:champions_of_mirra)).id,
       100
+    )
+
+    Currencies.add_currency(
+      user.id,
+      Currencies.get_currency_by_name_and_game!("Blueprints", Utils.get_game_id(:champions_of_mirra)).id,
+      50
     )
   end
 
@@ -288,4 +296,11 @@ defmodule Champions.Users do
         amount: user.kaline_tree_level.gold_level_up_cost
       }
     ]
+
+  @doc """
+  Purchase a Dungeon upgrade for a user.
+  """
+  def purchase_dungeon_upgrade(user_id, upgrade_id) do
+    Users.purchase_upgrade(user_id, upgrade_id, "Dungeon")
+  end
 end
