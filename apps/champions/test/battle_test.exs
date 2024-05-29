@@ -225,7 +225,7 @@ defmodule Champions.Test.BattleTest do
                             attack_ratio: 0.5,
                             energy_recharge: 50
                           }
-                        ]
+                        ],
                       })
                     ]
                   })
@@ -1558,9 +1558,9 @@ defmodule Champions.Test.BattleTest do
   describe "Executions over time" do
     test "DealDamage over time", %{target_dummy: target_dummy} do
       # We will create a battle between a damaging unit and a target dummy.
-      # The unit's basic skill will deal 4 points of damage to the target dummy over 3 steps, killing it in the third one.
+      # The unit's basic skill will deal 4 points of damage to the target dummy over 3 steps, killing it in the third one. The cooldown is such that the skill can be used only once.
       # The battle should finish with a victory for team_1 after the third step, or in timeout if the steps are less than 3.
-      maximum_steps = 3
+      maximum_steps = 8
 
       deal_damage_over_time_params =
         TestUtils.build_skill(%{
@@ -1572,6 +1572,10 @@ defmodule Champions.Test.BattleTest do
                 TestUtils.build_apply_effects_to_mechanic(%{
                   effects: [
                     TestUtils.build_effect(%{
+                      type: %{
+                        "type" => "duration",
+                        "duration" => 3 * @miliseconds_per_step
+                      },
                       executions_over_time: [
                         %{
                           type: "DealDamageOverTime",
@@ -1590,7 +1594,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: 0
+          cooldown: 5 * @miliseconds_per_step
         })
 
       {:ok, character} =
@@ -1598,7 +1602,7 @@ defmodule Champions.Test.BattleTest do
           name: "DealDamageOverTime Character",
           basic_skill: deal_damage_over_time_params,
           ultimate_skill: TestUtils.build_skill(%{name: "DealDamageOverTime Empty Skill"}),
-          base_attack: 4
+          base_attack: 2
         })
         |> Characters.insert_character()
 

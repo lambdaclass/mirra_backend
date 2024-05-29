@@ -280,6 +280,7 @@ defmodule Champions.Battle.Simulator do
 
     # Reduce tags remaining timers & remove expired ones
     {new_tags, new_history} = reduce_tag_timers(unit, new_history)
+    IO.inspect(new_tags)
 
     # Reduce basic skill cooldown
     new_state =
@@ -377,7 +378,6 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_step_for_skills({current_state, history}, initial_step_state) do
-    IO.inspect(current_state.skills_being_cast)
     Enum.reduce(current_state.skills_being_cast, {current_state, history}, fn skill, {current_state, history_acc} ->
       Logger.info(
         "Process step #{current_state.step_number} for skill #{skill.name} cast by #{String.slice(skill.caster_id, 0..2)}"
@@ -735,8 +735,12 @@ defmodule Champions.Battle.Simulator do
           else: {target, history}
       end)
 
-    Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
+    {target_after_executions, new_history} = Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
       process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
+    end)
+
+    Enum.reduce(effect.executions_over_time, {target_after_executions, new_history}, fn execution_over_time, {target_acc, history_acc} ->
+      process_execution_over_time(execution_over_time, target_acc, caster, history_acc, effect)
     end)
   end
 
@@ -956,6 +960,66 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
+  defp process_execution_over_time(
+         %{
+           "type" => "DealDamageOverTime",
+           "attack_ratio" => attack_ratio,
+           "apply_tags" => apply_tags,
+           "interval" => interval
+         },
+         target,
+         caster,
+         history,
+         effect
+       ) do
+
+    # Calculate the damage to be dealt in every step. Save it, because we'll need to apply it in every step and it mustn't be affected by modifiers, buffs, debuffs, etc.
+    # Process the execution for the first time, and repeat it for the remaining steps.
+    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
+
+    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
+    damage_after_defense =
+      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
+      |> Decimal.round()
+      |> Decimal.to_integer()
+
+    Logger.info(
+      "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{interval}."
+    )
+
+    new_history =
+      add_to_history(
+        history,
+        %{
+          target_id: target.id,
+          skill_id: effect.skill_id,
+          stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
+        },
+        :execution_received
+      )
+
+    new_target =
+      target
+      |> Map.put(:health, target.health - damage_after_defense)
+
+    apply_tags(new_target, apply_tags, effect, new_history)
+
+  end
+
+  defp process_execution_over_time(
+         _,
+         target,
+         caster,
+         history,
+         _skill_id
+       ) do
+    Logger.warning(
+      "#{format_unit_name(caster)} tried to apply an unknown execution over time to #{format_unit_name(target)}"
+    )
+
+    {target, history}
+  end
+
   # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
   defp calculate_unit_stat(unit, attribute) do
     overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
@@ -1115,6 +1179,7 @@ defmodule Champions.Battle.Simulator do
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
+      executions_over_time: effect.executions_over_time,
       skill_id: skill_id
     }
 
