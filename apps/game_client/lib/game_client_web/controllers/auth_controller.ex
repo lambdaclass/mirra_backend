@@ -17,6 +17,7 @@ defmodule GameClientWeb.AuthController do
         conn
         |> put_flash(:info, "Logged in successfully.")
         |> put_session(:user_id, get_in(body, ["user", "id"]))
+        |> put_session(:gateway_jwt, get_in(body, ["gateway_jwt"]))
         |> redirect(to: ~p"/")
 
       {:ok, %{status: 400}} ->
