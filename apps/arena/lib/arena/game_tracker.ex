@@ -81,7 +81,7 @@ defmodule Arena.GameTracker do
     match_data = get_in(state, [:matches, match_pid])
     results = generate_results(match_data, winner_id)
     payload = Jason.encode!(%{results: results})
-    send_request("/arena/match/#{match_data.match_id}", payload)
+    send_request("/curse/match/#{match_data.match_id}", payload)
     matches = Map.delete(state.matches, match_pid)
     {:noreply, %{state | matches: matches}}
   end
