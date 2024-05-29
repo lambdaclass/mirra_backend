@@ -8,9 +8,9 @@
             "Elix1r"
         ],
         "currency_rewards": {
-            "gold": 2000,
-            "arcane_crystal": 20,
-            "4_shards": 30
+            "Gold": 2000,
+            "Arcane Crystals": 20,
+            "4* Shards": 30
         }
     },
     {
@@ -22,9 +22,9 @@
             "Zanochi"
         ],
         "currency_rewards": {
-            "gold": 2000,
-            "arcane_crystal": 20,
-            "4_shards": 30
+            "Gold": 2000,
+            "Arcane Crystals": 20,
+            "4* Shards": 30
         }
     },
     {
@@ -36,9 +36,9 @@
             "Obure"
         ],
         "currency_rewards": {
-            "gold": 2000,
-            "arcane_crystal": 20,
-            "4_shards": 30
+            "Gold": 2000,
+            "Arcane Crystals": 20,
+            "4* Shards": 30
         }
     },
     {
@@ -51,9 +51,9 @@
             "Boy Kampf"
         ],
         "currency_rewards": {
-            "gold": 4000,
-            "arcane_crystal": 40,
-            "4_shards": 30
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
         }
     },
     {
@@ -66,9 +66,9 @@
             "Uren"
         ],
         "currency_rewards": {
-            "gold": 4000,
-            "arcane_crystal": 40,
-            "5_shards": 15
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "5* Shards": 15
         }
     },
     {
@@ -81,9 +81,9 @@
             "Valtimer"
         ],
         "currency_rewards": {
-            "gold": 4000,
-            "arcane_crystal": 40,
-            "4_shards": 30
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
         }
     },
     {
@@ -96,9 +96,9 @@
             "Zanochi"
         ],
         "currency_rewards": {
-            "gold": 4000,
-            "arcane_crystal": 40,
-            "4_shards": 30
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
         }
     },
     {
@@ -111,9 +111,9 @@
             "Uren"
         ],
         "currency_rewards": {
-            "gold": 4000,
-            "arcane_crystal": 40,
-            "4_shards": 30
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
         }
     },
     {
@@ -127,9 +127,9 @@
             "Romulo"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "4_shards": 30
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
         }
     },
     {
@@ -143,9 +143,9 @@
             "Uren"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "5_shards": 15
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "5* Shards": 15
         }
     },
     {
@@ -159,9 +159,9 @@
             "Uma"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "4_shards": 30
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
         }
     },
     {
@@ -175,9 +175,9 @@
             "Obure"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "4_shards": 30
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
         }
     },
     {
@@ -191,9 +191,9 @@
             "Fetra"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "4_shards": 30
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
         }
     },
     {
@@ -207,9 +207,9 @@
             "Kenzu"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "4_shards": 30
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
         }
     },
     {
@@ -223,9 +223,9 @@
             "Kura'bara"
         ],
         "currency_rewards": {
-            "gold": 6000,
-            "arcane_crystal": 60,
-            "5_shards": 15
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "5* Shards": 15
         }
     },
     {
@@ -240,9 +240,9 @@
             "Romulo"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -257,9 +257,9 @@
             "Valtimer"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -274,9 +274,9 @@
             "Obure"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -291,9 +291,9 @@
             "H4ck"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -308,9 +308,9 @@
             "Kura'bara"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "5_shards": 15
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "5* Shards": 15
         }
     },
     {
@@ -325,9 +325,9 @@
             "Obure"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -342,9 +342,9 @@
             "Fetra"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -359,9 +359,9 @@
             "Boy Kampf"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -376,9 +376,9 @@
             "Valtimer"
         ],
         "currency_rewards": {
-            "gold": 8000,
-            "arcane_crystal": 80,
-            "4_shards": 30
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
         }
     },
     {
@@ -394,9 +394,9 @@
             "Muflus"
         ],
         "currency_rewards": {
-            "gold": 10000,
-            "arcane_crystal": 100,
-            "5_shards": 15
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "5* Shards": 15
         }
     },
     {
@@ -412,9 +412,9 @@
             "Rust"
         ],
         "currency_rewards": {
-            "gold": 10000,
-            "arcane_crystal": 100,
-            "4_shards": 30
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
         }
     },
     {
@@ -430,9 +430,9 @@
             "Romulo"
         ],
         "currency_rewards": {
-            "gold": 10000,
-            "arcane_crystal": 100,
-            "4_shards": 30
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
         }
     },
     {
@@ -448,9 +448,9 @@
             "Zanochi"
         ],
         "currency_rewards": {
-            "gold": 10000,
-            "arcane_crystal": 100,
-            "4_shards": 30
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
         }
     },
     {
@@ -466,9 +466,9 @@
             "Uren"
         ],
         "currency_rewards": {
-            "gold": 10000,
-            "arcane_crystal": 100,
-            "4_shards": 30
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
         }
     },
     {
@@ -484,9 +484,9 @@
             "Kenzu"
         ],
         "currency_rewards": {
-            "gold": 10000,
-            "arcane_crystal": 100,
-            "5_shards": 15
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "5* Shards": 15
         }
     },
     {
@@ -502,9 +502,9 @@
             "Romulo"
         ],
         "currency_rewards": {
-            "gold": 15000,
-            "arcane_crystal": 150,
-            "4_shards": 30
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
         }
     },
     {
@@ -520,9 +520,9 @@
             "Romulo"
         ],
         "currency_rewards": {
-            "gold": 15000,
-            "arcane_crystal": 150,
-            "4_shards": 30
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
         }
     },
     {
@@ -538,9 +538,9 @@
             "Boy Kampf"
         ],
         "currency_rewards": {
-            "gold": 15000,
-            "arcane_crystal": 150,
-            "4_shards": 30
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
         }
     },
     {
@@ -556,9 +556,9 @@
             "Zanochi"
         ],
         "currency_rewards": {
-            "gold": 15000,
-            "arcane_crystal": 150,
-            "4_shards": 30
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
         }
     },
     {
@@ -574,9 +574,9 @@
             "Jayson"
         ],
         "currency_rewards": {
-            "gold": 15000,
-            "arcane_crystal": 150,
-            "5_shards": 15
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "5* Shards": 15
         }
     },
     {
@@ -592,9 +592,9 @@
             "Muflus"
         ],
         "currency_rewards": {
-            "gold": 20000,
-            "arcane_crystal": 200,
-            "4_shards": 30
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
         }
     },
     {
@@ -610,9 +610,9 @@
             "Elix1r"
         ],
         "currency_rewards": {
-            "gold": 20000,
-            "arcane_crystal": 200,
-            "4_shards": 30
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
         }
     },
     {
@@ -628,9 +628,9 @@
             "D'agna"
         ],
         "currency_rewards": {
-            "gold": 20000,
-            "arcane_crystal": 200,
-            "4_shards": 30
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
         }
     },
     {
@@ -646,9 +646,9 @@
             "Valtimer"
         ],
         "currency_rewards": {
-            "gold": 20000,
-            "arcane_crystal": 200,
-            "4_shards": 30
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
         }
     },
     {
@@ -664,9 +664,9 @@
             "Rust"
         ],
         "currency_rewards": {
-            "gold": 20000,
-            "arcane_crystal": 200,
-            "5_shards": 15
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "5* Shards": 15
         }
     },
     {
@@ -682,9 +682,9 @@
             "Kampako"
         ],
         "currency_rewards": {
-            "gold": 25000,
-            "arcane_crystal": 250,
-            "4_shards": 30
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
         }
     },
     {
@@ -700,9 +700,9 @@
             "Fetra"
         ],
         "currency_rewards": {
-            "gold": 25000,
-            "arcane_crystal": 250,
-            "4_shards": 30
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
         }
     },
     {
@@ -718,9 +718,9 @@
             "Otix"
         ],
         "currency_rewards": {
-            "gold": 25000,
-            "arcane_crystal": 250,
-            "4_shards": 30
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
         }
     },
     {
@@ -736,9 +736,9 @@
             "Romulo"
         ],
         "currency_rewards": {
-            "gold": 25000,
-            "arcane_crystal": 250,
-            "4_shards": 30
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
         }
     },
     {
@@ -754,9 +754,9 @@
             "Boy Kampf"
         ],
         "currency_rewards": {
-            "gold": 25000,
-            "arcane_crystal": 250,
-            "5_shards": 15
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "5* Shards": 15
         }
     },
     {
@@ -772,9 +772,9 @@
             "Uma"
         ],
         "currency_rewards": {
-            "gold": 30000,
-            "arcane_crystal": 300,
-            "4_shards": 30
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
         }
     },
     {
@@ -790,9 +790,9 @@
             "Fetra"
         ],
         "currency_rewards": {
-            "gold": 30000,
-            "arcane_crystal": 300,
-            "4_shards": 30
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
         }
     },
     {
@@ -808,9 +808,9 @@
             "Uren"
         ],
         "currency_rewards": {
-            "gold": 30000,
-            "arcane_crystal": 300,
-            "4_shards": 30
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
         }
     },
     {
@@ -826,9 +826,9 @@
             "Elix1r"
         ],
         "currency_rewards": {
-            "gold": 30000,
-            "arcane_crystal": 300,
-            "4_shards": 30
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
         }
     },
     {
@@ -844,9 +844,9 @@
             "Kura'bara"
         ],
         "currency_rewards": {
-            "gold": 30000,
-            "arcane_crystal": 300,
-            "5_shards": 15
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "5* Shards": 15
         }
     }
 ]

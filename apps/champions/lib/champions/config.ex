@@ -3,13 +3,13 @@ defmodule Champions.Config do
   Configuration utilities.
   """
 
-  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Campaigns
   alias Champions.Units
   alias GameBackend.Items
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
   alias GameBackend.Users
+  alias GameBackend.Users.Currencies
   alias GameBackend.Utils
 
   @doc """
@@ -171,7 +171,21 @@ defmodule Champions.Config do
       )
       |> Map.put(:game_id, game_id)
       |> Map.put(:campaign_id, dungeon_campaign.id)
-      |> Map.put(:attempt_cost, %CurrencyCost{currency_id: supplies, amount: 1})
+      |> Map.put(:attempt_cost, [%{currency_id: supplies.id, amount: 1}])
+      |> Map.put(
+        :currency_rewards,
+        Enum.map(campaign.currency_rewards, fn {currency, amount} ->
+          %{
+            currency_id:
+              currency
+              |> Atom.to_string()
+              |> Currencies.get_currency_by_name_and_game!(game_id)
+              |> Map.get(:id),
+            amount: amount
+          }
+        end)
+      )
     end)
+    |> Campaigns.upsert_levels()
   end
 end

@@ -65,13 +65,11 @@ defmodule GameBackend.Campaigns do
   Inserts all Campaigns into the database.
   If another one already exists with the same number and campaign_id, it updates it instead.
   """
-  def upsert_levels(attrs_list, campaign_id) do
+  def upsert_levels(attrs_list) do
     Enum.reduce(attrs_list, Multi.new(), fn attrs, multi ->
       # Cannot use Multi.insert because of the embeds_many
       Multi.run(multi, attrs.level_number, fn _, _ ->
-        attrs
-        |> Map.put(:campaign_id, campaign_id)
-        |> upsert_level()
+        upsert_level(attrs)
       end)
     end)
     |> Repo.transaction()
