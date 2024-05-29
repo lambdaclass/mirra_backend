@@ -310,8 +310,8 @@ message KillEntry {
 
 message BountyInfo {
   string id = 1;
-  string title = 2;
-  string description = 3;
+  string description = 2;
+  string quest_type = 3;
   CurrencyReward reward = 4; 
 }
 

@@ -68,6 +68,7 @@
         "config_id": 4,
         "description": "Get 3 kills",
         "type": "bounty",
+        "quest_type": "kills",
         "objective": {
             "match_tracking_field": "result",
             "value": 1,
@@ -88,8 +89,9 @@
     },
     {
         "config_id": 5,
-        "description": "Skill Issue",
+        "description": "Deal 300 damage",
         "type": "bounty",
+        "quest_type": "damage",
         "objective": {
             "match_tracking_field": "result",
             "value": 1,
@@ -98,14 +100,32 @@
         },
         "conditions": [
             {
-                "match_tracking_field": "deaths",
-                "value": 1,
+                "match_tracking_field": "damage_done",
+                "value": 300,
                 "comparison": "greater_or_equal"
-            },
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 4
+        }
+    },
+    {
+        "config_id": 6,
+        "description": "Receive less than 200 damage",
+        "type": "bounty",
+        "quest_type": "damage",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
             {
-                "match_tracking_field": "kills",
-                "value": 0,
-                "comparison": "equal"
+                "match_tracking_field": "damage_taken",
+                "value": 200,
+                "comparison": "lesser_or_equal"
             }
         ],
         "reward": {

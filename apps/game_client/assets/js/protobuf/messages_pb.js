@@ -9420,8 +9420,8 @@ proto.BountyInfo.prototype.toObject = function(opt_includeInstance) {
 proto.BountyInfo.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    title: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    description: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    description: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    questType: jspb.Message.getFieldWithDefault(msg, 3, ""),
     reward: (f = msg.getReward()) && proto.CurrencyReward.toObject(includeInstance, f)
   };
 
@@ -9465,11 +9465,11 @@ proto.BountyInfo.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
-      msg.setTitle(value);
+      msg.setDescription(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
-      msg.setDescription(value);
+      msg.setQuestType(value);
       break;
     case 4:
       var value = new proto.CurrencyReward;
@@ -9512,14 +9512,14 @@ proto.BountyInfo.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTitle();
+  f = message.getDescription();
   if (f.length > 0) {
     writer.writeString(
       2,
       f
     );
   }
-  f = message.getDescription();
+  f = message.getQuestType();
   if (f.length > 0) {
     writer.writeString(
       3,
@@ -9556,10 +9556,10 @@ proto.BountyInfo.prototype.setId = function(value) {
 
 
 /**
- * optional string title = 2;
+ * optional string description = 2;
  * @return {string}
  */
-proto.BountyInfo.prototype.getTitle = function() {
+proto.BountyInfo.prototype.getDescription = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
@@ -9568,16 +9568,16 @@ proto.BountyInfo.prototype.getTitle = function() {
  * @param {string} value
  * @return {!proto.BountyInfo} returns this
  */
-proto.BountyInfo.prototype.setTitle = function(value) {
+proto.BountyInfo.prototype.setDescription = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional string description = 3;
+ * optional string quest_type = 3;
  * @return {string}
  */
-proto.BountyInfo.prototype.getDescription = function() {
+proto.BountyInfo.prototype.getQuestType = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -9586,7 +9586,7 @@ proto.BountyInfo.prototype.getDescription = function() {
  * @param {string} value
  * @return {!proto.BountyInfo} returns this
  */
-proto.BountyInfo.prototype.setDescription = function(value) {
+proto.BountyInfo.prototype.setQuestType = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 

@@ -644,8 +644,8 @@ defmodule BotManager.Protobuf.BountyInfo do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:id, 1, type: :string)
-  field(:title, 2, type: :string)
-  field(:description, 3, type: :string)
+  field(:description, 2, type: :string)
+  field(:quest_type, 3, type: :string, json_name: "questType")
   field(:reward, 4, type: BotManager.Protobuf.CurrencyReward)
 end
 

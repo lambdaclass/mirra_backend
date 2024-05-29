@@ -11,6 +11,7 @@ defmodule GameBackend.Quests.Quest do
   schema "quests" do
     field(:description, :string)
     field(:type, :string)
+    field(:quest_type, :string)
     field(:objective, :map)
     field(:reward, :map)
     field(:config_id, :integer)
@@ -28,7 +29,7 @@ defmodule GameBackend.Quests.Quest do
     :config_id
   ]
 
-  @permitted [] ++ @required
+  @permitted [:quest_type] ++ @required
 
   def changeset(changeset, attrs) do
     changeset
