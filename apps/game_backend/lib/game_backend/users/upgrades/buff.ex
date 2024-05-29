@@ -31,7 +31,7 @@ defmodule GameBackend.Users.Upgrades.Buff do
 
   def changeset(buff, attrs \\ %{}) do
     buff
-    |> cast(attrs, [:upgrade_id, :upgrade_id])
+    |> cast(attrs, [:upgrade_id])
     |> cast_embed(:modifiers)
     |> cast_assoc(:skills)
   end
