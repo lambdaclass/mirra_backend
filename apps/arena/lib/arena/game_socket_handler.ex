@@ -3,6 +3,7 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Authentication.GatewaySigner
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
@@ -14,7 +15,18 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def init(req, _opts) do
-    client_id = :cowboy_req.binding(:client_id, req)
+    ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
+    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Sever".
+    client_id =
+      with [{"gateway_jwt", jwt}] <- :cowboy_req.parse_qs(req),
+           ## TODO: properly do this like google_token_manager.ex and verify at least expiry
+           {:ok, %{"sub" => user_id}} <- Joken.verify(jwt, GatewaySigner.signer()) do
+        user_id
+      else
+        _ ->
+          :cowboy_req.binding(:client_id, req)
+      end
+
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
 
