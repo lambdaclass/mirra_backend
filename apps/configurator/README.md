@@ -41,3 +41,39 @@ The API offers 2 endpoints
 
 - `/api/default_config` Fetches the default configuration version
 - `/configurations/:id` Fetches a specific configuration version
+
+
+## Current State
+
+The current state of the Configurator app has the following features:
+- Version control system: We have records of past configurations and can set a specific version as the current one.
+- UI that only allows users to edit Champions of Mirra configurations.
+  - Users can only edit these JSON files in plain text, specifically through an HTML textbox.
+- Endpoints to retrieve the default configuration and a specific one.
+
+## Features and Refactor
+
+### First Iteration
+
+- Implement a UI to display our current JSONs from Champions of Mirra and AFK Gacha Game.
+- Allow users to modify these JSONs and store them in the database.
+
+### Second Iteration
+
+- Create or modify current endpoints to retrieve configurations for both games.
+
+### Third Iteration
+
+- Google Sign-in and Sign-up.
+  - These users will be different from the actual game users.
+  - Only allow LambdaClass domains.
+- Store in the database who created or edited a particular configuration.
+
+### Fourth Iteration
+
+- Feature to create new fields in a particular configuration.
+- Feature to create new JSONs.
+
+### Fifth Iteration
+
+- UI/UX improvements (TBD).
