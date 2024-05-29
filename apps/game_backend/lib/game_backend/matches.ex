@@ -3,7 +3,6 @@ defmodule GameBackend.Matches do
   Matches
   """
   alias GameBackend.Units.Unit
-  alias GameBackend.Units.Characters.Character
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Users.Currencies
   alias GameBackend.Quests.DailyQuest
@@ -52,14 +51,21 @@ defmodule GameBackend.Matches do
 
     Enum.reduce(results, multi, fn result, transaction_acc ->
       Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, %{get_google_users: google_users} ->
-        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
-        ## This is because currently characters name are in this format
-        ## later on if match results report character_id instead we can skip it
-        result_character = String.capitalize(result["character"])
-        unit = Enum.find(google_user.user.units, %{level: 0}, fn unit -> unit.character.name == result_character end)
-        reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
-        changes = calculate_rank_and_amount_changes(unit, reward, prestige_config[:ranks])
-        insert_or_update_prestige(repo, google_user.user.id, result_character, changes, unit)
+        google_user =
+          Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+
+        Enum.find(google_user.user.units, fn unit -> unit.character.name == result["character"] end)
+        |> case do
+          nil ->
+            {:error, :unit_not_found}
+
+          unit ->
+            reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
+            changes = calculate_rank_and_amount_changes(unit, reward, prestige_config[:ranks])
+
+            Unit.curse_of_mirra_update_changeset(unit, changes)
+            |> repo.update()
+        end
       end)
     end)
   end
@@ -121,21 +127,6 @@ defmodule GameBackend.Matches do
     current_rank = Enum.find(ranks, fn rank -> unit.level in rank.min..rank.max end)
     amount = max(unit.level + loss_amount, current_rank.min)
     %{level: amount}
-  end
-
-  defp insert_or_update_prestige(repo, _user_id, _character, changes, %{id: _} = unit) do
-    Unit.moba_update_changeset(unit, changes)
-    |> repo.update()
-  end
-
-  defp insert_or_update_prestige(repo, user_id, character, changes, _unit) do
-    ## Although this looks bad, since we are making a query per player per game, it is not that bad
-    ## because this only run on the first match of a character for a player, so it will be rare
-    %{id: character_id} = repo.get_by!(Character, name: character)
-    attrs = Map.merge(changes, %{user_id: user_id, character_id: character_id})
-
-    Unit.moba_insert_changeset(attrs)
-    |> repo.insert()
   end
 
   defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}

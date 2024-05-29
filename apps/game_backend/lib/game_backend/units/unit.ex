@@ -51,13 +51,7 @@ defmodule GameBackend.Units.Unit do
   def update_changeset(unit, attrs),
     do: cast(unit, attrs, [:selected, :slot, :level, :tier, :rank])
 
-  def moba_insert_changeset(attrs) do
-    %__MODULE__{}
-    |> cast(attrs, [:level, :rank, :sub_rank, :user_id, :character_id])
-    |> common_changeset()
-  end
-
-  def moba_update_changeset(unit, attrs) do
+  def curse_of_mirra_update_changeset(unit, attrs) do
     unit
     |> cast(attrs, [:level, :rank, :sub_rank])
     |> common_changeset()
