@@ -38,10 +38,10 @@ units_per_level = 6
 {:ok, _fertilizer_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
 
-{:ok, supplies_currency} =
+{:ok, _supplies_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
 
-{:ok, blueprints_currency} =
+{:ok, _blueprints_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
 
 {:ok, pearls_currency} =
