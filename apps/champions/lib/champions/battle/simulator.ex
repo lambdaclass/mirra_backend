@@ -260,10 +260,13 @@ defmodule Champions.Battle.Simulator do
   # Calculate the new state of the battle after a step passes for a unit.
   # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state, history) do
+    {unit, new_history} = process_executions_over_time(unit, history)
+    current_state = Map.put(current_state, :units, Map.put(current_state.units, unit.id, unit))
+
     {new_state, new_history} =
       cond do
         not can_attack(unit, initial_step_state) ->
-          {current_state, history}
+          {current_state, new_history}
 
         can_cast_ultimate_skill(unit) ->
           Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
@@ -275,7 +278,7 @@ defmodule Champions.Battle.Simulator do
 
           new_history =
             add_to_history(
-              history,
+              new_history,
               %{
                 caster_id: unit.id,
                 target_ids: [],
@@ -313,7 +316,7 @@ defmodule Champions.Battle.Simulator do
 
           new_history =
             add_to_history(
-              history,
+              new_history,
               %{
                 caster_id: unit.id,
                 target_ids: [],
@@ -335,7 +338,7 @@ defmodule Champions.Battle.Simulator do
           {new_state, new_history}
 
         true ->
-          {current_state, history}
+          {current_state, new_history}
       end
 
     # Reduce modifier remaining timers & remove expired ones
@@ -825,10 +828,19 @@ defmodule Champions.Battle.Simulator do
 
     Enum.reduce(effect.executions_over_time, {target_after_executions, new_history}, fn execution_over_time,
                                                                                         {target_acc, _history_acc} ->
-      #process_execution_over_time(execution_over_time, target_acc, caster, history_acc, effect)
-      # TODO: Check period
-      update_in(target_acc, [:executions_over_time], fn current_executions -> [%{execution_over_time: execution_over_time, remaining_duration: get_duration(effect.type), remaining_period: effect.period} | current_executions]end)
-      |> apply_tags(apply_tags, effect, new_history)
+      update_in(target_acc, [:executions_over_time], fn current_executions ->
+        [
+          %{
+            execution: execution_over_time,
+            caster: caster,
+            skill_id: effect.skill_id,
+            remaining_duration: get_duration(effect.type),
+            remaining_period: effect.type.period
+          }
+          | current_executions
+        ]
+      end)
+      |> apply_tags(execution_over_time["apply_tags"], effect, new_history)
     end)
   end
 
@@ -1057,26 +1069,87 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
+  defp process_executions_over_time(unit, history) do
+    Enum.reduce(unit.executions_over_time, {unit, history}, fn execution_over_time, {unit_acc, history_acc} ->
+      {new_target, new_history} =
+        process_execution_over_time(
+          execution_over_time.execution,
+          unit_acc,
+          execution_over_time.caster,
+          history_acc,
+          execution_over_time.skill_id,
+          execution_over_time.remaining_duration
+        )
+
+      cond do
+        new_target.executions_over_time == [] ->
+          {new_target, new_history}
+
+        true ->
+          # Decrement in 1 the remaining duration of the execution
+          new_execution_over_time =
+            Map.put(execution_over_time, :remaining_duration, execution_over_time.remaining_duration - 1)
+
+          # Replace the old execution over time with the new one
+          new_target =
+            update_in(new_target, [:executions_over_time], fn current_executions ->
+              Enum.filter(current_executions, fn exec -> exec != execution_over_time end) ++ [new_execution_over_time]
+            end)
+
+          {new_target, new_history}
+      end
+    end)
+  end
+
+  defp process_execution_over_time(
+         _execution_over_time,
+         target,
+         _caster,
+         history,
+         skill_id,
+         -1
+       ) do
+    # If the execution is over, we remove it from the target
+    new_target =
+      update_in(target, [:executions_over_time], fn current_executions ->
+        Enum.filter(current_executions, fn exec -> exec.skill_id != skill_id end)
+      end)
+
+    {new_target, history}
+  end
+
   defp process_execution_over_time(
          %{
            "type" => "DealDamageOverTime",
            "attack_ratio" => attack_ratio,
-           "apply_tags" => apply_tags,
-           "interval" => interval
+           "apply_tags" => _apply_tags,
+           "interval" => _interval
          },
          target,
          caster,
          history,
-         effect
+         skill_id,
+         remaining_duration
        ) do
+    apply_execution_over_time(attack_ratio, target, caster, history, remaining_duration, skill_id)
+  end
 
-    # Is it moment to apply the damage?
-    # Such as modifiers but without period
+  defp process_execution_over_time(
+         _,
+         target,
+         caster,
+         history,
+         _skill_id,
+         _remaining_duration
+       ) do
+    Logger.warning(
+      "#{format_unit_name(caster)} tried to apply an unknown execution over time to #{format_unit_name(target)}"
+    )
 
+    {target, history}
+  end
 
-    # apply_eot() ->
-    # Calculate the damage to be dealt in every step. Save it, because we'll need to apply it in every step and it mustn't be affected by modifiers, buffs, debuffs, etc.
-    # Process the execution for the first time, and repeat it for the remaining steps.
+  def apply_execution_over_time(attack_ratio, target, caster, history, remaining_duration, skill_id) do
     damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
 
     # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
@@ -1086,7 +1159,7 @@ defmodule Champions.Battle.Simulator do
       |> Decimal.to_integer()
 
     Logger.info(
-      "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{interval}."
+      "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{remaining_duration}."
     )
 
     new_history =
@@ -1094,7 +1167,7 @@ defmodule Champions.Battle.Simulator do
         history,
         %{
           target_id: target.id,
-          skill_id: effect.skill_id,
+          skill_id: skill_id,
           stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
         },
         :execution_received
@@ -1103,20 +1176,8 @@ defmodule Champions.Battle.Simulator do
     new_target =
       target
       |> Map.put(:health, target.health - damage_after_defense)
-  end
 
-  defp process_execution_over_time(
-         _,
-         target,
-         caster,
-         history,
-         _skill_id
-       ) do
-    Logger.warning(
-      "#{format_unit_name(caster)} tried to apply an unknown execution over time to #{format_unit_name(target)}"
-    )
-
-    {target, history}
+    {new_target, new_history}
   end
 
   # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
@@ -1204,7 +1265,7 @@ defmodule Champions.Battle.Simulator do
            multiplicatives: [],
            overrides: []
          },
-         effects_over_time: [],
+         executions_over_time: [],
          tags: []
        }}
 

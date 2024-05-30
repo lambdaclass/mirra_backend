@@ -1687,7 +1687,7 @@ defmodule Champions.Test.BattleTest do
       # We will create a battle between a damaging unit and a target dummy.
       # The unit's basic skill will deal 4 points of damage to the target dummy over 3 steps, killing it in the third one. The cooldown is such that the skill can be used only once.
       # The battle should finish with a victory for team_1 after the third step, or in timeout if the steps are less than 3.
-      maximum_steps = 8
+      maximum_steps = 9
 
       deal_damage_over_time_params =
         TestUtils.build_skill(%{
@@ -1730,7 +1730,7 @@ defmodule Champions.Test.BattleTest do
           name: "DealDamageOverTime Character",
           basic_skill: deal_damage_over_time_params,
           ultimate_skill: TestUtils.build_skill(%{name: "DealDamageOverTime Empty Skill"}),
-          base_attack: 2
+          base_attack: 4
         })
         |> Characters.insert_character()
 
