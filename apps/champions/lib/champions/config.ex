@@ -1,6 +1,13 @@
 defmodule Champions.Config do
   @moduledoc """
   Configuration utilities.
+
+  The functions here read configuration files from the app's priv folder and import them into the database.
+  They are meant to be used during the application's initialization (in the seeds.exs file) but can also be called during runtime.
+  These functions will overwrite existing data in the database when unique identifiers are repeated (like character names) through upserts.
+
+  Take into account that these functions do not remove existing data from the database, so if you want to remove old data, you should do it manually.
+  For example, if you initially defined characters A and B in your `characters.json` file, and later on kept only A and reimported the file, B would still be in the database.
   """
 
   alias Champions.Units
