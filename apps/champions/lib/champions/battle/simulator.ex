@@ -953,13 +953,7 @@ defmodule Champions.Battle.Simulator do
          history,
          skill_id
        ) do
-    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
-
-    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
-    damage_after_defense =
-      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
-      |> Decimal.round()
-      |> Decimal.to_integer()
+    damage_after_defense = calculate_damage(caster, target, attack_ratio)
 
     Logger.info(
       "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}."
@@ -1202,13 +1196,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   def apply_execution_over_time(attack_ratio, target, caster, history, remaining_duration, skill_id) do
-    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
-
-    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
-    damage_after_defense =
-      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
-      |> Decimal.round()
-      |> Decimal.to_integer()
+    damage_after_defense = calculate_damage(caster, target, attack_ratio)
 
     Logger.info(
       "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{remaining_duration}."
@@ -1290,6 +1278,18 @@ defmodule Champions.Battle.Simulator do
          {unit_id, Map.put(unit, :energy, min(@ultimate_energy_cost, unit.energy))}
        end)
      ), history}
+  end
+
+  defp calculate_damage(unit, target, attack_ratio) do
+    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(unit, :attack)), 0)
+
+    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
+    damage_after_defense =
+      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
+      |> Decimal.round()
+      |> Decimal.to_integer()
+
+    damage_after_defense
   end
 
   # Used to create the initial unit maps to be used during simulation.
