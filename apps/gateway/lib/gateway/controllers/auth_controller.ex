@@ -3,7 +3,7 @@ defmodule Gateway.Controllers.AuthController do
   Controller for users authentication.
   """
   use Gateway, :controller
-  alias Gateway.Auth.GatewayTokenManager
+  alias Gateway.Auth.TokenManager
   alias Gateway.Auth.GoogleTokenManager
   alias GameBackend.Users
 
@@ -11,7 +11,7 @@ defmodule Gateway.Controllers.AuthController do
     case GoogleTokenManager.verify_and_validate(token_id) do
       {:ok, claims} ->
         {:ok, google_user} = Users.find_or_create_google_user_by_email(claims["email"])
-        gateway_jwt = GatewayTokenManager.generate_user_token(google_user.user)
+        gateway_jwt = TokenManager.generate_user_token(google_user.user)
         user_response = %{id: google_user.user.id, email: google_user.email}
         response = %{claims: claims, user: user_response, gateway_jwt: gateway_jwt}
         send_resp(conn, 200, Jason.encode!(response))

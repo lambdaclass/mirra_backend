@@ -3,7 +3,7 @@ defmodule Arena.SocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias Arena.Authentication.GatewaySigner
+  alias Arena.Authentication.GatewayToken
   alias Arena.GameLauncher
   alias Arena.Serialization.GameState
   alias Arena.Serialization.JoinedLobby
@@ -16,8 +16,7 @@ defmodule Arena.SocketHandler do
   @impl true
   def init(req, _opts) do
     [{"gateway_jwt", jwt}] = :cowboy_req.parse_qs(req)
-    ## TODO: properly do this like google_token_manager.ex and verify at least expiry
-    {:ok, %{"sub" => user_id}} = Joken.verify(jwt, GatewaySigner.signer())
+    {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt)
     character_name = :cowboy_req.binding(:character_name, req)
     player_name = :cowboy_req.binding(:player_name, req)
     {:cowboy_websocket, req, %{client_id: user_id, character_name: character_name, player_name: player_name}}

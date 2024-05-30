@@ -1,6 +1,6 @@
-defmodule Gateway.Auth.GatewayTokenManager do
+defmodule Gateway.Auth.TokenManager do
   @moduledoc """
-  Module responsible to verify and validate the JWT emitted by gatewat app.
+  Module responsible to verify and validate the JWT emitted by gateway app.
   """
   alias GameBackend.Users.User
 
@@ -13,6 +13,7 @@ defmodule Gateway.Auth.GatewayTokenManager do
 
   @impl Joken.Config
   def token_config do
-    default_claims(skip: [:aud, :iss])
+    default_exp = Application.get_env(:joken, :default_exp)
+    default_claims(skip: [:aud, :iss], default_exp: default_exp)
   end
 end
