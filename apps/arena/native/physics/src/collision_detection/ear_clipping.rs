@@ -3,6 +3,14 @@ use crate::map::{Entity, Position};
 /*
 Ear clipping triangulation algorithm
 
+To summarize the algorithm works by traversing the vertices from a polygon finding ears an deleting the current vertex
+from the polygon shape and repeat until there's 3 vertices in the polygon
+
+An ear is defined by the following:
+ a. It's a triangle formed by the current vertex we're traversing, the previous one and the next
+ b. The inner angle formed by the three vertices aren't greater than 180 degrees
+ c. There isn't any vertex inside the triangle area
+
 The logic of the algorithm goes like this:
 1. Traverse the polygon looking for ears
 2. Once we find an ear do the following:
