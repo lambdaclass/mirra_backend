@@ -208,8 +208,6 @@ defmodule Champions.Config do
     main_super_campaign =
       Campaigns.get_super_campaign_by_name_and_game("Main Campaign", game_id)
 
-    supplies = Users.Currencies.get_currency_by_name_and_game("Supplies", game_id)
-
     campaigns =
       Enum.into(main_super_campaign.campaigns, %{}, fn %{campaign_number: cn, id: id} ->
         {cn, id}
