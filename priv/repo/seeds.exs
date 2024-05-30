@@ -1,6 +1,6 @@
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
-alias GameBackend.Users.{DungeonSettlementLevel, KalineTreeLevel, Upgrade}
+alias GameBackend.Users.{KalineTreeLevel, Upgrade}
 alias GameBackend.Units.{Characters, Unit}
 alias GameBackend.CurseOfMirra.Config
 
@@ -267,32 +267,7 @@ currency_rewards =
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
-_dungeon_settlement_levels =
-  Enum.map(1..20, fn level_number ->
-    {:ok, dungeon_settlement_level} =
-      Repo.insert(
-        DungeonSettlementLevel.changeset(
-          %DungeonSettlementLevel{},
-          %{
-            level: level_number,
-            max_dungeon: level_number * 10,
-            max_factional: level_number * 5,
-            supply_limit: level_number * 5,
-            afk_reward_rates: [
-              %{rate: 10.0 * (level_number - 1), currency_id: supplies_currency.id}
-            ],
-            level_up_costs: [
-              %{currency_id: gold_currency.id, amount: level_number * 100},
-              %{currency_id: blueprints_currency.id, amount: level_number * 50}
-            ],
-            inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-            updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-          }
-        )
-      )
-
-    dungeon_settlement_level
-  end)
+Champions.Config.import_dungeon_settlement_levels_config()
 
 {:ok, _initial_debuff} =
   Repo.insert(

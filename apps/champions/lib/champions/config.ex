@@ -77,17 +77,9 @@ defmodule Champions.Config do
 
     Jason.decode!(item_templates_json, [{:keys, :atoms}])
     |> Enum.map(fn item_template ->
-      Map.put(item_template, :game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
-      |> update_in([:upgrade_costs], fn upgrade_costs ->
-        Enum.map(
-          upgrade_costs,
-          &%{
-            currency_id:
-              Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
-            amount: &1.amount
-          }
-        )
-      end)
+      item_template
+      |> Map.put(:game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
+      |> update_in([:upgrade_costs], &transform_currency_costs/1)
     end)
     |> Items.upsert_item_templates()
   end
@@ -132,5 +124,39 @@ defmodule Champions.Config do
         persistent: true
       )
     end)
+  end
+
+  @seconds_in_day 86_400
+
+  def import_dungeon_settlement_levels_config() do
+    {:ok, dungeon_settlement_levels_json} =
+      Application.app_dir(:champions, "priv/dungeon_settlement_levels.json")
+      |> File.read()
+
+    supplies =
+      Users.Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra))
+
+    Jason.decode!(dungeon_settlement_levels_json, [{:keys, :atoms}])
+    |> Enum.map(fn dungeon_settlement_level ->
+      Map.put(dungeon_settlement_level, :afk_reward_rates, [
+        %{
+          currency_id: supplies.id,
+          rate: dungeon_settlement_level.daily_supply_rate / @seconds_in_day
+        }
+      ])
+      |> update_in([:level_up_costs], &transform_currency_costs/1)
+    end)
+    |> Users.upsert_dungeon_settlement_levels()
+  end
+
+  defp transform_currency_costs(currency_costs) do
+    Enum.map(
+      currency_costs,
+      &%{
+        currency_id:
+          Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
+        amount: &1.amount
+      }
+    )
   end
 end
