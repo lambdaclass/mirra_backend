@@ -1,9 +1,10 @@
 [
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 1,
+        "experience_reward": 10,
         "lineup_level": 1,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Byte"
         ],
@@ -12,10 +13,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 2,
+        "experience_reward": 20,
         "lineup_level": 2,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Germund",
             "Melo"
@@ -25,10 +27,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 3,
+        "experience_reward": 30,
         "lineup_level": 3,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Chekla",
             "Chekla"
@@ -38,10 +41,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 4,
+        "experience_reward": 40,
         "lineup_level": 4,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Melo",
             "Scratch",
@@ -52,11 +56,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 5,
-        "is_boss_stage?": 1,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
         "lineup_level": 5,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Chekla",
             "Arupe",
@@ -67,10 +72,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 6,
+        "experience_reward": 60,
         "lineup_level": 6,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Qurin",
             "Chekla",
@@ -82,10 +88,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 7,
+        "experience_reward": 70,
         "lineup_level": 7,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Byte",
             "Scratch",
@@ -97,10 +104,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 8,
+        "experience_reward": 80,
         "lineup_level": 8,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Melo",
             "Byte",
@@ -113,10 +121,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 9,
+        "experience_reward": 90,
         "lineup_level": 9,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Byte",
             "Chekla",
@@ -129,11 +138,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 1,
+        "campaign_number": 1,
         "level_number": 10,
-        "is_boss_stage?": 1,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
         "lineup_level": 10,
-        "level_variance": 0,
+        "lineup_level_variance": 0,
         "characters": [
             "Byte",
             "Byte",
@@ -147,10 +157,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 1,
+        "experience_reward": 10,
         "lineup_level": 10,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Byte",
             "Germund",
@@ -164,10 +175,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 2,
+        "experience_reward": 20,
         "lineup_level": 11,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Melo",
             "Kel'mut",
@@ -181,10 +193,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 3,
+        "experience_reward": 30,
         "lineup_level": 11,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Byte",
             "Scratch",
@@ -198,10 +211,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 4,
+        "experience_reward": 40,
         "lineup_level": 12,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Qurin",
             "Byte",
@@ -215,11 +229,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 5,
-        "is_boss_stage?": 1,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
         "lineup_level": 12,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Melo",
             "Melo",
@@ -233,10 +248,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 6,
+        "experience_reward": 60,
         "lineup_level": 13,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Scratch",
             "Kel'mut",
@@ -250,10 +266,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 7,
+        "experience_reward": 70,
         "lineup_level": 13,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Arupe",
@@ -267,10 +284,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 8,
+        "experience_reward": 80,
         "lineup_level": 14,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Byte",
             "Qurin",
@@ -284,10 +302,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 9,
+        "experience_reward": 90,
         "lineup_level": 14,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Melo",
             "Kel'mut",
@@ -301,11 +320,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 10,
-        "is_boss_stage?": 1,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
         "lineup_level": 14,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Toburo",
@@ -319,10 +339,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 11,
+        "experience_reward": 110,
         "lineup_level": 15,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Valcher",
             "Germund",
@@ -336,10 +357,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 12,
+        "experience_reward": 120,
         "lineup_level": 15,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Byte",
             "Byte",
@@ -353,10 +375,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 13,
+        "experience_reward": 130,
         "lineup_level": 16,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Melo",
@@ -370,10 +393,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 14,
+        "experience_reward": 140,
         "lineup_level": 16,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Toburo",
@@ -387,11 +411,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 15,
-        "is_boss_stage?": 1,
+        "experience_reward": 150,
+        "is_boss_stage?": true,
         "lineup_level": 17,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Germund",
@@ -405,10 +430,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 16,
+        "experience_reward": 160,
         "lineup_level": 17,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Toburo",
@@ -422,10 +448,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 17,
+        "experience_reward": 170,
         "lineup_level": 18,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Melo",
             "Qurin",
@@ -439,10 +466,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 18,
+        "experience_reward": 180,
         "lineup_level": 18,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Valcher",
             "Melo",
@@ -456,10 +484,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 19,
+        "experience_reward": 190,
         "lineup_level": 18,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Byte",
             "Melo",
@@ -473,11 +502,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 2,
+        "campaign_number": 2,
         "level_number": 20,
-        "is_boss_stage?": 1,
+        "experience_reward": 200,
+        "is_boss_stage?": true,
         "lineup_level": 19,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Melo",
             "Melo",
@@ -491,10 +521,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 1,
+        "experience_reward": 10,
         "lineup_level": 19,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Germund",
             "Romulo",
@@ -508,10 +539,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 2,
+        "experience_reward": 20,
         "lineup_level": 20,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Toburo",
@@ -525,10 +557,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 3,
+        "experience_reward": 30,
         "lineup_level": 20,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Qurin",
             "Qurin",
@@ -542,10 +575,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 4,
+        "experience_reward": 40,
         "lineup_level": 21,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Grimstein",
@@ -559,11 +593,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 5,
-        "is_boss_stage?": 1,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
         "lineup_level": 21,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Zanochi",
             "Chekla",
@@ -577,10 +612,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 6,
+        "experience_reward": 60,
         "lineup_level": 22,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Rust",
             "Germund",
@@ -594,10 +630,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 7,
+        "experience_reward": 70,
         "lineup_level": 22,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Obure",
             "Dafnet",
@@ -611,10 +648,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 8,
+        "experience_reward": 80,
         "lineup_level": 22,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Chekla",
@@ -628,10 +666,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 9,
+        "experience_reward": 90,
         "lineup_level": 23,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Rust",
             "Zanochi",
@@ -645,11 +684,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 10,
-        "is_boss_stage?": 1,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
         "lineup_level": 23,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Fetra",
             "Grimstein",
@@ -663,10 +703,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 11,
+        "experience_reward": 110,
         "lineup_level": 24,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Chekla",
             "Kampako",
@@ -680,10 +721,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 12,
+        "experience_reward": 120,
         "lineup_level": 24,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Jayson",
@@ -697,10 +739,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 13,
+        "experience_reward": 130,
         "lineup_level": 25,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Elix1r",
             "Fetra",
@@ -714,10 +757,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 14,
+        "experience_reward": 140,
         "lineup_level": 25,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Dafnet",
             "Fetra",
@@ -731,11 +775,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 15,
-        "is_boss_stage?": 1,
+        "experience_reward": 150,
+        "is_boss_stage?": true,
         "lineup_level": 26,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Scratch",
             "Jayson",
@@ -749,10 +794,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 16,
+        "experience_reward": 160,
         "lineup_level": 26,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Fetra",
             "Qurin",
@@ -766,10 +812,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 17,
+        "experience_reward": 170,
         "lineup_level": 26,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Elix1r",
             "Scratch",
@@ -783,10 +830,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 18,
+        "experience_reward": 180,
         "lineup_level": 27,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Romulo",
@@ -800,10 +848,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 19,
+        "experience_reward": 190,
         "lineup_level": 27,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Zanochi",
@@ -817,11 +866,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 20,
-        "is_boss_stage?": 1,
+        "experience_reward": 200,
+        "is_boss_stage?": true,
         "lineup_level": 28,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Dafnet",
             "Grimstein",
@@ -835,10 +885,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 21,
+        "experience_reward": 210,
         "lineup_level": 28,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Elix1r",
             "Chekla",
@@ -852,10 +903,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 22,
+        "experience_reward": 220,
         "lineup_level": 29,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Romulo",
@@ -869,10 +921,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 23,
+        "experience_reward": 230,
         "lineup_level": 29,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Kel'mut",
@@ -886,10 +939,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 24,
+        "experience_reward": 240,
         "lineup_level": 30,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Romulo",
             "Romulo",
@@ -903,11 +957,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 25,
-        "is_boss_stage?": 1,
+        "experience_reward": 250,
+        "is_boss_stage?": true,
         "lineup_level": 30,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Qurin",
             "Obure",
@@ -921,10 +976,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 26,
+        "experience_reward": 260,
         "lineup_level": 30,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Dafnet",
             "Boy Kampf",
@@ -938,10 +994,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 27,
+        "experience_reward": 270,
         "lineup_level": 31,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Jayson",
             "Fetra",
@@ -955,10 +1012,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 28,
+        "experience_reward": 280,
         "lineup_level": 31,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Germund",
             "Scratch",
@@ -972,10 +1030,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 29,
+        "experience_reward": 290,
         "lineup_level": 32,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Kampako",
@@ -989,11 +1048,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 3,
+        "campaign_number": 3,
         "level_number": 30,
-        "is_boss_stage?": 1,
+        "experience_reward": 300,
+        "is_boss_stage?": true,
         "lineup_level": 32,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Qurin",
             "Obure",
@@ -1007,10 +1067,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 1,
+        "experience_reward": 10,
         "lineup_level": 33,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kura'bara",
             "Chekla",
@@ -1024,10 +1085,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 2,
+        "experience_reward": 20,
         "lineup_level": 33,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Germund",
             "Germund",
@@ -1041,10 +1103,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 3,
+        "experience_reward": 30,
         "lineup_level": 34,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Qurin",
             "Kel'mut",
@@ -1058,10 +1121,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 4,
+        "experience_reward": 40,
         "lineup_level": 34,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Zil'kan",
             "Qurin",
@@ -1075,11 +1139,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 5,
-        "is_boss_stage?": 1,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
         "lineup_level": 34,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Grimstein",
@@ -1093,10 +1158,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 6,
+        "experience_reward": 60,
         "lineup_level": 35,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Germund",
             "Dafnet",
@@ -1110,10 +1176,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 7,
+        "experience_reward": 70,
         "lineup_level": 35,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Romulo",
             "Qurin",
@@ -1127,10 +1194,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 8,
+        "experience_reward": 80,
         "lineup_level": 36,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Scratch",
             "Jayson",
@@ -1144,10 +1212,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 9,
+        "experience_reward": 90,
         "lineup_level": 36,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kura'bara",
             "Scratch",
@@ -1161,11 +1230,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 10,
-        "is_boss_stage?": 1,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
         "lineup_level": 37,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Germund",
@@ -1179,10 +1249,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 11,
+        "experience_reward": 110,
         "lineup_level": 37,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Zil'kan",
             "Obure",
@@ -1196,10 +1267,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 12,
+        "experience_reward": 120,
         "lineup_level": 38,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Hash",
             "Elix1r",
@@ -1213,10 +1285,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 13,
+        "experience_reward": 130,
         "lineup_level": 38,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Toburo",
@@ -1230,10 +1303,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 14,
+        "experience_reward": 140,
         "lineup_level": 38,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kampako",
             "Rust",
@@ -1247,11 +1321,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 15,
-        "is_boss_stage?": 1,
+        "experience_reward": 150,
+        "is_boss_stage?": true,
         "lineup_level": 39,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Rust",
             "Rust",
@@ -1265,10 +1340,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 16,
+        "experience_reward": 160,
         "lineup_level": 39,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Jayson",
             "Elix1r",
@@ -1282,10 +1358,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 17,
+        "experience_reward": 170,
         "lineup_level": 40,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Fetra",
@@ -1299,10 +1376,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 18,
+        "experience_reward": 180,
         "lineup_level": 40,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Zil'kan",
             "Hash",
@@ -1316,10 +1394,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 19,
+        "experience_reward": 190,
         "lineup_level": 41,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kel'mut",
             "Zanochi",
@@ -1333,11 +1412,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 20,
-        "is_boss_stage?": 1,
+        "experience_reward": 200,
+        "is_boss_stage?": true,
         "lineup_level": 41,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Toburo",
@@ -1351,10 +1431,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 21,
+        "experience_reward": 210,
         "lineup_level": 42,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Obure",
             "Muflus",
@@ -1368,10 +1449,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 22,
+        "experience_reward": 220,
         "lineup_level": 42,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "H4ck",
             "Obure",
@@ -1385,10 +1467,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 23,
+        "experience_reward": 230,
         "lineup_level": 42,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kenzu",
             "Rust",
@@ -1402,10 +1485,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 24,
+        "experience_reward": 240,
         "lineup_level": 43,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Elix1r",
             "Hash",
@@ -1419,11 +1503,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 25,
-        "is_boss_stage?": 1,
+        "experience_reward": 250,
+        "is_boss_stage?": true,
         "lineup_level": 43,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Obure",
             "H4ck",
@@ -1437,10 +1522,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 26,
+        "experience_reward": 260,
         "lineup_level": 44,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kenzu",
             "Jayson",
@@ -1454,10 +1540,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 27,
+        "experience_reward": 270,
         "lineup_level": 44,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Zil'kan",
             "Kel'mut",
@@ -1471,10 +1558,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 28,
+        "experience_reward": 280,
         "lineup_level": 45,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Elix1r",
             "Zil'kan",
@@ -1488,10 +1576,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 29,
+        "experience_reward": 290,
         "lineup_level": 45,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Kampako",
@@ -1505,11 +1594,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 30,
-        "is_boss_stage?": 1,
+        "experience_reward": 300,
+        "is_boss_stage?": true,
         "lineup_level": 46,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Uma",
             "Toburo",
@@ -1523,10 +1613,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 31,
+        "experience_reward": 310,
         "lineup_level": 46,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Obure",
             "Boy Kampf",
@@ -1540,10 +1631,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 32,
+        "experience_reward": 320,
         "lineup_level": 46,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Rust",
             "Kenzu",
@@ -1557,10 +1649,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 33,
+        "experience_reward": 330,
         "lineup_level": 47,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Grimstein",
             "Romulo",
@@ -1574,10 +1667,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 34,
+        "experience_reward": 340,
         "lineup_level": 47,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Kenzu",
             "Muflus",
@@ -1591,11 +1685,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 35,
-        "is_boss_stage?": 1,
+        "experience_reward": 350,
+        "is_boss_stage?": true,
         "lineup_level": 48,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Hash",
             "Jayson",
@@ -1609,10 +1704,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 36,
+        "experience_reward": 360,
         "lineup_level": 48,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Obure",
@@ -1626,10 +1722,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 37,
+        "experience_reward": 370,
         "lineup_level": 49,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Jayson",
             "Uren",
@@ -1643,10 +1740,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 38,
+        "experience_reward": 380,
         "lineup_level": 49,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Jayson",
             "Toburo",
@@ -1660,10 +1758,11 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 39,
+        "experience_reward": 390,
         "lineup_level": 50,
-        "level_variance": 1,
+        "lineup_level_variance": 1,
         "characters": [
             "Toburo",
             "Kenzu",
@@ -1677,11 +1776,12 @@
         "item_rewards": []
     },
     {
-        "stage_number": 4,
+        "campaign_number": 4,
         "level_number": 40,
-        "is_boss_stage?": 1,
+        "experience_reward": 400,
+        "is_boss_stage?": true,
         "lineup_level": 50,
-        "level_variance": 2,
+        "lineup_level_variance": 2,
         "characters": [
             "Toburo",
             "Kampako",

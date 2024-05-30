@@ -68,7 +68,7 @@ defmodule GameBackend.Campaigns do
   def upsert_levels(attrs_list) do
     Enum.reduce(attrs_list, Multi.new(), fn attrs, multi ->
       # Cannot use Multi.insert because of the embeds_many
-      Multi.run(multi, attrs.level_number, fn _, _ ->
+      Multi.run(multi, {attrs.campaign_id, attrs.level_number}, fn _, _ ->
         upsert_level(attrs)
       end)
     end)
@@ -79,7 +79,7 @@ defmodule GameBackend.Campaigns do
     case Repo.one(
            from(l in Level,
              where: l.campaign_id == ^attrs.campaign_id and l.level_number == ^attrs.level_number,
-             preload: [:units, :currency_rewards, attempt_cost: :currency]
+             preload: [:units, :currency_rewards, :item_rewards, :unit_rewards, attempt_cost: :currency]
            )
          ) do
       nil -> insert_level(attrs)
