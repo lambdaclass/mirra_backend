@@ -70,18 +70,12 @@
         "type": "bounty",
         "quest_type": "kills",
         "objective": {
-            "match_tracking_field": "result",
-            "value": 1,
+            "match_tracking_field": "kills",
+            "value": 3,
             "comparison": "greater_or_equal",
-            "scope": "match"
+            "scope": "day"
         },
-        "conditions": [
-            {
-                "match_tracking_field": "kills",
-                "value": 3,
-                "comparison": "greater_or_equal"
-            }
-        ],
+        "conditions": [],
         "reward": {
             "currency": "Gold",
             "amount": 4
@@ -93,18 +87,12 @@
         "type": "bounty",
         "quest_type": "damage",
         "objective": {
-            "match_tracking_field": "result",
-            "value": 1,
+            "match_tracking_field": "damage_done",
+            "value": 3000,
             "comparison": "greater_or_equal",
-            "scope": "match"
+            "scope": "day"
         },
-        "conditions": [
-            {
-                "match_tracking_field": "damage_done",
-                "value": 300,
-                "comparison": "greater_or_equal"
-            }
-        ],
+        "conditions": [],
         "reward": {
             "currency": "Gold",
             "amount": 4
@@ -116,18 +104,12 @@
         "type": "bounty",
         "quest_type": "damage",
         "objective": {
-            "match_tracking_field": "result",
-            "value": 1,
+            "match_tracking_field": "damage_taken",
+            "value": 200,
             "comparison": "greater_or_equal",
-            "scope": "match"
+            "scope": "day"
         },
-        "conditions": [
-            {
-                "match_tracking_field": "damage_taken",
-                "value": 200,
-                "comparison": "lesser_or_equal"
-            }
-        ],
+        "conditions": [],
         "reward": {
             "currency": "Gold",
             "amount": 4
