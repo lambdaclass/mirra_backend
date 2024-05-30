@@ -54,10 +54,10 @@ defmodule GameBackend.Users.Currencies do
   ## Examples
 
       iex> get_currency_by_name_and_game("gold", 1)
-      %Currency{}
+      {:ok, %Currency{}}
 
       iex> get_currency_by_name_and_game("silver", 1)
-      nil
+      {:error, :not_found}
 
   """
   def get_currency_by_name_and_game(name, game_id) do
