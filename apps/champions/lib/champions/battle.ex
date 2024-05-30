@@ -32,12 +32,7 @@ defmodule Champions.Battle do
          units <- Units.get_selected_units(user_id),
          {:max_units_met, true} <- {:max_units_met, Enum.count(units) <= (level.max_units || @default_max_units)},
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level.attempt_cost)} do
-      units =
-        if level.campaign.super_campaign.name == "Dungeon" do
-          apply_buffs(units, user_id)
-        else
-          units
-        end
+      units = apply_buffs(units, user_id, level.campaign.super_campaign.name)
 
       {:ok, response} =
         Multi.new()
@@ -92,8 +87,24 @@ defmodule Champions.Battle do
     id == current_level_id
   end
 
-  # TODO: implement buffs [#CHoM-428]
-  defp apply_buffs(units, _user_id) do
-    units
+  defp apply_buffs(units, user_id, "Dungeon") do
+    buff_modifiers =
+      user_id
+      |> Users.get_unlocks_with_type("Dungeon")
+      |> Enum.map(fn unlock -> Enum.map(unlock.upgrade.buffs, & &1.modifiers) end)
+      |> List.flatten()
+      |> sum_modifiers()
+
+    Enum.map(units, &{&1, buff_modifiers})
+  end
+
+  defp apply_buffs(units, _user_id, _super_campaign), do: units
+
+  # This will build a map with keys composed of {attribute, operation} tuples and values as the sum of the magnitudes
+  # For example: %{{"attack", "Multiply"} => 0.75, {"defense", "Add"} => -100, {"defense", "Multiply"} => 0.5}}
+  defp sum_modifiers(modifiers) do
+    Enum.reduce(modifiers, %{}, fn modifier, acc ->
+      Map.update(acc, {modifier.attribute, modifier.operation}, modifier.magnitude, &(&1 + modifier.magnitude))
+    end)
   end
 end

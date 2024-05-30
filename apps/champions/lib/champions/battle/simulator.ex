@@ -68,6 +68,8 @@ defmodule Champions.Battle.Simulator do
   @doc """
   Runs a battle between two teams.
   Teams are expected to be lists of units with their character and their skills preloaded.
+  Optionally, they can come together in a tuple with a list of initial modifiers that might affect them.
+  Either all of them are affected by initial modifiers (modifiers list can be empty, but the tuple format must be followed), or none are.
 
   Returns a map with the the initial state of the battle, the development of the battle for animation, and the result of the battle.
 
@@ -83,18 +85,88 @@ defmodule Champions.Battle.Simulator do
       iex> run_battle(team_1, team_2)
       %{initial_state: %{}, steps: [%{actions: [], step_number: 1}, ...], result: :team_1}
   """
-  def run_battle(team_1, team_2, options \\ []) do
+  def run_battle(team_1, team_2, options \\ [])
+
+  def run_battle([{_unit, _initial_modifiers} | _] = team_1, team_2, options) do
+    team_1_with_level_cap_and_modifiers =
+      Enum.map(team_1, fn {unit, modifiers} ->
+        case Map.get(modifiers, {"max_level", "Add"}, 0) do
+          0 ->
+            {unit, Map.drop(modifiers, [{"max_level", "Add"}])}
+
+          max_level ->
+            {%Unit{unit | level: min(unit.level, round(max_level))}, Map.drop(modifiers, [{"max_level", "Add"}])}
+        end
+      end)
+
+    team_1_before_modifiers =
+      Enum.map(team_1_with_level_cap_and_modifiers, fn {unit, modifiers} ->
+        {create_unit_map(unit, 1), modifiers}
+      end)
+
+    new_team_1 =
+      Enum.into(team_1_before_modifiers, %{}, fn {{id, unit}, modifiers} ->
+        unit_after_additive_modifiers =
+          modifiers
+          |> Enum.filter(fn {{_attribute, operation}, _value} ->
+            operation == "Add"
+          end)
+          |> Enum.reduce(unit, fn {{attribute, _operation}, value}, unit_acc ->
+            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+          end)
+
+        unit_after_multiplicative_modifiers =
+          modifiers
+          |> Enum.filter(fn {{_attribute, operation}, _value} ->
+            operation == "Multiply"
+          end)
+          |> Enum.reduce(unit_after_additive_modifiers, fn {{attribute, _operation}, value}, unit_acc ->
+            if attribute == "health" do
+              # We update both :health and :max_health
+              unit_acc
+              |> Map.update(
+                :health,
+                value,
+                &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
+              )
+              |> Map.update(
+                :max_health,
+                value,
+                &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
+              )
+            else
+              Map.update(
+                unit_acc,
+                string_to_atom(attribute),
+                value,
+                &(value |> Decimal.from_float() |> Decimal.mult(&1) |> Decimal.round() |> Decimal.to_integer())
+              )
+            end
+          end)
+
+        {id, unit_after_multiplicative_modifiers}
+      end)
+
+    team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
+
+    simulate_battle(new_team_1, team_2, options)
+  end
+
+  def run_battle(team_1, team_2, options) do
+    team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
+    team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
+
+    simulate_battle(team_1, team_2, options)
+  end
+
+  defp simulate_battle(team_1, team_2, options) do
     maximum_steps = options[:maximum_steps] || @default_maximum_steps
     seed = options[:seed] || @default_seed
 
     :rand.seed(:default, seed)
     Logger.info("Running battle with seed: #{seed}")
 
-    team_1 = Enum.into(team_1, %{}, fn unit -> create_unit_map(unit, 1) end)
-    team_2 = Enum.into(team_2, %{}, fn unit -> create_unit_map(unit, 2) end)
-    units = Map.merge(team_1, team_2)
-
-    initial_state = %{units: units, skills_being_cast: [], pending_effects: []}
+    initial_state = %{units: Map.merge(team_1, team_2), skills_being_cast: [], pending_effects: []}
 
     # The initial_step_state is what allows the battle to be simultaneous. If we refreshed the accum on every action,
     # we would be left with a turn-based battle. Instead we take decisions based on the state of the battle at the beggining
@@ -335,7 +407,7 @@ defmodule Champions.Battle.Simulator do
         # Modifier still going, reduce its timer by one
         remaining ->
           Logger.info(
-            "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)}."
+            "Modifier [#{format_modifier_name(modifier)}] remaining time reduced for #{format_unit_name(unit)} to #{remaining - 1}."
           )
 
           {[Map.put(modifier, :remaining_steps, remaining - 1) | acc], history_acc}
@@ -369,7 +441,7 @@ defmodule Champions.Battle.Simulator do
 
         # Tag still going, reduce its timer by one
         remaining ->
-          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)}.")
+          Logger.info(~c"Tag \"#{tag.tag}\" remaining time reduced for #{format_unit_name(unit)} to #{remaining - 1}.")
 
           {[Map.put(tag, :remaining_steps, remaining - 1) | acc], history}
       end
@@ -542,7 +614,7 @@ defmodule Champions.Battle.Simulator do
         Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is casting another skill")
         false
 
-      Enum.any?(unit.tags, &(&1.tag == "Stun")) ->
+      Enum.any?(unit.tags, &(&1.tag == "ControlEffect.Stun")) ->
         Logger.info("Unit #{format_unit_name(unit)} cannot attack because it is stunned")
         false
 
@@ -552,7 +624,19 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Check if the unit can cast their ultimate skill this step.
-  defp can_cast_ultimate_skill(unit), do: unit.energy >= @ultimate_energy_cost
+  defp can_cast_ultimate_skill(unit) do
+    cond do
+      unit.energy < @ultimate_energy_cost ->
+        false
+
+      Enum.any?(unit.tags, fn %{tag: tag} -> tag == "ControlEffect.Silence" end) ->
+        Logger.info("Unit #{format_unit_name(unit)} cannot cast its ultimate skill because it is silenced.")
+        false
+
+      true ->
+        true
+    end
+  end
 
   # Check if the unit can cast their basic skill this step.
   defp can_cast_basic_skill(unit), do: unit.basic_skill.remaining_cooldown <= 0
@@ -757,7 +841,15 @@ defmodule Champions.Battle.Simulator do
     {target, new_history}
   end
 
-  defp get_duration(%{duration: duration}), do: duration
+  # We substract a step because the modifier/tag is removed on the step when its' *initial* remaining value is 0.
+  # For a 2-step duration, this looks like:
+  # Step 0: Applied. steps_remaining = 2-1 = 1. Will be effective starting next step.
+  # Step 1: steps_remaining = 1. Modifier is effective. steps_remaining != 0 so we substract 1. Next steps_remaining = 1-1 = 0.
+  # Step 2: steps_remaining = 0. Modifier is effective. steps_remaining == 0 so we remove it from the modifiers list for next step.
+  # Step 3: Modifier has been removed, and is no longer effective.
+  defp get_duration(%{duration: duration}), do: duration - 1
+
+  # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
 
   # Return whether an effect hits.
@@ -799,9 +891,11 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp apply_tags(target, tags_to_apply, effect, history) do
+    steps = get_duration(effect.type)
+
     {new_tags, new_history} =
       Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
-        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)}")
+        Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)} for #{steps} steps.")
 
         new_history =
           add_to_history(
@@ -814,8 +908,7 @@ defmodule Champions.Battle.Simulator do
             :tag_received
           )
 
-        {[%{tag: tag, remaining_steps: Map.get(effect.type, "duration", -1) - 1, skill_id: effect.skill_id} | acc],
-         new_history}
+        {[%{tag: tag, remaining_steps: steps, skill_id: effect.skill_id} | acc], new_history}
       end)
 
     new_target =
@@ -1109,8 +1202,6 @@ defmodule Champions.Battle.Simulator do
           {"duration", duration} -> {:duration, div(duration, @miliseconds_per_step)}
         end),
       delay: div(effect.initial_delay, @miliseconds_per_step),
-      # TODO: replace random for the corresponding target strategy name (CHoM #325)
-      # target_strategy: effect.target_strategy,
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
@@ -1173,6 +1264,10 @@ defmodule Champions.Battle.Simulator do
   defp string_to_atom("period"), do: :period
   defp string_to_atom("instant"), do: :instant
   defp string_to_atom("permanent"), do: :permanent
+
+  defp string_to_atom("attack"), do: :attack
+  defp string_to_atom("health"), do: :health
+  defp string_to_atom("defense"), do: :defense
 
   defp string_to_atom("ATTACK"), do: :ATTACK
   defp string_to_atom("DEFENSE"), do: :DEFENSE
