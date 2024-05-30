@@ -1,4 +1,4 @@
-defmodule Arena.GameBountyCache do
+defmodule Arena.GameBountiesFetcher do
   @moduledoc false
   use GenServer
 

@@ -15,7 +15,7 @@ defmodule Arena.Application do
       {Finch, name: Arena.Finch},
       # Start game launcher genserver
       Arena.GameLauncher,
-      Arena.GameBountyCache,
+      Arena.GameBountiesFetcher,
       Arena.GameTracker,
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},
