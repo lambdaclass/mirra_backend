@@ -219,7 +219,6 @@ defmodule Champions.Config do
     |> Enum.map(fn level ->
       level
       |> transform_level_json_data()
-      |> Map.put(:attempt_cost, [%{currency_id: supplies.id, amount: 1}])
       |> Map.put(:campaign_id, campaigns[level.campaign_number])
     end)
     |> Campaigns.upsert_levels()
