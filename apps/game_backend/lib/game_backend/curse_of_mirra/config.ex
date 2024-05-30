@@ -28,6 +28,8 @@ defmodule GameBackend.CurseOfMirra.Config do
   end
 
   def import_stores_config() do
+    curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
+
     {:ok, stores_config_json} =
       Application.app_dir(:game_backend, "priv/stores_config.json")
       |> File.read()
@@ -35,6 +37,7 @@ defmodule GameBackend.CurseOfMirra.Config do
     Jason.decode!(stores_config_json, [{:keys, :atoms}])
     |> Enum.map(fn {store_name, store_info} ->
       Map.put(store_info, :name, Atom.to_string(store_name))
+      |> Map.put(:game_id, curse_of_mirra_id)
       |> Map.put(:start_date, datetime_from_string(store_info.start_date))
       |> Map.put(:end_date, datetime_from_string(store_info.end_date))
       |> Map.put(
@@ -45,7 +48,7 @@ defmodule GameBackend.CurseOfMirra.Config do
               Map.put(
                 purchase_cost,
                 :currency_id,
-                Repo.get_by!(Currency, name: purchase_cost.currency, game_id: Utils.get_game_id(:curse_of_mirra))
+                Repo.get_by!(Currency, name: purchase_cost.currency, game_id: curse_of_mirra_id)
                 |> Map.get(:id)
               )
             end)

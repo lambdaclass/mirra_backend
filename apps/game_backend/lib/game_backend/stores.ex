@@ -19,8 +19,8 @@ defmodule GameBackend.Stores do
   @doc """
   Get Store by name.
   """
-  def get_store_by_name(name) do
-    case Repo.get_by(Store, name: name) do
+  def get_store_by_name_and_game(name, game_id) do
+    case Repo.get_by(Store, name: name, game_id: game_id) do
       nil -> {:error, :not_found}
       store -> {:ok, store}
     end

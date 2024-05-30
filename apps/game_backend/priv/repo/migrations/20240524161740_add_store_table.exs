@@ -3,6 +3,7 @@ defmodule GameBackend.Repo.Migrations.AddStoreTable do
 
   def change do
     create(table(:stores)) do
+      add(:game_id, :integer, null: false)
       add(:name, :string, null: false)
       add(:start_date, :utc_datetime)
       add(:end_date, :utc_datetime)
