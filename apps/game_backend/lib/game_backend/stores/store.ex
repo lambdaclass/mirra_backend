@@ -13,7 +13,7 @@ defmodule GameBackend.Stores.Store do
     field(:name, :string)
     field(:start_date, :utc_datetime)
     field(:end_date, :utc_datetime)
-    has_many(:items, ItemTemplate)
+    has_many(:items, ItemTemplate, on_replace: :delete)
 
     timestamps()
   end

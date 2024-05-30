@@ -5,7 +5,7 @@ defmodule GameBackend.CurseOfMirra.Config do
 
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
-  alias GameBackend.Stores.Store
+  alias GameBackend.Stores
   alias GameBackend.Repo
   alias GameBackend.Users.Currencies.Currency
 
@@ -60,10 +60,7 @@ defmodule GameBackend.CurseOfMirra.Config do
         end)
       )
     end)
-    |> Enum.each(fn store ->
-      Store.changeset(%Store{}, store)
-      |> Repo.insert!()
-    end)
+    |> Enum.each(fn store -> Stores.upsert_store(store) end)
   end
 
   ################## Helpers ##################

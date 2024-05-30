@@ -8,12 +8,13 @@ defmodule GameBackend.Stores do
   import Ecto.Query
 
   @doc """
-  Inserts a Store.
+  Upserts a Store.
   """
-  def insert_store(attrs) do
-    %Store{}
-    |> Store.changeset(attrs)
-    |> Repo.insert()
+  def upsert_store(attrs) do
+    case get_store_by_name_and_game(attrs.name, attrs.game_id) do
+      {:ok, store} -> Repo.preload(store, :items) |> Store.changeset(attrs) |> Repo.update()
+      {:error, :not_found} -> Store.changeset(%Store{}, attrs) |> Repo.insert()
+    end
   end
 
   @doc """
