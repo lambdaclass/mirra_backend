@@ -246,11 +246,11 @@ defmodule GameBackend.Items do
   end
 
   @doc """
-  Gets Item's purchase cost by given currency and item_template.
+  Gets Item Template's purchase cost by given currency and item_template.
   Returns {:ok, purchase_cost} if found one.
   Returns {:error, :not_found} if there are none.
   """
-  def get_item_purchase_cost_by_currency(currency_id, item_template) do
+  def get_item_template_purchase_cost_by_currency(item_template, currency_id) do
     purchase_cost =
       Map.get(item_template, :purchase_costs)
       |> Enum.find(fn purchase_cost -> purchase_cost.currency_id == currency_id end)

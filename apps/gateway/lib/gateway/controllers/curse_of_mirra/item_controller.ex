@@ -28,7 +28,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ItemController do
            ),
          {:ok, currency} <-
            Currencies.get_currency_by_name_and_game(params["currency_name"], Utils.get_game_id(:curse_of_mirra)),
-         {:ok, purchase_cost} <- Items.get_item_purchase_cost_by_currency(currency.id, item_template),
+         {:ok, purchase_cost} <- Items.get_item_template_purchase_cost_by_currency(item_template, currency.id),
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(params["user_id"], [purchase_cost])},
          {:ok, item_updates_map} <- Items.buy_item(params["user_id"], item_template.id, [purchase_cost]) do
       send_resp(conn, 200, Jason.encode!(item_updates_map.item.id))
