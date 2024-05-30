@@ -20,14 +20,14 @@ defmodule GameBackend.Campaigns.Level do
     field(:is_boss_stage?, :boolean, default: false)
 
     field(:max_units, :integer)
-    has_many(:units, Unit, foreign_key: :campaign_level_id)
+    has_many(:units, Unit, foreign_key: :campaign_level_id, on_replace: :delete)
 
     belongs_to(:campaign, Campaign)
-    has_many(:currency_rewards, CurrencyReward)
+    has_many(:currency_rewards, CurrencyReward, on_replace: :delete)
     has_many(:item_rewards, ItemReward)
     has_many(:unit_rewards, UnitReward)
 
-    embeds_many(:attempt_cost, CurrencyCost)
+    embeds_many(:attempt_cost, CurrencyCost, on_replace: :delete)
     timestamps()
   end
 

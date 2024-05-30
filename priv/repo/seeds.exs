@@ -47,6 +47,18 @@ units_per_level = 6
 {:ok, pearls_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Pearls"})
 
+{:ok, _4_star_shards_currency} =
+  Users.Currencies.insert_currency(%{
+    game_id: champions_of_mirra_id,
+    name: "4* Shards"
+  })
+
+{:ok, _5_star_shards_currency} =
+  Users.Currencies.insert_currency(%{
+    game_id: champions_of_mirra_id,
+    name: "5* Shards"
+  })
+
 ### Curse Currencies
 
 {:ok, _curse_gold} =
@@ -356,16 +368,8 @@ _dungeon_settlement_levels =
     })
   )
 
-dungeon_rules =
-  %{
-    base_level: 5,
-    scaler: 1.05,
-    possible_factions: ["Araban", "Kaline", "Merliot", "Otobi"],
-    length: 200
-  }
-
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
-{:ok, dungeon_campaign} =
+{:ok, _dungeon_campaign} =
   Campaigns.insert_campaign(
     %{
       game_id: champions_of_mirra_id,
@@ -375,59 +379,7 @@ dungeon_rules =
     returning: true
   )
 
-dungeon_levels =
-  Enum.map(1..dungeon_rules.length, fn level_index ->
-    %{
-      game_id: champions_of_mirra_id,
-      campaign_id: dungeon_campaign.id,
-      level_number: level_index,
-      experience_reward: 100 * level_index,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
-
-{_, levels_without_units} =
-  Repo.insert_all(Level, dungeon_levels, returning: [:id, :level_number, :campaign_id])
-
-units =
-  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    base_level = dungeon_rules.base_level
-    level_scaler = dungeon_rules.scaler
-
-    possible_characters = Units.all_characters_from_factions(dungeon_rules.possible_factions)
-
-    agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
-
-    units =
-      Enum.map(1..6, fn slot ->
-        Units.unit_params_for_level(
-          possible_characters,
-          div(agg_difficulty, units_per_level),
-          slot
-        )
-        |> Map.put(:inserted_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
-        |> Map.put(:updated_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
-      end)
-
-    # Add the remaining unit levels to match the level difficulty
-    level_units =
-      case rem(agg_difficulty, units_per_level) do
-        0 ->
-          units
-
-        missing_levels ->
-          Enum.reduce(0..missing_levels, units, fn index, units ->
-            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
-          end)
-      end
-
-    Enum.map(level_units, fn unit_attrs ->
-      Map.put(unit_attrs, :campaign_level_id, level.id)
-    end)
-  end)
-
-Repo.insert_all(Unit, units, on_conflict: :nothing)
+Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 # Insert characters
