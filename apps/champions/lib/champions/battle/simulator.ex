@@ -1077,23 +1077,6 @@ defmodule Champions.Battle.Simulator do
           execution_over_time.remaining_period
         )
 
-      # cond do
-      #   new_target.executions_over_time == [] ->
-      #     {new_target, new_history}
-
-      #   true ->
-      #     # Decrement in 1 the remaining duration of the execution
-      #     new_execution_over_time =
-      #       Map.put(execution_over_time, :remaining_duration, execution_over_time.remaining_duration - 1)
-
-      #     # Replace the old execution over time with the new one
-      #     new_target =
-      #       update_in(new_target, [:executions_over_time], fn current_executions ->
-      #         Enum.filter(current_executions, fn exec -> exec != execution_over_time end) ++ [new_execution_over_time]
-      #       end)
-
-      #     {new_target, new_history}
-      # end
       {new_target, new_history}
     end)
   end
