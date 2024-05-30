@@ -1095,12 +1095,10 @@ defmodule Champions.Battle.Simulator do
        ) do
     {new_target, new_history} =
       apply_execution_over_time(
+        execution_over_time,
         attack_ratio,
         target,
-        execution_over_time.caster,
-        history,
-        execution_over_time.remaining_duration,
-        execution_over_time.skill_id
+        history
       )
 
     new_target =
@@ -1157,11 +1155,11 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
-  def apply_execution_over_time(attack_ratio, target, caster, history, remaining_duration, skill_id) do
-    damage_after_defense = calculate_damage(caster, target, attack_ratio)
+  def apply_execution_over_time(execution_over_time, attack_ratio, target, history) do
+    damage_after_defense = calculate_damage(execution_over_time.caster, target, attack_ratio)
 
     Logger.info(
-      "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{remaining_duration}."
+      "#{format_unit_name(execution_over_time.caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{execution_over_time.remaining_duration}."
     )
 
     new_history =
@@ -1169,7 +1167,7 @@ defmodule Champions.Battle.Simulator do
         history,
         %{
           target_id: target.id,
-          skill_id: skill_id,
+          skill_id: execution_over_time.skill_id,
           stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
         },
         :execution_received
