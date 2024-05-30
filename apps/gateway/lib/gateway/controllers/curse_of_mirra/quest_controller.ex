@@ -23,7 +23,7 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
           description: bounty.description,
           id: bounty.id,
           reward: bounty.reward,
-          quest_type: bounty.quest_type
+          quest_type: bounty.objective["type"]
         }
       end)
 
