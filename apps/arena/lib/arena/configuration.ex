@@ -14,12 +14,11 @@ defmodule Arena.Configuration do
 
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     skills = parse_skills_config(config.skills)
-    characters = parse_characters_config(config.characters, skills)
-    # characters = parse_characters_config(get_characters_config(), skills)
+    characters = parse_characters_config(get_characters_config(), skills)
     client_config = get_client_config()
 
-    %{config | skills: skills, characters: characters}
-    # |> Map.put(:characters, characters)
+    %{config | skills: skills}
+    |> Map.put(:characters, characters)
     |> Map.put(:client_config, client_config)
   end
 
@@ -31,15 +30,15 @@ defmodule Arena.Configuration do
     Jason.decode!(config_json, [{:keys, :atoms}])
   end
 
-  # defp get_characters_config() do
-  #   gateway_url = Application.get_env(:arena, :gateway_url)
+  defp get_characters_config() do
+    gateway_url = Application.get_env(:arena, :gateway_url)
 
-  #   {:ok, payload} =
-  #     Finch.build(:get, "#{gateway_url}/curse/characters/configuration", [{"content-type", "application/json"}])
-  #     |> Finch.request(Arena.Finch)
+    {:ok, payload} =
+      Finch.build(:get, "#{gateway_url}/curse/characters/configuration", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
 
-  #   Jason.decode!(payload.body, [{:keys, :atoms}])
-  # end
+    Jason.decode!(payload.body, [{:keys, :atoms}])
+  end
 
   defp parse_skills_config(skills_config) do
     Enum.reduce(skills_config, [], fn skill_config, skills ->
