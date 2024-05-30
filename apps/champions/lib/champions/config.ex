@@ -151,15 +151,15 @@ defmodule Champions.Config do
     supplies = Users.Currencies.get_currency_by_name_and_game("Supplies", game_id)
 
     Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
-    |> Enum.map(fn campaign ->
-      campaign
+    |> Enum.map(fn level ->
+      level
       |> Map.put(
         :units,
-        campaign.characters
+        level.characters
         |> Enum.with_index()
         |> Enum.map(fn {character, index} ->
           %{
-            level: campaign.lineup_level + Enum.random(-campaign.lineup_level_variance..campaign.lineup_level_variance),
+            level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
             tier: 1,
             rank: 1,
             selected: true,
@@ -174,7 +174,7 @@ defmodule Champions.Config do
       |> Map.put(:attempt_cost, [%{currency_id: supplies.id, amount: 1}])
       |> Map.put(
         :currency_rewards,
-        Enum.map(campaign.currency_rewards, fn {currency, amount} ->
+        Enum.map(level.currency_rewards, fn {currency, amount} ->
           %{
             currency_id:
               currency
