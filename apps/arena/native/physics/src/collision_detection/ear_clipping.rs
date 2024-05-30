@@ -30,8 +30,8 @@ fn remove_redundant_vertices(polygon: &mut Entity) {
     let mut cleaned_vertices = vec![];
     for current_vertex_index in 0..polygon.vertices.len() {
         let previous_vertex_index =
-            get_previous_cyclic_index(current_vertex_index, &polygon.vertices);
-        let next_vertex_index = get_next_cyclic_index(current_vertex_index, &polygon.vertices);
+            get_previous_vertex_index(current_vertex_index, &polygon.vertices);
+        let next_vertex_index = get_next_vertex_index(current_vertex_index, &polygon.vertices);
 
         let previous_vertex = polygon.vertices[previous_vertex_index];
         let current_vertex = polygon.vertices[current_vertex_index];
@@ -64,8 +64,8 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     while vertices.len() > 3 {
         ear_found = false;
         for current_vertex_index in 0..vertices.len() {
-            let previous_vertex_index = get_previous_cyclic_index(current_vertex_index, &vertices);
-            let next_vertex_index = get_next_cyclic_index(current_vertex_index, &vertices);
+            let previous_vertex_index = get_previous_vertex_index(current_vertex_index, &vertices);
+            let next_vertex_index = get_next_vertex_index(current_vertex_index, &vertices);
 
             let previous_vertex = vertices[previous_vertex_index];
             let current_vertex = vertices[current_vertex_index];
@@ -162,8 +162,8 @@ fn is_polygon_convex(polygon: &Entity) -> bool {
     let mut result = true;
     for current_vertex_index in 0..polygon.vertices.len() {
         let previous_vertex_index =
-            get_previous_cyclic_index(current_vertex_index, &polygon.vertices);
-        let next_vertex_index = get_next_cyclic_index(current_vertex_index, &polygon.vertices);
+            get_previous_vertex_index(current_vertex_index, &polygon.vertices);
+        let next_vertex_index = get_next_vertex_index(current_vertex_index, &polygon.vertices);
 
         let previous_vertex = polygon.vertices[previous_vertex_index];
         let current_vertex = polygon.vertices[current_vertex_index];
@@ -178,7 +178,7 @@ fn is_polygon_convex(polygon: &Entity) -> bool {
     result
 }
 
-fn get_previous_cyclic_index(index: usize, vector: &[Position]) -> usize {
+fn get_previous_vertex_index(index: usize, vector: &[Position]) -> usize {
     if index == 0 {
         vector.len() - 1
     } else {
@@ -186,7 +186,7 @@ fn get_previous_cyclic_index(index: usize, vector: &[Position]) -> usize {
     }
 }
 
-fn get_next_cyclic_index(index: usize, vector: &[Position]) -> usize {
+fn get_next_vertex_index(index: usize, vector: &[Position]) -> usize {
     if index == vector.len() - 1 {
         0
     } else {
