@@ -5,6 +5,7 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Units.Unit
