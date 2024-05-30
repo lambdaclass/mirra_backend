@@ -94,15 +94,15 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
 
 fn find_ear_in_vertices(vertices: &mut Vec<Position>) -> Option<Entity> {
     for current_vertex_index in 0..vertices.len() {
-        let previous_vertex_index = get_previous_vertex_index(current_vertex_index, &vertices);
-        let next_vertex_index = get_next_vertex_index(current_vertex_index, &vertices);
+        let previous_vertex_index = get_previous_vertex_index(current_vertex_index, vertices);
+        let next_vertex_index = get_next_vertex_index(current_vertex_index, vertices);
 
         let previous_vertex = vertices[previous_vertex_index];
         let current_vertex = vertices[current_vertex_index];
         let next_vertex = vertices[next_vertex_index];
         let candidate_triangle =
             Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
-        if is_triangle_ear(&candidate_triangle, &vertices) {
+        if is_triangle_ear(&candidate_triangle, vertices) {
             vertices.retain(|pos| pos != &current_vertex);
             return Some(candidate_triangle);
         }
