@@ -14,7 +14,7 @@ defmodule GameBackend.Matches do
   def create_arena_match_results(match_id, results) do
     Multi.new()
     |> create_arena_match_results(match_id, results)
-    |> add_google_users_to_multi(results)
+    |> add_users_to_multi(results)
     |> give_trophies(results)
     |> maybe_complete_quests()
     |> Repo.transaction()
@@ -26,22 +26,19 @@ defmodule GameBackend.Matches do
 
   defp create_arena_match_results(multi, match_id, results) do
     Enum.reduce(results, multi, fn result, multi ->
-      attrs =
-        Map.put(result, "google_user_id", result["user_id"])
-        |> Map.put("match_id", match_id)
-
+      attrs = Map.put(result, "match_id", match_id)
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
       Multi.insert(multi, {:insert, result["user_id"]}, changeset)
     end)
   end
 
-  defp add_google_users_to_multi(multi, results) do
-    Multi.run(multi, :get_google_users, fn repo, _changes_so_far ->
-      google_users =
+  defp add_users_to_multi(multi, results) do
+    Multi.run(multi, :get_users, fn repo, _changes_so_far ->
+      users =
         Enum.map(results, fn result -> result["user_id"] end)
-        |> Users.get_google_users_with_todays_daily_quests(repo)
+        |> Users.get_users_with_todays_daily_quests(repo)
 
-      {:ok, google_users}
+      {:ok, users}
     end)
   end
 
@@ -52,11 +49,11 @@ defmodule GameBackend.Matches do
       Multi.run(
         multi,
         {:add_trophies_to, result["user_id"]},
-        fn _, %{get_google_users: google_users} ->
-          google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+        fn _, %{get_users: users} ->
+          user = Enum.find(users, fn user -> user.id == result["user_id"] end)
 
           amount_of_trophies =
-            Enum.find(google_user.user.currencies, fn user_currency -> user_currency.currency.name == "Trophies" end)
+            Enum.find(user.currencies, fn user_currency -> user_currency.currency.name == "Trophies" end)
             |> case do
               nil -> 0
               currency -> currency.amount
@@ -66,7 +63,7 @@ defmodule GameBackend.Matches do
             get_amount_of_trophies_to_modify(amount_of_trophies, result["position"], currency_config)
 
           Currencies.add_currency_by_name_and_game!(
-            google_user.user.id,
+            user.id,
             "Trophies",
             Utils.get_game_id(:curse_of_mirra),
             amount
@@ -79,12 +76,12 @@ defmodule GameBackend.Matches do
   defp maybe_complete_quests(multi) do
     Multi.run(multi, :insert_completed_quests_result, fn repo,
                                                          %{
-                                                           get_google_users: google_users
+                                                           get_users: users
                                                          } ->
       correctly_updated_list =
-        Enum.map(google_users, fn
-          google_user ->
-            Quests.get_google_user_daily_quests_completed(google_user)
+        Enum.map(users, fn
+          user ->
+            Quests.get_user_daily_quests_completed(user)
             |> Enum.map(fn %DailyQuest{quest: quest} = daily_quest ->
               updated_match =
                 DailyQuest.changeset(daily_quest, %{
@@ -95,7 +92,7 @@ defmodule GameBackend.Matches do
 
               inserted_currency =
                 Currencies.add_currency_by_name_and_game(
-                  google_user.user.id,
+                  user.id,
                   quest.reward["currency"],
                   Utils.get_game_id(:curse_of_mirra),
                   quest.reward["amount"]

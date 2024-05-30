@@ -21,7 +21,7 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     field(:duration_ms, :integer)
     timestamps()
 
-    belongs_to(:google_user, GameBackend.Users.GoogleUser)
+    belongs_to(:user, GameBackend.Users.User)
   end
 
   @required [
@@ -30,7 +30,7 @@ defmodule GameBackend.Matches.ArenaMatchResult do
     :deaths,
     :character,
     :match_id,
-    :google_user_id,
+    :user_id,
     :position,
     :damage_done,
     :damage_taken,

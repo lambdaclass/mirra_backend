@@ -5,7 +5,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
-  alias GameBackend.Users.GoogleUser
   alias GameBackend.Users.User
   alias GameBackend.Quests.DailyQuest
   alias GameBackend.Repo
@@ -173,9 +172,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
-  def get_google_user_daily_quests_completed(%GoogleUser{
+  def get_user_daily_quests_completed(%User{
         arena_match_results: arena_match_results,
-        user: %User{daily_quests: daily_quests}
+        daily_quests: daily_quests
       }) do
     Enum.reduce(daily_quests, [], fn daily_quest, acc ->
       if completed_daily_quest?(daily_quest, arena_match_results) do
