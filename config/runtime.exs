@@ -17,22 +17,6 @@ import Config
 # Alternatively, you can use `mix phx.gen.release` to generate a `bin/server`
 # script that automatically sets the env var above.
 
-load_env_or_file! = fn application, env_key, priv_file_path ->
-  case {config_env(), System.get_env(env_key)} do
-    {:prod, nil} ->
-      raise "Missing env variable #{env_key}"
-
-    {_, value} when not is_nil(value) ->
-      value
-
-    _ ->
-      :code.priv_dir(application)
-      |> Path.join(priv_file_path)
-      |> File.read!()
-  end
-  |> String.trim()
-end
-
 ##########################
 # General configurations #
 ##########################
@@ -44,6 +28,20 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
 config :joken,
   issuer: "https://accounts.google.com",
   audience: System.get_env("GOOGLE_CLIENT_ID")
+
+if config_env() == :prod do
+  jwt_private_key =
+    System.get_env("JWT_PRIVATE_KEY") ||
+      raise """
+      environment variable JWT_PRIVATE_KEY is missing
+      """
+
+  config :joken,
+    default_signer: [
+      signer_alg: "Ed25519",
+      key_openssh: jwt_private_key
+    ]
+end
 
 ############################
 # App configuration: arena #
@@ -268,9 +266,6 @@ end
 ##############################
 # App configuration: gateway #
 ##############################
-config :gateway, Gateway.Auth.Guardian,
-  jwt_private_key:
-    load_env_or_file!.(:gateway, "JWT_PRIVATE_KEY", "guardian/dev_mirra_gateway_ed25519")
 
 ###################################
 # App configuration: configurator #
