@@ -34,18 +34,6 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
     name: "Mystic Summon Scrolls"
   })
 
-{:ok, _fertilizer_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
-
-{:ok, supplies_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
-
-{:ok, blueprints_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
-
-{:ok, pearls_currency} =
-  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Pearls"})
-
 {:ok, _4_star_shards_currency} =
   Users.Currencies.insert_currency(%{
     game_id: champions_of_mirra_id,
@@ -57,6 +45,18 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
     game_id: champions_of_mirra_id,
     name: "5* Shards"
   })
+
+{:ok, _fertilizer_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
+
+{:ok, supplies_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
+
+{:ok, blueprints_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
+
+{:ok, pearls_currency} =
+  Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Pearls"})
 
 ### Curse Currencies
 
