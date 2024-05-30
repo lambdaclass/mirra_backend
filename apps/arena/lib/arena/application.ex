@@ -16,6 +16,7 @@ defmodule Arena.Application do
       # Start game launcher genserver
       Arena.GameLauncher,
       Arena.GameTracker,
+      Arena.Authentication.GatewaySigner,
       # Start a worker by calling: Arena.Worker.start_link(arg)
       # {Arena.Worker, arg},
       # Start to serve requests, typically the last entry
