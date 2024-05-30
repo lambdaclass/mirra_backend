@@ -1687,7 +1687,11 @@ defmodule Champions.Test.BattleTest do
       # We will create a battle between a damaging unit and a target dummy.
       # The unit's basic skill will deal 4 points of damage to the target dummy over 3 steps, killing it in the third one. The cooldown is such that the skill can be used only once.
       # The battle should finish with a victory for team_1 after the third step, or in timeout if the steps are less than 3.
-      maximum_steps = 9
+      attacker_cooldown = 9
+      dot_duration = 3
+      dot_period = 2
+      # We add 1 to consider the step in which the attack is performed
+      required_steps = attacker_cooldown + dot_duration * (dot_period + 1)
 
       deal_damage_over_time_params =
         TestUtils.build_skill(%{
@@ -1701,15 +1705,15 @@ defmodule Champions.Test.BattleTest do
                     TestUtils.build_effect(%{
                       type: %{
                         "type" => "duration",
-                        "duration" => 3 * @miliseconds_per_step,
-                        "period" => 400
+                        "duration" => dot_duration * @miliseconds_per_step,
+                        "period" => dot_period * @miliseconds_per_step
                       },
                       executions_over_time: [
                         %{
                           type: "DealDamageOverTime",
                           attack_ratio: 1,
                           apply_tags: ["Burn"],
-                          interval: 3 * @miliseconds_per_step
+                          interval: dot_duration * @miliseconds_per_step
                         }
                       ]
                     })
@@ -1722,7 +1726,7 @@ defmodule Champions.Test.BattleTest do
                 })
             }
           ],
-          cooldown: 5 * @miliseconds_per_step
+          cooldown: attacker_cooldown * @miliseconds_per_step
         })
 
       {:ok, character} =
@@ -1739,7 +1743,7 @@ defmodule Champions.Test.BattleTest do
       {:ok, unit} = Units.get_unit(unit.id)
 
       assert "team_1" ==
-               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: maximum_steps).result
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps).result
     end
   end
 end

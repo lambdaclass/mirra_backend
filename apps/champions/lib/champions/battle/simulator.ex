@@ -835,7 +835,8 @@ defmodule Champions.Battle.Simulator do
             caster: caster,
             skill_id: effect.skill_id,
             remaining_duration: get_duration(effect.type),
-            remaining_period: effect.type.period
+            # Decrement in 1 because we're already processing the execution in the next step
+            remaining_period: effect.type.period - 1
           }
           | current_executions
         ]
@@ -1078,26 +1079,28 @@ defmodule Champions.Battle.Simulator do
           execution_over_time.caster,
           history_acc,
           execution_over_time.skill_id,
-          execution_over_time.remaining_duration
+          execution_over_time.remaining_duration,
+          execution_over_time.remaining_period
         )
 
-      cond do
-        new_target.executions_over_time == [] ->
-          {new_target, new_history}
+      # cond do
+      #   new_target.executions_over_time == [] ->
+      #     {new_target, new_history}
 
-        true ->
-          # Decrement in 1 the remaining duration of the execution
-          new_execution_over_time =
-            Map.put(execution_over_time, :remaining_duration, execution_over_time.remaining_duration - 1)
+      #   true ->
+      #     # Decrement in 1 the remaining duration of the execution
+      #     new_execution_over_time =
+      #       Map.put(execution_over_time, :remaining_duration, execution_over_time.remaining_duration - 1)
 
-          # Replace the old execution over time with the new one
-          new_target =
-            update_in(new_target, [:executions_over_time], fn current_executions ->
-              Enum.filter(current_executions, fn exec -> exec != execution_over_time end) ++ [new_execution_over_time]
-            end)
+      #     # Replace the old execution over time with the new one
+      #     new_target =
+      #       update_in(new_target, [:executions_over_time], fn current_executions ->
+      #         Enum.filter(current_executions, fn exec -> exec != execution_over_time end) ++ [new_execution_over_time]
+      #       end)
 
-          {new_target, new_history}
-      end
+      #     {new_target, new_history}
+      # end
+      {new_target, new_history}
     end)
   end
 
@@ -1107,7 +1110,8 @@ defmodule Champions.Battle.Simulator do
          _caster,
          history,
          skill_id,
-         -1
+         -1,
+         _remaining_period
        ) do
     # If the execution is over, we remove it from the target
     new_target =
@@ -1129,9 +1133,56 @@ defmodule Champions.Battle.Simulator do
          caster,
          history,
          skill_id,
-         remaining_duration
+         remaining_duration,
+         0
        ) do
-    apply_execution_over_time(attack_ratio, target, caster, history, remaining_duration, skill_id)
+    {new_target, new_history} =
+      apply_execution_over_time(attack_ratio, target, caster, history, remaining_duration, skill_id)
+
+    new_target =
+      update_in(new_target, [:executions_over_time], fn current_executions ->
+        Enum.map(current_executions, fn exec ->
+          if exec.skill_id == skill_id do
+            Map.put(exec, :remaining_period, 2)
+            |> Map.put(:remaining_duration, exec.remaining_duration - 1)
+          else
+            exec
+          end
+        end)
+      end)
+
+    {new_target, new_history}
+  end
+
+  defp process_execution_over_time(
+         %{
+           "type" => "DealDamageOverTime",
+           "attack_ratio" => attack_ratio,
+           "apply_tags" => _apply_tags,
+           "interval" => _interval
+         },
+         target,
+         caster,
+         history,
+         skill_id,
+         remaining_duration,
+         remaining_period
+       ) do
+    execution_over_time = target.executions_over_time |> Enum.find(fn exec -> exec.skill_id == skill_id end)
+
+    # Decrement in 1 the remaining period of the execution
+    new_execution_over_time =
+      Map.put(execution_over_time, :remaining_period, execution_over_time.remaining_period - 1)
+
+    # Replace the old execution over time with the new one
+    new_target =
+      update_in(target, [:executions_over_time], fn current_executions ->
+        Enum.filter(current_executions, fn exec -> exec != execution_over_time end) ++ [new_execution_over_time]
+      end)
+
+    Logger.info("Remaining period: #{new_execution_over_time.remaining_period}")
+
+    {new_target, history}
   end
 
   defp process_execution_over_time(
@@ -1140,7 +1191,8 @@ defmodule Champions.Battle.Simulator do
          caster,
          history,
          _skill_id,
-         _remaining_duration
+         _remaining_duration,
+         _remaining_period
        ) do
     Logger.warning(
       "#{format_unit_name(caster)} tried to apply an unknown execution over time to #{format_unit_name(target)}"
