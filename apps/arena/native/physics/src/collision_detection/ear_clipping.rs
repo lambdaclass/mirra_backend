@@ -67,28 +67,11 @@ fn is_vertex_consecutive(
 fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     let mut result: Vec<Entity> = vec![];
     let mut vertices = polygon.vertices.clone();
-    let mut ear_found: bool;
 
     while vertices.len() > 3 {
-        ear_found = false;
-        for current_vertex_index in 0..vertices.len() {
-            let previous_vertex_index = get_previous_vertex_index(current_vertex_index, &vertices);
-            let next_vertex_index = get_next_vertex_index(current_vertex_index, &vertices);
-
-            let previous_vertex = vertices[previous_vertex_index];
-            let current_vertex = vertices[current_vertex_index];
-            let next_vertex = vertices[next_vertex_index];
-            let candidate_triangle =
-                Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
-            if is_triangle_ear(&candidate_triangle, &vertices) {
-                ear_found = true;
-                result.push(candidate_triangle);
-                vertices.retain(|pos| pos != &current_vertex);
-                break;
-            }
-        }
-
-        if !ear_found {
+        if let Some(triangle) = find_ear_in_vertices(&mut vertices) {
+            result.push(triangle)
+        } else {
             panic!("No ear detected, polygon invalid")
         }
     }
@@ -107,6 +90,24 @@ fn triangulate_polygon(polygon: &Entity) -> Vec<Entity> {
     }
 
     result
+}
+
+fn find_ear_in_vertices(vertices: &mut Vec<Position>) -> Option<Entity> {
+    for current_vertex_index in 0..vertices.len() {
+        let previous_vertex_index = get_previous_vertex_index(current_vertex_index, &vertices);
+        let next_vertex_index = get_next_vertex_index(current_vertex_index, &vertices);
+
+        let previous_vertex = vertices[previous_vertex_index];
+        let current_vertex = vertices[current_vertex_index];
+        let next_vertex = vertices[next_vertex_index];
+        let candidate_triangle =
+            Entity::new_polygon(1, vec![previous_vertex, current_vertex, next_vertex]);
+        if is_triangle_ear(&candidate_triangle, &vertices) {
+            vertices.retain(|pos| pos != &current_vertex);
+            return Some(candidate_triangle);
+        }
+    }
+    None
 }
 
 // Check if the three vertices are a valid ear, this means
