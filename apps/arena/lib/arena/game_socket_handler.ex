@@ -18,10 +18,11 @@ defmodule Arena.GameSocketHandler do
     ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
     ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Sever".
     client_id =
-      with [{"gateway_jwt", jwt}] <- :cowboy_req.parse_qs(req),
-           {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt) do
-        user_id
-      else
+      case :cowboy_req.parse_qs(req) do
+        [{"gateway_jwt", jwt}] ->
+          {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt)
+          user_id
+
         _ ->
           :cowboy_req.binding(:client_id, req)
       end

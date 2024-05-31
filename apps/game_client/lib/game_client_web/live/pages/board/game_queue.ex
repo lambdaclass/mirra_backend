@@ -7,7 +7,14 @@ defmodule GameClientWeb.BoardLive.GameQueue do
         session,
         socket
       ) do
-    {:ok, assign(socket, player_id: player_id, character: character, player_name: player_name, game_mode: game_mode, gateway_jwt: session["gateway_jwt"])}
+    {:ok,
+     assign(socket,
+       player_id: player_id,
+       character: character,
+       player_name: player_name,
+       game_mode: game_mode,
+       gateway_jwt: session["gateway_jwt"]
+     )}
   end
 
   def handle_event("join_game", %{"game_id" => game_id, "player_id" => player_id}, socket) do

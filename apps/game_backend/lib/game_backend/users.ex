@@ -170,9 +170,10 @@ defmodule GameBackend.Users do
   """
   def find_or_create_google_user_by_email(email) do
     q =
-      from gu in GoogleUser,
+      from(gu in GoogleUser,
         where: gu.email == ^email,
         preload: [:user]
+      )
 
     case Repo.one(q) do
       nil -> create_google_user_by_email(email)

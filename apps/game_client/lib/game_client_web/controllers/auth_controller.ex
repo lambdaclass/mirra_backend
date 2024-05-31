@@ -41,7 +41,7 @@ defmodule GameClientWeb.AuthController do
 
     case response do
       {:ok, %{status: 200, body: body}} ->
-        body = Jason.decode!(body) |> IO.inspect()
+        body = Jason.decode!(body)
 
         conn
         |> put_flash(:info, "Guest logged in successfully.")

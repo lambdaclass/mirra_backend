@@ -1,4 +1,8 @@
 defmodule Arena.Authentication.GatewaySigner do
+  @moduledoc """
+  GenServer that calls gateway to fetch public key used for JWT authentication
+  The public key is converted into a Joken.Signer and cached for internal app usage
+  """
   use GenServer
 
   def signer() do
@@ -30,7 +34,7 @@ defmodule Arena.Authentication.GatewaySigner do
 
     case result do
       {:ok, %Finch.Response{status: 200, body: body}} ->
-        Process.send_after(self(), :fetch_signer, 3600_000)
+        Process.send_after(self(), :fetch_signer, 3_600_000)
         %{"jwk" => jwk} = Jason.decode!(body)
         signer = Joken.Signer.create("Ed25519", jwk)
         {:noreply, Map.put(state, :signer, signer)}
@@ -40,5 +44,4 @@ defmodule Arena.Authentication.GatewaySigner do
         {:noreply, state}
     end
   end
-
 end

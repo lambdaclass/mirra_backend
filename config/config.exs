@@ -77,7 +77,8 @@ config :ueberauth, Ueberauth,
   ]
 
 config :joken,
-  default_exp: 2 * 60 * 60 ## 2 hours for expiration
+  ## 2 hours for expiration
+  default_exp: 2 * 60 * 60
 
 ############################
 # App configuration: arena #
