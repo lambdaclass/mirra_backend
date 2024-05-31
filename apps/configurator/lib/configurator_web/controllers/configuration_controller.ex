@@ -31,27 +31,10 @@ defmodule ConfiguratorWeb.ConfigurationController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def edit(conn, %{"game_id" => game_id, "configuration_group_id" => configuration_group_id, "id" => id}) do
+    game = Games.get_game!(game_id)
+    configuration_group = Configure.get_configuration_group!(configuration_group_id)
     configuration = Configure.get_configuration!(id)
-    render(conn, :show, configuration: configuration)
-  end
-
-  def show(conn, _) do
-    configuration = Configure.get_default_configuration!()
-    render(conn, :show, configuration: configuration)
-  end
-
-  def set_default(conn, %{"id" => id}) do
-    case Configure.set_default_configuration(id) do
-      {:ok, _} ->
-        conn
-        |> put_flash(:info, "Default configuration set successfully.")
-        |> redirect(to: ~p"/configurations/#{id}")
-
-      {:error, _} ->
-        conn
-        |> put_flash(:error, "Failed to set default configuration.")
-        |> redirect(to: ~p"/configurations/#{id}")
-    end
+    render(conn, :edit, configuration: configuration, configuration_group: configuration_group, game: game)
   end
 end
