@@ -9,8 +9,11 @@
   </:actions>
 </.header>
 
-<.table id="configurations_groups" rows={@configurations_groups}
-  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{&1}")}>
+<.table
+  id="configurations_groups"
+  rows={@configurations_groups}
+  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{&1}")}
+>
   <:col :let={configuration} label="ID">
     <%= configuration.id %>
   </:col>
