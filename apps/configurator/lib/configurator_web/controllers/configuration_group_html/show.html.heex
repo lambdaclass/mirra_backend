@@ -7,7 +7,11 @@
   </:actions>
 </.header>
 
-<.table id="configuration" rows={@configurations}>
+<.table
+  id="configuration"
+  rows={@configurations}
+  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/#{&1}")}
+>
   <:col :let={configuration} label="ID">
     <%= configuration.id %>
   </:col>

@@ -59,7 +59,7 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
     end)
   end
 
-    def render_main_form(assigns) do
+  def render_main_form(assigns) do
     ~H"""
     <.inputs_for :let={nested_form} field={@form[@selected_key]} id={@selected_key} as={@selected_key}>
       <div class="border rounded-md p-1">
@@ -75,6 +75,7 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
     </.inputs_for>
     """
   end
+
   def render_nested_maps(assigns) do
     ~H"""
     <span><%= @field_name %></span>
@@ -82,7 +83,7 @@ defmodule ConfiguratorWeb.ConfigurationLive.Configuration do
       <div class="border rounded-md p-1">
         <%= for {data_name, data_value} <- @data do %>
           <%= if is_map(data_value) do %>
-            <% if map_size(data_value) != 0 do %>
+            <%= if map_size(data_value) != 0 do %>
               <.render_nested_maps data={data_value} form={nested_form} field_name={data_name} />
             <% end %>
           <% else %>
