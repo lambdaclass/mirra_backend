@@ -16,6 +16,8 @@ defmodule Gateway.Router do
       get "/configuration", CharacterController, :get_characters_config
     end
 
+    post "/users", UserController, :create_guest_user
+
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward

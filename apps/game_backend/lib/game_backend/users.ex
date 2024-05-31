@@ -37,6 +37,11 @@ defmodule GameBackend.Users do
     |> Repo.insert()
   end
 
+  def create_guest_user() do
+    CurseUsers.create_user_params()
+    |> register_user()
+  end
+
   @doc """
   Gets a single user.
   Returns {:ok, User}.

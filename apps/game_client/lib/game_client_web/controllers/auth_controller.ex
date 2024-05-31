@@ -31,4 +31,28 @@ defmodule GameClientWeb.AuthController do
         |> redirect(to: ~p"/")
     end
   end
+
+  def create_guest(conn, _params) do
+    gateway_url = Application.get_env(:game_client, :gateway_url)
+
+    response =
+      Finch.build(:post, "#{gateway_url}/curse/users", [{"content-type", "application/json"}])
+      |> Finch.request(GameClient.Finch)
+
+    case response do
+      {:ok, %{status: 200, body: body}} ->
+        body = Jason.decode!(body) |> IO.inspect()
+
+        conn
+        |> put_flash(:info, "Guest logged in successfully.")
+        |> put_session(:user_id, get_in(body, ["user_id"]))
+        |> put_session(:gateway_jwt, get_in(body, ["gateway_jwt"]))
+        |> redirect(to: ~p"/")
+
+      {:error, _reason} ->
+        conn
+        |> put_flash(:error, "An error occurred")
+        |> redirect(to: ~p"/")
+    end
+  end
 end

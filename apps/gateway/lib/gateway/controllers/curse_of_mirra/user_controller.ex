@@ -3,6 +3,7 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
   Controller for CurseOfMirra.User modifications.
   """
   use Gateway, :controller
+  alias Gateway.Auth.TokenManager
   alias GameBackend.Users
   alias GameBackend.Rewards
   alias GameBackend.Utils
@@ -25,6 +26,13 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
         |> Rewards.mark_user_daily_rewards_as_completed(user)
 
       send_resp(conn, 200, Jason.encode!(user_daily_reward_status))
+    end
+  end
+
+  def create_guest_user(conn, _params) do
+    with {:ok, user} <- Users.create_guest_user(),
+         gateway_jwt = TokenManager.generate_user_token(user) do
+      send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt}))
     end
   end
 end

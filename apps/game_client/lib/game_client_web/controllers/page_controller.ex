@@ -2,7 +2,7 @@ defmodule GameClientWeb.PageController do
   use GameClientWeb, :controller
 
   def home(conn, _params) do
-    current_user_id = get_session(conn, :user_id)
+    current_user_id = get_session(conn, :user_id) |> IO.inspect(lable: "home")
     user_id = current_user_id || Ecto.UUID.generate()
     render(conn, :home, current_user_id: current_user_id, user_id: user_id)
   end
