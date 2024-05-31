@@ -5,14 +5,14 @@ defmodule Configurator.Configure.Configuration do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Configurator.Games.Game
+  alias Configurator.Configure.ConfigurationGroup
 
   schema "configurations" do
     field :name, :string
     field :data, :string
     field :is_default, :boolean, default: false
 
-    belongs_to :game, Game
+    belongs_to :configuration_group, ConfigurationGroup
 
     timestamps(type: :utc_datetime)
   end
@@ -21,7 +21,7 @@ defmodule Configurator.Configure.Configuration do
     :data,
     :is_default,
     :data,
-    :game_id
+    :configuration_group_id
   ]
 
   @doc false
