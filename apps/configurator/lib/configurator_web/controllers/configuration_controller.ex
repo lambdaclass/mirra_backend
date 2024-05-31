@@ -5,27 +5,29 @@ defmodule ConfiguratorWeb.ConfigurationController do
   alias Configurator.Configure.Configuration
   alias Configurator.Games
 
-  def index(conn, _params) do
-    configurations = Configure.list_configurations()
-    render(conn, :index, configurations: configurations)
+  def new(conn, %{"configuration_group_id" => configuration_group_id, "game_id" => game_id}) do
+    game = Games.get_game!(game_id)
+    configuration_group = Configure.get_configuration_group!(configuration_group_id)
+    changeset = Configuration.changeset(%Configuration{}, %{configuration_group_id: configuration_group_id})
+    render(conn, :new, changeset: changeset, configuration_group: configuration_group, game: game)
   end
 
-  def new(conn, %{"game_id" => id}) do
-    game = Games.get_game!(id)
-    changeset = Configuration.changeset(%Configuration{}, %{game_id: id})
-    render(conn, :new, changeset: changeset, game: game)
-  end
+  def create(conn, %{
+        "configuration" => configuration_params,
+        "game_id" => game_id,
+        "configuration_group_id" => configuration_group_id
+      }) do
+    game = Games.get_game!(game_id)
+    configuration_group = Configure.get_configuration_group!(configuration_group_id)
 
-  def create(conn, %{"configuration" => configuration_params, "game_id" => game_id}) do
     case Configure.create_configuration(configuration_params) do
-      {:ok, configuration} ->
+      {:ok, _configuration} ->
         conn
         |> put_flash(:info, "Configuration created successfully.")
-        |> redirect(to: ~p"/configurations/#{configuration}")
+        |> redirect(to: ~p"/games/#{game}/configuration_groups/#{configuration_group}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        game = Games.get_game!(game_id)
-        render(conn, :new, changeset: changeset, game: game)
+        render(conn, :new, changeset: changeset, configuration_group: configuration_group, game: game)
     end
   end
 

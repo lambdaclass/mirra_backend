@@ -12,13 +12,30 @@
   rows={@configurations}
   row_click={&JS.navigate(~p"/games/#{@game}/configuration_group/#{@configuration_group}/configurations/#{&1}")}
 >
-  <:col :let={configuration} label="ID"><%= configuration.id %></:col>
-  <:col :let={configuration} label="Is Default"><%= configuration.is_default %></:col>
+  <:col :let={configuration} label="ID">
+    <%= configuration.id %>
+  </:col>
+  <:col :let={configuration} label="Is Default">
+    <%= configuration.is_default %>
+  </:col>
   <:action :let={configuration}>
     <div class="sr-only">
-      <.link navigate={~p"/games/#{@game}/configuration_group/#{@configuration_group}/configuration/#{configuration}"}>
+      <.link navigate={~p"/games/#{@game}/configuration_group/#{@configuration_group}/configurations/#{configuration}"}>
         Show
       </.link>
     </div>
+  </:action>
+  <:action :let={configuration}>
+    <%= unless configuration.is_default do %>
+      <.link
+        href={
+          ~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/set_current/#{configuration}"
+        }
+        method="put"
+        data-confirm="Are you sure?"
+      >
+        Set as default
+      </.link>
+    <% end %>
   </:action>
 </.table>

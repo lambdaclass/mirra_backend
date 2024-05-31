@@ -3,6 +3,11 @@
   <:subtitle>Use this form to manage configuration records in your database.</:subtitle>
 </.header>
 
-<.configuration_form changeset={@changeset} action={~p"/games/#{@game}/configurations"} game={@game} />
+<.configuration_form
+  changeset={@changeset}
+  action={~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations"}
+  configuration_group={@configuration_group}
+  game={@game}
+/>
 
 <.back navigate={~p"/games"}>Back to games</.back>
