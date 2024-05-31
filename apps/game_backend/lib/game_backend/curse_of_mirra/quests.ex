@@ -196,9 +196,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
         user: %User{daily_quests: daily_quests}
       }) do
     daily_quests
-    |> Enum.filter(fn daily_quest -> daily_quest.quest.type == "daily" end)
     |> Enum.reduce([], fn daily_quest, acc ->
-      if completed_daily_quest?(daily_quest, arena_match_results) do
+      if completed_daily_quest?(daily_quest, arena_match_results) and daily_quest.quest.type == "daily" do
         [daily_quest | acc]
       else
         acc
