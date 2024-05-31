@@ -37,6 +37,18 @@ defmodule Arena.Configuration do
     end)
   end
 
+  defp parse_skill_config(
+         %{
+           cooldown_mechanism: "combo",
+           combo_reset_timer_ms: combo_reset_timer_ms,
+           next_skill: _next_skill
+         } = skill_config
+       )
+       when combo_reset_timer_ms >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
   defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
     mechanics = parse_mechanics_config(skill_config.mechanics)
     %{skill_config | mechanics: mechanics}
@@ -54,6 +66,9 @@ defmodule Arena.Configuration do
 
       "time" ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      "combo" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` combo_reset_timer_ms should be a number greater than or equal to zero and a next skill value"
 
       _ ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
