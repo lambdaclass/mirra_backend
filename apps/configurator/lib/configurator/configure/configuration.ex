@@ -17,6 +17,7 @@ defmodule Configurator.Configure.Configuration do
   end
 
   @required [
+    :data,
     :is_default,
     :configuration_group_id
   ]
