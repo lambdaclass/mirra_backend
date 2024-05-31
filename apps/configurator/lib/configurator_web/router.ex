@@ -20,7 +20,6 @@ defmodule ConfiguratorWeb.Router do
     resources "/games", GameController, only: [:index, :new, :create, :show] do
       resources "/configuration_groups", ConfigurationGroupController, only: [:new, :create, :show] do
         resources "/configurations", ConfigurationController, only: [:new, :create, :show]
-        get "/configurations/new/:id", ConfigurationController, :new
         put "/configurations/set_default/:id", ConfigurationController, :set_default
       end
     end
