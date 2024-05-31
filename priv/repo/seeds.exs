@@ -1,5 +1,4 @@
-alias GameBackend.Users.Currencies.Currency
-alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
+alias GameBackend.{Campaigns, Gacha, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
 alias GameBackend.Users.{DungeonSettlementLevel, KalineTreeLevel, Upgrade}
 alias GameBackend.Units.{Characters, Unit}
