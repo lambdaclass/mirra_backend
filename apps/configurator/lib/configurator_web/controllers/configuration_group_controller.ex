@@ -35,7 +35,7 @@ defmodule ConfiguratorWeb.ConfigurationGroupController do
   end
 
   def show(conn, %{"game_id" => game_id, "id" => id}) do
-    game = Games.get_game!(id)
+    game = Games.get_game!(game_id)
     configuration_group = Configure.get_configuration_group!(id)
     configurations = Configure.list_configurations_by_group_id(id)
     render(conn, :show, game: game, configurations: configurations, configuration_group: configuration_group)
