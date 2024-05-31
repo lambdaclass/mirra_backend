@@ -1180,6 +1180,97 @@
         }
       ],
       "effects_to_apply": []
+    },
+    {
+      "name": "kenzu_quickstrike",
+      "cooldown_mechanism": "combo",
+      "next_skill": "kenzu_quickstrike_second",
+      "combo_reset_timer_ms": 5000,
+      "execution_duration_ms": 100,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "autoaim": true,
+      "max_autoaim_range": 1600,
+      "stamina_cost": 1,
+      "can_pick_destination": false,
+      "block_movement": true,
+      "mechanics": [
+        {
+          "simple_shoot": {
+            "speed": 55.0,
+            "duration_ms": 1100,
+            "remove_on_collision": true,
+            "projectile_offset": 100,
+            "radius": 100.0,
+            "damage": 0,
+            "on_explode_mechanics": {
+              "circle_hit": {
+                "damage": 58,
+                "range": 250.0,
+                "offset": 0
+              }
+            }
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "kenzu_quickstrike_second",
+      "cooldown_mechanism": "combo",
+      "next_skill": "kenzu_quickstrike_third",
+      "combo_reset_timer_ms": 5000,
+      "execution_duration_ms": 450,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "autoaim": true,
+      "max_autoaim_range": 1600,
+      "stamina_cost": 1,
+      "can_pick_destination": false,
+      "block_movement": true,
+      "mechanics": [
+        {
+          "multi_shoot": {
+            "angle_between": 22.0,
+            "amount": 3,
+            "speed": 65.0,
+            "duration_ms": 1000,
+            "remove_on_collision": true,
+            "projectile_offset": 100,
+            "damage": 44,
+            "radius": 40.0
+          }
+        }
+      ],
+      "effects_to_apply": []
+    },
+    {
+      "name": "kenzu_quickstrike_third",
+      "cooldown_mechanism": "combo",
+      "next_skill": "",
+      "combo_reset_timer_ms": 5000,
+      "execution_duration_ms": 450,
+      "activation_delay_ms": 0,
+      "is_passive": false,
+      "autoaim": true,
+      "max_autoaim_range": 1600,
+      "stamina_cost": 1,
+      "can_pick_destination": false,
+      "block_movement": true,
+      "mechanics": [
+        {
+          "spawn_pool": {
+            "name": "singularity",
+            "duration_ms": 5000,
+            "radius": 500.0,
+            "range": 1500.0,
+            "effects_to_apply": [
+              "singularity"
+            ]
+          }
+        }
+      ],
+      "effects_to_apply": []
     }
   ],
   "items": [
