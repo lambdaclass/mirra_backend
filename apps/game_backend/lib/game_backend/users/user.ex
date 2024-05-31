@@ -29,7 +29,7 @@ defmodule GameBackend.Users.User do
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)
-    has_many(:daily_quests, UserQuest)
+    has_many(:user_quests, UserQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
     has_many(:unlocks, Unlock)
 

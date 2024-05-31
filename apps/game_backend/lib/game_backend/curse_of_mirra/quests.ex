@@ -94,29 +94,14 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   ## Examples
 
-      iex>get_daily_quest(daily_quest_id)
+      iex>get_user_quest(user_quest_id)
       %UserQuest{}
 
   """
-  def get_daily_quest(daily_quest_id) do
-    q = from(dq in UserQuest, preload: [:quest], where: dq.id == ^daily_quest_id)
+  def get_user_quest(user_quest_id) do
+    q = from(dq in UserQuest, preload: [:quest], where: dq.id == ^user_quest_id)
 
     Repo.one(q)
-  end
-
-  @doc """
-  Receives a User id and returns all %UserQuest{} that belongs to that user
-
-  ## Examples
-
-      iex>get_users_daily_quests(user_id)
-      [%UserQuest{}]
-
-  """
-  def get_users_daily_quests(user_id) do
-    q = from(dq in UserQuest, preload: [:quest], where: dq.user_id == ^user_id)
-
-    Repo.all(q)
   end
 
   @doc """
@@ -139,7 +124,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         preload: [:quest],
         where:
           dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and
-            dq.status == ^"rerolled"
+            dq.status == ^"rerolled" and q.type == "daily"
       )
 
     Repo.all(q)
@@ -193,11 +178,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   def get_google_user_daily_quests_completed(%GoogleUser{
         arena_match_results: arena_match_results,
-        user: %User{daily_quests: daily_quests}
+        user: %User{user_quests: daily_quests}
       }) do
     daily_quests
     |> Enum.reduce([], fn daily_quest, acc ->
-      if completed_daily_quest?(daily_quest, arena_match_results) and daily_quest.quest.type == "daily" do
+      if completed_quest?(daily_quest, arena_match_results) and daily_quest.quest.type == "daily" do
         [daily_quest | acc]
       else
         acc
@@ -209,7 +194,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
 
     daily_quest =
-      get_daily_quest(daily_quest_id)
+      get_user_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
       get_user_today_rerolled_daily_quests(daily_quest.user_id)
@@ -290,7 +275,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  def completed_daily_quest?(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
+  def completed_quest?(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
     progress =
       arena_match_results
       |> filter_results_that_meet_quest_conditions(quest.conditions)

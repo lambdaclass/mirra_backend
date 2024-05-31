@@ -103,6 +103,7 @@ defmodule GameBackend.Matches do
   defp complete_or_fail_bounties(multi, results) do
     Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
     |> Enum.reduce(multi, fn result, multi ->
+
       Multi.run(multi, {:complete_of_fail_bounty, result["user_id"]}, fn repo,
                                                                          %{get_google_users: google_users} =
                                                                            changes_so_far ->
@@ -124,7 +125,7 @@ defmodule GameBackend.Matches do
           repo.insert!(user_quest_changeset)
           |> repo.preload([:quest])
 
-        if Quests.completed_daily_quest?(user_quest, [inserted_result]) do
+        if Quests.completed_quest?(user_quest, [inserted_result]) do
           complete_quest_and_insert_currency(user_quest, google_user.user.id)
         else
           UserQuest.changeset(user_quest, %{status: "failed"})

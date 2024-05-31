@@ -75,10 +75,11 @@ defmodule GameBackend.Users do
 
     daily_quest_subquery =
       from(user_quest in UserQuest,
+        join: q in assoc(user_quest, :quest),
         where:
           user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date and
             is_nil(user_quest.completed_at) and
-            user_quest.status == ^"available",
+            user_quest.status == ^"available" and q.type == "daily",
         preload: [:quest]
       )
 
@@ -89,7 +90,7 @@ defmodule GameBackend.Users do
           arena_match_results: ^arena_match_result_subquery,
           user: [
             currencies: :currency,
-            daily_quests: ^daily_quest_subquery
+            user_quests: ^daily_quest_subquery
           ]
         ]
       )
