@@ -1689,9 +1689,9 @@ defmodule Champions.Test.BattleTest do
       # The battle should finish with a victory for team_1 after the third step, or in timeout if the steps are less than 3.
       attacker_cooldown = 9
       dot_duration = 3
-      dot_period = 2
+      dot_interval = 2
       # We add 1 to consider the step in which the attack is performed
-      required_steps = attacker_cooldown + dot_duration * (dot_period + 1)
+      required_steps = attacker_cooldown + dot_duration * (dot_interval + 1)
 
       deal_damage_over_time_params =
         TestUtils.build_skill(%{
@@ -1705,15 +1705,14 @@ defmodule Champions.Test.BattleTest do
                     TestUtils.build_effect(%{
                       type: %{
                         "type" => "duration",
-                        "duration" => dot_duration * @miliseconds_per_step,
-                        "period" => dot_period * @miliseconds_per_step
+                        "duration" => dot_duration * @miliseconds_per_step
                       },
                       executions_over_time: [
                         %{
                           type: "DealDamageOverTime",
                           attack_ratio: 1,
                           apply_tags: ["Burn"],
-                          interval: dot_duration * @miliseconds_per_step
+                          interval: dot_interval * @miliseconds_per_step
                         }
                       ]
                     })

@@ -836,7 +836,7 @@ defmodule Champions.Battle.Simulator do
             skill_id: effect.skill_id,
             remaining_duration: get_duration(effect.type),
             # Decrement in 1 because we're already processing the execution in the next step
-            remaining_period: effect.type.period - 1
+            remaining_interval_steps: get_interval_steps(execution_over_time)
           }
           | current_executions
         ]
@@ -873,6 +873,8 @@ defmodule Champions.Battle.Simulator do
 
   # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
+
+  defp get_interval_steps(execution_over_time), do: trunc(execution_over_time["interval"] / @miliseconds_per_step) - 1
 
   # Return whether an effect hits.
   defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
@@ -1088,7 +1090,7 @@ defmodule Champions.Battle.Simulator do
              "apply_tags" => _apply_tags,
              "interval" => _interval
            },
-           remaining_period: 0
+           remaining_interval_steps: 0
          } = execution_over_time,
          target,
          history
@@ -1101,11 +1103,12 @@ defmodule Champions.Battle.Simulator do
         history
       )
 
+    initial_interval_steps = get_interval_steps(execution_over_time.execution)
     new_target =
       update_in(new_target, [:executions_over_time], fn current_executions ->
         Enum.map(current_executions, fn exec ->
           if exec.skill_id == execution_over_time.skill_id do
-            Map.put(exec, :remaining_period, 2)
+            Map.put(exec, :remaining_interval_steps, initial_interval_steps)
             |> Map.put(:remaining_duration, exec.remaining_duration - 1)
           else
             exec
@@ -1131,14 +1134,14 @@ defmodule Champions.Battle.Simulator do
     execution = target.executions_over_time |> Enum.find(fn exec -> exec.skill_id == execution_over_time.skill_id end)
 
     new_execution_over_time =
-      Map.put(execution_over_time, :remaining_period, execution.remaining_period - 1)
+      Map.put(execution_over_time, :remaining_interval_steps, execution.remaining_interval_steps - 1)
 
     new_target =
       update_in(target, [:executions_over_time], fn current_executions ->
         Enum.filter(current_executions, fn exec -> exec != execution end) ++ [new_execution_over_time]
       end)
 
-    Logger.info("Remaining period: #{new_execution_over_time.remaining_period}")
+    Logger.info("Remaining period: #{new_execution_over_time.remaining_interval_steps}")
 
     {new_target, history}
   end

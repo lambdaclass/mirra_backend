@@ -1940,8 +1940,7 @@
             {
               "type": {
                 "type": "duration",
-                "duration": 10000,
-                "period": 10
+                "duration": 10000
               },
               "initial_delay": 0,
               "components": [],
