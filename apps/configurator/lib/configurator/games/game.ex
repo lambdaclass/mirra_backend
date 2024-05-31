@@ -1,4 +1,7 @@
 defmodule Configurator.Games.Game do
+  @moduledoc """
+  Schema in charge of to group configuration groups by games.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
