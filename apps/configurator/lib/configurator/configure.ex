@@ -119,4 +119,12 @@ defmodule Configurator.Configure do
     |> Configuration.changeset(%{data: data_json, is_default: true})
     |> Repo.insert!()
   end
+
+  def list_all_configurations_by_game(game_id) do
+    q =
+      from c in Configuration,
+        where: c.game_id == ^game_id
+
+    Repo.all(q)
+  end
 end
