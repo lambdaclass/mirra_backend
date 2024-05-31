@@ -34,9 +34,11 @@ defmodule GameClientWeb.AuthController do
 
   def create_guest(conn, _params) do
     gateway_url = Application.get_env(:game_client, :gateway_url)
+    client_id = Ecto.UUID.generate()
+    payload = Jason.encode!(%{client_id: client_id})
 
     response =
-      Finch.build(:post, "#{gateway_url}/curse/users", [{"content-type", "application/json"}])
+      Finch.build(:post, "#{gateway_url}/curse/users", [{"content-type", "application/json"}], payload)
       |> Finch.request(GameClient.Finch)
 
     case response do
@@ -45,6 +47,7 @@ defmodule GameClientWeb.AuthController do
 
         conn
         |> put_flash(:info, "Guest logged in successfully.")
+        |> put_session(:client_id, get_in(body, ["client_id"]))
         |> put_session(:user_id, get_in(body, ["user_id"]))
         |> put_session(:gateway_jwt, get_in(body, ["gateway_jwt"]))
         |> redirect(to: ~p"/")

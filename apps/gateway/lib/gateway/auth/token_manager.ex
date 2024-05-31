@@ -6,8 +6,13 @@ defmodule Gateway.Auth.TokenManager do
 
   use Joken.Config
 
-  def generate_user_token(%User{id: id}) do
-    {:ok, token, _claims} = generate_and_sign(%{"sub" => id})
+  def generate_user_token(%User{id: id}, client_id) do
+    hash_client_id =
+      :crypto.hash(:sha256, client_id)
+      |> Base.url_encode64()
+
+    extra_claims = %{"sub" => id, "dev" => hash_client_id}
+    {:ok, token, _claims} = generate_and_sign(extra_claims)
     token
   end
 
