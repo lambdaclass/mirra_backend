@@ -364,7 +364,7 @@ syntax = "proto3";
     string description = 2;
     int32 group = 3;
     repeated CurrencyCost cost = 4;
-    repeated Buff buffs = 9;
+    repeated Buff buffs = 5;
   }
 
   message Buff {

@@ -773,7 +773,7 @@ defmodule Gateway.Serialization.Upgrade do
   field(:description, 2, type: :string)
   field(:group, 3, type: :int32)
   field(:cost, 4, repeated: true, type: Gateway.Serialization.CurrencyCost)
-  field(:buffs, 9, repeated: true, type: Gateway.Serialization.Buff)
+  field(:buffs, 5, repeated: true, type: Gateway.Serialization.Buff)
 end
 
 defmodule Gateway.Serialization.Buff do
