@@ -630,7 +630,7 @@ defmodule Champions.Battle.Simulator do
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
     Enum.map(target_team, fn {_id, unit} -> unit end)
-    |> sort_units_by_stat(stat, true)
+    |> sort_units_by_stat(stat, :desc)
     |> Enum.take(count)
     |> Enum.map(fn unit -> unit.id end)
   end
@@ -644,7 +644,7 @@ defmodule Champions.Battle.Simulator do
       Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
     Enum.map(target_team, fn {_id, unit} -> unit end)
-    |> sort_units_by_stat(stat, false)
+    |> sort_units_by_stat(stat, :asc)
     |> Enum.take(count)
     |> Enum.map(fn unit -> unit.id end)
   end
@@ -1205,20 +1205,32 @@ defmodule Champions.Battle.Simulator do
     }
   end
 
-  defp sort_units_by_stat(units, stat, desc) do
+  defp sort_units_by_stat(units, stat, order) do
     Enum.sort(
       units,
       fn unit_1, unit_2 ->
         unit_1_stat = calculate_unit_stat(unit_1, String.to_atom(stat))
         unit_2_stat = calculate_unit_stat(unit_2, String.to_atom(stat))
 
-        cond do
-          unit_1_stat > unit_2_stat -> if desc, do: false, else: true
-          unit_1_stat == unit_2_stat -> if Enum.random([true, false]), do: true, else: false
-          true -> if desc, do: true, else: false
-        end
+        decide_order(unit_1_stat, unit_2_stat, order)
       end
     )
+  end
+
+  defp decide_order(unit_1_stat, unit_2_stat, :asc) do
+    cond do
+      unit_1_stat > unit_2_stat -> true
+      unit_1_stat == unit_2_stat -> Enum.random([true, false])
+      true -> false
+    end
+  end
+
+  defp decide_order(unit_1_stat, unit_2_stat, :desc) do
+    cond do
+      unit_1_stat > unit_2_stat -> false
+      unit_1_stat == unit_2_stat -> Enum.random([true, false])
+      true -> true
+    end
   end
 
   defp string_to_atom("type"), do: :type
