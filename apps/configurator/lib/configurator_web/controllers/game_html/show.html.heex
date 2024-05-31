@@ -1,15 +1,16 @@
 <.header>
   <span>Listing <%= @game.name %> configurations groups</span>
-  <.link navigate={~p"/games/#{@game}/configuration_groups/new"}>
-    Create new config
-  </.link>
+  <:actions>
+    <.link navigate={~p"/games/#{@game}/configuration_groups/new"}>
+      <.button>
+        Create new config
+      </.button>
+    </.link>
+  </:actions>
 </.header>
 
-<.table
-  id="configurations_groups"
-  rows={@configurations_groups}
-  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{&1}")}
->
+<.table id="configurations_groups" rows={@configurations_groups}
+  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{&1}")}>
   <:col :let={configuration} label="ID">
     <%= configuration.id %>
   </:col>
