@@ -1,8 +1,8 @@
 <.header>
-  New Configuration
+  New configuration for <%= @game.name %>
   <:subtitle>Use this form to manage configuration records in your database.</:subtitle>
 </.header>
 
-<%= live_render(@conn, ConfiguratorWeb.ConfigurationLive.Configuration, session: %{"config" => @config}) %>
+<.configuration_form changeset={@changeset} action={~p"/games/#{@game}/configurations"} game={@game} />
 
-<.back navigate={~p"/configurations"}>Back to configurations</.back>
+<.back navigate={~p"/games"}>Back to games</.back>
