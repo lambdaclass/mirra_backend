@@ -1,0 +1,22 @@
+<.header>
+  Listing games
+  <:actions>
+    <.link href={~p"/games/new"}>
+      <.button>New game</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="games" rows={@games} row_click={&JS.navigate(~p"/games/#{&1}")}>
+  <:col :let={game} label="ID">
+    <%= game.id %>
+  </:col>
+  <:col :let={game} label="Name">
+    <%= game.name %>
+  </:col>
+  <:action :let={game}>
+    <div class="sr-only">
+      <.link navigate={~p"/games/#{game}"}>Show</.link>
+    </div>
+  </:action>
+</.table>

@@ -17,10 +17,11 @@ defmodule ConfiguratorWeb.Router do
   scope "/", ConfiguratorWeb do
     pipe_through :browser
 
-    get "/", ConfigurationController, :index
-    resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
-    get "/configurations/new/:id", ConfigurationController, :new
-    put "/configurations/set_default/:id", ConfigurationController, :set_default
+    resources "/games", GameController, only: [:index, :new, :create, :show] do
+      resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
+      get "/configurations/new/:id", ConfigurationController, :new
+      put "/configurations/set_default/:id", ConfigurationController, :set_default
+    end
   end
 
   scope "/api", ConfiguratorWeb do

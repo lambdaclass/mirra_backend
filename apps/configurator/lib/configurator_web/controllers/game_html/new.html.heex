@@ -1,0 +1,8 @@
+<.header>
+  New game
+  <:subtitle>Use this form to manage game records in your database.</:subtitle>
+</.header>
+
+<.game_form changeset={@changeset} action={~p"/games"} />
+
+<.back navigate={~p"/games"}>Back to games</.back>
