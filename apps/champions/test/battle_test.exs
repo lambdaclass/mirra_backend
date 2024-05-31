@@ -1684,7 +1684,7 @@ defmodule Champions.Test.BattleTest do
       # Its initial state for "health" would have been 5 due to its character's stats, but it will be buffed up to 10.
       # It will fight a unit that will deal 5 damage to it. Without the modifications, it would die.
       # After surviving an attack, it will deal 100% ATK damage to the enemy, that also has 10 health.
-      # Because of the attack buff, which brings hist total ATK to 10, he will kill the enemy in one hit, and battle won't end on a timeout.
+      # Because of the attack buff, which brings his total ATK to 10, he will kill the enemy in one hit, and battle won't end on a timeout.
 
       team2_base_attack = 5
       team2_base_health = 10
