@@ -11,12 +11,7 @@
     <% end %>
   </div>
 
-  <%= case @selected_key do %>
-    <% "game" -> %>
-      <.render_game_form data={@data} form={@form} selected_key={@selected_key} />
-    <% "effects" -> %>
-      <.render_effects_form data={@data} form={@form} selected_key={@selected_key} />
-  <% end %>
+  <.render_main_form data={@data} form={@form} selected_key={@selected_key} />
 
   <button class="p-1 bg-indigo-500 text-white rounded-md">
     Save Configuration
