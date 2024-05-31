@@ -2,7 +2,9 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
-  <.input field={f[:data]} type="textarea" label="Data" />
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:data]} type="textarea" label="Drop your Json here" />
+  <.input field={f[:game_id]} type="hidden" value={@game.id} />
   <:actions>
     <.button>Save Configuration</.button>
   </:actions>

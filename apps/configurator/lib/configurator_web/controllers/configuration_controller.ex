@@ -3,24 +3,20 @@ defmodule ConfiguratorWeb.ConfigurationController do
 
   alias Configurator.Configure
   alias Configurator.Configure.Configuration
+  alias Configurator.Games
 
   def index(conn, _params) do
     configurations = Configure.list_configurations()
     render(conn, :index, configurations: configurations)
   end
 
-  def new(conn, params) do
-    # config =
-    #   case params["id"] do
-    #     nil -> Configure.get_default_configuration!()
-    #     id -> Configure.get_configuration!(id)
-    #   end
-    config = Configure.get_default_configuration!()
-
-    render(conn, :new, config: config)
+  def new(conn, %{"game_id" => id}) do
+    game = Games.get_game!(id)
+    changeset = Configuration.changeset(%Configuration{}, %{game_id: id})
+    render(conn, :new, changeset: changeset, game: game)
   end
 
-  def create(conn, %{"configuration" => configuration_params}) do
+  def create(conn, %{"configuration" => configuration_params, "game_id" => game_id}) do
     case Configure.create_configuration(configuration_params) do
       {:ok, configuration} ->
         conn
@@ -28,7 +24,8 @@ defmodule ConfiguratorWeb.ConfigurationController do
         |> redirect(to: ~p"/configurations/#{configuration}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        game = Games.get_game!(game_id)
+        render(conn, :new, changeset: changeset, game: game)
     end
   end
 

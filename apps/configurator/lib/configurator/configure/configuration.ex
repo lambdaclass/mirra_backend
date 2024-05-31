@@ -5,18 +5,30 @@ defmodule Configurator.Configure.Configuration do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Configurator.Games.Game
+
   schema "configurations" do
     field :name, :string
     field :data, :string
     field :is_default, :boolean, default: false
+
+    belongs_to :game, Game
+
     timestamps(type: :utc_datetime)
   end
+
+  @required [
+    :data,
+    :is_default,
+    :data,
+    :game_id
+  ]
 
   @doc false
   def changeset(configuration, attrs) do
     configuration
-    |> cast(attrs, [:data, :is_default])
-    |> validate_required([:data, :is_default])
+    |> cast(attrs, @required)
+    |> validate_required(@required)
     |> validate_change(:data, &valid_json?/2)
   end
 
