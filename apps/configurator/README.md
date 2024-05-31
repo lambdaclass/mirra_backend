@@ -46,7 +46,7 @@ The API offers 2 endpoints
 ## Current State
 
 The current state of the Configurator app has the following features:
-- Version control system: We have records of past configurations and can set a specific version as the current one.
+- Version control system: We have records of past configurations and we can set a specific version as the current one.
 - UI that only allows users to edit Champions of Mirra configurations.
   - Users can only edit these JSON files in plain text, specifically through an HTML textbox.
 - Endpoints to retrieve the default configuration and a specific one.
@@ -61,6 +61,7 @@ The current state of the Configurator app has the following features:
 ### Second Iteration
 
 - Create or modify current endpoints to retrieve configurations for both games.
+- Refactor the games (Champions of Mirra and AFK Gacha Game) to get the config from these new endpoints.
 
 ### Third Iteration
 
