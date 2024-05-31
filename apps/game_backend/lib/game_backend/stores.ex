@@ -28,10 +28,10 @@ defmodule GameBackend.Stores do
   end
 
   @doc """
-  Returns {:ok, :available} if we are within Store dates.
-  Returns {:error, :not_available} otherwise.
+  Returns {:ok, :active} if we are within Store dates.
+  Returns {:error, :not_active} otherwise.
   """
-  def is_active(store) do
+  def store_is_active(store) do
     now = DateTime.utc_now()
 
     if (is_nil(store.start_date) or store.start_date <= now) and store.end_date >= now do
