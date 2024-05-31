@@ -1,28 +1,24 @@
 <.header>
-  <span>Showing <%= @game.name %> Configurations</span>
-  <.link navigate={~p"/games/#{@game}/configurations/new"}>
+  <span>Showing <%= @game.name %> Configurations Groups</span>
+  <.link navigate={~p"/games/#{@game}/configuration_groups/new"}>
     Create new config
   </.link>
 </.header>
 
-<.table id="configurations" rows={@configurations} row_click={&JS.navigate(~p"/configurations/#{&1}")}>
+<.table
+  id="configurations_groups"
+  rows={@configurations_groups}
+  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{&1}")}
+>
   <:col :let={configuration} label="ID">
     <%= configuration.id %>
   </:col>
-  <:col :let={configuration} label="Is default">
-    <%= configuration.is_default %>
+  <:col :let={configuration} label="Name">
+    <%= configuration.name %>
   </:col>
   <:action :let={configuration}>
     <div class="sr-only">
-      <.link navigate={~p"/configurations/#{configuration}"}>Show</.link>
+      <.link navigate={~p"/games/#{@game}/configuration_groups/#{configuration}"}>Show</.link>
     </div>
-    <.link navigate={~p"/configurations/new/#{configuration}"}>Copy</.link>
-  </:action>
-  <:action :let={configuration}>
-    <%= unless configuration.is_default do %>
-      <.link href={~p"/configurations/set_default/#{configuration}"} method="put" data-confirm="Are you sure?">
-        Set as default
-      </.link>
-    <% end %>
   </:action>
 </.table>

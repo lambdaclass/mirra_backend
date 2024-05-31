@@ -1,4 +1,7 @@
 defmodule ConfiguratorWeb.GameController do
+  @moduledoc """
+  The Game controller.
+  """
   use ConfiguratorWeb, :controller
 
   alias Configurator.Games
@@ -29,7 +32,7 @@ defmodule ConfiguratorWeb.GameController do
 
   def show(conn, %{"id" => id}) do
     game = Games.get_game!(id)
-    configurations = Configure.list_all_configurations_by_game(game.id)
-    render(conn, :show, game: game, configurations: configurations)
+    configurations_groups = Configure.list_configuration_groups_by_game_id(game.id)
+    render(conn, :show, game: game, configurations_groups: configurations_groups)
   end
 end

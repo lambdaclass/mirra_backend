@@ -1,0 +1,25 @@
+<.header>
+  Listing Configurations from Group <%= @configuration_group.name %>
+  <:actions>
+    <.link href={~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/new"}>
+      <.button>New configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="configuration"
+  rows={@configurations}
+  row_click={&JS.navigate(~p"/games/#{@game}/configuration_group/#{@configuration_group}/configurations/#{&1}")}
+>
+  <:col :let={configuration} label="ID"><%= configuration.id %></:col>
+  <:col :let={configuration} label="Name"><%= configuration.name %></:col>
+  <:col :let={configuration} label="Is Default"><%= configuration.is_default %></:col>
+  <:action :let={configuration}>
+    <div class="sr-only">
+      <.link navigate={~p"/games/#{@game}/configuration_group/#{@configuration_group}/configuration/#{configuration}"}>
+        Show
+      </.link>
+    </div>
+  </:action>
+</.table>

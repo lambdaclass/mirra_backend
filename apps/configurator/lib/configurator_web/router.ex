@@ -18,9 +18,11 @@ defmodule ConfiguratorWeb.Router do
     pipe_through :browser
 
     resources "/games", GameController, only: [:index, :new, :create, :show] do
-      resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
-      get "/configurations/new/:id", ConfigurationController, :new
-      put "/configurations/set_default/:id", ConfigurationController, :set_default
+      resources "/configuration_groups", ConfigurationGroupController, only: [:new, :create, :show] do
+        resources "/configurations", ConfigurationController, only: [:new, :create, :show]
+        get "/configurations/new/:id", ConfigurationController, :new
+        put "/configurations/set_default/:id", ConfigurationController, :set_default
+      end
     end
   end
 
