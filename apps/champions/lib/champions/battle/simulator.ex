@@ -1104,6 +1104,7 @@ defmodule Champions.Battle.Simulator do
       )
 
     initial_interval_steps = get_interval_steps(execution_over_time.execution)
+
     new_target =
       update_in(new_target, [:executions_over_time], fn current_executions ->
         Enum.map(current_executions, fn exec ->
