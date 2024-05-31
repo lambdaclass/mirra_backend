@@ -13,7 +13,6 @@
   row_click={&JS.navigate(~p"/games/#{@game}/configuration_group/#{@configuration_group}/configurations/#{&1}")}
 >
   <:col :let={configuration} label="ID"><%= configuration.id %></:col>
-  <:col :let={configuration} label="Name"><%= configuration.name %></:col>
   <:col :let={configuration} label="Is Default"><%= configuration.is_default %></:col>
   <:action :let={configuration}>
     <div class="sr-only">

@@ -3,7 +3,6 @@ defmodule Configurator.Repo.Migrations.AddGroupIdAndNameToConfigurations do
 
   def change do
     alter table(:configurations) do
-      add :name, :string
       add :configuration_group_id, references(:configuration_groups, on_delete: :nothing)
     end
   end

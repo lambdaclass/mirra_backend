@@ -8,7 +8,6 @@ defmodule Configurator.Configure.Configuration do
   alias Configurator.Configure.ConfigurationGroup
 
   schema "configurations" do
-    field :name, :string
     field :data, :string
     field :is_default, :boolean, default: false
 
@@ -18,9 +17,7 @@ defmodule Configurator.Configure.Configuration do
   end
 
   @required [
-    :data,
     :is_default,
-    :data,
     :configuration_group_id
   ]
 
