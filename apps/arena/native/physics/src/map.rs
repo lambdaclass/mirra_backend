@@ -13,7 +13,7 @@ pub struct Polygon {
     pub vertices: Vec<Position>,
 }
 
-#[derive(NifMap, Clone, Copy)]
+#[derive(NifMap, Clone, Copy, Debug)]
 pub struct Position {
     pub(crate) x: f32,
     pub(crate) y: f32,
@@ -94,6 +94,13 @@ impl Position {
     }
 }
 
+impl PartialEq for Position {
+    fn eq(&self, other: &Position) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+}
+impl Eq for Position {}
+
 impl Entity {
     pub fn new_point(id: u64, position: Position) -> Entity {
         Entity {
@@ -122,6 +129,21 @@ impl Entity {
             direction: Direction { x: 0.0, y: 0.0 },
             is_moving: false,
             name: format!("{}{}", "Line ", id),
+        }
+    }
+
+    pub fn new_polygon(id: u64, vertices: Vec<Position>) -> Entity {
+        Entity {
+            id,
+            shape: Shape::Polygon,
+            position: Position { x: 0.0, y: 0.0 },
+            radius: 0.0,
+            vertices,
+            speed: 0.0,
+            category: Category::Obstacle,
+            direction: Direction { x: 0.0, y: 0.0 },
+            is_moving: false,
+            name: format!("{}{}", "Polygon ", id),
         }
     }
 

@@ -1,16 +1,27 @@
 {
     "items": [
         {
-            "name": "Muflus Gold",
+            "name": "muflus_gold",
             "characters": ["muflus"],
             "type": "skin",
-            "purchasable?": true
+            "purchasable?": true,
+            "purchase_costs": [
+                {
+                    "currency": "Gems",
+                    "amount": 100
+                },
+                {
+                    "currency": "Gold",
+                    "amount": 1000
+                }
+            ]
         },
         {
-            "name": "H4ck Silver",
+            "name": "h4ck_silver",
             "characters": ["h4ck"],
             "type": "skin",
-            "purchasable?": false
+            "purchasable?": false,
+            "purchase_costs": []
         }
     ]
 }

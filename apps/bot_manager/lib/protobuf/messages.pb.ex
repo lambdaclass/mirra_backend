@@ -172,6 +172,7 @@ defmodule BotManager.Protobuf.Configuration do
   field(:game, 1, type: BotManager.Protobuf.ConfigGame)
   field(:map, 2, type: BotManager.Protobuf.ConfigMap)
   field(:characters, 3, repeated: true, type: BotManager.Protobuf.ConfigCharacter)
+  field(:client_config, 4, type: BotManager.Protobuf.ClientConfig, json_name: "clientConfig")
 end
 
 defmodule BotManager.Protobuf.ConfigGame do
@@ -216,6 +217,35 @@ defmodule BotManager.Protobuf.ConfigCharacter do
     type: BotManager.Protobuf.ConfigCharacter.SkillsEntry,
     map: true
   )
+end
+
+defmodule BotManager.Protobuf.ClientConfig do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:server_update, 1, type: BotManager.Protobuf.ConfigServerUpdate, json_name: "serverUpdate")
+end
+
+defmodule BotManager.Protobuf.ConfigServerUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_difference_samples_to_check_warning, 1,
+    type: :uint64,
+    json_name: "timestampDifferenceSamplesToCheckWarning"
+  )
+
+  field(:timestamp_differences_samples_max_length, 2,
+    type: :uint64,
+    json_name: "timestampDifferencesSamplesMaxLength"
+  )
+
+  field(:show_warning_threshold, 3, type: :uint64, json_name: "showWarningThreshold")
+  field(:stop_warning_threshold, 4, type: :uint64, json_name: "stopWarningThreshold")
+  field(:ms_without_update_show_warning, 5, type: :uint64, json_name: "msWithoutUpdateShowWarning")
+  field(:ms_without_update_disconnect, 6, type: :uint64, json_name: "msWithoutUpdateDisconnect")
 end
 
 defmodule BotManager.Protobuf.ConfigSkill do

@@ -44,6 +44,10 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "character cannot equip item"}))
   end
 
+  def call(conn, {:can_afford, false}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot afford the cost"}))
+  end
+
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) when is_binary(failed_operation) do
     send_resp(conn, 400, Jason.encode!(%{"error" => failed_operation}))
   end
