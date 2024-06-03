@@ -178,12 +178,12 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   def get_google_user_daily_quests_completed(%GoogleUser{
         arena_match_results: arena_match_results,
-        user: %User{user_quests: daily_quests}
+        user: %User{user_quests: user_quests}
       }) do
-    daily_quests
-    |> Enum.reduce([], fn daily_quest, acc ->
-      if completed_quest?(daily_quest, arena_match_results) and daily_quest.quest.type == "daily" do
-        [daily_quest | acc]
+    user_quests
+    |> Enum.reduce([], fn user_quest, acc ->
+      if completed_quest?(user_quest, arena_match_results) and user_quest.quest.type == "daily" do
+        [user_quest | acc]
       else
         acc
       end
