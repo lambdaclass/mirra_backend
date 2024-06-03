@@ -19,6 +19,7 @@ defmodule GameBackend.Units.Unit do
     field(:sub_rank, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
+    field(:prestige, :integer)
 
     belongs_to(:campaign_level, Level)
     belongs_to(:user, User)
@@ -40,7 +41,8 @@ defmodule GameBackend.Units.Unit do
       :slot,
       :character_id,
       :user_id,
-      :campaign_level_id
+      :campaign_level_id,
+      :prestige
     ])
     |> validate_required([:level, :selected, :character_id])
   end
@@ -63,5 +65,6 @@ defmodule GameBackend.Units.Unit do
     |> validate_number(:level, greater_than_or_equal_to: 0)
     |> validate_number(:rank, greater_than: 0)
     |> validate_number(:sub_rank, greater_than_or_equal_to: 0)
+    |> validate_number(:prestige, greater_than_or_equal_to: 0)
   end
 end

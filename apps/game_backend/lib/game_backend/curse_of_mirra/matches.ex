@@ -113,20 +113,21 @@ defmodule GameBackend.CurseOfMirra.Matches do
   ####################
   defp match_prestige_reward(unit, position, rewards) do
     Map.get(rewards, position)
-    |> Enum.find(fn %{min: minp, max: maxp} -> unit.level in minp..maxp end)
+    |> Enum.find(fn %{min: minp, max: maxp} -> unit.prestige in minp..maxp end)
     |> Map.get(:reward)
   end
 
   defp calculate_rank_and_amount_changes(unit, reward, ranks) when reward >= 0 do
-    amount = unit.level + reward
+    amount = unit.prestige + reward
     new_rank = Enum.find(ranks, fn rank -> amount in rank.min..rank.max end)
-    %{rank: rank_name_converter(new_rank.rank), sub_rank: new_rank.sub_rank, level: amount}
+
+    %{rank: rank_name_converter(new_rank.rank), sub_rank: new_rank.sub_rank, prestige: amount}
   end
 
   defp calculate_rank_and_amount_changes(unit, loss_amount, ranks) when loss_amount < 0 do
-    current_rank = Enum.find(ranks, fn rank -> unit.level in rank.min..rank.max end)
-    amount = max(unit.level + loss_amount, current_rank.min)
-    %{level: amount}
+    current_rank = Enum.find(ranks, fn rank -> unit.prestige in rank.min..rank.max end)
+    amount = max(unit.prestige + loss_amount, current_rank.min)
+    %{prestige: amount}
   end
 
   defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
