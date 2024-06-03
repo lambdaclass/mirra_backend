@@ -145,7 +145,7 @@ defmodule Champions.Users do
     Currencies.add_currency(
       user.id,
       Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
-      100
+      5
     )
   end
 
