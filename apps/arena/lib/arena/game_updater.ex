@@ -135,6 +135,7 @@ defmodule Arena.GameUpdater do
       # Players
       |> move_players()
       |> reduce_players_cooldowns(time_diff)
+      |> reduce_players_combo_skill_timers(time_diff, state.game_config)
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
@@ -785,6 +786,34 @@ defmodule Arena.GameUpdater do
           |> Map.filter(fn {_skill_key, cooldown} -> cooldown > 0 end)
 
         player = put_in(player, [:aditional_info, :cooldowns], cooldowns)
+        {player_id, player}
+      end)
+
+    %{game_state | players: players}
+  end
+
+  defp reduce_players_combo_skill_timers(game_state, time_diff, game_config) do
+    players =
+      Map.new(game_state.players, fn {player_id, player} ->
+        player.aditional_info.combo_skill_timers
+
+        {remaining_combo_timers, to_reset_combos} =
+          Map.new(player.aditional_info.combo_skill_timers, fn {skill_key,
+                                                                %{remaining_time: remaining_time} = timer_params} ->
+            remaining_time = remaining_time - time_diff
+            {skill_key, Map.put(timer_params, :remaining_time, remaining_time)}
+          end)
+          |> Enum.split_with(fn {_skill_key, %{remaining_time: remaining_time}} -> remaining_time > 0 end)
+
+        player =
+          Enum.reduce(to_reset_combos, player, fn {skill_key, %{base_skill: base_skill_name}}, player ->
+            base_skill = Enum.find(game_config.skills, fn configskill -> configskill.name == base_skill_name end)
+
+            player
+            |> put_in([:aditional_info, :skills, skill_key], base_skill)
+          end)
+          |> put_in([:aditional_info, :combo_skill_timers], Map.new(remaining_combo_timers))
+
         {player_id, player}
       end)
 

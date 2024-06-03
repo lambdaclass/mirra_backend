@@ -117,9 +117,16 @@ defmodule Arena.Game.Player do
     available_stamina = player.aditional_info.available_stamina
 
     case skill do
-      %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
-      %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
-      _ -> nil
+      %{cooldown_mechanism: "time"}
+      when is_nil(skill_cooldown) ->
+        skill
+
+      %{cooldown_mechanism: cooldown_mechanism, stamina_cost: cost}
+      when cooldown_mechanism in ["stamina", "combo"] and cost <= available_stamina ->
+        skill
+
+      _ ->
+        nil
     end
   end
 
@@ -163,7 +170,7 @@ defmodule Arena.Game.Player do
     player.aditional_info.forced_movement
   end
 
-  def use_skill(player, skill_key, skill_params, %{game_state: game_state}) do
+  def use_skill(player, skill_key, skill_params, %{game_state: game_state, game_config: game_config}) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         Process.send(self(), {:block_actions, player.id}, [])
@@ -214,7 +221,7 @@ defmodule Arena.Game.Player do
 
         player =
           add_action(player, action)
-          |> apply_skill_cooldown(skill_key, skill)
+          |> apply_skill_cooldown(skill_key, skill, game_config)
           |> maybe_face_player_towards_direction(skill_direction, skill.block_movement)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
 
@@ -402,7 +409,69 @@ defmodule Arena.Game.Player do
     |> Enum.uniq()
   end
 
-  defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}) do
+  defp apply_skill_cooldown(
+         player,
+         skill_key,
+         %{
+           cooldown_mechanism: "combo",
+           combo_reset_timer_ms: combo_reset_timer_ms,
+           stamina_cost: cost
+         } = skill,
+         game_config
+       ) do
+    player = change_stamina(player, -cost)
+
+    case stamina_recharging?(player) do
+      false ->
+        Process.send_after(self(), {:recharge_stamina, player.id}, player.aditional_info.stamina_interval)
+        put_in(player, [:aditional_info, :recharging_stamina], true)
+
+      _ ->
+        player
+    end
+
+    if skill.next_skill != "" do
+      next_skill = Enum.find(game_config.skills, fn config_skill -> config_skill.name == skill.next_skill end)
+
+      update_in(
+        player,
+        [:aditional_info, :combo_skill_timers, skill_key],
+        fn
+          nil ->
+            %{
+              remaining_time: round(combo_reset_timer_ms * player.aditional_info.cooldown_multiplier),
+              base_skill: skill.name
+            }
+
+          combo_timer ->
+            Map.put(
+              combo_timer,
+              :remaining_time,
+              round(combo_reset_timer_ms * player.aditional_info.cooldown_multiplier)
+            )
+        end
+      )
+      |> put_in([:aditional_info, :skills, skill_key], next_skill)
+    else
+      case get_in(player, [:aditional_info, :combo_skill_timers, skill_key]) do
+        nil ->
+          player
+
+        combo_timer ->
+          base_skill =
+            Enum.find(game_config.skills, fn config_skill -> config_skill.name == combo_timer.base_skill end)
+
+          update_in(
+            player,
+            [:aditional_info, :combo_skill_timers],
+            fn combo_timers -> Map.delete(combo_timers, skill_key) end
+          )
+          |> put_in([:aditional_info, :skills, skill_key], base_skill)
+      end
+    end
+  end
+
+  defp apply_skill_cooldown(player, skill_key, %{cooldown_mechanism: "time", cooldown_ms: cooldown_ms}, _) do
     put_in(
       player,
       [:aditional_info, :cooldowns, skill_key],
@@ -410,7 +479,7 @@ defmodule Arena.Game.Player do
     )
   end
 
-  defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}) do
+  defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "stamina", stamina_cost: cost}, _) do
     player = change_stamina(player, -cost)
 
     case stamina_recharging?(player) do

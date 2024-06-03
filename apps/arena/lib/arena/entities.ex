@@ -53,7 +53,8 @@ defmodule Arena.Entities do
         bonus_damage: 0,
         bonus_defense: 0,
         visible_players: [],
-        on_bush: false
+        on_bush: false,
+        combo_skill_timers: %{}
       },
       collides_with: []
     }
