@@ -38,7 +38,7 @@ defmodule GameBackend.Campaigns do
     do:
       from(l in Level,
         order_by: [asc: l.level_number],
-        preload: [currency_rewards: :currency, units: [:items, :character]]
+        preload: [currency_rewards: :currency, units: [:items, :character], attempt_cost: :currency]
       )
 
   @doc """
