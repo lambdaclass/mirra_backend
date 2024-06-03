@@ -1,3 +1,4 @@
+alias GameBackend.Users.Currencies.CurrencyCost
 alias GameBackend.Users.Currencies.Currency
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
@@ -383,6 +384,9 @@ dungeon_levels =
       campaign_id: dungeon_campaign.id,
       level_number: level_index,
       experience_reward: 100 * level_index,
+      attempt_cost: [
+        %CurrencyCost{currency_id: supplies_currency.id, amount: level_index}
+      ],
       inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
       updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
     }
