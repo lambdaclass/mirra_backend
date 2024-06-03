@@ -63,11 +63,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     q =
       from(q in Quest,
-        left_join: dq in UserQuest,
-        on: q.id == dq.quest_id and dq.user_id == ^user_id,
+        left_join: uq in UserQuest,
+        on: q.id == uq.quest_id and uq.user_id == ^user_id,
         where:
-          (is_nil(dq) or dq.inserted_at < ^start_of_date or dq.inserted_at > ^end_of_date or not is_nil(dq.completed_at) or
-             dq.status != "available") and
+          (is_nil(uq) or uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date or not is_nil(uq.completed_at) or
+             uq.status != "available") and
             q.type == ^type,
         distinct: q.id
       )
@@ -99,7 +99,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   """
   def get_user_quest(user_quest_id) do
-    q = from(dq in UserQuest, preload: [:quest], where: dq.id == ^user_quest_id)
+    q = from(uq in UserQuest, preload: [:quest], where: uq.id == ^user_quest_id)
 
     Repo.one(q)
   end
@@ -119,12 +119,12 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end_of_date = NaiveDateTime.end_of_day(naive_today)
 
     q =
-      from(dq in UserQuest,
-        join: q in assoc(dq, :quest),
+      from(uq in UserQuest,
+        join: q in assoc(uq, :quest),
         preload: [:quest],
         where:
-          dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and
-            dq.status == ^"rerolled" and q.type == "daily"
+          uq.user_id == ^user_id and uq.inserted_at > ^start_of_date and uq.inserted_at < ^end_of_date and
+            uq.status == ^"rerolled" and q.type == "daily"
       )
 
     Repo.all(q)
