@@ -1,16 +1,9 @@
-<.header>
-  Configuration <%= @configuration.id %>
-  <:subtitle>This is a configuration record from your database.</:subtitle>
-  <:actions>
-    <.link href={~p"/configurations/new/#{@configuration}"}>
-      <.button>Make copy</.button>
-    </.link>
-  </:actions>
-</.header>
-
-<.back navigate={~p"/configurations"}>Back to configurations</.back>
-
-<.list>
-  <:item title="Is default?"><%= @configuration.is_default %></:item>
-  <:item title="Data"><%= @configuration.data %></:item>
-</.list>
+<%= live_render(
+  @conn,
+  ConfiguratorWeb.ConfigurationLive.ConfigurationShow,
+  session: %{
+    "game" => @game,
+    "configuration_group" => @configuration_group,
+    "configuration" => @configuration
+  }
+) %>

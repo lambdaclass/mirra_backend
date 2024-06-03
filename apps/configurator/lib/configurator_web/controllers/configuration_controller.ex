@@ -42,6 +42,6 @@ defmodule ConfiguratorWeb.ConfigurationController do
     game = Games.get_game!(game_id)
     configuration_group = Configure.get_configuration_group!(configuration_group_id)
     configuration = Configure.get_configuration!(id)
-    render(conn, :show, configuration: configuration, configuration_group: configuration_group, game: game)
+    render(conn, :show, game: game, configuration: configuration, configuration_group: configuration_group)
   end
 end
