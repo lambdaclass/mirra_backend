@@ -159,9 +159,9 @@ defmodule GameBackend.Matches do
   defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
   defp get_operation_result(_, _), do: {:error, nil}
 
-  defp complete_quest_and_insert_currency(daily_quest, user_id) do
+  defp complete_quest_and_insert_currency(user_quest, user_id) do
     updated_match =
-      UserQuest.changeset(daily_quest, %{
+      UserQuest.changeset(user_quest, %{
         completed: true,
         completed_at: DateTime.utc_now(),
         status: "completed"
@@ -171,9 +171,9 @@ defmodule GameBackend.Matches do
     inserted_currency =
       Currencies.add_currency_by_name_and_game(
         user_id,
-        daily_quest.quest.reward["currency"],
+        user_quest.quest.reward["currency"],
         Utils.get_game_id(:curse_of_mirra),
-        daily_quest.quest.reward["amount"]
+        user_quest.quest.reward["amount"]
       )
 
     get_operation_result(updated_match, inserted_currency)
