@@ -6,6 +6,7 @@ defmodule Arena.Serialization.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
+  field(:SELECTING_BOUNTY, 3)
 end
 
 defmodule Arena.Serialization.ProjectileStatus do
@@ -160,6 +161,7 @@ defmodule Arena.Serialization.GameJoined do
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: Arena.Serialization.Configuration)
+  field(:bounties, 3, repeated: true, type: Arena.Serialization.BountyInfo)
 end
 
 defmodule Arena.Serialization.Configuration do
@@ -618,6 +620,14 @@ defmodule Arena.Serialization.UseItem do
   field(:item, 1, type: :uint64)
 end
 
+defmodule Arena.Serialization.SelectBounty do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
+end
+
 defmodule Arena.Serialization.GameAction do
   @moduledoc false
 
@@ -628,6 +638,13 @@ defmodule Arena.Serialization.GameAction do
   field(:move, 1, type: Arena.Serialization.Move, oneof: 0)
   field(:attack, 2, type: Arena.Serialization.Attack, oneof: 0)
   field(:use_item, 4, type: Arena.Serialization.UseItem, json_name: "useItem", oneof: 0)
+
+  field(:select_bounty, 5,
+    type: Arena.Serialization.SelectBounty,
+    json_name: "selectBounty",
+    oneof: 0
+  )
+
   field(:timestamp, 3, type: :int64)
 end
 
@@ -649,4 +666,24 @@ defmodule Arena.Serialization.KillEntry do
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
+end
+
+defmodule Arena.Serialization.BountyInfo do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:description, 2, type: :string)
+  field(:quest_type, 3, type: :string, json_name: "questType")
+  field(:reward, 4, type: Arena.Serialization.CurrencyReward)
+end
+
+defmodule Arena.Serialization.CurrencyReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: :string)
+  field(:amount, 2, type: :int64)
 end

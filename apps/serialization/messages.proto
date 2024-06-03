@@ -54,6 +54,7 @@ message PingUpdate {
 message GameJoined {
   uint64 player_id = 1;
   Configuration config = 2;
+  repeated BountyInfo bounties = 3;
 }
 
 message Configuration {
@@ -133,6 +134,7 @@ enum GameStatus {
   PREPARING = 0;
   RUNNING = 1;
   ENDED = 2;
+  SELECTING_BOUNTY = 3;
 }
 
 /*
@@ -294,11 +296,16 @@ message UseItem {
   uint64 item = 1;
 }
 
+message SelectBounty {
+  string bounty_quest_id = 1;
+}
+
 message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
     UseItem use_item = 4;
+    SelectBounty select_bounty = 5;
   }
   int64 timestamp = 3;
 }
@@ -313,4 +320,16 @@ message Zone {
 message KillEntry {
   uint64 killer_id = 1;
   uint64 victim_id = 2;
+}
+
+message BountyInfo {
+  string id = 1;
+  string description = 2;
+  string quest_type = 3;
+  CurrencyReward reward = 4; 
+}
+
+message CurrencyReward {
+  string currency  = 1;
+  int64 amount = 2;
 }
