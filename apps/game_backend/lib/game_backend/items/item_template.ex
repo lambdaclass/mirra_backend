@@ -21,7 +21,7 @@ defmodule GameBackend.Items.ItemTemplate do
   """
   alias GameBackend.Items.Modifier
   alias GameBackend.Users.Currencies.CurrencyCost
-  alias GameBackend.Stores.Store
+  alias GameBackend.Stores.Buyable
 
   use GameBackend.Schema
   import Ecto.Changeset
@@ -33,8 +33,7 @@ defmodule GameBackend.Items.ItemTemplate do
     field(:type, :string)
     field(:characters, {:array, :string})
     embeds_many(:modifiers, Modifier, on_replace: :delete)
-    embeds_many(:purchase_costs, CurrencyCost, on_replace: :delete)
-    belongs_to(:store, Store)
+    belongs_to(:buyable, Buyable)
 
     # Used to reference the ItemTemplate in the game's configuration
     field(:config_id, :string)
@@ -58,13 +57,11 @@ defmodule GameBackend.Items.ItemTemplate do
       :config_id,
       :upgrades_from_config_id,
       :upgrades_from_quantity,
-      :characters,
-      :store_id
+      :characters
     ])
     |> validate_required([:game_id, :name, :rarity, :type, :config_id])
     |> cast_embed(:modifiers)
     |> cast_embed(:upgrade_costs)
     |> foreign_key_constraint(:upgrades_from_config_id)
-    |> cast_embed(:purchase_costs)
   end
 end
