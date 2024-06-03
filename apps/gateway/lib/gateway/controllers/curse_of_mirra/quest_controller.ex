@@ -17,7 +17,7 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
 
   def get_bounties(conn, _) do
     bounties =
-      Quests.get_quest_by_type("bounty")
+      Quests.list_quests_by_type("bounty")
       |> Enum.map(fn bounty ->
         %{
           description: bounty.description,

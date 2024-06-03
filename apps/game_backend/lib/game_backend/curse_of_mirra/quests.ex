@@ -31,11 +31,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   ## Examples
 
-      iex>get_quest_by_config_id("bounty")
+      iex>list_quests_by_type("bounty")
       [%Quest{type: "bounty"}]
 
   """
-  def get_quest_by_type(type) do
+  def list_quests_by_type(type) do
     q =
       from(q in Quest,
         where: q.type == ^type
