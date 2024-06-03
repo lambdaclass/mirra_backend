@@ -148,9 +148,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def add_daily_quests_to_user_id(user_id, amount, type) do
+  def add_daily_quests_to_user_id(user_id, amount) do
     available_quests =
-      get_user_missing_quests_by_type(user_id, type)
+      get_user_missing_quests_by_type(user_id, "daily")
       |> Enum.shuffle()
 
     if amount > Enum.count(available_quests) do
