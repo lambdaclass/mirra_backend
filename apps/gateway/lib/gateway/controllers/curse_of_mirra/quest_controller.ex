@@ -8,8 +8,8 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
 
   action_fallback Gateway.Controllers.FallbackController
 
-  def reroll_quest(conn, %{"quest_id" => user_quest_id}) do
-    {:ok, %{insert_quest: user_quest}} = Quests.reroll_quest(user_quest_id)
+  def reroll_daily_quest(conn, %{"quest_id" => user_quest_id}) do
+    {:ok, %{insert_quest: user_quest}} = Quests.reroll_daily_quest(user_quest_id)
 
     conn
     |> send_resp(200, user_quest.id)

@@ -190,7 +190,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end)
   end
 
-  def reroll_quest(daily_quest_id) do
+  def reroll_daily_quest(daily_quest_id) do
     reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
 
     daily_quest =
