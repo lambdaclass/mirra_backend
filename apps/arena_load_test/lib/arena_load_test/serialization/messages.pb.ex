@@ -170,6 +170,11 @@ defmodule ArenaLoadTest.Serialization.Configuration do
   field(:game, 1, type: ArenaLoadTest.Serialization.ConfigGame)
   field(:map, 2, type: ArenaLoadTest.Serialization.ConfigMap)
   field(:characters, 3, repeated: true, type: ArenaLoadTest.Serialization.ConfigCharacter)
+
+  field(:client_config, 4,
+    type: ArenaLoadTest.Serialization.ClientConfig,
+    json_name: "clientConfig"
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigGame do
@@ -214,6 +219,38 @@ defmodule ArenaLoadTest.Serialization.ConfigCharacter do
     type: ArenaLoadTest.Serialization.ConfigCharacter.SkillsEntry,
     map: true
   )
+end
+
+defmodule ArenaLoadTest.Serialization.ClientConfig do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:server_update, 1,
+    type: ArenaLoadTest.Serialization.ConfigServerUpdate,
+    json_name: "serverUpdate"
+  )
+end
+
+defmodule ArenaLoadTest.Serialization.ConfigServerUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_difference_samples_to_check_warning, 1,
+    type: :uint64,
+    json_name: "timestampDifferenceSamplesToCheckWarning"
+  )
+
+  field(:timestamp_differences_samples_max_length, 2,
+    type: :uint64,
+    json_name: "timestampDifferencesSamplesMaxLength"
+  )
+
+  field(:show_warning_threshold, 3, type: :uint64, json_name: "showWarningThreshold")
+  field(:stop_warning_threshold, 4, type: :uint64, json_name: "stopWarningThreshold")
+  field(:ms_without_update_show_warning, 5, type: :uint64, json_name: "msWithoutUpdateShowWarning")
+  field(:ms_without_update_disconnect, 6, type: :uint64, json_name: "msWithoutUpdateDisconnect")
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigSkill do

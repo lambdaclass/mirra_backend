@@ -1,0 +1,10 @@
+{
+  "server_update": {
+    "timestamp_difference_samples_to_check_warning": 5,
+    "timestamp_differences_samples_max_length": 30,
+    "show_warning_threshold": 75,
+    "stop_warning_threshold": 40,
+    "ms_without_update_show_warning": 3000,
+    "ms_without_update_disconnect": 10000
+  }
+}
