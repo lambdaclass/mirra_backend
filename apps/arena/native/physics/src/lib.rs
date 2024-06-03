@@ -206,6 +206,9 @@ fn direction_from_positions(position_a: Position, position_b: Position) -> Direc
     let x = position_b.x - position_a.x;
     let y = position_b.y - position_a.y;
     let len = (x.powi(2) + y.powi(2)).sqrt();
+    if len == 0.0 {
+        return Direction { x: 0.0, y: 0.0 };
+    }
     Direction {
         x: x / len,
         y: y / len,
