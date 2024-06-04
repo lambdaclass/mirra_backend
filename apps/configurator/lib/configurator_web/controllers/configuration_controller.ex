@@ -31,13 +31,6 @@ defmodule ConfiguratorWeb.ConfigurationController do
     end
   end
 
-  def edit(conn, %{"game_id" => game_id, "configuration_group_id" => configuration_group_id, "id" => id}) do
-    game = Games.get_game!(game_id)
-    configuration_group = Configure.get_configuration_group!(configuration_group_id)
-    configuration = Configure.get_configuration!(id)
-    render(conn, :edit, configuration: configuration, configuration_group: configuration_group, game: game)
-  end
-
   def show(conn, %{"game_id" => game_id, "configuration_group_id" => configuration_group_id, "id" => id}) do
     game = Games.get_game!(game_id)
     configuration_group = Configure.get_configuration_group!(configuration_group_id)

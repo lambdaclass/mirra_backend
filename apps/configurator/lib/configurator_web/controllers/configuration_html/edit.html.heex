@@ -1,8 +1,0 @@
-<.header>
-  Edit Configuration
-  <:subtitle>Use this form to manage configuration records in your database.</:subtitle>
-</.header>
-
-<%= live_render(@conn, ConfiguratorWeb.ConfigurationLive.Configuration, session: %{"configuration" => @configuration}) %>
-
-<.back navigate={~p"/configurations"}>Back to configurations</.back>

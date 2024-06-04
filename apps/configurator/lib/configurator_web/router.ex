@@ -19,7 +19,7 @@ defmodule ConfiguratorWeb.Router do
 
     resources "/games", GameController, only: [:index, :new, :create, :show] do
       resources "/configuration_groups", ConfigurationGroupController, only: [:new, :create, :show] do
-        resources "/configurations", ConfigurationController, except: [:delete]
+        resources "/configurations", ConfigurationController, except: [:delete, :edit, :update]
       end
     end
   end
