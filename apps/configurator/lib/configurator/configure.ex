@@ -54,7 +54,7 @@ defmodule Configurator.Configure do
 
   def get_default_configuration!() do
     config =
-      from(c in Configuration, where: c.is_default)
+      from(c in Configuration, where: c.current)
       |> Repo.one()
 
     case config do
@@ -104,11 +104,11 @@ defmodule Configurator.Configure do
     Multi.new()
     |> Multi.update(
       :unset_default_config,
-      Configuration.changeset(default_config, %{is_default: false})
+      Configuration.changeset(default_config, %{current: false})
     )
     |> Multi.update(
       :set_default_config,
-      Configuration.changeset(new_default_config, %{is_default: true})
+      Configuration.changeset(new_default_config, %{current: true})
     )
     |> Repo.transaction()
   end
@@ -117,7 +117,7 @@ defmodule Configurator.Configure do
     data_json = File.read!(Application.app_dir(:configurator, "priv/config.json"))
 
     %Configurator.Configure.Configuration{}
-    |> Configuration.changeset(%{data: data_json, is_default: true})
+    |> Configuration.changeset(%{data: data_json, current: true})
     |> Repo.insert!()
   end
 

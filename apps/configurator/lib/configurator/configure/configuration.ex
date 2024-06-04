@@ -10,7 +10,7 @@ defmodule Configurator.Configure.Configuration do
   schema "configurations" do
     field :name, :string
     field :data, :string
-    field :is_default, :boolean, default: false
+    field :current, :boolean, default: false
 
     belongs_to :configuration_group, ConfigurationGroup
 
@@ -20,7 +20,7 @@ defmodule Configurator.Configure.Configuration do
   @required [
     :name,
     :data,
-    :is_default,
+    :current,
     :configuration_group_id
   ]
 

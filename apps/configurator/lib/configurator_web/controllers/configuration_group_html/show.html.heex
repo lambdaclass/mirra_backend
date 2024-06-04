@@ -15,16 +15,10 @@
   <:col :let={configuration} label="ID">
     <%= configuration.id %>
   </:col>
-  <:col :let={configuration} label="Is Default">
-    <%= configuration.is_default %>
+  <:col :let={configuration} label="Name">
+    <%= configuration.name %>
   </:col>
-  <:action :let={configuration}>
-    <%= unless configuration.is_default do %>
-      <.link href={
-        ~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/#{configuration}/edit"
-      }>
-        Edit
-      </.link>
-    <% end %>
-  </:action>
+  <:col :let={configuration} label="Current configuration">
+    <%= configuration.current %>
+  </:col>
 </.table>
