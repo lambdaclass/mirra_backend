@@ -198,7 +198,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:game_start, state) do
     broadcast_enable_incomming_messages(state.game_state.game_id)
-    Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
+    # Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
     send(self(), :pick_default_bouty_for_missing_players)
     send(self(), :natural_healing)
