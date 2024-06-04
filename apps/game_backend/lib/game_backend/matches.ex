@@ -3,7 +3,7 @@ defmodule GameBackend.Matches do
   Matches
   """
   alias GameBackend.CurseOfMirra.Quests
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Utils
   alias GameBackend.Users
   alias GameBackend.Users.Currencies
@@ -17,6 +17,7 @@ defmodule GameBackend.Matches do
     |> add_users_to_multi(results)
     |> give_trophies(results)
     |> maybe_complete_quests()
+    |> complete_or_fail_bounties(results)
     |> Repo.transaction()
   end
 
@@ -74,7 +75,7 @@ defmodule GameBackend.Matches do
   end
 
   defp maybe_complete_quests(multi) do
-    Multi.run(multi, :insert_completed_quests_result, fn repo,
+    Multi.run(multi, :insert_completed_quests_result, fn _,
                                                          %{
                                                            get_users: users
                                                          } ->
@@ -82,23 +83,8 @@ defmodule GameBackend.Matches do
         Enum.map(users, fn
           user ->
             Quests.get_user_daily_quests_completed(user)
-            |> Enum.map(fn %DailyQuest{quest: quest} = daily_quest ->
-              updated_match =
-                DailyQuest.changeset(daily_quest, %{
-                  completed: true,
-                  completed_at: DateTime.utc_now()
-                })
-                |> repo.update()
-
-              inserted_currency =
-                Currencies.add_currency_by_name_and_game(
-                  user.id,
-                  quest.reward["currency"],
-                  Utils.get_game_id(:curse_of_mirra),
-                  quest.reward["amount"]
-                )
-
-              get_operation_result(updated_match, inserted_currency)
+            |> Enum.map(fn %UserQuest{} = daily_quest ->
+              complete_quest_and_insert_currency(daily_quest, user.id)
             end)
         end)
         |> List.flatten()
@@ -108,6 +94,40 @@ defmodule GameBackend.Matches do
       else
         {:error, nil}
       end
+    end)
+  end
+
+  defp complete_or_fail_bounties(multi, results) do
+    Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
+    |> Enum.reduce(multi, fn result, multi ->
+      Multi.run(multi, {:complete_or_fail_bounty, result["user_id"]}, fn repo,
+                                                                         %{get_users: users} =
+                                                                           changes_so_far ->
+        user = Enum.find(users, fn user -> user.id == result["user_id"] end)
+
+        inserted_result =
+          Map.get(changes_so_far, {:insert, result["user_id"]})
+
+        user_quest_attrs =
+          %{
+            quest_id: result["bounty_quest_id"],
+            user_id: user.id,
+            status: "available"
+          }
+
+        user_quest_changeset = UserQuest.changeset(%UserQuest{}, user_quest_attrs)
+
+        user_quest =
+          repo.insert!(user_quest_changeset)
+          |> repo.preload([:quest])
+
+        if Quests.completed_quest?(user_quest, [inserted_result]) do
+          complete_quest_and_insert_currency(user_quest, user.id)
+        else
+          UserQuest.changeset(user_quest, %{status: "failed"})
+          |> repo.update()
+        end
+      end)
     end)
   end
 
@@ -135,4 +155,24 @@ defmodule GameBackend.Matches do
 
   defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
   defp get_operation_result(_, _), do: {:error, nil}
+
+  defp complete_quest_and_insert_currency(user_quest, user_id) do
+    updated_match =
+      UserQuest.changeset(user_quest, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed"
+      })
+      |> Repo.update()
+
+    inserted_currency =
+      Currencies.add_currency_by_name_and_game(
+        user_id,
+        user_quest.quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        user_quest.quest.reward["amount"]
+      )
+
+    get_operation_result(updated_match, inserted_currency)
+  end
 end

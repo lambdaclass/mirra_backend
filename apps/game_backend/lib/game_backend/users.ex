@@ -10,11 +10,10 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
-
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
@@ -80,8 +79,12 @@ defmodule GameBackend.Users do
       )
 
     daily_quest_subquery =
-      from(dq in DailyQuest,
-        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at),
+      from(user_quest in UserQuest,
+        join: q in assoc(user_quest, :quest),
+        where:
+          user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date and
+            is_nil(user_quest.completed_at) and
+            user_quest.status == ^"available" and q.type == "daily",
         preload: [:quest]
       )
 
@@ -91,7 +94,7 @@ defmodule GameBackend.Users do
         preload: [
           arena_match_results: ^arena_match_result_subquery,
           currencies: :currency,
-          daily_quests: ^daily_quest_subquery
+          user_quests: ^daily_quest_subquery
         ]
       )
 
