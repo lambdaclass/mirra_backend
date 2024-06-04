@@ -570,49 +570,49 @@ defmodule Champions.Battle.Simulator do
 
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
-  defp choose_targets_by_strategy(caster, %{count: count, type: "random", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{type: "random"} = targeting_strategy, state),
     do:
       state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
-      |> Enum.take_random(count)
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
+      |> Enum.take_random(targeting_strategy.count)
       |> Enum.map(fn {id, _unit} -> id end)
 
-  defp choose_targets_by_strategy(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
-    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+  defp choose_targets_by_strategy(caster, %{type: "nearest"} = targeting_strategy, state) do
+    config_name = if targeting_strategy.target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
     |> Enum.map(fn {_id, unit} -> unit end)
-    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == targeting_strategy.target_allies and unit.id != caster.id end)
     |> find_by_proximity(
       Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name],
-      count
+      targeting_strategy.count
     )
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets_by_strategy(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
-    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+  defp choose_targets_by_strategy(caster, %{type: "furthest"} = targeting_strategy, state) do
+    config_name = if targeting_strategy.target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
     |> Enum.map(fn {_id, unit} -> unit end)
-    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == targeting_strategy.target_allies and unit.id != caster.id end)
     |> find_by_proximity(
       Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Enum.reverse(),
-      count
+      targeting_strategy.count
     )
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "backline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "backline"} = targeting_strategy, state) do
     target_team =
-      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
 
     take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "frontline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "frontline"} = targeting_strategy, state) do
     target_team =
-      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
 
     take_unit_ids_by_slots(target_team, [1, 2])
   end
@@ -651,10 +651,10 @@ defmodule Champions.Battle.Simulator do
     )
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{type: "all"} = targeting_strategy, state),
     do:
       state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
       |> Enum.map(fn {id, _unit} -> id end)
 
   defp find_by_proximity(units, slots_priorities, amount) do
