@@ -4,6 +4,8 @@ defmodule GameBackend.Campaigns do
   """
 
   import Ecto.Query
+
+  alias Ecto.Multi
   alias GameBackend.Repo
   alias GameBackend.Campaigns.{Campaign, SuperCampaignProgress, Level, SuperCampaign}
 
@@ -48,6 +50,41 @@ defmodule GameBackend.Campaigns do
     %Level{}
     |> Level.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Updates a level.
+  """
+  def update_level(level, attrs) do
+    level
+    |> Level.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Inserts all Campaigns into the database.
+  If another one already exists with the same number and campaign_id, it updates it instead.
+  """
+  def upsert_levels(attrs_list) do
+    Enum.reduce(attrs_list, Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.level_number, fn _, _ ->
+        upsert_level(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  defp upsert_level(attrs) do
+    case Repo.one(
+           from(l in Level,
+             where: l.campaign_id == ^attrs.campaign_id and l.level_number == ^attrs.level_number,
+             preload: [:units, :currency_rewards, attempt_cost: :currency]
+           )
+         ) do
+      nil -> insert_level(attrs)
+      level -> update_level(level, attrs)
+    end
   end
 
   @doc """
@@ -115,6 +152,7 @@ defmodule GameBackend.Campaigns do
   """
   def get_super_campaign_by_name_and_game(name, game_id) do
     Repo.get_by(SuperCampaign, name: name, game_id: game_id)
+    |> Repo.preload(:campaigns)
   end
 
   @doc """
