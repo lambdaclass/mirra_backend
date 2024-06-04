@@ -1,4 +1,3 @@
-alias GameBackend.Users.Currencies.CurrencyCost
 alias GameBackend.Users.Currencies.Currency
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
