@@ -644,6 +644,8 @@ defmodule Gateway.Serialization.Level do
     type: Gateway.Serialization.CurrencyCost,
     json_name: "attemptCost"
   )
+
+  field(:max_units, 8, type: :uint32, json_name: "maxUnits")
 end
 
 defmodule Gateway.Serialization.CurrencyReward do
