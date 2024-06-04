@@ -925,11 +925,11 @@ defmodule Gateway.Test.Champions do
       {:ok, _} =
         leveled_up_user_with_rewards
         |> GameBackend.Users.User.changeset(%{
-          last_kaline_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+          last_dungeon_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
         })
         |> Repo.update()
 
-      SocketTester.claim_kaline_afk_rewards(socket_tester, leveled_up_user.id)
+      SocketTester.claim_dungeon_afk_rewards(socket_tester, leveled_up_user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
 
