@@ -391,7 +391,7 @@ defmodule GameBackend.Users do
       |> Transaction.run()
       |> case do
         {:ok, _} -> {:ok, get_user(user_id)}
-        {:error, _} -> {:error, :unknown_error}
+        _ -> {:error, :unknown_error}
       end
     else
       {:user, false} -> {:error, :user_not_found}
