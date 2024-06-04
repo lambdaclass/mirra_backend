@@ -935,8 +935,8 @@
       "name": "h4ck_denial_of_service",
       "cooldown_mechanism": "time",
       "cooldown_ms": 9000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 400,
+      "execution_duration_ms": 200,
+      "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
       "max_autoaim_range": 1500,
@@ -973,7 +973,7 @@
           "multi_shoot": {
             "angle_between": 22.0,
             "amount": 3,
-            "speed": 65.0,
+            "speed": 53.0,
             "duration_ms": 1000,
             "remove_on_collision": true,
             "projectile_offset": 100,
@@ -987,7 +987,7 @@
     {
       "name": "h4ck_dash",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 4500,
+      "cooldown_ms": 5500,
       "execution_duration_ms": 250,
       "activation_delay_ms": 0,
       "is_passive": false,
@@ -1152,7 +1152,7 @@
       "mechanics": [
         {
           "simple_shoot": {
-            "speed": 55.0,
+            "speed": 45.0,
             "duration_ms": 1100,
             "remove_on_collision": true,
             "projectile_offset": 100,
