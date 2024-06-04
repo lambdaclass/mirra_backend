@@ -5,6 +5,9 @@
         "max_units": 1,
         "lineup_level": 21,
         "lineup_level_variance": 0,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Elix1r"
         ],
@@ -20,6 +23,9 @@
         "max_units": 1,
         "lineup_level": 22,
         "lineup_level_variance": 0,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Zanochi"
         ],
@@ -35,6 +41,9 @@
         "max_units": 1,
         "lineup_level": 23,
         "lineup_level_variance": 0,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Obure"
         ],
@@ -50,6 +59,9 @@
         "max_units": 2,
         "lineup_level": 24,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Romulo",
             "Boy Kampf"
@@ -66,6 +78,9 @@
         "max_units": 2,
         "lineup_level": 25,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Zanochi",
             "Uren"
@@ -82,6 +97,9 @@
         "max_units": 2,
         "lineup_level": 25,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Zil'kan",
             "Valtimer"
@@ -98,6 +116,9 @@
         "max_units": 2,
         "lineup_level": 26,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Jayson",
             "Zanochi"
@@ -114,6 +135,9 @@
         "max_units": 2,
         "lineup_level": 27,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Elix1r",
             "Uren"
@@ -130,6 +154,9 @@
         "max_units": 3,
         "lineup_level": 28,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Boy Kampf",
             "H4ck",
@@ -147,6 +174,9 @@
         "max_units": 3,
         "lineup_level": 29,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kura'bara",
             "Elix1r",
@@ -164,6 +194,9 @@
         "max_units": 3,
         "lineup_level": 30,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "Kura'bara",
@@ -181,6 +214,9 @@
         "max_units": 3,
         "lineup_level": 31,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kampako",
             "Jayson",
@@ -198,6 +234,9 @@
         "max_units": 3,
         "lineup_level": 32,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Muflus",
             "Valtimer",
@@ -215,6 +254,9 @@
         "max_units": 3,
         "lineup_level": 33,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Valtimer",
             "Elix1r",
@@ -232,6 +274,9 @@
         "max_units": 3,
         "lineup_level": 34,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "Uren",
@@ -249,6 +294,9 @@
         "max_units": 4,
         "lineup_level": 34,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "D'agna",
@@ -267,6 +315,9 @@
         "max_units": 4,
         "lineup_level": 35,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Otix",
             "Zanochi",
@@ -285,6 +336,9 @@
         "max_units": 4,
         "lineup_level": 36,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Muflus",
             "Kenzu",
@@ -303,6 +357,9 @@
         "max_units": 4,
         "lineup_level": 37,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "Kura'bara",
@@ -321,6 +378,9 @@
         "max_units": 4,
         "lineup_level": 38,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Otix",
             "Elix1r",
@@ -339,6 +399,9 @@
         "max_units": 4,
         "lineup_level": 39,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Boy Kampf",
             "Uma",
@@ -357,6 +420,9 @@
         "max_units": 4,
         "lineup_level": 40,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Obure",
             "Zil'kan",
@@ -375,6 +441,9 @@
         "max_units": 4,
         "lineup_level": 41,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Jayson",
             "Rust",
@@ -393,6 +462,9 @@
         "max_units": 4,
         "lineup_level": 42,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "H4ck",
             "Zil'kan",
@@ -411,6 +483,9 @@
         "max_units": 5,
         "lineup_level": 43,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Uren",
             "Kenzu",
@@ -430,6 +505,9 @@
         "max_units": 5,
         "lineup_level": 43,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "Elix1r",
@@ -449,6 +527,9 @@
         "max_units": 5,
         "lineup_level": 44,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Obure",
             "Kura'bara",
@@ -468,6 +549,9 @@
         "max_units": 5,
         "lineup_level": 45,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Zil'kan",
             "Obure",
@@ -487,6 +571,9 @@
         "max_units": 5,
         "lineup_level": 46,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "Kampako",
@@ -506,6 +593,9 @@
         "max_units": 5,
         "lineup_level": 47,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Rust",
             "Kenzu",
@@ -525,6 +615,9 @@
         "max_units": 5,
         "lineup_level": 48,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kampako",
             "Obure",
@@ -544,6 +637,9 @@
         "max_units": 5,
         "lineup_level": 49,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Fetra",
             "Kampako",
@@ -563,6 +659,9 @@
         "max_units": 5,
         "lineup_level": 50,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kenzu",
             "Grimstein",
@@ -582,6 +681,9 @@
         "max_units": 5,
         "lineup_level": 51,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Otix",
             "Uma",
@@ -601,6 +703,9 @@
         "max_units": 5,
         "lineup_level": 52,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "H4ck",
             "Muflus",
@@ -620,6 +725,9 @@
         "max_units": 5,
         "lineup_level": 52,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Fetra",
             "Uma",
@@ -639,6 +747,9 @@
         "max_units": 5,
         "lineup_level": 53,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Rust",
             "Grimstein",
@@ -658,6 +769,9 @@
         "max_units": 5,
         "lineup_level": 54,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kenzu",
             "H4ck",
@@ -677,6 +791,9 @@
         "max_units": 5,
         "lineup_level": 55,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Uma",
             "Rust",
@@ -696,6 +813,9 @@
         "max_units": 5,
         "lineup_level": 56,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Muflus",
             "Boy Kampf",
@@ -715,6 +835,9 @@
         "max_units": 5,
         "lineup_level": 57,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "H4ck",
             "Kenzu",
@@ -734,6 +857,9 @@
         "max_units": 5,
         "lineup_level": 58,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Otix",
             "Muflus",
@@ -753,6 +879,9 @@
         "max_units": 5,
         "lineup_level": 59,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kampako",
             "Romulo",
@@ -772,6 +901,9 @@
         "max_units": 5,
         "lineup_level": 60,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Muflus",
             "Otix",
@@ -791,6 +923,9 @@
         "max_units": 5,
         "lineup_level": 61,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kenzu",
             "Kampako",
@@ -810,6 +945,9 @@
         "max_units": 5,
         "lineup_level": 61,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Fetra",
             "Zil'kan",
@@ -829,6 +967,9 @@
         "max_units": 5,
         "lineup_level": 62,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Kenzu",
             "Muflus",
@@ -848,6 +989,9 @@
         "max_units": 5,
         "lineup_level": 63,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Grimstein",
             "Romulo",
@@ -867,6 +1011,9 @@
         "max_units": 5,
         "lineup_level": 64,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Boy Kampf",
             "Grimstein",
@@ -886,6 +1033,9 @@
         "max_units": 5,
         "lineup_level": 65,
         "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
         "characters": [
             "Zanochi",
             "Uren",
