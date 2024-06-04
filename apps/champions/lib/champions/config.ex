@@ -133,25 +133,33 @@ defmodule Champions.Config do
     end)
   end
 
-  @seconds_in_day 86_400
-
   def import_dungeon_settlement_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
     {:ok, dungeon_settlement_levels_json} =
       Application.app_dir(:champions, "priv/dungeon_settlement_levels.json")
       |> File.read()
 
-    supplies =
-      Users.Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra))
-
     Jason.decode!(dungeon_settlement_levels_json, [{:keys, :atoms}])
     |> Enum.map(fn dungeon_settlement_level ->
-      Map.put(dungeon_settlement_level, :afk_reward_rates, [
-        %{
-          currency_id: supplies.id,
-          rate: dungeon_settlement_level.daily_supply_rate / @seconds_in_day
-        }
-      ])
+      dungeon_settlement_level
       |> update_in([:level_up_costs], &transform_currency_costs/1)
+      |> Map.put(
+        :afk_reward_rates,
+        Enum.map(
+          dungeon_settlement_level.afk_reward_rates,
+          fn {currency, rate} ->
+            %{
+              currency_id:
+                currency
+                |> Atom.to_string()
+                |> Users.Currencies.get_currency_by_name_and_game!(game_id)
+                |> Map.get(:id),
+              rate: rate
+            }
+          end
+        )
+      )
     end)
     |> Users.upsert_dungeon_settlement_levels()
   end

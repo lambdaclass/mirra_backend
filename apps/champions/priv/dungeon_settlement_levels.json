@@ -4,7 +4,9 @@
         "max_dungeon": 25,
         "max_factional": 0,
         "supply_limit": 10,
-        "daily_supply_rate": 72,
+        "afk_reward_rates": {
+            "Supplies": 72
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -21,7 +23,9 @@
         "max_dungeon": 50,
         "max_factional": 0,
         "supply_limit": 10,
-        "daily_supply_rate": 72,
+        "afk_reward_rates": {
+            "Supplies": 72
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -38,7 +42,9 @@
         "max_dungeon": 75,
         "max_factional": 0,
         "supply_limit": 10,
-        "daily_supply_rate": 73,
+        "afk_reward_rates": {
+            "Supplies": 73
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -55,7 +61,9 @@
         "max_dungeon": 100,
         "max_factional": 0,
         "supply_limit": 10,
-        "daily_supply_rate": 73,
+        "afk_reward_rates": {
+            "Supplies": 73
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -72,7 +80,9 @@
         "max_dungeon": 125,
         "max_factional": 0,
         "supply_limit": 12,
-        "daily_supply_rate": 74,
+        "afk_reward_rates": {
+            "Supplies": 74
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -89,7 +99,9 @@
         "max_dungeon": 150,
         "max_factional": 0,
         "supply_limit": 12,
-        "daily_supply_rate": 74,
+        "afk_reward_rates": {
+            "Supplies": 74
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -106,7 +118,9 @@
         "max_dungeon": 175,
         "max_factional": 0,
         "supply_limit": 12,
-        "daily_supply_rate": 75,
+        "afk_reward_rates": {
+            "Supplies": 75
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -123,7 +137,9 @@
         "max_dungeon": 200,
         "max_factional": 0,
         "supply_limit": 12,
-        "daily_supply_rate": 75,
+        "afk_reward_rates": {
+            "Supplies": 75
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -140,7 +156,9 @@
         "max_dungeon": 225,
         "max_factional": 0,
         "supply_limit": 12,
-        "daily_supply_rate": 76,
+        "afk_reward_rates": {
+            "Supplies": 76
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
@@ -157,7 +175,9 @@
         "max_dungeon": 250,
         "max_factional": 0,
         "supply_limit": 14,
-        "daily_supply_rate": 76,
+        "afk_reward_rates": {
+            "Supplies": 76
+        },
         "level_up_costs": [
             {
                 "currency": "Blueprints",
