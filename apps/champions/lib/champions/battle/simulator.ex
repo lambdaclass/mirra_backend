@@ -621,11 +621,7 @@ defmodule Champions.Battle.Simulator do
     [caster.id]
   end
 
-  defp choose_targets_by_strategy(
-         caster,
-         %{type: %{"lowest" => stat}} = targeting_strategy,
-         state
-       ) do
+  defp choose_targets_by_strategy(caster, %{type: %{"lowest" => stat}} = targeting_strategy, state) do
     filter_and_choose_units_by_stat(
       state.units,
       stat,
