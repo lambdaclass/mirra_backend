@@ -38,7 +38,7 @@ defmodule Gateway.Controllers.AuthController do
          {:ok, ^hashed_client_id} <- Base.url_decode64(claims["dev"]),
          {:ok, user} <- Users.get_user(claims["sub"]) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
-      send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt}))
+      send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id}))
     else
       _ ->
         send_resp(conn, 400, Jason.encode!(%{error: "bad_request"}))
