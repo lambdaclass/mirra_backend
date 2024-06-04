@@ -4,6 +4,8 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
 
   They can either belong to a KalineTreeLevel or a DungeonSettlementLevel.
   This field is accessed through a user's KalineTreeLevel or DungeonSettlementLevel when we need to calculate their AFK rewards.
+
+  AfkRewardRates are stored as daily rates. The rate is divided by the number of seconds in a day to get the rate per second when calculating rewards.
   """
 
   use GameBackend.Schema

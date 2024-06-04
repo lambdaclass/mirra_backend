@@ -33,6 +33,8 @@ defmodule Gateway.Test.Champions do
 
   alias Gateway.SocketTester
 
+  @seconds_in_day 86_400
+
   setup do
     {:ok, socket_tester} = SocketTester.start_link()
 
@@ -786,7 +788,8 @@ defmodule Gateway.Test.Champions do
                    currency_before_claim =
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
-                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   expected_amount = trunc(currency_before_claim + reward_rate / @seconds_in_day * seconds_to_wait)
+
                    user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
                end
              end)

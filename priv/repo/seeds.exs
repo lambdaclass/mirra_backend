@@ -112,26 +112,28 @@ kaline_tree_levels =
 {_, kaline_tree_levels} =
   Repo.insert_all(KalineTreeLevel, kaline_tree_levels, returning: [:id, :level])
 
+seconds_in_day = 86_400
+
 afk_reward_rates =
   Enum.flat_map(Enum.with_index(kaline_tree_levels, 1), fn {level, level_index} ->
     [
       %{
         kaline_tree_level_id: level.id,
-        rate: 10.0 * (level_index - 1),
+        rate: 10.0 * (level_index - 1) * seconds_in_day,
         currency_id: gold_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        rate: 2.0 * (level_index - 1),
+        rate: 2.0 * (level_index - 1) * seconds_in_day,
         currency_id: hero_souls_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        rate: 3.0 * (level_index - 1),
+        rate: 3.0 * (level_index - 1) * seconds_in_day,
         currency_id: arcane_crystals_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
