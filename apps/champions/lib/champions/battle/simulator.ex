@@ -622,7 +622,7 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp choose_targets_by_strategy(caster, %{type: %{"lowest" => stat}} = targeting_strategy, state) do
-    filter_and_choose_units_by_stat(
+    choose_units_by_stat_and_team(
       state.units,
       stat,
       targeting_strategy.count,
@@ -632,12 +632,8 @@ defmodule Champions.Battle.Simulator do
     )
   end
 
-  defp choose_targets_by_strategy(
-         caster,
-         %{type: %{"highest" => stat}} = targeting_strategy,
-         state
-       ) do
-    filter_and_choose_units_by_stat(
+  defp choose_targets_by_strategy(caster, %{type: %{"highest" => stat}} = targeting_strategy, state) do
+    choose_units_by_stat_and_team(
       state.units,
       stat,
       targeting_strategy.count,
@@ -662,7 +658,7 @@ defmodule Champions.Battle.Simulator do
     Enum.take(sorted_units, amount)
   end
 
-  defp filter_and_choose_units_by_stat(units, stat, count, caster, target_allies, order) do
+  defp choose_units_by_stat_and_team(units, stat, count, caster, target_allies, order) do
     target_team =
       Enum.filter(units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
 
