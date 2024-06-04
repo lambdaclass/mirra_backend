@@ -148,8 +148,6 @@ defmodule Champions.Config do
 
     [dungeon_campaign] = dungeon_super_campaign.campaigns
 
-    supplies = Users.Currencies.get_currency_by_name_and_game("Supplies", game_id)
-
     Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
     |> Enum.map(fn level ->
       level
@@ -171,21 +169,30 @@ defmodule Champions.Config do
       )
       |> Map.put(:game_id, game_id)
       |> Map.put(:campaign_id, dungeon_campaign.id)
-      |> Map.put(:attempt_cost, [%{currency_id: supplies.id, amount: 1}])
+      |> Map.put(
+        :attempt_cost,
+        Enum.map(level.attempt_cost, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
       |> Map.put(
         :currency_rewards,
         Enum.map(level.currency_rewards, fn {currency, amount} ->
-          %{
-            currency_id:
-              currency
-              |> Atom.to_string()
-              |> Currencies.get_currency_by_name_and_game!(game_id)
-              |> Map.get(:id),
-            amount: amount
-          }
+          transform_currency_amount(currency, amount, game_id)
         end)
       )
     end)
     |> Campaigns.upsert_levels()
+  end
+
+  defp transform_currency_amount(currency, amount, game_id) do
+    %{
+      currency_id:
+        currency
+        |> Atom.to_string()
+        |> Currencies.get_currency_by_name_and_game!(game_id)
+        |> Map.get(:id),
+      amount: amount
+    }
   end
 end
