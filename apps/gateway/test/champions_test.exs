@@ -1003,6 +1003,25 @@ defmodule Gateway.Test.Champions do
                    rate.rate == 0
                end
              end)
+
+      # Check that supply cap works
+      # We give the an amount that is sure to reach the cap
+      {:ok, %Currencies.UserCurrency{} = user_currency} =
+        Currencies.add_currency_by_name_and_game!(
+          more_advanced_user.id,
+          "Supplies",
+          Utils.get_game_id(:champions_of_mirra),
+          Currencies.get_user_currency_cap(
+            more_advanced_user.id,
+            Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id
+          )
+        )
+
+      # If we claim the rewards, the amount should not change, as it has reached the cap
+      SocketTester.claim_dungeon_afk_rewards(socket_tester, more_advanced_user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = capped_user}}
+      assert Enum.find(capped_user.currencies, &(&1.currency.name == "Supplies")).amount == user_currency.amount
     end
   end
 
