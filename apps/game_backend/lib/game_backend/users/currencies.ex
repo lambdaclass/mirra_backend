@@ -5,6 +5,7 @@ defmodule GameBackend.Users.Currencies do
 
   import Ecto.Query, warn: false
 
+  alias GameBackend.Users.Currencies.UserCurrencyCap
   alias GameBackend.Users.Currencies.UserCurrency
   alias GameBackend.Users.Currencies.Currency
   alias GameBackend.Users.Currencies.CurrencyCost
@@ -85,16 +86,33 @@ defmodule GameBackend.Users.Currencies do
   """
   def add_currency(user_id, currency_id, amount) do
     result =
-      with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id),
-           changeset <-
-             UserCurrency.update_changeset(user_currency, %{
-               amount: max(user_currency.amount + amount, 0)
-             }) do
-        Repo.update(changeset)
-      else
+      case get_user_currency(user_id, currency_id) do
+        %UserCurrency{} = user_currency ->
+          new_amount =
+            case get_user_currency_cap(user_id, currency_id) do
+              %UserCurrencyCap{cap: cap} ->
+                if cap <= user_currency.amount do
+                  # Cap reached, don't add anything.
+                  user_currency.amount
+                else
+                  # Cap not reached, add the amount. We are fine with allowing overflows.
+                  user_currency.amount + amount
+                end
+
+              nil ->
+                # No cap, just add the amount.
+                user_currency.amount + amount
+            end
+            # We don't want users with negative currencies
+            |> max(0)
+
+          user_currency
+          |> UserCurrency.update_changeset(%{amount: new_amount})
+          |> Repo.update()
+
         nil ->
           # User has none of this currency, create it with given amount
-          insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
+          insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: max(amount, 0)})
       end
 
     case result do
@@ -214,4 +232,7 @@ defmodule GameBackend.Users.Currencies do
       {:ok, currency} -> add_currency(user_id, currency.id, amount)
     end
   end
+
+  def get_user_currency_cap(user_id, currency_id),
+    do: Repo.one(from(uc in UserCurrencyCap, where: uc.user_id == ^user_id and uc.currency_id == ^currency_id))
 end
