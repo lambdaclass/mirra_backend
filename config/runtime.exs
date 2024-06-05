@@ -36,7 +36,7 @@ if config_env() == :prod do
       environment variable JWT_PRIVATE_KEY_BASE_64 is missing
       """
 
-  jwt_private_key = Base.decode64(jwt_private_key_base64)
+  jwt_private_key = Base.decode64!(jwt_private_key_base64)
 
   config :joken,
     default_signer: [
