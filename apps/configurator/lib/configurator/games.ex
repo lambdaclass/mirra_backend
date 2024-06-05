@@ -2,7 +2,6 @@ defmodule Configurator.Games do
   @moduledoc """
   The Games context.
   """
-  import Ecto.Query
   alias Configurator.Repo
 
   alias Configurator.Games.Game
