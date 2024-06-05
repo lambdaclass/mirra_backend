@@ -1139,7 +1139,7 @@ defmodule Champions.Battle.Simulator do
     case remaining_interval_steps do
       0 ->
         {new_target, new_history} =
-          apply_execution_over_time(
+          apply_deal_damage_over_time(
             execution_over_time,
             execution_over_time.execution["attack_ratio"],
             target,
@@ -1192,7 +1192,7 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
-  def apply_execution_over_time(execution_over_time, attack_ratio, target, history) do
+  defp apply_deal_damage_over_time(execution_over_time, attack_ratio, target, history) do
     damage_after_defense = calculate_damage(execution_over_time.caster, target, attack_ratio)
 
     Logger.info(
