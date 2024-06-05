@@ -35,6 +35,7 @@ defmodule Gateway.Test.Champions do
   alias Gateway.SocketTester
 
   @seconds_in_day 86_400
+  @hours_in_day 24
 
   setup do
     {:ok, socket_tester} = SocketTester.start_link()
@@ -912,14 +913,14 @@ defmodule Gateway.Test.Champions do
       # Claim afk rewards
       currencies_before_claiming = leveled_up_user.currencies
 
-      # Simulate waiting 2 seconds before claiming the rewards, to let the rewards accumulate
-      seconds_to_wait = 2
+      # Simulate waiting 2 hours before claiming the rewards, to let the rewards accumulate
+      hours_to_wait = 2
       {:ok, leveled_up_user_with_rewards} = Users.get_user(leveled_up_user.id)
 
       {:ok, _} =
         leveled_up_user_with_rewards
         |> GameBackend.Users.User.changeset(%{
-          last_dungeon_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+          last_dungeon_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-hours_to_wait, :hour)
         })
         |> Repo.update()
 
@@ -947,7 +948,7 @@ defmodule Gateway.Test.Champions do
                    currency_before_claim =
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
-                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   expected_amount = trunc(currency_before_claim + reward_rate * hours_to_wait / @hours_in_day)
                    user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
                end
              end)
