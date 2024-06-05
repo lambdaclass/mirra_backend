@@ -7,12 +7,13 @@ defmodule Gateway.Test.Champions do
   use ExUnit.Case
 
   alias Champions.{Units, Users}
-  alias GameBackend.Utils
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
   alias GameBackend.Repo
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Utils
 
   alias Gateway.Serialization.{
     Box,
@@ -925,11 +926,11 @@ defmodule Gateway.Test.Champions do
       {:ok, _} =
         leveled_up_user_with_rewards
         |> GameBackend.Users.User.changeset(%{
-          last_kaline_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+          last_dungeon_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
         })
         |> Repo.update()
 
-      SocketTester.claim_kaline_afk_rewards(socket_tester, leveled_up_user.id)
+      SocketTester.claim_dungeon_afk_rewards(socket_tester, leveled_up_user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
 
@@ -1019,7 +1020,13 @@ defmodule Gateway.Test.Champions do
 
       dungeon_level = dungeon_campaign_progress.level
 
-      [some_unit | _] = user.units
+      [some_unit | units_to_unselect] = user.units
+
+      # Unselect all units because first level of dungeon has max_units = 1
+      Enum.each(units_to_unselect, fn unit_to_unselect ->
+        {:ok, unit} = GameBackend.Units.unselect_unit(user.id, unit_to_unselect.id)
+        assert unit.selected == false
+      end)
 
       # Check that user has initial BaseSetting debuff after register
 
