@@ -24,11 +24,11 @@ defmodule Champions.Battle.Simulator do
   [x] Frontline - Heroes in slots 1 and 2
   [x] Backline - Heroes in slots 2 to 4
   [x] All
-  [ ] Self
+  [x] Self
   [ ] Factions
   [ ] Classes
-  [ ] Min (STAT)
-  [ ] Max (STAT)
+  [x] Lowest (STAT)
+  [x] Highest (STAT)
 
   It can also be chosen how many targets are affected by the effect, and if they are allies or enemies.
 
@@ -40,8 +40,9 @@ defmodule Champions.Battle.Simulator do
   would base its actions on the state of the battle at the end of the previous unit's action.
 
   ### Speed Stat
+
   Units have a `speed` stat that affects the cooldown of their basic skill. The formula is:
-  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100];`
+  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100]`
   For now, speed is only used to calculate the cooldown of newly cast skills, meaning it's not retroactive with
   skills already on cooldown.
 
@@ -112,7 +113,14 @@ defmodule Champions.Battle.Simulator do
             operation == "Add"
           end)
           |> Enum.reduce(unit, fn {{attribute, _operation}, value}, unit_acc ->
-            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+            if attribute == "health" do
+              # We update both :health and :max_health
+              unit_acc
+              |> Map.update(:health, value, &(&1 + value))
+              |> Map.update(:max_health, value, &(&1 + value))
+            else
+              Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+            end
           end)
 
         unit_after_multiplicative_modifiers =
@@ -662,49 +670,49 @@ defmodule Champions.Battle.Simulator do
 
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
-  defp choose_targets_by_strategy(caster, %{count: count, type: "random", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{type: "random"} = targeting_strategy, state),
     do:
       state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
-      |> Enum.take_random(count)
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
+      |> Enum.take_random(targeting_strategy.count)
       |> Enum.map(fn {id, _unit} -> id end)
 
-  defp choose_targets_by_strategy(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
-    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+  defp choose_targets_by_strategy(caster, %{type: "nearest"} = targeting_strategy, state) do
+    config_name = if targeting_strategy.target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
     |> Enum.map(fn {_id, unit} -> unit end)
-    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == targeting_strategy.target_allies and unit.id != caster.id end)
     |> find_by_proximity(
       Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name],
-      count
+      targeting_strategy.count
     )
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets_by_strategy(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
-    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+  defp choose_targets_by_strategy(caster, %{type: "furthest"} = targeting_strategy, state) do
+    config_name = if targeting_strategy.target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
     |> Enum.map(fn {_id, unit} -> unit end)
-    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == targeting_strategy.target_allies and unit.id != caster.id end)
     |> find_by_proximity(
       Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Enum.reverse(),
-      count
+      targeting_strategy.count
     )
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "backline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "backline"} = targeting_strategy, state) do
     target_team =
-      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
 
     take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "frontline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "frontline"} = targeting_strategy, state) do
     target_team =
-      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
 
     take_unit_ids_by_slots(target_team, [1, 2])
   end
@@ -713,10 +721,32 @@ defmodule Champions.Battle.Simulator do
     [caster.id]
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{type: %{"lowest" => stat}} = targeting_strategy, state) do
+    choose_units_by_stat_and_team(
+      state.units,
+      stat,
+      targeting_strategy.count,
+      caster,
+      targeting_strategy.target_allies,
+      :desc
+    )
+  end
+
+  defp choose_targets_by_strategy(caster, %{type: %{"highest" => stat}} = targeting_strategy, state) do
+    choose_units_by_stat_and_team(
+      state.units,
+      stat,
+      targeting_strategy.count,
+      caster,
+      targeting_strategy.target_allies,
+      :asc
+    )
+  end
+
+  defp choose_targets_by_strategy(caster, %{type: "all"} = targeting_strategy, state),
     do:
       state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
       |> Enum.map(fn {id, _unit} -> id end)
 
   defp find_by_proximity(units, slots_priorities, amount) do
@@ -726,6 +756,16 @@ defmodule Champions.Battle.Simulator do
       end)
 
     Enum.take(sorted_units, amount)
+  end
+
+  defp choose_units_by_stat_and_team(units, stat, count, caster, target_allies, order) do
+    target_team =
+      Enum.filter(units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    Enum.map(target_team, fn {_id, unit} -> unit end)
+    |> sort_units_by_stat(stat, order)
+    |> Enum.take(count)
+    |> Enum.map(fn unit -> unit.id end)
   end
 
   defp take_unit_ids_by_slots(units, slots) do
@@ -1316,20 +1356,29 @@ defmodule Champions.Battle.Simulator do
     "all",
     "frontline",
     "backline",
-    "self"
+    "self",
+    "lowest",
+    "highest"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
+    targeting_strategy_type = mechanic.apply_effects_to.targeting_strategy.type
+
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
         # TODO: replace random for the corresponding target type name (CHoM #325)
         # type: mechanic.apply_effects_to.targeting_strategy.type,
         type:
-          if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
-            mechanic.apply_effects_to.targeting_strategy.type
-          else
-            "random"
+          cond do
+            is_binary(targeting_strategy_type) && targeting_strategy_type in @implemented_targeting_strategies ->
+              targeting_strategy_type
+
+            hd(Map.keys(targeting_strategy_type)) in @implemented_targeting_strategies ->
+              targeting_strategy_type
+
+            true ->
+              "random"
           end,
         count: mechanic.apply_effects_to.targeting_strategy.count || 1,
         target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies || false
@@ -1412,6 +1461,34 @@ defmodule Champions.Battle.Simulator do
           Map.take(unit, [:id, :health, :slot, :character_id, :team])
         end)
     }
+  end
+
+  defp sort_units_by_stat(units, stat, order) do
+    Enum.sort(
+      units,
+      fn unit_1, unit_2 ->
+        unit_1_stat = calculate_unit_stat(unit_1, String.to_atom(stat))
+        unit_2_stat = calculate_unit_stat(unit_2, String.to_atom(stat))
+
+        decide_order(unit_1_stat, unit_2_stat, order)
+      end
+    )
+  end
+
+  defp decide_order(unit_1_stat, unit_2_stat, :asc) do
+    cond do
+      unit_1_stat > unit_2_stat -> true
+      unit_1_stat == unit_2_stat -> Enum.random([true, false])
+      true -> false
+    end
+  end
+
+  defp decide_order(unit_1_stat, unit_2_stat, :desc) do
+    cond do
+      unit_1_stat > unit_2_stat -> false
+      unit_1_stat == unit_2_stat -> Enum.random([true, false])
+      true -> true
+    end
   end
 
   defp string_to_atom("type"), do: :type

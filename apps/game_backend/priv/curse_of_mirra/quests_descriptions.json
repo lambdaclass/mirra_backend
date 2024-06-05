@@ -63,5 +63,56 @@
             "currency": "Gold",
             "amount": 444
         }
+    },
+    {
+        "config_id": 4,
+        "description": "Get 3 kills",
+        "type": "bounty",
+        "objective": {
+            "type": "kills",
+            "match_tracking_field": "kills",
+            "value": 3,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 4
+        }
+    },
+    {
+        "config_id": 5,
+        "description": "Deal 300 damage",
+        "type": "bounty",
+        "objective": {
+            "type": "damage",
+            "match_tracking_field": "damage_done",
+            "value": 3000,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 4
+        }
+    },
+    {
+        "config_id": 6,
+        "description": "Receive less than 200 damage",
+        "type": "bounty",
+        "objective": {
+            "type": "damage",
+            "match_tracking_field": "damage_taken",
+            "value": 200,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 4
+        }
     }
 ]

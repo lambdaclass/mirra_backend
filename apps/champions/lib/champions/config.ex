@@ -3,11 +3,13 @@ defmodule Champions.Config do
   Configuration utilities.
   """
 
+  alias GameBackend.Campaigns
   alias Champions.Units
   alias GameBackend.Items
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
   alias GameBackend.Users
+  alias GameBackend.Users.Currencies
   alias GameBackend.Utils
 
   @doc """
@@ -132,5 +134,65 @@ defmodule Champions.Config do
         persistent: true
       )
     end)
+  end
+
+  def import_dungeon_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, dungeon_campaign_json} =
+      Application.app_dir(:champions, "priv/dungeon_campaign.json")
+      |> File.read()
+
+    dungeon_super_campaign =
+      Campaigns.get_super_campaign_by_name_and_game("Dungeon", game_id)
+
+    [dungeon_campaign] = dungeon_super_campaign.campaigns
+
+    Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
+    |> Enum.map(fn level ->
+      level
+      |> Map.put(
+        :units,
+        level.characters
+        |> Enum.with_index()
+        |> Enum.map(fn {character, index} ->
+          %{
+            level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
+            tier: 1,
+            rank: 1,
+            selected: true,
+            slot: index,
+            character_id:
+              Characters.get_character_id_by_name_and_game_id(character, Utils.get_game_id(:champions_of_mirra))
+          }
+        end)
+      )
+      |> Map.put(:game_id, game_id)
+      |> Map.put(:campaign_id, dungeon_campaign.id)
+      |> Map.put(
+        :attempt_cost,
+        Enum.map(level.attempt_cost, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
+      |> Map.put(
+        :currency_rewards,
+        Enum.map(level.currency_rewards, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
+    end)
+    |> Campaigns.upsert_levels()
+  end
+
+  defp transform_currency_amount(currency, amount, game_id) do
+    %{
+      currency_id:
+        currency
+        |> Atom.to_string()
+        |> Currencies.get_currency_by_name_and_game!(game_id)
+        |> Map.get(:id),
+      amount: amount
+    }
   end
 end

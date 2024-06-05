@@ -54,12 +54,14 @@ message PingUpdate {
 message GameJoined {
   uint64 player_id = 1;
   Configuration config = 2;
+  repeated BountyInfo bounties = 3;
 }
 
 message Configuration {
   ConfigGame game = 1;
   ConfigMap map = 2;
   repeated ConfigCharacter characters = 3;
+  ClientConfig client_config = 4;
 }
 
 message ConfigGame {
@@ -78,6 +80,19 @@ message ConfigCharacter {
   uint64 base_health = 5;
   uint64 max_inventory_size = 6;
   map<string, ConfigSkill> skills = 7;
+}
+
+message ClientConfig {
+  ConfigServerUpdate server_update = 1;
+}
+
+message ConfigServerUpdate {
+  uint64 timestamp_difference_samples_to_check_warning = 1;
+  uint64 timestamp_differences_samples_max_length = 2;
+  uint64 show_warning_threshold = 3;
+  uint64 stop_warning_threshold = 4;
+  uint64 ms_without_update_show_warning = 5;
+  uint64 ms_without_update_disconnect = 6;
 }
 
 message ConfigSkill {
@@ -119,6 +134,7 @@ enum GameStatus {
   PREPARING = 0;
   RUNNING = 1;
   ENDED = 2;
+  SELECTING_BOUNTY = 3;
 }
 
 /*
@@ -280,11 +296,16 @@ message UseItem {
   uint64 item = 1;
 }
 
+message SelectBounty {
+  string bounty_quest_id = 1;
+}
+
 message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
     UseItem use_item = 4;
+    SelectBounty select_bounty = 5;
   }
   int64 timestamp = 3;
 }
@@ -299,4 +320,16 @@ message Zone {
 message KillEntry {
   uint64 killer_id = 1;
   uint64 victim_id = 2;
+}
+
+message BountyInfo {
+  string id = 1;
+  string description = 2;
+  string quest_type = 3;
+  CurrencyReward reward = 4; 
+}
+
+message CurrencyReward {
+  string currency  = 1;
+  int64 amount = 2;
 }

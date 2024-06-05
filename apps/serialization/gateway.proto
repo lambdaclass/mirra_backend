@@ -27,6 +27,7 @@ syntax = "proto3";
       LevelUpKalineTree level_up_kaline_tree = 24;
       ClaimDungeonAfkRewards claim_dungeon_afk_rewards = 25;
       LevelUpDungeonSettlement level_up_dungeon_settlement = 26;
+      PurchaseDungeonUpgrade purchase_dungeon_upgrade = 27;
     }
   }
 
@@ -146,6 +147,11 @@ syntax = "proto3";
     string user_id = 1;
   }
 
+  message PurchaseDungeonUpgrade {
+    string user_id = 1;
+    string upgrade_id = 2;
+  }
+
   ////////////////////////////////////////
 
   message WebSocketResponse {
@@ -178,6 +184,7 @@ syntax = "proto3";
     repeated Item items = 9;
     KalineTreeLevel kaline_tree_level = 10;
     DungeonSettlementLevel dungeon_settlement_level = 11;
+    repeated Unlock unlocks = 12;
   }
 
   message KalineTreeLevel {
@@ -345,6 +352,25 @@ syntax = "proto3";
   message UserAndUnit {
     User user = 1;
     Unit unit = 2;
+  }
+
+  message Unlock {
+    string name = 1;
+    Upgrade upgrade = 2;
+  }
+
+  message Upgrade {
+    string name = 1;
+    string description = 2;
+    int32 group = 3;
+    repeated CurrencyCost cost = 4;
+    repeated Buff buffs = 5;
+  }
+
+  message Buff {
+    string attribute = 1;
+    float value = 2;
+    string operation = 3;
   }
 
 // BATTLE RESULT

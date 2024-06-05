@@ -6,6 +6,7 @@ defmodule ArenaLoadTest.Serialization.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
+  field(:SELECTING_BOUNTY, 3)
 end
 
 defmodule ArenaLoadTest.Serialization.ProjectileStatus do
@@ -160,6 +161,7 @@ defmodule ArenaLoadTest.Serialization.GameJoined do
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: ArenaLoadTest.Serialization.Configuration)
+  field(:bounties, 3, repeated: true, type: ArenaLoadTest.Serialization.BountyInfo)
 end
 
 defmodule ArenaLoadTest.Serialization.Configuration do
@@ -170,6 +172,11 @@ defmodule ArenaLoadTest.Serialization.Configuration do
   field(:game, 1, type: ArenaLoadTest.Serialization.ConfigGame)
   field(:map, 2, type: ArenaLoadTest.Serialization.ConfigMap)
   field(:characters, 3, repeated: true, type: ArenaLoadTest.Serialization.ConfigCharacter)
+
+  field(:client_config, 4,
+    type: ArenaLoadTest.Serialization.ClientConfig,
+    json_name: "clientConfig"
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigGame do
@@ -214,6 +221,38 @@ defmodule ArenaLoadTest.Serialization.ConfigCharacter do
     type: ArenaLoadTest.Serialization.ConfigCharacter.SkillsEntry,
     map: true
   )
+end
+
+defmodule ArenaLoadTest.Serialization.ClientConfig do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:server_update, 1,
+    type: ArenaLoadTest.Serialization.ConfigServerUpdate,
+    json_name: "serverUpdate"
+  )
+end
+
+defmodule ArenaLoadTest.Serialization.ConfigServerUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_difference_samples_to_check_warning, 1,
+    type: :uint64,
+    json_name: "timestampDifferenceSamplesToCheckWarning"
+  )
+
+  field(:timestamp_differences_samples_max_length, 2,
+    type: :uint64,
+    json_name: "timestampDifferencesSamplesMaxLength"
+  )
+
+  field(:show_warning_threshold, 3, type: :uint64, json_name: "showWarningThreshold")
+  field(:stop_warning_threshold, 4, type: :uint64, json_name: "stopWarningThreshold")
+  field(:ms_without_update_show_warning, 5, type: :uint64, json_name: "msWithoutUpdateShowWarning")
+  field(:ms_without_update_disconnect, 6, type: :uint64, json_name: "msWithoutUpdateDisconnect")
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigSkill do
@@ -623,6 +662,14 @@ defmodule ArenaLoadTest.Serialization.UseItem do
   field(:item, 1, type: :uint64)
 end
 
+defmodule ArenaLoadTest.Serialization.SelectBounty do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
+end
+
 defmodule ArenaLoadTest.Serialization.GameAction do
   @moduledoc false
 
@@ -633,6 +680,13 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:move, 1, type: ArenaLoadTest.Serialization.Move, oneof: 0)
   field(:attack, 2, type: ArenaLoadTest.Serialization.Attack, oneof: 0)
   field(:use_item, 4, type: ArenaLoadTest.Serialization.UseItem, json_name: "useItem", oneof: 0)
+
+  field(:select_bounty, 5,
+    type: ArenaLoadTest.Serialization.SelectBounty,
+    json_name: "selectBounty",
+    oneof: 0
+  )
+
   field(:timestamp, 3, type: :int64)
 end
 
@@ -654,4 +708,24 @@ defmodule ArenaLoadTest.Serialization.KillEntry do
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
+end
+
+defmodule ArenaLoadTest.Serialization.BountyInfo do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:description, 2, type: :string)
+  field(:quest_type, 3, type: :string, json_name: "questType")
+  field(:reward, 4, type: ArenaLoadTest.Serialization.CurrencyReward)
+end
+
+defmodule ArenaLoadTest.Serialization.CurrencyReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: :string)
+  field(:amount, 2, type: :int64)
 end

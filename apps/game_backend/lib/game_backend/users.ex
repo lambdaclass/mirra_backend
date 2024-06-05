@@ -10,11 +10,10 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
-
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
@@ -75,8 +74,12 @@ defmodule GameBackend.Users do
       )
 
     daily_quest_subquery =
-      from(dq in DailyQuest,
-        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at),
+      from(user_quest in UserQuest,
+        join: q in assoc(user_quest, :quest),
+        where:
+          user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date and
+            is_nil(user_quest.completed_at) and
+            user_quest.status == ^"available" and q.type == "daily",
         preload: [:quest]
       )
 
@@ -87,7 +90,7 @@ defmodule GameBackend.Users do
           arena_match_results: ^arena_match_result_subquery,
           user: [
             currencies: :currency,
-            daily_quests: ^daily_quest_subquery
+            user_quests: ^daily_quest_subquery
           ]
         ]
       )
@@ -329,6 +332,7 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
+        unlocks: [upgrade: [:buffs, cost: :currency]],
         kaline_tree_level: [afk_reward_rates: :currency],
         dungeon_settlement_level: [afk_reward_rates: :currency, level_up_costs: :currency],
         super_campaign_progresses: :level,
@@ -361,7 +365,7 @@ defmodule GameBackend.Users do
       {:ok, %Upgrade{name: "upgrade_name"}}
   """
   def get_upgrade_by_name(name) do
-    case Repo.get_by(Upgrade, name: name) do
+    case Repo.get_by(Upgrade, name: name) |> Repo.preload(cost: :currency) do
       nil -> {:error, :not_found}
       upgrade -> {:ok, upgrade}
     end
@@ -388,6 +392,10 @@ defmodule GameBackend.Users do
         Currencies.substract_currencies(user_id, upgrade.cost)
       end)
       |> Transaction.run()
+      |> case do
+        {:ok, _} -> {:ok, get_user(user_id)}
+        _ -> {:error, :unknown_error}
+      end
     else
       {:user, false} -> {:error, :user_not_found}
       {:upgrade, _} -> {:error, :upgrade_not_found}
