@@ -7,12 +7,13 @@ defmodule Gateway.Test.Champions do
   use ExUnit.Case
 
   alias Champions.{Units, Users}
-  alias GameBackend.Utils
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
   alias GameBackend.Repo
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Utils
 
   alias Gateway.Serialization.{
     Box,
@@ -1001,6 +1002,91 @@ defmodule Gateway.Test.Champions do
                    rate.rate == 0
                end
              end)
+    end
+  end
+
+  describe "Dungeon Settlement Upgrades" do
+    test "Dungeon Settlement Upgrades", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("Dungeon Settlement Upgrades User")
+
+      {:ok, hp_upgrade_1} = GameBackend.Users.get_upgrade_by_name("Dungeon.HPUpgrade1")
+      {:ok, _hp_upgrade_2} = GameBackend.Users.get_upgrade_by_name("Dungeon.HPUpgrade2")
+
+      dungeon_campaign =
+        GameBackend.Campaigns.get_super_campaign_by_name_and_game("Dungeon", Utils.get_game_id(:champions_of_mirra))
+
+      {:ok, dungeon_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, dungeon_campaign.id)
+
+      dungeon_level = dungeon_campaign_progress.level
+
+      [some_unit | units_to_unselect] = user.units
+
+      # Unselect all units because first level of dungeon has max_units = 1
+      Enum.each(units_to_unselect, fn unit_to_unselect ->
+        {:ok, unit} = GameBackend.Units.unselect_unit(user.id, unit_to_unselect.id)
+        assert unit.selected == false
+      end)
+
+      # Check that user has initial BaseSetting debuff after register
+
+      assert Enum.any?(user.unlocks, &(&1.upgrade.name == "Dungeon.BaseSetting"))
+
+      # Fighting a dungeon level with this user will have its units attributes reduced due to the BaseSetting debuff
+
+      SocketTester.fight_level(socket_tester, user.id, dungeon_level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:battle_result, %{initial_state: initial_state}}}
+      unit_initial_state_with_debuff = Enum.find(initial_state.units, &(&1.id == some_unit.id))
+      assert unit_initial_state_with_debuff.health < Units.get_health(some_unit)
+
+      # TODO: [#CHOM-471] Check that upgrade 2 cannot be purchased before upgrade 1
+
+      # Purchase upgrade 1 fails if the user does not have enough Pearls
+
+      SocketTester.purchase_dungeon_upgrade(socket_tester, user.id, hp_upgrade_1.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+
+      # Add necessary currency to User
+      {:ok, _} =
+        Currencies.add_currency_by_name_and_game!(user.id, "Pearls", Utils.get_game_id(:champions_of_mirra), 999)
+
+      initial_currencies = %{
+        "Pearls" => Currencies.get_amount_of_currency_by_name(user.id, "Pearls")
+      }
+
+      # PurchaseDungeonUpgrade with enough currency should return an updated user.
+      SocketTester.purchase_dungeon_upgrade(socket_tester, user.id, hp_upgrade_1.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = user_with_upgrade}}
+
+      # User should have the Unlock
+      hp_upgrade_1_unlock = Enum.find(user_with_upgrade.unlocks, &(&1.upgrade.name == hp_upgrade_1.name))
+      assert not is_nil(hp_upgrade_1_unlock)
+      assert hp_upgrade_1_unlock.name == hp_upgrade_1.name
+
+      # Currency should be deducted
+      Enum.each(hp_upgrade_1.cost, fn currency_cost ->
+        assert Currencies.get_amount_of_currency_by_name(user_with_upgrade.id, currency_cost.currency.name) ==
+                 (Map.get(initial_currencies, currency_cost.currency.name) - currency_cost.amount) |> max(0)
+      end)
+
+      # Check that if we fight another level, the same unit will have a bit more health than before
+      {:ok, dungeon_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, dungeon_campaign.id)
+
+      dungeon_level = dungeon_campaign_progress.level
+
+      SocketTester.fight_level(socket_tester, user.id, dungeon_level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:battle_result, %{initial_state: initial_state}}}
+      unit_initial_state_with_upgrade = Enum.find(initial_state.units, &(&1.id == some_unit.id))
+      assert unit_initial_state_with_upgrade.health > unit_initial_state_with_debuff.health
     end
   end
 
