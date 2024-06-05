@@ -1,4 +1,7 @@
 defmodule ConfiguratorWeb.UtilsConfiguration do
+  @moduledoc """
+  Module with utility functions for configuration data.
+  """
   def nested_maps_level(map, level) do
     map
     |> Enum.reduce(level, fn {_key, value}, level ->
@@ -8,5 +11,11 @@ defmodule ConfiguratorWeb.UtilsConfiguration do
         level
       end
     end)
+  end
+
+  def key_prettier(key) do
+    key
+    |> String.split("_")
+    |> Enum.map_join(" ", &String.capitalize/1)
   end
 end
