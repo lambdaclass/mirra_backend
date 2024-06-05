@@ -28,19 +28,19 @@
                 <%= cond do %>
                   <% is_map(@data[tab][value][attribute_key]) -> %>
                     <td>
-                      <.modal id={attribute_key}>
+                      <.modal id={"#{tab}_#{value}_#{attribute_key}"}>
                         <.render_map_as_table map={@data[tab][value][attribute_key]} name={attribute_key} />
                       </.modal>
-                      <.button phx-click={show_modal(attribute_key)}>
+                      <.button phx-click={show_modal("#{tab}_#{value}_#{attribute_key}")}>
                         Display <%= attribute_key %>
                       </.button>
                     </td>
                   <% is_list(@data[tab][value][attribute_key]) -> %>
                     <td>
-                      <.modal id={attribute_key}>
+                      <.modal id={"#{tab}_#{value}_#{attribute_key}"}>
                         <.render_list_as_table list={@data[tab][value][attribute_key]} name={attribute_key} />
                       </.modal>
-                      <.button phx-click={show_modal(attribute_key)}>
+                      <.button phx-click={show_modal("#{tab}_#{value}_#{attribute_key}")}>
                         Display <%= attribute_key %>
                       </.button>
                     </td>
