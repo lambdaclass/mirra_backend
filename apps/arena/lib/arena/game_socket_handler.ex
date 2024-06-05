@@ -3,6 +3,7 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayToken
   alias Arena.Utils
   alias Arena.Serialization
@@ -20,7 +21,8 @@ defmodule Arena.GameSocketHandler do
     client_id =
       case :cowboy_req.parse_qs(req) do
         [{"gateway_jwt", jwt}] ->
-          {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt)
+          signer = GatewaySigner.signer()
+          {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt, signer)
           user_id
 
         _ ->
