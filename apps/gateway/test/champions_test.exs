@@ -1014,7 +1014,7 @@ defmodule Gateway.Test.Champions do
           Currencies.get_user_currency_cap(
             more_advanced_user.id,
             Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id
-          )
+          ).cap
         )
 
       # If we claim the rewards, the amount should not change, as it has reached the cap

@@ -10,6 +10,7 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
+  alias Gateway.Serialization.DungeonSettlementLevel
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
@@ -300,6 +301,15 @@ defmodule GameBackend.Users do
       |> Multi.run(:user, fn _, _ -> increment_settlement_level(user_id) end)
       |> Multi.run(:user_currency, fn _, _ ->
         Currencies.substract_currencies(user_id, level_up_costs)
+      end)
+      |> Multi.run(:supply_cap, fn _, %{user: user} ->
+        dungeon_settlement_level = Repo.get(DungeonSettlementLevel, user.dungeon_settlement_level_id)
+
+        Currencies.update_user_currency_cap(
+          user.id,
+          {"Supplies", user.game_id},
+          dungeon_settlement_level.supply_cap
+        )
       end)
       |> Repo.transaction()
 

@@ -240,6 +240,17 @@ defmodule GameBackend.Users.Currencies do
   end
 
   @doc """
+  Updates a User's UserCurrencyCap cap for a given currency.
+
+  Currency is identified by a name and a game id.
+  """
+  def update_user_currency_cap(user_id, {currency_name, game_id}, new_cap) do
+    get_user_currency_cap(user_id, get_currency_by_name_and_game!(currency_name, game_id).id)
+    |> UserCurrencyCap.update_changeset(%{cap: new_cap})
+    |> Repo.update()
+  end
+
+  @doc """
   Get an UserCurrencyCap.
   """
   def get_user_currency_cap(user_id, currency_id),
