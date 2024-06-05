@@ -5,10 +5,7 @@ defmodule GameBackend.Users.Currencies do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Users.Currencies.UserCurrencyCap
-  alias GameBackend.Users.Currencies.UserCurrency
-  alias GameBackend.Users.Currencies.Currency
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Users.Currencies.{Currency, CurrencyCost, UserCurrency, UserCurrencyCap}
   alias GameBackend.Repo
 
   @doc """
