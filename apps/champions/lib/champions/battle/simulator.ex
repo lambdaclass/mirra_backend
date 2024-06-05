@@ -260,13 +260,12 @@ defmodule Champions.Battle.Simulator do
   # Calculate the new state of the battle after a step passes for a unit.
   # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state, history) do
-    {unit, new_history} = process_executions_over_time(unit, history)
     current_state = Map.put(current_state, :units, Map.put(current_state.units, unit.id, unit))
 
     {new_state, new_history} =
       cond do
         not can_attack(unit, initial_step_state) ->
-          {current_state, new_history}
+          {current_state, history}
 
         can_cast_ultimate_skill(unit) ->
           Logger.info("Unit #{format_unit_name(unit)} casting Ultimate skill")
@@ -278,7 +277,7 @@ defmodule Champions.Battle.Simulator do
 
           new_history =
             add_to_history(
-              new_history,
+              history,
               %{
                 caster_id: unit.id,
                 target_ids: [],
@@ -316,7 +315,7 @@ defmodule Champions.Battle.Simulator do
 
           new_history =
             add_to_history(
-              new_history,
+              history,
               %{
                 caster_id: unit.id,
                 target_ids: [],
@@ -338,7 +337,7 @@ defmodule Champions.Battle.Simulator do
           {new_state, new_history}
 
         true ->
-          {current_state, new_history}
+          {current_state, history}
       end
 
     # Reduce modifier remaining timers & remove expired ones
@@ -365,6 +364,12 @@ defmodule Champions.Battle.Simulator do
       )
       |> put_in([:units, unit.id, :modifiers], new_modifiers)
       |> put_in([:units, unit.id, :tags], new_tags)
+
+    {new_unit, new_history} = process_executions_over_time(new_state.units[unit.id], new_history)
+
+    new_state =
+      new_state
+      |> put_in([:units, unit.id], new_unit)
 
     {new_state, new_history}
   end
