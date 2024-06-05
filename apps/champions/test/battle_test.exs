@@ -2055,7 +2055,7 @@ defmodule Champions.Test.BattleTest do
   end
 
   describe "Executions over time" do
-    test "DealDamage over time", %{target_dummy: target_dummy} do
+    test "DealDamageOverTime", %{target_dummy: target_dummy} do
       # We will create a battle between a damaging unit and a target dummy.
       # The unit's basic skill will deal 4 points of damage to the target dummy over 3 steps, killing it in the third one. The cooldown is such that the skill can be used only once.
       # The battle should finish with a victory for team_1 after the third step, or in timeout if the steps are less than 3.
