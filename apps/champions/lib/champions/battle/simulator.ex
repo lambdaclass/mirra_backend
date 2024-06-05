@@ -1138,29 +1138,11 @@ defmodule Champions.Battle.Simulator do
        ) do
     case remaining_interval_steps do
       0 ->
-        {new_target, new_history} =
-          apply_deal_damage_over_time(
-            execution_over_time,
-            execution_over_time.execution["attack_ratio"],
-            target,
-            history
-          )
-
-        initial_interval_steps = get_interval_steps(execution_over_time.execution)
-
-        new_target =
-          update_in(new_target, [:executions_over_time], fn current_executions ->
-            Enum.map(current_executions, fn exec ->
-              if exec.skill_id == execution_over_time.skill_id do
-                Map.put(exec, :remaining_interval_steps, initial_interval_steps)
-                |> Map.put(:remaining_duration, exec.remaining_duration - 1)
-              else
-                exec
-              end
-            end)
-          end)
-
-        {new_target, new_history}
+        apply_deal_damage_over_time(
+          execution_over_time,
+          target,
+          history
+        )
 
       _ ->
         execution =
@@ -1192,8 +1174,9 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
-  defp apply_deal_damage_over_time(execution_over_time, attack_ratio, target, history) do
-    damage_after_defense = calculate_damage(execution_over_time.caster, target, attack_ratio)
+  defp apply_deal_damage_over_time(execution_over_time, target, history) do
+    damage_after_defense =
+      calculate_damage(execution_over_time.caster, target, execution_over_time.execution["attack_ratio"])
 
     Logger.info(
       "#{format_unit_name(execution_over_time.caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{execution_over_time.remaining_duration}."
@@ -1210,9 +1193,21 @@ defmodule Champions.Battle.Simulator do
         :execution_received
       )
 
+    initial_interval_steps = get_interval_steps(execution_over_time.execution)
+
     new_target =
       target
       |> Map.put(:health, target.health - damage_after_defense)
+      |> update_in([:executions_over_time], fn current_executions ->
+        Enum.map(current_executions, fn exec ->
+          if exec.skill_id == execution_over_time.skill_id do
+            Map.put(exec, :remaining_interval_steps, initial_interval_steps)
+            |> Map.put(:remaining_duration, exec.remaining_duration - 1)
+          else
+            exec
+          end
+        end)
+      end)
 
     {new_target, new_history}
   end
