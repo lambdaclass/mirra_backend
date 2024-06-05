@@ -57,7 +57,7 @@
     <% end %>
   <% else %>
     <%= for {tab, values} <- @values_by_tabs do %>
-      <.render_map_as_table map={values} name={tab} />
+      <.render_map_as_table map={@data[tab]} name={tab} />
     <% end %>
   <% end %>
 </div>
