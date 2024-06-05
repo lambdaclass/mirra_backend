@@ -42,29 +42,29 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
         <%= for key <- Map.keys(@map) do %>
           <tr>
             <td><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(key) %></td>
-          <%= cond do %>
-            <% is_map(@map[key]) -> %>
-              <td>
-                <.modal id={"#{@name}_#{key}"}>
-                  <.render_map_as_table map={@map[key]} name={key} />
-                </.modal>
-                <.button phx-click={show_modal("#{@name}_#{key}")}>
-                  Display <%= key %>
-                </.button>
-              </td>
-            <% is_list(@map[key]) -> %>
-              <td>
-                <.modal id={"#{@name}_#{key}"}>
-                  <.render_list_as_table list={@map[key]} name={key} />
-                </.modal>
-                <.button phx-click={show_modal("#{@name}_#{key}")}>
-                  Display <%= key %>
-                </.button>
-              </td>
-            <% true -> %>
+            <%= cond do %>
+              <% is_map(@map[key]) -> %>
+                <td>
+                  <.modal id={"#{@name}_#{key}"}>
+                    <.render_map_as_table map={@map[key]} name={key} />
+                  </.modal>
+                  <.button phx-click={show_modal("#{@name}_#{key}")}>
+                    Display <%= key %>
+                  </.button>
+                </td>
+              <% is_list(@map[key]) -> %>
+                <td>
+                  <.modal id={"#{@name}_#{key}"}>
+                    <.render_list_as_table list={@map[key]} name={key} />
+                  </.modal>
+                  <.button phx-click={show_modal("#{@name}_#{key}")}>
+                    Display <%= key %>
+                  </.button>
+                </td>
+              <% true -> %>
                 <td><%= @map[key] %></td>
-          <% end %>
-            </tr>
+            <% end %>
+          </tr>
         <% end %>
       </tbody>
     </table>
