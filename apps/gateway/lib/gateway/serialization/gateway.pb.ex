@@ -123,6 +123,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "levelUpDungeonSettlement",
     oneof: 0
   )
+
+  field(:purchase_dungeon_upgrade, 27,
+    type: Gateway.Serialization.PurchaseDungeonUpgrade,
+    json_name: "purchaseDungeonUpgrade",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -341,6 +347,15 @@ defmodule Gateway.Serialization.LevelUpDungeonSettlement do
   field(:user_id, 1, type: :string, json_name: "userId")
 end
 
+defmodule Gateway.Serialization.PurchaseDungeonUpgrade do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:upgrade_id, 2, type: :string, json_name: "upgradeId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -414,6 +429,8 @@ defmodule Gateway.Serialization.User do
     type: Gateway.Serialization.DungeonSettlementLevel,
     json_name: "dungeonSettlementLevel"
   )
+
+  field(:unlocks, 12, repeated: true, type: Gateway.Serialization.Unlock)
 end
 
 defmodule Gateway.Serialization.KalineTreeLevel do
@@ -736,6 +753,37 @@ defmodule Gateway.Serialization.UserAndUnit do
 
   field(:user, 1, type: Gateway.Serialization.User)
   field(:unit, 2, type: Gateway.Serialization.Unit)
+end
+
+defmodule Gateway.Serialization.Unlock do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:upgrade, 2, type: Gateway.Serialization.Upgrade)
+end
+
+defmodule Gateway.Serialization.Upgrade do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:description, 2, type: :string)
+  field(:group, 3, type: :int32)
+  field(:cost, 4, repeated: true, type: Gateway.Serialization.CurrencyCost)
+  field(:buffs, 5, repeated: true, type: Gateway.Serialization.Buff)
+end
+
+defmodule Gateway.Serialization.Buff do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:attribute, 1, type: :string)
+  field(:value, 2, type: :float)
+  field(:operation, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.BattleResult do

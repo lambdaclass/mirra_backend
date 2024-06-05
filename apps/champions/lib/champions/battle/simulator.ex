@@ -40,8 +40,9 @@ defmodule Champions.Battle.Simulator do
   would base its actions on the state of the battle at the end of the previous unit's action.
 
   ### Speed Stat
+
   Units have a `speed` stat that affects the cooldown of their basic skill. The formula is:
-  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100];`
+  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100]`
   For now, speed is only used to calculate the cooldown of newly cast skills, meaning it's not retroactive with
   skills already on cooldown.
 
@@ -112,7 +113,14 @@ defmodule Champions.Battle.Simulator do
             operation == "Add"
           end)
           |> Enum.reduce(unit, fn {{attribute, _operation}, value}, unit_acc ->
-            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+            if attribute == "health" do
+              # We update both :health and :max_health
+              unit_acc
+              |> Map.update(:health, value, &(&1 + value))
+              |> Map.update(:max_health, value, &(&1 + value))
+            else
+              Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+            end
           end)
 
         unit_after_multiplicative_modifiers =
