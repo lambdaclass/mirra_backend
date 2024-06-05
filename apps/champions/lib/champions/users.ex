@@ -6,7 +6,6 @@ defmodule Champions.Users do
   alias Ecto.{Changeset, Multi}
   alias Champions.Users
   alias GameBackend.Items
-  alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Units
   alias GameBackend.Units.Characters
@@ -165,12 +164,14 @@ defmodule Champions.Users do
   end
 
   defp add_currency_caps(user) do
-    user = Repo.preload(user, [:dungeon_settlement_level])
     # Supplies
+
+    dungeon_settlement_level = Users.get_dungeon_settlement_level(user.dungeon_settlement_level_id)
+
     Currencies.insert_user_currency_cap(%{
       user_id: user.id,
       currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
-      cap: user.dungeon_settlement_level.supply_cap
+      cap: dungeon_settlement_level.supply_cap
     })
   end
 
