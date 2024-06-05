@@ -955,6 +955,7 @@ defmodule Gateway.Test.Champions do
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
                    expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   # Note: This will fail if the initial amount for a user exceeds the UserCurrencyCap
                    user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
                end
              end)

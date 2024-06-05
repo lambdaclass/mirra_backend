@@ -290,7 +290,7 @@ _dungeon_settlement_levels =
             level: level_number,
             max_dungeon: level_number * 10,
             max_factional: level_number * 5,
-            supply_cap: level_number * 5,
+            supply_cap: level_number * 10,
             afk_reward_rates: [
               %{rate: 10.0 * (level_number - 1), currency_id: supplies_currency.id}
             ],
