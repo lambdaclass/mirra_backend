@@ -10,7 +10,6 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
-  alias Gateway.Serialization.DungeonSettlementLevel
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
