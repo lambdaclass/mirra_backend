@@ -600,6 +600,7 @@ defmodule ArenaLoadTest.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:effects, 2, repeated: true, type: ArenaLoadTest.Serialization.Effect)
 end
 
 defmodule ArenaLoadTest.Serialization.Bush do
