@@ -2,8 +2,8 @@ defmodule Arena.Authentication.GatewayToken do
   @moduledoc """
   Module responsible to verify and validate the JWT emitted by gateway app.
   """
-  alias Arena.Authentication.GatewaySigner
   use Joken.Config, default_signer: nil
+  alias Arena.Authentication.GatewaySigner
 
   @impl Joken.Config
   def token_config do
