@@ -880,8 +880,7 @@ defmodule Champions.Battle.Simulator do
             caster: caster,
             skill_id: effect.skill_id,
             remaining_duration: get_duration(effect.type),
-            # Decrement in 1 because we're already processing the execution in the next step
-            remaining_interval_steps: get_interval_steps(execution_over_time)
+            remaining_interval_steps: get_interval_steps(execution_over_time),
           }
           | current_executions
         ]
@@ -919,7 +918,10 @@ defmodule Champions.Battle.Simulator do
   # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
 
-  defp get_interval_steps(execution_over_time), do: trunc(execution_over_time["interval"] / @miliseconds_per_step) - 1
+  defp get_interval_steps(execution_over_time) do
+    # Decrement in 1 because we're already processing the execution in the next step
+    execution_over_time["interval"] - 1
+  end
 
   # Return whether an effect hits.
   defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
@@ -1396,8 +1398,8 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Used to create the initial effect maps to be used during simulation.
-  defp create_effect_map(%Effect{} = effect, skill_id),
-    do: %{
+  defp create_effect_map(%Effect{} = effect, skill_id) do
+   %{
       type:
         Enum.into(effect.type, %{}, fn
           {"type", type} -> {:type, string_to_atom(type)}
@@ -1408,9 +1410,12 @@ defmodule Champions.Battle.Simulator do
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
-      executions_over_time: effect.executions_over_time,
+      executions_over_time: Enum.map(effect.executions_over_time, fn eot ->
+        Map.put(eot, "interval", div(eot["interval"], @miliseconds_per_step))
+      end),
       skill_id: skill_id
     }
+  end
 
   # Format step state for logs.
   defp format_step_state(%{
