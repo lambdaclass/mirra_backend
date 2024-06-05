@@ -366,7 +366,8 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :pool do
     {:pool,
      %Arena.Serialization.Pool{
-       owner_id: entity.aditional_info.owner_id
+       owner_id: entity.aditional_info.owner_id,
+       effects: entity.aditional_info.effects
      }}
   end
 
