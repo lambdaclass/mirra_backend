@@ -48,19 +48,24 @@ defmodule GameBackend.Users.Currencies do
 
   @doc """
   Gets a single currency.
-
-  Returns nil if the Currency does not exist.
+  Returns {:ok, currency} if query succeeds.
+  Returns {:error, :not_found} if the Currency does not exist.
 
   ## Examples
 
       iex> get_currency_by_name_and_game("gold", 1)
-      %Currency{}
+      {:ok, %Currency{}}
 
       iex> get_currency_by_name_and_game("silver", 1)
-      nil
+      {:error, :not_found}
 
   """
-  def get_currency_by_name_and_game(name, game_id), do: Repo.get_by(Currency, name: name, game_id: game_id)
+  def get_currency_by_name_and_game(name, game_id) do
+    case Repo.get_by(Currency, name: name, game_id: game_id) do
+      nil -> {:error, :not_found}
+      currency -> {:ok, currency}
+    end
+  end
 
   @doc """
   Gets how much a user has of a given currency.
@@ -205,8 +210,8 @@ defmodule GameBackend.Users.Currencies do
   """
   def add_currency_by_name_and_game(user_id, currency_name, game_id, amount) do
     case get_currency_by_name_and_game(currency_name, game_id) do
-      nil -> nil
-      currency -> add_currency(user_id, currency.id, amount)
+      {:error, :not_found} -> nil
+      {:ok, currency} -> add_currency(user_id, currency.id, amount)
     end
   end
 end

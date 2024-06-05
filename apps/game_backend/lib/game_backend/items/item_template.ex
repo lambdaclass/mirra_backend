@@ -33,6 +33,7 @@ defmodule GameBackend.Items.ItemTemplate do
     field(:purchasable?, :boolean)
     field(:characters, {:array, :string})
     embeds_many(:modifiers, Modifier, on_replace: :delete)
+    embeds_many(:purchase_costs, CurrencyCost, on_replace: :delete)
 
     # Used to reference the ItemTemplate in the game's configuration
     field(:config_id, :string)
@@ -63,5 +64,6 @@ defmodule GameBackend.Items.ItemTemplate do
     |> cast_embed(:modifiers)
     |> cast_embed(:upgrade_costs)
     |> foreign_key_constraint(:upgrades_from_config_id)
+    |> cast_embed(:purchase_costs)
   end
 end

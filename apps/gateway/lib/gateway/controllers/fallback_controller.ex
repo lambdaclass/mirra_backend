@@ -20,6 +20,14 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "invalid reward"}))
   end
 
+  def call(conn, {:error, :cant_afford}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "cant afford"}))
+  end
+
+  def call(conn, {:error, :quest_rerolled}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "quest already rerolled"}))
+  end
+
   def call(conn, {:error, :item_not_found}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "item not found"}))
   end
@@ -34,6 +42,10 @@ defmodule Gateway.Controllers.FallbackController do
 
   def call(conn, {:error, :character_cannot_equip}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "character cannot equip item"}))
+  end
+
+  def call(conn, {:can_afford, false}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot afford the cost"}))
   end
 
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) when is_binary(failed_operation) do

@@ -1,4 +1,4 @@
-defmodule GameBackend.Quests.DailyQuest do
+defmodule GameBackend.Quests.UserQuest do
   @moduledoc """
     Relation between users and quests, will determine if a quest is completed or no
   """
@@ -9,7 +9,7 @@ defmodule GameBackend.Quests.DailyQuest do
   alias GameBackend.Quests.Quest
   alias GameBackend.Users.User
 
-  schema "daily_quest" do
+  schema "user_quests" do
     field(:completed_at, :utc_datetime)
     field(:status, :string)
     belongs_to(:quest, Quest)
@@ -30,6 +30,6 @@ defmodule GameBackend.Quests.DailyQuest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
-    |> validate_inclusion(:status, ["available", "completed", "rerolled"])
+    |> validate_inclusion(:status, ["available", "completed", "rerolled", "failed"])
   end
 end
