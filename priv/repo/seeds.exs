@@ -1,3 +1,4 @@
+alias GameBackend.Users.Currencies.Currency
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
 alias GameBackend.Users.{DungeonSettlementLevel, KalineTreeLevel, Upgrade}
@@ -33,6 +34,18 @@ units_per_level = 6
   Users.Currencies.insert_currency(%{
     game_id: champions_of_mirra_id,
     name: "Mystic Summon Scrolls"
+  })
+
+{:ok, _4_star_shards_currency} =
+  Users.Currencies.insert_currency(%{
+    game_id: champions_of_mirra_id,
+    name: "4* Shards"
+  })
+
+{:ok, _5_star_shards_currency} =
+  Users.Currencies.insert_currency(%{
+    game_id: champions_of_mirra_id,
+    name: "5* Shards"
   })
 
 {:ok, _fertilizer_currency} =
@@ -317,7 +330,7 @@ _dungeon_settlement_levels =
   Repo.insert(
     Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
-      name: "HP Upgrade 1",
+      name: "Dungeon.HPUpgrade1",
       description: "This upgrade increases the health of all units by 5%.",
       group: 1,
       cost: [
@@ -337,7 +350,7 @@ _dungeon_settlement_levels =
   Repo.insert(
     Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
-      name: "HP Upgrade 2",
+      name: "Dungeon.HPUpgrade2",
       description: "This upgrade increases the health of all units by 10%.",
       group: 1,
       cost: [
@@ -356,16 +369,8 @@ _dungeon_settlement_levels =
     })
   )
 
-dungeon_rules =
-  %{
-    base_level: 5,
-    scaler: 1.05,
-    possible_factions: ["Araban", "Kaline", "Merliot", "Otobi"],
-    length: 200
-  }
-
 # Since insert_all doesn't accept assocs, we insert the levels first and then their units
-{:ok, dungeon_campaign} =
+{:ok, _dungeon_campaign} =
   Campaigns.insert_campaign(
     %{
       game_id: champions_of_mirra_id,
@@ -375,59 +380,7 @@ dungeon_rules =
     returning: true
   )
 
-dungeon_levels =
-  Enum.map(1..dungeon_rules.length, fn level_index ->
-    %{
-      game_id: champions_of_mirra_id,
-      campaign_id: dungeon_campaign.id,
-      level_number: level_index,
-      experience_reward: 100 * level_index,
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
-
-{_, levels_without_units} =
-  Repo.insert_all(Level, dungeon_levels, returning: [:id, :level_number, :campaign_id])
-
-units =
-  Enum.flat_map(Enum.with_index(levels_without_units, 0), fn {level, level_index} ->
-    base_level = dungeon_rules.base_level
-    level_scaler = dungeon_rules.scaler
-
-    possible_characters = Units.all_characters_from_factions(dungeon_rules.possible_factions)
-
-    agg_difficulty = (base_level * Math.pow(level_scaler, level_index)) |> round()
-
-    units =
-      Enum.map(1..6, fn slot ->
-        Units.unit_params_for_level(
-          possible_characters,
-          div(agg_difficulty, units_per_level),
-          slot
-        )
-        |> Map.put(:inserted_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
-        |> Map.put(:updated_at, NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second))
-      end)
-
-    # Add the remaining unit levels to match the level difficulty
-    level_units =
-      case rem(agg_difficulty, units_per_level) do
-        0 ->
-          units
-
-        missing_levels ->
-          Enum.reduce(0..missing_levels, units, fn index, units ->
-            List.update_at(units, index, fn unit -> %{unit | level: unit.level + 1} end)
-          end)
-      end
-
-    Enum.map(level_units, fn unit_attrs ->
-      Map.put(unit_attrs, :campaign_level_id, level.id)
-    end)
-  end)
-
-Repo.insert_all(Unit, units, on_conflict: :nothing)
+Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 # Insert characters
@@ -441,9 +394,20 @@ end)
 # Insert items templates
 Config.get_items_templates_config()
 |> Enum.each(fn item_template ->
+  purchase_costs =
+    Enum.map(item_template.purchase_costs, fn purchase_cost ->
+      Map.put(
+        purchase_cost,
+        :currency_id,
+        Repo.get_by!(Currency, name: purchase_cost.currency, game_id: curse_of_mirra_id)
+        |> Map.get(:id)
+      )
+    end)
+
   Map.put(item_template, :game_id, curse_of_mirra_id)
   |> Map.put(:rarity, 0)
   |> Map.put(:config_id, item_template.name)
+  |> Map.put(:purchase_costs, purchase_costs)
   |> Items.insert_item_template()
 end)
 

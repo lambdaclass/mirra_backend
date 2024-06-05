@@ -21,6 +21,7 @@ defmodule Arena.GameTracker do
   end
 
   @type player_id :: pos_integer()
+  @type bounty_quest_id :: binary()
   @type player :: %{id: player_id(), character_name: binary()}
   @type event ::
           {:kill, player(), player()}
@@ -28,6 +29,7 @@ defmodule Arena.GameTracker do
           | {:damage_done, player_id(), non_neg_integer()}
           | {:heal, player_id(), non_neg_integer()}
           | {:kill_by_zone, player_id()}
+          | {:select_bounty, player_id(), bounty_quest_id()}
 
   @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
@@ -58,7 +60,8 @@ defmodule Arena.GameTracker do
           damage_taken: 0,
           damage_done: 0,
           health_healed: 0,
-          killed_by_bot: false
+          killed_by_bot: false,
+          bounty_quest_id: nil
         }
 
         {player.id, player_data}
@@ -133,6 +136,10 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :health_healed], fn health_healed -> health_healed + amount end)
   end
 
+  defp update_data(data, {:select_bounty, player_id, bounty_quest_id}) do
+    put_in(data, [:players, player_id, :bounty_quest_id], bounty_quest_id)
+  end
+
   defp generate_results(match_data, winner_id) do
     duration = System.monotonic_time(:millisecond) - match_data.start_at
 
@@ -155,7 +162,8 @@ defmodule Arena.GameTracker do
         health_healed: player_data.health_healed,
         killed_by: player_data.death,
         killed_by_bot: player_data.killed_by_bot,
-        duration_ms: duration
+        duration_ms: duration,
+        bounty_quest_id: player_data.bounty_quest_id
       }
     end)
   end
