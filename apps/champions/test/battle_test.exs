@@ -2062,8 +2062,9 @@ defmodule Champions.Test.BattleTest do
       attacker_cooldown = 9
       dot_duration = 3
       dot_interval = 2
+
       # We add 1 to consider the step in which the attack is performed
-      required_steps = attacker_cooldown + dot_duration * (dot_interval + 1)
+      required_steps = attacker_cooldown + dot_duration * dot_interval + 1
 
       deal_damage_over_time_params =
         TestUtils.build_skill(%{
@@ -2115,6 +2116,9 @@ defmodule Champions.Test.BattleTest do
 
       assert "team_1" ==
                Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps).result
+
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps - 1).result
     end
   end
 end
