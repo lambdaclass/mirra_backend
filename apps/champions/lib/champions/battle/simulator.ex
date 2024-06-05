@@ -365,7 +365,7 @@ defmodule Champions.Battle.Simulator do
       |> put_in([:units, unit.id, :modifiers], new_modifiers)
       |> put_in([:units, unit.id, :tags], new_tags)
 
-    {new_unit, new_history} = process_executions_over_time(new_state.units[unit.id], new_history)
+    {new_unit, new_history} = process_executions_over_time(unit, new_state.units[unit.id], new_history)
 
     new_state =
       new_state
@@ -1071,8 +1071,8 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
-  defp process_executions_over_time(unit, history) do
-    Enum.reduce(unit.executions_over_time, {unit, history}, fn execution_over_time, {unit_acc, history_acc} ->
+  defp process_executions_over_time(unit_initial_state, current_unit, history) do
+    Enum.reduce(unit_initial_state.executions_over_time, {current_unit, history}, fn execution_over_time, {unit_acc, history_acc} ->
       process_execution_over_time(execution_over_time, unit_acc, history_acc)
     end)
   end
