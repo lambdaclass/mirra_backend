@@ -30,11 +30,13 @@ config :joken,
   audience: System.get_env("GOOGLE_CLIENT_ID")
 
 if config_env() == :prod do
-  jwt_private_key =
-    System.get_env("JWT_PRIVATE_KEY") ||
+  jwt_private_key_base64 =
+    System.get_env("JWT_PRIVATE_KEY_BASE_64") ||
       raise """
-      environment variable JWT_PRIVATE_KEY is missing
+      environment variable JWT_PRIVATE_KEY_BASE_64 is missing
       """
+
+  jwt_private_key = Base.decode64(jwt_private_key_base64)
 
   config :joken,
     default_signer: [

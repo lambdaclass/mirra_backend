@@ -54,6 +54,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+          JWT_PRIVATE_KEY_BASE_64: ${{ secrets.JWT_PRIVATE_KEY_BASE_64 }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -72,6 +73,7 @@ jobs:
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 JWT_PRIVATE_KEY='${JWT_PRIVATE_KEY}' \
+                JWT_PRIVATE_KEY_BASE_64=${JWT_PRIVATE_KEY_BASE_64} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh
