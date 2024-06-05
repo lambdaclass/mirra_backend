@@ -1,78 +1,64 @@
 <.header>
-  Configuration <%= @configuration.id %>
-  <:subtitle>This is a configuration record from your database.</:subtitle>
+  Configuration <%= @configuration.name %>
 </.header>
 
-<%= if ConfiguratorWeb.UtilsConfiguration.nested_maps_level(@data, 0) > 1 do %>
-  <%= for {tab, values} <- @values_by_tabs do %>
-    <table class="config-table">
-      <thead>
-        <tr>
-          <th>
-            <%= tab %>
-          </th>
-          <%= for attribute_key <- @attribute_keys do %>
-            <th>
-              <%= attribute_key %>
-            </th>
-          <% end %>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for value <- values do %>
+<div>
+  <%= if ConfiguratorWeb.UtilsConfiguration.nested_maps_level(@data, 0) > 1 do %>
+    <%= for {tab, values} <- @values_by_tabs do %>
+      <table class="config-table w-full">
+        <thead>
           <tr>
-            <td>
-              <%= value %>
-            </td>
+            <th>
+              <%= ConfiguratorWeb.UtilsConfiguration.key_prettier(tab) %>
+            </th>
             <%= for attribute_key <- @attribute_keys do %>
-              <%= if is_map(@data[tab][value][attribute_key]) do %>
-                <td>
-                  <.modal id={attribute_key}>
-                  <div class="border">
-                    <%= for {key, value} <- @data[tab][value][attribute_key] do %>
-                      <p><%= key %>:<%= value %></p>
-                    <% end %>
-                  </div>
-                  </.modal>
-                  <.button phx-click={show_modal(attribute_key)}>
-                    Click to show data
-                  </.button>
-                </td>
-              <% else %>
-                <td>
-                  <%= @data[tab][value][attribute_key] %>
-                </td>
-              <% end %>
+              <th>
+                <%= ConfiguratorWeb.UtilsConfiguration.key_prettier(attribute_key) %>
+              </th>
             <% end %>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <%= for value <- values do %>
+            <tr>
+              <td>
+                <%= ConfiguratorWeb.UtilsConfiguration.key_prettier(value) %>
+              </td>
+              <%= for attribute_key <- @attribute_keys do %>
+                <%= cond do %>
+                  <% is_map(@data[tab][value][attribute_key]) -> %>
+                    <td>
+                      <.modal id={attribute_key}>
+                        <.render_map_as_table map={@data[tab][value][attribute_key]} name={attribute_key} />
+                      </.modal>
+                      <.button phx-click={show_modal(attribute_key)}>
+                        Display <%= attribute_key %>
+                      </.button>
+                    </td>
+                  <% is_list(@data[tab][value][attribute_key]) -> %>
+                    <td>
+                      <.modal id={attribute_key}>
+                        <.render_list_as_table list={@data[tab][value][attribute_key]} name={attribute_key} />
+                      </.modal>
+                      <.button phx-click={show_modal(attribute_key)}>
+                        Display <%= attribute_key %>
+                      </.button>
+                    </td>
+                  <% true -> %>
+                    <td>
+                      <%= @data[tab][value][attribute_key] %>
+                    </td>
+                <% end %>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% end %>
+  <% else %>
+    <%= for {tab, values} <- @values_by_tabs do %>
+      <.render_map_as_table map={@data[tab]} name={tab} />
+    <% end %>
   <% end %>
-<% else %>
-  <%= for {tab, values} <- @values_by_tabs do %>
-    <table class="config-table">
-      <thead>
-        <tr>
-          <th>
-            <%= tab %>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <%= for value <- values do %>
-          <tr>
-            <td>
-              <%= value %>
-            </td>
-            <td>
-              <%= @data[tab][value] %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  <% end %>
-<% end %>
-
+</div>
 <.back navigate={~p"/games/#{@game}/configuration_groups/#{@configuration_group}"}>Back to configurations</.back>

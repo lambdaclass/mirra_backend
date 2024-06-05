@@ -7,18 +7,29 @@
   </:actions>
 </.header>
 
-<.table
-  id="configuration"
-  rows={@configurations}
-  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/#{&1}")}
->
-  <:col :let={configuration} label="ID">
-    <%= configuration.id %>
-  </:col>
-  <:col :let={configuration} label="Name">
-    <%= configuration.name %>
-  </:col>
-  <:col :let={configuration} label="Current configuration">
-    <%= configuration.current %>
-  </:col>
-</.table>
+<table class="config-table w-full">
+  <thead>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Current Configuration</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <%= for configuration <- @configurations do %>
+      <tr>
+        <td><%= configuration.id %></td>
+        <td><%= configuration.name %></td>
+        <td><%= configuration.current %></td>
+        <td>
+          <.link navigate={
+            ~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/#{configuration.id}"
+          }>
+            Show
+          </.link>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<.back navigate={~p"/games/#{@game.id}"}>Back to configuration groups</.back>

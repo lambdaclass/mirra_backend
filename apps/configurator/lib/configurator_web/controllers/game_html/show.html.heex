@@ -1,5 +1,5 @@
 <.header>
-  <span>Listing <%= @game.name %> configurations groups</span>
+  <span>Listing <%= @game.name %> configuration groups</span>
   <:actions>
     <.link navigate={~p"/games/#{@game}/configuration_groups/new"}>
       <.button>
@@ -9,20 +9,23 @@
   </:actions>
 </.header>
 
-<.table
-  id="configurations_groups"
-  rows={@configurations_groups}
-  row_click={&JS.navigate(~p"/games/#{@game}/configuration_groups/#{&1}")}
->
-  <:col :let={configuration} label="ID">
-    <%= configuration.id %>
-  </:col>
-  <:col :let={configuration} label="Name">
-    <%= configuration.name %>
-  </:col>
-  <:action :let={configuration}>
-    <div class="sr-only">
-      <.link navigate={~p"/games/#{@game}/configuration_groups/#{configuration}"}>Show</.link>
-    </div>
-  </:action>
-</.table>
+<table class="config-table w-full">
+  <thead>
+    <th>ID</th>
+    <th>Name</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <%= for configuration_group <- @configuration_groups do %>
+      <tr>
+        <td><%= configuration_group.id %></td>
+        <td><%= configuration_group.name %></td>
+        <td>
+          <.link navigate={~p"/games/#{@game}/configuration_groups/#{configuration_group}"}>Show</.link>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<.back navigate={~p"/games"}>Back to games</.back>
