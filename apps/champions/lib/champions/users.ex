@@ -23,7 +23,7 @@ defmodule Champions.Users do
   """
   def register(username) do
     kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
-    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level(1)
+    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level_by_number(1)
     {:ok, dungeon_base_setting} = Users.get_upgrade_by_name("Dungeon.BaseSetting")
 
     case Users.register_user(%{

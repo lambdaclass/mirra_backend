@@ -201,19 +201,26 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a DungeonSettlementLevel by its id.
+  """
+  def get_dungeon_settlement_level(dungeon_settlement_level_id) do
+    Repo.get(DungeonSettlementLevel, dungeon_settlement_level_id)
+  end
+
+  @doc """
   Gets a DungeonSettlementLevel by its number.
 
   Returns {:error, :not_found} if no level is found.
 
   ## Examples
 
-      iex> get_dungeon_settlement_level(1)
+      iex> get_dungeon_settlement_level_by_number(1)
       %DungeonSettlementLevel{}
 
-      iex> get_dungeon_settlement_level(-1)
+      iex> get_dungeon_settlement_level_by_number(-1)
       nil
   """
-  def get_dungeon_settlement_level(level_number) do
+  def get_dungeon_settlement_level_by_number(level_number) do
     Repo.get_by(DungeonSettlementLevel, level: level_number)
   end
 
@@ -322,7 +329,7 @@ defmodule GameBackend.Users do
   defp increment_settlement_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
-        case get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1) do
+        case get_dungeon_settlement_level_by_number(user.dungeon_settlement_level.level + 1) do
           nil ->
             {:error, :dungeon_settlement_level_not_found}
 
