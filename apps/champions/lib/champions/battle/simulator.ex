@@ -880,7 +880,7 @@ defmodule Champions.Battle.Simulator do
             caster: caster,
             skill_id: effect.skill_id,
             remaining_duration: get_duration(effect.type),
-            remaining_interval_steps: get_interval_steps(execution_over_time),
+            remaining_interval_steps: get_interval_steps(execution_over_time)
           }
           | current_executions
         ]
@@ -1114,7 +1114,8 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_executions_over_time(unit_initial_state, current_unit, history) do
-    Enum.reduce(unit_initial_state.executions_over_time, {current_unit, history}, fn execution_over_time, {unit_acc, history_acc} ->
+    Enum.reduce(unit_initial_state.executions_over_time, {current_unit, history}, fn execution_over_time,
+                                                                                     {unit_acc, history_acc} ->
       process_execution_over_time(execution_over_time, unit_acc, history_acc)
     end)
   end
@@ -1130,68 +1131,53 @@ defmodule Champions.Battle.Simulator do
   end
 
   defp process_execution_over_time(
-         %{
-           execution: %{
-             "type" => "DealDamageOverTime",
-             "attack_ratio" => attack_ratio,
-             "apply_tags" => _apply_tags,
-             "interval" => _interval
-           },
-           remaining_interval_steps: 0
-         } = execution_over_time,
+         %{execution: %{"type" => "DealDamageOverTime"}, remaining_interval_steps: remaining_interval_steps} =
+           execution_over_time,
          target,
          history
        ) do
-    {new_target, new_history} =
-      apply_execution_over_time(
-        execution_over_time,
-        attack_ratio,
-        target,
-        history
-      )
+    case remaining_interval_steps do
+      0 ->
+        {new_target, new_history} =
+          apply_execution_over_time(
+            execution_over_time,
+            execution_over_time.execution["attack_ratio"],
+            target,
+            history
+          )
 
-    initial_interval_steps = get_interval_steps(execution_over_time.execution)
+        initial_interval_steps = get_interval_steps(execution_over_time.execution)
 
-    new_target =
-      update_in(new_target, [:executions_over_time], fn current_executions ->
-        Enum.map(current_executions, fn exec ->
-          if exec.skill_id == execution_over_time.skill_id do
-            Map.put(exec, :remaining_interval_steps, initial_interval_steps)
-            |> Map.put(:remaining_duration, exec.remaining_duration - 1)
-          else
-            exec
-          end
-        end)
-      end)
+        new_target =
+          update_in(new_target, [:executions_over_time], fn current_executions ->
+            Enum.map(current_executions, fn exec ->
+              if exec.skill_id == execution_over_time.skill_id do
+                Map.put(exec, :remaining_interval_steps, initial_interval_steps)
+                |> Map.put(:remaining_duration, exec.remaining_duration - 1)
+              else
+                exec
+              end
+            end)
+          end)
 
-    {new_target, new_history}
-  end
+        {new_target, new_history}
 
-  defp process_execution_over_time(
-         %{
-           execution: %{
-             "type" => "DealDamageOverTime",
-             "attack_ratio" => _attack_ratio,
-             "apply_tags" => _apply_tags,
-             "interval" => _interval
-           }
-         } = execution_over_time,
-         target,
-         history
-       ) do
-    execution = target.executions_over_time |> Enum.find(fn exec -> exec.skill_id == execution_over_time.skill_id end)
+      _ ->
+        execution =
+          target.executions_over_time |> Enum.find(fn exec -> exec.skill_id == execution_over_time.skill_id end)
 
-    new_execution_over_time =
-      Map.put(execution_over_time, :remaining_interval_steps, execution.remaining_interval_steps - 1)
+        new_execution_over_time =
+          Map.put(execution_over_time, :remaining_interval_steps, execution.remaining_interval_steps - 1)
 
-    new_target =
-      update_in(target, [:executions_over_time], fn current_executions ->
-        Enum.filter(current_executions, fn exec -> exec != execution end) ++ [new_execution_over_time]
-      end)
+        new_target =
+          update_in(target, [:executions_over_time], fn current_executions ->
+            Enum.filter(current_executions, fn exec -> exec != execution end) ++ [new_execution_over_time]
+          end)
 
-    Logger.info("Remaining period: #{new_execution_over_time.remaining_interval_steps}")
+        Logger.info("Remaining period: #{new_execution_over_time.remaining_interval_steps}")
 
-    {new_target, history}
+        {new_target, history}
+    end
   end
 
   defp process_execution_over_time(
@@ -1399,7 +1385,7 @@ defmodule Champions.Battle.Simulator do
 
   # Used to create the initial effect maps to be used during simulation.
   defp create_effect_map(%Effect{} = effect, skill_id) do
-   %{
+    %{
       type:
         Enum.into(effect.type, %{}, fn
           {"type", type} -> {:type, string_to_atom(type)}
@@ -1410,9 +1396,10 @@ defmodule Champions.Battle.Simulator do
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
-      executions_over_time: Enum.map(effect.executions_over_time, fn eot ->
-        Map.put(eot, "interval", div(eot["interval"], @miliseconds_per_step))
-      end),
+      executions_over_time:
+        Enum.map(effect.executions_over_time, fn eot ->
+          Map.put(eot, "interval", div(eot["interval"], @miliseconds_per_step))
+        end),
       skill_id: skill_id
     }
   end
