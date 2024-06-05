@@ -3,19 +3,17 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias GameBackend.Repo
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias Ecto.{Changeset, Multi}
   alias Champions.Users
-  alias GameBackend.Utils
-  alias Ecto.Changeset
-  alias Ecto.Multi
   alias GameBackend.Items
+  alias GameBackend.Repo
   alias GameBackend.Transaction
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users
-  alias GameBackend.Users.Currencies
   alias GameBackend.Units
   alias GameBackend.Units.Characters
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Utils
 
   @max_afk_reward_seconds 12 * 60 * 60
 
