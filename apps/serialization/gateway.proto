@@ -202,7 +202,7 @@ syntax = "proto3";
     repeated CurrencyCost level_up_costs = 3;
     uint64 max_dungeon = 4;
     uint64 max_factional = 5;
-    uint64 supply_limit = 6;
+    uint64 supply_cap = 6;
     repeated AfkRewardRate afk_reward_rates = 7;
   }
 

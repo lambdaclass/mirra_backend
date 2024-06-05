@@ -3,6 +3,7 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
+  alias GameBackend.Repo
   alias GameBackend.Users.Currencies.CurrencyCost
   alias Champions.Users
   alias GameBackend.Utils
@@ -43,6 +44,7 @@ defmodule Champions.Users do
         add_sample_items(user)
         add_sample_currencies(user)
         add_super_campaign_progresses(user)
+        add_currency_caps(user)
 
         Users.get_user(user.id)
 
@@ -162,6 +164,16 @@ defmodule Champions.Users do
         level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
       })
     end)
+  end
+
+  defp add_currency_caps(user) do
+    user = Repo.preload(user, [:dungeon_settlement_level])
+    # Supplies
+    Currencies.insert_user_currency_cap(%{
+      user_id: user.id,
+      currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
+      cap: user.dungeon_settlement_level.supply_cap
+    })
   end
 
   @doc """

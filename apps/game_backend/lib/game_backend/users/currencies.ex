@@ -230,6 +230,18 @@ defmodule GameBackend.Users.Currencies do
     end
   end
 
+  @doc """
+  Inserts an UserCurrencyCap.
+  """
+  def insert_user_currency_cap(attrs) do
+    %UserCurrencyCap{}
+    |> UserCurrencyCap.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get an UserCurrencyCap.
+  """
   def get_user_currency_cap(user_id, currency_id),
     do: Repo.one(from(uc in UserCurrencyCap, where: uc.user_id == ^user_id and uc.currency_id == ^currency_id))
 end

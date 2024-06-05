@@ -467,7 +467,7 @@ defmodule Gateway.Serialization.DungeonSettlementLevel do
 
   field(:max_dungeon, 4, type: :uint64, json_name: "maxDungeon")
   field(:max_factional, 5, type: :uint64, json_name: "maxFactional")
-  field(:supply_limit, 6, type: :uint64, json_name: "supplyLimit")
+  field(:supply_cap, 6, type: :uint64, json_name: "supplyLimit")
 
   field(:afk_reward_rates, 7,
     repeated: true,
