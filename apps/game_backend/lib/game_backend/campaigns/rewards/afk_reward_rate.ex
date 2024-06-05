@@ -19,7 +19,7 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
     belongs_to(:kaline_tree_level, KalineTreeLevel)
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:currency, Currency)
-    field(:rate, :float)
+    field(:daily_rate, :float)
 
     timestamps()
   end
@@ -27,8 +27,8 @@ defmodule GameBackend.Campaigns.Rewards.AfkRewardRate do
   @doc false
   def changeset(afk_reward_rate, attrs) do
     afk_reward_rate
-    |> cast(attrs, [:kaline_tree_level_id, :dungeon_settlement_level_id, :currency_id, :rate])
-    |> validate_number(:rate, greater_than_or_equal_to: 0)
-    |> validate_required([:currency_id, :rate])
+    |> cast(attrs, [:kaline_tree_level_id, :dungeon_settlement_level_id, :currency_id, :daily_rate])
+    |> validate_number(:daily_rate, greater_than_or_equal_to: 0)
+    |> validate_required([:currency_id, :daily_rate])
   end
 end

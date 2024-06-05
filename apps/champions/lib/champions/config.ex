@@ -150,14 +150,14 @@ defmodule Champions.Config do
         :afk_reward_rates,
         Enum.map(
           dungeon_settlement_level.afk_reward_rates,
-          fn {currency, rate} ->
+          fn {currency, daily_rate} ->
             %{
               currency_id:
                 currency
                 |> Atom.to_string()
                 |> Users.Currencies.get_currency_by_name_and_game!(game_id)
                 |> Map.get(:id),
-              rate: rate
+              daily_rate: daily_rate
             }
           end
         )

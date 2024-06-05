@@ -132,21 +132,21 @@ afk_reward_rates =
     [
       %{
         kaline_tree_level_id: level.id,
-        rate: 10.0 * (level_index - 1) * seconds_in_day,
+        daily_rate: 10.0 * (level_index - 1) * seconds_in_day,
         currency_id: gold_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        rate: 2.0 * (level_index - 1) * seconds_in_day,
+        daily_rate: 2.0 * (level_index - 1) * seconds_in_day,
         currency_id: hero_souls_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        rate: 3.0 * (level_index - 1) * seconds_in_day,
+        daily_rate: 3.0 * (level_index - 1) * seconds_in_day,
         currency_id: arcane_crystals_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)

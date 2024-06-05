@@ -723,10 +723,10 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(user.kaline_tree_level.afk_reward_rates, fn rate ->
                case rate.currency.name in rewardable_currencies do
                  true ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
 
                  false ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
                end
              end)
 
@@ -743,10 +743,10 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(leveled_up_user.kaline_tree_level.afk_reward_rates, fn rate ->
                case rate.currency.name in rewardable_currencies do
                  true ->
-                   rate.rate > 0
+                   rate.daily_rate > 0
 
                  false ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
                end
              end)
 
@@ -783,7 +783,7 @@ defmodule Gateway.Test.Champions do
                    true
 
                  rate ->
-                   reward_rate = rate.rate
+                   reward_rate = rate.daily_rate
 
                    currency_before_claim =
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
@@ -823,16 +823,16 @@ defmodule Gateway.Test.Champions do
                      Enum.find(
                        leveled_up_user.kaline_tree_level.afk_reward_rates,
                        &(&1.currency.name == rate.currency.name)
-                     ).rate
+                     ).daily_rate
 
                    afk_reward_rate =
-                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
+                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).daily_rate
 
                    new_rate = previous_rate + afk_reward_rate
-                   rate.rate > previous_rate
+                   rate.daily_rate > previous_rate
 
                  false ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
                end
              end)
     end
@@ -941,7 +941,7 @@ defmodule Gateway.Test.Champions do
                    true
 
                  rate ->
-                   reward_rate = rate.rate
+                   reward_rate = rate.daily_rate
 
                    currency_before_claim =
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
@@ -979,13 +979,13 @@ defmodule Gateway.Test.Champions do
                  Enum.find(
                    leveled_up_user.dungeon_settlement_level.afk_reward_rates,
                    &(&1.currency.name == rate.currency.name)
-                 ).rate
+                 ).daily_rate
 
                afk_reward_rate =
-                 Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
+                 Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).daily_rate
 
                new_rate = previous_rate + afk_reward_rate
-               rate.rate > previous_rate
+               rate.daily_rate > previous_rate
              end)
     end
   end
