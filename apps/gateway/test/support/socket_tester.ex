@@ -52,7 +52,8 @@ defmodule Gateway.SocketTester do
     GetUserSuperCampaignProgresses,
     LevelUpKalineTree,
     ClaimDungeonAfkRewards,
-    LevelUpDungeonSettlement
+    LevelUpDungeonSettlement,
+    PurchaseDungeonUpgrade
   }
 
   def start_link() do
@@ -312,6 +313,16 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:level_up_dungeon_settlement, %LevelUpDungeonSettlement{user_id: user_id}}
+         })}
+      )
+
+  def purchase_dungeon_upgrade(pid, user_id, upgrade_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:purchase_dungeon_upgrade, %PurchaseDungeonUpgrade{user_id: user_id, upgrade_id: upgrade_id}}
          })}
       )
 

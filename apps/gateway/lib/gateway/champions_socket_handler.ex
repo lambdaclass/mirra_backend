@@ -5,6 +5,7 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
 
+  alias Gateway.Serialization.PurchaseDungeonUpgrade
   alias Gateway.Serialization.LevelUpDungeonSettlement
   alias Gateway.Serialization.ClaimDungeonAfkRewards
   alias Gateway.Serialization.FuseItems
@@ -238,6 +239,13 @@ defmodule Gateway.ChampionsSocketHandler do
 
   defp handle(%LevelUpDungeonSettlement{user_id: user_id}) do
     case Users.level_up_dungeon_settlement(user_id) do
+      {:ok, result} -> prepare_response(result, :user)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%PurchaseDungeonUpgrade{user_id: user_id, upgrade_id: upgrade_id}) do
+    case Users.purchase_dungeon_upgrade(user_id, upgrade_id) do
       {:ok, result} -> prepare_response(result, :user)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
