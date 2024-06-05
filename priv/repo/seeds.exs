@@ -245,6 +245,8 @@ _dungeon_settlement_levels =
     })
   )
 
+Champions.Config.import_dungeon_levels_config()
+
 ##################### CURSE OF MIRRA #####################
 # Insert characters
 Config.get_characters_config()
