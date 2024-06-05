@@ -373,6 +373,7 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
+        unlocks: [upgrade: [:buffs, cost: :currency]],
         kaline_tree_level: [afk_reward_rates: :currency],
         dungeon_settlement_level: [afk_reward_rates: :currency, level_up_costs: :currency],
         super_campaign_progresses: :level,
@@ -405,7 +406,7 @@ defmodule GameBackend.Users do
       {:ok, %Upgrade{name: "upgrade_name"}}
   """
   def get_upgrade_by_name(name) do
-    case Repo.get_by(Upgrade, name: name) do
+    case Repo.get_by(Upgrade, name: name) |> Repo.preload(cost: :currency) do
       nil -> {:error, :not_found}
       upgrade -> {:ok, upgrade}
     end
@@ -432,6 +433,10 @@ defmodule GameBackend.Users do
         Currencies.substract_currencies(user_id, upgrade.cost)
       end)
       |> Transaction.run()
+      |> case do
+        {:ok, _} -> {:ok, get_user(user_id)}
+        _ -> {:error, :unknown_error}
+      end
     else
       {:user, false} -> {:error, :user_not_found}
       {:upgrade, _} -> {:error, :upgrade_not_found}

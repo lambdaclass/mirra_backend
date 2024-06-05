@@ -307,7 +307,7 @@ Champions.Config.import_dungeon_settlement_levels_config()
   Repo.insert(
     Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
-      name: "HP Upgrade 1",
+      name: "Dungeon.HPUpgrade1",
       description: "This upgrade increases the health of all units by 5%.",
       group: 1,
       cost: [
@@ -327,7 +327,7 @@ Champions.Config.import_dungeon_settlement_levels_config()
   Repo.insert(
     Upgrade.changeset(%Upgrade{}, %{
       game_id: champions_of_mirra_id,
-      name: "HP Upgrade 2",
+      name: "Dungeon.HPUpgrade2",
       description: "This upgrade increases the health of all units by 10%.",
       group: 1,
       cost: [

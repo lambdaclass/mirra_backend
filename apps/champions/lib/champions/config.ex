@@ -195,7 +195,7 @@ defmodule Champions.Config do
       |> Map.put(
         :units,
         level.characters
-        |> Enum.with_index()
+        |> Enum.with_index(1)
         |> Enum.map(fn {character, index} ->
           %{
             level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
