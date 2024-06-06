@@ -7,13 +7,13 @@ defmodule Champions.Users do
   alias GameBackend.Utils
   alias Ecto.Changeset
   alias Ecto.Multi
+  alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
   alias GameBackend.Transaction
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users
-  alias GameBackend.Users.Currencies
   alias GameBackend.Units
   alias GameBackend.Units.Characters
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
 
   @max_afk_reward_seconds 12 * 60 * 60
   @seconds_in_day 86_400
@@ -227,7 +227,8 @@ defmodule Champions.Users do
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
     seconds_since_last_claim = DateTime.diff(now, last_claim, :second)
 
-    Decimal.from_float(afk_reward_rate.daily_rate)
+    afk_reward_rate.daily_rate
+    |> Decimal.from_float()
     |> Decimal.div(@seconds_in_day)
     |> Decimal.mult(min(seconds_since_last_claim, @max_afk_reward_seconds))
     |> Decimal.round()
@@ -237,9 +238,21 @@ defmodule Champions.Users do
   @doc """
   Claim a user's AFK rewards, and reset their last AFK reward claim time.
   """
-  def claim_afk_rewards(user_id, type) when type in [:kaline, :dungeon] do
-    afk_rewards = get_afk_rewards(user_id, type)
-    claim_afk_rewards(user_id, afk_rewards, type)
+  def claim_afk_rewards(user_id, :kaline) do
+    {:ok, user} = Users.get_user(user_id)
+    xp_last_claim = user.last_kaline_afk_reward_claim
+    xp_reward_rate = user.kaline_tree_level.experience_reward_rate
+
+    afk_rewards = get_afk_rewards(user_id, :kaline)
+    claim_afk_rewards(user_id, afk_rewards, :kaline)
+
+    experience_reward = calculate_afk_rewards(xp_last_claim, %AfkRewardRate{daily_rate: xp_reward_rate})
+    add_experience(user_id, experience_reward)
+  end
+
+  def claim_afk_rewards(user_id, :dungeon) do
+    afk_rewards = get_afk_rewards(user_id, :dungeon)
+    claim_afk_rewards(user_id, afk_rewards, :dungeon)
   end
 
   defp claim_afk_rewards(user_id, afk_rewards, type) do
