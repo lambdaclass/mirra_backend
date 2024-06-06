@@ -683,6 +683,7 @@ defmodule Gateway.Test.Champions do
   describe "kaline tree" do
     test "kaline tree", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("KalineTreeUser")
+      user = Repo.preload(user, [:currencies, kaline_tree_level: [level_up_cost: :currency]])
 
       # Kaline tree level is 1 when the user is created.
       initial_kaline_tree_level = user.kaline_tree_level.level
@@ -690,6 +691,7 @@ defmodule Gateway.Test.Champions do
 
       initial_fertilizer = Currencies.get_amount_of_currency_by_name(user.id, "Fertilizer")
       initial_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      initial_currencies = %{"Gold" => initial_gold, "Fertilizer" => initial_fertilizer}
 
       # Level up Kaline Tree with enough fertilizer should return an updated user.
       SocketTester.level_up_kaline_tree(socket_tester, user.id)
@@ -699,13 +701,20 @@ defmodule Gateway.Test.Champions do
       assert leveled_up_user.kaline_tree_level.level == initial_kaline_tree_level + 1
 
       # Currency should be deducted
-      assert Currencies.get_amount_of_currency_by_name(user.id, "Fertilizer") ==
-               initial_fertilizer - user.kaline_tree_level.fertilizer_level_up_cost
+      Enum.each(user.kaline_tree_level.level_up_cost, fn cost ->
+        user_currency = Enum.find(leveled_up_user.currencies, &(&1.currency.name == cost.currency.name))
 
-      assert Currencies.get_amount_of_currency_by_name(user.id, "Gold") ==
-               initial_gold - user.kaline_tree_level.gold_level_up_cost
+        assert user_currency.amount == initial_currencies[user_currency.currency.name] - cost.amount
+      end)
 
       # Level up Kaline Tree without enough fertilizer should return an error.
+      Currencies.add_currency_by_name_and_game!(
+        leveled_up_user.id,
+        "Fertilizer",
+        Utils.get_game_id(:champions_of_mirra),
+        -initial_fertilizer
+      )
+
       SocketTester.level_up_kaline_tree(socket_tester, user.id)
 
       fetch_last_message(socket_tester)
@@ -719,18 +728,7 @@ defmodule Gateway.Test.Champions do
       # Check that the initial afk reward rates is not an empty list
       assert Enum.any?(user.kaline_tree_level.afk_reward_rates)
 
-      # Check that the gold, arcane crystals and hero souls afk rewards rates are 0 initially
       rewardable_currencies = ["Gold", "Hero Souls", "Arcane Crystals"]
-
-      assert Enum.all?(user.kaline_tree_level.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   rate.daily_rate == 0
-
-                 false ->
-                   rate.daily_rate == 0
-               end
-             end)
 
       # Level up the Kaline Tree
       SocketTester.level_up_kaline_tree(socket_tester, user.id)

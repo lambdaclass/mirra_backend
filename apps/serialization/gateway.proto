@@ -190,10 +190,9 @@ syntax = "proto3";
   message KalineTreeLevel {
     string id = 1;
     uint64 level = 2;
-    uint64 fertilizer_level_up_cost = 3;
-    uint64 gold_level_up_cost = 4;
     repeated string unlock_features = 5;
     repeated AfkRewardRate afk_reward_rates = 6;
+    repeated CurrencyCost level_up_costs = 7;
   }
   
   message DungeonSettlementLevel {
