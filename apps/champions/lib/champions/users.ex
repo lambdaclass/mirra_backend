@@ -272,7 +272,7 @@ defmodule Champions.Users do
   """
   def level_up_kaline_tree(user_id) do
     with {:user, {:ok, user}} <- {:user, Users.get_user(user_id)},
-         level_up_costs = get_kaline_tree_level_up_costs(user),
+         level_up_costs = user.kaline_tree_level.level_up_cost,
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(user_id, level_up_costs)} do
       Users.level_up_kaline_tree(user_id, level_up_costs)
     else
@@ -294,20 +294,6 @@ defmodule Champions.Users do
       {:user, {:error, :not_found}} -> {:error, :user_not_found}
     end
   end
-
-  # TODO: remove this after finishing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
-  # The costs will be defined in a configuration file.
-  defp get_kaline_tree_level_up_costs(user),
-    do: [
-      %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name_and_game!("Fertilizer", Utils.get_game_id(:champions_of_mirra)).id,
-        amount: user.kaline_tree_level.fertilizer_level_up_cost
-      },
-      %CurrencyCost{
-        currency_id: Currencies.get_currency_by_name_and_game!("Gold", Utils.get_game_id(:champions_of_mirra)).id,
-        amount: user.kaline_tree_level.gold_level_up_cost
-      }
-    ]
 
   @doc """
   Purchase a Dungeon upgrade for a user.
