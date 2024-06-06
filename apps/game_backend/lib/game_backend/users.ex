@@ -259,7 +259,7 @@ defmodule GameBackend.Users do
   Inserts a DungeonSettlementLevel into the database. If another one already exists with the same number, it updates it instead.
   """
   def upsert_dungeon_settlement_level(attrs) do
-    case get_dungeon_settlement_level(attrs.level) do
+    case get_dungeon_settlement_level_by_number(attrs.level) do
       nil -> insert_dungeon_settlement_level(attrs)
       dungeon_settlement_level -> update_dungeon_settlement_level(dungeon_settlement_level, attrs)
     end
