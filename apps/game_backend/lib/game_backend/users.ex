@@ -197,7 +197,10 @@ defmodule GameBackend.Users do
       nil
   """
   def get_kaline_tree_level(level_number) do
-    Repo.get_by(KalineTreeLevel, level: level_number)
+    case Repo.get_by(KalineTreeLevel, level: level_number) do
+      nil -> {:error, :not_found}
+      kaline_tree_level -> {:ok, kaline_tree_level}
+    end
   end
 
   @doc """
@@ -232,8 +235,8 @@ defmodule GameBackend.Users do
 
   defp upsert_kaline_tree_level(attrs) do
     case get_kaline_tree_level(attrs.level) do
-      nil -> insert_kaline_tree_level(attrs)
-      kaline_tree_level -> update_kaline_tree_level(kaline_tree_level, attrs)
+      {:error, :not_found} -> insert_kaline_tree_level(attrs)
+      {:ok, kaline_tree_level} -> update_kaline_tree_level(kaline_tree_level, attrs)
     end
   end
 
@@ -370,7 +373,7 @@ defmodule GameBackend.Users do
       |> Repo.update()
     else
       {:user, {:error, :not_found}} -> {:error, :user_not_found}
-      {:kaline_tree_level, nil} -> {:error, :kaline_tree_max_level_reached}
+      {:kaline_tree_level, {:error, :not_found}} -> {:error, :kaline_tree_max_level_reached}
     end
   end
 
