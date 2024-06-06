@@ -90,6 +90,7 @@ defmodule GameBackend.Users do
           arena_match_results: ^arena_match_result_subquery,
           user: [
             currencies: :currency,
+            units: :character,
             user_quests: ^daily_quest_subquery
           ]
         ]

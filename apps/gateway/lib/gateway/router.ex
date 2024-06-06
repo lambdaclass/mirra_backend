@@ -12,6 +12,7 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
+    post "/match/:match_id", MatchResultsController, :create
     get "/get_bounties", QuestController, :get_bounties
 
     scope "/characters" do
@@ -29,12 +30,6 @@ defmodule Gateway.Router do
         put "/buy", ItemController, :buy
       end
     end
-  end
-
-  scope "/arena", Gateway.Controllers.Arena do
-    pipe_through :api
-
-    post "/match/:match_id", MatchResultsController, :create
   end
 
   scope "/", Gateway do
