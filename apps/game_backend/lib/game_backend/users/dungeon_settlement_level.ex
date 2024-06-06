@@ -23,9 +23,9 @@ defmodule GameBackend.Users.DungeonSettlementLevel do
     # The amount of Supplies currency that a player can hold at a time // TODO: [#CHoM-439]
     field(:supply_cap, :integer)
 
-    has_many(:afk_reward_rates, AfkRewardRate)
+    has_many(:afk_reward_rates, AfkRewardRate, on_replace: :delete)
 
-    embeds_many(:level_up_costs, CurrencyCost)
+    embeds_many(:level_up_costs, CurrencyCost, on_replace: :delete)
 
     timestamps()
   end
