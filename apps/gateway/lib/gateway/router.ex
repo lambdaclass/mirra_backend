@@ -13,6 +13,7 @@ defmodule Gateway.Router do
     pipe_through :api
 
     post "/match/:match_id", MatchResultsController, :create
+    get "/get_bounties", QuestController, :get_bounties
 
     scope "/characters" do
       get "/configuration", CharacterController, :get_characters_config
@@ -22,7 +23,7 @@ defmodule Gateway.Router do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
       get "/get_daily_reward_status", UserController, :get_daily_reward_status
-      get "/quest/:quest_id/reroll_quest", QuestController, :reroll_quest
+      get "/quest/:quest_id/reroll_daily_quest", QuestController, :reroll_daily_quest
 
       scope "/items" do
         put "/equip", ItemController, :equip

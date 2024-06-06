@@ -1,13 +1,22 @@
 defmodule Champions.Config do
   @moduledoc """
   Configuration utilities.
+
+  The functions here read configuration files from the app's priv folder and import them into the database.
+  They are meant to be used during the application's initialization (in the seeds.exs file) but can also be called during runtime.
+  These functions will overwrite existing data in the database when unique identifiers are repeated (like character names) through upserts.
+
+  Take into account that these functions do not remove existing data from the database, so if you want to remove old data, you should do it manually.
+  For example, if you initially defined characters A and B in your `characters.json` file, and later on kept only A and reimported the file, B would still be in the database.
   """
 
+  alias GameBackend.Campaigns
   alias Champions.Units
   alias GameBackend.Items
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
   alias GameBackend.Users
+  alias GameBackend.Users.Currencies
   alias GameBackend.Utils
 
   @doc """
@@ -77,17 +86,9 @@ defmodule Champions.Config do
 
     Jason.decode!(item_templates_json, [{:keys, :atoms}])
     |> Enum.map(fn item_template ->
-      Map.put(item_template, :game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
-      |> update_in([:upgrade_costs], fn upgrade_costs ->
-        Enum.map(
-          upgrade_costs,
-          &%{
-            currency_id:
-              Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
-            amount: &1.amount
-          }
-        )
-      end)
+      item_template
+      |> Map.put(:game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
+      |> update_in([:upgrade_costs], &transform_currency_costs/1)
     end)
     |> Items.upsert_item_templates()
   end
@@ -132,5 +133,107 @@ defmodule Champions.Config do
         persistent: true
       )
     end)
+  end
+
+  def import_dungeon_settlement_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, dungeon_settlement_levels_json} =
+      Application.app_dir(:champions, "priv/dungeon_settlement_levels.json")
+      |> File.read()
+
+    Jason.decode!(dungeon_settlement_levels_json, [{:keys, :atoms}])
+    |> Enum.map(fn dungeon_settlement_level ->
+      dungeon_settlement_level
+      |> update_in([:level_up_costs], &transform_currency_costs/1)
+      |> Map.put(
+        :afk_reward_rates,
+        Enum.map(
+          dungeon_settlement_level.afk_reward_rates,
+          fn {currency, daily_rate} ->
+            %{
+              currency_id:
+                currency
+                |> Atom.to_string()
+                |> Users.Currencies.get_currency_by_name_and_game!(game_id)
+                |> Map.get(:id),
+              daily_rate: daily_rate
+            }
+          end
+        )
+      )
+    end)
+    |> Users.upsert_dungeon_settlement_levels()
+  end
+
+  defp transform_currency_costs(currency_costs) do
+    Enum.map(
+      currency_costs,
+      &%{
+        currency_id:
+          Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
+        amount: &1.amount
+      }
+    )
+  end
+
+  def import_dungeon_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, dungeon_campaign_json} =
+      Application.app_dir(:champions, "priv/dungeon_campaign.json")
+      |> File.read()
+
+    dungeon_super_campaign =
+      Campaigns.get_super_campaign_by_name_and_game("Dungeon", game_id)
+
+    [dungeon_campaign] = dungeon_super_campaign.campaigns
+
+    Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
+    |> Enum.map(fn level ->
+      level
+      |> Map.put(
+        :units,
+        level.characters
+        |> Enum.with_index(1)
+        |> Enum.map(fn {character, index} ->
+          %{
+            level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
+            tier: 1,
+            rank: 1,
+            selected: true,
+            slot: index,
+            character_id:
+              Characters.get_character_id_by_name_and_game_id(character, Utils.get_game_id(:champions_of_mirra))
+          }
+        end)
+      )
+      |> Map.put(:game_id, game_id)
+      |> Map.put(:campaign_id, dungeon_campaign.id)
+      |> Map.put(
+        :attempt_cost,
+        Enum.map(level.attempt_cost, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
+      |> Map.put(
+        :currency_rewards,
+        Enum.map(level.currency_rewards, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
+    end)
+    |> Campaigns.upsert_levels()
+  end
+
+  defp transform_currency_amount(currency, amount, game_id) do
+    %{
+      currency_id:
+        currency
+        |> Atom.to_string()
+        |> Currencies.get_currency_by_name_and_game!(game_id)
+        |> Map.get(:id),
+      amount: amount
+    }
   end
 end

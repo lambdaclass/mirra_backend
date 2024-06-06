@@ -26,7 +26,7 @@ defmodule Arena.GameSocketHandler do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
-    {:ok, %{player_id: player_id, game_config: config, game_status: game_status}} =
+    {:ok, %{player_id: player_id, game_config: config, game_status: game_status, bounties: bounties}} =
       GameUpdater.join(state.game_pid, state.client_id)
 
     state =
@@ -39,17 +39,12 @@ defmodule Arena.GameSocketHandler do
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config)}}
+        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 
     {:reply, {:binary, encoded_msg}, state}
-  end
-
-  @impl true
-  def websocket_handle(_, %{enable: false} = state) do
-    {:ok, state}
   end
 
   @impl true
@@ -71,31 +66,9 @@ defmodule Arena.GameSocketHandler do
     {:reply, {:pong, ""}, state}
   end
 
-  def websocket_handle({:binary, message}, %{block_actions: block_actions, block_movement: block_movement} = state) do
-    case Serialization.GameAction.decode(message) do
-      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
-        unless block_actions do
-          GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
-        end
-
-      %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        unless block_actions do
-          GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
-        end
-
-      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        unless block_movement do
-          GameUpdater.move(
-            state.game_pid,
-            state.player_id,
-            {direction.x, direction.y},
-            timestamp
-          )
-        end
-
-      _ ->
-        {}
-    end
+  def websocket_handle({:binary, message}, state) do
+    Serialization.GameAction.decode(message)
+    |> handle_decoded_message(state)
 
     {:ok, state}
   end
@@ -205,4 +178,52 @@ defmodule Arena.GameSocketHandler do
 
     {key, Map.merge(skill, extra_params)}
   end
+
+  defp handle_decoded_message(%{action_type: {:select_bounty, %{bounty_quest_id: bounty_quest_id}}}, state),
+    do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_quest_id)
+
+  defp handle_decoded_message(
+         _,
+         %{enable: false} = _state
+       ),
+       do: nil
+
+  defp handle_decoded_message(
+         %{action_type: {action, _}} = message,
+         %{block_movement: false} = state
+       )
+       when action in [:move] do
+    case message do
+      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
+        GameUpdater.move(
+          state.game_pid,
+          state.player_id,
+          {direction.x, direction.y},
+          timestamp
+        )
+
+      _ ->
+        nil
+    end
+  end
+
+  defp handle_decoded_message(
+         %{action_type: {action, _}} = message,
+         %{block_actions: false} = state
+       )
+       when action in [:attack, :use_item] do
+    case message do
+      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
+        GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+
+      %{action_type: {:use_item, _}, timestamp: timestamp} ->
+        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+
+      _ ->
+        nil
+    end
+  end
+
+  defp handle_decoded_message(_, _),
+    do: nil
 end

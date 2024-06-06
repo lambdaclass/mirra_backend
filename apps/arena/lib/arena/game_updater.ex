@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
@@ -34,6 +35,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:use_item, player_id, timestamp})
   end
 
+  def select_bounty(game_pid, player_id, bounty_quest_id) do
+    GenServer.cast(game_pid, {:select_bounty, player_id, bounty_quest_id})
+  end
+
   ##########################
   # END API
   ##########################
@@ -45,7 +50,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
-    Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -72,7 +77,19 @@ defmodule Arena.GameUpdater do
         {:reply, :not_a_client, state}
 
       player_id ->
-        response = %{player_id: player_id, game_config: state.game_config, game_status: state.game_state.status}
+        bounties =
+          GameBountiesFetcher.get_bounties()
+
+        response = %{
+          player_id: player_id,
+          game_config: state.game_config,
+          game_status: state.game_state.status,
+          bounties: bounties
+        }
+
+        state =
+          put_in(state, [:game_state, :players, player_id, :aditional_info, :bounties], bounties)
+
         {:reply, {:ok, response}, state}
     end
   end
@@ -108,6 +125,15 @@ defmodule Arena.GameUpdater do
       |> Player.use_item(state.game_state, state.game_config)
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_cast({:select_bounty, player_id, bounty_quest_id}, state) do
+    GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
+
+    state =
+      put_in(state, [:game_state, :players, player_id, :aditional_info, :bounty_selected], true)
+
+    {:noreply, state}
   end
 
   ##########################
@@ -164,10 +190,17 @@ defmodule Arena.GameUpdater do
     {:noreply, %{state | game_state: game_state}}
   end
 
+  def handle_info(:selecting_bounty, state) do
+    Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
+
+    {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
+  end
+
   def handle_info(:game_start, state) do
     broadcast_enable_incomming_messages(state.game_state.game_id)
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    send(self(), :pick_default_bouty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
@@ -455,6 +488,18 @@ defmodule Arena.GameUpdater do
 
   def handle_info({:block_movement, player_id, value}, state) do
     broadcast_player_block_movement(state.game_state.game_id, player_id, value)
+    {:noreply, state}
+  end
+
+  def handle_info(:pick_default_bouty_for_missing_players, state) do
+    Enum.each(state.game_state.players, fn {player_id, player} ->
+      if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
+        bounty = Enum.random(player.aditional_info.bounties)
+
+        GameTracker.push_event(self(), {:select_bounty, player_id, bounty.id})
+      end
+    end)
+
     {:noreply, state}
   end
 
