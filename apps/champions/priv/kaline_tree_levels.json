@@ -1,0 +1,726 @@
+[
+    {
+        "level": 1,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 28800,
+            "Experience": 11520,
+            "Souls": 21600,
+            "Crystals": 100
+        }
+    },
+    {
+        "level": 2,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 30240,
+            "Experience": 13680,
+            "Souls": 22140,
+            "Crystals": 102
+        }
+    },
+    {
+        "level": 3,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 31680,
+            "Experience": 15840,
+            "Souls": 22693,
+            "Crystals": 104
+        }
+    },
+    {
+        "level": 4,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 33120,
+            "Experience": 18000,
+            "Souls": 23260,
+            "Crystals": 106
+        }
+    },
+    {
+        "level": 5,
+        "feature_unlocks": "Mystic Portal (Summoning)",
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 34560,
+            "Experience": 20160,
+            "Souls": 23842,
+            "Crystals": 108
+        }
+    },
+    {
+        "level": 6,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 36000,
+            "Experience": 22320,
+            "Souls": 24438,
+            "Crystals": 110
+        }
+    },
+    {
+        "level": 7,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 37440,
+            "Experience": 24480,
+            "Souls": 25049,
+            "Crystals": 112
+        }
+    },
+    {
+        "level": 8,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 38880,
+            "Experience": 26640,
+            "Souls": 25675,
+            "Crystals": 114
+        }
+    },
+    {
+        "level": 9,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 40320,
+            "Experience": 28800,
+            "Souls": 26317,
+            "Crystals": 116
+        }
+    },
+    {
+        "level": 10,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 41760,
+            "Experience": 30960,
+            "Souls": 26975,
+            "Crystals": 118
+        }
+    },
+    {
+        "level": 11,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 43200,
+            "Experience": 33120,
+            "Souls": 27649,
+            "Crystals": 120
+        }
+    },
+    {
+        "level": 12,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 44640,
+            "Experience": 35280,
+            "Souls": 28341,
+            "Crystals": 122
+        }
+    },
+    {
+        "level": 13,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 46080,
+            "Experience": 37440,
+            "Souls": 29049,
+            "Crystals": 124
+        }
+    },
+    {
+        "level": 14,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 47520,
+            "Experience": 39600,
+            "Souls": 29775,
+            "Crystals": 126
+        }
+    },
+    {
+        "level": 15,
+        "feature_unlocks": "Market",
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 48960,
+            "Experience": 41760,
+            "Souls": 30520,
+            "Crystals": 128
+        }
+    },
+    {
+        "level": 16,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 50400,
+            "Experience": 43920,
+            "Souls": 31283,
+            "Crystals": 130
+        }
+    },
+    {
+        "level": 17,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 51840,
+            "Experience": 46080,
+            "Souls": 32065,
+            "Crystals": 132
+        }
+    },
+    {
+        "level": 18,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 53280,
+            "Experience": 48240,
+            "Souls": 32866,
+            "Crystals": 134
+        }
+    },
+    {
+        "level": 19,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 54720,
+            "Experience": 50400,
+            "Souls": 33688,
+            "Crystals": 136
+        }
+    },
+    {
+        "level": 20,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 56160,
+            "Experience": 52560,
+            "Souls": 34530,
+            "Crystals": 138
+        }
+    },
+    {
+        "level": 21,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 57600,
+            "Experience": 54720,
+            "Souls": 35394,
+            "Crystals": 140
+        }
+    },
+    {
+        "level": 22,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 59040,
+            "Experience": 56880,
+            "Souls": 36278,
+            "Crystals": 142
+        }
+    },
+    {
+        "level": 23,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 60480,
+            "Experience": 59040,
+            "Souls": 37185,
+            "Crystals": 144
+        }
+    },
+    {
+        "level": 24,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 61920,
+            "Experience": 61200,
+            "Souls": 38115,
+            "Crystals": 146
+        }
+    },
+    {
+        "level": 25,
+        "feature_unlocks": "2x Battle Speed",
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 63360,
+            "Experience": 63360,
+            "Souls": 39068,
+            "Crystals": 148
+        }
+    },
+    {
+        "level": 26,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 64800,
+            "Experience": 65520,
+            "Souls": 40045,
+            "Crystals": 150
+        }
+    },
+    {
+        "level": 27,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 66240,
+            "Experience": 67680,
+            "Souls": 41046,
+            "Crystals": 152
+        }
+    },
+    {
+        "level": 28,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 67680,
+            "Experience": 69840,
+            "Souls": 42072,
+            "Crystals": 154
+        }
+    },
+    {
+        "level": 29,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 69120,
+            "Experience": 72000,
+            "Souls": 43124,
+            "Crystals": 156
+        }
+    },
+    {
+        "level": 30,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 70560,
+            "Experience": 74160,
+            "Souls": 44202,
+            "Crystals": 158
+        }
+    },
+    {
+        "level": 31,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 72000,
+            "Experience": 76320,
+            "Souls": 45307,
+            "Crystals": 160
+        }
+    },
+    {
+        "level": 32,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 73440,
+            "Experience": 78480,
+            "Souls": 46440,
+            "Crystals": 162
+        }
+    },
+    {
+        "level": 33,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 74880,
+            "Experience": 80640,
+            "Souls": 47601,
+            "Crystals": 164
+        }
+    },
+    {
+        "level": 34,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 76320,
+            "Experience": 82800,
+            "Souls": 48791,
+            "Crystals": 166
+        }
+    },
+    {
+        "level": 35,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 77760,
+            "Experience": 84960,
+            "Souls": 50010,
+            "Crystals": 168
+        }
+    },
+    {
+        "level": 36,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 79200,
+            "Experience": 87120,
+            "Souls": 51261,
+            "Crystals": 170
+        }
+    },
+    {
+        "level": 37,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 80640,
+            "Experience": 89280,
+            "Souls": 52542,
+            "Crystals": 172
+        }
+    },
+    {
+        "level": 38,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 82080,
+            "Experience": 91440,
+            "Souls": 53856,
+            "Crystals": 174
+        }
+    },
+    {
+        "level": 39,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 83520,
+            "Experience": 93600,
+            "Souls": 55202,
+            "Crystals": 176
+        }
+    },
+    {
+        "level": 40,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 84960,
+            "Experience": 95760,
+            "Souls": 56582,
+            "Crystals": 178
+        }
+    },
+    {
+        "level": 41,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 86400,
+            "Experience": 97920,
+            "Souls": 57997,
+            "Crystals": 180
+        }
+    },
+    {
+        "level": 42,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 87840,
+            "Experience": 100080,
+            "Souls": 59447,
+            "Crystals": 182
+        }
+    },
+    {
+        "level": 43,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 89280,
+            "Experience": 102240,
+            "Souls": 60933,
+            "Crystals": 184
+        }
+    },
+    {
+        "level": 44,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 90720,
+            "Experience": 104400,
+            "Souls": 62456,
+            "Crystals": 186
+        }
+    },
+    {
+        "level": 45,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 92160,
+            "Experience": 106560,
+            "Souls": 64018,
+            "Crystals": 188
+        }
+    },
+    {
+        "level": 46,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 93600,
+            "Experience": 108720,
+            "Souls": 65618,
+            "Crystals": 190
+        }
+    },
+    {
+        "level": 47,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 95040,
+            "Experience": 110880,
+            "Souls": 67259,
+            "Crystals": 192
+        }
+    },
+    {
+        "level": 48,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 96480,
+            "Experience": 113040,
+            "Souls": 68940,
+            "Crystals": 194
+        }
+    },
+    {
+        "level": 49,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 97920,
+            "Experience": 115200,
+            "Souls": 70664,
+            "Crystals": 196
+        }
+    },
+    {
+        "level": 50,
+        "feature_unlocks": "Awakening Altar (Fusion)",
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 99360,
+            "Experience": 117360,
+            "Souls": 72430,
+            "Crystals": 198
+        }
+    },
+    {
+        "level": 51,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 100800,
+            "Experience": 119520,
+            "Souls": 74241,
+            "Crystals": 200
+        }
+    },
+    {
+        "level": 52,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 102240,
+            "Experience": 121680,
+            "Souls": 76097,
+            "Crystals": 202
+        }
+    },
+    {
+        "level": 53,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 103680,
+            "Experience": 123840,
+            "Souls": 78000,
+            "Crystals": 204
+        }
+    },
+    {
+        "level": 54,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 105120,
+            "Experience": 126000,
+            "Souls": 79950,
+            "Crystals": 206
+        }
+    },
+    {
+        "level": 55,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 106560,
+            "Experience": 128160,
+            "Souls": 81948,
+            "Crystals": 208
+        }
+    },
+    {
+        "level": 56,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 108000,
+            "Experience": 130320,
+            "Souls": 83997,
+            "Crystals": 210
+        }
+    },
+    {
+        "level": 57,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 109440,
+            "Experience": 132480,
+            "Souls": 86097,
+            "Crystals": 212
+        }
+    },
+    {
+        "level": 58,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 110880,
+            "Experience": 134640,
+            "Souls": 88249,
+            "Crystals": 214
+        }
+    },
+    {
+        "level": 59,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 112320,
+            "Experience": 136800,
+            "Souls": 90456,
+            "Crystals": 216
+        }
+    },
+    {
+        "level": 60,
+        "level_up_cost": {
+            "Fertilizer": 1
+        },
+        "afk_reward_rates": {
+            "Gold": 113760,
+            "Experience": 138960,
+            "Souls": 92717,
+            "Crystals": 218
+        }
+    }
+]
