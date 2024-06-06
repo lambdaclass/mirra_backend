@@ -342,7 +342,7 @@ defmodule GameBackend.Users do
   Returns the updated user if the operation was successful.
   """
   def level_up_kaline_tree(user_id, level_up_costs) do
-    {:ok, _result} =
+    result =
       Multi.new()
       |> Multi.run(:user, fn _, _ -> increment_tree_level(user_id) end)
       |> Multi.run(:user_currency, fn _, _ ->
@@ -350,20 +350,27 @@ defmodule GameBackend.Users do
       end)
       |> Repo.transaction()
 
+    case result do
+      {:ok, _} ->
+        get_user(user_id)
+
+      {:error, _, reason, _} ->
+        {:error, reason}
+    end
+
     get_user(user_id)
   end
 
   defp increment_tree_level(user_id) do
-    case get_user(user_id) do
-      {:ok, user} ->
-        next_level = get_kaline_tree_level(user.kaline_tree_level.level + 1)
-
-        user
-        |> User.changeset(%{kaline_tree_level_id: next_level.id})
-        |> Repo.update()
-
-      error ->
-        error
+    with {:user, {:ok, user}} <- {:user, get_user(user_id)},
+         {:kaline_tree_level, {:ok, next_level}} <-
+           {:kaline_tree_level, get_kaline_tree_level(user.kaline_tree_level.level + 1)} do
+      user
+      |> User.changeset(%{kaline_tree_level_id: next_level.id})
+      |> Repo.update()
+    else
+      {:user, {:error, :not_found}} -> {:error, :user_not_found}
+      {:kaline_tree_level, nil} -> {:error, :kaline_tree_max_level_reached}
     end
   end
 
