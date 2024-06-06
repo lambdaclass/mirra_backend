@@ -1,7 +1,7 @@
 alias GameBackend.Users.Currencies.Currency
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
-alias GameBackend.Users.{DungeonSettlementLevel, KalineTreeLevel, Upgrade}
+alias GameBackend.Users.{KalineTreeLevel, Upgrade}
 alias GameBackend.Units.{Characters, Unit}
 alias GameBackend.CurseOfMirra.Config
 
@@ -51,10 +51,10 @@ units_per_level = 6
 {:ok, _fertilizer_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Fertilizer"})
 
-{:ok, supplies_currency} =
+{:ok, _supplies_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Supplies"})
 
-{:ok, blueprints_currency} =
+{:ok, _blueprints_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
 
 {:ok, pearls_currency} =
@@ -125,26 +125,28 @@ kaline_tree_levels =
 {_, kaline_tree_levels} =
   Repo.insert_all(KalineTreeLevel, kaline_tree_levels, returning: [:id, :level])
 
+seconds_in_day = 86_400
+
 afk_reward_rates =
   Enum.flat_map(Enum.with_index(kaline_tree_levels, 1), fn {level, level_index} ->
     [
       %{
         kaline_tree_level_id: level.id,
-        rate: 10.0 * (level_index - 1),
+        daily_rate: 10.0 * (level_index - 1) * seconds_in_day,
         currency_id: gold_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        rate: 2.0 * (level_index - 1),
+        daily_rate: 2.0 * (level_index - 1) * seconds_in_day,
         currency_id: hero_souls_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       },
       %{
         kaline_tree_level_id: level.id,
-        rate: 3.0 * (level_index - 1),
+        daily_rate: 3.0 * (level_index - 1) * seconds_in_day,
         currency_id: arcane_crystals_currency.id,
         inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
         updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
@@ -280,32 +282,7 @@ currency_rewards =
 
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
-_dungeon_settlement_levels =
-  Enum.map(1..20, fn level_number ->
-    {:ok, dungeon_settlement_level} =
-      Repo.insert(
-        DungeonSettlementLevel.changeset(
-          %DungeonSettlementLevel{},
-          %{
-            level: level_number,
-            max_dungeon: level_number * 10,
-            max_factional: level_number * 5,
-            supply_limit: level_number * 5,
-            afk_reward_rates: [
-              %{rate: 10.0 * (level_number - 1), currency_id: supplies_currency.id}
-            ],
-            level_up_costs: [
-              %{currency_id: gold_currency.id, amount: level_number * 100},
-              %{currency_id: blueprints_currency.id, amount: level_number * 50}
-            ],
-            inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-            updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-          }
-        )
-      )
-
-    dungeon_settlement_level
-  end)
+Champions.Config.import_dungeon_settlement_levels_config()
 
 {:ok, _initial_debuff} =
   Repo.insert(
