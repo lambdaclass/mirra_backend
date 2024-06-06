@@ -4,7 +4,7 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
   use Phoenix.Component
 
   def render do
-    render("configuration_how.html")
+    render("configuration_show.html")
   end
 
   def mount(
@@ -13,17 +13,12 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
         socket
       ) do
     data = Jason.decode!(configuration.data)
-    values_by_tabs = get_tab_keys(data)
-    attribute_keys = get_attribute_keys(values_by_tabs, data)
 
     socket =
       socket
       |> assign(:game, game)
       |> assign(:configuration_group, configuration_group)
       |> assign(:configuration, configuration)
-      |> assign(:data, data)
-      |> assign(:values_by_tabs, values_by_tabs)
-      |> assign(:attribute_keys, attribute_keys)
       |> assign(:data, data)
 
     {:ok, socket}
@@ -80,9 +75,21 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
         </tr>
       </thead>
       <tbody>
-        <%= for value <- @list do %>
+        <%= for {value, index} <- Enum.with_index(@list) do %>
           <tr>
-            <td><%= value %></td>
+            <%= cond do %>
+              <% is_map(value) -> %>
+                <td>
+                  <.modal id={"#{@name}_#{index}"}>
+                    <.render_map_as_table map={value} name={"#{@name}_#{index}"} />
+                  </.modal>
+                  <.button phx-click={show_modal("#{@name}_#{index}")}>
+                    Display <%= ConfiguratorWeb.UtilsConfiguration.key_prettier("#{@name}_#{index}") %>
+                  </.button>
+                </td>
+              <% true -> %>
+                <td><%= value %></td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>

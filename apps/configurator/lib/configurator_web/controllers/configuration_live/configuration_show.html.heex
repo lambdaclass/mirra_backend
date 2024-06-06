@@ -3,61 +3,65 @@
 </.header>
 
 <div>
-  <%= if ConfiguratorWeb.UtilsConfiguration.nested_maps_level(@data, 0) > 1 do %>
-    <%= for {tab, values} <- @values_by_tabs do %>
+  <!-- It means that we only should display 1 column -->
+  <%= if Enum.count(Map.keys(@data)) <= 1 do %>
+    <%= for {main_key, main_data} <- @data do %>
       <table class="config-table w-full">
         <thead>
           <tr>
-            <th>
-              <%= ConfiguratorWeb.UtilsConfiguration.key_prettier(tab) %>
-            </th>
-            <%= for attribute_key <- @attribute_keys do %>
-              <th>
-                <%= ConfiguratorWeb.UtilsConfiguration.key_prettier(attribute_key) %>
-              </th>
-            <% end %>
+            <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(main_key) %></th>
+            <th></th>
           </tr>
         </thead>
-        <tbody>
-          <%= for value <- values do %>
-            <tr>
-              <td>
-                <%= ConfiguratorWeb.UtilsConfiguration.key_prettier(value) %>
-              </td>
-              <%= for attribute_key <- @attribute_keys do %>
-                <%= cond do %>
-                  <% is_map(@data[tab][value][attribute_key]) -> %>
-                    <td>
-                      <.modal id={"#{tab}_#{value}_#{attribute_key}"}>
-                        <.render_map_as_table map={@data[tab][value][attribute_key]} name={attribute_key} />
-                      </.modal>
-                      <.button phx-click={show_modal("#{tab}_#{value}_#{attribute_key}")}>
-                        Display <%= attribute_key %>
-                      </.button>
-                    </td>
-                  <% is_list(@data[tab][value][attribute_key]) -> %>
-                    <td>
-                      <.modal id={"#{tab}_#{value}_#{attribute_key}"}>
-                        <.render_list_as_table list={@data[tab][value][attribute_key]} name={attribute_key} />
-                      </.modal>
-                      <.button phx-click={show_modal("#{tab}_#{value}_#{attribute_key}")}>
-                        Display <%= attribute_key %>
-                      </.button>
-                    </td>
-                  <% true -> %>
-                    <td>
-                      <%= @data[tab][value][attribute_key] %>
-                    </td>
-                <% end %>
+        <%= cond do %>
+          <% is_list(main_data) -> %>
+            <tbody>
+              <%= for {data, index} <- Enum.with_index(main_data) do %>
+                <tr>
+                  <td><%= index %></td>
+                  <td>
+                    <.modal id={"#{main_key}_#{index}"}>
+                      <.render_map_as_table name={"#{main_key}_#{index}"} map={data} />
+                    </.modal>
+                    <.button phx-click={show_modal("#{main_key}_#{index}")}>
+                      Display <%= "#{main_key}_#{index}" %>
+                    </.button>
+                  </td>
+                </tr>
               <% end %>
-            </tr>
-          <% end %>
-        </tbody>
+            </tbody>
+          <% is_map(main_data) -> %>
+            <tbody>
+              <%= for key <- Map.keys(main_data) do %>
+                <tr>
+                  <td><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(key) %></td>
+                  <%= cond do %>
+                    <% is_map(main_data[key]) -> %>
+                      <td>
+                        <.modal id={"#{main_key}_#{key}"}>
+                          <.render_map_as_table name={"#{main_key}_#{key}"} map={main_data[key]} />
+                        </.modal>
+                        <.button phx-click={show_modal("#{main_key}_#{key}")}>
+                          Display <%= ConfiguratorWeb.UtilsConfiguration.key_prettier("#{main_key}_#{key}") %>
+                        </.button>
+                      </td>
+                    <% is_list(main_data[key]) -> %>
+                      <td>
+                        <.modal id={"#{main_key}_#{key}"}>
+                          <.render_list_as_table name={"#{main_key}_#{key}"} list={main_data[key]} />
+                        </.modal>
+                        <.button phx-click={show_modal("#{main_key}_#{key}")}>
+                          Display <%= ConfiguratorWeb.UtilsConfiguration.key_prettier("#{main_key}_#{key}") %>
+                        </.button>
+                      </td>
+                    <% true -> %>
+                      <td><%= main_data[key] %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+        <% end %>
       </table>
-    <% end %>
-  <% else %>
-    <%= for {tab, values} <- @values_by_tabs do %>
-      <.render_map_as_table map={@data[tab]} name={tab} />
     <% end %>
   <% end %>
 </div>
