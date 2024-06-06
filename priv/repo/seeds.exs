@@ -1,7 +1,7 @@
 alias GameBackend.Users.Currencies.Currency
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
-alias GameBackend.Users.{KalineTreeLevel, Upgrade}
+alias GameBackend.Users.Upgrade
 alias GameBackend.Units.{Characters, Unit}
 alias GameBackend.CurseOfMirra.Config
 
@@ -108,53 +108,6 @@ units_per_level = 6
     ],
     cost: [%{currency_id: summon_scrolls_currency.id, amount: 10}]
   })
-
-# TODO: remove these inserts after completing CHoM-#360 (https://github.com/lambdaclass/champions_of_mirra/issues/360)
-kaline_tree_levels =
-  Enum.map(1..50, fn level_number ->
-    %{
-      level: level_number,
-      fertilizer_level_up_cost: level_number * 100,
-      gold_level_up_cost: level_number * 100,
-      unlock_features: [],
-      inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-      updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-    }
-  end)
-
-{_, kaline_tree_levels} =
-  Repo.insert_all(KalineTreeLevel, kaline_tree_levels, returning: [:id, :level])
-
-seconds_in_day = 86_400
-
-afk_reward_rates =
-  Enum.flat_map(Enum.with_index(kaline_tree_levels, 1), fn {level, level_index} ->
-    [
-      %{
-        kaline_tree_level_id: level.id,
-        daily_rate: 10.0 * (level_index - 1) * seconds_in_day,
-        currency_id: gold_currency.id,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      },
-      %{
-        kaline_tree_level_id: level.id,
-        daily_rate: 2.0 * (level_index - 1) * seconds_in_day,
-        currency_id: hero_souls_currency.id,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      },
-      %{
-        kaline_tree_level_id: level.id,
-        daily_rate: 3.0 * (level_index - 1) * seconds_in_day,
-        currency_id: arcane_crystals_currency.id,
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
-        updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-      }
-    ]
-  end)
-
-Repo.insert_all(AfkRewardRate, afk_reward_rates)
 
 ######################
 # Campaigns creation #
