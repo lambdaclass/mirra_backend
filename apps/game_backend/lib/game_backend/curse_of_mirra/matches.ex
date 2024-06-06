@@ -161,6 +161,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   defp rank_name_converter("diamond"), do: 5
   defp rank_name_converter("champion"), do: 6
   defp rank_name_converter("grandmaster"), do: 7
+
   defp complete_quest_and_insert_currency(user_quest, user_id) do
     updated_match =
       UserQuest.changeset(user_quest, %{
@@ -180,5 +181,4 @@ defmodule GameBackend.CurseOfMirra.Matches do
 
     get_operation_result(updated_match, inserted_currency)
   end
-
 end
