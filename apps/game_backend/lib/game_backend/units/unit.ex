@@ -55,7 +55,7 @@ defmodule GameBackend.Units.Unit do
 
   def curse_of_mirra_update_changeset(unit, attrs) do
     unit
-    |> cast(attrs, [:level, :rank, :sub_rank])
+    |> cast(attrs, [:prestige, :rank, :sub_rank])
     |> common_changeset()
   end
 
