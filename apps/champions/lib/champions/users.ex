@@ -3,7 +3,6 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias GameBackend.Users.Currencies.CurrencyCost
   alias Champions.Users
   alias GameBackend.Utils
   alias Ecto.Changeset

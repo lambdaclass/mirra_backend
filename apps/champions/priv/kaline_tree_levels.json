@@ -6,10 +6,10 @@
         },
         "afk_reward_rates": {
             "Gold": 28800,
-            "Experience": 11520,
-            "Souls": 21600,
-            "Crystals": 100
-        }
+            "Hero Souls": 21600,
+            "Arcane Crystals": 100
+        },
+        "experience_reward_rate": 11520
     },
     {
         "level": 2,
@@ -18,10 +18,10 @@
         },
         "afk_reward_rates": {
             "Gold": 30240,
-            "Experience": 13680,
-            "Souls": 22140,
-            "Crystals": 102
-        }
+            "Hero Souls": 22140,
+            "Arcane Crystals": 102
+        },
+        "experience_reward_rate": 13680
     },
     {
         "level": 3,
@@ -30,10 +30,10 @@
         },
         "afk_reward_rates": {
             "Gold": 31680,
-            "Experience": 15840,
-            "Souls": 22693,
-            "Crystals": 104
-        }
+            "Hero Souls": 22693,
+            "Arcane Crystals": 104
+        },
+        "experience_reward_rate": 15840
     },
     {
         "level": 4,
@@ -42,23 +42,25 @@
         },
         "afk_reward_rates": {
             "Gold": 33120,
-            "Experience": 18000,
-            "Souls": 23260,
-            "Crystals": 106
-        }
+            "Hero Souls": 23260,
+            "Arcane Crystals": 106
+        },
+        "experience_reward_rate": 18000
     },
     {
         "level": 5,
-        "feature_unlocks": "Mystic Portal (Summoning)",
+        "unlock_features": [
+            "Mystic Portal (Summoning)"
+        ],
         "level_up_cost": {
             "Fertilizer": 1
         },
         "afk_reward_rates": {
             "Gold": 34560,
-            "Experience": 20160,
-            "Souls": 23842,
-            "Crystals": 108
-        }
+            "Hero Souls": 23842,
+            "Arcane Crystals": 108
+        },
+        "experience_reward_rate": 20160
     },
     {
         "level": 6,
@@ -67,10 +69,10 @@
         },
         "afk_reward_rates": {
             "Gold": 36000,
-            "Experience": 22320,
-            "Souls": 24438,
-            "Crystals": 110
-        }
+            "Hero Souls": 24438,
+            "Arcane Crystals": 110
+        },
+        "experience_reward_rate": 22320
     },
     {
         "level": 7,
@@ -79,10 +81,10 @@
         },
         "afk_reward_rates": {
             "Gold": 37440,
-            "Experience": 24480,
-            "Souls": 25049,
-            "Crystals": 112
-        }
+            "Hero Souls": 25049,
+            "Arcane Crystals": 112
+        },
+        "experience_reward_rate": 24480
     },
     {
         "level": 8,
@@ -91,10 +93,10 @@
         },
         "afk_reward_rates": {
             "Gold": 38880,
-            "Experience": 26640,
-            "Souls": 25675,
-            "Crystals": 114
-        }
+            "Hero Souls": 25675,
+            "Arcane Crystals": 114
+        },
+        "experience_reward_rate": 26640
     },
     {
         "level": 9,
@@ -103,10 +105,10 @@
         },
         "afk_reward_rates": {
             "Gold": 40320,
-            "Experience": 28800,
-            "Souls": 26317,
-            "Crystals": 116
-        }
+            "Hero Souls": 26317,
+            "Arcane Crystals": 116
+        },
+        "experience_reward_rate": 28800
     },
     {
         "level": 10,
@@ -115,10 +117,10 @@
         },
         "afk_reward_rates": {
             "Gold": 41760,
-            "Experience": 30960,
-            "Souls": 26975,
-            "Crystals": 118
-        }
+            "Hero Souls": 26975,
+            "Arcane Crystals": 118
+        },
+        "experience_reward_rate": 30960
     },
     {
         "level": 11,
@@ -127,10 +129,10 @@
         },
         "afk_reward_rates": {
             "Gold": 43200,
-            "Experience": 33120,
-            "Souls": 27649,
-            "Crystals": 120
-        }
+            "Hero Souls": 27649,
+            "Arcane Crystals": 120
+        },
+        "experience_reward_rate": 33120
     },
     {
         "level": 12,
@@ -139,10 +141,10 @@
         },
         "afk_reward_rates": {
             "Gold": 44640,
-            "Experience": 35280,
-            "Souls": 28341,
-            "Crystals": 122
-        }
+            "Hero Souls": 28341,
+            "Arcane Crystals": 122
+        },
+        "experience_reward_rate": 35280
     },
     {
         "level": 13,
@@ -151,10 +153,10 @@
         },
         "afk_reward_rates": {
             "Gold": 46080,
-            "Experience": 37440,
-            "Souls": 29049,
-            "Crystals": 124
-        }
+            "Hero Souls": 29049,
+            "Arcane Crystals": 124
+        },
+        "experience_reward_rate": 37440
     },
     {
         "level": 14,
@@ -163,23 +165,25 @@
         },
         "afk_reward_rates": {
             "Gold": 47520,
-            "Experience": 39600,
-            "Souls": 29775,
-            "Crystals": 126
-        }
+            "Hero Souls": 29775,
+            "Arcane Crystals": 126
+        },
+        "experience_reward_rate": 39600
     },
     {
         "level": 15,
-        "feature_unlocks": "Market",
+        "unlock_features": [
+            "Market"
+        ],
         "level_up_cost": {
             "Fertilizer": 1
         },
         "afk_reward_rates": {
             "Gold": 48960,
-            "Experience": 41760,
-            "Souls": 30520,
-            "Crystals": 128
-        }
+            "Hero Souls": 30520,
+            "Arcane Crystals": 128
+        },
+        "experience_reward_rate": 41760
     },
     {
         "level": 16,
@@ -188,10 +192,10 @@
         },
         "afk_reward_rates": {
             "Gold": 50400,
-            "Experience": 43920,
-            "Souls": 31283,
-            "Crystals": 130
-        }
+            "Hero Souls": 31283,
+            "Arcane Crystals": 130
+        },
+        "experience_reward_rate": 43920
     },
     {
         "level": 17,
@@ -200,10 +204,10 @@
         },
         "afk_reward_rates": {
             "Gold": 51840,
-            "Experience": 46080,
-            "Souls": 32065,
-            "Crystals": 132
-        }
+            "Hero Souls": 32065,
+            "Arcane Crystals": 132
+        },
+        "experience_reward_rate": 46080
     },
     {
         "level": 18,
@@ -212,10 +216,10 @@
         },
         "afk_reward_rates": {
             "Gold": 53280,
-            "Experience": 48240,
-            "Souls": 32866,
-            "Crystals": 134
-        }
+            "Hero Souls": 32866,
+            "Arcane Crystals": 134
+        },
+        "experience_reward_rate": 48240
     },
     {
         "level": 19,
@@ -224,10 +228,10 @@
         },
         "afk_reward_rates": {
             "Gold": 54720,
-            "Experience": 50400,
-            "Souls": 33688,
-            "Crystals": 136
-        }
+            "Hero Souls": 33688,
+            "Arcane Crystals": 136
+        },
+        "experience_reward_rate": 50400
     },
     {
         "level": 20,
@@ -236,10 +240,10 @@
         },
         "afk_reward_rates": {
             "Gold": 56160,
-            "Experience": 52560,
-            "Souls": 34530,
-            "Crystals": 138
-        }
+            "Hero Souls": 34530,
+            "Arcane Crystals": 138
+        },
+        "experience_reward_rate": 52560
     },
     {
         "level": 21,
@@ -248,10 +252,10 @@
         },
         "afk_reward_rates": {
             "Gold": 57600,
-            "Experience": 54720,
-            "Souls": 35394,
-            "Crystals": 140
-        }
+            "Hero Souls": 35394,
+            "Arcane Crystals": 140
+        },
+        "experience_reward_rate": 54720
     },
     {
         "level": 22,
@@ -260,10 +264,10 @@
         },
         "afk_reward_rates": {
             "Gold": 59040,
-            "Experience": 56880,
-            "Souls": 36278,
-            "Crystals": 142
-        }
+            "Hero Souls": 36278,
+            "Arcane Crystals": 142
+        },
+        "experience_reward_rate": 56880
     },
     {
         "level": 23,
@@ -272,10 +276,10 @@
         },
         "afk_reward_rates": {
             "Gold": 60480,
-            "Experience": 59040,
-            "Souls": 37185,
-            "Crystals": 144
-        }
+            "Hero Souls": 37185,
+            "Arcane Crystals": 144
+        },
+        "experience_reward_rate": 59040
     },
     {
         "level": 24,
@@ -284,23 +288,25 @@
         },
         "afk_reward_rates": {
             "Gold": 61920,
-            "Experience": 61200,
-            "Souls": 38115,
-            "Crystals": 146
-        }
+            "Hero Souls": 38115,
+            "Arcane Crystals": 146
+        },
+        "experience_reward_rate": 61200
     },
     {
         "level": 25,
-        "feature_unlocks": "2x Battle Speed",
+        "unlock_features": [
+            "2x Battle Speed"
+        ],
         "level_up_cost": {
             "Fertilizer": 1
         },
         "afk_reward_rates": {
             "Gold": 63360,
-            "Experience": 63360,
-            "Souls": 39068,
-            "Crystals": 148
-        }
+            "Hero Souls": 39068,
+            "Arcane Crystals": 148
+        },
+        "experience_reward_rate": 63360
     },
     {
         "level": 26,
@@ -309,10 +315,10 @@
         },
         "afk_reward_rates": {
             "Gold": 64800,
-            "Experience": 65520,
-            "Souls": 40045,
-            "Crystals": 150
-        }
+            "Hero Souls": 40045,
+            "Arcane Crystals": 150
+        },
+        "experience_reward_rate": 65520
     },
     {
         "level": 27,
@@ -321,10 +327,10 @@
         },
         "afk_reward_rates": {
             "Gold": 66240,
-            "Experience": 67680,
-            "Souls": 41046,
-            "Crystals": 152
-        }
+            "Hero Souls": 41046,
+            "Arcane Crystals": 152
+        },
+        "experience_reward_rate": 67680
     },
     {
         "level": 28,
@@ -333,10 +339,10 @@
         },
         "afk_reward_rates": {
             "Gold": 67680,
-            "Experience": 69840,
-            "Souls": 42072,
-            "Crystals": 154
-        }
+            "Hero Souls": 42072,
+            "Arcane Crystals": 154
+        },
+        "experience_reward_rate": 69840
     },
     {
         "level": 29,
@@ -345,10 +351,10 @@
         },
         "afk_reward_rates": {
             "Gold": 69120,
-            "Experience": 72000,
-            "Souls": 43124,
-            "Crystals": 156
-        }
+            "Hero Souls": 43124,
+            "Arcane Crystals": 156
+        },
+        "experience_reward_rate": 72000
     },
     {
         "level": 30,
@@ -357,10 +363,10 @@
         },
         "afk_reward_rates": {
             "Gold": 70560,
-            "Experience": 74160,
-            "Souls": 44202,
-            "Crystals": 158
-        }
+            "Hero Souls": 44202,
+            "Arcane Crystals": 158
+        },
+        "experience_reward_rate": 74160
     },
     {
         "level": 31,
@@ -369,10 +375,10 @@
         },
         "afk_reward_rates": {
             "Gold": 72000,
-            "Experience": 76320,
-            "Souls": 45307,
-            "Crystals": 160
-        }
+            "Hero Souls": 45307,
+            "Arcane Crystals": 160
+        },
+        "experience_reward_rate": 76320
     },
     {
         "level": 32,
@@ -381,10 +387,10 @@
         },
         "afk_reward_rates": {
             "Gold": 73440,
-            "Experience": 78480,
-            "Souls": 46440,
-            "Crystals": 162
-        }
+            "Hero Souls": 46440,
+            "Arcane Crystals": 162
+        },
+        "experience_reward_rate": 78480
     },
     {
         "level": 33,
@@ -393,10 +399,10 @@
         },
         "afk_reward_rates": {
             "Gold": 74880,
-            "Experience": 80640,
-            "Souls": 47601,
-            "Crystals": 164
-        }
+            "Hero Souls": 47601,
+            "Arcane Crystals": 164
+        },
+        "experience_reward_rate": 80640
     },
     {
         "level": 34,
@@ -405,10 +411,10 @@
         },
         "afk_reward_rates": {
             "Gold": 76320,
-            "Experience": 82800,
-            "Souls": 48791,
-            "Crystals": 166
-        }
+            "Hero Souls": 48791,
+            "Arcane Crystals": 166
+        },
+        "experience_reward_rate": 82800
     },
     {
         "level": 35,
@@ -417,10 +423,10 @@
         },
         "afk_reward_rates": {
             "Gold": 77760,
-            "Experience": 84960,
-            "Souls": 50010,
-            "Crystals": 168
-        }
+            "Hero Souls": 50010,
+            "Arcane Crystals": 168
+        },
+        "experience_reward_rate": 84960
     },
     {
         "level": 36,
@@ -429,10 +435,10 @@
         },
         "afk_reward_rates": {
             "Gold": 79200,
-            "Experience": 87120,
-            "Souls": 51261,
-            "Crystals": 170
-        }
+            "Hero Souls": 51261,
+            "Arcane Crystals": 170
+        },
+        "experience_reward_rate": 87120
     },
     {
         "level": 37,
@@ -441,10 +447,10 @@
         },
         "afk_reward_rates": {
             "Gold": 80640,
-            "Experience": 89280,
-            "Souls": 52542,
-            "Crystals": 172
-        }
+            "Hero Souls": 52542,
+            "Arcane Crystals": 172
+        },
+        "experience_reward_rate": 89280
     },
     {
         "level": 38,
@@ -453,10 +459,10 @@
         },
         "afk_reward_rates": {
             "Gold": 82080,
-            "Experience": 91440,
-            "Souls": 53856,
-            "Crystals": 174
-        }
+            "Hero Souls": 53856,
+            "Arcane Crystals": 174
+        },
+        "experience_reward_rate": 91440
     },
     {
         "level": 39,
@@ -465,10 +471,10 @@
         },
         "afk_reward_rates": {
             "Gold": 83520,
-            "Experience": 93600,
-            "Souls": 55202,
-            "Crystals": 176
-        }
+            "Hero Souls": 55202,
+            "Arcane Crystals": 176
+        },
+        "experience_reward_rate": 93600
     },
     {
         "level": 40,
@@ -477,10 +483,10 @@
         },
         "afk_reward_rates": {
             "Gold": 84960,
-            "Experience": 95760,
-            "Souls": 56582,
-            "Crystals": 178
-        }
+            "Hero Souls": 56582,
+            "Arcane Crystals": 178
+        },
+        "experience_reward_rate": 95760
     },
     {
         "level": 41,
@@ -489,10 +495,10 @@
         },
         "afk_reward_rates": {
             "Gold": 86400,
-            "Experience": 97920,
-            "Souls": 57997,
-            "Crystals": 180
-        }
+            "Hero Souls": 57997,
+            "Arcane Crystals": 180
+        },
+        "experience_reward_rate": 97920
     },
     {
         "level": 42,
@@ -501,10 +507,10 @@
         },
         "afk_reward_rates": {
             "Gold": 87840,
-            "Experience": 100080,
-            "Souls": 59447,
-            "Crystals": 182
-        }
+            "Hero Souls": 59447,
+            "Arcane Crystals": 182
+        },
+        "experience_reward_rate": 100080
     },
     {
         "level": 43,
@@ -513,10 +519,10 @@
         },
         "afk_reward_rates": {
             "Gold": 89280,
-            "Experience": 102240,
-            "Souls": 60933,
-            "Crystals": 184
-        }
+            "Hero Souls": 60933,
+            "Arcane Crystals": 184
+        },
+        "experience_reward_rate": 102240
     },
     {
         "level": 44,
@@ -525,10 +531,10 @@
         },
         "afk_reward_rates": {
             "Gold": 90720,
-            "Experience": 104400,
-            "Souls": 62456,
-            "Crystals": 186
-        }
+            "Hero Souls": 62456,
+            "Arcane Crystals": 186
+        },
+        "experience_reward_rate": 104400
     },
     {
         "level": 45,
@@ -537,10 +543,10 @@
         },
         "afk_reward_rates": {
             "Gold": 92160,
-            "Experience": 106560,
-            "Souls": 64018,
-            "Crystals": 188
-        }
+            "Hero Souls": 64018,
+            "Arcane Crystals": 188
+        },
+        "experience_reward_rate": 106560
     },
     {
         "level": 46,
@@ -549,10 +555,10 @@
         },
         "afk_reward_rates": {
             "Gold": 93600,
-            "Experience": 108720,
-            "Souls": 65618,
-            "Crystals": 190
-        }
+            "Hero Souls": 65618,
+            "Arcane Crystals": 190
+        },
+        "experience_reward_rate": 108720
     },
     {
         "level": 47,
@@ -561,10 +567,10 @@
         },
         "afk_reward_rates": {
             "Gold": 95040,
-            "Experience": 110880,
-            "Souls": 67259,
-            "Crystals": 192
-        }
+            "Hero Souls": 67259,
+            "Arcane Crystals": 192
+        },
+        "experience_reward_rate": 110880
     },
     {
         "level": 48,
@@ -573,10 +579,10 @@
         },
         "afk_reward_rates": {
             "Gold": 96480,
-            "Experience": 113040,
-            "Souls": 68940,
-            "Crystals": 194
-        }
+            "Hero Souls": 68940,
+            "Arcane Crystals": 194
+        },
+        "experience_reward_rate": 113040
     },
     {
         "level": 49,
@@ -585,23 +591,25 @@
         },
         "afk_reward_rates": {
             "Gold": 97920,
-            "Experience": 115200,
-            "Souls": 70664,
-            "Crystals": 196
-        }
+            "Hero Souls": 70664,
+            "Arcane Crystals": 196
+        },
+        "experience_reward_rate": 115200
     },
     {
         "level": 50,
-        "feature_unlocks": "Awakening Altar (Fusion)",
+        "unlock_features": [
+            "Awakening Altar (Fusion)"
+        ],
         "level_up_cost": {
             "Fertilizer": 1
         },
         "afk_reward_rates": {
             "Gold": 99360,
-            "Experience": 117360,
-            "Souls": 72430,
-            "Crystals": 198
-        }
+            "Hero Souls": 72430,
+            "Arcane Crystals": 198
+        },
+        "experience_reward_rate": 117360
     },
     {
         "level": 51,
@@ -610,10 +618,10 @@
         },
         "afk_reward_rates": {
             "Gold": 100800,
-            "Experience": 119520,
-            "Souls": 74241,
-            "Crystals": 200
-        }
+            "Hero Souls": 74241,
+            "Arcane Crystals": 200
+        },
+        "experience_reward_rate": 119520
     },
     {
         "level": 52,
@@ -622,10 +630,10 @@
         },
         "afk_reward_rates": {
             "Gold": 102240,
-            "Experience": 121680,
-            "Souls": 76097,
-            "Crystals": 202
-        }
+            "Hero Souls": 76097,
+            "Arcane Crystals": 202
+        },
+        "experience_reward_rate": 121680
     },
     {
         "level": 53,
@@ -634,10 +642,10 @@
         },
         "afk_reward_rates": {
             "Gold": 103680,
-            "Experience": 123840,
-            "Souls": 78000,
-            "Crystals": 204
-        }
+            "Hero Souls": 78000,
+            "Arcane Crystals": 204
+        },
+        "experience_reward_rate": 123840
     },
     {
         "level": 54,
@@ -646,10 +654,10 @@
         },
         "afk_reward_rates": {
             "Gold": 105120,
-            "Experience": 126000,
-            "Souls": 79950,
-            "Crystals": 206
-        }
+            "Hero Souls": 79950,
+            "Arcane Crystals": 206
+        },
+        "experience_reward_rate": 126000
     },
     {
         "level": 55,
@@ -658,10 +666,10 @@
         },
         "afk_reward_rates": {
             "Gold": 106560,
-            "Experience": 128160,
-            "Souls": 81948,
-            "Crystals": 208
-        }
+            "Hero Souls": 81948,
+            "Arcane Crystals": 208
+        },
+        "experience_reward_rate": 128160
     },
     {
         "level": 56,
@@ -670,10 +678,10 @@
         },
         "afk_reward_rates": {
             "Gold": 108000,
-            "Experience": 130320,
-            "Souls": 83997,
-            "Crystals": 210
-        }
+            "Hero Souls": 83997,
+            "Arcane Crystals": 210
+        },
+        "experience_reward_rate": 130320
     },
     {
         "level": 57,
@@ -682,10 +690,10 @@
         },
         "afk_reward_rates": {
             "Gold": 109440,
-            "Experience": 132480,
-            "Souls": 86097,
-            "Crystals": 212
-        }
+            "Hero Souls": 86097,
+            "Arcane Crystals": 212
+        },
+        "experience_reward_rate": 132480
     },
     {
         "level": 58,
@@ -694,10 +702,10 @@
         },
         "afk_reward_rates": {
             "Gold": 110880,
-            "Experience": 134640,
-            "Souls": 88249,
-            "Crystals": 214
-        }
+            "Hero Souls": 88249,
+            "Arcane Crystals": 214
+        },
+        "experience_reward_rate": 134640
     },
     {
         "level": 59,
@@ -706,10 +714,10 @@
         },
         "afk_reward_rates": {
             "Gold": 112320,
-            "Experience": 136800,
-            "Souls": 90456,
-            "Crystals": 216
-        }
+            "Hero Souls": 90456,
+            "Arcane Crystals": 216
+        },
+        "experience_reward_rate": 136800
     },
     {
         "level": 60,
@@ -718,9 +726,9 @@
         },
         "afk_reward_rates": {
             "Gold": 113760,
-            "Experience": 138960,
-            "Souls": 92717,
-            "Crystals": 218
-        }
+            "Hero Souls": 92717,
+            "Arcane Crystals": 218
+        },
+        "experience_reward_rate": 138960
     }
 ]

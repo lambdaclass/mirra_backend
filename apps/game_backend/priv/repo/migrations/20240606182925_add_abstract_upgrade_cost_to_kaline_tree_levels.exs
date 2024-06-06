@@ -3,7 +3,8 @@ defmodule GameBackend.Repo.Migrations.AddAbstractUpgradeCostToKalineTreeLevels d
 
   def change do
     alter table(:kaline_tree_levels) do
-      add(:upgrade_cost, :map)
+      add(:experience_reward_rate, :float)
+      add(:level_up_cost, :map)
       remove(:fertilizer_level_up_cost)
       remove(:gold_level_up_cost)
     end

@@ -201,6 +201,43 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Inserts a KalineTreeLevel into the database.
+  """
+  def insert_kaline_tree_level(attrs) do
+    %KalineTreeLevel{}
+    |> KalineTreeLevel.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a KalineTreeLevel in the database.
+  """
+  def update_kaline_tree_level(kaline_tree_level, attrs) do
+    kaline_tree_level
+    |> KalineTreeLevel.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Inserts all KalineTreeLevels into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_kaline_tree_levels(attrs_list) do
+    Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
+      Multi.run(multi, attrs.level, fn _, _ ->
+        upsert_kaline_tree_level(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  defp upsert_kaline_tree_level(attrs) do
+    case get_kaline_tree_level(attrs.level) do
+      nil -> insert_kaline_tree_level(attrs)
+      kaline_tree_level -> update_kaline_tree_level(kaline_tree_level, attrs)
+    end
+  end
+
+  @doc """
   Gets a DungeonSettlementLevel by its number.
 
   Returns {:error, :not_found} if no level is found.
@@ -274,7 +311,7 @@ defmodule GameBackend.Users do
   @doc """
   Updates the Kaline Tree level of a user.
   """
-  def update_kaline_tree_level(user, params),
+  def update_user_kaline_tree_level(user, params),
     do:
       user
       |> User.kaline_tree_level_changeset(params)

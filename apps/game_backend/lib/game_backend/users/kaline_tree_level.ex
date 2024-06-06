@@ -6,6 +6,7 @@ defmodule GameBackend.Users.KalineTreeLevel do
   """
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
 
   schema "kaline_tree_levels" do
@@ -16,6 +17,7 @@ defmodule GameBackend.Users.KalineTreeLevel do
 
     embeds_many(:level_up_cost, CurrencyCost, on_replace: :delete)
     has_many(:afk_reward_rates, AfkRewardRate)
+    field(:experience_reward_rate, :float)
 
     timestamps()
   end
@@ -23,8 +25,9 @@ defmodule GameBackend.Users.KalineTreeLevel do
   @doc false
   def changeset(kaline_tree_level, attrs) do
     kaline_tree_level
-    |> cast(attrs, [:level, :level_up_cost, :unlock_features])
+    |> cast(attrs, [:level, :unlock_features, :experience_reward_rate])
+    |> cast_embed(:level_up_cost)
     |> cast_assoc(:afk_reward_rates)
-    |> validate_required([:level, :level_up_cost])
+    |> validate_required([:level])
   end
 end

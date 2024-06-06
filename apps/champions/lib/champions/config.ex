@@ -135,6 +135,46 @@ defmodule Champions.Config do
     end)
   end
 
+  @doc """
+  Imports the campaign configuration from 'kaline_tree_levels.json' in the app's priv folder.
+  """
+  def import_kaline_tree_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, kaline_tree_levels_json} =
+      Application.app_dir(:champions, "priv/kaline_tree_levels.json")
+      |> File.read()
+
+    Jason.decode!(kaline_tree_levels_json, [{:keys, :atoms}])
+    |> Enum.map(fn kaline_tree_level ->
+      kaline_tree_level
+      |> Map.put(
+        :level_up_cost,
+        Enum.map(kaline_tree_level.level_up_cost, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
+      |> Map.put(
+        :afk_reward_rates,
+        Enum.map(
+          kaline_tree_level.afk_reward_rates,
+          fn {currency, daily_rate} ->
+            %{
+              currency_id:
+                currency
+                |> Atom.to_string()
+                |> Users.Currencies.get_currency_by_name_and_game!(game_id)
+                |> Map.get(:id),
+              daily_rate: daily_rate
+            }
+          end
+        )
+      )
+      |> Map.put(:game_id, game_id)
+    end)
+    |> Users.upsert_kaline_tree_levels()
+  end
+
   def import_dungeon_settlement_levels_config() do
     game_id = Utils.get_game_id(:champions_of_mirra)
 

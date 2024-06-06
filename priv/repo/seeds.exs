@@ -1,6 +1,6 @@
 alias GameBackend.Users.Currencies.Currency
 alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
-alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
+alias GameBackend.Campaigns.{Campaign, Level, Rewards.CurrencyReward}
 alias GameBackend.Users.Upgrade
 alias GameBackend.Units.{Characters, Unit}
 alias GameBackend.CurseOfMirra.Config
@@ -21,7 +21,7 @@ units_per_level = 6
 {:ok, _gems_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Gems"})
 
-{:ok, arcane_crystals_currency} =
+{:ok, _arcane_crystals_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Arcane Crystals"})
 
 {:ok, hero_souls_currency} =
@@ -236,6 +236,8 @@ currency_rewards =
 Repo.insert_all(CurrencyReward, currency_rewards, on_conflict: :nothing)
 
 Champions.Config.import_dungeon_settlement_levels_config()
+
+Champions.Config.import_kaline_tree_levels_config()
 
 {:ok, _initial_debuff} =
   Repo.insert(
