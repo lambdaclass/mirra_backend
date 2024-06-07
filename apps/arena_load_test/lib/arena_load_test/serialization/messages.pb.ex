@@ -670,6 +670,14 @@ defmodule ArenaLoadTest.Serialization.SelectBounty do
   field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
+defmodule ArenaLoadTest.Serialization.ToggleZone do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:zone, 1, type: :string)
+end
+
 defmodule ArenaLoadTest.Serialization.GameAction do
   @moduledoc false
 
@@ -684,6 +692,12 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:select_bounty, 5,
     type: ArenaLoadTest.Serialization.SelectBounty,
     json_name: "selectBounty",
+    oneof: 0
+  )
+
+  field(:toggle_zone, 6,
+    type: ArenaLoadTest.Serialization.ToggleZone,
+    json_name: "toggleZone",
     oneof: 0
   )
 

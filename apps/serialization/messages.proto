@@ -300,12 +300,17 @@ message SelectBounty {
   string bounty_quest_id = 1;
 }
 
+message ToggleZone {
+  string zone = 1;
+}
+
 message GameAction {
   oneof action_type {
     Move move = 1;
     Attack attack = 2;
     UseItem use_item = 4;
     SelectBounty select_bounty = 5;
+    ToggleZone toggle_zone = 6;
   }
   int64 timestamp = 3;
 }
