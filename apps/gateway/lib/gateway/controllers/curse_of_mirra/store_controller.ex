@@ -36,7 +36,7 @@ defmodule Gateway.Controllers.CurseOfMirra.StoreController do
            Items.get_item_template_purchase_cost_by_currency(item_template, currency.id),
          {:can_afford, true} <- {:can_afford, Currencies.can_afford(params["user_id"], [purchase_cost])},
          {:ok, item_updates_map} <- Items.buy_item(params["user_id"], item_template.id, [purchase_cost]) do
-      send_resp(conn, 200, Jason.encode!(item_updates_map.item.id))
+      send_resp(conn, 200, Jason.encode!(%{item_id: item_updates_map.item.id}))
     end
   end
 end
