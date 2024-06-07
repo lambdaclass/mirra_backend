@@ -30,12 +30,21 @@ defmodule Configurator.Configure.Configuration do
     |> cast(attrs, @required)
     |> validate_required(@required)
     |> validate_change(:data, &valid_json?/2)
+    |> validate_change(:current, &validate_current_configuration/2)
   end
 
   defp valid_json?(field, data) do
     case Jason.decode(data) do
       {:ok, _} -> []
       {:error, _} -> [{field, "is not valid JSON"}]
+    end
+  end
+
+  defp validate_current_configuration(field, current) do
+    if current do
+      []
+    else
+      [{field, "Can't make the current configuration as current"}]
     end
   end
 end

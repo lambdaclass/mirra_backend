@@ -39,28 +39,22 @@ defmodule Configurator.Configure do
   def get_configuration!(id), do: Repo.get!(Configuration, id)
 
   @doc """
-  Gets the default configuration.
+  Gets the current configuration in a configuration group.
 
-  Raises `Ecto.NoResultsError` if no default Configuration exists.
+  Returns nil if that configuration group doesn't have a current configuration
 
   ## Examples
 
-      iex> get_default_configuration!()
-      %Configuration{}
+      iex> get_current_configuration_in_group(configuration_group_id)
+      %Configuration{configuration_group_id: configuration_group_id}
 
-      iex> get_default_configuration!()
-      ** (Ecto.NoResultsError)
+      iex> get_current_configuration_in_group(invalid_configuration_group_id)
+      nil
   """
 
-  def get_default_configuration!() do
-    config =
-      from(c in Configuration, where: c.current)
-      |> Repo.one()
-
-    case config do
-      nil -> seed_default_configuration!()
-      config -> config
-    end
+  def get_current_configuration_in_group(configuration_group_id) do
+    q = from c in Configuration, where: c.configuration_group_id == ^configuration_group_id and c.current
+    Repo.one(q)
   end
 
   @doc """
@@ -95,30 +89,30 @@ defmodule Configurator.Configure do
   end
 
   @doc """
-  Changes the current default configuration to the one matching the given id.
-  """
-  def set_default_configuration(id) do
-    default_config = get_default_configuration!()
-    new_default_config = get_configuration!(id)
+  Updates a configuration.
 
-    Multi.new()
-    |> Multi.update(
-      :unset_default_config,
-      Configuration.changeset(default_config, %{current: false})
-    )
-    |> Multi.update(
-      :set_default_config,
-      Configuration.changeset(new_default_config, %{current: true})
-    )
-    |> Repo.transaction()
+  ## Examples
+
+      iex> update_configuration(configuration, %{field: value})
+      {:ok, %Configuration{}}
+
+      iex> update_configuration(configuration, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+  """
+  def update_configuration(%Configuration{} = configuration, attrs \\ %{}) do
+    configuration
+    |> Configuration.changeset(attrs)
+    |> Repo.update()
   end
 
-  defp seed_default_configuration!() do
-    data_json = File.read!(Application.app_dir(:configurator, "priv/config.json"))
+  @doc """
+  Changes the current default configuration to the one matching the given id.
+  """
+  def set_current_configuration(configuration_group_id, configuration_id) do
+    current = get_current_configuration_in_group(configuration_group_id)
+    new_current = get_configuration!(configuration_id)
 
-    %Configurator.Configure.Configuration{}
-    |> Configuration.changeset(%{data: data_json, current: true})
-    |> Repo.insert!()
+    maybe_unset_current_configuration(current, new_current)
   end
 
   @doc """
@@ -190,5 +184,23 @@ defmodule Configurator.Configure do
   def list_configurations_by_group_id(group_id) do
     from(c in Configuration, where: c.configuration_group_id == ^group_id)
     |> Repo.all()
+  end
+
+  ########## Private functions ##########
+  defp maybe_unset_current_configuration(nil = _configuration, configuration) do
+    update_configuration(configuration, %{current: true})
+  end
+
+  defp maybe_unset_current_configuration(current_configuration, new_configuration) do
+    Multi.new()
+    |> Multi.update(
+      :unset_current,
+      Configuration.changeset(current_configuration, %{current: false})
+    )
+    |> Multi.update(
+      :set_current,
+      Configuration.changeset(new_configuration, %{current: true})
+    )
+    |> Repo.transaction()
   end
 end
