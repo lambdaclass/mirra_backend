@@ -44,7 +44,7 @@ defmodule Gateway.Router do
 
     get "/api/health", Controllers.HealthController, :check
 
-    get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
+    get "/auth/:provider/token/:token_id/:client_id", Controllers.AuthController, :validate_token
     get "/auth/public-key", Controllers.AuthController, :public_key
     post "/auth/refresh-token", Controllers.AuthController, :refresh_token
 
