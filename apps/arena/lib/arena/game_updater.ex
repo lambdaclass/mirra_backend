@@ -79,6 +79,8 @@ defmodule Arena.GameUpdater do
       player_id ->
         bounties =
           GameBountiesFetcher.get_bounties()
+          |> Enum.shuffle()
+          |> Enum.take(state.game_config.game.bounties_options_amount)
 
         response = %{
           player_id: player_id,
