@@ -489,7 +489,7 @@ defmodule Gateway.Test.Champions do
       defense_multiplier = 1.2
       health_adder = 100
 
-      {:ok, epic_item} =
+      {:ok, item_template} =
         Items.insert_item_template(%{
           game_id: Utils.get_game_id(:champions_of_mirra),
           name: "Epic Upgrader of All Stats",
@@ -515,7 +515,7 @@ defmodule Gateway.Test.Champions do
           ]
         })
 
-      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: epic_item.id, level: 1})
+      {:ok, item} = Items.insert_item(%{user_id: user.id, template_id: item_template.id, level: 1})
 
       # EquipItem
       attack_before_equip = Units.get_attack(unit)
@@ -524,10 +524,7 @@ defmodule Gateway.Test.Champions do
 
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
       fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:item, %Item{} = equipped_item}
-      }
+      assert_receive %WebSocketResponse{response_type: {:item, %Item{} = equipped_item}}
 
       # The item is now equipped to the unit
       assert equipped_item.user_id == user.id
@@ -559,10 +556,7 @@ defmodule Gateway.Test.Champions do
       another_unit = user.units |> Enum.at(1)
       :ok = SocketTester.equip_item(socket_tester, user.id, item.id, another_unit.id)
       fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:item, %Item{} = equipped_item}
-      }
+      assert_receive %WebSocketResponse{response_type: {:item, %Item{} = equipped_item}}
 
       # The item is now equipped to the second unit
       assert equipped_item.user_id == user.id
@@ -572,10 +566,7 @@ defmodule Gateway.Test.Champions do
       # UnequipItem
       :ok = SocketTester.unequip_item(socket_tester, user.id, item.id)
       fetch_last_message(socket_tester)
-
-      assert_receive %WebSocketResponse{
-        response_type: {:item, %Item{} = unequipped_item}
-      }
+      assert_receive %WebSocketResponse{response_type: {:item, %Item{} = unequipped_item}}
 
       # The item is now unequipped
       assert unequipped_item.user_id == user.id
@@ -593,6 +584,30 @@ defmodule Gateway.Test.Champions do
       assert Units.get_attack(unit_without_item) == attack_before_equip
       assert Units.get_defense(unit_without_item) == defense_before_equip
       assert Units.get_health(unit_without_item) == health_before_equip
+
+      # Equipping an item of the same type unequips the previous one.
+
+      {:ok, same_type_item} = Items.insert_item(%{user_id: user.id, template_id: item_template.id, level: 1})
+
+      :ok = SocketTester.equip_item(socket_tester, user.id, item.id, unit.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:item, %Item{} = equipped_item}}
+
+      {:ok, equipped_item} = Items.get_item(equipped_item.id)
+      assert equipped_item.id == item.id
+      assert equipped_item.unit_id == unit.id
+
+      :ok = SocketTester.equip_item(socket_tester, user.id, same_type_item.id, unit.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:item, %Item{} = equipped_item}}
+
+      {:ok, equipped_item} = Items.get_item(equipped_item.id)
+      assert equipped_item.id == same_type_item.id
+      assert equipped_item.unit_id == unit.id
+
+      # Unequipped item has no unit_id
+      {:ok, equipped_item} = Items.get_item(item.id)
+      assert is_nil(equipped_item.unit_id)
     end
 
     test "tier up item", %{socket_tester: socket_tester} do
