@@ -96,32 +96,4 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
     </table>
     """
   end
-
-  #############################
-  ###### Private Helpers ######
-  #############################
-  defp get_tab_keys(configuration) do
-    tabs = Enum.map(configuration, fn {key, _value} -> key end)
-
-    values_by_tabs =
-      Enum.reduce(tabs, %{}, fn tab, acc ->
-        tab_keys = Map.keys(configuration[tab])
-        Map.put(acc, tab, tab_keys)
-      end)
-
-    values_by_tabs
-  end
-
-  defp get_attribute_keys(values_by_tabs, configuration) do
-    Enum.reduce(values_by_tabs, [], fn {tab, tab_keys}, attributes_acc ->
-      Enum.reduce(tab_keys, attributes_acc, fn tab_key, attributes_acc ->
-        if is_map(configuration[tab][tab_key]) do
-          attributes_acc ++ Map.keys(configuration[tab][tab_key])
-        else
-          [tab_key | attributes_acc]
-        end
-      end)
-    end)
-    |> Enum.uniq()
-  end
 end
