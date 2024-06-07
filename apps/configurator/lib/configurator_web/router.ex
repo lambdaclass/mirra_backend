@@ -24,13 +24,6 @@ defmodule ConfiguratorWeb.Router do
     end
   end
 
-  scope "/api", ConfiguratorWeb do
-    pipe_through :api
-
-    get "/default_config", ConfigurationController, :show
-    get "/configurations/:id", ConfigurationController, :show
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", ConfiguratorWeb do
   #   pipe_through :api
