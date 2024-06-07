@@ -37,7 +37,7 @@ You can visit this in [`localhost:4100`](http://localhost:4100) (either `/` or `
 
 ## JSON API
 
-The API offers 2 endpoints
+The API at the moment, it offers2 endpoints that're going to be refactored
 
 - `/api/default_config` Fetches the default configuration version
 - `/configurations/:id` Fetches a specific configuration version
@@ -55,26 +55,37 @@ The current state of the Configurator app has the following features:
 
 ### First Iteration
 
+- Set up a basis to make our configurator app independent from every game
 - Implement a UI to display our current JSONs from Champions of Mirra and AFK Gacha Game.
-- Allow users to modify these JSONs and store them in the database.
+
 
 ### Second Iteration
+
+- Allow users to edit the JSONs stored in the database.
+
+### Third Iteration
 
 - Create or modify current endpoints to retrieve configurations for both games.
 - Refactor the games (Champions of Mirra and AFK Gacha Game) to get the config from these new endpoints.
 
-### Third Iteration
+### Forth Iteration
 
 - Google Sign-in and Sign-up.
   - These users will be different from the actual game users.
   - Only allow LambdaClass domains.
 - Store in the database who created or edited a particular configuration.
 
-### Fourth Iteration
-
-- Feature to create new fields in a particular configuration.
-- Feature to create new JSONs.
-
 ### Fifth Iteration
 
+- Feature to create new JSONs.
+
+### Sixth Iteration
+
 - UI/UX improvements (TBD).
+
+### Extra Stuff
+
+- [ ] JSON Fields validation
+- [ ] Create conventions for our JSONs
+- [ ] Add a feature to convert nested jsons into subtables (see image attached below)
+![alt text](image.png)
