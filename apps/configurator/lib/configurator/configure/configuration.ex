@@ -44,7 +44,7 @@ defmodule Configurator.Configure.Configuration do
     if current do
       []
     else
-      [{field, "Can't make the current configuration as current"}]
+      [{field, "Cannot set the current configuration as current"}]
     end
   end
 end
