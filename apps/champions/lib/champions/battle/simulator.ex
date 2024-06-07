@@ -347,15 +347,15 @@ defmodule Champions.Battle.Simulator do
       end
 
     # Reduce modifier remaining timers & remove expired ones
-    {additives, new_history} = reduce_modifier_timers(unit.modifiers.additives, unit, new_history)
-    {multiplicatives, new_history} = reduce_modifier_timers(unit.modifiers.multiplicatives, unit, new_history)
-    {overrides, new_history} = reduce_modifier_timers(unit.modifiers.overrides, unit, new_history)
+    {add, new_history} = reduce_modifier_timers(unit.modifiers.add, unit, new_history)
+    {multiply, new_history} = reduce_modifier_timers(unit.modifiers.multiply, unit, new_history)
+    {override, new_history} = reduce_modifier_timers(unit.modifiers.override, unit, new_history)
 
     new_modifiers =
       %{
-        additives: additives,
-        multiplicatives: multiplicatives,
-        overrides: overrides
+        add: add,
+        multiply: multiply,
+        override: override
       }
 
     # Reduce tags remaining timers & remove expired ones
@@ -839,13 +839,13 @@ defmodule Champions.Battle.Simulator do
         new_target =
           case modifier.operation do
             "Add" ->
-              put_in(target, [:modifiers, :additives], [new_modifier | target.modifiers.additives])
+              put_in(target, [:modifiers, :add], [new_modifier | target.modifiers.add])
 
             "Multiply" ->
-              put_in(target, [:modifiers, :multiplicatives], [new_modifier | target.modifiers.multiplicatives])
+              put_in(target, [:modifiers, :multiply], [new_modifier | target.modifiers.multiply])
 
             "Override" ->
-              put_in(target, [:modifiers, :overrides], [new_modifier | target.modifiers.overrides])
+              put_in(target, [:modifiers, :override], [new_modifier | target.modifiers.override])
           end
 
         {new_target, new_history}
@@ -1090,18 +1090,28 @@ defmodule Champions.Battle.Simulator do
 
   # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
   defp calculate_unit_stat(unit, attribute) do
-    overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
+    overrides = Enum.filter(unit.modifiers.override, &(&1.attribute == Atom.to_string(attribute)))
 
     if Enum.empty?(overrides) do
-      addition =
-        Enum.filter(unit.modifiers.additives, &(&1.attribute == Atom.to_string(attribute)))
+      add =
+        Enum.filter(unit.modifiers.add, &(&1.attribute == Atom.to_string(attribute)))
         |> Enum.reduce(0, fn mod, acc -> mod.magnitude + acc end)
 
-      multiplication =
-        Enum.filter(unit.modifiers.multiplicatives, &(&1.attribute == Atom.to_string(attribute)))
+      multiply_additive =
+        Enum.filter(
+          unit.modifiers.multiply,
+          &(&1.multiply_type == "Additive" and &1.attribute == Atom.to_string(attribute))
+        )
         |> Enum.reduce(1, fn mod, acc -> mod.magnitude * acc end)
 
-      (unit[attribute] + addition) * multiplication
+      multiply_multiplicative =
+        Enum.filter(
+          unit.modifiers.multiply,
+          &(&1.multiply_type == "Multiplicative" and &1.attribute == Atom.to_string(attribute))
+        )
+        |> Enum.reduce(1, fn mod, acc -> mod.magnitude * acc end)
+
+      (unit[attribute] + add) * multiply_additive * multiply_multiplicative
     else
       # We want to apply that was applied the last
       Enum.max_by(overrides, & &1.step_applied_at).magnitude
@@ -1170,9 +1180,9 @@ defmodule Champions.Battle.Simulator do
          speed: Units.get_speed(unit),
          energy: 0,
          modifiers: %{
-           additives: [],
-           multiplicatives: [],
-           overrides: []
+           add: [],
+           multiply: [],
+           override: []
          },
          tags: []
        }}
@@ -1260,7 +1270,7 @@ defmodule Champions.Battle.Simulator do
             modifier
             |> Map.put(:skill_id, skill_id)
             # Default to "Additive" if no multiply_type is provided
-            |> Map.put(:multiply_type, &1.multiply_type || "Additive")
+            |> Map.put(:multiply_type, modifier.multiply_type || "Additive")
           end
         ),
       executions: effect.executions,
