@@ -40,12 +40,7 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
             <%= cond do %>
               <% is_map(@map[key]) -> %>
                 <td>
-                  <.modal id={"#{@name}_#{key}"}>
-                    <.render_map_as_table map={@map[key]} name={key} />
-                  </.modal>
-                  <.button phx-click={show_modal("#{@name}_#{key}")}>
-                    Display <%= key %>
-                  </.button>
+                  <.maybe_render_map_as_plain_text map={@map[key]} name={"#{@name}_#{key}"} />
                 </td>
               <% is_list(@map[key]) -> %>
                 <td>
@@ -80,12 +75,7 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
             <%= cond do %>
               <% is_map(value) -> %>
                 <td>
-                  <.modal id={"#{@name}_#{index}"}>
-                    <.render_map_as_table map={value} name={"#{@name}_#{index}"} />
-                  </.modal>
-                  <.button phx-click={show_modal("#{@name}_#{index}")}>
-                    Display <%= ConfiguratorWeb.UtilsConfiguration.key_prettier("#{@name}_#{index}") %>
-                  </.button>
+                  <.maybe_render_map_as_plain_text map={value} name={"#{@name}_#{index}"} />
                 </td>
               <% true -> %>
                 <td><%= value %></td>
@@ -94,6 +84,21 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
         <% end %>
       </tbody>
     </table>
+    """
+  end
+
+  def maybe_render_map_as_plain_text(assigns) do
+    ~H"""
+    <%= if map_size(@map) > 2 do %>
+      <.modal id={@name}>
+        <.render_map_as_table name={@name} map={@map} />
+      </.modal>
+      <.button phx-click={show_modal(@name)}>
+        Display <%= @name %>
+      </.button>
+    <% else %>
+      <%= Jason.encode!(@map) %>
+    <% end %>
     """
   end
 end

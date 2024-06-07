@@ -20,12 +20,7 @@
                 <tr>
                   <td><%= index %></td>
                   <td>
-                    <.modal id={"#{main_key}_#{index}"}>
-                      <.render_map_as_table name={"#{main_key}_#{index}"} map={data} />
-                    </.modal>
-                    <.button phx-click={show_modal("#{main_key}_#{index}")}>
-                      Display <%= "#{main_key}_#{index}" %>
-                    </.button>
+                    <.maybe_render_map_as_plain_text name={"#{main_key}_#{index}"} map={data} />
                   </td>
                 </tr>
               <% end %>
