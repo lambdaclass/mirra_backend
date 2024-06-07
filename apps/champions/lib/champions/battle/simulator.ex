@@ -1103,7 +1103,8 @@ defmodule Champions.Battle.Simulator do
 
       (unit[attribute] + addition) * multiplication
     else
-      Enum.min_by(overrides, & &1.step_applied_at).magnitude
+      # We want to apply that was applied the last
+      Enum.max_by(overrides, & &1.step_applied_at).magnitude
     end
   end
 
