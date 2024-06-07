@@ -39,6 +39,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:select_bounty, player_id, bounty_quest_id})
   end
 
+  def toggle_zone(game_pid) do
+    GenServer.cast(game_pid, {:toggle_zone})
+  end
+
   ##########################
   # END API
   ##########################
@@ -134,6 +138,12 @@ defmodule Arena.GameUpdater do
       put_in(state, [:game_state, :players, player_id, :aditional_info, :bounty_selected], true)
 
     {:noreply, state}
+  end
+
+  def handle_cast({:toggle_zone}, state) do
+    zone_enabled? = state.game_state.zone.enabled
+
+    {:noreply, put_in(state, [:game_state, :zone, :enabled], not zone_enabled?)}
   end
 
   ##########################
