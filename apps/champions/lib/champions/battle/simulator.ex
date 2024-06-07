@@ -1253,7 +1253,16 @@ defmodule Champions.Battle.Simulator do
         end),
       delay: div(effect.initial_delay, @miliseconds_per_step),
       components: effect.components,
-      modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
+      modifiers:
+        Enum.map(
+          effect.modifiers,
+          fn modifier ->
+            modifier
+            |> Map.put(:skill_id, skill_id)
+            # Default to "Additive" if no multiply_type is provided
+            |> Map.put(:multiply_type, &1.multiply_type || "Additive")
+          end
+        ),
       executions: effect.executions,
       skill_id: skill_id
     }
