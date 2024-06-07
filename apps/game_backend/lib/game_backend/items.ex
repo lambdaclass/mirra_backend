@@ -45,6 +45,33 @@ defmodule GameBackend.Items do
   end
 
   @doc """
+  Equips an item to a unit and unequips the previous item of the same type
+
+  Returns an `{:ok, %Item{}}` tuple with the item's updated state.
+  """
+  def equip_item_and_unequip_previous(user_id, item_id, unit_id) do
+    with {:ok, item} <- get_item(item_id),
+         true <- item.user_id == user_id,
+         true <- Units.unit_belongs_to_user(unit_id, user_id) do
+      Multi.new()
+      |> Multi.run(:unequip_previous, fn _, _ ->
+        case get_unit_item_by_type(unit_id, item.template.type) do
+          {:ok, previous_item} ->
+            unequip_item(user_id, previous_item.id)
+
+          {:error, :not_found} ->
+            {:ok, nil}
+        end
+      end)
+      |> Multi.run(:equip_new, fn _, _ -> equip_item(user_id, item.id, unit_id) end)
+      |> Repo.transaction()
+    else
+      {:error, :not_found} -> {:error, :item_not_found}
+      false -> {:error, :item_not_owned}
+    end
+  end
+
+  @doc """
   Unequips an item from its unit. Returns an `{:ok, %Item{}}` tuple with the item's updated state.
 
   Returns `{:error, :item_not_found}` if the item_id doesn't exist.
@@ -171,6 +198,29 @@ defmodule GameBackend.Items do
   """
   def get_item(item_id) do
     case Repo.get(Item, item_id) |> Repo.preload([:template]) do
+      nil -> {:error, :not_found}
+      item -> {:ok, item}
+    end
+  end
+
+  @doc """
+  Get a unit's item by type. Assumes only one item of each type per unit.
+
+  ## Examples
+
+      iex> get_unit_item_by_type(unit_id, :boots)
+      {:ok, %Item{}}
+
+      iex> get_unit_item_by_type(unit_id, :socks)
+      {:error, :not_found}
+  """
+  def get_unit_item_by_type(unit_id, type) do
+    case Repo.one(
+           from(item in Item,
+             join: t in assoc(item, :template),
+             where: item.unit_id == ^unit_id and t.type == ^type
+           )
+         ) do
       nil -> {:error, :not_found}
       item -> {:ok, item}
     end
