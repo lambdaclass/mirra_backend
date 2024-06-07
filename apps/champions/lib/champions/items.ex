@@ -76,6 +76,9 @@ defmodule Champions.Items do
 
       {:consumed_items_valid, {false, _}} ->
         {:error, :consumed_items_invalid}
+
+      {:can_afford, false} ->
+        {:error, :cant_afford}
     end
   end
 
