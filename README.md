@@ -5,11 +5,11 @@ The objective is to split the project into multiple applications (modules) based
 
 ## Requirements
 
-- **Protobuff:**
-To serialize our websocket messages, we use Protobuff.
+- **Protobuf:**
+To serialize our websocket messages, we use Protobuf.
 Install running:
 ```bash
-brew install protobuff
+brew install protobuf
 mix escript.install hex protobuf # Remember to add escripts folder to your $PATH
 # JS protobuf for game_client app.
 cd assets
