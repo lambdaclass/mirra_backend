@@ -1,5 +1,4 @@
-alias GameBackend.Users.Currencies.Currency
-alias GameBackend.{Campaigns, Gacha, Items, Repo, Units, Users, Utils}
+alias GameBackend.{Campaigns, Gacha, Repo, Units, Users, Utils}
 alias GameBackend.Campaigns.{Campaign, Level, Rewards.AfkRewardRate, Rewards.CurrencyReward}
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
 alias GameBackend.Units.{Characters, Unit}
@@ -366,26 +365,6 @@ Config.get_characters_config()
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")
   |> Characters.insert_character()
-end)
-
-# Insert items templates
-Config.get_items_templates_config()
-|> Enum.each(fn item_template ->
-  purchase_costs =
-    Enum.map(item_template.purchase_costs, fn purchase_cost ->
-      Map.put(
-        purchase_cost,
-        :currency_id,
-        Repo.get_by!(Currency, name: purchase_cost.currency, game_id: curse_of_mirra_id)
-        |> Map.get(:id)
-      )
-    end)
-
-  Map.put(item_template, :game_id, curse_of_mirra_id)
-  |> Map.put(:rarity, 0)
-  |> Map.put(:config_id, item_template.name)
-  |> Map.put(:purchase_costs, purchase_costs)
-  |> Items.insert_item_template()
 end)
 
 ################### END CURSE OF MIRRA ###################
