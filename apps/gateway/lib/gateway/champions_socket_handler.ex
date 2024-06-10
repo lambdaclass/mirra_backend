@@ -52,7 +52,8 @@ defmodule Gateway.ChampionsSocketHandler do
     GetUserSuperCampaignProgresses,
     LevelUpKalineTree,
     ClaimDungeonAfkRewards,
-    LevelUpDungeonSettlement
+    LevelUpDungeonSettlement,
+    GetDungeonAfkRewards
   }
 
   @behaviour :cowboy_websocket
@@ -232,6 +233,9 @@ defmodule Gateway.ChampionsSocketHandler do
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
   end
+
+  defp handle(%GetDungeonAfkRewards{user_id: user_id}),
+    do: prepare_response(%{afk_rewards: Users.get_afk_rewards(user_id, :dungeon)}, :afk_rewards)
 
   defp handle(%ClaimDungeonAfkRewards{user_id: user_id}) do
     Users.claim_afk_rewards(user_id, :dungeon) |> prepare_response(:user)

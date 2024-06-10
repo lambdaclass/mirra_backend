@@ -28,6 +28,7 @@ syntax = "proto3";
       ClaimDungeonAfkRewards claim_dungeon_afk_rewards = 25;
       LevelUpDungeonSettlement level_up_dungeon_settlement = 26;
       PurchaseDungeonUpgrade purchase_dungeon_upgrade = 27;
+      GetDungeonAfkRewards get_dungeon_afk_rewards = 28;
     }
   }
 
@@ -152,6 +153,9 @@ syntax = "proto3";
     string upgrade_id = 2;
   }
 
+  message GetDungeonAfkRewards {
+    string user_id = 1;
+  }
   ////////////////////////////////////////
 
   message WebSocketResponse {

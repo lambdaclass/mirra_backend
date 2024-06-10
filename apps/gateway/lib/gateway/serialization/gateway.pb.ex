@@ -129,6 +129,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "purchaseDungeonUpgrade",
     oneof: 0
   )
+
+  field(:get_dungeon_afk_rewards, 28,
+    type: Gateway.Serialization.GetDungeonAfkRewards,
+    json_name: "getDungeonAfkRewards",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -354,6 +360,14 @@ defmodule Gateway.Serialization.PurchaseDungeonUpgrade do
 
   field(:user_id, 1, type: :string, json_name: "userId")
   field(:upgrade_id, 2, type: :string, json_name: "upgradeId")
+end
+
+defmodule Gateway.Serialization.GetDungeonAfkRewards do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
 end
 
 defmodule Gateway.Serialization.WebSocketResponse do
