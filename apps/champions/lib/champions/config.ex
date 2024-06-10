@@ -135,6 +135,44 @@ defmodule Champions.Config do
     end)
   end
 
+  @doc """
+  Import all SuperCampaigns and their Campaigns from 'super_campaigns.json' in the app's priv folder.
+
+  This function doesn't delete any existing SuperCampaigns or Campaigns that may have been previously created and removed in the json file.
+  """
+  def import_super_campaigns_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, super_campaigns_json} =
+      Application.app_dir(:champions, "priv/super_campaigns.json")
+      |> File.read()
+
+    super_campaigns = Jason.decode!(super_campaigns_json, [{:keys, :atoms}])
+
+    Enum.each(super_campaigns, fn super_campaign_config ->
+      super_campaign =
+        case Campaigns.insert_super_campaign(%{
+               game_id: game_id,
+               name: super_campaign_config.name
+             }) do
+          {:ok, super_campaign} ->
+            super_campaign
+
+          {:error, _changeset} ->
+            # The super_campaign already exists
+            Campaigns.get_super_campaign_by_name_and_game(super_campaign_config.name, game_id)
+        end
+
+      Enum.each(1..super_campaign_config.campaign_amount, fn campaign_number ->
+        Campaigns.insert_campaign(%{
+          game_id: game_id,
+          super_campaign_id: super_campaign.id,
+          campaign_number: campaign_number
+        })
+      end)
+    end)
+  end
+
   def import_dungeon_settlement_levels_config() do
     game_id = Utils.get_game_id(:champions_of_mirra)
 
@@ -192,38 +230,69 @@ defmodule Champions.Config do
     Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
     |> Enum.map(fn level ->
       level
-      |> Map.put(
-        :units,
-        level.characters
-        |> Enum.with_index(1)
-        |> Enum.map(fn {character, index} ->
-          %{
-            level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
-            tier: 1,
-            rank: 1,
-            selected: true,
-            slot: index,
-            character_id:
-              Characters.get_character_id_by_name_and_game_id(character, Utils.get_game_id(:champions_of_mirra))
-          }
-        end)
-      )
-      |> Map.put(:game_id, game_id)
-      |> Map.put(:campaign_id, dungeon_campaign.id)
+      |> transform_level_json_data()
       |> Map.put(
         :attempt_cost,
         Enum.map(level.attempt_cost, fn {currency, amount} ->
           transform_currency_amount(currency, amount, game_id)
         end)
       )
-      |> Map.put(
-        :currency_rewards,
-        Enum.map(level.currency_rewards, fn {currency, amount} ->
-          transform_currency_amount(currency, amount, game_id)
-        end)
-      )
+      |> Map.put(:campaign_id, dungeon_campaign.id)
     end)
     |> Campaigns.upsert_levels()
+  end
+
+  def import_main_campaign_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, main_campaign_json} =
+      Application.app_dir(:champions, "priv/main_campaign.json")
+      |> File.read()
+
+    main_super_campaign =
+      Campaigns.get_super_campaign_by_name_and_game("Main Campaign", game_id)
+
+    campaigns =
+      Enum.into(main_super_campaign.campaigns, %{}, fn %{campaign_number: cn, id: id} ->
+        {cn, id}
+      end)
+
+    Jason.decode!(main_campaign_json, [{:keys, :atoms}])
+    |> Enum.map(fn level ->
+      level
+      |> transform_level_json_data()
+      |> Map.put(:campaign_id, campaigns[level.campaign_number])
+    end)
+    |> Campaigns.upsert_levels()
+  end
+
+  defp transform_level_json_data(level) do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    level
+    |> Map.put(
+      :units,
+      level.characters
+      |> Enum.with_index(1)
+      |> Enum.map(fn {character, index} ->
+        %{
+          level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
+          tier: 1,
+          rank: 1,
+          selected: true,
+          slot: index,
+          character_id:
+            Characters.get_character_id_by_name_and_game_id(character, Utils.get_game_id(:champions_of_mirra))
+        }
+      end)
+    )
+    |> Map.put(:game_id, game_id)
+    |> Map.put(
+      :currency_rewards,
+      Enum.map(level.currency_rewards, fn {currency, amount} ->
+        transform_currency_amount(currency, amount, game_id)
+      end)
+    )
   end
 
   defp transform_currency_amount(currency, amount, game_id) do
