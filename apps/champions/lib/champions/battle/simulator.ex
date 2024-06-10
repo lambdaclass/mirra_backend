@@ -1134,15 +1134,13 @@ defmodule Champions.Battle.Simulator do
          target,
          history
        ) do
-    case remaining_interval_steps do
-      0 ->
+    if remaining_interval_steps == 0 do
         apply_deal_damage_over_time(
           execution_over_time,
           target,
           history
         )
-
-      _ ->
+    else
         execution =
           target.executions_over_time |> Enum.find(fn exec -> exec.skill_id == execution_over_time.skill_id end)
 
