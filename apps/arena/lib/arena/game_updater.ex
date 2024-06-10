@@ -147,12 +147,12 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    time_diff = now - game_state.server_timestamp
-    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
+    delta_time = now - game_state.server_timestamp
+    # delta_time = time_diff / state.game_config.game.tick_rate_ms
 
     game_state =
       game_state
-      |> Map.put(:ticks_to_move, ticks_to_move)
+      |> Map.put(:delta_time, delta_time/1)
       # Effects
       |> remove_expired_effects()
       |> remove_effects_on_action()
@@ -160,7 +160,7 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
-      |> reduce_players_cooldowns(time_diff)
+      |> reduce_players_cooldowns(delta_time)
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
@@ -839,7 +839,7 @@ defmodule Arena.GameUpdater do
   defp move_players(
          %{
            players: players,
-           ticks_to_move: ticks_to_move,
+           delta_time: delta_time,
            external_wall: external_wall,
            obstacles: obstacles,
            bushes: bushes,
@@ -856,7 +856,7 @@ defmodule Arena.GameUpdater do
     moved_players =
       players
       |> Physics.move_entities(
-        ticks_to_move,
+        delta_time,
         external_wall,
         obstacles
       )
@@ -892,7 +892,7 @@ defmodule Arena.GameUpdater do
            obstacles: obstacles,
            crates: crates,
            external_wall: external_wall,
-           ticks_to_move: ticks_to_move,
+           delta_time: delta_time,
            pools: pools
          } = game_state
        ) do
@@ -912,7 +912,7 @@ defmodule Arena.GameUpdater do
 
     moved_projectiles =
       alive_projectiles
-      |> Physics.move_entities(ticks_to_move, external_wall, %{})
+      |> Physics.move_entities(delta_time, external_wall, %{})
       |> update_collisions(
         projectiles,
         entities_to_collide_with
