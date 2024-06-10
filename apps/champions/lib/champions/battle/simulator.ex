@@ -1114,11 +1114,11 @@ defmodule Champions.Battle.Simulator do
   defp process_executions_over_time(unit_initial_state, current_unit, history) do
     Enum.reduce(unit_initial_state.executions_over_time, {current_unit, history}, fn execution_over_time,
                                                                                      {unit_acc, history_acc} ->
-      process_execution_over_time(execution_over_time, unit_acc, history_acc)
+      process_execution_over_time(execution_over_time, unit_acc, history_acc, unit_initial_state)
     end)
   end
 
-  defp process_execution_over_time(%{remaining_duration: -1} = execution_over_time, target, history) do
+  defp process_execution_over_time(%{remaining_duration: -1} = execution_over_time, target, history, _target_initial_state) do
     # If the execution is over, we remove it from the target
     new_target =
       update_in(target, [:executions_over_time], fn current_executions ->
@@ -1132,13 +1132,15 @@ defmodule Champions.Battle.Simulator do
          %{execution: %{"type" => "DealDamageOverTime"}, remaining_interval_steps: remaining_interval_steps} =
            execution_over_time,
          target,
-         history
+         history,
+         target_initial_state
        ) do
     if remaining_interval_steps == 0 do
         apply_deal_damage_over_time(
           execution_over_time,
           target,
-          history
+          history,
+          target_initial_state
         )
     else
         execution =
@@ -1161,7 +1163,8 @@ defmodule Champions.Battle.Simulator do
   defp process_execution_over_time(
          execution_over_time,
          target,
-         history
+         history,
+         _target_initial_state
        ) do
     Logger.warning(
       "#{format_unit_name(execution_over_time.caster)} tried to apply an unknown execution over time to #{format_unit_name(target)}"
@@ -1170,9 +1173,9 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
-  defp apply_deal_damage_over_time(execution_over_time, target, history) do
+  defp apply_deal_damage_over_time(execution_over_time, target, history, target_initial_state) do
     damage_after_defense =
-      calculate_damage(execution_over_time.caster, target, execution_over_time.execution["attack_ratio"])
+      calculate_damage(execution_over_time.caster, target_initial_state, execution_over_time.execution["attack_ratio"])
 
     Logger.info(
       "#{format_unit_name(execution_over_time.caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{execution_over_time.remaining_duration}."
