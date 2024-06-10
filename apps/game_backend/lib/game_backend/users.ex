@@ -90,6 +90,7 @@ defmodule GameBackend.Users do
           arena_match_results: ^arena_match_result_subquery,
           user: [
             currencies: :currency,
+            units: :character,
             user_quests: ^daily_quest_subquery
           ]
         ]
@@ -214,7 +215,48 @@ defmodule GameBackend.Users do
       nil
   """
   def get_dungeon_settlement_level(level_number) do
-    Repo.get_by(DungeonSettlementLevel, level: level_number)
+    Repo.get_by(DungeonSettlementLevel, level: level_number) |> Repo.preload(:afk_reward_rates)
+  end
+
+  @doc """
+  Inserts a DungeonSettlementLevel into the database.
+  """
+  def insert_dungeon_settlement_level(attrs) do
+    %DungeonSettlementLevel{}
+    |> DungeonSettlementLevel.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a DungeonSettlementLevel in the database.
+  """
+  def update_dungeon_settlement_level(dungeon_settlement_level, attrs) do
+    dungeon_settlement_level
+    |> DungeonSettlementLevel.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Inserts all DungeonSettlementLevels into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_dungeon_settlement_levels(attrs_list) do
+    Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.level, fn _, _ ->
+        upsert_dungeon_settlement_level(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  @doc """
+  Inserts a DungeonSettlementLevel into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_dungeon_settlement_level(attrs) do
+    case get_dungeon_settlement_level(attrs.level) do
+      nil -> insert_dungeon_settlement_level(attrs)
+      dungeon_settlement_level -> update_dungeon_settlement_level(dungeon_settlement_level, attrs)
+    end
   end
 
   @doc """

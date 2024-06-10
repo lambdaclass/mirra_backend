@@ -506,7 +506,7 @@ defmodule Gateway.Serialization.AfkRewardRate do
 
   field(:kaline_tree_level_id, 1, type: :string, json_name: "kalineTreeLevelId")
   field(:currency, 2, type: Gateway.Serialization.Currency)
-  field(:rate, 3, type: :float)
+  field(:daily_rate, 3, type: :float, json_name: "dailyRate")
 end
 
 defmodule Gateway.Serialization.UserCurrency do
@@ -661,6 +661,8 @@ defmodule Gateway.Serialization.Level do
     type: Gateway.Serialization.CurrencyCost,
     json_name: "attemptCost"
   )
+
+  field(:max_units, 8, type: :uint32, json_name: "maxUnits")
 end
 
 defmodule Gateway.Serialization.CurrencyReward do
