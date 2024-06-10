@@ -121,6 +121,20 @@ defmodule ArenaLoadTest.Serialization.GameEvent do
   field(:update, 2, type: ArenaLoadTest.Serialization.GameState, oneof: 0)
   field(:finished, 3, type: ArenaLoadTest.Serialization.GameFinished, oneof: 0)
   field(:ping, 4, type: ArenaLoadTest.Serialization.PingUpdate, oneof: 0)
+
+  field(:toggle_bots, 5,
+    type: ArenaLoadTest.Serialization.ToggleBots,
+    json_name: "toggleBots",
+    oneof: 0
+  )
+end
+
+defmodule ArenaLoadTest.Serialization.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:active, 1, type: :bool)
 end
 
 defmodule ArenaLoadTest.Serialization.GameFinished.PlayersEntry do

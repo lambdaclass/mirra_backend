@@ -11,7 +11,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished}
+  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -43,12 +43,16 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:toggle_zone})
   end
 
+  def toggle_bots(game_pid) do
+    GenServer.cast(game_pid, {:toggle_bots})
+  end
+
   ##########################
   # END API
   ##########################
 
   def init(%{clients: clients, bot_clients: bot_clients}) do
-    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
+    game_id = self() |> :erlang.term_to_binary() |> Base58.encode() |> IO.inspect(label: :game_id)
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
     match_id = Ecto.UUID.generate()
@@ -149,6 +153,32 @@ defmodule Arena.GameUpdater do
       |> put_in([:game_state, :zone, :shrinking], not zone_enabled?)
 
     {:noreply, state}
+  end
+
+  def handle_cast({:toggle_bots}, %{game_state: %{toggle_bots: false}} = state) do
+    bots_active? = true
+
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:toggle_bots, %ToggleBots{active: bots_active?}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
+
+    {:noreply, put_in(state, [:game_state, :toggle_bots], bots_active?)}
+  end
+
+  def handle_cast({:toggle_bots}, %{game_state: %{toggle_bots: :enabled}} = state) do
+    bots_active? = false
+
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:toggle_bots, %ToggleBots{active: bots_active?}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
+
+    {:noreply, put_in(state, [:game_state, :toggle_bots], bots_active?)}
   end
 
   ##########################
@@ -643,6 +673,7 @@ defmodule Arena.GameUpdater do
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
       })
+      |> Map.put(:toggle_bots, false)
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
       |> Map.put(:positions, %{})

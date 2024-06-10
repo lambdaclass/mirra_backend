@@ -121,6 +121,15 @@ defmodule BotManager.Protobuf.GameEvent do
   field(:update, 2, type: BotManager.Protobuf.GameState, oneof: 0)
   field(:finished, 3, type: BotManager.Protobuf.GameFinished, oneof: 0)
   field(:ping, 4, type: BotManager.Protobuf.PingUpdate, oneof: 0)
+  field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
+end
+
+defmodule BotManager.Protobuf.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:active, 1, type: :bool)
 end
 
 defmodule BotManager.Protobuf.GameFinished.PlayersEntry do

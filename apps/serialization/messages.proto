@@ -39,7 +39,12 @@ message GameEvent {
     GameState update = 2;
     GameFinished finished = 3;
     PingUpdate ping = 4;
+    ToggleBots toggle_bots = 5;
   }
+}
+
+message ToggleBots {
+  bool active = 1;
 }
 
 message GameFinished {
