@@ -19,6 +19,10 @@ defmodule Gateway.Router do
       get "/configuration", CharacterController, :get_characters_config
     end
 
+    scope "/stores" do
+      get "/:store_name/list_items", StoreController, :list_items
+    end
+
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
@@ -27,7 +31,10 @@ defmodule Gateway.Router do
 
       scope "/items" do
         put "/equip", ItemController, :equip
-        put "/buy", ItemController, :buy
+      end
+
+      scope "/stores" do
+        put "/:store_name/buy_item", StoreController, :buy_item
       end
     end
   end

@@ -1,0 +1,1797 @@
+[
+    {
+        "campaign_number": 1,
+        "level_number": 1,
+        "experience_reward": 10,
+        "lineup_level": 1,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Byte"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 2,
+        "experience_reward": 20,
+        "lineup_level": 2,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Germund",
+            "Melo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 3,
+        "experience_reward": 30,
+        "lineup_level": 3,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Chekla",
+            "Chekla"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 4,
+        "experience_reward": 40,
+        "lineup_level": 4,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Melo",
+            "Scratch",
+            "Melo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 5,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
+        "lineup_level": 5,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Chekla",
+            "Arupe",
+            "Arupe"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 6,
+        "experience_reward": 60,
+        "lineup_level": 6,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Qurin",
+            "Chekla",
+            "Chekla",
+            "Chekla"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 7,
+        "experience_reward": 70,
+        "lineup_level": 7,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Byte",
+            "Scratch",
+            "Byte",
+            "Qurin"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 8,
+        "experience_reward": 80,
+        "lineup_level": 8,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Melo",
+            "Byte",
+            "Qurin",
+            "Scratch",
+            "Germund"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 9,
+        "experience_reward": 90,
+        "lineup_level": 9,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Byte",
+            "Chekla",
+            "Chekla",
+            "Scratch",
+            "Arupe"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 1,
+        "level_number": 10,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
+        "lineup_level": 10,
+        "lineup_level_variance": 0,
+        "characters": [
+            "Byte",
+            "Byte",
+            "Arupe",
+            "Byte",
+            "Chekla",
+            "Byte"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 1,
+        "experience_reward": 10,
+        "lineup_level": 10,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Byte",
+            "Germund",
+            "Hash",
+            "Byte",
+            "Hash",
+            "Byte"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 2,
+        "experience_reward": 20,
+        "lineup_level": 11,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Melo",
+            "Kel'mut",
+            "Qurin",
+            "Chekla",
+            "Germund",
+            "Germund"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 3,
+        "experience_reward": 30,
+        "lineup_level": 11,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Byte",
+            "Scratch",
+            "Scratch",
+            "Germund",
+            "Scratch",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 4,
+        "experience_reward": 40,
+        "lineup_level": 12,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Qurin",
+            "Byte",
+            "Kel'mut",
+            "Melo",
+            "Qurin",
+            "Germund"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 5,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
+        "lineup_level": 12,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Melo",
+            "Melo",
+            "Valcher",
+            "Qurin",
+            "Dafnet",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 6,
+        "experience_reward": 60,
+        "lineup_level": 13,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Scratch",
+            "Kel'mut",
+            "Qurin",
+            "Dafnet",
+            "Germund",
+            "Chekla"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 7,
+        "experience_reward": 70,
+        "lineup_level": 13,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Arupe",
+            "Qurin",
+            "Kel'mut",
+            "Melo",
+            "Valcher"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 8,
+        "experience_reward": 80,
+        "lineup_level": 14,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Byte",
+            "Qurin",
+            "Qurin",
+            "Hash",
+            "Melo",
+            "Chekla"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 9,
+        "experience_reward": 90,
+        "lineup_level": 14,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Melo",
+            "Kel'mut",
+            "Kel'mut",
+            "Germund",
+            "Qurin",
+            "Chekla"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 10,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
+        "lineup_level": 14,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Toburo",
+            "Chekla",
+            "Chekla",
+            "Valcher",
+            "Dafnet"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 11,
+        "experience_reward": 110,
+        "lineup_level": 15,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Valcher",
+            "Germund",
+            "Melo",
+            "Chekla",
+            "Melo",
+            "Byte"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 12,
+        "experience_reward": 120,
+        "lineup_level": 15,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Byte",
+            "Byte",
+            "Scratch",
+            "Byte",
+            "Germund",
+            "Arupe"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 13,
+        "experience_reward": 130,
+        "lineup_level": 16,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Melo",
+            "Scratch",
+            "Arupe",
+            "Kel'mut",
+            "Qurin"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 14,
+        "experience_reward": 140,
+        "lineup_level": 16,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Toburo",
+            "Arupe",
+            "Arupe",
+            "Toburo",
+            "Arupe"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 15,
+        "experience_reward": 150,
+        "is_boss_stage?": true,
+        "lineup_level": 17,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Germund",
+            "Kel'mut",
+            "Qurin",
+            "Qurin",
+            "Germund"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 16,
+        "experience_reward": 160,
+        "lineup_level": 17,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Toburo",
+            "Arupe",
+            "Valcher",
+            "Germund",
+            "Toburo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 17,
+        "experience_reward": 170,
+        "lineup_level": 18,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Melo",
+            "Qurin",
+            "Qurin",
+            "Chekla",
+            "Qurin",
+            "Germund"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 18,
+        "experience_reward": 180,
+        "lineup_level": 18,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Valcher",
+            "Melo",
+            "Chekla",
+            "Germund",
+            "Germund",
+            "Valcher"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 19,
+        "experience_reward": 190,
+        "lineup_level": 18,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Byte",
+            "Melo",
+            "Dafnet",
+            "Dafnet",
+            "Valcher",
+            "Chekla"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 2,
+        "level_number": 20,
+        "experience_reward": 200,
+        "is_boss_stage?": true,
+        "lineup_level": 19,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Melo",
+            "Melo",
+            "Chekla",
+            "Toburo",
+            "Toburo",
+            "Byte"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 1,
+        "experience_reward": 10,
+        "lineup_level": 19,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Germund",
+            "Romulo",
+            "Boy Kampf",
+            "Dafnet",
+            "Kel'mut",
+            "Grimstein"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 2,
+        "experience_reward": 20,
+        "lineup_level": 20,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Toburo",
+            "Obure",
+            "Zanochi",
+            "Kampako",
+            "Boy Kampf"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 3,
+        "experience_reward": 30,
+        "lineup_level": 20,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Qurin",
+            "Qurin",
+            "Zil'kan",
+            "Fetra",
+            "Qurin",
+            "Jayson"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 4,
+        "experience_reward": 40,
+        "lineup_level": 21,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Grimstein",
+            "Dafnet",
+            "Dafnet",
+            "Germund",
+            "Grimstein"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 5,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
+        "lineup_level": 21,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zanochi",
+            "Chekla",
+            "Scratch",
+            "Scratch",
+            "Jayson",
+            "Hash"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 6,
+        "experience_reward": 60,
+        "lineup_level": 22,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Rust",
+            "Germund",
+            "Rust",
+            "Kel'mut",
+            "Fetra",
+            "Kura'bara"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 7,
+        "experience_reward": 70,
+        "lineup_level": 22,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Obure",
+            "Dafnet",
+            "Hash",
+            "Rust",
+            "Zanochi",
+            "Hash"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 8,
+        "experience_reward": 80,
+        "lineup_level": 22,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Chekla",
+            "Kura'bara",
+            "Chekla",
+            "Toburo",
+            "Obure"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 9,
+        "experience_reward": 90,
+        "lineup_level": 23,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Rust",
+            "Zanochi",
+            "Hash",
+            "Hash",
+            "Rust",
+            "Rust"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 10,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
+        "lineup_level": 23,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Fetra",
+            "Grimstein",
+            "Elix1r",
+            "Jayson",
+            "Jayson",
+            "Hash"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 11,
+        "experience_reward": 110,
+        "lineup_level": 24,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Chekla",
+            "Kampako",
+            "Chekla",
+            "Chekla",
+            "Boy Kampf",
+            "Zil'kan"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 12,
+        "experience_reward": 120,
+        "lineup_level": 24,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Jayson",
+            "Dafnet",
+            "Obure",
+            "Chekla",
+            "Hash"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 13,
+        "experience_reward": 130,
+        "lineup_level": 25,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Elix1r",
+            "Fetra",
+            "Qurin",
+            "Obure",
+            "Scratch",
+            "Zil'kan"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 14,
+        "experience_reward": 140,
+        "lineup_level": 25,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Dafnet",
+            "Fetra",
+            "Rust",
+            "Kel'mut",
+            "Germund",
+            "Fetra"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 15,
+        "experience_reward": 150,
+        "is_boss_stage?": true,
+        "lineup_level": 26,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Scratch",
+            "Jayson",
+            "Rust",
+            "Qurin",
+            "Dafnet",
+            "Fetra"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 16,
+        "experience_reward": 160,
+        "lineup_level": 26,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Fetra",
+            "Qurin",
+            "Qurin",
+            "Dafnet",
+            "Fetra",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 17,
+        "experience_reward": 170,
+        "lineup_level": 26,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Elix1r",
+            "Scratch",
+            "Chekla",
+            "Chekla",
+            "Boy Kampf",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 18,
+        "experience_reward": 180,
+        "lineup_level": 27,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Romulo",
+            "Zanochi",
+            "Kel'mut",
+            "Dafnet",
+            "Boy Kampf"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 19,
+        "experience_reward": 190,
+        "lineup_level": 27,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Zanochi",
+            "Chekla",
+            "Zanochi",
+            "Toburo",
+            "Romulo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 20,
+        "experience_reward": 200,
+        "is_boss_stage?": true,
+        "lineup_level": 28,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Dafnet",
+            "Grimstein",
+            "Kura'bara",
+            "Boy Kampf",
+            "Dafnet",
+            "Dafnet"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 21,
+        "experience_reward": 210,
+        "lineup_level": 28,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Elix1r",
+            "Chekla",
+            "Rust",
+            "Kura'bara",
+            "Scratch",
+            "Hash"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 22,
+        "experience_reward": 220,
+        "lineup_level": 29,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Romulo",
+            "Grimstein",
+            "Dafnet",
+            "Boy Kampf",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 23,
+        "experience_reward": 230,
+        "lineup_level": 29,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Kel'mut",
+            "Dafnet",
+            "Toburo",
+            "Zil'kan",
+            "Dafnet"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 24,
+        "experience_reward": 240,
+        "lineup_level": 30,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Romulo",
+            "Romulo",
+            "Qurin",
+            "Grimstein",
+            "Dafnet",
+            "Scratch"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 25,
+        "experience_reward": 250,
+        "is_boss_stage?": true,
+        "lineup_level": 30,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Qurin",
+            "Obure",
+            "Fetra",
+            "Kura'bara",
+            "Fetra",
+            "Obure"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 26,
+        "experience_reward": 260,
+        "lineup_level": 30,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Dafnet",
+            "Boy Kampf",
+            "Dafnet",
+            "Germund",
+            "Romulo",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 27,
+        "experience_reward": 270,
+        "lineup_level": 31,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Jayson",
+            "Fetra",
+            "Scratch",
+            "Qurin",
+            "Fetra",
+            "Rust"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 28,
+        "experience_reward": 280,
+        "lineup_level": 31,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Germund",
+            "Scratch",
+            "Rust",
+            "Dafnet",
+            "Dafnet",
+            "Zil'kan"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 29,
+        "experience_reward": 290,
+        "lineup_level": 32,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Kampako",
+            "Zanochi",
+            "Chekla",
+            "Scratch",
+            "Qurin"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 3,
+        "level_number": 30,
+        "experience_reward": 300,
+        "is_boss_stage?": true,
+        "lineup_level": 32,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Qurin",
+            "Obure",
+            "Germund",
+            "Zil'kan",
+            "Kel'mut",
+            "Zanochi"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 1,
+        "experience_reward": 10,
+        "lineup_level": 33,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kura'bara",
+            "Chekla",
+            "Obure",
+            "Kura'bara",
+            "Kel'mut",
+            "Zil'kan"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 2,
+        "experience_reward": 20,
+        "lineup_level": 33,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Germund",
+            "Germund",
+            "Scratch",
+            "Zil'kan",
+            "Kura'bara",
+            "Dafnet"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 3,
+        "experience_reward": 30,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Qurin",
+            "Kel'mut",
+            "Zil'kan",
+            "Fetra",
+            "Zanochi",
+            "Fetra"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 4,
+        "experience_reward": 40,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zil'kan",
+            "Qurin",
+            "Obure",
+            "Kel'mut",
+            "Rust",
+            "Obure"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 5,
+        "experience_reward": 50,
+        "is_boss_stage?": true,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Grimstein",
+            "Germund",
+            "Hash",
+            "Jayson",
+            "Romulo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 6,
+        "experience_reward": 60,
+        "lineup_level": 35,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Germund",
+            "Dafnet",
+            "Toburo",
+            "Chekla",
+            "Kura'bara",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 7,
+        "experience_reward": 70,
+        "lineup_level": 35,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Romulo",
+            "Qurin",
+            "Romulo",
+            "Romulo",
+            "Dafnet",
+            "Fetra"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 8,
+        "experience_reward": 80,
+        "lineup_level": 36,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Scratch",
+            "Jayson",
+            "Zanochi",
+            "Fetra",
+            "Rust",
+            "Jayson"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 9,
+        "experience_reward": 90,
+        "lineup_level": 36,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kura'bara",
+            "Scratch",
+            "Kampako",
+            "Kel'mut",
+            "Kel'mut",
+            "Scratch"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 10,
+        "experience_reward": 100,
+        "is_boss_stage?": true,
+        "lineup_level": 37,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Germund",
+            "Kura'bara",
+            "Kura'bara",
+            "Hash",
+            "Zanochi"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 11,
+        "experience_reward": 110,
+        "lineup_level": 37,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zil'kan",
+            "Obure",
+            "Obure",
+            "Zil'kan",
+            "Obure",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 12,
+        "experience_reward": 120,
+        "lineup_level": 38,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Hash",
+            "Elix1r",
+            "Toburo",
+            "Kampako",
+            "Romulo",
+            "Hash"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 13,
+        "experience_reward": 130,
+        "lineup_level": 38,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Toburo",
+            "Zanochi",
+            "Zanochi",
+            "Zanochi",
+            "Zanochi"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 14,
+        "experience_reward": 140,
+        "lineup_level": 38,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kampako",
+            "Rust",
+            "Jayson",
+            "Jayson",
+            "Boy Kampf",
+            "Jayson"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 15,
+        "experience_reward": 150,
+        "is_boss_stage?": true,
+        "lineup_level": 39,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Rust",
+            "Rust",
+            "Romulo",
+            "Jayson",
+            "Jayson",
+            "Rust"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 16,
+        "experience_reward": 160,
+        "lineup_level": 39,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Jayson",
+            "Elix1r",
+            "Qurin",
+            "Elix1r",
+            "Dafnet",
+            "Romulo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 17,
+        "experience_reward": 170,
+        "lineup_level": 40,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Fetra",
+            "Boy Kampf",
+            "Germund",
+            "Zil'kan",
+            "Dafnet"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 18,
+        "experience_reward": 180,
+        "lineup_level": 40,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zil'kan",
+            "Hash",
+            "Kel'mut",
+            "Rust",
+            "Germund",
+            "Zanochi"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 19,
+        "experience_reward": 190,
+        "lineup_level": 41,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kel'mut",
+            "Zanochi",
+            "Germund",
+            "Germund",
+            "Grimstein",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 20,
+        "experience_reward": 200,
+        "is_boss_stage?": true,
+        "lineup_level": 41,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Toburo",
+            "Zanochi",
+            "Zil'kan",
+            "Qurin",
+            "Toburo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 21,
+        "experience_reward": 210,
+        "lineup_level": 42,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Obure",
+            "Muflus",
+            "Zanochi",
+            "Uren",
+            "Otix",
+            "Valtimer"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 22,
+        "experience_reward": 220,
+        "lineup_level": 42,
+        "lineup_level_variance": 1,
+        "characters": [
+            "H4ck",
+            "Obure",
+            "Hash",
+            "Jayson",
+            "Jayson",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 23,
+        "experience_reward": 230,
+        "lineup_level": 42,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "Rust",
+            "Elix1r",
+            "Rust",
+            "Uren",
+            "Jayson"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 24,
+        "experience_reward": 240,
+        "lineup_level": 43,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Elix1r",
+            "Hash",
+            "Kenzu",
+            "Elix1r",
+            "Elix1r",
+            "Toburo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 25,
+        "experience_reward": 250,
+        "is_boss_stage?": true,
+        "lineup_level": 43,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Obure",
+            "H4ck",
+            "Kel'mut",
+            "Rust",
+            "Toburo",
+            "Boy Kampf"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 26,
+        "experience_reward": 260,
+        "lineup_level": 44,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "Jayson",
+            "Boy Kampf",
+            "Kel'mut",
+            "Boy Kampf",
+            "Kel'mut"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 27,
+        "experience_reward": 270,
+        "lineup_level": 44,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Zil'kan",
+            "Kel'mut",
+            "Valtimer",
+            "Romulo",
+            "Rust",
+            "Zanochi"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 28,
+        "experience_reward": 280,
+        "lineup_level": 45,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Elix1r",
+            "Zil'kan",
+            "Zil'kan",
+            "Otix",
+            "Kenzu",
+            "Uma"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 29,
+        "experience_reward": 290,
+        "lineup_level": 45,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Kampako",
+            "Kura'bara",
+            "Valtimer",
+            "Zanochi",
+            "Valtimer"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 30,
+        "experience_reward": 300,
+        "is_boss_stage?": true,
+        "lineup_level": 46,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Uma",
+            "Toburo",
+            "Zanochi",
+            "Uma",
+            "Boy Kampf",
+            "Kampako"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 31,
+        "experience_reward": 310,
+        "lineup_level": 46,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Obure",
+            "Boy Kampf",
+            "Fetra",
+            "Hash",
+            "Elix1r",
+            "D'agna"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 32,
+        "experience_reward": 320,
+        "lineup_level": 46,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Rust",
+            "Kenzu",
+            "Rust",
+            "Hash",
+            "Kura'bara",
+            "H4ck"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 33,
+        "experience_reward": 330,
+        "lineup_level": 47,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Grimstein",
+            "Romulo",
+            "Jayson",
+            "Obure",
+            "Romulo",
+            "Uren"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 34,
+        "experience_reward": 340,
+        "lineup_level": 47,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Kenzu",
+            "Muflus",
+            "Zil'kan",
+            "Kenzu",
+            "Hash",
+            "Otix"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 35,
+        "experience_reward": 350,
+        "is_boss_stage?": true,
+        "lineup_level": 48,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Hash",
+            "Jayson",
+            "Rust",
+            "Rust",
+            "Valtimer",
+            "Rust"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 36,
+        "experience_reward": 360,
+        "lineup_level": 48,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Obure",
+            "Kel'mut",
+            "Otix",
+            "Hash",
+            "Romulo"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 37,
+        "experience_reward": 370,
+        "lineup_level": 49,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Jayson",
+            "Uren",
+            "Romulo",
+            "Zil'kan",
+            "Obure",
+            "Otix"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 38,
+        "experience_reward": 380,
+        "lineup_level": 49,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Jayson",
+            "Toburo",
+            "Jayson",
+            "Jayson",
+            "Rust",
+            "Kura'bara"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 39,
+        "experience_reward": 390,
+        "lineup_level": 50,
+        "lineup_level_variance": 1,
+        "characters": [
+            "Toburo",
+            "Kenzu",
+            "Zanochi",
+            "Muflus",
+            "Kampako",
+            "Uma"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    },
+    {
+        "campaign_number": 4,
+        "level_number": 40,
+        "experience_reward": 400,
+        "is_boss_stage?": true,
+        "lineup_level": 50,
+        "lineup_level_variance": 2,
+        "characters": [
+            "Toburo",
+            "Kampako",
+            "Uren",
+            "Rust",
+            "Uren",
+            "Uren"
+        ],
+        "currency_rewards": [],
+        "unit_rewards": [],
+        "item_rewards": []
+    }
+]
