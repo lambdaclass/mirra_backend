@@ -2,16 +2,17 @@ defmodule GameBackend.CurseOfMirra.Matches do
   @moduledoc """
   Matches
   """
-  alias GameBackend.Units.Unit
-  alias GameBackend.CurseOfMirra.Quests
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Quests.UserQuest
-
-  alias GameBackend.Utils
-  alias GameBackend.Users
+  import Ecto.Query
   alias Ecto.Multi
+  alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Matches.ArenaMatchResult
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
+  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Units.Unit
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Utils
 
   def create_arena_match_results(match_id, results) do
     Multi.new()
@@ -127,6 +128,18 @@ defmodule GameBackend.CurseOfMirra.Matches do
         end
       end)
     end)
+  end
+
+  def get_prestige(user_id, character) do
+    q =
+      from(u in Unit,
+        join: c in Character,
+        on: u.character_id == c.id,
+        where: u.user_id == ^user_id and c.name == ^character,
+        select: u.prestige
+      )
+
+    Repo.one(q)
   end
 
   ####################
