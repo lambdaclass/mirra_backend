@@ -375,9 +375,7 @@ defmodule Champions.Battle.Simulator do
 
     {new_unit, new_history} = process_executions_over_time(unit, new_state.units[unit.id], new_history)
 
-    new_state =
-      new_state
-      |> put_in([:units, unit.id], new_unit)
+    new_state = put_in(new_state, [:units, unit.id], new_unit)
 
     {new_state, new_history}
   end
