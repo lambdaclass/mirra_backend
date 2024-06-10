@@ -1102,7 +1102,12 @@ defmodule Champions.Battle.Simulator do
           unit.modifiers.multiply,
           &(&1.multiply_type == "Additive" and &1.attribute == Atom.to_string(attribute))
         )
-        |> Enum.reduce(1, fn mod, acc -> mod.magnitude * acc end)
+        |> Enum.reduce(0, fn mod, acc -> mod.magnitude + acc end)
+        |> case do
+          # Keep the identity value for multiplication
+          0 -> 1
+          x -> x
+        end
 
       multiply_multiplicative =
         Enum.filter(
@@ -1224,8 +1229,6 @@ defmodule Champions.Battle.Simulator do
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
-        # TODO: replace random for the corresponding target type name (CHoM #325)
-        # type: mechanic.apply_effects_to.targeting_strategy.type,
         type:
           cond do
             is_binary(targeting_strategy_type) && targeting_strategy_type in @implemented_targeting_strategies ->

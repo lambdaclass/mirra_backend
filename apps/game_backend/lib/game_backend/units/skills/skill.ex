@@ -23,6 +23,7 @@ defmodule GameBackend.Units.Skills.Skill do
   def changeset(skill, attrs \\ %{}) do
     skill
     |> cast(attrs, [:name, :cooldown, :energy_regen, :animation_duration, :buff_id])
+    |> unique_constraint(:name, name: :skills_name_index)
     |> cast_assoc(:mechanics)
   end
 end

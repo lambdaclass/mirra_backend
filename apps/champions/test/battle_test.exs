@@ -600,6 +600,123 @@ defmodule Champions.Test.BattleTest do
     end
   end
 
+  describe "Modifiers" do
+    test "Additive and Multipliative multiply modifiers are combined properly", %{target_dummy: target_dummy} do
+      # If a unit with 1 base attack has two additive mult modifiers of 10 and 5, plus two multiplicative
+      # mult modifiers of 10 and 5, the final result is: [1 * (10 + 5) * 10 * 5 = 750].
+
+      # The basic skill will give the unit these modifiers and add 500 energy to them.
+      # The ultimate will deal 1*750 = 750 damage to the target dummy, killing it.
+
+      basic_skill_params =
+        TestUtils.build_skill(%{
+          name: "ModifiersAddtiveMultiplicative - Basic",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{"type" => "duration", "duration" => 5 * @miliseconds_per_step},
+                      executions: [
+                        %{
+                          type: "AddEnergy",
+                          amount: 500
+                        }
+                      ],
+                      modifiers: [
+                        %{
+                          attribute: "attack",
+                          operation: "Multiply",
+                          multiply_type: "Additive",
+                          magnitude: 10.0
+                        },
+                        %{
+                          attribute: "attack",
+                          operation: "Multiply",
+                          multiply_type: "Additive",
+                          magnitude: 5.0
+                        },
+                        %{
+                          attribute: "attack",
+                          operation: "Multiply",
+                          multiply_type: "Multiplicative",
+                          magnitude: 10.0
+                        },
+                        %{
+                          attribute: "attack",
+                          operation: "Multiply",
+                          multiply_type: "Multiplicative",
+                          magnitude: 5.0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "self",
+                    target_allies: true
+                  }
+                })
+            }
+          ],
+          cooldown: 1 * @miliseconds_per_step
+        })
+
+      ultimate_skill_params =
+        TestUtils.build_skill(%{
+          name: "ModifiersAddtiveMultiplicative - Ultimate",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      executions: [
+                        %{
+                          type: "DealDamage",
+                          attack_ratio: 1,
+                          energy_recharge: 0
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "random",
+                    target_allies: false
+                  }
+                })
+            }
+          ]
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "ModifiersAddtiveMultiplicative - Character",
+          basic_skill: basic_skill_params,
+          ultimate_skill: ultimate_skill_params,
+          base_attack: 1
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      target_dummy = Map.put(target_dummy, :character, Map.put(target_dummy.character, :base_health, 750))
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 3).result
+
+      target_dummy = Map.put(target_dummy, :character, Map.put(target_dummy.character, :base_health, 751))
+
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: 3).result
+    end
+  end
+
   describe "Components" do
     test "Untargetable tag is applied" do
       # We will set up a battle between a unit with an untargetable skill and a unit that targets the nearest enemy, performing a DealDamage execution.
