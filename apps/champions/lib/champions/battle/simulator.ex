@@ -1118,7 +1118,12 @@ defmodule Champions.Battle.Simulator do
     end)
   end
 
-  defp process_execution_over_time(%{remaining_duration: -1} = execution_over_time, target, history, _target_initial_state) do
+  defp process_execution_over_time(
+         %{remaining_duration: -1} = execution_over_time,
+         target,
+         history,
+         _target_initial_state
+       ) do
     # If the execution is over, we remove it from the target
     new_target =
       update_in(target, [:executions_over_time], fn current_executions ->
@@ -1136,27 +1141,26 @@ defmodule Champions.Battle.Simulator do
          target_initial_state
        ) do
     if remaining_interval_steps == 0 do
-        apply_deal_damage_over_time(
-          execution_over_time,
-          target,
-          history,
-          target_initial_state
-        )
+      apply_deal_damage_over_time(
+        execution_over_time,
+        target,
+        history,
+        target_initial_state
+      )
     else
-        execution =
-          target.executions_over_time |> Enum.find(fn exec -> exec.skill_id == execution_over_time.skill_id end)
+      execution = target.executions_over_time |> Enum.find(fn exec -> exec == execution_over_time end)
 
-        new_execution_over_time =
-          Map.put(execution_over_time, :remaining_interval_steps, execution.remaining_interval_steps - 1)
+      new_execution_over_time =
+        Map.put(execution_over_time, :remaining_interval_steps, execution.remaining_interval_steps - 1)
 
-        new_target =
-          update_in(target, [:executions_over_time], fn current_executions ->
-            Enum.filter(current_executions, fn exec -> exec != execution end) ++ [new_execution_over_time]
-          end)
+      new_target =
+        update_in(target, [:executions_over_time], fn current_executions ->
+          Enum.filter(current_executions, fn exec -> exec != execution end) ++ [new_execution_over_time]
+        end)
 
-        Logger.info("Remaining period: #{new_execution_over_time.remaining_interval_steps}")
+      Logger.info("Remaining period: #{new_execution_over_time.remaining_interval_steps}")
 
-        {new_target, history}
+      {new_target, history}
     end
   end
 
@@ -1199,7 +1203,7 @@ defmodule Champions.Battle.Simulator do
       |> Map.put(:health, target.health - damage_after_defense)
       |> update_in([:executions_over_time], fn current_executions ->
         Enum.map(current_executions, fn exec ->
-          if exec.skill_id == execution_over_time.skill_id do
+          if exec == execution_over_time do
             Map.put(exec, :remaining_interval_steps, initial_interval_steps)
             |> Map.put(:remaining_duration, exec.remaining_duration - 1)
           else
