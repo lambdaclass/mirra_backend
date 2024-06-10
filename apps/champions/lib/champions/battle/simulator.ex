@@ -963,7 +963,7 @@ defmodule Champions.Battle.Simulator do
     steps = get_duration(effect.type)
 
     {new_tags, new_history} =
-      Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
+      Enum.reduce(tags_to_apply || [], {[], history}, fn tag, {acc, history} ->
         Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)} for #{steps} steps.")
 
         new_history =
