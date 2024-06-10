@@ -1275,10 +1275,9 @@ defmodule Champions.Battle.Simulator do
      ), history}
   end
 
+  # Calculates the damage dealt by an attacker to its target, considering the target's defense.
+  # We used this function to determine the damage to be dealt by an execution over time, as well as by a DealDamage execution.
   defp calculate_damage(unit, target, attack_ratio) do
-    # Calculates the damage dealt by an attacker to its target, considering the target's defense.
-    # We used this function to determine the damage to be dealt by an execution over time, as well as by a DealDamage execution.
-
     damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(unit, :attack)), 0)
 
     # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
