@@ -236,23 +236,22 @@ main_campaign_1 =
 
 level_1 = Enum.find(main_campaign_1.levels, &(&1.level_number == 1))
 
-{:ok, _} =
-  %UnitReward{}
-  |> UnitReward.changeset(%{
-    character_id: Characters.get_characters(champions_of_mirra_id),
-    level_id: level_1.id,
-    amount: 1,
-    rank: 5
-  })
-  |> Repo.insert()
+%UnitReward{}
+|> UnitReward.changeset(%{
+  character_id: Characters.get_characters(champions_of_mirra_id) |> hd() |> Map.get(:id),
+  level_id: level_1.id,
+  amount: 1,
+  rank: 5
+})
+|> Repo.insert!()
 
-{:ok, _} =
-  %ItemReward{}
-  |> ItemReward.changeset(%{
-    item_template_id: Items.get_item_templates(champions_of_mirra_id) |> hd() |> Map.get(:id),
-    level_id: level_1.id,
-    amount: 1
-  })
+%ItemReward{}
+|> ItemReward.changeset(%{
+  item_template_id: Items.get_item_templates(champions_of_mirra_id) |> hd() |> Map.get(:id),
+  level_id: level_1.id,
+  amount: 1
+})
+|> Repo.insert!()
 
 ##################### CURSE OF MIRRA #####################
 # Insert characters
