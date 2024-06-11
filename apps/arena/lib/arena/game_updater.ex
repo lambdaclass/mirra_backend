@@ -163,11 +163,10 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     delta_time = now - game_state.server_timestamp
-    # delta_time = time_diff / state.game_config.game.tick_rate_ms
 
     game_state =
       game_state
-      |> Map.put(:delta_time, delta_time/1)
+      |> Map.put(:delta_time, delta_time / 1)
       # Effects
       |> remove_expired_effects()
       |> remove_effects_on_action()
