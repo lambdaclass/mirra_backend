@@ -44,7 +44,7 @@ defmodule GameBackend.Campaigns do
           currency_rewards: :currency,
           units: [:items, :character],
           attempt_cost: :currency,
-          item_rewards: :item,
+          item_rewards: :item_template,
           unit_rewards: :character
         ]
       )
