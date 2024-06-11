@@ -259,7 +259,36 @@ defmodule Gateway.ChampionsSocketHandler do
       id: campaign.id,
       super_campaign_name: campaign.super_campaign.name,
       campaign_number: campaign.campaign_number,
-      levels: campaign.levels
+      levels: Enum.map(campaign.levels, &prepare_level/1)
+    }
+  end
+
+  defp prepare_level(level) do
+    %{
+      id: level.id,
+      campaign_id: level.campaign_id,
+      level_number: level.level_number,
+      units: level.units,
+      currency_rewards: level.currency_rewards,
+      item_rewards:
+        Enum.map(
+          level.item_rewards,
+          &%{
+            item_template_name: &1.item_template.name,
+            amount: &1.amount
+          }
+        ),
+      unit_rewards:
+        Enum.map(
+          level.unit_rewards,
+          &%{
+            character_name: &1.character.name,
+            rank: &1.rank
+          }
+        ),
+      experience_reward: level.experience_reward,
+      attempt_cost: level.attempt_cost,
+      max_units: level.max_units
     }
   end
 

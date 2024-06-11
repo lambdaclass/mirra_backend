@@ -87,13 +87,13 @@ defmodule GameBackend.Items do
   end
 
   @doc """
-  Get all item templates.
+  Get all item templates from a game.
 
   ## Examples
-      iex> get_item_templates()
+      iex> get_item_templates(game_id)
       [%ItemTemplate{}]
   """
-  def get_item_templates(), do: Repo.all(ItemTemplate)
+  def get_item_templates(game_id), do: Repo.all(from(it in ItemTemplate, where: it.game_id == ^game_id))
 
   @doc """
   Get an item template by id.

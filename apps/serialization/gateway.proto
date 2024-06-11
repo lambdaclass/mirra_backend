@@ -304,14 +304,26 @@ syntax = "proto3";
     uint32 level_number = 3;
     repeated Unit units = 4;
     repeated CurrencyReward currency_rewards = 5;
-    uint32 experience_reward = 6;    
-    repeated CurrencyCost attempt_cost = 7;
+    repeated ItemReward item_rewards = 6;
+    repeated UnitReward unit_rewards = 7;
+    uint32 experience_reward = 9;    
+    repeated CurrencyCost attempt_cost = 10;
     uint32 max_units = 8;
   }
 
   message CurrencyReward {
     Currency currency = 1; 
     uint64 amount = 3;
+  }
+
+  message ItemReward {
+    string item_template_name = 1;
+    uint32 level = 2;
+  }
+
+  message UnitReward {
+    string character_name = 1;
+    uint32 rank = 4;
   }
 
   message AfkRewards {

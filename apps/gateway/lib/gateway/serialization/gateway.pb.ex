@@ -654,9 +654,21 @@ defmodule Gateway.Serialization.Level do
     json_name: "currencyRewards"
   )
 
-  field(:experience_reward, 6, type: :uint32, json_name: "experienceReward")
+  field(:item_rewards, 6,
+    repeated: true,
+    type: Gateway.Serialization.ItemReward,
+    json_name: "itemRewards"
+  )
 
-  field(:attempt_cost, 7,
+  field(:unit_rewards, 7,
+    repeated: true,
+    type: Gateway.Serialization.UnitReward,
+    json_name: "unitRewards"
+  )
+
+  field(:experience_reward, 9, type: :uint32, json_name: "experienceReward")
+
+  field(:attempt_cost, 10,
     repeated: true,
     type: Gateway.Serialization.CurrencyCost,
     json_name: "attemptCost"
@@ -672,6 +684,24 @@ defmodule Gateway.Serialization.CurrencyReward do
 
   field(:currency, 1, type: Gateway.Serialization.Currency)
   field(:amount, 3, type: :uint64)
+end
+
+defmodule Gateway.Serialization.ItemReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:item_template_name, 1, type: :string, json_name: "itemTemplateName")
+  field(:level, 2, type: :uint32)
+end
+
+defmodule Gateway.Serialization.UnitReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:character_name, 1, type: :string, json_name: "characterName")
+  field(:rank, 4, type: :uint32)
 end
 
 defmodule Gateway.Serialization.AfkRewards do

@@ -94,7 +94,7 @@ defmodule Champions.Users do
   end
 
   defp add_sample_items(user) do
-    Items.get_item_templates()
+    Items.get_item_templates(Utils.get_game_id(:champions_of_mirra))
     |> Enum.each(fn template ->
       Items.insert_item(%{user_id: user.id, template_id: template.id, level: Enum.random(1..5)})
     end)
