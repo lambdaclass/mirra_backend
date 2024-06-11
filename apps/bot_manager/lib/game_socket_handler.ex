@@ -28,7 +28,7 @@ defmodule BotManager.GameSocketHandler do
   def handle_connect(_conn, state) do
     send(self(), :decide_action)
     send(self(), :perform_action)
-    {:ok, Map.put(state, :toggle_bots, %{active: false})}
+    {:ok, Map.put(state, :bots_enabled?, true)}
   end
 
   def handle_frame({:binary, frame}, state) do
@@ -49,18 +49,12 @@ defmodule BotManager.GameSocketHandler do
       %{event: {:finished, _}} ->
         exit(:shutdown)
 
-      %{event: {:toggle_bots, toggle_bots}} ->
-        IO.inspect(toggle_bots, label: :aver_bots)
-        {:ok, Map.merge(state, toggle_bots) |> IO.inspect(label: :aver_map_merge)}
+      %{event: {:server_toggle_bots, _}} ->
+        {:ok, Map.put(state, :bots_enabled?, not state.bots_enabled?)}
 
       _ ->
         {:ok, state}
     end
-  end
-
-  def handle_info(:decide_action, %{toggle_bots: %{active: false}} = state) do
-    Process.send_after(self(), :decide_action, @decision_delay_ms)
-    {:ok, state}
   end
 
   def handle_info(:decide_action, state) do
@@ -69,11 +63,6 @@ defmodule BotManager.GameSocketHandler do
     action = BotStateMachine.decide_action(state)
 
     {:ok, Map.put(state, :current_action, action)}
-  end
-
-  def handle_info(:perform_action, %{toggle_bots: %{active: false}} = state) do
-    Process.send_after(self(), :perform_action, @action_delay_ms)
-    {:ok, state}
   end
 
   def handle_info(:perform_action, state) do
