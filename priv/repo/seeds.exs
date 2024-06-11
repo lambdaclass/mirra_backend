@@ -1,8 +1,10 @@
 alias GameBackend.{Gacha, Repo, Users, Utils}
-alias GameBackend.Campaigns.Rewards.AfkRewardRate
+alias GameBackend.Campaigns.Rewards.{AfkRewardRate, ItemReward, UnitReward}
+alias GameBackend.Campaigns
+alias GameBackend.CurseOfMirra.Config
+alias GameBackend.Items
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
 alias GameBackend.Units.Characters
-alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
@@ -223,6 +225,34 @@ Champions.Config.import_dungeon_settlement_levels_config()
   )
 
 Champions.Config.import_dungeon_levels_config()
+
+# Add sample unit/item rewards to first level of main campaign
+# Should be removed when we implement unit/item rewards on campaign config import [CHoM-#494]
+main_super_campaign =
+  Campaigns.get_super_campaign_by_name_and_game("Main Campaign", champions_of_mirra_id)
+
+main_campaign_1 =
+  Enum.find(main_super_campaign.campaigns, &(&1.campaign_number == 1)) |> Repo.preload(:levels)
+
+level_1 = Enum.find(main_campaign_1.levels, &(&1.level_number == 1))
+
+{:ok, _} =
+  %UnitReward{}
+  |> UnitReward.changeset(%{
+    character_id: Characters.get_characters(champions_of_mirra_id),
+    level_id: level_1.id,
+    amount: 1,
+    rank: 5
+  })
+  |> Repo.insert()
+
+{:ok, _} =
+  %ItemReward{}
+  |> ItemReward.changeset(%{
+    item_template_id: Items.get_item_templates(champions_of_mirra_id) |> hd() |> Map.get(:id),
+    level_id: level_1.id,
+    amount: 1
+  })
 
 ##################### CURSE OF MIRRA #####################
 # Insert characters
