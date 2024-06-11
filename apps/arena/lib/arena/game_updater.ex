@@ -52,7 +52,7 @@ defmodule Arena.GameUpdater do
   ##########################
 
   def init(%{clients: clients, bot_clients: bot_clients}) do
-    game_id = self() |> :erlang.term_to_binary() |> Base58.encode() |> IO.inspect(label: :game_id)
+    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
     match_id = Ecto.UUID.generate()
