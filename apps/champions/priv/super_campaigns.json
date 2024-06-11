@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Main Campaign",
+        "campaign_amount": 4
+    },
+    {
+        "name": "Dungeon",
+        "campaign_amount": 1
+    }
+]

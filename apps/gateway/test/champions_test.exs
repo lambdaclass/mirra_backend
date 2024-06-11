@@ -7,12 +7,13 @@ defmodule Gateway.Test.Champions do
   use ExUnit.Case
 
   alias Champions.{Units, Users}
-  alias GameBackend.Utils
   alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
   alias GameBackend.Repo
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Units.Unit
   alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Utils
 
   alias Gateway.Serialization.{
     Box,
@@ -32,6 +33,9 @@ defmodule Gateway.Test.Champions do
   }
 
   alias Gateway.SocketTester
+
+  @seconds_in_day 86_400
+  @hours_in_day 24
 
   setup do
     {:ok, socket_tester} = SocketTester.start_link()
@@ -424,8 +428,11 @@ defmodule Gateway.Test.Champions do
         response_type: {:campaigns, %Campaigns{} = campaigns}
       }
 
-      levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
-      invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
+      invalid_level =
+        campaigns.campaigns
+        |> Enum.find(&(&1.super_campaign_name == "Main Campaign"))
+        |> Map.get(:levels)
+        |> Enum.find(&(&1.id != next_level_id))
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, invalid_level.id)
@@ -721,10 +728,10 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(user.kaline_tree_level.afk_reward_rates, fn rate ->
                case rate.currency.name in rewardable_currencies do
                  true ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
 
                  false ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
                end
              end)
 
@@ -741,10 +748,10 @@ defmodule Gateway.Test.Champions do
       assert Enum.all?(leveled_up_user.kaline_tree_level.afk_reward_rates, fn rate ->
                case rate.currency.name in rewardable_currencies do
                  true ->
-                   rate.rate > 0
+                   rate.daily_rate > 0
 
                  false ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
                end
              end)
 
@@ -781,12 +788,13 @@ defmodule Gateway.Test.Champions do
                    true
 
                  rate ->
-                   reward_rate = rate.rate
+                   reward_rate = rate.daily_rate
 
                    currency_before_claim =
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
-                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   expected_amount = trunc(currency_before_claim + reward_rate / @seconds_in_day * seconds_to_wait)
+
                    user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
                end
              end)
@@ -820,16 +828,16 @@ defmodule Gateway.Test.Champions do
                      Enum.find(
                        leveled_up_user.kaline_tree_level.afk_reward_rates,
                        &(&1.currency.name == rate.currency.name)
-                     ).rate
+                     ).daily_rate
 
                    afk_reward_rate =
-                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
+                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).daily_rate
 
                    new_rate = previous_rate + afk_reward_rate
-                   rate.rate > previous_rate
+                   rate.daily_rate > previous_rate
 
                  false ->
-                   rate.rate == 0
+                   rate.daily_rate == 0
                end
              end)
     end
@@ -843,13 +851,21 @@ defmodule Gateway.Test.Champions do
       initial_dungeon_settlement_level = user.dungeon_settlement_level.level
       assert initial_dungeon_settlement_level == 1
 
-      initial_blueprints = Currencies.get_amount_of_currency_by_name(user.id, "Blueprints")
-      initial_gold = Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      initial_currencies = %{
+        "Blueprints" => Currencies.get_amount_of_currency_by_name(user.id, "Blueprints"),
+        "Gold" => Currencies.get_amount_of_currency_by_name(user.id, "Gold")
+      }
 
-      # Due to sample currencies
-      assert initial_blueprints == 50
-      assert initial_gold == 100
-      initial_currencies = %{"Blueprints" => initial_blueprints, "Gold" => initial_gold}
+      # Add just enough currency for 1 upgrade
+      Enum.each(user.dungeon_settlement_level.level_up_costs, fn currency_cost ->
+        {:ok, _} =
+          Currencies.add_currency_by_name_and_game!(
+            user.id,
+            currency_cost.currency.name,
+            Utils.get_game_id(:champions_of_mirra),
+            currency_cost.amount - initial_currencies[currency_cost.currency.name]
+          )
+      end)
 
       # Level up Dungeon Settlements with enough Blueprints and Gold should return an updated user.
       SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
@@ -860,8 +876,7 @@ defmodule Gateway.Test.Champions do
 
       # Currency should be deducted
       Enum.each(user.dungeon_settlement_level.level_up_costs, fn currency_cost ->
-        assert Currencies.get_amount_of_currency_by_name(user.id, currency_cost.currency.name) ==
-                 (Map.get(initial_currencies, currency_cost.currency.name) - currency_cost.amount) |> max(0)
+        assert Currencies.get_amount_of_currency_by_name(user.id, currency_cost.currency.name) == 0
       end)
 
       # Level up Dungeon Settlements without enough blueprints should return an error.
@@ -875,25 +890,19 @@ defmodule Gateway.Test.Champions do
     test "leveling up the Dungeon Settlements increments the afk rewards", %{socket_tester: socket_tester} do
       {:ok, user} = Users.register("DungeonSettlementAFKRewardsUser")
 
-      # Check that the initial afk reward rates is not an empty list
-      assert Enum.any?(user.dungeon_settlement_level.afk_reward_rates)
+      # Chek the user is created with the right DungeonSettlementLevel
+      assert user.dungeon_settlement_level.level == 1
 
-      # Check that supply afk reward rates are 0 initially
-      rewardable_currencies = ["Supplies"]
-
-      assert Enum.all?(user.dungeon_settlement_level.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   rate.rate == 0
-
-                 false ->
-                   rate.rate == 0
-               end
-             end)
-
-      # Add enough blueprints for 1 upgrade
-      {:ok, _} =
-        Currencies.add_currency_by_name_and_game!(user.id, "Blueprints", Utils.get_game_id(:champions_of_mirra), 50)
+      # Add enough currency for 1 upgrade
+      Enum.each(user.dungeon_settlement_level.level_up_costs, fn currency_cost ->
+        {:ok, _} =
+          Currencies.add_currency_by_name_and_game!(
+            user.id,
+            currency_cost.currency.name,
+            Utils.get_game_id(:champions_of_mirra),
+            currency_cost.amount
+          )
+      end)
 
       # Level up the Dungeon Settlement
       SocketTester.level_up_dungeon_settlement(socket_tester, user.id)
@@ -901,35 +910,24 @@ defmodule Gateway.Test.Champions do
 
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = leveled_up_user}}
 
-      # Check that any afk reward rates exist
-      assert Enum.any?(leveled_up_user.dungeon_settlement_level.afk_reward_rates)
-
-      # Check that supply afk reward rate is greater than 0
-      assert Enum.all?(leveled_up_user.dungeon_settlement_level.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   rate.rate > 0
-
-                 false ->
-                   rate.rate == 0
-               end
-             end)
+      # Check that the user's DungeonSettlementLevel level has increased
+      assert leveled_up_user.dungeon_settlement_level.level == 2
 
       # Claim afk rewards
       currencies_before_claiming = leveled_up_user.currencies
 
-      # Simulate waiting 2 seconds before claiming the rewards, to let the rewards accumulate
-      seconds_to_wait = 2
+      # Simulate waiting 2 hours before claiming the rewards, to let the rewards accumulate
+      hours_to_wait = 2
       {:ok, leveled_up_user_with_rewards} = Users.get_user(leveled_up_user.id)
 
       {:ok, _} =
         leveled_up_user_with_rewards
         |> GameBackend.Users.User.changeset(%{
-          last_kaline_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-seconds_to_wait, :second)
+          last_dungeon_afk_reward_claim: DateTime.utc_now() |> DateTime.add(-hours_to_wait, :hour)
         })
         |> Repo.update()
 
-      SocketTester.claim_kaline_afk_rewards(socket_tester, leveled_up_user.id)
+      SocketTester.claim_dungeon_afk_rewards(socket_tester, leveled_up_user.id)
       fetch_last_message(socket_tester)
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = claimed_user}}
 
@@ -948,12 +946,12 @@ defmodule Gateway.Test.Champions do
                    true
 
                  rate ->
-                   reward_rate = rate.rate
+                   reward_rate = rate.daily_rate
 
                    currency_before_claim =
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
-                   expected_amount = trunc(currency_before_claim + reward_rate * seconds_to_wait)
+                   expected_amount = trunc(currency_before_claim + reward_rate * hours_to_wait / @hours_in_day)
                    user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
                end
              end)
@@ -961,16 +959,15 @@ defmodule Gateway.Test.Champions do
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
       # Level up the Dungeon Settlements again to check that the afk rewards rates have increased
-      {:ok, _} =
-        Currencies.add_currency_by_name_and_game!(claimed_user.id, "Gold", Utils.get_game_id(:champions_of_mirra), 200)
-
-      {:ok, _} =
-        Currencies.add_currency_by_name_and_game!(
-          claimed_user.id,
-          "Blueprints",
-          Utils.get_game_id(:champions_of_mirra),
-          200
-        )
+      Enum.each(claimed_user.dungeon_settlement_level.level_up_costs, fn currency_cost ->
+        {:ok, _} =
+          Currencies.add_currency_by_name_and_game!(
+            claimed_user.id,
+            currency_cost.currency.name,
+            Utils.get_game_id(:champions_of_mirra),
+            currency_cost.amount
+          )
+      end)
 
       SocketTester.level_up_dungeon_settlement(socket_tester, claimed_user.id)
       fetch_last_message(socket_tester)
@@ -983,24 +980,103 @@ defmodule Gateway.Test.Champions do
         |> Repo.preload(:currency)
 
       assert Enum.all?(more_advanced_user.dungeon_settlement_level.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   previous_rate =
-                     Enum.find(
-                       leveled_up_user.dungeon_settlement_level.afk_reward_rates,
-                       &(&1.currency.name == rate.currency.name)
-                     ).rate
+               previous_rate =
+                 Enum.find(
+                   leveled_up_user.dungeon_settlement_level.afk_reward_rates,
+                   &(&1.currency.name == rate.currency.name)
+                 ).daily_rate
 
-                   afk_reward_rate =
-                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).rate
+               afk_reward_rate =
+                 Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).daily_rate
 
-                   new_rate = previous_rate + afk_reward_rate
-                   rate.rate > previous_rate
-
-                 false ->
-                   rate.rate == 0
-               end
+               new_rate = previous_rate + afk_reward_rate
+               rate.daily_rate > previous_rate
              end)
+    end
+  end
+
+  describe "Dungeon Settlement Upgrades" do
+    test "Dungeon Settlement Upgrades", %{socket_tester: socket_tester} do
+      {:ok, user} = Users.register("Dungeon Settlement Upgrades User")
+
+      {:ok, hp_upgrade_1} = GameBackend.Users.get_upgrade_by_name("Dungeon.HPUpgrade1")
+      {:ok, _hp_upgrade_2} = GameBackend.Users.get_upgrade_by_name("Dungeon.HPUpgrade2")
+
+      dungeon_campaign =
+        GameBackend.Campaigns.get_super_campaign_by_name_and_game("Dungeon", Utils.get_game_id(:champions_of_mirra))
+
+      {:ok, dungeon_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, dungeon_campaign.id)
+
+      dungeon_level = dungeon_campaign_progress.level
+
+      [some_unit | units_to_unselect] = user.units
+
+      # Unselect all units because first level of dungeon has max_units = 1
+      Enum.each(units_to_unselect, fn unit_to_unselect ->
+        {:ok, unit} = GameBackend.Units.unselect_unit(user.id, unit_to_unselect.id)
+        assert unit.selected == false
+      end)
+
+      # Check that user has initial BaseSetting debuff after register
+
+      assert Enum.any?(user.unlocks, &(&1.upgrade.name == "Dungeon.BaseSetting"))
+
+      # Fighting a dungeon level with this user will have its units attributes reduced due to the BaseSetting debuff
+
+      SocketTester.fight_level(socket_tester, user.id, dungeon_level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:battle_result, %{initial_state: initial_state}}}
+      unit_initial_state_with_debuff = Enum.find(initial_state.units, &(&1.id == some_unit.id))
+      assert unit_initial_state_with_debuff.health < Units.get_health(some_unit)
+
+      # TODO: [#CHOM-471] Check that upgrade 2 cannot be purchased before upgrade 1
+
+      # Purchase upgrade 1 fails if the user does not have enough Pearls
+
+      SocketTester.purchase_dungeon_upgrade(socket_tester, user.id, hp_upgrade_1.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "cant_afford"}}}
+
+      # Add necessary currency to User
+      {:ok, _} =
+        Currencies.add_currency_by_name_and_game!(user.id, "Pearls", Utils.get_game_id(:champions_of_mirra), 999)
+
+      initial_currencies = %{
+        "Pearls" => Currencies.get_amount_of_currency_by_name(user.id, "Pearls")
+      }
+
+      # PurchaseDungeonUpgrade with enough currency should return an updated user.
+      SocketTester.purchase_dungeon_upgrade(socket_tester, user.id, hp_upgrade_1.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = user_with_upgrade}}
+
+      # User should have the Unlock
+      hp_upgrade_1_unlock = Enum.find(user_with_upgrade.unlocks, &(&1.upgrade.name == hp_upgrade_1.name))
+      assert not is_nil(hp_upgrade_1_unlock)
+      assert hp_upgrade_1_unlock.name == hp_upgrade_1.name
+
+      # Currency should be deducted
+      Enum.each(hp_upgrade_1.cost, fn currency_cost ->
+        assert Currencies.get_amount_of_currency_by_name(user_with_upgrade.id, currency_cost.currency.name) ==
+                 (Map.get(initial_currencies, currency_cost.currency.name) - currency_cost.amount) |> max(0)
+      end)
+
+      # Check that if we fight another level, the same unit will have a bit more health than before
+      {:ok, dungeon_campaign_progress} =
+        GameBackend.Campaigns.get_super_campaign_progress(user.id, dungeon_campaign.id)
+
+      dungeon_level = dungeon_campaign_progress.level
+
+      SocketTester.fight_level(socket_tester, user.id, dungeon_level.id)
+      fetch_last_message(socket_tester)
+
+      assert_receive %WebSocketResponse{response_type: {:battle_result, %{initial_state: initial_state}}}
+      unit_initial_state_with_upgrade = Enum.find(initial_state.units, &(&1.id == some_unit.id))
+      assert unit_initial_state_with_upgrade.health > unit_initial_state_with_debuff.health
     end
   end
 

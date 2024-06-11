@@ -155,17 +155,52 @@ end
 ###################################
 
 if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
-  {:ok, currency_config_json} =
-    "./apps/game_backend/priv/currencies_rules.json"
-    |> File.read()
-
-  config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
-
   {:ok, daily_rewards_json} =
     Application.app_dir(:game_backend, "priv/daily_rewards_rules.json")
     |> File.read()
 
   config :game_backend, :daily_rewards_config, Jason.decode!(daily_rewards_json)
+
+  arena_prestige_ranks_json =
+    Application.app_dir(:game_backend, "priv/arena_prestige_ranks.json")
+    |> File.read!()
+    |> Jason.decode!()
+
+  arena_prestige_ranks =
+    Enum.reduce(arena_prestige_ranks_json["ranks"], [], fn rank, acc ->
+      Enum.reduce(rank["sub_ranks"], acc, fn sub_rank, acc ->
+        entry = %{
+          rank: rank["rank"],
+          sub_rank: sub_rank["sub_rank"],
+          min: sub_rank["min"],
+          max: sub_rank["max"]
+        }
+
+        [entry | acc]
+      end)
+    end)
+    |> Enum.sort_by(& &1.min, :asc)
+
+  arena_prestige_rewards =
+    Enum.reduce(arena_prestige_ranks_json["rewards"], %{}, fn reward, acc ->
+      distributions =
+        Enum.reduce(reward["distributions"], [], fn distribution, acc ->
+          entry = %{
+            min: distribution["min"],
+            max: distribution["max"],
+            reward: distribution["reward"]
+          }
+
+          [entry | acc]
+        end)
+        |> Enum.sort_by(& &1.min, :asc)
+
+      Map.put(acc, reward["position"], distributions)
+    end)
+
+  config :game_backend, :arena_prestige,
+    ranks: arena_prestige_ranks,
+    rewards: arena_prestige_rewards
 
   {:ok, quest_prices_attrs} =
     Application.app_dir(:game_backend, "priv/curse_of_mirra/quest_reroll_configuration.json")

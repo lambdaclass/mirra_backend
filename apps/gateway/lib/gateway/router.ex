@@ -12,10 +12,15 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
+    post "/match/:match_id", MatchResultsController, :create
     get "/get_bounties", QuestController, :get_bounties
 
     scope "/characters" do
       get "/configuration", CharacterController, :get_characters_config
+    end
+
+    scope "/stores" do
+      get "/:store_name/list_items", StoreController, :list_items
     end
 
     post "/users", UserController, :create_guest_user
@@ -28,15 +33,12 @@ defmodule Gateway.Router do
 
       scope "/items" do
         put "/equip", ItemController, :equip
-        put "/buy", ItemController, :buy
+      end
+
+      scope "/stores" do
+        put "/:store_name/buy_item", StoreController, :buy_item
       end
     end
-  end
-
-  scope "/arena", Gateway.Controllers.Arena do
-    pipe_through :api
-
-    post "/match/:match_id", MatchResultsController, :create
   end
 
   scope "/", Gateway do
