@@ -436,8 +436,7 @@ defmodule Arena.Game.Player do
       y: position.y + direction.y
     }
 
-    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    Physics.calculate_duration(position, target_position, leap.speed) * 30
+    Physics.calculate_duration(position, target_position, leap.speed)
   end
 
   defp calculate_duration(%{mechanics: [_]} = skill, _, _, _) do
