@@ -5,9 +5,10 @@ defmodule GameClientWeb.AuthController do
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     token = auth.extra.raw_info.token.other_params["id_token"]
     gateway_url = Application.get_env(:game_client, :gateway_url)
+    client_id = get_session(conn, :client_id) || Ecto.UUID.generate()
 
     response =
-      Finch.build(:get, "#{gateway_url}/auth/google/token/#{token}", [{"content-type", "application/json"}])
+      Finch.build(:get, "#{gateway_url}/auth/google/token/#{token}/#{client_id}", [{"content-type", "application/json"}])
       |> Finch.request(GameClient.Finch)
 
     case response do
@@ -16,6 +17,7 @@ defmodule GameClientWeb.AuthController do
 
         conn
         |> put_flash(:info, "Logged in successfully.")
+        |> put_session(:client_id, client_id)
         |> put_session(:user_id, get_in(body, ["user", "id"]))
         |> put_session(:gateway_jwt, get_in(body, ["gateway_jwt"]))
         |> redirect(to: ~p"/")
