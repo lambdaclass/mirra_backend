@@ -11,7 +11,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ServerToggleBots}
+  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -158,10 +158,10 @@ defmodule Arena.GameUpdater do
   def handle_cast(:toggle_bots, state) do
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:server_toggle_bots, %ServerToggleBots{}}
+        event: {:toggle_bots, %ToggleBots{}}
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:server_toggle_bots, encoded_msg})
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
 
     {:noreply, state}
   end

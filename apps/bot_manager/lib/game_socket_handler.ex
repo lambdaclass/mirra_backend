@@ -49,7 +49,7 @@ defmodule BotManager.GameSocketHandler do
       %{event: {:finished, _}} ->
         exit(:shutdown)
 
-      %{event: {:server_toggle_bots, _}} ->
+      %{event: {:toggle_bots, _}} ->
         {:ok, Map.put(state, :bots_enabled?, not state.bots_enabled?)}
 
       _ ->

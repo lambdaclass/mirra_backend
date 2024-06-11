@@ -136,7 +136,7 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
-  def websocket_info({:server_toggle_bots, message}, state) do
+  def websocket_info({:toggle_bots, message}, state) do
     {:reply, {:binary, message}, state}
   end
 
@@ -189,7 +189,7 @@ defmodule Arena.GameSocketHandler do
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)
 
-  defp handle_decoded_message(%{action_type: {:client_toggle_bots, _bots_params}}, state),
+  defp handle_decoded_message(%{action_type: {:toggle_bots, _bots_params}}, state),
     do: GameUpdater.toggle_bots(state.game_pid)
 
   defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
