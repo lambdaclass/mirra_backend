@@ -189,6 +189,9 @@ defmodule Arena.GameSocketHandler do
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)
 
+  defp handle_decoded_message(%{action_type: {:client_toggle_bots, _bots_params}}, state),
+    do: GameUpdater.toggle_bots(state.game_pid)
+
   defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
 
   defp handle_decoded_message(
