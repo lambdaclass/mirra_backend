@@ -136,10 +136,8 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
-  @impl true
-  def websocket_info({:toggle_bots, new_bots_state}, state) do
-    Logger.info("BOTS: #{inspect(new_bots_state)}")
-    {:reply, {:binary, new_bots_state}, state}
+  def websocket_info({:server_toggle_bots, message}, state) do
+    {:reply, {:binary, message}, state}
   end
 
   @impl true
