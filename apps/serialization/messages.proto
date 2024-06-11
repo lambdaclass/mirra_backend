@@ -32,6 +32,7 @@ message LobbyEvent {
 message LeaveLobby { }
 message LeftLobby { }
 message JoinedLobby { }
+message ServerToggleBots { }
 
 message GameEvent {
   oneof event {
@@ -39,13 +40,10 @@ message GameEvent {
     GameState update = 2;
     GameFinished finished = 3;
     PingUpdate ping = 4;
-    ToggleBots toggle_bots = 5;
+    ServerToggleBots server_toggle_bots = 5;
   }
 }
 
-message ToggleBots {
-  bool active = 1;
-}
 
 message GameFinished {
   Entity winner = 1;
@@ -305,9 +303,8 @@ message SelectBounty {
   string bounty_quest_id = 1;
 }
 
-message ToggleZone {
-  string zone = 1;
-}
+message ToggleZone { }
+message ClientToggleBots { }
 
 message GameAction {
   oneof action_type {
@@ -316,6 +313,7 @@ message GameAction {
     UseItem use_item = 4;
     SelectBounty select_bounty = 5;
     ToggleZone toggle_zone = 6;
+    ClientToggleBots client_toggle_bots = 7;
   }
   int64 timestamp = 3;
 }

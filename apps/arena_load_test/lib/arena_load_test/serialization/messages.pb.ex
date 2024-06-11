@@ -110,6 +110,12 @@ defmodule ArenaLoadTest.Serialization.JoinedLobby do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule ArenaLoadTest.Serialization.ServerToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule ArenaLoadTest.Serialization.GameEvent do
   @moduledoc false
 
@@ -122,19 +128,11 @@ defmodule ArenaLoadTest.Serialization.GameEvent do
   field(:finished, 3, type: ArenaLoadTest.Serialization.GameFinished, oneof: 0)
   field(:ping, 4, type: ArenaLoadTest.Serialization.PingUpdate, oneof: 0)
 
-  field(:toggle_bots, 5,
-    type: ArenaLoadTest.Serialization.ToggleBots,
-    json_name: "toggleBots",
+  field(:server_toggle_bots, 5,
+    type: ArenaLoadTest.Serialization.ServerToggleBots,
+    json_name: "serverToggleBots",
     oneof: 0
   )
-end
-
-defmodule ArenaLoadTest.Serialization.ToggleBots do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:active, 1, type: :bool)
 end
 
 defmodule ArenaLoadTest.Serialization.GameFinished.PlayersEntry do
@@ -688,8 +686,12 @@ defmodule ArenaLoadTest.Serialization.ToggleZone do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
 
-  field(:zone, 1, type: :string)
+defmodule ArenaLoadTest.Serialization.ClientToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
 defmodule ArenaLoadTest.Serialization.GameAction do
@@ -712,6 +714,12 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:toggle_zone, 6,
     type: ArenaLoadTest.Serialization.ToggleZone,
     json_name: "toggleZone",
+    oneof: 0
+  )
+
+  field(:client_toggle_bots, 7,
+    type: ArenaLoadTest.Serialization.ClientToggleBots,
+    json_name: "clientToggleBots",
     oneof: 0
   )
 
