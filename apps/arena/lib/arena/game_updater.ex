@@ -40,7 +40,7 @@ defmodule Arena.GameUpdater do
   end
 
   def toggle_zone(game_pid) do
-    GenServer.cast(game_pid, {:toggle_zone})
+    GenServer.cast(game_pid, :toggle_zone)
   end
 
   def toggle_bots(game_pid) do
@@ -144,7 +144,7 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_cast({:toggle_zone}, state) do
+  def handle_cast(:toggle_zone, state) do
     zone_enabled? = state.game_state.zone.enabled
 
     state =
