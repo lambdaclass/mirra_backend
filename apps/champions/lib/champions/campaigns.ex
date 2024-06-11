@@ -89,7 +89,6 @@ defmodule Champions.Campaigns do
         %{
           user_id: user_id,
           template_id: item_reward.item_template_id,
-          level: 1,
           inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second),
           updated_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
         }
