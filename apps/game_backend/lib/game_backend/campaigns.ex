@@ -131,6 +131,9 @@ defmodule GameBackend.Campaigns do
       |> Repo.preload([
         :currency_rewards,
         campaign: :super_campaign,
+        attempt_cost: :currency,
+        item_rewards: :item_template,
+        unit_rewards: :character,
         units: [
           :items,
           character: [basic_skill: [mechanics: :apply_effects_to], ultimate_skill: [mechanics: :apply_effects_to]]
