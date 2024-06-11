@@ -658,7 +658,6 @@ defmodule Arena.GameUpdater do
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
       })
-      |> Map.put(:toggle_bots, false)
       |> Map.put(:status, :PREPARING)
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
       |> Map.put(:positions, %{})
