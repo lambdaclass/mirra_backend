@@ -300,9 +300,7 @@ message SelectBounty {
   string bounty_quest_id = 1;
 }
 
-message ToggleZone {
-  string zone = 1;
-}
+message ToggleZone { }
 
 message GameAction {
   oneof action_type {

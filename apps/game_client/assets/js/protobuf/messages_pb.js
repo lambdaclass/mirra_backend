@@ -9225,7 +9225,7 @@ proto.ToggleZone.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ToggleZone.toObject = function(includeInstance, msg) {
   var f, obj = {
-    zone: jspb.Message.getFieldWithDefault(msg, 1, "")
+
   };
 
   if (includeInstance) {
@@ -9262,10 +9262,6 @@ proto.ToggleZone.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setZone(value);
-      break;
     default:
       reader.skipField();
       break;
@@ -9295,31 +9291,6 @@ proto.ToggleZone.prototype.serializeBinary = function() {
  */
 proto.ToggleZone.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getZone();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
-};
-
-
-/**
- * optional string zone = 1;
- * @return {string}
- */
-proto.ToggleZone.prototype.getZone = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/**
- * @param {string} value
- * @return {!proto.ToggleZone} returns this
- */
-proto.ToggleZone.prototype.setZone = function(value) {
-  return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
