@@ -683,7 +683,7 @@ defmodule Gateway.Serialization.CurrencyReward do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:currency, 1, type: Gateway.Serialization.Currency)
-  field(:amount, 3, type: :uint64)
+  field(:amount, 2, type: :uint64)
 end
 
 defmodule Gateway.Serialization.ItemReward do
@@ -693,6 +693,7 @@ defmodule Gateway.Serialization.ItemReward do
 
   field(:item_template_name, 1, type: :string, json_name: "itemTemplateName")
   field(:level, 2, type: :uint32)
+  field(:amount, 3, type: :uint32)
 end
 
 defmodule Gateway.Serialization.UnitReward do
@@ -701,7 +702,8 @@ defmodule Gateway.Serialization.UnitReward do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:character_name, 1, type: :string, json_name: "characterName")
-  field(:rank, 4, type: :uint32)
+  field(:rank, 2, type: :uint32)
+  field(:amount, 3, type: :uint32)
 end
 
 defmodule Gateway.Serialization.AfkRewards do

@@ -313,17 +313,18 @@ syntax = "proto3";
 
   message CurrencyReward {
     Currency currency = 1; 
-    uint64 amount = 3;
+    uint64 amount = 2;
   }
 
   message ItemReward {
     string item_template_name = 1;
-    uint32 level = 2;
+    uint32 amount = 2;
   }
 
   message UnitReward {
     string character_name = 1;
-    uint32 rank = 4;
+    uint32 rank = 2;
+    uint32 amount = 3;
   }
 
   message AfkRewards {

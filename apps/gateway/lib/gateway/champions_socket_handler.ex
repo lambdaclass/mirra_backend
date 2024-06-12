@@ -283,7 +283,8 @@ defmodule Gateway.ChampionsSocketHandler do
           level.unit_rewards,
           &%{
             character_name: &1.character.name,
-            rank: &1.rank
+            rank: &1.rank,
+            amount: &1.amount
           }
         ),
       experience_reward: level.experience_reward,
