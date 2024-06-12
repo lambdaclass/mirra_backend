@@ -1,6 +1,6 @@
 alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
-alias GameBackend.Users.{KalineTreeLevel, Upgrade}
+alias GameBackend.Users.KalineTreeLevel
 alias GameBackend.Units.Characters
 alias GameBackend.CurseOfMirra.Config
 
@@ -55,7 +55,7 @@ champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
 {:ok, _blueprints_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Blueprints"})
 
-{:ok, pearls_currency} =
+{:ok, _pearls_currency} =
   Users.Currencies.insert_currency(%{game_id: champions_of_mirra_id, name: "Pearls"})
 
 ### Curse Currencies
@@ -157,72 +157,10 @@ Repo.insert_all(AfkRewardRate, afk_reward_rates)
 Champions.Config.import_super_campaigns_config()
 Champions.Config.import_main_campaign_levels_config()
 Champions.Config.import_dungeon_levels_config()
-
-Champions.Config.import_dungeon_settlement_levels_config()
-
-{:ok, _initial_debuff} =
-  Repo.insert(
-    Upgrade.changeset(%Upgrade{}, %{
-      game_id: champions_of_mirra_id,
-      name: "Dungeon.BaseSetting",
-      description: "This upgrade sets the base settings for the dungeon.",
-      group: -1,
-      buffs: [
-        %{
-          modifiers: [
-            %{attribute: "max_level", magnitude: 10, operation: "Add"},
-            %{attribute: "health", magnitude: 0.1, operation: "Multiply"},
-            %{attribute: "attack", magnitude: 0.1, operation: "Multiply"}
-          ]
-        }
-      ]
-    })
-  )
-
-{:ok, sample_hp_1} =
-  Repo.insert(
-    Upgrade.changeset(%Upgrade{}, %{
-      game_id: champions_of_mirra_id,
-      name: "Dungeon.HPUpgrade1",
-      description: "This upgrade increases the health of all units by 5%.",
-      group: 1,
-      cost: [
-        %{currency_id: pearls_currency.id, amount: 5}
-      ],
-      buffs: [
-        %{
-          modifiers: [
-            %{attribute: "health", magnitude: 0.05, operation: "Multiply"}
-          ]
-        }
-      ]
-    })
-  )
-
-{:ok, _sample_hp_2} =
-  Repo.insert(
-    Upgrade.changeset(%Upgrade{}, %{
-      game_id: champions_of_mirra_id,
-      name: "Dungeon.HPUpgrade2",
-      description: "This upgrade increases the health of all units by 10%.",
-      group: 1,
-      cost: [
-        %{currency_id: pearls_currency.id, amount: 10}
-      ],
-      upgrade_dependency_depends_on: [
-        %{depends_on_id: sample_hp_1.id}
-      ],
-      buffs: [
-        %{
-          modifiers: [
-            %{attribute: "health", magnitude: 1.1, operation: "Multiply"}
-          ]
-        }
-      ]
-    })
-  )
-
 Champions.Config.import_dungeon_levels_config()
+Champions.Config.import_dungeon_settlement_levels_config()
+Champions.Config.import_upgrades()
+Champions.Config.import_upgrade_dependencies()
 
 ##################### CURSE OF MIRRA #####################
 # Insert characters

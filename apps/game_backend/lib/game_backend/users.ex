@@ -16,7 +16,17 @@ defmodule GameBackend.Users do
   alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Transaction
-  alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+
+  alias GameBackend.Users.{
+    Currencies,
+    DungeonSettlementLevel,
+    GoogleUser,
+    KalineTreeLevel,
+    User,
+    Unlock,
+    Upgrade,
+    Upgrades.UpgradeDependency
+  }
 
   @doc """
   Registers a user.
@@ -260,6 +270,67 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Insert an Upgrade into the database.
+  """
+  def insert_upgrade(attrs) do
+    %Upgrade{}
+    |> Upgrade.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update an Upgrade in the database.
+  """
+  def update_upgrade(upgrade, attrs) do
+    upgrade
+    |> Upgrade.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Inserts all Upgrades into the database. If another one already exists with the same name, it updates it instead.
+
+  Does not handle dependencies. Check `insert_upgrade_dependencies/1` for that.
+  """
+  def upsert_upgrades(attrs_list) do
+    Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.name, fn _, _ ->
+        upsert_upgrade(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  defp upsert_upgrade(attrs) do
+    case get_upgrade_by_name(attrs.name) do
+      {:error, :not_found} -> insert_upgrade(attrs)
+      {:ok, upgrade} -> update_upgrade(upgrade, attrs)
+    end
+  end
+
+  @doc """
+  Inserts all UpgradeDependencies into the database.
+
+  Identifies upgrades by name.
+  """
+  def insert_upgrade_dependencies(attrs_list) do
+    upgrade_dependencies_params =
+      Enum.map(attrs_list, fn attrs ->
+        %{
+          blocked_upgrade_id: get_upgrade_by_name!(attrs.blocked_upgrade).id,
+          depends_on_id: get_upgrade_by_name!(attrs.depends_on).id,
+          inserted_at: NaiveDateTime.utc_now(:second),
+          updated_at: NaiveDateTime.utc_now(:second)
+        }
+      end)
+
+    Multi.new()
+    |> Multi.insert_all(:upgrade_dependencies, UpgradeDependency, upgrade_dependencies_params, on_conflict: :nothing)
+    |> Repo.transaction()
+  end
+
+  @doc """
   Checks whether a user exists with the given id.
 
   Useful if you want to validate an id while not needing to operate with the user itself.
@@ -413,6 +484,26 @@ defmodule GameBackend.Users do
     end
   end
 
+  @doc """
+  Get the upgrade with the given name.
+
+  Raises an error if the upgrade is not found.
+
+  ## Examples
+
+      iex> get_upgrade_by_name!("upgrade_name")
+      %Upgrade{name: "upgrade_name"}
+  """
+  def get_upgrade_by_name!(name) do
+    case get_upgrade_by_name(name) do
+      {:ok, upgrade} -> upgrade
+      {:error, :not_found} -> raise "Upgrade with name #{name} not found"
+    end
+  end
+
+  @doc """
+  Check if a user has an unlock with the given name.
+  """
   def user_has_unlock?(user_id, unlock_name) do
     Repo.exists?(from(u in Unlock, where: u.user_id == ^user_id and u.name == ^unlock_name))
   end

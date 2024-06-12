@@ -1,0 +1,73 @@
+[
+    {
+        "name": "Dungeon.BaseSetting",
+        "description": "This upgrade sets the base settings for the dungeon.",
+        "group": -1,
+        "cost": [],
+        "buffs": [
+            {
+                "modifiers": [
+                    {
+                        "attribute": "max_level",
+                        "magnitude": 10,
+                        "operation": "Add"
+                    },
+                    {
+                        "attribute": "health",
+                        "magnitude": 0.1,
+                        "operation": "Multiply"
+                    },
+                    {
+                        "attribute": "attack",
+                        "magnitude": 0.1,
+                        "operation": "Multiply"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Dungeon.HPUpgrade1",
+        "description": "This upgrade increases the health of all units by 5%.",
+        "group": 1,
+        "cost": [
+            {
+                "currency": "Pearls",
+                "amount": 5
+            }
+        ],
+        "buffs": [
+            {
+                "modifiers": [
+                    {
+                        "attribute": "health",
+                        "magnitude": 0.05,
+                        "operation": "Multiply"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "Dungeon.HPUpgrade2",
+        "description": "This upgrade increases the health of all units by 10%.",
+        "group": 1,
+        "cost": [
+            {
+                "currency": "Pearls",
+                "amount": 10
+            }
+        ],
+        "buffs": [
+            {
+                "modifiers": [
+                    {
+                        "attribute": "health",
+                        "magnitude": 0.1,
+                        "operation": "Multiply"
+                    }
+                ]
+            }
+        ]
+    }
+]

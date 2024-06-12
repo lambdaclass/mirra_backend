@@ -72,13 +72,9 @@ defmodule Champions.Config do
     |> Characters.upsert_characters()
   end
 
-  defp get_skill_id(skill) do
-    case Skills.get_skill_by_name(skill) do
-      nil -> nil
-      skill -> skill.id
-    end
-  end
-
+  @doc """
+  Imports the item configuration from 'items.json' in the app's priv folder.
+  """
   def import_item_template_config() do
     {:ok, item_templates_json} =
       Application.app_dir(:champions, "priv/item_templates.json")
@@ -93,6 +89,11 @@ defmodule Champions.Config do
     |> Items.upsert_item_templates()
   end
 
+  @doc """
+  Imports the item configuration from 'items.json' in the app's priv folder.
+
+  Instead of using the DB, this function stores the items in the application environment.
+  """
   def import_proximity_config() do
     {:ok, proximities_json} =
       Application.app_dir(:champions, "priv/proximities.json")
@@ -113,6 +114,9 @@ defmodule Champions.Config do
     end)
   end
 
+  @doc """
+  Imports the fusion configuration from 'fusion.json' in the app's priv folder.
+  """
   def import_fusion_config() do
     {:ok, fusion_json} =
       Application.app_dir(:champions, "priv/fusion.json")
@@ -173,6 +177,9 @@ defmodule Champions.Config do
     end)
   end
 
+  @doc """
+  Imports the dungeon settlement levels configuration from 'dungeon_settlement_levels.json' in the app's priv folder.
+  """
   def import_dungeon_settlement_levels_config() do
     game_id = Utils.get_game_id(:champions_of_mirra)
 
@@ -204,17 +211,41 @@ defmodule Champions.Config do
     |> Users.upsert_dungeon_settlement_levels()
   end
 
-  defp transform_currency_costs(currency_costs) do
-    Enum.map(
-      currency_costs,
-      &%{
-        currency_id:
-          Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
-        amount: &1.amount
-      }
-    )
+  @doc """
+  Imports the upgrades configuration from 'upgrades.json' in the app's priv folder.
+  """
+  def import_upgrades() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, upgrades_json} =
+      Application.app_dir(:champions, "priv/upgrades.json")
+      |> File.read()
+
+    Jason.decode!(upgrades_json, [{:keys, :atoms}])
+    |> Enum.map(fn upgrade ->
+      upgrade
+      |> Map.put(:game_id, game_id)
+      |> update_in([:cost], &transform_currency_costs/1)
+    end)
+    |> Users.upsert_upgrades()
   end
 
+  @doc """
+  Imports the upgrade dependencies configuration from 'upgrade_dependencies.json' in the app's priv folder.
+  """
+  def import_upgrade_dependencies() do
+    {:ok, dungeon_upgrades_dependencies_json} =
+      Application.app_dir(:champions, "priv/upgrade_dependencies.json")
+      |> File.read()
+
+    dungeon_upgrades_dependencies_json
+    |> Jason.decode!([{:keys, :atoms}])
+    |> Users.insert_upgrade_dependencies()
+  end
+
+  @doc """
+  Imports the dungeon levels configuration from 'dungeon_campaign.json' in the app's priv folder.
+  """
   def import_dungeon_levels_config() do
     game_id = Utils.get_game_id(:champions_of_mirra)
 
@@ -242,6 +273,9 @@ defmodule Champions.Config do
     |> Campaigns.upsert_levels()
   end
 
+  @doc """
+  Imports the main campaign levels configuration from 'main_campaign.json' in the app's priv folder.
+  """
   def import_main_campaign_levels_config() do
     game_id = Utils.get_game_id(:champions_of_mirra)
 
@@ -304,5 +338,23 @@ defmodule Champions.Config do
         |> Map.get(:id),
       amount: amount
     }
+  end
+
+  defp transform_currency_costs(currency_costs) do
+    Enum.map(
+      currency_costs,
+      &%{
+        currency_id:
+          Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
+        amount: &1.amount
+      }
+    )
+  end
+
+  defp get_skill_id(skill) do
+    case Skills.get_skill_by_name(skill) do
+      nil -> nil
+      skill -> skill.id
+    end
   end
 end

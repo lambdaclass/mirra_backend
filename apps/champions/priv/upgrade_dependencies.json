@@ -1,0 +1,6 @@
+[
+    {
+        "blocked_upgrade": "Dungeon.HPUpgrade2",
+        "depends_on": "Dungeon.HPUpgrade1"
+    }
+]
