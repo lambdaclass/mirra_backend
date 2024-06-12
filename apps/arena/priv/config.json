@@ -1353,33 +1353,22 @@
   "crates": [
     {
       "position": {
-        "y": 500.0,
-        "x": 0.0
+        "y": 230.0,
+        "x": 260.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
     },
     {
       "position": {
-        "y": -250.0,
-        "x": 250.0
+        "y": 230.0,
+        "x": -40.0
       },
       "shape": "circle",
-      "radius": 250.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1
-    },
-    {
-      "position": {
-        "y": -250.0,
-        "x": -250.0
-      },
-      "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1390,7 +1379,7 @@
         "x": 2630.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1401,7 +1390,7 @@
         "x": 4360.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1412,7 +1401,7 @@
         "x": -4650.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1423,7 +1412,7 @@
         "x": -3960.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1434,7 +1423,7 @@
         "x": 290.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1445,7 +1434,7 @@
         "x": 2400.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1456,7 +1445,7 @@
         "x": 4950.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
