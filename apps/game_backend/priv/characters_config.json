@@ -54,7 +54,7 @@
     {
       "name": "valtimer",
       "active": false,
-      "base_speed": 20,
+      "base_speed": 20.0,
       "base_size": 100.0,
       "base_health": 400,
       "base_stamina": 3,
