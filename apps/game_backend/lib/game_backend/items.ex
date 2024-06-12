@@ -200,7 +200,8 @@ defmodule GameBackend.Items do
   def delete_items(item_ids), do: Repo.delete_all(from(u in Item, where: u.id in ^item_ids))
 
   @doc """
-  Receives an item template name and a game id.
+  Gets an item template by name and game_id.
+
   Returns {:ok, item_template} if found or {:error, :not_found} otherwise.
   """
   def get_template_by_name_and_game_id(name, game_id) do
@@ -213,6 +214,14 @@ defmodule GameBackend.Items do
       item_template -> {:ok, item_template}
     end
   end
+
+  @doc """
+  Gets an item by name and game_id.
+
+  Raises if there is none.
+  """
+  def get_template_by_name_and_game_id!(name, game_id),
+    do: Repo.one!(from(it in ItemTemplate, where: it.name == ^name and it.game_id == ^game_id))
 
   @doc """
   Get a user's item associated to the given item name.

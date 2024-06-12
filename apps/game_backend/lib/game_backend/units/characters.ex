@@ -105,11 +105,24 @@ defmodule GameBackend.Units.Characters do
       iex> get_character(character_name, game_id)
       "character_name_id"
 
-      iex> get_character(wrong_character_name, game_id)
+      iex> get_character_id_by_name_and_game_id(wrong_character_name, game_id)
       nil
   """
   def get_character_id_by_name_and_game_id(name, game_id),
     do: Repo.one(from(c in Character, where: c.name == ^name and c.game_id == ^game_id, select: c.id))
+
+  @doc """
+  Get a Character's ID by name and game_id.
+
+  Raises is none is found.
+
+  ## Examples
+
+      iex> get_character_id_by_name_and_game_id!(character_name, game_id)
+      "character_name_id"
+  """
+  def get_character_id_by_name_and_game_id!(name, game_id),
+    do: Repo.one!(from(c in Character, where: c.name == ^name and c.game_id == ^game_id, select: c.id))
 
   @doc """
   Delete all Characters from the database.

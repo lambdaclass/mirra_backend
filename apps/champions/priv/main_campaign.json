@@ -9,7 +9,12 @@
             "Byte"
         ],
         "currency_rewards": [],
-        "unit_rewards": [],
+        "unit_rewards": [
+            {
+                "character": "Byte",
+                "rank": 1
+            }
+        ],
         "item_rewards": []
     },
     {
@@ -24,7 +29,12 @@
         ],
         "currency_rewards": [],
         "unit_rewards": [],
-        "item_rewards": []
+        "item_rewards": [
+            {
+                "item_template": "cw1",
+                "amount": 1
+            }
+        ]
     },
     {
         "campaign_number": 1,

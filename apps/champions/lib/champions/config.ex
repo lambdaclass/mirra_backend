@@ -287,12 +287,72 @@ defmodule Champions.Config do
       end)
     )
     |> Map.put(:game_id, game_id)
-    |> Map.put(
-      :currency_rewards,
-      Enum.map(level.currency_rewards, fn {currency, amount} ->
-        transform_currency_amount(currency, amount, game_id)
-      end)
-    )
+    |> maybe_transform_currency_rewards()
+    |> maybe_transform_unit_rewards()
+    |> maybe_transform_item_rewards()
+  end
+
+  defp maybe_transform_currency_rewards(level) do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    case Map.get(level, :currency_rewards) do
+      nil ->
+        level
+
+      currency_rewards ->
+        level
+        |> Map.put(
+          :currency_rewards,
+          Enum.map(currency_rewards, fn {currency, amount} ->
+            transform_currency_amount(currency, amount, game_id)
+          end)
+        )
+    end
+  end
+
+  defp maybe_transform_unit_rewards(level) do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    case Map.get(level, :unit_rewards) do
+      nil ->
+        level
+
+      unit_rewards ->
+        level
+        |> Map.put(
+          :unit_rewards,
+          Enum.map(
+            unit_rewards,
+            &%{
+              character_id: Characters.get_character_id_by_name_and_game_id!(&1.character, game_id),
+              amount: Map.get(&1, :amount, 1),
+              rank: &1.rank
+            }
+          )
+        )
+    end
+  end
+
+  defp maybe_transform_item_rewards(level) do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    case Map.get(level, :item_rewards) do
+      nil ->
+        level
+
+      item_rewards ->
+        level
+        |> Map.put(
+          :item_rewards,
+          Enum.map(
+            item_rewards,
+            &%{
+              item_template_id: Items.get_template_by_name_and_game_id!(&1.item_template, game_id).id,
+              amount: Map.get(&1, :amount, 1)
+            }
+          )
+        )
+    end
   end
 
   defp transform_currency_amount(currency, amount, game_id) do
