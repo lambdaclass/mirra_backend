@@ -44,4 +44,9 @@ defmodule Gateway.Controllers.AuthController do
         send_resp(conn, 400, Jason.encode!(%{error: "bad_request"}))
     end
   end
+
+  def generate_bot_token(conn, %{"bot_secret" => bot_secret}) do
+    token = TokenManager.generate_bot_token(bot_secret)
+    send_resp(conn, 200, Jason.encode!(%{token: token}))
+  end
 end

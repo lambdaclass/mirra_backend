@@ -16,6 +16,16 @@ defmodule Gateway.Auth.TokenManager do
     token
   end
 
+  def generate_bot_token(bot_secret) do
+    hash_bot_secret =
+      :crypto.hash(:sha256, bot_secret)
+      |> Base.url_encode64()
+
+    extra_claims = %{"bot" => hash_bot_secret}
+    {:ok, token, _claims} = generate_and_sign(extra_claims)
+    token
+  end
+
   @impl Joken.Config
   def token_config do
     default_exp = Application.get_env(:joken, :default_exp)
