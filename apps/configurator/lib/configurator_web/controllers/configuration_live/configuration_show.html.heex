@@ -2,17 +2,29 @@
   Configuration <%= @configuration.name %>
 </.header>
 
-<div>
+<div class="overflow-auto py-10">
   <!-- It means that we only should display 1 column -->
   <%= if Enum.count(Map.keys(@data)) <= 1 do %>
     <%= for {main_key, main_data} <- @data do %>
       <table class="config-table w-full">
-        <thead>
-          <tr>
-            <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(main_key) %></th>
-            <th></th>
-          </tr>
-        </thead>
+        <%= cond do %>
+          <% is_list(main_data) -> %>
+            <thead>
+              <tr>
+                <th>Index</th>
+                <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(main_key) %></th>
+              </tr>
+            </thead>
+          <% is_map(main_data) -> %>
+            <thead>
+              <tr>
+                <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(main_key) %></th>
+                <%= for key <- Map.keys(main_data) do %>
+                  <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(key) %></th>
+                <% end %>
+              </tr>
+            </thead>
+        <% end %>
         <%= cond do %>
           <% is_list(main_data) -> %>
             <tbody>
@@ -27,13 +39,13 @@
             </tbody>
           <% is_map(main_data) -> %>
             <tbody>
-              <%= for key <- Map.keys(main_data) do %>
-                <tr>
-                  <td><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(key) %></td>
+              <tr>
+                <td></td>
+                <%= for key <- Map.keys(main_data) do %>
                   <%= cond do %>
                     <% is_map(main_data[key]) -> %>
                       <td>
-                        <.modal id={"#{main_key}_#{key}"}>
+                        <.modal id={"#{main_key}_#{key}"} class="colo">
                           <.render_map_as_table name={"#{main_key}_#{key}"} map={main_data[key]} />
                         </.modal>
                         <.button phx-click={show_modal("#{main_key}_#{key}")}>
@@ -52,8 +64,8 @@
                     <% true -> %>
                       <td><%= main_data[key] %></td>
                   <% end %>
-                </tr>
-              <% end %>
+                <% end %>
+              </tr>
             </tbody>
         <% end %>
       </table>

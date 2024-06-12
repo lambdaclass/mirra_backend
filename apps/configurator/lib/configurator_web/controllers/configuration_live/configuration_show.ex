@@ -30,13 +30,15 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
       <thead>
         <tr>
           <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(@name) %></th>
-          <th></th>
+          <%= for key <- Map.keys(@map) do %>
+            <th><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(key) %></th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
-        <%= for key <- Map.keys(@map) do %>
-          <tr>
-            <td><%= ConfiguratorWeb.UtilsConfiguration.key_prettier(key) %></td>
+        <tr>
+          <td></td>
+          <%= for key <- Map.keys(@map) do %>
             <%= cond do %>
               <% is_map(@map[key]) -> %>
                 <td>
@@ -54,8 +56,8 @@ defmodule ConfiguratorWeb.ConfigurationLive.ConfigurationShow do
               <% true -> %>
                 <td><%= @map[key] %></td>
             <% end %>
-          </tr>
-        <% end %>
+          <% end %>
+        </tr>
       </tbody>
     </table>
     """

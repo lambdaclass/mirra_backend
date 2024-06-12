@@ -11,6 +11,7 @@
 .config-table th, .config-table td {
     border: 1px solid;
     padding: 0.5rem;
+    white-space: nowrap;
 }
 
 .config-table th {
