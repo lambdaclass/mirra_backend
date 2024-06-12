@@ -1,6 +1,6 @@
 defmodule Gateway.Auth.TokenManager do
   @moduledoc """
-  Module responsible to verify and validate the JWT emitted by gateway app.
+  Module responsible to generate and verify JWT for the app used to authenticate users
   """
   alias GameBackend.Users.User
 

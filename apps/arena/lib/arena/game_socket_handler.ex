@@ -4,7 +4,7 @@ defmodule Arena.GameSocketHandler do
   """
   require Logger
   alias Arena.Authentication.GatewaySigner
-  alias Arena.Authentication.GatewayToken
+  alias Arena.Authentication.GatewayTokenManager
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
@@ -21,8 +21,8 @@ defmodule Arena.GameSocketHandler do
     client_id =
       case :cowboy_req.parse_qs(req) do
         [{"gateway_jwt", jwt}] ->
-          signer = GatewaySigner.signer()
-          {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt, signer)
+          signer = GatewaySigner.get_signer()
+          {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
           user_id
 
         _ ->

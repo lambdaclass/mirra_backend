@@ -5,7 +5,7 @@ defmodule Arena.Authentication.GatewaySigner do
   """
   use GenServer
 
-  def signer() do
+  def get_signer() do
     GenServer.call(__MODULE__, :get_signer)
   end
 

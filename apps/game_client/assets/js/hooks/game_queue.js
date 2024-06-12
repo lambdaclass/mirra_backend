@@ -8,7 +8,6 @@ export const GameQueue = function () {
         let player_name = document.getElementById("board_game").dataset.playerName
         let game_mode = document.getElementById("board_game").dataset.gameMode
         let gateway_jwt = document.getElementById("board_game").dataset.gatewayJwt
-        console.log(gateway_jwt)
         let player = new Player(getQueueSocketUrl(gateway_jwt, player_id, character, player_name, game_mode))
 
         player.socket.addEventListener("message", (event) => {

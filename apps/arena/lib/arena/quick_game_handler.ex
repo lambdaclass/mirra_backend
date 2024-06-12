@@ -2,7 +2,7 @@ defmodule Arena.QuickGameHandler do
   @moduledoc """
   Module that handles cowboy websocket requests
   """
-  alias Arena.Authentication.GatewayToken
+  alias Arena.Authentication.GatewayTokenManager
   alias Arena.Authentication.GatewaySigner
   alias Arena.GameLauncher
   alias Arena.Serialization.GameState
@@ -14,8 +14,8 @@ defmodule Arena.QuickGameHandler do
   @impl true
   def init(req, _opts) do
     [{"gateway_jwt", jwt}] = :cowboy_req.parse_qs(req)
-    signer = GatewaySigner.signer()
-    {:ok, %{"sub" => user_id}} = GatewayToken.verify_and_validate(jwt, signer)
+    signer = GatewaySigner.get_signer()
+    {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
     character_name = :cowboy_req.binding(:character_name, req)
     player_name = :cowboy_req.binding(:player_name, req)
     {:cowboy_websocket, req, %{client_id: user_id, character_name: character_name, player_name: player_name}}
