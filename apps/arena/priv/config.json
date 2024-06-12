@@ -1201,8 +1201,8 @@
     ],
     "power_up": {
       "distance_to_power_up": 400,
-      "power_up_damage_modifier": 0.8,
-      "power_up_health_modifier": 0.8,
+      "power_up_damage_modifier": 0.08,
+      "power_up_health_modifier": 0.08,
       "radius": 200.0
     }
   },
