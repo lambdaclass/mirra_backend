@@ -1127,7 +1127,7 @@ defmodule Champions.Battle.Simulator do
     # If the execution is over, we remove it from the target
     new_target =
       update_in(target, [:executions_over_time], fn current_executions ->
-        Enum.filter(current_executions, fn exec -> exec.skill_id != execution_over_time.skill_id end)
+        Enum.filter(current_executions, fn exec -> exec != execution_over_time end)
       end)
 
     {new_target, history}
