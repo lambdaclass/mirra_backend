@@ -53,7 +53,8 @@ defmodule Gateway.SocketTester do
     LevelUpKalineTree,
     ClaimDungeonAfkRewards,
     LevelUpDungeonSettlement,
-    PurchaseDungeonUpgrade
+    PurchaseDungeonUpgrade,
+    GetDungeonUpgrades
   }
 
   def start_link() do
@@ -323,6 +324,16 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:purchase_dungeon_upgrade, %PurchaseDungeonUpgrade{user_id: user_id, upgrade_id: upgrade_id}}
+         })}
+      )
+
+  def get_dungeon_upgrades(pid, user_id),
+    do:
+      WebSockex.send_frame(
+        pid,
+        {:binary,
+         WebSocketRequest.encode(%WebSocketRequest{
+           request_type: {:get_dungeon_upgrades, %GetDungeonUpgrades{user_id: user_id}}
          })}
       )
 

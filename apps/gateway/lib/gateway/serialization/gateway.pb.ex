@@ -129,6 +129,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
     json_name: "purchaseDungeonUpgrade",
     oneof: 0
   )
+
+  field(:get_dungeon_upgrades, 28,
+    type: Gateway.Serialization.GetDungeonUpgrades,
+    json_name: "getDungeonUpgrades",
+    oneof: 0
+  )
 end
 
 defmodule Gateway.Serialization.GetUser do
@@ -356,6 +362,14 @@ defmodule Gateway.Serialization.PurchaseDungeonUpgrade do
   field(:upgrade_id, 2, type: :string, json_name: "upgradeId")
 end
 
+defmodule Gateway.Serialization.GetDungeonUpgrades do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -405,6 +419,8 @@ defmodule Gateway.Serialization.WebSocketResponse do
     json_name: "superCampaignProgresses",
     oneof: 0
   )
+
+  field(:upgrades, 16, type: Gateway.Serialization.Upgrades, oneof: 0)
 end
 
 defmodule Gateway.Serialization.User do
@@ -776,6 +792,14 @@ defmodule Gateway.Serialization.Upgrade do
   field(:group, 3, type: :int32)
   field(:cost, 4, repeated: true, type: Gateway.Serialization.CurrencyCost)
   field(:buffs, 5, repeated: true, type: Gateway.Serialization.Buff)
+end
+
+defmodule Gateway.Serialization.Upgrades do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:upgrades, 1, repeated: true, type: Gateway.Serialization.Upgrade)
 end
 
 defmodule Gateway.Serialization.Buff do

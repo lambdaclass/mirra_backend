@@ -466,4 +466,14 @@ defmodule GameBackend.Users do
   def get_unlocks_with_type(user_id, type) do
     Repo.all(from(u in Unlock, where: u.user_id == ^user_id and u.type == ^type, preload: [upgrade: :buffs]))
   end
+
+  @doc """
+  Get all available dungeon upgrades
+  """
+  def get_dungeon_upgrades() do
+    dungeon_upgrades =
+      Repo.all(from(u in Upgrade, preload: [:cost, :buffs, :unblocks, :depends_on]))
+
+    if Enum.empty?(dungeon_upgrades), do: {:error, :no_dungeon_upgrades}, else: {:ok, dungeon_upgrades}
+  end
 end

@@ -315,4 +315,11 @@ defmodule Champions.Users do
   def purchase_dungeon_upgrade(user_id, upgrade_id) do
     Users.purchase_upgrade(user_id, upgrade_id, "Dungeon")
   end
+
+  @doc """
+  Get all Dungeon upgrades.
+  """
+  def get_dungeon_upgrades() do
+    Users.get_dungeon_upgrades()
+  end
 end

@@ -28,6 +28,7 @@ syntax = "proto3";
       ClaimDungeonAfkRewards claim_dungeon_afk_rewards = 25;
       LevelUpDungeonSettlement level_up_dungeon_settlement = 26;
       PurchaseDungeonUpgrade purchase_dungeon_upgrade = 27;
+      GetDungeonUpgrades get_dungeon_upgrades = 28;
     }
   }
 
@@ -152,6 +153,10 @@ syntax = "proto3";
     string upgrade_id = 2;
   }
 
+  message GetDungeonUpgrades {
+    string user_id = 1;
+  }
+
   ////////////////////////////////////////
 
   message WebSocketResponse {
@@ -171,6 +176,7 @@ syntax = "proto3";
       UserAndUnit user_and_unit = 13;
       AfkRewards afk_rewards = 14;
       SuperCampaignProgresses super_campaign_progresses = 15;
+      Upgrades upgrades = 16;
     }
   }
   
@@ -366,6 +372,10 @@ syntax = "proto3";
     int32 group = 3;
     repeated CurrencyCost cost = 4;
     repeated Buff buffs = 5;
+  }
+
+  message Upgrades {
+    repeated Upgrade upgrades = 1;
   }
 
   message Buff {

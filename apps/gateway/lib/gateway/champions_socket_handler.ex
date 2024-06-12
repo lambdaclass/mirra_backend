@@ -5,11 +5,6 @@ defmodule Gateway.ChampionsSocketHandler do
 
   require Logger
 
-  alias Gateway.Serialization.PurchaseDungeonUpgrade
-  alias Gateway.Serialization.LevelUpDungeonSettlement
-  alias Gateway.Serialization.ClaimDungeonAfkRewards
-  alias Gateway.Serialization.FuseItems
-
   alias Gateway.Serialization.{
     StatAffected,
     Death,
@@ -52,7 +47,9 @@ defmodule Gateway.ChampionsSocketHandler do
     GetUserSuperCampaignProgresses,
     LevelUpKalineTree,
     ClaimDungeonAfkRewards,
-    LevelUpDungeonSettlement
+    LevelUpDungeonSettlement,
+    PurchaseDungeonUpgrade,
+    GetDungeonUpgrades
   }
 
   @behaviour :cowboy_websocket
@@ -247,6 +244,13 @@ defmodule Gateway.ChampionsSocketHandler do
   defp handle(%PurchaseDungeonUpgrade{user_id: user_id, upgrade_id: upgrade_id}) do
     case Users.purchase_dungeon_upgrade(user_id, upgrade_id) do
       {:ok, result} -> prepare_response(result, :user)
+      {:error, reason} -> prepare_response({:error, reason}, nil)
+    end
+  end
+
+  defp handle(%GetDungeonUpgrades{user_id: _user_id}) do
+    case Users.get_dungeon_upgrades() do
+      {:ok, upgrades} -> prepare_response(%{upgrades: upgrades}, :dungeon_upgrades)
       {:error, reason} -> prepare_response({:error, reason}, nil)
     end
   end
