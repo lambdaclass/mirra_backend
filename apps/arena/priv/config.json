@@ -852,7 +852,9 @@
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
     "zone_damage": 40,
-    "item_spawn_interval_ms": 7500
+    "item_spawn_interval_ms": 7500,
+    "bots_enabled": true,
+    "zone_enabled": true
   },
   "skills": [
     {
