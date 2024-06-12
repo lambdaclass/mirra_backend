@@ -26,6 +26,11 @@
           }>
             Show
           </.link>
+          <.link navigate={
+            ~p"/games/#{@game}/configuration_groups/#{@configuration_group}/configurations/#{configuration.id}/edit"
+          }>
+            Edit
+          </.link>
         </td>
       </tr>
     <% end %>
