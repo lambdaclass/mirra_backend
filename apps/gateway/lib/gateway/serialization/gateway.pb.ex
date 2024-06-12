@@ -692,8 +692,7 @@ defmodule Gateway.Serialization.ItemReward do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:item_template_name, 1, type: :string, json_name: "itemTemplateName")
-  field(:level, 2, type: :uint32)
-  field(:amount, 3, type: :uint32)
+  field(:amount, 2, type: :uint32)
 end
 
 defmodule Gateway.Serialization.UnitReward do
