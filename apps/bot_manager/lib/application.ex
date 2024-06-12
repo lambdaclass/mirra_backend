@@ -9,7 +9,8 @@ defmodule BotManager.Application do
   def start(_type, _args) do
     children = [
       BotManager.BotSupervisor,
-      {Plug.Cowboy, Application.get_env(:bot_manager, :end_point_configuration)}
+      {Plug.Cowboy, Application.get_env(:bot_manager, :end_point_configuration)},
+      BotManager.TokenFetcher
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

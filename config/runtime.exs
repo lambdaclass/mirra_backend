@@ -394,6 +394,8 @@ end
 
 bot_manager_port = String.to_integer(System.get_env("BOT_MANAGER_PORT") || "4003")
 
+config :bot_manager, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
+
 config :bot_manager, :end_point_configuration,
   scheme: :http,
   plug: BotManager.Endpoint,
