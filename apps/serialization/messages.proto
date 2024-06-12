@@ -243,6 +243,7 @@ enum  PowerUpstatus {
 message Pool {
   uint64 owner_id = 1;
   repeated Effect effects = 2;
+  string skill_key = 3;
 }
 
 message Bush {

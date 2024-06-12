@@ -287,10 +287,12 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, entity.id], entity)
   end
 
-  def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
-        skill_direction: skill_direction,
-        auto_aim?: auto_aim?
-      }) do
+  def do_mechanic(game_state, player, {:spawn_pool, pool_params}, skill_params) do
+    %{
+      skill_direction: skill_direction,
+      auto_aim?: auto_aim?
+    } = skill_params
+
     last_id = game_state.last_id + 1
 
     skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, pool_params.range)
@@ -310,6 +312,7 @@ defmodule Arena.Game.Skill do
         pool_params.radius,
         pool_params.duration_ms,
         player.id,
+        skill_params.skill_key,
         now
       )
 

@@ -7786,7 +7786,8 @@ proto.Pool.toObject = function(includeInstance, msg) {
   var f, obj = {
     ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
-    proto.Effect.toObject, includeInstance)
+    proto.Effect.toObject, includeInstance),
+    skillKey: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -7832,6 +7833,10 @@ proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
       msg.addEffects(value);
       break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSkillKey(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7874,6 +7879,13 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
       2,
       f,
       proto.Effect.serializeBinaryToWriter
+    );
+  }
+  f = message.getSkillKey();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
     );
   }
 };
@@ -7932,6 +7944,24 @@ proto.Pool.prototype.addEffects = function(opt_value, opt_index) {
  */
 proto.Pool.prototype.clearEffectsList = function() {
   return this.setEffectsList([]);
+};
+
+
+/**
+ * optional string skill_key = 3;
+ * @return {string}
+ */
+proto.Pool.prototype.getSkillKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Pool} returns this
+ */
+proto.Pool.prototype.setSkillKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 

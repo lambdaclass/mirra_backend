@@ -138,7 +138,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, spawn_at) do
+  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, skill_key, spawn_at) do
     %{
       id: id,
       category: :pool,
@@ -160,7 +160,8 @@ defmodule Arena.Entities do
         stat_multiplier: 0,
         duration_ms: duration_ms,
         pull_immunity: true,
-        spawn_at: spawn_at
+        spawn_at: spawn_at,
+        skill_key: skill_key
       },
       collides_with: []
     }
@@ -367,7 +368,8 @@ defmodule Arena.Entities do
     {:pool,
      %Arena.Serialization.Pool{
        owner_id: entity.aditional_info.owner_id,
-       effects: entity.aditional_info.effects
+       effects: entity.aditional_info.effects,
+       skill_key: entity.aditional_info.skill_key
      }}
   end
 
