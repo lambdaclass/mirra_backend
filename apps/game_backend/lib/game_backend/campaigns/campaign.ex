@@ -23,5 +23,6 @@ defmodule GameBackend.Campaigns.Campaign do
     |> cast(attrs, [:game_id, :campaign_number, :super_campaign_id])
     |> cast_assoc(:levels)
     |> validate_required([:game_id, :super_campaign_id])
+    |> unique_constraint([:campaign_number, :super_campaign_id])
   end
 end
