@@ -202,19 +202,26 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a DungeonSettlementLevel by its id.
+  """
+  def get_dungeon_settlement_level(dungeon_settlement_level_id) do
+    Repo.get(DungeonSettlementLevel, dungeon_settlement_level_id)
+  end
+
+  @doc """
   Gets a DungeonSettlementLevel by its number.
 
   Returns {:error, :not_found} if no level is found.
 
   ## Examples
 
-      iex> get_dungeon_settlement_level(1)
+      iex> get_dungeon_settlement_level_by_number(1)
       %DungeonSettlementLevel{}
 
-      iex> get_dungeon_settlement_level(-1)
+      iex> get_dungeon_settlement_level_by_number(-1)
       nil
   """
-  def get_dungeon_settlement_level(level_number) do
+  def get_dungeon_settlement_level_by_number(level_number) do
     Repo.get_by(DungeonSettlementLevel, level: level_number) |> Repo.preload(:afk_reward_rates)
   end
 
@@ -253,7 +260,7 @@ defmodule GameBackend.Users do
   Inserts a DungeonSettlementLevel into the database. If another one already exists with the same number, it updates it instead.
   """
   def upsert_dungeon_settlement_level(attrs) do
-    case get_dungeon_settlement_level(attrs.level) do
+    case get_dungeon_settlement_level_by_number(attrs.level) do
       nil -> insert_dungeon_settlement_level(attrs)
       dungeon_settlement_level -> update_dungeon_settlement_level(dungeon_settlement_level, attrs)
     end
@@ -343,6 +350,15 @@ defmodule GameBackend.Users do
       |> Multi.run(:user_currency, fn _, _ ->
         Currencies.substract_currencies(user_id, level_up_costs)
       end)
+      |> Multi.run(:supply_cap, fn _, %{user: user} ->
+        dungeon_settlement_level = Repo.get(DungeonSettlementLevel, user.dungeon_settlement_level_id)
+
+        Currencies.update_user_currency_cap(
+          user.id,
+          {"Supplies", user.game_id},
+          dungeon_settlement_level.supply_cap
+        )
+      end)
       |> Repo.transaction()
 
     case result do
@@ -355,7 +371,7 @@ defmodule GameBackend.Users do
   defp increment_settlement_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
-        case get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1) do
+        case get_dungeon_settlement_level_by_number(user.dungeon_settlement_level.level + 1) do
           nil ->
             {:error, :dungeon_settlement_level_not_found}
 

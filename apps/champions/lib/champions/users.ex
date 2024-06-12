@@ -3,18 +3,16 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias Ecto.{Changeset, Multi}
   alias Champions.Users
-  alias GameBackend.Utils
-  alias Ecto.Changeset
-  alias Ecto.Multi
   alias GameBackend.Items
   alias GameBackend.Transaction
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users
-  alias GameBackend.Users.Currencies
   alias GameBackend.Units
   alias GameBackend.Units.Characters
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Utils
 
   @max_afk_reward_seconds 12 * 60 * 60
   @seconds_in_day 86_400
@@ -26,7 +24,7 @@ defmodule Champions.Users do
   """
   def register(username) do
     kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
-    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level(1)
+    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level_by_number(1)
     {:ok, dungeon_base_setting} = Users.get_upgrade_by_name("Dungeon.BaseSetting")
 
     case Users.register_user(%{
@@ -44,6 +42,7 @@ defmodule Champions.Users do
         add_sample_items(user)
         add_sample_currencies(user)
         add_super_campaign_progresses(user)
+        add_currency_caps(user)
 
         Users.get_user(user.id)
 
@@ -163,6 +162,18 @@ defmodule Champions.Users do
         level_id: first_campaign.levels |> Enum.sort_by(& &1.level_number) |> hd() |> Map.get(:id)
       })
     end)
+  end
+
+  defp add_currency_caps(user) do
+    # Supplies
+
+    dungeon_settlement_level = Users.get_dungeon_settlement_level(user.dungeon_settlement_level_id)
+
+    Currencies.insert_user_currency_cap(%{
+      user_id: user.id,
+      currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
+      cap: dungeon_settlement_level.supply_cap
+    })
   end
 
   @doc """
