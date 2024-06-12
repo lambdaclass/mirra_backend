@@ -428,8 +428,11 @@ defmodule Gateway.Test.Champions do
         response_type: {:campaigns, %Campaigns{} = campaigns}
       }
 
-      levels = Enum.map(campaigns.campaigns, & &1.levels) |> List.flatten()
-      invalid_level = Enum.find(levels, fn level -> level.id != next_level_id end)
+      invalid_level =
+        campaigns.campaigns
+        |> Enum.find(&(&1.super_campaign_name == "Main Campaign"))
+        |> Map.get(:levels)
+        |> Enum.find(&(&1.id != next_level_id))
 
       # FightLevel
       SocketTester.fight_level(socket_tester, user.id, invalid_level.id)
