@@ -2,12 +2,9 @@ defmodule Gateway.Test.Champions do
   @moduledoc """
   Test for Champions of Mirra messages.
   """
-  import Ecto.Query
-
   use ExUnit.Case
 
   alias Champions.{Units, Users}
-  alias GameBackend.Campaigns.Rewards.AfkRewardRate
   alias GameBackend.Items
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
@@ -743,15 +740,15 @@ defmodule Gateway.Test.Champions do
       assert Enum.any?(leveled_up_user.kaline_tree_level.afk_reward_rates)
 
       # Check that the gold, arcane crystals and hero souls afk rewards rates are greater than 0
-      assert Enum.all?(leveled_up_user.kaline_tree_level.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   rate.daily_rate > 0
+      Enum.each(leveled_up_user.kaline_tree_level.afk_reward_rates, fn rate ->
+        case rate.currency.name in rewardable_currencies do
+          true ->
+            assert rate.daily_rate > 0
 
-                 false ->
-                   rate.daily_rate == 0
-               end
-             end)
+          false ->
+            assert rate.daily_rate == 0
+        end
+      end)
 
       # Claim afk rewards
       currencies_before_claiming = leveled_up_user.currencies
@@ -774,28 +771,28 @@ defmodule Gateway.Test.Champions do
       # Check that the user has received gold, arcane crystals and hero souls
       # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
       # We add 10% to the time waited to account for the time it takes to process the message.
-      assert Enum.all?(claimed_user.currencies, fn currency ->
-               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
+      Enum.each(claimed_user.currencies, fn currency ->
+        user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
 
-               case Enum.find(
-                      claimed_user.kaline_tree_level.afk_reward_rates,
-                      &(&1.currency.name == currency.currency.name)
-                    ) do
-                 nil ->
-                   # If the currency is not in the afk rewards rates, we don't consider it.
-                   true
+        case Enum.find(
+               claimed_user.kaline_tree_level.afk_reward_rates,
+               &(&1.currency.name == currency.currency.name)
+             ) do
+          nil ->
+            # If the currency is not in the afk rewards rates, we don't consider it.
+            nil
 
-                 rate ->
-                   reward_rate = rate.daily_rate
+          rate ->
+            reward_rate = rate.daily_rate
 
-                   currency_before_claim =
-                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
+            currency_before_claim =
+              Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
-                   expected_amount = trunc(currency_before_claim + reward_rate / @seconds_in_day * seconds_to_wait)
+            expected_amount = trunc(currency_before_claim + reward_rate / @seconds_in_day * seconds_to_wait)
 
-                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
-               end
-             end)
+            assert user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
+        end
+      end)
 
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
@@ -813,31 +810,22 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
-      current_kaline_tree_level_id = more_advanced_user.kaline_tree_level.id
 
-      current_level_afk_rewards_rates =
-        Repo.all(from(r in AfkRewardRate, where: r.kaline_tree_level_id == ^current_kaline_tree_level_id))
-        |> Repo.preload(:currency)
+      Enum.each(more_advanced_user.kaline_tree_level.afk_reward_rates, fn rate ->
+        case rate.currency.name in rewardable_currencies do
+          true ->
+            previous_rate =
+              Enum.find(
+                leveled_up_user.kaline_tree_level.afk_reward_rates,
+                &(&1.currency.name == rate.currency.name)
+              ).daily_rate
 
-      assert Enum.all?(more_advanced_user.kaline_tree_level.afk_reward_rates, fn rate ->
-               case rate.currency.name in rewardable_currencies do
-                 true ->
-                   previous_rate =
-                     Enum.find(
-                       leveled_up_user.kaline_tree_level.afk_reward_rates,
-                       &(&1.currency.name == rate.currency.name)
-                     ).daily_rate
+            assert rate.daily_rate > previous_rate
 
-                   afk_reward_rate =
-                     Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).daily_rate
-
-                   new_rate = previous_rate + afk_reward_rate
-                   rate.daily_rate > previous_rate
-
-                 false ->
-                   rate.daily_rate == 0
-               end
-             end)
+          false ->
+            assert rate.daily_rate == 0
+        end
+      end)
     end
   end
 
@@ -932,27 +920,27 @@ defmodule Gateway.Test.Champions do
       # Check that the user has received supplies
       # The amount should be greater than the initial amount and be in the range of the expected amount considering the time waited.
       # We add 10% to the time waited to account for the time it takes to process the message.
-      assert Enum.all?(claimed_user.currencies, fn currency ->
-               user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
+      Enum.each(claimed_user.currencies, fn currency ->
+        user_currency = Enum.find(claimed_user.currencies, &(&1.currency.name == currency.currency.name))
 
-               case Enum.find(
-                      claimed_user.dungeon_settlement_level.afk_reward_rates,
-                      &(&1.currency.name == currency.currency.name)
-                    ) do
-                 nil ->
-                   # If the currency is not in the afk rewards rates, we don't consider it.
-                   true
+        case Enum.find(
+               claimed_user.dungeon_settlement_level.afk_reward_rates,
+               &(&1.currency.name == currency.currency.name)
+             ) do
+          nil ->
+            # If the currency is not in the afk rewards rates, we don't consider it.
+            nil
 
-                 rate ->
-                   reward_rate = rate.daily_rate
+          rate ->
+            reward_rate = rate.daily_rate
 
-                   currency_before_claim =
-                     Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
+            currency_before_claim =
+              Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
-                   expected_amount = trunc(currency_before_claim + reward_rate * hours_to_wait / @hours_in_day)
-                   user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
-               end
-             end)
+            expected_amount = trunc(currency_before_claim + reward_rate * hours_to_wait / @hours_in_day)
+            assert user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
+        end
+      end)
 
       # TODO: check that the afk rewards rates have been reset after [CHoM-380] is solved (https://github.com/lambdaclass/mirra_backend/issues/385)
 
@@ -971,25 +959,16 @@ defmodule Gateway.Test.Champions do
       fetch_last_message(socket_tester)
 
       assert_receive %WebSocketResponse{response_type: {:user, %User{} = more_advanced_user}}
-      current_dungeon_settlement_level_id = more_advanced_user.dungeon_settlement_level.id
 
-      current_level_afk_rewards_rates =
-        Repo.all(from(r in AfkRewardRate, where: r.dungeon_settlement_level_id == ^current_dungeon_settlement_level_id))
-        |> Repo.preload(:currency)
+      Enum.each(more_advanced_user.dungeon_settlement_level.afk_reward_rates, fn rate ->
+        previous_rate =
+          Enum.find(
+            leveled_up_user.dungeon_settlement_level.afk_reward_rates,
+            &(&1.currency.name == rate.currency.name)
+          ).daily_rate
 
-      assert Enum.all?(more_advanced_user.dungeon_settlement_level.afk_reward_rates, fn rate ->
-               previous_rate =
-                 Enum.find(
-                   leveled_up_user.dungeon_settlement_level.afk_reward_rates,
-                   &(&1.currency.name == rate.currency.name)
-                 ).daily_rate
-
-               afk_reward_rate =
-                 Enum.find(current_level_afk_rewards_rates, &(&1.currency.name == rate.currency.name)).daily_rate
-
-               new_rate = previous_rate + afk_reward_rate
-               rate.daily_rate > previous_rate
-             end)
+        assert rate.daily_rate > previous_rate
+      end)
     end
   end
 
