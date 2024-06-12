@@ -1,0 +1,192 @@
+[
+    {
+        "level": 1,
+        "max_dungeon": 25,
+        "max_factional": 0,
+        "supply_limit": 10,
+        "afk_reward_rates": {
+            "Supplies": 72
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 2
+            },
+            {
+                "currency": "Gold",
+                "amount": 200000
+            }
+        ]
+    },
+    {
+        "level": 2,
+        "max_dungeon": 50,
+        "max_factional": 0,
+        "supply_limit": 10,
+        "afk_reward_rates": {
+            "Supplies": 72
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 4
+            },
+            {
+                "currency": "Gold",
+                "amount": 400000
+            }
+        ]
+    },
+    {
+        "level": 3,
+        "max_dungeon": 75,
+        "max_factional": 0,
+        "supply_limit": 10,
+        "afk_reward_rates": {
+            "Supplies": 73
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 6
+            },
+            {
+                "currency": "Gold",
+                "amount": 600000
+            }
+        ]
+    },
+    {
+        "level": 4,
+        "max_dungeon": 100,
+        "max_factional": 0,
+        "supply_limit": 10,
+        "afk_reward_rates": {
+            "Supplies": 73
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 8
+            },
+            {
+                "currency": "Gold",
+                "amount": 800000
+            }
+        ]
+    },
+    {
+        "level": 5,
+        "max_dungeon": 125,
+        "max_factional": 0,
+        "supply_limit": 12,
+        "afk_reward_rates": {
+            "Supplies": 74
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 10
+            },
+            {
+                "currency": "Gold",
+                "amount": 1000000
+            }
+        ]
+    },
+    {
+        "level": 6,
+        "max_dungeon": 150,
+        "max_factional": 0,
+        "supply_limit": 12,
+        "afk_reward_rates": {
+            "Supplies": 74
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 11
+            },
+            {
+                "currency": "Gold",
+                "amount": 1100000
+            }
+        ]
+    },
+    {
+        "level": 7,
+        "max_dungeon": 175,
+        "max_factional": 0,
+        "supply_limit": 12,
+        "afk_reward_rates": {
+            "Supplies": 75
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 12
+            },
+            {
+                "currency": "Gold",
+                "amount": 1200000
+            }
+        ]
+    },
+    {
+        "level": 8,
+        "max_dungeon": 200,
+        "max_factional": 0,
+        "supply_limit": 12,
+        "afk_reward_rates": {
+            "Supplies": 75
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 13
+            },
+            {
+                "currency": "Gold",
+                "amount": 1300000
+            }
+        ]
+    },
+    {
+        "level": 9,
+        "max_dungeon": 225,
+        "max_factional": 0,
+        "supply_limit": 12,
+        "afk_reward_rates": {
+            "Supplies": 76
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 14
+            },
+            {
+                "currency": "Gold",
+                "amount": 1400000
+            }
+        ]
+    },
+    {
+        "level": 10,
+        "max_dungeon": 250,
+        "max_factional": 0,
+        "supply_limit": 14,
+        "afk_reward_rates": {
+            "Supplies": 76
+        },
+        "level_up_costs": [
+            {
+                "currency": "Blueprints",
+                "amount": 15
+            },
+            {
+                "currency": "Gold",
+                "amount": 1500000
+            }
+        ]
+    }
+]

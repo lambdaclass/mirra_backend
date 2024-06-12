@@ -1,10 +1,10 @@
-defmodule Gateway.Controllers.Arena.MatchResultsController do
+defmodule Gateway.Controllers.CurseOfMirra.MatchResultsController do
   @moduledoc """
   Controller for Arena requests involving match results.
   """
 
   use Gateway, :controller
-  alias GameBackend.Matches
+  alias GameBackend.CurseOfMirra.Matches
 
   def create(conn, %{"match_id" => match_id, "results" => results}) do
     case Matches.create_arena_match_results(match_id, results) do

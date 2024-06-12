@@ -628,6 +628,12 @@ defmodule Arena.Serialization.SelectBounty do
   field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
+defmodule Arena.Serialization.ToggleZone do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule Arena.Serialization.GameAction do
   @moduledoc false
 
@@ -645,6 +651,7 @@ defmodule Arena.Serialization.GameAction do
     oneof: 0
   )
 
+  field(:toggle_zone, 6, type: Arena.Serialization.ToggleZone, json_name: "toggleZone", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
