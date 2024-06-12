@@ -19,7 +19,7 @@ defmodule Champions.Items do
   def get_items(user_id), do: Items.get_items(user_id)
 
   @doc """
-  Equip an item to a unit. Unequips the previously eqyupped item of the same type if there is any.
+  Equip an item to a unit. Unequips the previously equipped item of the same type if there is any.
   """
   def equip_item(user_id, item_id, unit_id) do
     Items.equip_item_and_unequip_previous(user_id, item_id, unit_id)
