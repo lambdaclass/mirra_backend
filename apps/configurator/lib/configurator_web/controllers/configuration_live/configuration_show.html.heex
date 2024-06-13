@@ -6,6 +6,16 @@
   <!-- It means that we only should display 1 column -->
   <%= if Enum.count(Map.keys(@data)) <= 1 do %>
     <%= for {main_key, main_data} <- @data do %>
+      <% IO.inspect(ConfiguratorWeb.UtilsConfiguration.extract_keys(main_data)) %>
+      <ConfiguratorWeb.UtilsConfiguration.tabla data={main_data} />
+    <% end %>
+  <% end %>
+</div>
+
+<div class="overflow-auto py-10">
+  <!-- It means that we only should display 1 column -->
+  <%= if Enum.count(Map.keys(@data)) <= 1 do %>
+    <%= for {main_key, main_data} <- @data do %>
       <table class="config-table w-full">
         <%= cond do %>
           <% is_list(main_data) -> %>
@@ -72,4 +82,5 @@
     <% end %>
   <% end %>
 </div>
+
 <.back navigate={~p"/games/#{@game}/configuration_groups/#{@configuration_group}"}>Back to configurations</.back>
