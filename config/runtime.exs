@@ -401,4 +401,11 @@ config :bot_manager, :end_point_configuration,
   plug: BotManager.Endpoint,
   options: [port: bot_manager_port]
 
+
+###################################
+# App configuration: Bot Manager  #
+###################################
+
+config :arena_load_test, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
+
 ###################################
