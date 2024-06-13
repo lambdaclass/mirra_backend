@@ -223,5 +223,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
-  defp handle_decoded_message(_, _), do: nil
+  # We don't do anything in these messages, we already handle these actions when we have to in previous functions.
+  defp handle_decoded_message(%{action_type: {action, _}}, _state) when action in [:move, :attack, :use_item], do: nil
+
+  defp handle_decoded_message(message, _) do
+    Logger.info("Unexpected message: #{inspect(message)}")
+  end
 end
