@@ -23,6 +23,8 @@ defmodule Gateway.Router do
       get "/:store_name/list_items", StoreController, :list_items
     end
 
+    post "/users", UserController, :create_guest_user
+
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
@@ -44,7 +46,9 @@ defmodule Gateway.Router do
 
     get "/api/health", Controllers.HealthController, :check
 
-    get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
+    get "/auth/:provider/token/:token_id/:client_id", Controllers.AuthController, :validate_token
+    get "/auth/public-key", Controllers.AuthController, :public_key
+    post "/auth/refresh-token", Controllers.AuthController, :refresh_token
 
     put "/users/:user_id", Controllers.UserController, :update
   end

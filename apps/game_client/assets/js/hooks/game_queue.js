@@ -7,7 +7,8 @@ export const GameQueue = function () {
         let character = document.getElementById("board_game").dataset.character
         let player_name = document.getElementById("board_game").dataset.playerName
         let game_mode = document.getElementById("board_game").dataset.gameMode
-        let player = new Player(getQueueSocketUrl(player_id, character, player_name, game_mode))
+        let gateway_jwt = document.getElementById("board_game").dataset.gatewayJwt
+        let player = new Player(getQueueSocketUrl(gateway_jwt, player_id, character, player_name, game_mode))
 
         player.socket.addEventListener("message", (event) => {
             lobby_event = messages.LobbyEvent.deserializeBinary(event.data);
@@ -18,10 +19,10 @@ export const GameQueue = function () {
     };
 }
 
-function getQueueSocketUrl(player_id, character, player_name, game_mode) {
+function getQueueSocketUrl(gateway_jwt, player_id, character, player_name, game_mode) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const host = getHost()
-    return `${protocol}//${host}/${game_mode}/${player_id}/${character}/${player_name}`
+    return `${protocol}//${host}/${game_mode}/${player_id}/${character}/${player_name}?gateway_jwt=${gateway_jwt}`
 }
 
 // TODO: This will work for while the Arena is using the default wss port and
