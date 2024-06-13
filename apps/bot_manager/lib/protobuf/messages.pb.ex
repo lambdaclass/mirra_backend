@@ -634,6 +634,14 @@ defmodule BotManager.Protobuf.ToggleZone do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule BotManager.Protobuf.ChangeTickrate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tickrate, 1, type: :int64)
+end
+
 defmodule BotManager.Protobuf.GameAction do
   @moduledoc false
 
@@ -652,6 +660,13 @@ defmodule BotManager.Protobuf.GameAction do
   )
 
   field(:toggle_zone, 6, type: BotManager.Protobuf.ToggleZone, json_name: "toggleZone", oneof: 0)
+
+  field(:change_tickrate, 7,
+    type: BotManager.Protobuf.ChangeTickrate,
+    json_name: "changeTickrate",
+    oneof: 0
+  )
+
   field(:timestamp, 3, type: :int64)
 end
 

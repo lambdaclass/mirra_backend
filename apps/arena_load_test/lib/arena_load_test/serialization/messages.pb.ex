@@ -676,6 +676,14 @@ defmodule ArenaLoadTest.Serialization.ToggleZone do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule ArenaLoadTest.Serialization.ChangeTickrate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tickrate, 1, type: :int64)
+end
+
 defmodule ArenaLoadTest.Serialization.GameAction do
   @moduledoc false
 
@@ -696,6 +704,12 @@ defmodule ArenaLoadTest.Serialization.GameAction do
   field(:toggle_zone, 6,
     type: ArenaLoadTest.Serialization.ToggleZone,
     json_name: "toggleZone",
+    oneof: 0
+  )
+
+  field(:change_tickrate, 7,
+    type: ArenaLoadTest.Serialization.ChangeTickrate,
+    json_name: "changeTickrate",
     oneof: 0
   )
 

@@ -301,6 +301,9 @@ message SelectBounty {
 }
 
 message ToggleZone { }
+message ChangeTickrate {
+  int64 tickrate = 1;
+}
 
 message GameAction {
   oneof action_type {
@@ -309,6 +312,7 @@ message GameAction {
     UseItem use_item = 4;
     SelectBounty select_bounty = 5;
     ToggleZone toggle_zone = 6;
+    ChangeTickrate change_tickrate = 7;
   }
   int64 timestamp = 3;
 }
