@@ -10,6 +10,7 @@ defmodule BotManager.Application do
     children = [
       BotManager.BotSupervisor,
       {Plug.Cowboy, Application.get_env(:bot_manager, :end_point_configuration)},
+      {Finch, name: BotManager.Finch},
       BotManager.TokenFetcher
     ]
 

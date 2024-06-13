@@ -31,7 +31,7 @@ defmodule BotManager.TokenFetcher do
 
     result =
       Finch.build(:post, "#{gateway_url}/auth/generate-bot-token", [{"content-type", "application/json"}], payload)
-      |> Finch.request(Arena.Finch)
+      |> Finch.request(BotManager.Finch)
 
     case result do
       {:ok, %Finch.Response{status: 200, body: body}} ->
