@@ -43,6 +43,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, :toggle_zone)
   end
 
+  def change_tickrate(game_pid, tickrate) do
+    GenServer.cast(game_pid, {:change_tickrate, tickrate})
+  end
+
   ##########################
   # END API
   ##########################
@@ -149,6 +153,10 @@ defmodule Arena.GameUpdater do
       |> put_in([:game_state, :zone, :shrinking], not zone_enabled?)
 
     {:noreply, state}
+  end
+
+  def handle_cast({:change_tickrate, tickrate}, state) do
+    {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
   end
 
   ##########################
