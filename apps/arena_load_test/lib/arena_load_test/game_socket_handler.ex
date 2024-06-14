@@ -8,14 +8,15 @@ defmodule ArenaLoadTest.GameSocketHandler do
   alias ArenaLoadTest.Utils
   use WebSockex, restart: :transient
 
-  def start_link({client_id, game_id}) do
-    ws_url = ws_url(client_id, game_id)
+  def start_link({client_id, user_token, game_id}) do
+    ws_url = ws_url(client_id, user_token, game_id)
 
     WebSockex.start_link(
       ws_url,
       __MODULE__,
       %{
         client_id: client_id,
+        user_token: user_token,
         game_id: game_id
       }
     )
@@ -109,15 +110,17 @@ defmodule ArenaLoadTest.GameSocketHandler do
     ])
   end
 
-  defp ws_url(client_id, game_id) do
+  defp ws_url(client_id, user_token, game_id) do
+    query_params = "gateway_jwt=#{user_token}"
+
     case System.get_env("TARGET_SERVER") do
       nil ->
-        "ws://localhost:4000/play/#{game_id}/#{client_id}"
+        "ws://localhost:4000/play/#{game_id}/#{client_id}?#{query_params}"
 
       target_server ->
         # TODO Replace this for a SSL connection using erlang credentials.
         # TODO https://github.com/lambdaclass/mirra_backend/issues/493
-        "ws://#{Utils.get_server_ip(target_server)}:4000/play/#{game_id}/#{client_id}"
+        "ws://#{Utils.get_server_ip(target_server)}:4000/play/#{game_id}/#{client_id}?#{query_params}"
     end
   end
 

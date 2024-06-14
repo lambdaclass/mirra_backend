@@ -10,8 +10,7 @@ defmodule ArenaLoadTest.Application do
     children = [
       ArenaLoadTest.SocketSupervisor,
       ArenaLoadTest.LoadtestManager,
-      {Finch, name: ArenaLoadTest.Finch},
-      ArenaLoadTest.TokenFetcher
+      {Finch, name: ArenaLoadTest.Finch}
       # Starts a worker by calling: ArenaLoadTest.Worker.start_link(arg)
       # {ArenaLoadTest.Worker, arg}
     ]

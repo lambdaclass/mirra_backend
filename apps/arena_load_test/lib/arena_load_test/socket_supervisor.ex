@@ -34,10 +34,10 @@ defmodule ArenaLoadTest.SocketSupervisor do
   @doc """
   Initializes a websocket that handles the client connection in-game.
   """
-  def add_new_player(client_id, game_id) do
+  def add_new_player(client_id, user_token, game_id) do
     DynamicSupervisor.start_child(
       __MODULE__,
-      {GameSocketHandler, {client_id, game_id}}
+      {GameSocketHandler, {client_id, user_token, game_id}}
     )
   end
 
