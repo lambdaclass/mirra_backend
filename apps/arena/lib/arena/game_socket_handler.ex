@@ -185,6 +185,9 @@ defmodule Arena.GameSocketHandler do
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)
 
+  defp handle_decoded_message(%{action_type: {:change_tickrate, tickrate_params}}, state),
+    do: GameUpdater.change_tickrate(state.game_pid, tickrate_params.tickrate)
+
   defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
 
   defp handle_decoded_message(
