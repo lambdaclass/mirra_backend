@@ -952,6 +952,8 @@ defmodule Gateway.Test.Champions do
                      Enum.find(currencies_before_claiming, &(&1.currency.name == currency.currency.name)).amount
 
                    expected_amount = trunc(currency_before_claim + reward_rate * hours_to_wait / @hours_in_day)
+
+                   # Note: This will fail if the initial amount for a user exceeds the UserCurrencyCap
                    user_currency.amount in expected_amount..trunc(expected_amount * 1.1)
                end
              end)
@@ -992,6 +994,25 @@ defmodule Gateway.Test.Champions do
                new_rate = previous_rate + afk_reward_rate
                rate.daily_rate > previous_rate
              end)
+
+      # Check that supply cap works
+      # We give the an amount that is sure to reach the cap
+      {:ok, %Currencies.UserCurrency{} = user_currency} =
+        Currencies.add_currency_by_name_and_game!(
+          more_advanced_user.id,
+          "Supplies",
+          Utils.get_game_id(:champions_of_mirra),
+          Currencies.get_user_currency_cap(
+            more_advanced_user.id,
+            Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id
+          ).cap
+        )
+
+      # If we claim the rewards, the amount should not change, as it has reached the cap
+      SocketTester.claim_dungeon_afk_rewards(socket_tester, more_advanced_user.id)
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = capped_user}}
+      assert Enum.find(capped_user.currencies, &(&1.currency.name == "Supplies")).amount == user_currency.amount
     end
   end
 

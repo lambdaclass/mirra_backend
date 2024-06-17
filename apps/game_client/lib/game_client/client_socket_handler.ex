@@ -7,8 +7,8 @@ defmodule GameClient.ClientSocketHandler do
   use WebSockex, restart: :transient
   require Logger
 
-  def start_link(live_pid, player_id, game_id) do
-    ws_url = ws_url(player_id, game_id)
+  def start_link(live_pid, gateway_jwt, player_id, game_id) do
+    ws_url = ws_url(gateway_jwt, player_id, game_id)
 
     WebSockex.start_link(ws_url, __MODULE__, %{
       player_id: player_id,
@@ -19,7 +19,7 @@ defmodule GameClient.ClientSocketHandler do
 
   def handle_frame({:binary, game_event}, state) do
     # Logger.info("Received Message: GAME EVENT")
-    Process.send(state.live_pid |> :erlang.list_to_pid(), {:game_event, game_event}, [])
+    Process.send(state.live_pid, {:game_event, game_event}, [])
     {:ok, state}
   end
 
@@ -78,16 +78,16 @@ defmodule GameClient.ClientSocketHandler do
     {:close, state}
   end
 
-  defp ws_url(player_id, game_id) do
+  defp ws_url(gateway_jwt, player_id, game_id) do
     # FIX ME Remove hardcoded host
     host = "localhost:4000"
 
     case System.get_env("SSL_ENABLED") do
       "true" ->
-        "wss://#{host}/play/#{game_id}/#{player_id}"
+        "wss://#{host}/play/#{game_id}/#{player_id}?gateway_jwt=#{gateway_jwt}"
 
       _ ->
-        "ws://#{host}/play/#{game_id}/#{player_id}"
+        "ws://#{host}/play/#{game_id}/#{player_id}?gateway_jwt=#{gateway_jwt}"
     end
   end
 end

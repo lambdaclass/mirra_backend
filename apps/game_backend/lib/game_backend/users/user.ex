@@ -5,11 +5,20 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
-  alias GameBackend.Units.Unit
-  alias GameBackend.Users.{Currencies.UserCurrency, DungeonSettlementLevel, KalineTreeLevel, GoogleUser, Unlock}
   alias GameBackend.Quests.UserQuest
+  alias GameBackend.Units.Unit
+
+  alias GameBackend.Users.{
+    Currencies.UserCurrency,
+    Currencies.UserCurrencyCap,
+    DungeonSettlementLevel,
+    KalineTreeLevel,
+    GoogleUser,
+    Unlock
+  }
 
   schema "users" do
     field(:game_id, :integer)
@@ -26,12 +35,14 @@ defmodule GameBackend.Users.User do
     belongs_to(:kaline_tree_level, KalineTreeLevel)
     belongs_to(:google_user, GoogleUser)
 
+    has_many(:arena_match_results, ArenaMatchResult)
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)
     has_many(:user_quests, UserQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
     has_many(:unlocks, Unlock)
+    has_many(:currency_caps, UserCurrencyCap)
 
     timestamps()
   end

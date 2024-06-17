@@ -21,7 +21,7 @@ defmodule GameBackend.Users.DungeonSettlementLevel do
     field(:max_factional, :integer)
 
     # The amount of Supplies currency that a player can hold at a time // TODO: [#CHoM-439]
-    field(:supply_limit, :integer)
+    field(:supply_cap, :integer)
 
     has_many(:afk_reward_rates, AfkRewardRate, on_replace: :delete)
 
@@ -33,9 +33,9 @@ defmodule GameBackend.Users.DungeonSettlementLevel do
   @doc false
   def changeset(dungeon_settlement_level, attrs) do
     dungeon_settlement_level
-    |> cast(attrs, [:level, :max_dungeon, :max_factional, :supply_limit])
+    |> cast(attrs, [:level, :max_dungeon, :max_factional, :supply_cap])
     |> cast_assoc(:afk_reward_rates)
     |> cast_embed(:level_up_costs)
-    |> validate_required([:level, :max_dungeon, :max_factional, :supply_limit])
+    |> validate_required([:level, :max_dungeon, :max_factional, :supply_cap])
   end
 end
