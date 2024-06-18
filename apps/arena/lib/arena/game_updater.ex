@@ -11,7 +11,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished}
+  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -37,6 +37,14 @@ defmodule Arena.GameUpdater do
 
   def select_bounty(game_pid, player_id, bounty_quest_id) do
     GenServer.cast(game_pid, {:select_bounty, player_id, bounty_quest_id})
+  end
+
+  def toggle_zone(game_pid) do
+    GenServer.cast(game_pid, :toggle_zone)
+  end
+
+  def toggle_bots(game_pid) do
+    GenServer.cast(game_pid, :toggle_bots)
   end
 
   ##########################
@@ -138,6 +146,28 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_cast(:toggle_zone, state) do
+    zone_enabled? = state.game_state.zone.enabled
+
+    state =
+      state
+      |> put_in([:game_state, :zone, :enabled], not zone_enabled?)
+      |> put_in([:game_state, :zone, :shrinking], not zone_enabled?)
+
+    {:noreply, state}
+  end
+
+  def handle_cast(:toggle_bots, state) do
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:toggle_bots, %ToggleBots{}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
+
+    {:noreply, state}
+  end
+
   ##########################
   # END API Callbacks
   ##########################
@@ -206,7 +236,12 @@ defmodule Arena.GameUpdater do
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
-    {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
+    state =
+      state
+      |> put_in([:game_state, :zone, :enabled], true)
+      |> put_in([:game_state, :status], :RUNNING)
+
+    {:noreply, state}
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
@@ -337,7 +372,6 @@ defmodule Arena.GameUpdater do
 
     state =
       put_in(state, [:game_state, :zone, :shrinking], true)
-      |> put_in([:game_state, :zone, :enabled], true)
       |> put_in(
         [:game_state, :zone, :next_zone_change_timestamp],
         now + state.game_config.game.zone_stop_interval_ms
@@ -361,14 +395,18 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: true}}} = state) do
-    Process.send_after(self(), :zone_shrink, state.game_config.game.zone_shrink_interval)
-    radius = max(state.game_state.zone.radius - state.game_config.game.zone_shrink_radius_by, 0.0)
-    state = put_in(state, [:game_state, :zone, :radius], radius)
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: false}}} = state) do
     {:noreply, state}
   end
 
-  def handle_info(:zone_shrink, %{game_state: %{zone: %{shrinking: false}}} = state) do
+  def handle_info(:zone_shrink, %{game_state: %{zone: %{enabled: false}}} = state) do
+    {:noreply, state}
+  end
+
+  def handle_info(:zone_shrink, %{game_state: %{zone: zone}} = state) do
+    Process.send_after(self(), :zone_shrink, state.game_config.game.zone_shrink_interval)
+    radius = max(zone.radius - state.game_config.game.zone_shrink_radius_by, 0.0)
+    state = put_in(state, [:game_state, :zone, :radius], radius)
     {:noreply, state}
   end
 
@@ -1069,10 +1107,11 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp apply_zone_damage_to_players(%{players: players, zone: zone} = game_state, %{
-         zone_damage_interval_ms: zone_interval,
-         zone_damage: zone_damage
-       }) do
+  defp apply_zone_damage_to_players(%{zone: %{enabled: false}} = game_state, _zone_params), do: game_state
+
+  defp apply_zone_damage_to_players(%{zone: %{enabled: true}} = game_state, zone_params) do
+    players = game_state.players
+    zone = game_state.zone
     safe_zone = Entities.make_circular_area(0, %{x: 0.0, y: 0.0}, zone.radius)
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
@@ -1090,7 +1129,9 @@ defmodule Arena.GameUpdater do
             last_damage = player |> get_in([:aditional_info, :last_damage_received])
             elapse_time = now - last_damage
 
-            player = player |> maybe_receive_zone_damage(elapse_time, zone_interval, zone_damage)
+            player =
+              player
+              |> maybe_receive_zone_damage(elapse_time, zone_params.zone_damage_interval_ms, zone_params.zone_damage)
 
             Map.put(players_acc, player_id, player)
         end

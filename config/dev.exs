@@ -20,6 +20,20 @@ config :phoenix_live_view, :debug_heex_annotations, true
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 
+config :joken,
+  default_signer: [
+    signer_alg: "Ed25519",
+    key_openssh: """
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACDVgskcQdNGPgcP9UJIwA6AB1FUnvCyO19dChVY3EFuZQAAAKDVn3NU1Z9z
+    VAAAAAtzc2gtZWQyNTUxOQAAACDVgskcQdNGPgcP9UJIwA6AB1FUnvCyO19dChVY3EFuZQ
+    AAAECOw1cqNcGfb/U3HgERb+cujt5dvVM+QzIWMMEWeaua5NWCyRxB00Y+Bw/1QkjADoAH
+    UVSe8LI7X10KFVjcQW5lAAAAF2FyZW5hQGdhdGV3YXkubWlycmEuZGV2AQIDBAUG
+    -----END OPENSSH PRIVATE KEY-----
+    """
+  ]
+
 ############################
 # App configuration: arena #
 ############################

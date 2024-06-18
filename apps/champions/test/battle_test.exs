@@ -2053,4 +2053,72 @@ defmodule Champions.Test.BattleTest do
       assert unit_initial_state_with_modifiers.health == base_health * health_multiplier
     end
   end
+
+  describe "Executions over time" do
+    test "DealDamageOverTime", %{target_dummy: target_dummy} do
+      # We will create a battle between a damaging unit and a target dummy.
+      # The unit's basic skill will deal 4 points of damage to the target dummy over 6 steps, killing it in the sixth one. The cooldown is such that the skill can be used only once.
+      # The battle should finish with a victory for team_1 after the last step, or in timeout if the steps are less than the required ones to kill the target dummy.
+      attacker_cooldown = 9
+      dot_duration = 3
+      dot_interval = 2
+
+      # We add 1 to consider the step in which the attack is performed
+      required_steps = attacker_cooldown + dot_duration * dot_interval + 1
+
+      deal_damage_over_time_params =
+        TestUtils.build_skill(%{
+          name: "DealDamageOverTime",
+          mechanics: [
+            %{
+              trigger_delay: 0,
+              apply_effects_to:
+                TestUtils.build_apply_effects_to_mechanic(%{
+                  effects: [
+                    TestUtils.build_effect(%{
+                      type: %{
+                        "type" => "duration",
+                        "duration" => dot_duration * @miliseconds_per_step
+                      },
+                      executions_over_time: [
+                        %{
+                          type: "DealDamageOverTime",
+                          attack_ratio: 1,
+                          apply_tags: ["Burn"],
+                          interval: dot_interval * @miliseconds_per_step
+                        }
+                      ]
+                    })
+                  ],
+                  targeting_strategy: %{
+                    count: 1,
+                    type: "nearest",
+                    target_allies: false
+                  }
+                })
+            }
+          ],
+          cooldown: attacker_cooldown * @miliseconds_per_step
+        })
+
+      {:ok, character} =
+        TestUtils.build_character(%{
+          name: "DealDamageOverTime Character",
+          basic_skill: deal_damage_over_time_params,
+          ultimate_skill: TestUtils.build_skill(%{name: "DealDamageOverTime Empty Skill"}),
+          base_attack: 4
+        })
+        |> Characters.insert_character()
+
+      {:ok, unit} = TestUtils.build_unit(%{character_id: character.id}) |> Units.insert_unit()
+
+      {:ok, unit} = Units.get_unit(unit.id)
+
+      assert "team_1" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps).result
+
+      assert "timeout" ==
+               Champions.Battle.Simulator.run_battle([unit], [target_dummy], maximum_steps: required_steps - 1).result
+    end
+  end
 end

@@ -29,6 +29,22 @@ config :joken,
   issuer: "https://accounts.google.com",
   audience: System.get_env("GOOGLE_CLIENT_ID")
 
+if config_env() == :prod do
+  jwt_private_key_base64 =
+    System.get_env("JWT_PRIVATE_KEY_BASE_64") ||
+      raise """
+      environment variable JWT_PRIVATE_KEY_BASE_64 is missing
+      """
+
+  jwt_private_key = Base.decode64!(jwt_private_key_base64)
+
+  config :joken,
+    default_signer: [
+      signer_alg: "Ed25519",
+      key_openssh: jwt_private_key
+    ]
+end
+
 ############################
 # App configuration: arena #
 ############################
