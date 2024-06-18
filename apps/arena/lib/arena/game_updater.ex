@@ -661,7 +661,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:zone, %{
         radius: config.map.radius,
         enabled: config.game.zone_enabled,
-        shrinking: config.game.zone_enabled,
+        shrinking: false,
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
       })
