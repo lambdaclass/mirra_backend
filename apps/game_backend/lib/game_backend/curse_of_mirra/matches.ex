@@ -16,7 +16,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   def create_arena_match_results(match_id, results) do
     Multi.new()
     |> create_arena_match_results(match_id, results)
-    |> add_google_users_to_multi(results)
+    |> add_users_to_multi(results)
     |> give_prestige(results)
     |> maybe_complete_quests()
     |> complete_or_fail_bounties(results)
@@ -29,22 +29,19 @@ defmodule GameBackend.CurseOfMirra.Matches do
 
   defp create_arena_match_results(multi, match_id, results) do
     Enum.reduce(results, multi, fn result, multi ->
-      attrs =
-        Map.put(result, "google_user_id", result["user_id"])
-        |> Map.put("match_id", match_id)
-
+      attrs = Map.put(result, "match_id", match_id)
       changeset = ArenaMatchResult.changeset(%ArenaMatchResult{}, attrs)
       Multi.insert(multi, {:insert, result["user_id"]}, changeset)
     end)
   end
 
-  defp add_google_users_to_multi(multi, results) do
-    Multi.run(multi, :get_google_users, fn repo, _changes_so_far ->
-      google_users =
+  defp add_users_to_multi(multi, results) do
+    Multi.run(multi, :get_users, fn repo, _changes_so_far ->
+      users =
         Enum.map(results, fn result -> result["user_id"] end)
-        |> Users.get_google_users_with_todays_daily_quests(repo)
+        |> Users.get_users_with_todays_daily_quests(repo)
 
-      {:ok, google_users}
+      {:ok, users}
     end)
   end
 
@@ -52,11 +49,10 @@ defmodule GameBackend.CurseOfMirra.Matches do
     prestige_config = Application.get_env(:game_backend, :arena_prestige)
 
     Enum.reduce(results, multi, fn result, transaction_acc ->
-      Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, %{get_google_users: google_users} ->
-        google_user =
-          Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+      Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, %{get_users: users} ->
+        user = Enum.find(users, fn user -> user.id == result["user_id"] end)
 
-        Enum.find(google_user.user.units, fn unit -> unit.character.name == result["character"] end)
+        Enum.find(user.units, fn unit -> unit.character.name == result["character"] end)
         |> case do
           nil ->
             {:error, :unit_not_found}
@@ -75,14 +71,14 @@ defmodule GameBackend.CurseOfMirra.Matches do
   defp maybe_complete_quests(multi) do
     Multi.run(multi, :insert_completed_quests_result, fn _,
                                                          %{
-                                                           get_google_users: google_users
+                                                           get_users: users
                                                          } ->
       correctly_updated_list =
-        Enum.map(google_users, fn
-          google_user ->
-            Quests.get_google_user_daily_quests_completed(google_user)
+        Enum.map(users, fn
+          user ->
+            Quests.get_user_daily_quests_completed(user)
             |> Enum.map(fn %UserQuest{} = daily_quest ->
-              complete_quest_and_insert_currency(daily_quest, google_user.user.id)
+              complete_quest_and_insert_currency(daily_quest, user.id)
             end)
         end)
         |> List.flatten()
@@ -99,9 +95,9 @@ defmodule GameBackend.CurseOfMirra.Matches do
     Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
     |> Enum.reduce(multi, fn result, multi ->
       Multi.run(multi, {:complete_or_fail_bounty, result["user_id"]}, fn repo,
-                                                                         %{get_google_users: google_users} =
+                                                                         %{get_users: users} =
                                                                            changes_so_far ->
-        google_user = Enum.find(google_users, fn google_user -> google_user.id == result["user_id"] end)
+        user = Enum.find(users, fn user -> user.id == result["user_id"] end)
 
         inserted_result =
           Map.get(changes_so_far, {:insert, result["user_id"]})
@@ -109,7 +105,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
         user_quest_attrs =
           %{
             quest_id: result["bounty_quest_id"],
-            user_id: google_user.user.id,
+            user_id: user.id,
             status: "available"
           }
 
@@ -120,7 +116,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
           |> repo.preload([:quest])
 
         if Quests.completed_quest?(user_quest, [inserted_result]) do
-          complete_quest_and_insert_currency(user_quest, google_user.user.id)
+          complete_quest_and_insert_currency(user_quest, user.id)
         else
           UserQuest.changeset(user_quest, %{status: "failed"})
           |> repo.update()

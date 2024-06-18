@@ -54,7 +54,8 @@ defmodule Gateway.MixProject do
       {:websockex, "~> 0.4.3"},
       {:protobuf, "~> 0.12.0"},
       {:joken, "~> 2.6"},
-      {:google_certs, "~> 0.1"}
+      {:google_certs, "~> 0.1"},
+      {:jose, "~> 1.11"}
     ]
   end
 

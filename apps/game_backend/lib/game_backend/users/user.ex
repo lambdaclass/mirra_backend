@@ -5,6 +5,7 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
   alias GameBackend.Quests.UserQuest
@@ -34,6 +35,7 @@ defmodule GameBackend.Users.User do
     belongs_to(:kaline_tree_level, KalineTreeLevel)
     belongs_to(:google_user, GoogleUser)
 
+    has_many(:arena_match_results, ArenaMatchResult)
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)

@@ -36,6 +36,11 @@ defmodule GameBackend.Users do
     |> Repo.insert()
   end
 
+  def create_guest_user() do
+    CurseUsers.create_user_params()
+    |> register_user()
+  end
+
   @doc """
   Gets a single user.
   Returns {:ok, User}.
@@ -60,10 +65,10 @@ defmodule GameBackend.Users do
 
   ## Examples
 
-      iex> get_google_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      iex> get_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
       [%GoogleUser{}]
   """
-  def get_google_users_with_todays_daily_quests(ids, repo \\ Repo) do
+  def get_users_with_todays_daily_quests(ids, repo \\ Repo) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
@@ -84,15 +89,13 @@ defmodule GameBackend.Users do
       )
 
     q =
-      from(u in GoogleUser,
+      from(u in User,
         where: u.id in ^ids,
         preload: [
           arena_match_results: ^arena_match_result_subquery,
-          user: [
-            currencies: :currency,
-            units: :character,
-            user_quests: ^daily_quest_subquery
-          ]
+          currencies: :currency,
+          units: :character,
+          user_quests: ^daily_quest_subquery
         ]
       )
 
@@ -170,7 +173,13 @@ defmodule GameBackend.Users do
       {:ok, %GoogleUser{}}
   """
   def find_or_create_google_user_by_email(email) do
-    case Repo.get_by(GoogleUser, email: email) do
+    q =
+      from(gu in GoogleUser,
+        where: gu.email == ^email,
+        preload: [:user]
+      )
+
+    case Repo.one(q) do
       nil -> create_google_user_by_email(email)
       user -> {:ok, user}
     end

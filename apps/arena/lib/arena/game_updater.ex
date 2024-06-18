@@ -11,7 +11,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished}
+  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -41,6 +41,10 @@ defmodule Arena.GameUpdater do
 
   def toggle_zone(game_pid) do
     GenServer.cast(game_pid, :toggle_zone)
+  end
+
+  def toggle_bots(game_pid) do
+    GenServer.cast(game_pid, :toggle_bots)
   end
 
   def change_tickrate(game_pid, tickrate) do
@@ -151,6 +155,17 @@ defmodule Arena.GameUpdater do
       state
       |> put_in([:game_state, :zone, :enabled], not zone_enabled?)
       |> put_in([:game_state, :zone, :shrinking], not zone_enabled?)
+
+    {:noreply, state}
+  end
+
+  def handle_cast(:toggle_bots, state) do
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:toggle_bots, %ToggleBots{}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
 
     {:noreply, state}
   end
