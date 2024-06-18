@@ -59,10 +59,6 @@ defmodule Arena.GameUpdater do
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
     match_id = Ecto.UUID.generate()
 
-    unless game_config.game.bots_enabled do
-      Process.send_after(self(), :toggle_bots, 300)
-    end
-
     send(self(), :update_game)
     Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
 
@@ -245,6 +241,10 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bouty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+
+    unless state.game_config.game.bots_enabled do
+      toggle_bots(self())
+    end
 
     {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
   end
