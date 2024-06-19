@@ -26,7 +26,7 @@ defmodule BotManager.TokenFetcher do
   @impl true
   def handle_info(:fetch_token, state) do
     gateway_url = Application.get_env(:bot_manager, :gateway_url)
-    secret = :crypto.strong_rand_bytes(32) |> Base.url_encode64
+    secret = :crypto.strong_rand_bytes(32) |> Base.url_encode64()
     payload = Jason.encode!(%{"bot_secret" => secret})
 
     result =

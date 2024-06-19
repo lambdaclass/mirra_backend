@@ -401,7 +401,6 @@ config :bot_manager, :end_point_configuration,
   plug: BotManager.Endpoint,
   options: [port: bot_manager_port]
 
-
 ###################################
 # App configuration: Bot Manager  #
 ###################################

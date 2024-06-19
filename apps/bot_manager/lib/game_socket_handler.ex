@@ -127,6 +127,7 @@ defmodule BotManager.GameSocketHandler do
        }) do
     Logger.info("Connecting bot with client: #{bot_client} to game: #{game_id} in the server: #{arena_host}")
     %{token: token, secret: secret} = BotManager.TokenFetcher.get_auth()
+
     if arena_host == "localhost" do
       "ws://localhost:4000/play/#{game_id}/#{bot_client}?bot_token=#{token}&bot_secret=#{secret}"
     else

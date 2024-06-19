@@ -35,7 +35,7 @@ defmodule BotManager.MixProject do
       {:websockex, "~> 0.4.3"},
       {:exbase58, "~> 1.0.2"},
       {:protobuf, "~> 0.12.0"},
-      {:finch, "~> 0.13"},
+      {:finch, "~> 0.13"}
     ]
   end
 end
