@@ -1,0 +1,28 @@
+<.header>
+  Listing Characters
+  <:actions>
+    <.link href={~p"/characters/new"}>
+      <.button>New Character</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="characters" rows={@characters} row_click={&JS.navigate(~p"/characters/#{&1}")}>
+  <:col :let={character} label="Name"><%= character.name %></:col>
+  <:col :let={character} label="Active"><%= character.active %></:col>
+  <:col :let={character} label="Base speed"><%= character.base_speed %></:col>
+  <:col :let={character} label="Base size"><%= character.base_size %></:col>
+  <:col :let={character} label="Base health"><%= character.base_health %></:col>
+  <:col :let={character} label="Base stamina"><%= character.base_stamina %></:col>
+  <:action :let={character}>
+    <div class="sr-only">
+      <.link navigate={~p"/characters/#{character}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/characters/#{character}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={character}>
+    <.link href={~p"/characters/#{character}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

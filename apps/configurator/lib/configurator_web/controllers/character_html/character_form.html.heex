@@ -1,0 +1,14 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:active]} type="checkbox" label="Active" />
+  <.input field={f[:base_speed]} type="number" label="Base speed" step="any" />
+  <.input field={f[:base_size]} type="number" label="Base size" step="any" />
+  <.input field={f[:base_health]} type="number" label="Base health" />
+  <.input field={f[:base_stamina]} type="number" label="Base stamina" />
+  <:actions>
+    <.button>Save Character</.button>
+  </:actions>
+</.simple_form>
