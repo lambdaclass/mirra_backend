@@ -73,6 +73,17 @@ defmodule GameClient.ClientSocketHandler do
     {:reply, {:binary, game_action}, state}
   end
 
+  def handle_info(:toggle_bots, state) do
+    Logger.info("Sending GameAction frame with toggle_bots payload")
+
+    game_action =
+      GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
+        action_type: {:toggle_bots, %GameClient.Protobuf.ToggleBots{}}
+      })
+
+    {:reply, {:binary, game_action}, state}
+  end
+
   def handle_info(:close, state) do
     Logger.info("ClientSocket closed")
     {:close, state}
