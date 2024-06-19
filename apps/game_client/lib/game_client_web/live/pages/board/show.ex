@@ -95,6 +95,10 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
   end
 
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+    {:noreply, socket}
+  end
+
   defp transform_entity_entry({_entity_id, entity}) do
     %{
       id: entity.id,
