@@ -39,6 +39,7 @@ message GameEvent {
     GameState update = 2;
     GameFinished finished = 3;
     PingUpdate ping = 4;
+    ToggleBots toggle_bots = 5;
   }
 }
 
@@ -301,6 +302,7 @@ message SelectBounty {
 }
 
 message ToggleZone { }
+message ToggleBots { }
 
 message GameAction {
   oneof action_type {
@@ -309,6 +311,7 @@ message GameAction {
     UseItem use_item = 4;
     SelectBounty select_bounty = 5;
     ToggleZone toggle_zone = 6;
+    ToggleBots toggle_bots = 7;
   }
   int64 timestamp = 3;
 }

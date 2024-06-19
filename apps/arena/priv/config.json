@@ -852,7 +852,9 @@
     "zone_start_interval_ms": 20000,
     "zone_damage_interval_ms": 1000,
     "zone_damage": 40,
-    "item_spawn_interval_ms": 7500
+    "item_spawn_interval_ms": 7500,
+    "bots_enabled": true,
+    "zone_enabled": true
   },
   "skills": [
     {
@@ -862,7 +864,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 800,
+      "max_autoaim_range": 700,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "block_movement": true,
@@ -870,7 +872,7 @@
         {
           "circle_hit": {
             "damage": 64,
-            "range": 380.0,
+            "range": 350.0,
             "offset": 400
           }
         }
@@ -885,7 +887,7 @@
       "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 1500,
+      "max_autoaim_range": 1200,
       "can_pick_destination": true,
       "block_movement": true,
       "mechanics": [
@@ -893,8 +895,8 @@
           "spawn_pool": {
             "name": "singularity",
             "duration_ms": 5000,
-            "radius": 500.0,
-            "range": 1500.0,
+            "radius": 450.0,
+            "range": 1200.0,
             "effects_to_apply": [
               "singularity"
             ]
@@ -911,19 +913,19 @@
       "activation_delay_ms": 200,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 1500,
+      "max_autoaim_range": 1300,
       "can_pick_destination": true,
       "block_movement": true,
       "mechanics": [
         {
           "leap": {
-            "range": 1500.0,
+            "range": 1300.0,
             "speed": 1.7,
-            "radius": 650,
+            "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
                 "damage": 92,
-                "range": 650.0,
+                "range": 600.0,
                 "offset": 0
               }
             }
@@ -935,11 +937,11 @@
       "name": "h4ck_denial_of_service",
       "cooldown_mechanism": "time",
       "cooldown_ms": 9000,
-      "execution_duration_ms": 500,
-      "activation_delay_ms": 400,
+      "execution_duration_ms": 200,
+      "activation_delay_ms": 300,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 1500,
+      "max_autoaim_range": 1200,
       "can_pick_destination": true,
       "block_movement": true,
       "mechanics": [
@@ -947,8 +949,8 @@
           "spawn_pool": {
             "name": "denial_of_service",
             "duration_ms": 2500,
-            "radius": 550.0,
-            "range": 1500.0,
+            "radius": 500.0,
+            "range": 1200.0,
             "effects_to_apply": [
               "denial_of_service"
             ]
@@ -964,7 +966,7 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 1600,
+      "max_autoaim_range": 1300,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "block_movement": true,
@@ -987,7 +989,7 @@
     {
       "name": "h4ck_dash",
       "cooldown_mechanism": "time",
-      "cooldown_ms": 4500,
+      "cooldown_ms": 5500,
       "execution_duration_ms": 250,
       "activation_delay_ms": 0,
       "is_passive": false,
@@ -1031,18 +1033,18 @@
       "activation_delay_ms": 0,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 800,
+      "max_autoaim_range": 650,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "block_movement": true,
       "mechanics": [
         {
           "multi_circle_hit": {
-            "damage": 21,
+            "damage": 22,
             "range": 280.0,
             "interval_ms": 200,
             "amount": 3,
-            "move_by": 200.0,
+            "move_by": 100.0,
             "offset": 200.0
           }
         }
@@ -1053,7 +1055,7 @@
       "name": "uma_veil_radiance",
       "cooldown_mechanism": "time",
       "cooldown_ms": 9000,
-      "execution_duration_ms": 400,
+      "execution_duration_ms": 300,
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
@@ -1063,7 +1065,7 @@
       "mechanics": [
         {
           "circle_hit": {
-            "damage": 68,
+            "damage": 80,
             "range": 800.0,
             "offset": 0
           }
@@ -1110,29 +1112,8 @@
       "mechanics": [
         {
           "teleport": {
-            "range": 1200,
+            "range": 1100,
             "duration_ms": 150
-          }
-        }
-      ],
-      "effects_to_apply": []
-    },
-    {
-      "name": "uma_sneak",
-      "cooldown_mechanism": "time",
-      "cooldown_ms": 5000,
-      "execution_duration_ms": 250,
-      "activation_delay_ms": 0,
-      "is_passive": false,
-      "autoaim": false,
-      "max_autoaim_range": 0,
-      "can_pick_destination": false,
-      "block_movement": true,
-      "mechanics": [
-        {
-          "dash": {
-            "speed": 4.0,
-            "duration": 250
           }
         }
       ],
@@ -1145,7 +1126,7 @@
       "activation_delay_ms": 150,
       "is_passive": false,
       "autoaim": true,
-      "max_autoaim_range": 1600,
+      "max_autoaim_range": 1300,
       "stamina_cost": 1,
       "can_pick_destination": false,
       "block_movement": true,
@@ -1221,22 +1202,27 @@
       }
     ],
     "power_up": {
-      "distance_to_power_up": 500,
-      "power_up_damage_modifier": 0.10,
-      "power_up_health_modifier": 0.10,
+      "distance_to_power_up": 400,
+      "power_up_damage_modifier": 0.08,
+      "power_up_health_modifier": 0.08,
       "radius": 200.0
     }
   },
   "effects": [
     {
       "name": "invisible",
-      "duration_ms": 3500,
+      "duration_ms": 4000,
       "remove_on_action": true,
       "one_time_application": false,
       "effect_mechanics": {
         "invisible": {
           "execute_multiple_times": true,
           "effect_delay_ms": 0
+        },
+        "speed_boost": {
+          "modifier": 0.25,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
         }
       }
     },
@@ -1369,33 +1355,22 @@
   "crates": [
     {
       "position": {
-        "y": 500.0,
-        "x": 0.0
+        "y": 230.0,
+        "x": 260.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
     },
     {
       "position": {
-        "y": -250.0,
-        "x": 250.0
+        "y": 230.0,
+        "x": -40.0
       },
       "shape": "circle",
-      "radius": 250.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1
-    },
-    {
-      "position": {
-        "y": -250.0,
-        "x": -250.0
-      },
-      "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1406,7 +1381,7 @@
         "x": 2630.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1417,7 +1392,7 @@
         "x": 4360.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1428,7 +1403,7 @@
         "x": -4650.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1439,7 +1414,7 @@
         "x": -3960.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1450,7 +1425,7 @@
         "x": 290.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1461,7 +1436,7 @@
         "x": 2400.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1
@@ -1472,7 +1447,7 @@
         "x": 4950.0
       },
       "shape": "circle",
-      "radius": 250.0,
+      "radius": 150.0,
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1

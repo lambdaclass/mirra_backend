@@ -150,6 +150,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
+  def websocket_info({:toggle_bots, message}, state) do
+    {:reply, {:binary, message}, state}
+  end
+
   @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
@@ -198,6 +202,9 @@ defmodule Arena.GameSocketHandler do
 
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)
+
+  defp handle_decoded_message(%{action_type: {:toggle_bots, _bots_params}}, state),
+    do: GameUpdater.toggle_bots(state.game_pid)
 
   defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
 
