@@ -240,7 +240,7 @@ defmodule Arena.GameUpdater do
     broadcast_enable_incomming_messages(state.game_state.game_id)
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
-    send(self(), :pick_default_bouty_for_missing_players)
+    send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
@@ -538,7 +538,7 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info(:pick_default_bouty_for_missing_players, state) do
+  def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
       if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
         bounty = Enum.random(player.aditional_info.bounties)
