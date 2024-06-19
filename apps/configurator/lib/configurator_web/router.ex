@@ -21,6 +21,7 @@ defmodule ConfiguratorWeb.Router do
     resources "/configurations", ConfigurationController, only: [:index, :new, :create, :show]
     get "/configurations/new/:id", ConfigurationController, :new
     put "/configurations/set_default/:id", ConfigurationController, :set_default
+    resources "/characters", CharacterController
   end
 
   scope "/api", ConfiguratorWeb do
