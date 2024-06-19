@@ -51,9 +51,11 @@ defmodule Arena.GameUpdater do
   # END API
   ##########################
 
-  def init(%{clients: clients, bot_clients: bot_clients}) do
+  def init(%{clients: clients, bot_clients: bot_clients, game_params: game_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
+    game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
+
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
     match_id = Ecto.UUID.generate()
 
@@ -176,6 +178,12 @@ defmodule Arena.GameUpdater do
   # Game Callbacks
   ##########################
 
+  def handle_info(:toggle_bots, state) do
+    GenServer.cast(self(), :toggle_bots)
+
+    {:noreply, state}
+  end
+
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
@@ -236,12 +244,11 @@ defmodule Arena.GameUpdater do
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
-    state =
-      state
-      |> put_in([:game_state, :zone, :enabled], true)
-      |> put_in([:game_state, :status], :RUNNING)
+    unless state.game_config.game.bots_enabled do
+      toggle_bots(self())
+    end
 
-    {:noreply, state}
+    {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
@@ -655,7 +662,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
         radius: config.map.radius,
-        enabled: false,
+        enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
