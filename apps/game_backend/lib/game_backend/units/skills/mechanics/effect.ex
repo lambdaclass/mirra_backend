@@ -14,6 +14,7 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
     field(:components, {:array, :map})
     embeds_many(:modifiers, Modifier)
     field(:executions, {:array, :map})
+    field(:executions_over_time, {:array, :map})
   end
 
   @doc false
@@ -23,13 +24,15 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
       :type,
       :initial_delay,
       :components,
-      :executions
+      :executions,
+      :executions_over_time
     ])
     |> validate_required([
       :type,
       :initial_delay,
       :components,
-      :executions
+      :executions,
+      :executions_over_time
     ])
     |> validate_change(:executions, fn :executions, executions ->
       valid? =
@@ -42,6 +45,12 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
         Enum.all?(components, fn component -> valid_component?(component) end)
 
       if valid?, do: [], else: [components: "A component is invalid"]
+    end)
+    |> validate_change(:executions_over_time, fn :executions_over_time, executions_over_time ->
+      valid? =
+        Enum.all?(executions_over_time, fn eot -> valid_execution_over_time?(eot) end)
+
+      if valid?, do: [], else: [executions_over_time: "An execution over time is invalid"]
     end)
     |> cast_embed(:modifiers)
   end
@@ -56,21 +65,7 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
         true
 
       %{
-        type: "DealDamageOverTime",
-        attack_ratio: _attack_ratio,
-        energy_recharge: _energy_recharge,
-        dot_type: _dot_type
-      } ->
-        true
-
-      %{
         type: "Heal",
-        attack_ratio: _attack_ratio
-      } ->
-        true
-
-      %{
-        type: "HealOverTime",
         attack_ratio: _attack_ratio
       } ->
         true
@@ -78,6 +73,28 @@ defmodule GameBackend.Units.Skills.Mechanics.Effect do
       %{
         type: "AddEnergy",
         amount: _amount
+      } ->
+        true
+
+      _ ->
+        false
+    end
+  end
+
+  defp valid_execution_over_time?(execution_over_time) do
+    case execution_over_time do
+      %{
+        type: "DealDamageOverTime",
+        attack_ratio: _attack_ratio,
+        apply_tags: _apply_tags,
+        interval: _interval
+      } ->
+        true
+
+      %{
+        type: "HealOverTime",
+        attack_ratio: _attack_ratio,
+        interval: _interval
       } ->
         true
 

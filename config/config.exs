@@ -76,6 +76,10 @@ config :ueberauth, Ueberauth,
     google: {Ueberauth.Strategy.Google, []}
   ]
 
+config :joken,
+  ## 2 hours for expiration
+  default_exp: 2 * 60 * 60
+
 ############################
 # App configuration: arena #
 ############################

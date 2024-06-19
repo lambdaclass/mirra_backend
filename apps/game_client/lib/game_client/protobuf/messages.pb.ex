@@ -121,6 +121,7 @@ defmodule GameClient.Protobuf.GameEvent do
   field(:update, 2, type: GameClient.Protobuf.GameState, oneof: 0)
   field(:finished, 3, type: GameClient.Protobuf.GameFinished, oneof: 0)
   field(:ping, 4, type: GameClient.Protobuf.PingUpdate, oneof: 0)
+  field(:toggle_bots, 5, type: GameClient.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
 end
 
 defmodule GameClient.Protobuf.GameFinished.PlayersEntry do
@@ -634,6 +635,12 @@ defmodule GameClient.Protobuf.ToggleZone do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule GameClient.Protobuf.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule GameClient.Protobuf.GameAction do
   @moduledoc false
 
@@ -652,6 +659,7 @@ defmodule GameClient.Protobuf.GameAction do
   )
 
   field(:toggle_zone, 6, type: GameClient.Protobuf.ToggleZone, json_name: "toggleZone", oneof: 0)
+  field(:toggle_bots, 7, type: GameClient.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 

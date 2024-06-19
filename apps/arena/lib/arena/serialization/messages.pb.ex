@@ -121,6 +121,7 @@ defmodule Arena.Serialization.GameEvent do
   field(:update, 2, type: Arena.Serialization.GameState, oneof: 0)
   field(:finished, 3, type: Arena.Serialization.GameFinished, oneof: 0)
   field(:ping, 4, type: Arena.Serialization.PingUpdate, oneof: 0)
+  field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
 end
 
 defmodule Arena.Serialization.GameFinished.PlayersEntry do
@@ -634,6 +635,12 @@ defmodule Arena.Serialization.ToggleZone do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
+defmodule Arena.Serialization.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
 defmodule Arena.Serialization.GameAction do
   @moduledoc false
 
@@ -652,6 +659,7 @@ defmodule Arena.Serialization.GameAction do
   )
 
   field(:toggle_zone, 6, type: Arena.Serialization.ToggleZone, json_name: "toggleZone", oneof: 0)
+  field(:toggle_bots, 7, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
