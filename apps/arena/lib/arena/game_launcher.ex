@@ -65,7 +65,10 @@ defmodule Arena.GameLauncher do
 
   @impl true
   def handle_call({:join_quick_game, client_id, character_name, player_name}, {from_pid, _}, state) do
-    create_game_for_clients([{client_id, character_name, player_name, from_pid}])
+    create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
+      bots_enabled: false,
+      zone_enabled: false
+    })
 
     {:reply, :ok, state}
   end
@@ -128,13 +131,14 @@ defmodule Arena.GameLauncher do
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
-  defp create_game_for_clients(clients) do
+  defp create_game_for_clients(clients, game_params \\ %{}) do
     bot_clients = get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
-        bot_clients: bot_clients
+        bot_clients: bot_clients,
+        game_params: game_params
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
