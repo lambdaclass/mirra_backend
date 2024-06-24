@@ -203,6 +203,8 @@ config :configurator, ConfiguratorWeb.Endpoint,
   pubsub_server: Configurator.PubSub,
   live_view: [signing_salt: "6A8twvHJ"]
 
+config :configurator, Configurator.Repo, migration_primary_key: [type: :binary_id]
+
 ############################
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
