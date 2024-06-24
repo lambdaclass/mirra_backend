@@ -29,6 +29,8 @@ defmodule ConfiguratorWeb.Router do
 
     get "/default_config", ConfigurationController, :show
     get "/configurations/:id", ConfigurationController, :show
+
+    get "/characters", CharacterController, :characters
   end
 
   # Other scopes may use custom stacks.

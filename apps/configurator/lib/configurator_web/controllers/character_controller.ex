@@ -3,6 +3,7 @@ defmodule ConfiguratorWeb.CharacterController do
 
   alias Configurator.Configuration
   alias Configurator.Configuration.Character
+  alias ConfiguratorWeb.UtilsAPI
 
   def index(conn, _params) do
     characters = Configuration.list_characters()
@@ -61,5 +62,11 @@ defmodule ConfiguratorWeb.CharacterController do
     conn
     |> put_flash(:info, "Character deleted successfully.")
     |> redirect(to: ~p"/characters")
+  end
+
+  def characters(conn, _params) do
+    characters = UtilsAPI.list_characters()
+
+    send_resp(conn, 200, Jason.encode!(characters))
   end
 end
