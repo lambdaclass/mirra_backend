@@ -27,4 +27,30 @@ defmodule Configurator.ConfigurationFixtures do
 
     character
   end
+
+  @doc """
+  Generate a game_config.
+  """
+  def game_config_fixture(attrs \\ %{}) do
+    {:ok, game_config} =
+      attrs
+      |> Enum.into(%{
+        end_game_interval_ms: 42,
+        item_spawn_interval_ms: 42,
+        natural_healing_interval_ms: 42,
+        shutdown_game_wait_ms: 42,
+        start_game_time_ms: 42,
+        tick_rate_ms: 42,
+        zone_damage: 42,
+        zone_damage_interval_ms: 42,
+        zone_shrink_interval: 42,
+        zone_shrink_radius_by: 42,
+        zone_shrink_start_ms: 42,
+        zone_start_interval_ms: 42,
+        zone_stop_interval_ms: 42
+      })
+      |> Configurator.Configuration.create_game_config()
+
+    game_config
+  end
 end

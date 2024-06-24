@@ -1,0 +1,35 @@
+<.header>
+  Listing Game configurations
+  <:actions>
+    <.link href={~p"/game_configurations/new"}>
+      <.button>New Game config</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="game_configurations" rows={@game_configurations} row_click={&JS.navigate(~p"/game_configurations/#{&1}")}>
+  <:col :let={game_config} label="End game interval ms"><%= game_config.end_game_interval_ms %></:col>
+  <:col :let={game_config} label="Item spawn interval ms"><%= game_config.item_spawn_interval_ms %></:col>
+  <:col :let={game_config} label="Natural healing interval ms"><%= game_config.natural_healing_interval_ms %></:col>
+  <:col :let={game_config} label="Shutdown game wait ms"><%= game_config.shutdown_game_wait_ms %></:col>
+  <:col :let={game_config} label="Start game time ms"><%= game_config.start_game_time_ms %></:col>
+  <:col :let={game_config} label="Tick rate ms"><%= game_config.tick_rate_ms %></:col>
+  <:col :let={game_config} label="Zone damage interval ms"><%= game_config.zone_damage_interval_ms %></:col>
+  <:col :let={game_config} label="Zone damage"><%= game_config.zone_damage %></:col>
+  <:col :let={game_config} label="Zone shrink interval"><%= game_config.zone_shrink_interval %></:col>
+  <:col :let={game_config} label="Zone shrink radius by"><%= game_config.zone_shrink_radius_by %></:col>
+  <:col :let={game_config} label="Zone shrink start ms"><%= game_config.zone_shrink_start_ms %></:col>
+  <:col :let={game_config} label="Zone start interval ms"><%= game_config.zone_start_interval_ms %></:col>
+  <:col :let={game_config} label="Zone stop interval ms"><%= game_config.zone_stop_interval_ms %></:col>
+  <:action :let={game_config}>
+    <div class="sr-only">
+      <.link navigate={~p"/game_configurations/#{game_config}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/game_configurations/#{game_config}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={game_config}>
+    <.link href={~p"/game_configurations/#{game_config}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
