@@ -47,6 +47,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, :toggle_bots)
   end
 
+  def change_tickrate(game_pid, tickrate) do
+    GenServer.cast(game_pid, {:change_tickrate, tickrate})
+  end
+
   ##########################
   # END API
   ##########################
@@ -166,6 +170,10 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
 
     {:noreply, state}
+  end
+
+  def handle_cast({:change_tickrate, tickrate}, state) do
+    {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
   end
 
   ##########################
