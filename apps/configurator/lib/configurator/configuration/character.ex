@@ -1,5 +1,5 @@
 defmodule Configurator.Configuration.Character do
-  use Ecto.Schema
+  use Configurator.Schema
   import Ecto.Changeset
 
   schema "characters" do
@@ -10,12 +10,28 @@ defmodule Configurator.Configuration.Character do
     field :base_health, :integer
     field :base_stamina, :integer
 
+    field :max_inventory_size, :integer
+    field :natural_healing_interval, :integer
+    field :natural_healing_damage_interval, :integer
+    field :stamina_interval, :integer
+
+    field :skills, {:map, :string}
+
     timestamps(type: :utc_datetime)
   end
 
-
   @required [
-    :name, :active, :base_speed, :base_size, :base_health, :base_stamina
+    :name,
+    :active,
+    :base_speed,
+    :base_size,
+    :base_health,
+    :base_stamina,
+    :stamina_interval,
+    :max_inventory_size,
+    :natural_healing_interval,
+    :natural_healing_damage_interval,
+    :skills
   ]
 
   @permitted [] ++ @required

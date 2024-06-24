@@ -15,6 +15,9 @@ defmodule ConfiguratorWeb.CharacterController do
   end
 
   def create(conn, %{"character" => character_params}) do
+    skills = Jason.decode!(character_params["skills"]) |> IO.inspect()
+    character_params = Map.put(character_params, "skills", skills)
+
     case Configuration.create_character(character_params) do
       {:ok, character} ->
         conn

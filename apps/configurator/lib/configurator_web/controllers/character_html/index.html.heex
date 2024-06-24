@@ -14,6 +14,8 @@
   <:col :let={character} label="Base size"><%= character.base_size %></:col>
   <:col :let={character} label="Base health"><%= character.base_health %></:col>
   <:col :let={character} label="Base stamina"><%= character.base_stamina %></:col>
+  <:col :let={character} label="Stamina Interval"><%= character.stamina_interval %></:col>
+
   <:action :let={character}>
     <div class="sr-only">
       <.link navigate={~p"/characters/#{character}"}>Show</.link>

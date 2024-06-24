@@ -15,6 +15,11 @@
   <:item title="Base size"><%= @character.base_size %></:item>
   <:item title="Base health"><%= @character.base_health %></:item>
   <:item title="Base stamina"><%= @character.base_stamina %></:item>
+  <:item title="Stamina Interval"><%= @character.stamina_interval %></:item>
+  <:item title="Max inventory size"><%= @character.max_inventory_size %></:item>
+  <:item title="Natural healing interval"><%= @character.natural_healing_interval %></:item>
+  <:item title="Natural healing damage interval"><%= @character.natural_healing_damage_interval %></:item>
+  <:item title="Skills"><%= Jason.encode!(@character.skills) %></:item>
 </.list>
 
 <.back navigate={~p"/characters"}>Back to characters</.back>
