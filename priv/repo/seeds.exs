@@ -234,3 +234,90 @@ Config.get_characters_config()
 end)
 
 ################### END CURSE OF MIRRA ###################
+
+##################### Configurator #####################
+# Insert characters
+alias Configurator.Configuration.Character
+alias Configurator.Configuration
+
+muflus_params = %{
+  name: "muflus",
+  active: true,
+  base_speed: 17.5,
+  base_size: 110.0,
+  base_health: 440,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  skills: %{
+    "1": "muflus_crush",
+    "2": "muflus_leap",
+    "3": "muflus_dash"
+  }
+}
+
+{:ok, _muflus} = Configuration.create_character(muflus_params)
+
+h4ck_params = %{
+  name: "h4ck",
+  active: true,
+  base_speed: 22.5,
+  base_size: 90.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 1800,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  skills: %{
+    "1": "h4ck_slingshot",
+    "2": "h4ck_denial_of_service",
+    "3": "h4ck_dash"
+  }
+}
+
+{:ok, _h4ck} = Configuration.create_character(h4ck_params)
+
+uma_params = %{
+  name: "uma",
+  active: true,
+  base_speed: 20.0,
+  base_size: 95.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  skills: %{
+    "1": "uma_avenge",
+    "2": "uma_veil_radiance",
+    "3": "uma_sneak"
+  }
+}
+
+{:ok, _uma} = Configuration.create_character(uma_params)
+
+valtimer_params = %{
+  name: "valtimer",
+  active: false,
+  base_speed: 20.0,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  skills: %{
+    "1": "valt_antimatter",
+    "2": "valt_singularity",
+    "3": "valt_warp"
+  }
+}
+
+{:ok, _valtimer} = Configuration.create_character(valtimer_params)
+
+##################### End Configurator #####################
