@@ -15,6 +15,7 @@ defmodule Configurator.Configuration.Character do
     field :natural_healing_damage_interval, :integer
     field :stamina_interval, :integer
 
+    # TODO This should be removed once we have the skills relationship
     field :skills, {:map, :string}
 
     timestamps(type: :utc_datetime)

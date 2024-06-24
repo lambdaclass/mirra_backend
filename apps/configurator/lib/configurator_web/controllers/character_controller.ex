@@ -16,7 +16,8 @@ defmodule ConfiguratorWeb.CharacterController do
   end
 
   def create(conn, %{"character" => character_params}) do
-    skills = Jason.decode!(character_params["skills"]) |> IO.inspect()
+    # TODO this should be removed once we have the skills relationship
+    skills = Jason.decode!(character_params["skills"])
     character_params = Map.put(character_params, "skills", skills)
 
     case Configuration.create_character(character_params) do
