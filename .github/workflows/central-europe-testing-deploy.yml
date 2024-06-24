@@ -56,6 +56,7 @@ jobs:
           JWT_PRIVATE_KEY_BASE_64: ${{ secrets.JWT_PRIVATE_KEY_BASE_64 }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
+          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
@@ -74,4 +75,5 @@ jobs:
                 JWT_PRIVATE_KEY_BASE_64=${JWT_PRIVATE_KEY_BASE_64} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
+                DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh
