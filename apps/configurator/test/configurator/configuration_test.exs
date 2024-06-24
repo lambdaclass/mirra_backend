@@ -21,7 +21,14 @@ defmodule Configurator.ConfigurationTest do
     end
 
     test "create_character/1 with valid data creates a character" do
-      valid_attrs = %{active: true, name: "some name", base_speed: "120.5", base_size: "120.5", base_health: 42, base_stamina: 42}
+      valid_attrs = %{
+        active: true,
+        name: "some name",
+        base_speed: "120.5",
+        base_size: "120.5",
+        base_health: 42,
+        base_stamina: 42
+      }
 
       assert {:ok, %Character{} = character} = Configuration.create_character(valid_attrs)
       assert character.active == true
@@ -38,7 +45,15 @@ defmodule Configurator.ConfigurationTest do
 
     test "update_character/2 with valid data updates the character" do
       character = character_fixture()
-      update_attrs = %{active: false, name: "some updated name", base_speed: "456.7", base_size: "456.7", base_health: 43, base_stamina: 43}
+
+      update_attrs = %{
+        active: false,
+        name: "some updated name",
+        base_speed: "456.7",
+        base_size: "456.7",
+        base_health: 43,
+        base_stamina: 43
+      }
 
       assert {:ok, %Character{} = character} = Configuration.update_character(character, update_attrs)
       assert character.active == false

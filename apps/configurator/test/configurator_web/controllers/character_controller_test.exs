@@ -3,8 +3,22 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
 
   import Configurator.ConfigurationFixtures
 
-  @create_attrs %{active: true, name: "some name", base_speed: "120.5", base_size: "120.5", base_health: 42, base_stamina: 42}
-  @update_attrs %{active: false, name: "some updated name", base_speed: "456.7", base_size: "456.7", base_health: 43, base_stamina: 43}
+  @create_attrs %{
+    active: true,
+    name: "some name",
+    base_speed: "120.5",
+    base_size: "120.5",
+    base_health: 42,
+    base_stamina: 42
+  }
+  @update_attrs %{
+    active: false,
+    name: "some updated name",
+    base_speed: "456.7",
+    base_size: "456.7",
+    base_health: 43,
+    base_stamina: 43
+  }
   @invalid_attrs %{active: nil, name: nil, base_speed: nil, base_size: nil, base_health: nil, base_stamina: nil}
 
   describe "index" do
