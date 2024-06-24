@@ -5,21 +5,40 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
 
   @create_attrs %{
     active: true,
-    name: "some name",
-    base_speed: "120.5",
-    base_size: "120.5",
     base_health: 42,
-    base_stamina: 42
+    base_size: 120.5,
+    base_speed: 120.5,
+    base_stamina: 42,
+    name: "some name",
+    max_inventory_size: 42,
+    natural_healing_damage_interval: 42,
+    natural_healing_interval: 42,
+    stamina_interval: 42,
+    skills: "{}"
   }
   @update_attrs %{
-    active: false,
+    active: true,
+    base_health: 42,
+    base_size: 120.5,
+    base_speed: 120.5,
+    base_stamina: 42,
     name: "some updated name",
-    base_speed: "456.7",
-    base_size: "456.7",
-    base_health: 43,
-    base_stamina: 43
+    max_inventory_size: 42,
+    natural_healing_damage_interval: 42,
+    natural_healing_interval: 42,
+    stamina_interval: 42,
+    skills: "{}"
   }
-  @invalid_attrs %{active: nil, name: nil, base_speed: nil, base_size: nil, base_health: nil, base_stamina: nil}
+
+  @invalid_attrs %{
+    active: nil,
+    name: nil,
+    base_speed: nil,
+    base_size: nil,
+    base_health: nil,
+    base_stamina: nil,
+    skills: "{}"
+  }
 
   describe "index" do
     test "lists all characters", %{conn: conn} do

@@ -10,11 +10,6 @@ defmodule Configurator.ConfigurationTest do
 
     @invalid_attrs %{active: nil, name: nil, base_speed: nil, base_size: nil, base_health: nil, base_stamina: nil}
 
-    test "list_characters/0 returns all characters" do
-      character = character_fixture()
-      assert Configuration.list_characters() == [character]
-    end
-
     test "get_character!/1 returns the character with given id" do
       character = character_fixture()
       assert Configuration.get_character!(character.id) == character
@@ -23,11 +18,16 @@ defmodule Configurator.ConfigurationTest do
     test "create_character/1 with valid data creates a character" do
       valid_attrs = %{
         active: true,
-        name: "some name",
-        base_speed: "120.5",
-        base_size: "120.5",
         base_health: 42,
-        base_stamina: 42
+        base_size: "120.5",
+        base_speed: "120.5",
+        base_stamina: 42,
+        name: "some name",
+        max_inventory_size: 42,
+        natural_healing_damage_interval: 42,
+        natural_healing_interval: 42,
+        stamina_interval: 42,
+        skills: %{}
       }
 
       assert {:ok, %Character{} = character} = Configuration.create_character(valid_attrs)

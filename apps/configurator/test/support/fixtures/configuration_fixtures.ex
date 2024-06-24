@@ -16,7 +16,12 @@ defmodule Configurator.ConfigurationFixtures do
         base_size: "120.5",
         base_speed: "120.5",
         base_stamina: 42,
-        name: "some name"
+        name: "some name",
+        max_inventory_size: 42,
+        natural_healing_damage_interval: 42,
+        natural_healing_interval: 42,
+        stamina_interval: 42,
+        skills: %{}
       })
       |> Configurator.Configuration.create_character()
 

@@ -2,7 +2,7 @@ defmodule Configurator.Configure.Configuration do
   @moduledoc """
   Configuration in DB
   """
-  use Ecto.Schema
+  use Configurator.Schema
   import Ecto.Changeset
 
   schema "configurations" do
