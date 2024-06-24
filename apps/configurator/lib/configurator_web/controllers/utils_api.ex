@@ -1,4 +1,7 @@
 defmodule ConfiguratorWeb.UtilsAPI do
+  @moduledoc """
+  Utility functions for the Configurator API
+  """
   alias Configurator.Configuration
 
   def list_characters do

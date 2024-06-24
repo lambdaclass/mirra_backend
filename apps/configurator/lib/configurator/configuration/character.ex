@@ -1,4 +1,7 @@
 defmodule Configurator.Configuration.Character do
+  @moduledoc """
+  Character schema
+  """
   use Configurator.Schema
   import Ecto.Changeset
 
