@@ -69,7 +69,7 @@ defmodule ConfiguratorWeb.CharacterController do
   end
 
   def characters(conn, _params) do
-    characters = Utils.list_characters()
+    characters = Configuration.list_characters() |> Utils.transform_to_map_from_ecto_struct()
 
     send_resp(conn, 200, Jason.encode!(characters))
   end

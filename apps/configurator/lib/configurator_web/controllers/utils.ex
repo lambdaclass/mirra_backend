@@ -1,25 +1,21 @@
 defmodule ConfiguratorWeb.Utils do
   @moduledoc """
-  Utility functions for the Configurator APP
+  Utility functions for the Configurator App
   """
-  alias Configurator.Configuration
 
-  def list_characters do
-    Configuration.list_characters()
-    |> Enum.map(fn character ->
-      %{
-        active: character.active,
-        name: character.name,
-        base_speed: character.base_speed,
-        base_size: character.base_size,
-        base_health: character.base_health,
-        base_stamina: character.base_stamina,
-        max_inventory_size: character.max_inventory_size,
-        natural_healing_interval: character.natural_healing_interval,
-        natural_healing_damage_interval: character.natural_healing_damage_interval,
-        stamina_interval: character.stamina_interval,
-        skills: character.skills
-      }
+  def transform_to_map_from_ecto_struct(ecto_struct) when is_struct(ecto_struct) do
+    ecto_struct
+    |> Map.from_struct()
+    |> Map.delete(:__meta__)
+    |> Map.delete(:__struct__)
+    |> Map.delete(:inserted_at)
+    |> Map.delete(:updated_at)
+    |> Map.delete(:id)
+  end
+
+  def transform_to_map_from_ecto_struct(ecto_structs) when is_list(ecto_structs) do
+    Enum.map(ecto_structs, fn ecto_struct ->
+      transform_to_map_from_ecto_struct(ecto_struct)
     end)
   end
 end
