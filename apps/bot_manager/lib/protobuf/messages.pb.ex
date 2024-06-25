@@ -496,6 +496,7 @@ defmodule BotManager.Protobuf.Player do
   field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
 end
 
 defmodule BotManager.Protobuf.Effect do
