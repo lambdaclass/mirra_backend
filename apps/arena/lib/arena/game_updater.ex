@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Game.Obstacle
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
@@ -249,6 +250,7 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bouty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+    send(self(), :start_obstacles_transitions)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -556,6 +558,37 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info(:start_obstacles_transitions, state) do
+    game_state =
+      Enum.reduce(state.game_state.obstacles, state.game_state, fn {obstacle_id, obstacle}, game_state ->
+        if(obstacle.aditional_info.type == "dynamic") do
+          put_in(game_state, [:obstacles, obstacle_id], Obstacle.handle_transition_init(obstacle))
+        else
+          game_state
+        end
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:start_obstacle_transition, obstacle_id}, state) do
+    state =
+      update_in(state, [:game_state, :obstacles, obstacle_id], fn obstacle ->
+        Obstacle.start_obstacle_transition(obstacle)
+      end)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:handle_obstacle_transition, obstacle_id}, state) do
+    state =
+      update_in(state, [:game_state, :obstacles, obstacle_id], fn obstacle ->
+        Obstacle.handle_transition(obstacle)
+      end)
+
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -719,14 +752,17 @@ defmodule Arena.GameUpdater do
     Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
       last_id = last_id + 1
 
+      new_obstacle =
+        Entities.new_obstacle(
+          last_id,
+          obstacle
+        )
+
       obstacles_acc =
         Map.put(
           obstacles_acc,
           last_id,
-          Entities.new_obstacle(
-            last_id,
-            obstacle
-          )
+          new_obstacle
         )
 
       {obstacles_acc, last_id}
@@ -911,7 +947,7 @@ defmodule Arena.GameUpdater do
       |> Physics.move_entities(
         ticks_to_move,
         external_wall,
-        obstacles
+        Obstacle.get_active_obstacles(obstacles)
       )
       |> update_collisions(players, entities_to_collide)
 
