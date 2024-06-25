@@ -579,6 +579,8 @@ defmodule ArenaLoadTest.Serialization.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:color, 1, type: :string)
+  field(:active, 2, type: :bool)
+  field(:status, 3, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.PowerUp do

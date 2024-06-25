@@ -187,7 +187,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices}) do
+  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices} = params) do
     %{
       id: id,
       category: :obstacle,
@@ -201,7 +201,14 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{
+        active: Map.get(params, :active, true),
+        statuses_cycle: Map.get(params, :statuses_cycle),
+        status: Map.get(params, :base_status, "activated"),
+        transition_time_ms: Map.get(params, :transition_time_ms),
+        type: Map.get(params, :type, "static")
+      }
     }
   end
 
@@ -359,7 +366,9 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :obstacle do
     {:obstacle,
      %Arena.Serialization.Obstacle{
-       color: "red"
+       color: "red",
+       active: entity.aditional_info.active,
+       status: entity.aditional_info.status
      }}
   end
 
