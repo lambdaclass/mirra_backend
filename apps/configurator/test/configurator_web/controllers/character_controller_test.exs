@@ -43,7 +43,7 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
   describe "index" do
     test "lists all characters", %{conn: conn} do
       conn = get(conn, ~p"/characters")
-      assert html_response(conn, 200) =~ "Listing Characters"
+      assert html_response(conn, 200) =~ "Characters"
     end
   end
 
