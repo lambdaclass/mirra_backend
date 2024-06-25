@@ -18,7 +18,7 @@ defmodule Configurator.Configuration.Character do
     field :natural_healing_damage_interval, :integer
     field :stamina_interval, :integer
 
-    # TODO This should be removed once we have the skills relationship
+    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
     field :skills, {:map, :string}
 
     timestamps(type: :utc_datetime)

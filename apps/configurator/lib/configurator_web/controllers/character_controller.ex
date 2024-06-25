@@ -16,7 +16,7 @@ defmodule ConfiguratorWeb.CharacterController do
   end
 
   def create(conn, %{"character" => character_params}) do
-    # TODO this should be removed once we have the skills relationship
+    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
     skills = Jason.decode!(character_params["skills"])
     character_params = Map.put(character_params, "skills", skills)
 
@@ -43,6 +43,7 @@ defmodule ConfiguratorWeb.CharacterController do
   end
 
   def update(conn, %{"id" => id, "character" => character_params}) do
+    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
     skills = Jason.decode!(character_params["skills"])
     character_params = Map.put(character_params, "skills", skills)
     character = Configuration.get_character!(id)
