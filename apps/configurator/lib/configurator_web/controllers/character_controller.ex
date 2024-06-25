@@ -23,7 +23,7 @@ defmodule ConfiguratorWeb.CharacterController do
     case Configuration.create_character(character_params) do
       {:ok, character} ->
         conn
-        |> put_flash(:info, "Character created successfully.")
+        |> put_flash(:success, "Character created successfully.")
         |> redirect(to: ~p"/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -51,7 +51,7 @@ defmodule ConfiguratorWeb.CharacterController do
     case Configuration.update_character(character, character_params) do
       {:ok, character} ->
         conn
-        |> put_flash(:info, "Character updated successfully.")
+        |> put_flash(:success, "Character updated successfully.")
         |> redirect(to: ~p"/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
@@ -64,7 +64,7 @@ defmodule ConfiguratorWeb.CharacterController do
     {:ok, _character} = Configuration.delete_character(character)
 
     conn
-    |> put_flash(:info, "Character deleted successfully.")
+    |> put_flash(:success, "Character deleted successfully.")
     |> redirect(to: ~p"/characters")
   end
 
