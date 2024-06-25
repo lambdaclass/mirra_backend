@@ -47,7 +47,7 @@ defmodule ConfiguratorWeb.CharacterController do
     character_params = Map.put(character_params, "skills", skills)
     character = Configuration.get_character!(id)
 
-    case Configuration.update_character(character, character_params) |> IO.inspect(label: :wea) do
+    case Configuration.update_character(character, character_params) do
       {:ok, character} ->
         conn
         |> put_flash(:info, "Character updated successfully.")
