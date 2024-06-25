@@ -3,7 +3,7 @@ defmodule ConfiguratorWeb.CharacterController do
 
   alias Configurator.Configuration
   alias Configurator.Configuration.Character
-  alias ConfiguratorWeb.UtilsAPI
+  alias ConfiguratorWeb.Utils
 
   def index(conn, _params) do
     characters = Configuration.list_characters()
@@ -69,7 +69,7 @@ defmodule ConfiguratorWeb.CharacterController do
   end
 
   def characters(conn, _params) do
-    characters = UtilsAPI.list_characters()
+    characters = Utils.list_characters()
 
     send_resp(conn, 200, Jason.encode!(characters))
   end

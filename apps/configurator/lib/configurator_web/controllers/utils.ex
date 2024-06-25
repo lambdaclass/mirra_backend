@@ -1,6 +1,6 @@
-defmodule ConfiguratorWeb.UtilsAPI do
+defmodule ConfiguratorWeb.Utils do
   @moduledoc """
-  Utility functions for the Configurator API
+  Utility functions for the Configurator APP
   """
   alias Configurator.Configuration
 
