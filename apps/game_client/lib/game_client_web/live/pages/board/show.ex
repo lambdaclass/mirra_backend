@@ -63,6 +63,11 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_bots", _, socket) do
+    send(socket.assigns.game_socket_handler_pid, :toggle_bots)
+    {:noreply, socket}
+  end
+
   defp player_name(player_id), do: "P#{player_id}"
 
   defp handle_game_event({:joined, _joined_info}, socket) do
@@ -93,6 +98,10 @@ defmodule GameClientWeb.BoardLive.Show do
 
   defp handle_game_event({:ping, ping_event}, socket) do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
+  end
+
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+    {:noreply, socket}
   end
 
   defp transform_entity_entry({_entity_id, entity}) do
