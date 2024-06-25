@@ -237,7 +237,6 @@ end)
 
 ##################### Configurator #####################
 # Insert characters
-alias Configurator.Configuration.Character
 alias Configurator.Configuration
 
 muflus_params = %{
