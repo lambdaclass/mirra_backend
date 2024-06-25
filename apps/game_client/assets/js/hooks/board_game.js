@@ -19,6 +19,8 @@ export const BoardGame = function () {
     currentPlayer: 0x007cff,
     players: 0x000000,
     obstacle: 0x00aa77,
+    transitioningObstacle: 0xff944d,
+    deactivatedObstacle: 0xff0000,
     colliding: 0xff0000,
     projectile: 0x0000ff,
     item: 0x238636,
@@ -60,7 +62,7 @@ export const BoardGame = function () {
           entities.set(backEntity.id, newEntity);
         }
         let entity = entities.get(backEntity.id);
-        this.updateEntityColor(entity, backEntity.is_colliding);
+        this.updateEntityColor(entity, backEntity.is_colliding, backEntity);
 
         this.updateEntityPosition(entity, backEntity.x, backEntity.y);
       });
@@ -201,7 +203,7 @@ export const BoardGame = function () {
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
     }),
-    (this.updateEntityColor = function (entity, is_colliding) {
+    (this.updateEntityColor = function (entity, is_colliding, backEntity) {
       let color;
       if (is_colliding == true) {
         color = colors.colliding;
@@ -212,7 +214,13 @@ export const BoardGame = function () {
               entity.id == player_id ? colors.currentPlayer : colors.players;
             break;
           case "obstacle":
-            color = colors.obstacle;
+            if (backEntity.status === "deactivated") {
+              color = colors.deactivatedObstacle;
+            } else if (backEntity.status === "transitioning") {
+              color = colors.transitioningObstacle;
+            } else {
+              color = colors.obstacle;
+            }
             break;
           case "projectile":
             color = colors.projectile;

@@ -95,6 +95,27 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
   end
 
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+    {:noreply, socket}
+  end
+
+  defp transform_entity_entry({_entity_id, %{category: "obstacle"} = entity}) do
+    {_, aditional_info} = entity.aditional_info
+
+    %{
+      id: entity.id,
+      category: entity.category,
+      shape: entity.shape,
+      name: entity.name,
+      x: entity.position.x / 5 + 1000,
+      y: entity.position.y / 5 + 1000,
+      radius: entity.radius / 5,
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
+      is_colliding: entity.collides_with |> Enum.any?(),
+      status: aditional_info.status
+    }
+  end
+
   defp transform_entity_entry({_entity_id, entity}) do
     %{
       id: entity.id,
