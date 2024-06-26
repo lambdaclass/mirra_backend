@@ -561,7 +561,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:start_obstacles_transitions, state) do
     game_state =
       Enum.reduce(state.game_state.obstacles, state.game_state, fn {obstacle_id, obstacle}, game_state ->
-        if(obstacle.aditional_info.type == "dynamic") do
+        if obstacle.aditional_info.type == "dynamic" do
           put_in(game_state, [:obstacles, obstacle_id], Obstacle.handle_transition_init(obstacle))
         else
           game_state

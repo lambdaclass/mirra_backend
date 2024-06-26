@@ -203,7 +203,7 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        collisionable: is_obstacle_collisionable?(params),
+        collisionable: obstacle_collisionable?(params),
         statuses_cycle: params.statuses_cycle,
         status: params.status,
         type: params.type
@@ -449,11 +449,11 @@ defmodule Arena.Entities do
     put_in(entity, [:aditional_info, :cooldowns], %{})
   end
 
-  def is_obstacle_collisionable?(%{type: "static"}) do
+  def obstacle_collisionable?(%{type: "static"}) do
     true
   end
 
-  def is_obstacle_collisionable?(params) do
+  def obstacle_collisionable?(params) do
     %{status: base_status, statuses_cycle: statuses_cycle} = params
 
     base_status_params =

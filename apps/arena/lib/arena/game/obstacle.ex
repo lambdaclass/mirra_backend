@@ -1,4 +1,8 @@
 defmodule Arena.Game.Obstacle do
+  @moduledoc """
+  Module to hable obstacles logic in game updater
+  """
+
   alias Arena.Game.Skill
   alias Arena.Entities
   alias Arena.Game.Player
