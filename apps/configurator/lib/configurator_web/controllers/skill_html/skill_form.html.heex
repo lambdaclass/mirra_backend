@@ -20,6 +20,9 @@
   <.input field={f[:is_passive]} type="checkbox" label="Is passive" />
   <.input field={f[:max_autoaim_range]} type="number" label="Max autoaim range" />
   <.input field={f[:stamina_cost]} type="number" label="Stamina cost" />
+
+  <.skill_mechanic_inputs skill_form={f} />
+
   <:actions>
     <.button>Save Skill</.button>
   </:actions>

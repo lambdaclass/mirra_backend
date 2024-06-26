@@ -2,6 +2,7 @@ defmodule ConfiguratorWeb.SkillController do
   use ConfiguratorWeb, :controller
 
   alias GameBackend.Units.Skills
+  alias GameBackend.Units.Skills.Mechanic
   alias GameBackend.Units.Skills.Skill
 
   def index(conn, _params) do
@@ -10,12 +11,12 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def new(conn, _params) do
-    changeset = Skills.change_skill(%Skill{})
+    changeset = Skills.change_skill(%Skill{mechanics: [%Mechanic{}]})
     render(conn, :new, changeset: changeset)
   end
 
   def create(conn, %{"skill" => skill_params}) do
-    case Skills.insert_skill(skill_params) do
+    case Skills.insert_skill(skill_params) |> IO.inspect() do
       {:ok, skill} ->
         conn
         |> put_flash(:info, "Skill created successfully.")
@@ -27,7 +28,7 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def show(conn, %{"id" => id}) do
-    skill = Skills.get_skill!(id)
+    skill = Skills.get_skill!(id) |> IO.inspect()
     render(conn, :show, skill: skill)
   end
 

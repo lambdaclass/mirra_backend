@@ -81,7 +81,10 @@ defmodule GameBackend.Units.Skills do
       ** (Ecto.NoResultsError)
 
   """
-  def get_skill!(id), do: Repo.get!(Skill, id)
+  def get_skill!(id) do
+    Repo.get!(Skill, id)
+    |> Repo.preload(:mechanics)
+  end
 
   @doc """
   Deletes a skill.

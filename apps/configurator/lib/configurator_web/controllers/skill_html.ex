@@ -10,4 +10,11 @@ defmodule ConfiguratorWeb.SkillHTML do
   attr :action, :string, required: true
 
   def skill_form(assigns)
+
+  @doc """
+  Renders the inputs for a mechanic inside a skill form.
+  """
+  attr :skill_form, Phoenix.HTML.FormField, required: true
+
+  def skill_mechanic_inputs(assigns)
 end
