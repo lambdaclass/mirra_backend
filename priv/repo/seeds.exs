@@ -319,4 +319,26 @@ valtimer_params = %{
 
 {:ok, _valtimer} = Configuration.create_character(valtimer_params)
 
+game_configuration_1 = %{
+  tick_rate_ms: 30,
+  bounty_pick_time_ms: 0,
+  start_game_time_ms: 10000,
+  end_game_interval_ms: 1000,
+  shutdown_game_wait_ms: 10000,
+  natural_healing_interval_ms: 300,
+  zone_shrink_start_ms: 35000,
+  zone_shrink_radius_by: 10,
+  zone_shrink_interval: 100,
+  zone_stop_interval_ms: 13000,
+  zone_start_interval_ms: 20000,
+  zone_damage_interval_ms: 1000,
+  zone_damage: 40,
+  item_spawn_interval_ms: 7500,
+  bots_enabled: true,
+  zone_enabled: true
+}
+
+{:ok, _game_configuration_1} =
+  GameBackend.Configuration.create_game_configuration(game_configuration_1)
+
 ##################### End Configurator #####################

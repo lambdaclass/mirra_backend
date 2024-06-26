@@ -19,6 +19,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:item_spawn_interval_ms, :integer)
     field(:bots_enabled, :boolean)
     field(:zone_enabled, :boolean)
+
+    timestamps()
   end
 
   @required [
