@@ -436,7 +436,6 @@ defmodule Arena.Entities do
   end
 
   def get_obstacle_active_value(params) do
-    IO.inspect(params)
     %{status: base_status, statuses_cycle: statuses_cycle} = params
 
     base_status_params =
