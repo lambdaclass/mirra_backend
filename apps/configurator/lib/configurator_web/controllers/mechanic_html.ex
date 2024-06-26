@@ -8,6 +8,7 @@ defmodule ConfiguratorWeb.MechanicHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
+  attr :mechanics, :list, required: true
 
   def mechanic_form(assigns)
 end

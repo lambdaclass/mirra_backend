@@ -23,6 +23,8 @@
   <.input field={f[:range]} type="number" label="Range" step="any" />
   <.input field={f[:remove_on_collision]} type="checkbox" label="Remove on collision" />
   <.input field={f[:speed]} type="number" label="Speed" step="any" />
+  <.input field={f[:on_arrival_mechanic_id]} type="select" label="On arrival mechanic" prompt="" options={@mechanics}/>
+  <.input field={f[:on_explode_mechanic_id]} type="select" label="On explode mechanic" prompt="" options={@mechanics}/>
   <:actions>
     <.button>Save Mechanic</.button>
   </:actions>

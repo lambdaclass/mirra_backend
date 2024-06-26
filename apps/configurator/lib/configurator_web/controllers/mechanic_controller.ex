@@ -11,7 +11,10 @@ defmodule ConfiguratorWeb.MechanicController do
 
   def new(conn, _params) do
     changeset = Configuration.change_mechanic(%Mechanic{})
-    render(conn, :new, changeset: changeset)
+    mechanics =
+      Configuration.list_mechanics()
+      |> Enum.map(&{&1.type, &1.id})
+    render(conn, :new, changeset: changeset, mechanics: mechanics)
   end
 
   def create(conn, %{"mechanic" => mechanic_params}) do
@@ -22,7 +25,8 @@ defmodule ConfiguratorWeb.MechanicController do
         |> redirect(to: ~p"/mechanics/#{mechanic}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        mechanics = Configuration.list_mechanics()
+        render(conn, :new, changeset: changeset, mechanics: mechanics)
     end
   end
 
@@ -34,7 +38,8 @@ defmodule ConfiguratorWeb.MechanicController do
   def edit(conn, %{"id" => id}) do
     mechanic = Configuration.get_mechanic!(id)
     changeset = Configuration.change_mechanic(mechanic)
-    render(conn, :edit, mechanic: mechanic, changeset: changeset)
+    mechanics = Configuration.list_mechanics()
+    render(conn, :edit, mechanic: mechanic, changeset: changeset, mechanics: mechanics)
   end
 
   def update(conn, %{"id" => id, "mechanic" => mechanic_params}) do
@@ -47,7 +52,8 @@ defmodule ConfiguratorWeb.MechanicController do
         |> redirect(to: ~p"/mechanics/#{mechanic}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, mechanic: mechanic, changeset: changeset)
+        mechanics = Configuration.list_mechanics()
+        render(conn, :edit, mechanic: mechanic, changeset: changeset, mechanics: mechanics)
     end
   end
 
