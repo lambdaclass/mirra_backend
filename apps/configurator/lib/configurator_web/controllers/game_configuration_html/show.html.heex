@@ -1,0 +1,30 @@
+<.header>
+  Game configuration <%= @game_configuration.id %>
+  <:subtitle>This is a game_configuration record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/game_configurations/#{@game_configuration}/edit"}>
+      <.button>Edit game_configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Tick rate ms"><%= @game_configuration.tick_rate_ms %></:item>
+  <:item title="Bounty pick time ms"><%= @game_configuration.bounty_pick_time_ms %></:item>
+  <:item title="Start game time ms"><%= @game_configuration.start_game_time_ms %></:item>
+  <:item title="End game interval ms"><%= @game_configuration.end_game_interval_ms %></:item>
+  <:item title="Shutdown game wait ms"><%= @game_configuration.shutdown_game_wait_ms %></:item>
+  <:item title="Natural healing interval ms"><%= @game_configuration.natural_healing_interval_ms %></:item>
+  <:item title="Zone shrink start ms"><%= @game_configuration.zone_shrink_start_ms %></:item>
+  <:item title="Zone shrink radius by"><%= @game_configuration.zone_shrink_radius_by %></:item>
+  <:item title="Zone shrink interval"><%= @game_configuration.zone_shrink_interval %></:item>
+  <:item title="Zone stop interval ms"><%= @game_configuration.zone_stop_interval_ms %></:item>
+  <:item title="Zone start interval ms"><%= @game_configuration.zone_start_interval_ms %></:item>
+  <:item title="Zone damage interval ms"><%= @game_configuration.zone_damage_interval_ms %></:item>
+  <:item title="Zone damage"><%= @game_configuration.zone_damage %></:item>
+  <:item title="Item spawn interval ms"><%= @game_configuration.item_spawn_interval_ms %></:item>
+  <:item title="Bots enabled"><%= @game_configuration.bots_enabled %></:item>
+  <:item title="Zone enabled"><%= @game_configuration.zone_enabled %></:item>
+</.list>
+
+<.back navigate={~p"/game_configurations"}>Back to game_configurations</.back>

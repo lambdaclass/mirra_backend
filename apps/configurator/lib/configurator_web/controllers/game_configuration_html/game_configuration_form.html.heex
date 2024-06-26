@@ -1,0 +1,24 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:tick_rate_ms]} type="number" label="Tick rate ms" />
+  <.input field={f[:bounty_pick_time_ms]} type="number" label="Bounty pick time ms" />
+  <.input field={f[:start_game_time_ms]} type="number" label="Start game time ms" />
+  <.input field={f[:end_game_interval_ms]} type="number" label="End game interval ms" />
+  <.input field={f[:shutdown_game_wait_ms]} type="number" label="Shutdown game wait ms" />
+  <.input field={f[:natural_healing_interval_ms]} type="number" label="Natural healing interval ms" />
+  <.input field={f[:zone_shrink_start_ms]} type="number" label="Zone shrink start ms" />
+  <.input field={f[:zone_shrink_radius_by]} type="number" label="Zone shrink radius by" />
+  <.input field={f[:zone_shrink_interval]} type="number" label="Zone shrink interval" />
+  <.input field={f[:zone_stop_interval_ms]} type="number" label="Zone stop interval ms" />
+  <.input field={f[:zone_start_interval_ms]} type="number" label="Zone start interval ms" />
+  <.input field={f[:zone_damage_interval_ms]} type="number" label="Zone damage interval ms" />
+  <.input field={f[:zone_damage]} type="number" label="Zone damage" />
+  <.input field={f[:item_spawn_interval_ms]} type="number" label="Item spawn interval ms" />
+  <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
+  <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
+  <:actions>
+    <.button>Save Game configuration</.button>
+  </:actions>
+</.simple_form>

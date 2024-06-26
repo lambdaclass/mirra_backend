@@ -1,0 +1,42 @@
+<.header>
+  Listing Game configurations
+  <:actions>
+    <.link href={~p"/game_configurations/new"}>
+      <.button>New Game configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="game_configurations" rows={@game_configurations} row_click={&JS.navigate(~p"/game_configurations/#{&1}")}>
+  <:col :let={game_configuration} label="Tick rate ms"><%= game_configuration.tick_rate_ms %></:col>
+  <:col :let={game_configuration} label="Bounty pick time ms"><%= game_configuration.bounty_pick_time_ms %></:col>
+  <:col :let={game_configuration} label="Start game time ms"><%= game_configuration.start_game_time_ms %></:col>
+  <:col :let={game_configuration} label="End game interval ms"><%= game_configuration.end_game_interval_ms %></:col>
+  <:col :let={game_configuration} label="Shutdown game wait ms"><%= game_configuration.shutdown_game_wait_ms %></:col>
+  <:col :let={game_configuration} label="Natural healing interval ms">
+    <%= game_configuration.natural_healing_interval_ms %>
+  </:col>
+  <:col :let={game_configuration} label="Zone shrink start ms"><%= game_configuration.zone_shrink_start_ms %></:col>
+  <:col :let={game_configuration} label="Zone shrink radius by"><%= game_configuration.zone_shrink_radius_by %></:col>
+  <:col :let={game_configuration} label="Zone shrink interval"><%= game_configuration.zone_shrink_interval %></:col>
+  <:col :let={game_configuration} label="Zone stop interval ms"><%= game_configuration.zone_stop_interval_ms %></:col>
+  <:col :let={game_configuration} label="Zone start interval ms"><%= game_configuration.zone_start_interval_ms %></:col>
+  <:col :let={game_configuration} label="Zone damage interval ms">
+    <%= game_configuration.zone_damage_interval_ms %>
+  </:col>
+  <:col :let={game_configuration} label="Zone damage"><%= game_configuration.zone_damage %></:col>
+  <:col :let={game_configuration} label="Item spawn interval ms"><%= game_configuration.item_spawn_interval_ms %></:col>
+  <:col :let={game_configuration} label="Bots enabled"><%= game_configuration.bots_enabled %></:col>
+  <:col :let={game_configuration} label="Zone enabled"><%= game_configuration.zone_enabled %></:col>
+  <:action :let={game_configuration}>
+    <div class="sr-only">
+      <.link navigate={~p"/game_configurations/#{game_configuration}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/game_configurations/#{game_configuration}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={game_configuration}>
+    <.link href={~p"/game_configurations/#{game_configuration}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
