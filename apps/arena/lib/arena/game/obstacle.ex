@@ -25,10 +25,13 @@ defmodule Arena.Game.Obstacle do
   end
 
   def start_obstacle_transition(obstacle) do
+    next_status_params =
+      Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
+
     Process.send_after(
       self(),
       {:handle_obstacle_transition, obstacle.id},
-      obstacle.aditional_info.transition_time_ms
+      next_status_params.transition_time_ms
     )
 
     update_in(obstacle, [:aditional_info], fn aditional_info ->
@@ -38,22 +41,20 @@ defmodule Arena.Game.Obstacle do
   end
 
   def handle_transition(obstacle) do
-    IO.inspect("transition")
-
-    current_status_params =
+    next_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
 
     Process.send_after(
       self(),
       {:start_obstacle_transition, obstacle.id},
-      current_status_params.time_until_transition_ms
+      next_status_params.time_until_transition_ms
     )
 
     update_in(obstacle, [:aditional_info], fn aditional_info ->
       aditional_info
-      |> Map.put(:next_status, current_status_params.next_status)
+      |> Map.put(:next_status, next_status_params.next_status)
       |> Map.put(:status, obstacle.aditional_info.next_status)
-      |> Map.put(:active, current_status_params.activate_obstacle)
+      |> Map.put(:active, next_status_params.activate_obstacle)
     end)
   end
 end

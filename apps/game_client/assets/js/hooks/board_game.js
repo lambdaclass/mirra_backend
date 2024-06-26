@@ -214,7 +214,7 @@ export const BoardGame = function () {
               entity.id == player_id ? colors.currentPlayer : colors.players;
             break;
           case "obstacle":
-            if (backEntity.status === "deactivated") {
+            if (backEntity.status === "underground") {
               color = colors.deactivatedObstacle;
             } else if (backEntity.status === "transitioning") {
               color = colors.transitioningObstacle;

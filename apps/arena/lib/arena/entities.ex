@@ -203,11 +203,10 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        active: Map.get(params, :active, true),
-        statuses_cycle: Map.get(params, :statuses_cycle),
-        status: Map.get(params, :base_status, "activated"),
-        transition_time_ms: Map.get(params, :transition_time_ms),
-        type: Map.get(params, :type, "static")
+        active: get_obstacle_active_value(params),
+        statuses_cycle: params.statuses_cycle,
+        status: params.status,
+        type: params.type
       }
     }
   end
@@ -430,5 +429,19 @@ defmodule Arena.Entities do
 
   def refresh_cooldowns(%{category: :player} = entity) do
     put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
+
+  def get_obstacle_active_value(%{type: "static"}) do
+    true
+  end
+
+  def get_obstacle_active_value(params) do
+    IO.inspect(params)
+    %{status: base_status, statuses_cycle: statuses_cycle} = params
+
+    base_status_params =
+      Map.get(statuses_cycle, String.to_existing_atom(base_status))
+
+    base_status_params.activate_obstacle
   end
 end

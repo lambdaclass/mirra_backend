@@ -52,6 +52,8 @@
         "radius": 1800.05,
         "shape": "circle",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": []
       },
       {
@@ -62,6 +64,8 @@
         "radius": 365.55,
         "shape": "circle",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": []
       },
       {
@@ -99,19 +103,20 @@
             "y": -989.0
           }
         ],
-        "base_status": "deactivated",
-        "transition_time_ms": 300,
+        "status": "underground",
         "statuses_cycle": {
-          "deactivated": {
+          "underground": {
+            "transition_time_ms": 3000,
             "on_activation_mechanics": [],
-            "next_status": "activated",
-            "time_until_transition_ms": 300,
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
             "activate_obstacle": false
           },
-          "activated": {
+          "raised": {
+            "transition_time_ms": 3000,
             "on_activation_mechanics": [],
-            "next_status": "deactivated",
-            "time_until_transition_ms": 300,
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
             "activate_obstacle": true
           }
         }
@@ -125,6 +130,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -499.0,
@@ -161,6 +168,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -1674.0,
@@ -205,6 +214,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 2758.0,
@@ -253,6 +264,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 3421.0,
@@ -281,6 +294,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 3970.0,
@@ -309,6 +324,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 4352.0,
@@ -349,6 +366,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -4420.0,
@@ -381,6 +400,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -4454.0,
@@ -409,6 +430,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -3980.0,
@@ -445,6 +468,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 470.0,
@@ -481,6 +506,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -770.0,
@@ -513,6 +540,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -849.0,
@@ -549,6 +578,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 1226.0,
@@ -581,6 +612,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -2511.0,
@@ -617,6 +650,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -2881.0,
@@ -649,6 +684,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -3943.0,
@@ -681,6 +718,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -4022.0,
@@ -717,6 +756,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 791.0,
@@ -753,6 +794,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 1598.0,
@@ -785,6 +828,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 2789.0,
@@ -817,6 +862,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": 3186.0,
@@ -849,6 +896,8 @@
         "radius": 0.0,
         "shape": "polygon",
         "type": "static",
+        "statuses_cycle": {},
+        "status": "",
         "vertices": [
           {
             "x": -2376.0,
