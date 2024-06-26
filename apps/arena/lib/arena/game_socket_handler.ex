@@ -206,6 +206,9 @@ defmodule Arena.GameSocketHandler do
   defp handle_decoded_message(%{action_type: {:toggle_bots, _bots_params}}, state),
     do: GameUpdater.toggle_bots(state.game_pid)
 
+  defp handle_decoded_message(%{action_type: {:change_tickrate, tickrate_params}}, state),
+    do: GameUpdater.change_tickrate(state.game_pid, tickrate_params.tickrate)
+
   defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
 
   defp handle_decoded_message(
@@ -244,5 +247,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
-  defp handle_decoded_message(_, _), do: nil
+  # We don't do anything in these messages, we already handle these actions when we have to in previous functions.
+  defp handle_decoded_message(%{action_type: {action, _}}, _state) when action in [:move, :attack, :use_item], do: nil
+
+  defp handle_decoded_message(message, _) do
+    Logger.info("Unexpected message: #{inspect(message)}")
+  end
 end
