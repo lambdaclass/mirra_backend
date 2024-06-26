@@ -4,7 +4,6 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
   """
   use GameBackend.Schema
   import Ecto.Changeset
-
   @required [
     :tick_rate_ms,
     :bounty_pick_time_ms,
