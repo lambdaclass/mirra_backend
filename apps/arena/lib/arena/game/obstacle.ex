@@ -74,30 +74,34 @@ defmodule Arena.Game.Obstacle do
   defp maybe_move_above_players(game_state, obstacle_id) do
     obstacle = get_in(game_state, [:obstacles, obstacle_id])
 
-    obstacle_area = Entities.make_polygon_area(obstacle.id, obstacle.vertices)
+    if obstacle.aditional_info.active do
+      obstacle_area = Entities.make_polygon_area(obstacle.id, obstacle.vertices)
 
-    alive_players =
-      Player.alive_players(game_state.players)
+      alive_players =
+        Player.alive_players(game_state.players)
 
-    players =
-      Physics.check_collisions(obstacle_area, alive_players)
-      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        player = Map.get(players_acc, player_id)
+      players =
+        Physics.check_collisions(obstacle_area, alive_players)
+        |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+          player = Map.get(players_acc, player_id)
 
-        new_position =
-          Physics.get_closest_available_position(
-            player.position,
-            player,
-            game_state.external_wall,
-            game_state.obstacles
-          )
+          new_position =
+            Physics.get_closest_available_position(
+              player.position,
+              player,
+              game_state.external_wall,
+              game_state.obstacles
+            )
 
-        updated_player =
-          Map.put(player, :position, new_position)
+          updated_player =
+            Map.put(player, :position, new_position)
 
-        Map.put(players_acc, player_id, updated_player)
-      end)
+          Map.put(players_acc, player_id, updated_player)
+        end)
 
-    %{game_state | players: players}
+      %{game_state | players: players}
+    else
+      game_state
+    end
   end
 end
