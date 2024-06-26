@@ -62,6 +62,22 @@ defmodule GameBackend.Units.Characters do
   end
 
   @doc """
+  Deletes a Character.
+
+  ## Examples
+
+      iex> delete_character(character)
+      {:ok, %character{}}
+
+      iex> delete_character(character)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_character(%Character{} = character) do
+    Repo.delete(character)
+  end
+
+  @doc """
   Get a Character by id.
 
   ## Examples
@@ -146,4 +162,17 @@ defmodule GameBackend.Units.Characters do
   """
   def get_characters_by_rank_and_faction(rank, factions),
     do: Repo.all(from(c in Character, where: ^rank in c.ranks_dropped_in and c.faction in ^factions))
+
+  @doc """
+  Get all Characters for Curse of Mirra game.
+
+  ## Examples
+
+  iex> get_curse_characters()
+  [%Character%{game_id: 1, name: "Muflus"}, ...]
+  """
+  def get_curse_characters() do
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+    Repo.all(from(c in Character, where: ^curse_id == c.game_id))
+  end
 end
