@@ -581,12 +581,10 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:handle_obstacle_transition, obstacle_id}, state) do
-    state =
-      update_in(state, [:game_state, :obstacles, obstacle_id], fn obstacle ->
-        Obstacle.handle_transition(obstacle)
-      end)
+    game_state =
+      Obstacle.handle_transition(state.game_state, obstacle_id)
 
-    {:noreply, state}
+    {:noreply, Map.put(state, :game_state, game_state)}
   end
 
   ##########################

@@ -1,4 +1,8 @@
 defmodule Arena.Game.Obstacle do
+  alias Arena.Game.Skill
+  alias Arena.Entities
+  alias Arena.Game.Player
+
   def active_obstacle?(obstacle) do
     obstacle.aditional_info.active
   end
@@ -40,7 +44,9 @@ defmodule Arena.Game.Obstacle do
     end)
   end
 
-  def handle_transition(obstacle) do
+  def handle_transition(game_state, obstacle_id) do
+    obstacle = get_in(game_state, [:obstacles, obstacle_id])
+
     next_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
 
@@ -50,11 +56,48 @@ defmodule Arena.Game.Obstacle do
       next_status_params.time_until_transition_ms
     )
 
-    update_in(obstacle, [:aditional_info], fn aditional_info ->
-      aditional_info
-      |> Map.put(:next_status, next_status_params.next_status)
-      |> Map.put(:status, obstacle.aditional_info.next_status)
-      |> Map.put(:active, next_status_params.activate_obstacle)
+    obstacle =
+      update_in(obstacle, [:aditional_info], fn aditional_info ->
+        aditional_info
+        |> Map.put(:next_status, next_status_params.next_status)
+        |> Map.put(:status, obstacle.aditional_info.next_status)
+        |> Map.put(:active, next_status_params.activate_obstacle)
+      end)
+
+    Enum.reduce(next_status_params.on_activation_mechanics, game_state, fn mechanic, game_state ->
+      Skill.do_mechanic(game_state, obstacle, mechanic, %{})
     end)
+    |> put_in([:obstacles, obstacle.id], obstacle)
+    |> maybe_move_above_players(obstacle_id)
+  end
+
+  defp maybe_move_above_players(game_state, obstacle_id) do
+    obstacle = get_in(game_state, [:obstacles, obstacle_id])
+
+    obstacle_area = Entities.make_polygon_area(obstacle.id, obstacle.vertices)
+
+    alive_players =
+      Player.alive_players(game_state.players)
+
+    players =
+      Physics.check_collisions(obstacle_area, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        player = Map.get(players_acc, player_id)
+
+        new_position =
+          Physics.get_closest_available_position(
+            player.position,
+            player,
+            game_state.external_wall,
+            game_state.obstacles
+          )
+
+        updated_player =
+          Map.put(player, :position, new_position)
+
+        Map.put(players_acc, player_id, updated_player)
+      end)
+
+    %{game_state | players: players}
   end
 end
