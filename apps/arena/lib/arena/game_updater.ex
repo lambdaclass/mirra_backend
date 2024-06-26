@@ -945,7 +945,7 @@ defmodule Arena.GameUpdater do
       |> Physics.move_entities(
         ticks_to_move,
         external_wall,
-        Obstacle.get_active_obstacles(obstacles)
+        Obstacle.get_collisionable_obstacles(obstacles)
       )
       |> update_collisions(players, entities_to_collide)
 

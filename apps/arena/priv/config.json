@@ -110,7 +110,7 @@
             "on_activation_mechanics": {},
             "next_status": "raised",
             "time_until_transition_ms": 10000,
-            "activate_obstacle": false
+            "make_obstacle_collisionable": false
           },
           "raised": {
             "transition_time_ms": 3000,
@@ -147,7 +147,7 @@
             },
             "next_status": "underground",
             "time_until_transition_ms": 10000,
-            "activate_obstacle": true
+            "make_obstacle_collisionable": true
           }
         }
       },

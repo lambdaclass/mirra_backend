@@ -203,7 +203,7 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        active: get_obstacle_active_value(params),
+        collisionable: is_obstacle_collisionable?(params),
         statuses_cycle: params.statuses_cycle,
         status: params.status,
         type: params.type
@@ -384,7 +384,7 @@ defmodule Arena.Entities do
     {:obstacle,
      %Arena.Serialization.Obstacle{
        color: "red",
-       active: entity.aditional_info.active,
+       collisionable: entity.aditional_info.collisionable,
        status: entity.aditional_info.status
      }}
   end
@@ -449,16 +449,16 @@ defmodule Arena.Entities do
     put_in(entity, [:aditional_info, :cooldowns], %{})
   end
 
-  def get_obstacle_active_value(%{type: "static"}) do
+  def is_obstacle_collisionable?(%{type: "static"}) do
     true
   end
 
-  def get_obstacle_active_value(params) do
+  def is_obstacle_collisionable?(params) do
     %{status: base_status, statuses_cycle: statuses_cycle} = params
 
     base_status_params =
       Map.get(statuses_cycle, String.to_existing_atom(base_status))
 
-    base_status_params.activate_obstacle
+    base_status_params.make_obstacle_collisionable
   end
 end

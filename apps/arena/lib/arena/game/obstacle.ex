@@ -3,12 +3,12 @@ defmodule Arena.Game.Obstacle do
   alias Arena.Entities
   alias Arena.Game.Player
 
-  def active_obstacle?(obstacle) do
-    obstacle.aditional_info.active
+  def collisionable_obstacle?(obstacle) do
+    obstacle.aditional_info.collisionable
   end
 
-  def get_active_obstacles(obstacles) do
-    Map.filter(obstacles, fn {_obstacle_id, obstacle} -> active_obstacle?(obstacle) end)
+  def get_collisionable_obstacles(obstacles) do
+    Map.filter(obstacles, fn {_obstacle_id, obstacle} -> collisionable_obstacle?(obstacle) end)
   end
 
   def handle_transition_init(obstacle) do
@@ -24,7 +24,7 @@ defmodule Arena.Game.Obstacle do
     update_in(obstacle, [:aditional_info], fn aditional_info ->
       aditional_info
       |> Map.put(:next_status, current_status_params.next_status)
-      |> Map.put(:active, current_status_params.activate_obstacle)
+      |> Map.put(:collisionable, current_status_params.make_obstacle_collisionable)
     end)
   end
 
@@ -61,7 +61,7 @@ defmodule Arena.Game.Obstacle do
         aditional_info
         |> Map.put(:next_status, next_status_params.next_status)
         |> Map.put(:status, obstacle.aditional_info.next_status)
-        |> Map.put(:active, next_status_params.activate_obstacle)
+        |> Map.put(:collisionable, next_status_params.make_obstacle_collisionable)
       end)
 
     Enum.reduce(next_status_params.on_activation_mechanics, game_state, fn mechanic, game_state ->
@@ -74,7 +74,7 @@ defmodule Arena.Game.Obstacle do
   defp maybe_move_above_players(game_state, obstacle_id) do
     obstacle = get_in(game_state, [:obstacles, obstacle_id])
 
-    if obstacle.aditional_info.active do
+    if collisionable_obstacle?(obstacle) do
       obstacle_area = Entities.make_polygon_area(obstacle.id, obstacle.vertices)
 
       alive_players =

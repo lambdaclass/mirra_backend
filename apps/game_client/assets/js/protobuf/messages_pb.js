@@ -7416,7 +7416,7 @@ proto.Obstacle.prototype.toObject = function(opt_includeInstance) {
 proto.Obstacle.toObject = function(includeInstance, msg) {
   var f, obj = {
     color: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    active: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    collisionable: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     status: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
@@ -7460,7 +7460,7 @@ proto.Obstacle.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 2:
       var value = /** @type {boolean} */ (reader.readBool());
-      msg.setActive(value);
+      msg.setCollisionable(value);
       break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
@@ -7502,7 +7502,7 @@ proto.Obstacle.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getActive();
+  f = message.getCollisionable();
   if (f) {
     writer.writeBool(
       2,
@@ -7538,10 +7538,10 @@ proto.Obstacle.prototype.setColor = function(value) {
 
 
 /**
- * optional bool active = 2;
+ * optional bool collisionable = 2;
  * @return {boolean}
  */
-proto.Obstacle.prototype.getActive = function() {
+proto.Obstacle.prototype.getCollisionable = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
 };
 
@@ -7550,7 +7550,7 @@ proto.Obstacle.prototype.getActive = function() {
  * @param {boolean} value
  * @return {!proto.Obstacle} returns this
  */
-proto.Obstacle.prototype.setActive = function(value) {
+proto.Obstacle.prototype.setCollisionable = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
