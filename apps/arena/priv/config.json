@@ -107,14 +107,44 @@
         "statuses_cycle": {
           "underground": {
             "transition_time_ms": 3000,
-            "on_activation_mechanics": [],
+            "on_activation_mechanics": {},
             "next_status": "raised",
             "time_until_transition_ms": 10000,
             "activate_obstacle": false
           },
           "raised": {
             "transition_time_ms": 3000,
-            "on_activation_mechanics": [],
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": -956.0,
+                    "y": -779.0
+                  },
+                  {
+                    "x": -761.0,
+                    "y": -727.0
+                  },
+                  {
+                    "x": 219.0,
+                    "y": -1232.0
+                  },
+                  {
+                    "x": 105.0,
+                    "y": -1632.0
+                  },
+                  {
+                    "x": -503.0,
+                    "y": -1416.0
+                  },
+                  {
+                    "x": -995.0,
+                    "y": -989.0
+                  }
+                ]
+              }
+            },
             "next_status": "underground",
             "time_until_transition_ms": 10000,
             "activate_obstacle": true
