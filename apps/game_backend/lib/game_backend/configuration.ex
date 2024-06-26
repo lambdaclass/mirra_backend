@@ -1,10 +1,15 @@
 defmodule GameBackend.Configuration do
+<<<<<<< HEAD
   @moduledoc """
   Configuration context for GameBackend
   """
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Repo
   import Ecto.Query
+=======
+  alias GameBackend.CurseOfMirra.GameConfiguration
+  alias GameBackend.Repo
+>>>>>>> b915fc61 (Add configuration context to gamebackend)
 
   @doc """
   Returns the list of game_configurations.
@@ -99,7 +104,6 @@ defmodule GameBackend.Configuration do
   def change_game_configuration(%GameConfiguration{} = game_configuration, attrs \\ %{}) do
     GameConfiguration.changeset(game_configuration, attrs)
   end
-
   @doc """
   Gets the latest game configuration
 
