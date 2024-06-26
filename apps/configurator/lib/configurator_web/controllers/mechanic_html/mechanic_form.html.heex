@@ -1,0 +1,29 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:type]} type="text" label="Type" />
+  <.input field={f[:amount]} type="number" label="Amount" />
+  <.input field={f[:angle_between]} type="number" label="Angle between" step="any" />
+  <.input field={f[:damage]} type="number" label="Damage" />
+  <.input field={f[:duration_ms]} type="number" label="Duration ms" />
+  <.input
+    field={f[:effects_to_apply]}
+    type="select"
+    multiple
+    label="Effects to apply"
+    options={[{"Option 1", "option1"}, {"Option 2", "option2"}]}
+  />
+  <.input field={f[:interval_ms]} type="number" label="Interval ms" />
+  <.input field={f[:move_by]} type="number" label="Move by" step="any" />
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:offset]} type="number" label="Offset" />
+  <.input field={f[:projectile_offset]} type="number" label="Projectile offset" />
+  <.input field={f[:radius]} type="number" label="Radius" step="any" />
+  <.input field={f[:range]} type="number" label="Range" step="any" />
+  <.input field={f[:remove_on_collision]} type="checkbox" label="Remove on collision" />
+  <.input field={f[:speed]} type="number" label="Speed" step="any" />
+  <:actions>
+    <.button>Save Mechanic</.button>
+  </:actions>
+</.simple_form>

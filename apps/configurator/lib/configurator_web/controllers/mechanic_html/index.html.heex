@@ -1,0 +1,37 @@
+<.header>
+  Listing Mechanics
+  <:actions>
+    <.link href={~p"/mechanics/new"}>
+      <.button>New Mechanic</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="mechanics" rows={@mechanics} row_click={&JS.navigate(~p"/mechanics/#{&1}")}>
+  <:col :let={mechanic} label="Type"><%= mechanic.type %></:col>
+  <:col :let={mechanic} label="Amount"><%= mechanic.amount %></:col>
+  <:col :let={mechanic} label="Angle between"><%= mechanic.angle_between %></:col>
+  <:col :let={mechanic} label="Damage"><%= mechanic.damage %></:col>
+  <:col :let={mechanic} label="Duration ms"><%= mechanic.duration_ms %></:col>
+  <:col :let={mechanic} label="Effects to apply"><%= mechanic.effects_to_apply %></:col>
+  <:col :let={mechanic} label="Interval ms"><%= mechanic.interval_ms %></:col>
+  <:col :let={mechanic} label="Move by"><%= mechanic.move_by %></:col>
+  <:col :let={mechanic} label="Name"><%= mechanic.name %></:col>
+  <:col :let={mechanic} label="Offset"><%= mechanic.offset %></:col>
+  <:col :let={mechanic} label="Projectile offset"><%= mechanic.projectile_offset %></:col>
+  <:col :let={mechanic} label="Radius"><%= mechanic.radius %></:col>
+  <:col :let={mechanic} label="Range"><%= mechanic.range %></:col>
+  <:col :let={mechanic} label="Remove on collision"><%= mechanic.remove_on_collision %></:col>
+  <:col :let={mechanic} label="Speed"><%= mechanic.speed %></:col>
+  <:action :let={mechanic}>
+    <div class="sr-only">
+      <.link navigate={~p"/mechanics/#{mechanic}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/mechanics/#{mechanic}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={mechanic}>
+    <.link href={~p"/mechanics/#{mechanic}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
