@@ -1,8 +1,0 @@
-<.header>
-  Edit Mechanic <%= @mechanic.id %>
-  <:subtitle>Use this form to manage mechanic records in your database.</:subtitle>
-</.header>
-
-<.mechanic_form changeset={@changeset} action={~p"/mechanics/#{@mechanic}"}  mechanics={@mechanics}/>
-
-<.back navigate={~p"/mechanics"}>Back to mechanics</.back>

@@ -53,4 +53,62 @@ defmodule GameBackend.Units.Skills do
       detail_type in Mechanic.mechanic_types() and mechanic[detail_type] != nil
     end)
   end
+
+  @doc """
+  Returns the list of config_skills.
+
+  ## Examples
+
+      iex> list_config_skills()
+      [%Skill{}, ...]
+
+  """
+  def list_config_skills do
+    Repo.all(Skill)
+  end
+
+  @doc """
+  Gets a single skill.
+
+  Raises `Ecto.NoResultsError` if the Skill does not exist.
+
+  ## Examples
+
+      iex> get_skill!(123)
+      %Skill{}
+
+      iex> get_skill!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_skill!(id), do: Repo.get!(Skill, id)
+
+  @doc """
+  Deletes a skill.
+
+  ## Examples
+
+      iex> delete_skill(skill)
+      {:ok, %Skill{}}
+
+      iex> delete_skill(skill)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_skill(%Skill{} = skill) do
+    Repo.delete(skill)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking skill changes.
+
+  ## Examples
+
+      iex> change_skill(skill)
+      %Ecto.Changeset{data: %Skill{}}
+
+  """
+  def change_skill(%Skill{} = skill, attrs \\ %{}) do
+    Skill.changeset(skill, attrs)
+  end
 end

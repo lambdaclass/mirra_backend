@@ -1,0 +1,26 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:activation_delay_ms]} type="number" label="Activation delay ms" />
+  <.input field={f[:autoaim]} type="checkbox" label="Autoaim" />
+  <.input field={f[:block_movement]} type="checkbox" label="Block movement" />
+  <.input field={f[:can_pick_destination]} type="checkbox" label="Can pick destination" />
+  <.input
+    field={f[:cooldown_mechanism]}
+    type="select"
+    label="Cooldown mechanism"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.Units.Skills.Skill, :cooldown_mechanism)}
+  />
+  <.input field={f[:cooldown_ms]} type="number" label="Cooldown ms" />
+  <.input field={f[:execution_duration_ms]} type="number" label="Execution duration ms" />
+  <.input field={f[:inmune_while_executing]} type="checkbox" label="Inmune while executing" />
+  <.input field={f[:is_passive]} type="checkbox" label="Is passive" />
+  <.input field={f[:max_autoaim_range]} type="number" label="Max autoaim range" />
+  <.input field={f[:stamina_cost]} type="number" label="Stamina cost" />
+  <:actions>
+    <.button>Save Skill</.button>
+  </:actions>
+</.simple_form>

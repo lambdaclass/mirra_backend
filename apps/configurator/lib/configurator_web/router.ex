@@ -22,7 +22,7 @@ defmodule ConfiguratorWeb.Router do
     get "/configurations/new/:id", ConfigurationController, :new
     put "/configurations/set_default/:id", ConfigurationController, :set_default
     resources "/characters", CharacterController
-    resources "/mechanics", MechanicController
+    resources "/config_skills", SkillController
   end
 
   scope "/api", ConfiguratorWeb do
