@@ -145,12 +145,13 @@ fn nearest_entity_position_in_range(
     entity: Entity,
     entities: HashMap<u64, Entity>,
     range: i64,
-) -> Position {
+) -> (bool, Position) {
     let mut max_distance = range as f32;
     let mut position = Position {
         x: entity.direction.x,
         y: entity.direction.y,
     };
+    let mut use_autoaim: bool = false;
 
     for other_entity in entities.values() {
         if entity.id != other_entity.id {
@@ -163,11 +164,12 @@ fn nearest_entity_position_in_range(
                     x: difference_between_positions.x,
                     y: difference_between_positions.y,
                 };
+                use_autoaim = true;
             }
         }
     }
 
-    position
+    (use_autoaim, position)
 }
 #[rustler::nif()]
 fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
