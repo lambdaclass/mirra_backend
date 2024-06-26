@@ -317,6 +317,37 @@ defmodule Arena.Game.Skill do
     |> put_in([:last_id], last_id)
   end
 
+  def do_mechanic(game_state, entity, {:polygon_hit, polygon_hit}, _skill_params) do
+    polygon_damage_area = Entities.make_polygon_area(entity.id, polygon_hit.vertices)
+
+    entity_player_owner = get_entity_player_owner(game_state, entity)
+
+    # Players
+    alive_players =
+      Player.alive_players(game_state.players)
+      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
+
+    players =
+      Physics.check_collisions(polygon_damage_area, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage = Player.calculate_real_damage(entity_player_owner, polygon_hit.damage)
+
+        target_player =
+          Map.get(players_acc, player_id)
+          |> Player.take_damage(real_damage)
+
+        send(self(), {:damage_done, entity_player_owner.id, polygon_hit.damage})
+
+        unless Player.alive?(target_player) do
+          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    %{game_state | players: players}
+  end
+
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
       GameUpdater.get_effects_from_config(effects, game_config)
@@ -411,6 +442,10 @@ defmodule Arena.Game.Skill do
          aditional_info: %{owner_id: owner_id}
        }),
        do: get_in(game_state, [:players, owner_id])
+
+  # Default to zone id
+  defp get_entity_player_owner(_game_state, _),
+    do: %{id: 9999}
 
   defp maybe_move_player(game_state, %{category: :player} = player, move_by)
        when not is_nil(move_by) do
