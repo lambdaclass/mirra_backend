@@ -309,6 +309,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def make_polygon_area(id, positions) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices: positions,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def make_polygon(id, vertices) do
     %{
       id: id,
