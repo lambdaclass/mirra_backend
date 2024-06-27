@@ -334,7 +334,8 @@ defmodule Arena.Entities do
        inventory: entity.aditional_info.inventory,
        cooldowns: entity.aditional_info.cooldowns,
        visible_players: entity.aditional_info.visible_players,
-       on_bush: entity.aditional_info.on_bush
+       on_bush: entity.aditional_info.on_bush,
+       forced_movement: entity.aditional_info.forced_movement
      }}
   end
 
