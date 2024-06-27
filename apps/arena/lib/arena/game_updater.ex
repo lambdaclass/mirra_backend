@@ -750,17 +750,14 @@ defmodule Arena.GameUpdater do
     Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
       last_id = last_id + 1
 
-      new_obstacle =
-        Entities.new_obstacle(
-          last_id,
-          obstacle
-        )
-
       obstacles_acc =
         Map.put(
           obstacles_acc,
           last_id,
-          new_obstacle
+          Entities.new_obstacle(
+            last_id,
+            obstacle
+          )
         )
 
       {obstacles_acc, last_id}
