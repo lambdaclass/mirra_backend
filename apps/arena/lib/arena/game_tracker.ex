@@ -124,10 +124,6 @@ defmodule Arena.GameTracker do
     |> put_in([:position_on_death], data.position_on_death - 1)
   end
 
-  defp update_data(data, {:damage_taken, 9999, _amount}) do
-    data
-  end
-
   defp update_data(data, {:damage_taken, player_id, amount}) do
     update_in(data, [:players, player_id, :damage_taken], fn damage_taken -> damage_taken + amount end)
   end
