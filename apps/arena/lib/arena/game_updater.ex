@@ -250,7 +250,7 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bouty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
-    send(self(), :start_obstacles_transitions)
+    send(self(), :init_obstacles_transitions)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -558,7 +558,7 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info(:start_obstacles_transitions, state) do
+  def handle_info(:init_obstacles_transitions, state) do
     game_state =
       Enum.reduce(state.game_state.obstacles, state.game_state, fn {obstacle_id, obstacle}, game_state ->
         if obstacle.aditional_info.type == "dynamic" do
