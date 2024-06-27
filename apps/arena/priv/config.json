@@ -1327,7 +1327,7 @@
       "one_time_application": true,
       "effect_mechanics": {
         "modify_radius": {
-          "modifier": 1.0,
+          "modifier": 0.5,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
