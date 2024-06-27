@@ -12,11 +12,18 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
+    post "/match/:match_id", MatchResultsController, :create
     get "/get_bounties", QuestController, :get_bounties
 
     scope "/characters" do
       get "/configuration", CharacterController, :get_characters_config
     end
+
+    scope "/stores" do
+      get "/:store_name/list_items", StoreController, :list_items
+    end
+
+    post "/users", UserController, :create_guest_user
 
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
@@ -26,15 +33,12 @@ defmodule Gateway.Router do
 
       scope "/items" do
         put "/equip", ItemController, :equip
-        put "/buy", ItemController, :buy
+      end
+
+      scope "/stores" do
+        put "/:store_name/buy_item", StoreController, :buy_item
       end
     end
-  end
-
-  scope "/arena", Gateway.Controllers.Arena do
-    pipe_through :api
-
-    post "/match/:match_id", MatchResultsController, :create
   end
 
   scope "/", Gateway do
@@ -42,7 +46,9 @@ defmodule Gateway.Router do
 
     get "/api/health", Controllers.HealthController, :check
 
-    get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
+    get "/auth/:provider/token/:token_id/:client_id", Controllers.AuthController, :validate_token
+    get "/auth/public-key", Controllers.AuthController, :public_key
+    post "/auth/refresh-token", Controllers.AuthController, :refresh_token
 
     put "/users/:user_id", Controllers.UserController, :update
   end

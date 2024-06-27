@@ -121,6 +121,7 @@ defmodule Arena.Serialization.GameEvent do
   field(:update, 2, type: Arena.Serialization.GameState, oneof: 0)
   field(:finished, 3, type: Arena.Serialization.GameFinished, oneof: 0)
   field(:ping, 4, type: Arena.Serialization.PingUpdate, oneof: 0)
+  field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
 end
 
 defmodule Arena.Serialization.GameFinished.PlayersEntry do
@@ -630,6 +631,26 @@ defmodule Arena.Serialization.SelectBounty do
   field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
+defmodule Arena.Serialization.ToggleZone do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule Arena.Serialization.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule Arena.Serialization.ChangeTickrate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tickrate, 1, type: :int64)
+end
+
 defmodule Arena.Serialization.GameAction do
   @moduledoc false
 
@@ -644,6 +665,15 @@ defmodule Arena.Serialization.GameAction do
   field(:select_bounty, 5,
     type: Arena.Serialization.SelectBounty,
     json_name: "selectBounty",
+    oneof: 0
+  )
+
+  field(:toggle_zone, 6, type: Arena.Serialization.ToggleZone, json_name: "toggleZone", oneof: 0)
+  field(:toggle_bots, 7, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
+
+  field(:change_tickrate, 8,
+    type: Arena.Serialization.ChangeTickrate,
+    json_name: "changeTickrate",
     oneof: 0
   )
 

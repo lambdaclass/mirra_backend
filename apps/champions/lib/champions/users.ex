@@ -3,20 +3,19 @@ defmodule Champions.Users do
   Users logic for Champions Of Mirra.
   """
 
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias Ecto.{Changeset, Multi}
   alias Champions.Users
-  alias GameBackend.Utils
-  alias Ecto.Changeset
-  alias Ecto.Multi
   alias GameBackend.Items
   alias GameBackend.Transaction
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Users
-  alias GameBackend.Users.Currencies
   alias GameBackend.Units
   alias GameBackend.Units.Characters
+  alias GameBackend.Users
+  alias GameBackend.Users.Currencies
+  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Utils
 
   @max_afk_reward_seconds 12 * 60 * 60
+  @seconds_in_day 86_400
 
   @doc """
   Registers a user. Doesn't handle authentication, users only consist of a unique username for now.
@@ -25,7 +24,7 @@ defmodule Champions.Users do
   """
   def register(username) do
     kaline_tree_level = GameBackend.Users.get_kaline_tree_level(1)
-    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level(1)
+    dungeon_settlement_level = GameBackend.Users.get_dungeon_settlement_level_by_number(1)
     {:ok, dungeon_base_setting} = Users.get_upgrade_by_name("Dungeon.BaseSetting")
 
     case Users.register_user(%{
@@ -43,6 +42,7 @@ defmodule Champions.Users do
         add_sample_items(user)
         add_sample_currencies(user)
         add_super_campaign_progresses(user)
+        add_currency_caps(user)
 
         Users.get_user(user.id)
 
@@ -164,6 +164,18 @@ defmodule Champions.Users do
     end)
   end
 
+  defp add_currency_caps(user) do
+    # Supplies
+
+    dungeon_settlement_level = Users.get_dungeon_settlement_level(user.dungeon_settlement_level_id)
+
+    Currencies.insert_user_currency_cap(%{
+      user_id: user.id,
+      currency_id: Currencies.get_currency_by_name_and_game!("Supplies", Utils.get_game_id(:champions_of_mirra)).id,
+      cap: dungeon_settlement_level.supply_cap
+    })
+  end
+
   @doc """
   Adds the given experience to a user. If the user were to have enough resulting experience to level up,
   it is performed automatically.
@@ -226,7 +238,12 @@ defmodule Champions.Users do
 
     # Cap the amount of rewards to the maximum amount of rewards that can be accumulated in 12 hours.
     seconds_since_last_claim = DateTime.diff(now, last_claim, :second)
-    (afk_reward_rate.rate * min(seconds_since_last_claim, @max_afk_reward_seconds)) |> round()
+
+    Decimal.from_float(afk_reward_rate.daily_rate)
+    |> Decimal.div(@seconds_in_day)
+    |> Decimal.mult(min(seconds_since_last_claim, @max_afk_reward_seconds))
+    |> Decimal.round()
+    |> Decimal.to_integer()
   end
 
   @doc """

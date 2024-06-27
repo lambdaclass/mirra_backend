@@ -3,6 +3,7 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.Game.Crate
   alias Arena.GameUpdater
   alias Arena.GameTracker
   alias Arena.Utils
@@ -175,6 +176,13 @@ defmodule Arena.Game.Player do
         {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
+          |> case do
+            {false, _} ->
+              Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.interactable_crates(game_state.crates))
+
+            auto_aim ->
+              auto_aim
+          end
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)

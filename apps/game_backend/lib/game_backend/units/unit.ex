@@ -16,8 +16,10 @@ defmodule GameBackend.Units.Unit do
     field(:level, :integer)
     field(:tier, :integer)
     field(:rank, :integer)
+    field(:sub_rank, :integer)
     field(:selected, :boolean)
     field(:slot, :integer)
+    field(:prestige, :integer)
 
     belongs_to(:campaign_level, Level)
     belongs_to(:user, User)
@@ -39,7 +41,8 @@ defmodule GameBackend.Units.Unit do
       :slot,
       :character_id,
       :user_id,
-      :campaign_level_id
+      :campaign_level_id,
+      :prestige
     ])
     |> validate_required([:level, :selected, :character_id])
   end
@@ -49,4 +52,19 @@ defmodule GameBackend.Units.Unit do
   """
   def update_changeset(unit, attrs),
     do: cast(unit, attrs, [:selected, :slot, :level, :tier, :rank])
+
+  def curse_of_mirra_update_changeset(unit, attrs) do
+    unit
+    |> cast(attrs, [:prestige, :rank, :sub_rank])
+    |> common_changeset()
+  end
+
+  defp common_changeset(changeset) do
+    changeset
+    |> validate_required([:level, :rank, :sub_rank, :user_id, :character_id])
+    |> validate_number(:level, greater_than_or_equal_to: 0)
+    |> validate_number(:rank, greater_than: 0)
+    |> validate_number(:sub_rank, greater_than_or_equal_to: 0)
+    |> validate_number(:prestige, greater_than_or_equal_to: 0)
+  end
 end

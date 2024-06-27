@@ -202,7 +202,7 @@ syntax = "proto3";
     repeated CurrencyCost level_up_costs = 3;
     uint64 max_dungeon = 4;
     uint64 max_factional = 5;
-    uint64 supply_limit = 6;
+    uint64 supply_cap = 6;
     repeated AfkRewardRate afk_reward_rates = 7;
   }
 
@@ -220,7 +220,7 @@ syntax = "proto3";
   message AfkRewardRate {
     string kaline_tree_level_id = 1;
     Currency currency = 2;
-    float rate = 3;
+    float daily_rate = 3;
   }
 
   message UserCurrency {
@@ -306,6 +306,7 @@ syntax = "proto3";
     repeated CurrencyReward currency_rewards = 5;
     uint32 experience_reward = 6;    
     repeated CurrencyCost attempt_cost = 7;
+    uint32 max_units = 8;
   }
 
   message CurrencyReward {

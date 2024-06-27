@@ -3,7 +3,7 @@
     {
       "name": "muflus",
       "active": true,
-      "base_speed": 19.0,
+      "base_speed": 17.5,
       "base_size": 110.0,
       "base_health": 440,
       "base_stamina": 3,
@@ -20,7 +20,7 @@
     {
       "name": "h4ck",
       "active": true,
-      "base_speed": 21.0,
+      "base_speed": 22.5,
       "base_size": 90.0,
       "base_health": 400,
       "base_stamina": 3,
@@ -54,7 +54,7 @@
     {
       "name": "valtimer",
       "active": false,
-      "base_speed": 20.5,
+      "base_speed": 20.0,
       "base_size": 100.0,
       "base_health": 400,
       "base_stamina": 3,

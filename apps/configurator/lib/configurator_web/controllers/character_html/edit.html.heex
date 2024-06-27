@@ -1,0 +1,8 @@
+<.header>
+  Edit Character <%= @character.id %>
+  <:subtitle>Use this form to manage character records in your database.</:subtitle>
+</.header>
+
+<.character_form changeset={@changeset} action={~p"/characters/#{@character}"} />
+
+<.back navigate={~p"/characters"}>Back to characters</.back>

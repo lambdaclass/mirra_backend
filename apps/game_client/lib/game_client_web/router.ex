@@ -26,6 +26,7 @@ defmodule GameClientWeb.Router do
   scope "/auth", GameClientWeb do
     pipe_through :browser
 
+    get "/guest", AuthController, :create_guest
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback
   end

@@ -2,17 +2,17 @@ defmodule GameClientWeb.BoardLive.Show do
   require Logger
   use GameClientWeb, :live_view
 
-  def mount(%{"game_id" => game_id} = params, _session, socket) do
+  def mount(%{"game_id" => game_id} = params, session, socket) do
     if connected?(socket) do
-      mount_connected(params, socket)
+      mount_connected(params, session["gateway_jwt"], socket)
     else
       {:ok, assign(socket, game_id: game_id, game_status: :pending)}
     end
   end
 
-  def mount_connected(%{"game_id" => game_id, "player_id" => player_id} = _params, socket) do
+  def mount_connected(%{"game_id" => game_id, "player_id" => player_id}, gateway_jwt, socket) do
     {:ok, game_socket_handler_pid} =
-      GameClient.ClientSocketHandler.start_link(self() |> :erlang.pid_to_list(), player_id, game_id)
+      GameClient.ClientSocketHandler.start_link(self(), gateway_jwt, player_id, game_id)
 
     mocked_board_width = 2000
     mocked_board_height = 2000
@@ -63,6 +63,11 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_bots", _, socket) do
+    send(socket.assigns.game_socket_handler_pid, :toggle_bots)
+    {:noreply, socket}
+  end
+
   defp player_name(player_id), do: "P#{player_id}"
 
   defp handle_game_event({:joined, _joined_info}, socket) do
@@ -93,6 +98,10 @@ defmodule GameClientWeb.BoardLive.Show do
 
   defp handle_game_event({:ping, ping_event}, socket) do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
+  end
+
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+    {:noreply, socket}
   end
 
   defp transform_entity_entry({_entity_id, entity}) do

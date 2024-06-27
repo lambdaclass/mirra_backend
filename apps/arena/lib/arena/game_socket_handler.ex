@@ -3,6 +3,8 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Authentication.GatewaySigner
+  alias Arena.Authentication.GatewayTokenManager
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
@@ -14,7 +16,19 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def init(req, _opts) do
-    client_id = :cowboy_req.binding(:client_id, req)
+    ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
+    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Sever".
+    client_id =
+      case :cowboy_req.parse_qs(req) do
+        [{"gateway_jwt", jwt}] ->
+          signer = GatewaySigner.get_signer()
+          {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
+          user_id
+
+        _ ->
+          :cowboy_req.binding(:client_id, req)
+      end
+
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
 
@@ -136,6 +150,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
+  def websocket_info({:toggle_bots, message}, state) do
+    {:reply, {:binary, message}, state}
+  end
+
   @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
@@ -179,14 +197,19 @@ defmodule Arena.GameSocketHandler do
     {key, Map.merge(skill, extra_params)}
   end
 
-  defp handle_decoded_message(%{action_type: {:select_bounty, %{bounty_quest_id: bounty_quest_id}}}, state),
-    do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_quest_id)
+  defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
+    do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
 
-  defp handle_decoded_message(
-         _,
-         %{enable: false} = _state
-       ),
-       do: nil
+  defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
+    do: GameUpdater.toggle_zone(state.game_pid)
+
+  defp handle_decoded_message(%{action_type: {:toggle_bots, _bots_params}}, state),
+    do: GameUpdater.toggle_bots(state.game_pid)
+
+  defp handle_decoded_message(%{action_type: {:change_tickrate, tickrate_params}}, state),
+    do: GameUpdater.change_tickrate(state.game_pid, tickrate_params.tickrate)
+
+  defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
 
   defp handle_decoded_message(
          %{action_type: {action, _}} = message,
@@ -224,6 +247,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
-  defp handle_decoded_message(_, _),
-    do: nil
+  # We don't do anything in these messages, we already handle these actions when we have to in previous functions.
+  defp handle_decoded_message(%{action_type: {action, _}}, _state) when action in [:move, :attack, :use_item], do: nil
+
+  defp handle_decoded_message(message, _) do
+    Logger.info("Unexpected message: #{inspect(message)}")
+  end
 end

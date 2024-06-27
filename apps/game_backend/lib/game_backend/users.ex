@@ -36,6 +36,11 @@ defmodule GameBackend.Users do
     |> Repo.insert()
   end
 
+  def create_guest_user() do
+    CurseUsers.create_user_params()
+    |> register_user()
+  end
+
   @doc """
   Gets a single user.
   Returns {:ok, User}.
@@ -60,10 +65,10 @@ defmodule GameBackend.Users do
 
   ## Examples
 
-      iex> get_google_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      iex> get_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
       [%GoogleUser{}]
   """
-  def get_google_users_with_todays_daily_quests(ids, repo \\ Repo) do
+  def get_users_with_todays_daily_quests(ids, repo \\ Repo) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
@@ -84,14 +89,13 @@ defmodule GameBackend.Users do
       )
 
     q =
-      from(u in GoogleUser,
+      from(u in User,
         where: u.id in ^ids,
         preload: [
           arena_match_results: ^arena_match_result_subquery,
-          user: [
-            currencies: :currency,
-            user_quests: ^daily_quest_subquery
-          ]
+          currencies: :currency,
+          units: :character,
+          user_quests: ^daily_quest_subquery
         ]
       )
 
@@ -169,7 +173,13 @@ defmodule GameBackend.Users do
       {:ok, %GoogleUser{}}
   """
   def find_or_create_google_user_by_email(email) do
-    case Repo.get_by(GoogleUser, email: email) do
+    q =
+      from(gu in GoogleUser,
+        where: gu.email == ^email,
+        preload: [:user]
+      )
+
+    case Repo.one(q) do
       nil -> create_google_user_by_email(email)
       user -> {:ok, user}
     end
@@ -201,20 +211,68 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a DungeonSettlementLevel by its id.
+  """
+  def get_dungeon_settlement_level(dungeon_settlement_level_id) do
+    Repo.get(DungeonSettlementLevel, dungeon_settlement_level_id)
+  end
+
+  @doc """
   Gets a DungeonSettlementLevel by its number.
 
   Returns {:error, :not_found} if no level is found.
 
   ## Examples
 
-      iex> get_dungeon_settlement_level(1)
+      iex> get_dungeon_settlement_level_by_number(1)
       %DungeonSettlementLevel{}
 
-      iex> get_dungeon_settlement_level(-1)
+      iex> get_dungeon_settlement_level_by_number(-1)
       nil
   """
-  def get_dungeon_settlement_level(level_number) do
-    Repo.get_by(DungeonSettlementLevel, level: level_number)
+  def get_dungeon_settlement_level_by_number(level_number) do
+    Repo.get_by(DungeonSettlementLevel, level: level_number) |> Repo.preload(:afk_reward_rates)
+  end
+
+  @doc """
+  Inserts a DungeonSettlementLevel into the database.
+  """
+  def insert_dungeon_settlement_level(attrs) do
+    %DungeonSettlementLevel{}
+    |> DungeonSettlementLevel.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a DungeonSettlementLevel in the database.
+  """
+  def update_dungeon_settlement_level(dungeon_settlement_level, attrs) do
+    dungeon_settlement_level
+    |> DungeonSettlementLevel.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Inserts all DungeonSettlementLevels into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_dungeon_settlement_levels(attrs_list) do
+    Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.level, fn _, _ ->
+        upsert_dungeon_settlement_level(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  @doc """
+  Inserts a DungeonSettlementLevel into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_dungeon_settlement_level(attrs) do
+    case get_dungeon_settlement_level_by_number(attrs.level) do
+      nil -> insert_dungeon_settlement_level(attrs)
+      dungeon_settlement_level -> update_dungeon_settlement_level(dungeon_settlement_level, attrs)
+    end
   end
 
   @doc """
@@ -301,6 +359,15 @@ defmodule GameBackend.Users do
       |> Multi.run(:user_currency, fn _, _ ->
         Currencies.substract_currencies(user_id, level_up_costs)
       end)
+      |> Multi.run(:supply_cap, fn _, %{user: user} ->
+        dungeon_settlement_level = Repo.get(DungeonSettlementLevel, user.dungeon_settlement_level_id)
+
+        Currencies.update_user_currency_cap(
+          user.id,
+          {"Supplies", user.game_id},
+          dungeon_settlement_level.supply_cap
+        )
+      end)
       |> Repo.transaction()
 
     case result do
@@ -313,7 +380,7 @@ defmodule GameBackend.Users do
   defp increment_settlement_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
-        case get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1) do
+        case get_dungeon_settlement_level_by_number(user.dungeon_settlement_level.level + 1) do
           nil ->
             {:error, :dungeon_settlement_level_not_found}
 

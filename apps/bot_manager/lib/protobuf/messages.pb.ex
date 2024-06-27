@@ -121,6 +121,7 @@ defmodule BotManager.Protobuf.GameEvent do
   field(:update, 2, type: BotManager.Protobuf.GameState, oneof: 0)
   field(:finished, 3, type: BotManager.Protobuf.GameFinished, oneof: 0)
   field(:ping, 4, type: BotManager.Protobuf.PingUpdate, oneof: 0)
+  field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
 end
 
 defmodule BotManager.Protobuf.GameFinished.PlayersEntry do
@@ -630,6 +631,26 @@ defmodule BotManager.Protobuf.SelectBounty do
   field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
+defmodule BotManager.Protobuf.ToggleZone do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.ChangeTickrate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tickrate, 1, type: :int64)
+end
+
 defmodule BotManager.Protobuf.GameAction do
   @moduledoc false
 
@@ -644,6 +665,15 @@ defmodule BotManager.Protobuf.GameAction do
   field(:select_bounty, 5,
     type: BotManager.Protobuf.SelectBounty,
     json_name: "selectBounty",
+    oneof: 0
+  )
+
+  field(:toggle_zone, 6, type: BotManager.Protobuf.ToggleZone, json_name: "toggleZone", oneof: 0)
+  field(:toggle_bots, 7, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
+
+  field(:change_tickrate, 8,
+    type: BotManager.Protobuf.ChangeTickrate,
+    json_name: "changeTickrate",
     oneof: 0
   )
 

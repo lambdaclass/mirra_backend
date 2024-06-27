@@ -76,6 +76,10 @@ config :ueberauth, Ueberauth,
     google: {Ueberauth.Strategy.Google, []}
   ]
 
+config :joken,
+  ## 2 hours for expiration
+  default_exp: 2 * 60 * 60
+
 ############################
 # App configuration: arena #
 ############################
@@ -198,6 +202,8 @@ config :configurator, ConfiguratorWeb.Endpoint,
   ],
   pubsub_server: Configurator.PubSub,
   live_view: [signing_salt: "6A8twvHJ"]
+
+config :configurator, Configurator.Repo, migration_primary_key: [type: :binary_id]
 
 ############################
 # Import environment specific config. This must remain at the bottom
