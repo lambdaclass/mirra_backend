@@ -1322,27 +1322,27 @@
     },
     {
       "name": "giant_effect",
-      "duration_ms": 8000,
+      "duration_ms": 9000,
       "remove_on_action": false,
       "one_time_application": true,
       "effect_mechanics": {
         "modify_radius": {
-          "modifier": 0.5,
+          "modifier": 0.4,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
         "damage_change": {
-          "modifier": 0.2,
+          "modifier": 0.25,
           "effect_delay_ms": 0,
           "execute_multiple_times": true
         },
         "speed_boost": {
-          "modifier": -0.25,
+          "modifier": -0.2,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
         "defense_change": {
-          "modifier": 0.3,
+          "modifier": 0.4,
           "effect_delay_ms": 0,
           "execute_multiple_times": true
         }
