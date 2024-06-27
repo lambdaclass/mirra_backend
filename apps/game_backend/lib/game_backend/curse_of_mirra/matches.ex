@@ -6,7 +6,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
   alias GameBackend.Units.Unit
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Users.Currencies
-  alias GameBackend.Units.Characters
   alias GameBackend.Quests.UserQuest
 
   alias GameBackend.Utils
