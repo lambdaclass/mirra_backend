@@ -67,6 +67,8 @@ message Configuration {
 
 message ConfigGame {
   float tick_rate_ms = 1;
+  float bounty_pick_time_ms = 2;
+  float start_game_time_ms = 3;
 }
 
 message ConfigMap {
