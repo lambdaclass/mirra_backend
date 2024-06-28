@@ -36,6 +36,10 @@ defmodule Arena.GameTracker do
     GenServer.cast(__MODULE__, {:push_event, match_pid, event})
   end
 
+  def get_player_result(player_id) do
+    GenServer.call(__MODULE__, {:get_player_result, player_id})
+  end
+
   ##########################
   # Callbacks
   ##########################
@@ -77,6 +81,13 @@ defmodule Arena.GameTracker do
 
     state = put_in(state, [:matches, match_pid], match_state)
     {:reply, :ok, state}
+  end
+
+  def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
+    match_data = get_in(state, [:matches, match_pid])
+    result = generate_player_result(match_data, player_id)
+
+    {:reply, result, state}
   end
 
   @impl true
@@ -138,6 +149,33 @@ defmodule Arena.GameTracker do
 
   defp update_data(data, {:select_bounty, player_id, bounty_quest_id}) do
     put_in(data, [:players, player_id, :bounty_quest_id], bounty_quest_id)
+  end
+
+  defp generate_player_result(match_data, player_id) do
+    duration = System.monotonic_time(:millisecond) - match_data.start_at
+
+    player_data =
+      Map.get(match_data.players, player_id)
+
+    %{
+      ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
+      ##    GameUpdater should send an event when the abandon happens to mark the player
+      ##    https://github.com/lambdaclass/mirra_backend/issues/601
+      result: "loss",
+      kills: length(player_data.kills),
+      ## TODO: this only works because you can only die once
+      ##    https://github.com/lambdaclass/mirra_backend/issues/601
+      deaths: if(player_data.death == nil, do: 0, else: 1),
+      character: player_data.character,
+      position: match_data.position_on_death,
+      damage_taken: player_data.damage_taken,
+      damage_done: player_data.damage_done,
+      health_healed: player_data.health_healed,
+      killed_by: player_data.death,
+      killed_by_bot: player_data.killed_by_bot,
+      duration_ms: duration,
+      bounty_quest_id: player_data.bounty_quest_id
+    }
   end
 
   defp generate_results(match_data, winner_id) do
