@@ -545,6 +545,13 @@ defmodule ArenaLoadTest.Serialization.Player do
 
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+
+  field(:default_bounty, 15,
+    type: ArenaLoadTest.Serialization.BountyInfo,
+    json_name: "defaultBounty"
+  )
+
+  field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

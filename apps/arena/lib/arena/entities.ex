@@ -55,7 +55,10 @@ defmodule Arena.Entities do
         visible_players: [],
         on_bush: false,
         bounties: [],
-        bounty_selected: false
+        bounty_selected: false,
+        selected_bounty: nil,
+        default_bounty: nil,
+        bounty_completed: false
       },
       collides_with: []
     }
@@ -334,7 +337,9 @@ defmodule Arena.Entities do
        inventory: entity.aditional_info.inventory,
        cooldowns: entity.aditional_info.cooldowns,
        visible_players: entity.aditional_info.visible_players,
-       on_bush: entity.aditional_info.on_bush
+       on_bush: entity.aditional_info.on_bush,
+       default_bounty: entity.aditional_info.default_bounty,
+       bounty_completed: entity.aditional_info.bounty_completed
      }}
   end
 
