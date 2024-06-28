@@ -1,4 +1,7 @@
 defmodule GameBackend.CurseOfMirra.GameConfiguration do
+  @moduledoc """
+  GameConfiguration schema
+  """
   use GameBackend.Schema
   import Ecto.Changeset
 

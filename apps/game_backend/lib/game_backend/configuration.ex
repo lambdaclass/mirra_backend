@@ -1,4 +1,7 @@
 defmodule GameBackend.Configuration do
+  @moduledoc """
+  Configuration context for GameBackend
+  """
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Repo
 
