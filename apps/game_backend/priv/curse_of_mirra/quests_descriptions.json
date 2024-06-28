@@ -88,7 +88,7 @@
         "objective": {
             "type": "damage",
             "match_tracking_field": "damage_done",
-            "value": 3000,
+            "value": 300,
             "comparison": "greater_or_equal",
             "scope": "day"
         },
@@ -106,7 +106,7 @@
             "type": "damage",
             "match_tracking_field": "damage_taken",
             "value": 200,
-            "comparison": "greater_or_equal",
+            "comparison": "lesser_or_equal",
             "scope": "day"
         },
         "conditions": [],
