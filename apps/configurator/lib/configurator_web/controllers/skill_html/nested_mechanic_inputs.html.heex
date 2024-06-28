@@ -6,18 +6,18 @@
     prompt="Choose a value"
     options={Ecto.Enum.values(GameBackend.Units.Skills.Mechanic, :type)}
   />
-  <.input field={fp[:name]} type="text" label="Name"/>
-  <.input field={fp[:angle_between]} type="number" label="angle_between"/>
-  <.input field={fp[:damage]} type="number" label="damage"/>
-  <.input field={fp[:duration_ms]} type="number" label="duration_ms"/>
-  <.input field={fp[:interval_ms]} type="number" label="interval_ms"/>
-  <.input field={fp[:move_by]} type="number" label="move_by"/>
-  <.input field={fp[:offset]} type="number" label="offset"/>
-  <.input field={fp[:projectile_offset]} type="number" label="projectile_offset"/>
-  <.input field={fp[:radius]} type="number" label="radius"/>
-  <.input field={fp[:range]} type="number" label="range"/>
-  <.input field={fp[:remove_on_collision]} type="checkbox" label="remove_on_collision"/>
-  <.input field={fp[:speed]} type="number" label="speed"/>
+  <.input field={fp[:name]} type="text" label="Name" />
+  <.input field={fp[:angle_between]} type="number" label="angle_between" />
+  <.input field={fp[:damage]} type="number" label="damage" />
+  <.input field={fp[:duration_ms]} type="number" label="duration_ms" />
+  <.input field={fp[:interval_ms]} type="number" label="interval_ms" />
+  <.input field={fp[:move_by]} type="number" label="move_by" />
+  <.input field={fp[:offset]} type="number" label="offset" />
+  <.input field={fp[:projectile_offset]} type="number" label="projectile_offset" />
+  <.input field={fp[:radius]} type="number" label="radius" />
+  <.input field={fp[:range]} type="number" label="range" />
+  <.input field={fp[:remove_on_collision]} type="checkbox" label="remove_on_collision" />
+  <.input field={fp[:speed]} type="number" label="speed" />
   <.input
     field={fp[:effects_to_apply]}
     type="select"

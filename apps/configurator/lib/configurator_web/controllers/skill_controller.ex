@@ -16,7 +16,7 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def create(conn, %{"skill" => skill_params}) do
-    case Skills.insert_skill(skill_params) |> IO.inspect() do
+    case Skills.insert_skill(skill_params) do
       {:ok, skill} ->
         conn
         |> put_flash(:info, "Skill created successfully.")
