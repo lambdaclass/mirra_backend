@@ -84,6 +84,22 @@ defmodule GameBackend.Units.Characters do
   def get_characters(), do: Repo.all(Character) |> Repo.preload([:basic_skill, :ultimate_skill])
 
   @doc """
+  Get a Character by game.
+
+  ## Examples
+
+      iex> get_character(character_name)
+      %Character{}
+
+      iex> get_character(wrong_character_name)
+      nil
+  """
+  def get_characters_by_game(game_id) do
+    q = from(c in Character, where: c.game_id == ^game_id)
+    Repo.all(q)
+  end
+
+  @doc """
   Get a Character by name.
 
   ## Examples

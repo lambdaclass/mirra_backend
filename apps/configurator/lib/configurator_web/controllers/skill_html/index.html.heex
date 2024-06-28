@@ -9,6 +9,7 @@
 
 <.table id="config_skills" rows={@config_skills} row_click={&JS.navigate(~p"/config_skills/#{&1}")}>
   <:col :let={skill} label="Name"><%= skill.name %></:col>
+  <:col :let={skill} label="Character"><%= get_in(skill, [Access.key!(:character), Access.key!(:name)]) %></:col>
   <:col :let={skill} label="Activation delay ms"><%= skill.activation_delay_ms %></:col>
   <:col :let={skill} label="Autoaim"><%= skill.autoaim %></:col>
   <:col :let={skill} label="Block movement"><%= skill.block_movement %></:col>

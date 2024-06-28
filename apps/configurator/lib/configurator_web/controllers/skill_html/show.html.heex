@@ -10,6 +10,7 @@
 
 <.list>
   <:item title="Name"><%= @skill.name %></:item>
+  <:item title="Character"><%= get_in(@skill, [Access.key!(:character), Access.key!(:name)]) %></:item>
   <:item title="Activation delay ms"><%= @skill.activation_delay_ms %></:item>
   <:item title="Autoaim"><%= @skill.autoaim %></:item>
   <:item title="Block movement"><%= @skill.block_movement %></:item>

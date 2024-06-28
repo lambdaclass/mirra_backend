@@ -7,6 +7,7 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :autoaim, :boolean, default: false, null: false
       add :block_movement, :boolean, default: false, null: false
       add :can_pick_destination, :boolean, default: false, null: false
+      add :character_id, references(:characters, on_delete: :delete_all)
       add :cooldown_mechanism, :string
       add :cooldown_ms, :integer
       add :execution_duration_ms, :integer
@@ -15,6 +16,8 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :max_autoaim_range, :integer
       add :stamina_cost, :integer
     end
+
+    create index(:skills, [:character_id])
 
     alter table(:mechanics) do
       add :type, :string

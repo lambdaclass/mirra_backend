@@ -4,6 +4,7 @@ defmodule GameBackend.Units.Skills.Skill do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Units.Characters.Character
   alias GameBackend.Users.Upgrades.Buff
   alias GameBackend.Units.Skills.Mechanic
 
@@ -25,6 +26,7 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:stamina_cost, :integer)
 
     belongs_to(:buff, Buff)
+    belongs_to(:character, Character)
     has_many(:mechanics, Mechanic, on_replace: :delete)
 
     timestamps()
@@ -49,7 +51,8 @@ defmodule GameBackend.Units.Skills.Skill do
       :inmune_while_executing,
       :is_passive,
       :max_autoaim_range,
-      :stamina_cost
+      :stamina_cost,
+      :character_id
     ])
     |> cast_assoc(:mechanics)
   end

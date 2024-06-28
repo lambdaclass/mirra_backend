@@ -26,6 +26,8 @@ defmodule GameBackend.Units.Characters.Character do
     belongs_to(:basic_skill, Skill, on_replace: :update)
     belongs_to(:ultimate_skill, Skill, on_replace: :update)
 
+    has_many(:skills, Skill)
+
     timestamps()
   end
 

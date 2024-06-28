@@ -65,7 +65,7 @@ defmodule GameBackend.Units.Skills do
   """
   def list_config_skills do
     Repo.all(Skill)
-    |> Repo.preload(mechanics: [:on_arrival_mechanic, :on_explode_mechanic])
+    |> Repo.preload([:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
   end
 
   @doc """
@@ -84,7 +84,7 @@ defmodule GameBackend.Units.Skills do
   """
   def get_skill!(id) do
     Repo.get!(Skill, id)
-    |> Repo.preload(mechanics: [:on_arrival_mechanic, :on_explode_mechanic])
+    |> Repo.preload([:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
   end
 
   @doc """

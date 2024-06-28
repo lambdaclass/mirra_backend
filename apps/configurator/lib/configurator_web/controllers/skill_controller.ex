@@ -1,9 +1,11 @@
 defmodule ConfiguratorWeb.SkillController do
   use ConfiguratorWeb, :controller
 
+  alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
   alias GameBackend.Units.Skills.Mechanic
   alias GameBackend.Units.Skills.Skill
+  alias GameBackend.Utils
 
   def index(conn, _params) do
     config_skills = Skills.list_config_skills()
@@ -12,7 +14,8 @@ defmodule ConfiguratorWeb.SkillController do
 
   def new(conn, _params) do
     changeset = Skills.change_skill(%Skill{mechanics: [%Mechanic{}]})
-    render(conn, :new, changeset: changeset)
+    characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
+    render(conn, :new, changeset: changeset, characters: characters)
   end
 
   def create(conn, %{"skill" => skill_params}) do
@@ -23,7 +26,8 @@ defmodule ConfiguratorWeb.SkillController do
         |> redirect(to: ~p"/config_skills/#{skill}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        characters = Characters.get_characters()
+        render(conn, :new, changeset: changeset, characters: characters)
     end
   end
 
@@ -35,7 +39,8 @@ defmodule ConfiguratorWeb.SkillController do
   def edit(conn, %{"id" => id}) do
     skill = Skills.get_skill!(id)
     changeset = Skills.change_skill(skill)
-    render(conn, :edit, skill: skill, changeset: changeset)
+    characters = Characters.get_characters()
+    render(conn, :edit, skill: skill, changeset: changeset, characters: characters)
   end
 
   def update(conn, %{"id" => id, "skill" => skill_params}) do
@@ -48,7 +53,8 @@ defmodule ConfiguratorWeb.SkillController do
         |> redirect(to: ~p"/config_skills/#{skill}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, skill: skill, changeset: changeset)
+        characters = Characters.get_characters()
+        render(conn, :edit, skill: skill, changeset: changeset, characters: characters)
     end
   end
 
