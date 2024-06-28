@@ -4,6 +4,7 @@ defmodule GameBackend.Configuration do
   """
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Repo
+  import Ecto.Query
 
   @doc """
   Returns the list of game_configurations.
@@ -97,5 +98,17 @@ defmodule GameBackend.Configuration do
   """
   def change_game_configuration(%GameConfiguration{} = game_configuration, attrs \\ %{}) do
     GameConfiguration.changeset(game_configuration, attrs)
+  end
+
+  @doc """
+  Gets the latest game configuration
+
+  ## Examples
+
+      iex> get_latest_game_configuration()
+      %GameConfiguration{}
+  """
+  def get_latest_game_configuration do
+    Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at]))
   end
 end
