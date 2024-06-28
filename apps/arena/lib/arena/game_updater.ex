@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
@@ -104,7 +105,11 @@ defmodule Arena.GameUpdater do
         }
 
         state =
-          put_in(state, [:game_state, :players, player_id, :aditional_info, :bounties], bounties)
+          update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
+            aditional_info
+            |> Map.put(:bounties, bounties)
+            |> Map.put(:default_bounty, Enum.random(bounties))
+          end)
 
         {:reply, {:ok, response}, state}
     end
@@ -147,7 +152,14 @@ defmodule Arena.GameUpdater do
     GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
 
     state =
-      put_in(state, [:game_state, :players, player_id, :aditional_info, :bounty_selected], true)
+      update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
+        bounty =
+          Enum.find(aditional_info.bounties, fn bounty -> bounty.id == bounty_quest_id end)
+
+        aditional_info
+        |> Map.put(:bounty_selected, true)
+        |> Map.put(:selected_bounty, bounty)
+      end)
 
     {:noreply, state}
   end
@@ -214,6 +226,7 @@ defmodule Arena.GameUpdater do
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
+      |> update_bounties_states(state)
       # Projectiles
       |> update_projectiles_status()
       |> move_projectiles()
@@ -549,9 +562,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
       if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
-        bounty = Enum.random(player.aditional_info.bounties)
-
-        GameTracker.push_event(self(), {:select_bounty, player_id, bounty.id})
+        GameTracker.push_event(self(), {:select_bounty, player_id, player.aditional_info.default_bounty.id})
       end
     end)
 
@@ -1165,6 +1176,32 @@ defmodule Arena.GameUpdater do
         game_state
         |> spawn_power_ups(game_config, crate, amount_of_power_ups)
         |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
+      end
+    end)
+  end
+
+  defp update_bounties_states(game_state, state) do
+    actual_players =
+      state.clients
+      |> Enum.map(fn client_id ->
+        player_id =
+          get_in(game_state, [:client_to_player_map, client_id])
+
+        player = get_in(game_state, [:players, player_id])
+
+        {player_id, player}
+      end)
+
+    Enum.reduce(actual_players, game_state, fn {player_id, player}, game_state ->
+      if not player.aditional_info.bounty_completed and
+           Bounties.completed_bounty?(player.aditional_info.selected_bounty, [GameTracker.get_player_result(player_id)]) do
+        IO.inspect("completada")
+
+        update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+          Map.put(aditional_info, :bounty_completed, true)
+        end)
+      else
+        game_state
       end
     end)
   end
