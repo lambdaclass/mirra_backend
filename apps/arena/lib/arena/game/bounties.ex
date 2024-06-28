@@ -1,4 +1,8 @@
 defmodule Arena.Game.Bounties do
+  @moduledoc """
+  Module to handle quest logic in arena application
+  """
+
   defp parse_comparator("equal"), do: &Kernel.==/2
   defp parse_comparator("distinct"), do: &Kernel.!=/2
   defp parse_comparator("greater"), do: &Kernel.>/2
