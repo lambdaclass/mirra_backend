@@ -17,6 +17,7 @@ defmodule ConfiguratorWeb.CharacterController do
   def create(conn, %{"character" => character_params}) do
     # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
     skills = Jason.decode!(character_params["skills"])
+
     character_params =
       Map.put(character_params, "skills", skills)
       |> Map.put("game_id", GameBackend.Utils.get_game_id(:curse_of_mirra))
