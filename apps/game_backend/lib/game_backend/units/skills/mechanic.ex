@@ -36,6 +36,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
     belongs_to(:on_explode_mechanic, __MODULE__)
   end
 
+  def mechanic_types(), do: [:apply_effects_to, :passive_effects]
+
   @doc false
   def changeset(mechanic, attrs \\ %{}) do
     mechanic
@@ -62,47 +64,5 @@ defmodule GameBackend.Units.Skills.Mechanic do
     |> cast_assoc(:passive_effects)
     |> cast_assoc(:on_arrival_mechanic)
     |> cast_assoc(:on_explode_mechanic)
-
-    # |> validate_only_one_type()
   end
-
-  # defp validate_only_one_type(changeset) do
-  #   if Enum.count(mechanic_types(), fn type -> Map.has_key?(changeset.changes, type) end) == 1,
-  #     do: changeset,
-  #     else:
-  #       add_error(
-  #         changeset,
-  #         hd(mechanic_types()),
-  #         "Exactly 1 of these fields must be present: #{inspect(mechanic_types())}"
-  #       )
-  # end
-
-  @doc false
-  def arena_changeset(mechanic, attrs \\ %{}) do
-    mechanic
-    |> cast(attrs, [
-      :skill_id,
-      :type,
-      :amount,
-      :angle_between,
-      :damage,
-      :duration_ms,
-      :effects_to_apply,
-      :interval_ms,
-      :move_by,
-      :name,
-      :offset,
-      :projectile_offset,
-      :radius,
-      :range,
-      :remove_on_collision,
-      :speed
-    ])
-    |> cast_assoc(:on_arrival_mechanic)
-    |> cast_assoc(:on_explode_mechanic)
-
-    # |> validate_only_one_type()
-  end
-
-  def mechanic_types(), do: [:apply_effects_to, :passive_effects]
 end

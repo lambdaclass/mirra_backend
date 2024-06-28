@@ -9,6 +9,7 @@
     type="select"
     label="Type"
     prompt="Choose a value"
+    required
     options={Ecto.Enum.values(GameBackend.Units.Skills.Mechanic, :type)}
   />
   <.input field={fp[:name]} type="text" label="Name" />
