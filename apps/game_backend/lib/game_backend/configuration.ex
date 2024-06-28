@@ -1,15 +1,10 @@
 defmodule GameBackend.Configuration do
-<<<<<<< HEAD
   @moduledoc """
   Configuration context for GameBackend
   """
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Repo
   import Ecto.Query
-=======
-  alias GameBackend.CurseOfMirra.GameConfiguration
-  alias GameBackend.Repo
->>>>>>> b915fc61 (Add configuration context to gamebackend)
 
   @doc """
   Returns the list of game_configurations.
