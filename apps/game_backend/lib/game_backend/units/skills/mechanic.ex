@@ -35,11 +35,13 @@ defmodule GameBackend.Units.Skills.Mechanic do
 
   @doc false
   def changeset(mechanic, attrs \\ %{}) do
+    IO.inspect(attrs)
     mechanic
     |> cast(attrs, [:trigger_delay, :skill_id, :type, :amount, :angle_between, :damage, :duration_ms, :effects_to_apply, :interval_ms, :move_by, :name, :offset, :projectile_offset, :radius, :range, :remove_on_collision, :speed])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)
     |> cast_assoc(:on_arrival_mechanic)
+    |> IO.inspect()
     |> cast_assoc(:on_explode_mechanic)
     # |> validate_only_one_type()
   end
@@ -54,6 +56,17 @@ defmodule GameBackend.Units.Skills.Mechanic do
   #         "Exactly 1 of these fields must be present: #{inspect(mechanic_types())}"
   #       )
   # end
+
+  @doc false
+  def arena_changeset(mechanic, attrs \\ %{}) do
+    IO.inspect(attrs)
+    mechanic
+    |> cast(attrs, [:skill_id, :type, :amount, :angle_between, :damage, :duration_ms, :effects_to_apply, :interval_ms, :move_by, :name, :offset, :projectile_offset, :radius, :range, :remove_on_collision, :speed])
+    |> cast_assoc(:on_arrival_mechanic)
+    |> IO.inspect()
+    |> cast_assoc(:on_explode_mechanic)
+    # |> validate_only_one_type()
+  end
 
   def mechanic_types(), do: [:apply_effects_to, :passive_effects]
 end

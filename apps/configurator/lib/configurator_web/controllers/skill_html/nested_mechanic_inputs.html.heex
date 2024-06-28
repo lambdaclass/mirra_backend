@@ -1,9 +1,4 @@
-<.header>
-  Skill mechanic
-  <:subtitle>Manage the mechanic for the skill</:subtitle>
-</.header>
-
-<.inputs_for :let={fp} field={@skill_form[:mechanics]}>
+<.inputs_for :let={fp} field={@parent_form[@parent_field]}>
   <.input
     field={fp[:type]}
     type="select"
@@ -30,22 +25,4 @@
     multiple
     options={["singularity", "denial_of_service", "invisible"]}
   />
-
-  <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Edit on arrival mechanic</.button>
-  <.modal id="on-arrival-mechanic-modal">
-    <.header>
-      On arrival mechanic
-      <:subtitle>Details to use on mechanic when arriving</:subtitle>
-    </.header>
-    <.nested_mechanic_inputs parent_form={fp} parent_field={:on_arrival_mechanic} />
-  </.modal>
-
-  <.button type="button" phx-click={show_modal("on-explode-mechanic-modal")}>Edit on explode mechanic</.button>
-  <.modal id="on-explode-mechanic-modal">
-    <.header>
-      On explode mechanic
-      <:subtitle>Details to use on mechanic when exploding</:subtitle>
-    </.header>
-    <.nested_mechanic_inputs parent_form={fp} parent_field={:on_explode_mechanic} />
-  </.modal>
 </.inputs_for>

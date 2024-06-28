@@ -28,7 +28,7 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def show(conn, %{"id" => id}) do
-    skill = Skills.get_skill!(id) |> IO.inspect()
+    skill = Skills.get_skill!(id)
     render(conn, :show, skill: skill)
   end
 

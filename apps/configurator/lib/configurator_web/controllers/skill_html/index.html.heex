@@ -21,6 +21,37 @@
   <:col :let={skill} label="Max autoaim range"><%= skill.max_autoaim_range %></:col>
   <:col :let={skill} label="Stamina cost"><%= skill.stamina_cost %></:col>
   <:action :let={skill}>
+    <.button type="button" phx-click={show_modal("skill-mechanics-#{skill.id}")}>Mechanics</.button>
+    <.modal id={"skill-mechanics-#{skill.id}"}>
+      <.header>
+        Mechanis for the skill
+      </.header>
+      <%= for mechanic <- skill.mechanics do %>
+        <.mechanic_show mechanic={mechanic} />
+
+        <%= if not is_nil(mechanic.on_arrival_mechanic) do %>
+          <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Show on arrival mechanic</.button>
+          <.modal id="on-arrival-mechanic-modal">
+            <.header>
+              On arrival mechanic
+            </.header>
+            <.mechanic_show mechanic={mechanic.on_arrival_mechanic} />
+          </.modal>
+        <% end %>
+
+        <%= if not is_nil(mechanic.on_explode_mechanic) do %>
+          <.button type="button" phx-click={show_modal("on-explode-mechanic-modal")}>Show on explode mechanic</.button>
+          <.modal id="on-explode-mechanic-modal">
+            <.header>
+              On explode mechanic
+            </.header>
+            <.mechanic_show mechanic={mechanic.on_explode_mechanic} />
+          </.modal>
+        <% end %>
+      <% end %>
+    </.modal>
+  </:action>
+  <:action :let={skill}>
     <div class="sr-only">
       <.link navigate={~p"/config_skills/#{skill}"}>Show</.link>
     </div>
