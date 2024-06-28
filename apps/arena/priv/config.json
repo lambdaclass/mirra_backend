@@ -855,7 +855,8 @@
     "item_spawn_interval_ms": 7500,
     "bots_enabled": true,
     "zone_enabled": true,
-    "bounties_options_amount": 3
+    "bounties_options_amount": 3,
+    "match_timeout_minutes": 5
   },
   "skills": [
     {
