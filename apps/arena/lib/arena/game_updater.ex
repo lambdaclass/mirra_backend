@@ -1195,7 +1195,6 @@ defmodule Arena.GameUpdater do
     Enum.reduce(actual_players, game_state, fn {player_id, player}, game_state ->
       if not player.aditional_info.bounty_completed and
            Bounties.completed_bounty?(player.aditional_info.selected_bounty, [GameTracker.get_player_result(player_id)]) do
-
         update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
           Map.put(aditional_info, :bounty_completed, true)
         end)
