@@ -498,6 +498,8 @@ defmodule GameClient.Protobuf.Player do
   field(:cooldowns, 12, repeated: true, type: GameClient.Protobuf.Player.CooldownsEntry, map: true)
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:default_bounty, 15, type: GameClient.Protobuf.BountyInfo, json_name: "defaultBounty")
+  field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
 end
 
 defmodule GameClient.Protobuf.Effect do

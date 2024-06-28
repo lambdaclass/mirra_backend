@@ -6368,7 +6368,9 @@ proto.Player.toObject = function(includeInstance, msg) {
     inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
-    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false)
+    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    defaultBounty: (f = msg.getDefaultBounty()) && proto.BountyInfo.toObject(includeInstance, f),
+    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
   };
 
   if (includeInstance) {
@@ -6467,6 +6469,15 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 14:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setOnBush(value);
+      break;
+    case 15:
+      var value = new proto.BountyInfo;
+      reader.readMessage(value,proto.BountyInfo.deserializeBinaryFromReader);
+      msg.setDefaultBounty(value);
+      break;
+    case 16:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setBountyCompleted(value);
       break;
     default:
       reader.skipField();
@@ -6592,6 +6603,21 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       14,
+      f
+    );
+  }
+  f = message.getDefaultBounty();
+  if (f != null) {
+    writer.writeMessage(
+      15,
+      f,
+      proto.BountyInfo.serializeBinaryToWriter
+    );
+  }
+  f = message.getBountyCompleted();
+  if (f) {
+    writer.writeBool(
+      16,
       f
     );
   }
@@ -6930,6 +6956,61 @@ proto.Player.prototype.getOnBush = function() {
  */
 proto.Player.prototype.setOnBush = function(value) {
   return jspb.Message.setProto3BooleanField(this, 14, value);
+};
+
+
+/**
+ * optional BountyInfo default_bounty = 15;
+ * @return {?proto.BountyInfo}
+ */
+proto.Player.prototype.getDefaultBounty = function() {
+  return /** @type{?proto.BountyInfo} */ (
+    jspb.Message.getWrapperField(this, proto.BountyInfo, 15));
+};
+
+
+/**
+ * @param {?proto.BountyInfo|undefined} value
+ * @return {!proto.Player} returns this
+*/
+proto.Player.prototype.setDefaultBounty = function(value) {
+  return jspb.Message.setWrapperField(this, 15, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.clearDefaultBounty = function() {
+  return this.setDefaultBounty(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Player.prototype.hasDefaultBounty = function() {
+  return jspb.Message.getField(this, 15) != null;
+};
+
+
+/**
+ * optional bool bounty_completed = 16;
+ * @return {boolean}
+ */
+proto.Player.prototype.getBountyCompleted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setBountyCompleted = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 16, value);
 };
 
 
