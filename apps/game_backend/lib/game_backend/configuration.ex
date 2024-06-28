@@ -99,6 +99,7 @@ defmodule GameBackend.Configuration do
   def change_game_configuration(%GameConfiguration{} = game_configuration, attrs \\ %{}) do
     GameConfiguration.changeset(game_configuration, attrs)
   end
+
   @doc """
   Gets the latest game configuration
 
