@@ -19,7 +19,7 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def create(conn, %{"skill" => skill_params}) do
-    skill_params = Map.put(skill_params, "game_id", GameBackend.Utils.get_game_id(:curse_of_mirra))
+    skill_params = Map.put(skill_params, "game_id", Utils.get_game_id(:curse_of_mirra))
 
     case Skills.insert_skill(skill_params) do
       {:ok, skill} ->
@@ -28,7 +28,7 @@ defmodule ConfiguratorWeb.SkillController do
         |> redirect(to: ~p"/config_skills/#{skill}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        characters = Characters.get_characters()
+        characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
         render(conn, :new, changeset: changeset, characters: characters)
     end
   end
@@ -41,7 +41,7 @@ defmodule ConfiguratorWeb.SkillController do
   def edit(conn, %{"id" => id}) do
     skill = Skills.get_skill!(id)
     changeset = Skills.change_skill(skill)
-    characters = Characters.get_characters()
+    characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
     render(conn, :edit, skill: skill, changeset: changeset, characters: characters)
   end
 
@@ -55,7 +55,7 @@ defmodule ConfiguratorWeb.SkillController do
         |> redirect(to: ~p"/config_skills/#{skill}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        characters = Characters.get_characters()
+        characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
         render(conn, :edit, skill: skill, changeset: changeset, characters: characters)
     end
   end
