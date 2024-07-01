@@ -35,6 +35,7 @@ defmodule BotManager.Protobuf.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule BotManager.Protobuf.PlayerActionType do

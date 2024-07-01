@@ -224,7 +224,7 @@ defmodule Arena.GameUpdater do
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
       # Crates
-      |> handle_destroyed_crates(state.game_config)
+      |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
@@ -556,6 +556,24 @@ defmodule Arena.GameUpdater do
     end)
 
     {:noreply, state}
+  end
+
+  def handle_info({:delayed_power_up_spawn, entity, amount}, state) do
+    game_state =
+      state.game_state
+      |> spawn_power_ups(state.game_config, entity, amount)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:activate_power_up, power_up_id}, state) do
+    game_state =
+      state.game_state
+      |> update_in([:power_ups, power_up_id], fn power_up ->
+        put_in(power_up, [:aditional_info, :status], :AVAILABLE)
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
   end
 
   ##########################
@@ -1155,15 +1173,20 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
-  defp handle_destroyed_crates(%{crates: crates} = game_state, game_config) do
+  defp handle_destroyed_crates(%{crates: crates} = game_state) do
     Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
       if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
         game_state
       else
         amount_of_power_ups = crate.aditional_info.amount_of_power_ups
 
+        Process.send_after(
+          self(),
+          {:delayed_power_up_spawn, crate, amount_of_power_ups},
+          crate.aditional_info.power_up_spawn_delay_ms
+        )
+
         game_state
-        |> spawn_power_ups(game_config, crate, amount_of_power_ups)
         |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
       end
     end)
@@ -1378,6 +1401,8 @@ defmodule Arena.GameUpdater do
           victim.id,
           game_config.power_ups.power_up
         )
+
+      Process.send_after(self(), {:activate_power_up, last_id}, game_config.power_ups.power_up.activation_delay_ms)
 
       game_state
       |> put_in([:power_ups, last_id], power_up)

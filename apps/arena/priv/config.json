@@ -1206,7 +1206,8 @@
       "distance_to_power_up": 400,
       "power_up_damage_modifier": 0.08,
       "power_up_health_modifier": 0.08,
-      "radius": 200.0
+      "radius": 200.0,
+      "activation_delay_ms": 500
     }
   },
   "effects": [
@@ -1363,7 +1364,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1374,7 +1376,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1385,7 +1388,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1396,7 +1400,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1407,7 +1412,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1418,7 +1424,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1429,7 +1436,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1440,7 +1448,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1451,7 +1460,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     }
   ],
   "traps": []
