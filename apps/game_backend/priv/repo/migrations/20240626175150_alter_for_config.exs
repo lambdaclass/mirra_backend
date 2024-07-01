@@ -3,6 +3,7 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
 
   def change do
     alter table(:skills) do
+      add :game_id, :integer
       add :activation_delay_ms, :integer
       add :autoaim, :boolean, default: false, null: false
       add :block_movement, :boolean, default: false, null: false
@@ -18,6 +19,7 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
     end
 
     create index(:skills, [:character_id])
+    create unique_index(:skills, [:game_id, :name])
 
     alter table(:mechanics) do
       add :type, :string

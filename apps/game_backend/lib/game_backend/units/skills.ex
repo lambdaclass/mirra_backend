@@ -68,6 +68,15 @@ defmodule GameBackend.Units.Skills do
     |> Repo.preload([:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
   end
 
+  def list_curse_config_skills() do
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+    q = from s in Skill,
+      where: ^curse_id == s.game_id,
+      preload: [:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
+
+    Repo.all(q)
+  end
+
   @doc """
   Gets a single skill.
 

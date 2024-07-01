@@ -8,7 +8,7 @@ defmodule ConfiguratorWeb.SkillController do
   alias GameBackend.Utils
 
   def index(conn, _params) do
-    config_skills = Skills.list_config_skills()
+    config_skills = Skills.list_curse_config_skills()
     render(conn, :index, config_skills: config_skills)
   end
 
@@ -19,6 +19,8 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def create(conn, %{"skill" => skill_params}) do
+    skill_params = Map.put(skill_params, "game_id", GameBackend.Utils.get_game_id(:curse_of_mirra))
+
     case Skills.insert_skill(skill_params) do
       {:ok, skill} ->
         conn

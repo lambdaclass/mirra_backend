@@ -30,9 +30,6 @@ defmodule GameBackend.Units.Characters.Character do
     field(:base_speed, :float)
     field(:base_size, :float)
 
-    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
-    field(:skills, {:map, :string})
-
     belongs_to(:basic_skill, Skill, on_replace: :update)
     belongs_to(:ultimate_skill, Skill, on_replace: :update)
 
@@ -65,7 +62,6 @@ defmodule GameBackend.Units.Characters.Character do
       :max_inventory_size,
       :natural_healing_interval,
       :natural_healing_damage_interval,
-      :skills,
       :base_defense
     ])
     |> cast_assoc(:basic_skill)

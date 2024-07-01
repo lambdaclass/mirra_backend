@@ -10,6 +10,7 @@ defmodule GameBackend.Units.Skills.Skill do
 
   schema "skills" do
     field(:name, :string)
+    field(:game_id, :integer)
     field(:cooldown, :integer)
     field(:energy_regen, :integer)
     field(:animation_duration, :integer)
@@ -37,6 +38,7 @@ defmodule GameBackend.Units.Skills.Skill do
     skill
     |> cast(attrs, [
       :name,
+      :game_id,
       :cooldown,
       :energy_regen,
       :animation_duration,
@@ -55,5 +57,6 @@ defmodule GameBackend.Units.Skills.Skill do
       :character_id
     ])
     |> cast_assoc(:mechanics)
+    |> unique_constraint([:game_id, :name])
   end
 end
