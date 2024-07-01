@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   @moduledoc """
   Matches
   """
+  alias GameBackend.Units
   alias GameBackend.Units.Unit
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Users.Currencies
@@ -55,7 +56,15 @@ defmodule GameBackend.CurseOfMirra.Matches do
         Enum.find(user.units, fn unit -> unit.character.name == result["character"] end)
         |> case do
           nil ->
-            {:error, :unit_not_found}
+            unit_params =
+              Units.get_unit_default_values(result["character"])
+              |> Map.put(:user_id, user.id)
+
+            reward = match_prestige_reward(unit_params, result["position"], prestige_config[:rewards])
+            changes = calculate_rank_and_amount_changes(unit_params, reward, prestige_config[:ranks])
+
+            Map.merge(unit_params, changes)
+            |> Units.insert_unit()
 
           unit ->
             reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])

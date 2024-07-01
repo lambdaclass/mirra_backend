@@ -12,6 +12,8 @@ defmodule GameBackend.Units do
 
   import Ecto.Query
 
+  alias GameBackend.Utils
+  alias GameBackend.Units.Characters
   alias GameBackend.Repo
   alias GameBackend.Units.Unit
   alias GameBackend.Units.Characters.Character
@@ -232,5 +234,14 @@ defmodule GameBackend.Units do
     unit
     |> Unit.update_changeset(%{rank: unit.rank + rank})
     |> Repo.update()
+  end
+
+  def get_unit_default_values(character_name) do
+    %{
+      level: 1,
+      prestige: 1,
+      selected: false,
+      character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
+    }
   end
 end
