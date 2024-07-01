@@ -251,6 +251,7 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+    Process.send_after(self(), :match_timeout, round(state.game_config.game.match_timeout_minutes * 60 * 1000))
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -260,7 +261,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
-    case check_game_ended(state.game_state.players, last_players_ids) do
+    case check_game_ended(state.game_state.players, last_players_ids, state) do
       {:ongoing, players_ids} ->
         Process.send_after(
           self(),
@@ -558,6 +559,13 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info(:match_timeout, state) do
+    state =
+      put_in(state, [:game_state, :did_timeout], true)
+
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -679,6 +687,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
+      |> Map.put(:did_timeout, false)
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -1198,22 +1207,26 @@ defmodule Arena.GameUpdater do
   end
 
   # Check if game has ended
-  defp check_game_ended(players, last_players_ids) do
+  defp check_game_ended(players, last_players_ids, state) do
     players_alive =
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
 
-    case players_alive do
-      [player] when map_size(players) > 1 ->
-        {:ended, player}
+    cond do
+      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
+        {:ended, hd(players_alive)}
 
-      [] ->
+      Enum.empty?(players_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
         player = Map.get(players, Enum.random(last_players_ids))
         {:ended, player}
 
-      _ ->
+      state.game_state.did_timeout ->
+        player = Map.get(players, Enum.random(last_players_ids))
+        {:ended, player}
+
+      true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}
     end
   end
