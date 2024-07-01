@@ -18,6 +18,7 @@ defmodule ConfiguratorWeb.Router do
     pipe_through :browser
 
     resources "/characters", CharacterController
+    resources "/config_skills", SkillController
   end
 
   # Other scopes may use custom stacks.
