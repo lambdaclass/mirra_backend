@@ -187,7 +187,7 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices}) do
+  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices} = params) do
     %{
       id: id,
       category: :obstacle,
@@ -201,7 +201,13 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{
+        collisionable: obstacle_collisionable?(params),
+        statuses_cycle: params.statuses_cycle,
+        status: params.status,
+        type: params.type
+      }
     }
   end
 
@@ -303,6 +309,24 @@ defmodule Arena.Entities do
     }
   end
 
+  def make_polygon_area(id, positions) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices: positions,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
+      is_moving: false
+    }
+  end
+
   def make_polygon(id, vertices) do
     %{
       id: id,
@@ -359,7 +383,9 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :obstacle do
     {:obstacle,
      %Arena.Serialization.Obstacle{
-       color: "red"
+       color: "red",
+       collisionable: entity.aditional_info.collisionable,
+       status: entity.aditional_info.status
      }}
   end
 
@@ -421,5 +447,18 @@ defmodule Arena.Entities do
 
   def refresh_cooldowns(%{category: :player} = entity) do
     put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
+
+  def obstacle_collisionable?(%{type: "static"}) do
+    true
+  end
+
+  def obstacle_collisionable?(params) do
+    %{status: base_status, statuses_cycle: statuses_cycle} = params
+
+    base_status_params =
+      Map.get(statuses_cycle, String.to_existing_atom(base_status))
+
+    base_status_params.make_obstacle_collisionable
   end
 end
