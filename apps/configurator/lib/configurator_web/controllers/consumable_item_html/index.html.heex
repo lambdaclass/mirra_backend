@@ -1,0 +1,25 @@
+<.header>
+  Listing Consumable items
+  <:actions>
+    <.link href={~p"/consumable_items/new"}>
+      <.button>New Consumable item</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="consumable_items" rows={@consumable_items} row_click={&JS.navigate(~p"/consumable_items/#{&1}")}>
+  <:col :let={consumable_item} label="Name"><%= consumable_item.name %></:col>
+  <:col :let={consumable_item} label="Radius"><%= consumable_item.radius %></:col>
+  <:col :let={consumable_item} label="Effects"><%= consumable_item.effects %></:col>
+  <:action :let={consumable_item}>
+    <div class="sr-only">
+      <.link navigate={~p"/consumable_items/#{consumable_item}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/consumable_items/#{consumable_item}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={consumable_item}>
+    <.link href={~p"/consumable_items/#{consumable_item}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

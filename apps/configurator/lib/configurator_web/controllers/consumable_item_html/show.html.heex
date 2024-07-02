@@ -1,0 +1,17 @@
+<.header>
+  Consumable item <%= @consumable_item.id %>
+  <:subtitle>This is a consumable_item record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/consumable_items/#{@consumable_item}/edit"}>
+      <.button>Edit consumable_item</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @consumable_item.name %></:item>
+  <:item title="Radius"><%= @consumable_item.radius %></:item>
+  <:item title="Effects"><%= @consumable_item.effects %></:item>
+</.list>
+
+<.back navigate={~p"/consumable_items"}>Back to consumable_items</.back>

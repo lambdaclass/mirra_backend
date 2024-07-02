@@ -1,0 +1,17 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:radius]} type="number" label="Radius" step="any" />
+  <.input
+    field={f[:effects]}
+    type="select"
+    multiple
+    label="Effects"
+    options={[{"Option 1", "option1"}, {"Option 2", "option2"}]}
+  />
+  <:actions>
+    <.button>Save Consumable item</.button>
+  </:actions>
+</.simple_form>

@@ -19,6 +19,7 @@ defmodule ConfiguratorWeb.Router do
 
     resources "/characters", CharacterController
     resources "/game_configurations", GameConfigurationController
+    resources "/consumable_items", ConsumableItemController
   end
 
   # Other scopes may use custom stacks.
