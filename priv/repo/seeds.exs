@@ -322,7 +322,8 @@ game_configuration_1 = %{
   zone_damage: 40,
   item_spawn_interval_ms: 7500,
   bots_enabled: true,
-  zone_enabled: true
+  zone_enabled: true,
+  bounties_options_amount: 3
 }
 
 {:ok, _game_configuration_1} =
