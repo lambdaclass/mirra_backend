@@ -4,13 +4,7 @@
   </.error>
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
-  <.input
-    field={f[:effects]}
-    type="select"
-    multiple
-    label="Effects"
-    options={[]}
-  />
+  <.input field={f[:effects]} type="select" multiple label="Effects" options={[]} />
   <:actions>
     <.button>Save Consumable item</.button>
   </:actions>
