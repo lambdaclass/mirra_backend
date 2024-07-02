@@ -856,7 +856,7 @@
     "bots_enabled": true,
     "zone_enabled": true,
     "bounties_options_amount": 3,
-    "match_timeout_minutes": 5
+    "match_timeout_ms": 300000
   },
   "skills": [
     {

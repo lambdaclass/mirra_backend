@@ -251,7 +251,7 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
-    Process.send_after(self(), :match_timeout, round(state.game_config.game.match_timeout_minutes * 60 * 1000))
+    Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
