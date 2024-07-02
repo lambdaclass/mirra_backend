@@ -1,0 +1,8 @@
+<.header>
+  Edit Consumable item <%= @consumable_item.id %>
+  <:subtitle>Use this form to manage consumable_item records in your database.</:subtitle>
+</.header>
+
+<.consumable_item_form changeset={@changeset} action={~p"/consumable_items/#{@consumable_item}"} />
+
+<.back navigate={~p"/consumable_items"}>Back to consumable_items</.back>
