@@ -21,7 +21,7 @@ defmodule Gateway.Controllers.CurseOfMirra.CharacterController do
       :__struct__,
       :inserted_at,
       :updated_at,
-      :id,
+      :id
     ])
   end
 

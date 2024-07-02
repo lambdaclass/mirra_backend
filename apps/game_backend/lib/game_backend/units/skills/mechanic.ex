@@ -68,6 +68,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
 
   defp assoc_changeset(struct, params) do
     changeset = changeset(struct, params)
+
     case get_field(changeset, :type) do
       nil -> %{changeset | action: :ignore}
       _ -> changeset
