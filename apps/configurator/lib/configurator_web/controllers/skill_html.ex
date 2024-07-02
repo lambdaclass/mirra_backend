@@ -9,7 +9,6 @@ defmodule ConfiguratorWeb.SkillHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
-  attr :characters, :list, required: true
 
   def skill_form(assigns)
 

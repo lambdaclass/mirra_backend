@@ -11,15 +11,13 @@ defmodule ConfiguratorWeb.CharacterController do
 
   def new(conn, _params) do
     changeset = Ecto.Changeset.change(%Character{})
-    render(conn, :new, changeset: changeset)
+    skills = GameBackend.Units.Skills.list_curse_skills()
+    render(conn, :new, changeset: changeset, skills: skills)
   end
 
   def create(conn, %{"character" => character_params}) do
-    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
-    skills = Jason.decode!(character_params["skills"])
-
     character_params =
-      Map.put(character_params, "skills", skills)
+      character_params
       |> Map.put("game_id", GameBackend.Utils.get_game_id(:curse_of_mirra))
       |> Map.put("faction", "curse")
 
@@ -30,7 +28,8 @@ defmodule ConfiguratorWeb.CharacterController do
         |> redirect(to: ~p"/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        skills = GameBackend.Units.Skills.list_curse_skills()
+        render(conn, :new, changeset: changeset, skills: skills)
     end
   end
 
@@ -42,13 +41,11 @@ defmodule ConfiguratorWeb.CharacterController do
   def edit(conn, %{"id" => id}) do
     character = Characters.get_character(id)
     changeset = Ecto.Changeset.change(character)
-    render(conn, :edit, character: character, changeset: changeset)
+    skills = GameBackend.Units.Skills.list_curse_skills()
+    render(conn, :edit, character: character, changeset: changeset, skills: skills)
   end
 
   def update(conn, %{"id" => id, "character" => character_params}) do
-    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
-    skills = Jason.decode!(character_params["skills"])
-    character_params = Map.put(character_params, "skills", skills)
     character = Characters.get_character(id)
 
     case Characters.update_character(character, character_params) do
@@ -58,7 +55,8 @@ defmodule ConfiguratorWeb.CharacterController do
         |> redirect(to: ~p"/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, character: character, changeset: changeset)
+        skills = GameBackend.Units.Skills.list_curse_skills()
+        render(conn, :edit, character: character, changeset: changeset, skills: skills)
     end
   end
 

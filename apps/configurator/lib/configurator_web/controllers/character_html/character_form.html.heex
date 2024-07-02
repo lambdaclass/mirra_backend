@@ -5,7 +5,7 @@
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:active]} type="checkbox" label="Active" />
   <.input field={f[:base_speed]} type="number" label="Base speed" step="any" />
-  <.input field={f[:base_size]} type="number" label="Base size" step="any" />
+  <.input field={f[:base_size]} type="number" label="Base size" step="any" lang="en"/>
   <.input field={f[:base_health]} type="number" label="Base health" />
   <.input field={f[:base_stamina]} type="number" label="Base stamina" />
   <.input field={f[:stamina_interval]} type="number" label="Stamina Interval" />
@@ -14,7 +14,9 @@
   <.input field={f[:natural_healing_interval]} type="number" label="Natural healing interval" />
   <.input field={f[:natural_healing_damage_interval]} type="number" label="Natural healing damage interval" />
 
-  <.input field={f[:skills]} type="text" label="Skills" value={Jason.encode!(f.data.skills)} />
+  <.skill_select field={f[:basic_skill_id]} label="Basic skill" skills={@skills}/>
+  <.skill_select field={f[:dash_skill_id]} label="Dash skill" skills={@skills}/>
+  <.skill_select field={f[:ultimate_skill_id]} label="Ultimate skill" skills={@skills}/>
 
   <:actions>
     <.button>Save Character</.button>

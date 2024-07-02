@@ -2,7 +2,7 @@
   Skill: <%= @skill.name %>
   <:subtitle>This is a skill record from your database.</:subtitle>
   <:actions>
-    <.link href={~p"/config_skills/#{@skill}/edit"}>
+    <.link href={~p"/skills/#{@skill}/edit"}>
       <.button>Edit skill</.button>
     </.link>
   </:actions>
@@ -10,7 +10,6 @@
 
 <.list>
   <:item title="Name"><%= @skill.name %></:item>
-  <:item title="Character"><%= get_in(@skill, [Access.key!(:character), Access.key!(:name)]) %></:item>
   <:item title="Activation delay ms"><%= @skill.activation_delay_ms %></:item>
   <:item title="Autoaim"><%= @skill.autoaim %></:item>
   <:item title="Block movement"><%= @skill.block_movement %></:item>
@@ -37,7 +36,7 @@
     <.header>
       On arrival mechanic
     </.header>
-    <.mechanic_show mechanic={mechanic.on_arrival_mechanic} />
+    <.mechanic_show :if={not is_nil(mechanic.on_arrival_mechanic)} mechanic={mechanic.on_arrival_mechanic} />
   </.modal>
 
   <.button type="button" phx-click={show_modal("on-explode-mechanic-modal")}>Show on explode mechanic</.button>
@@ -45,8 +44,8 @@
     <.header>
       On explode mechanic
     </.header>
-    <.mechanic_show mechanic={mechanic.on_explode_mechanic} />
+    <.mechanic_show :if={not is_nil(mechanic.on_explode_mechanic)} mechanic={mechanic.on_explode_mechanic} />
   </.modal>
 <% end %>
 
-<.back navigate={~p"/config_skills"}>Back to config_skills</.back>
+<.back navigate={~p"/skills"}>Back to skills</.back>

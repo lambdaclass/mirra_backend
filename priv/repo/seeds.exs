@@ -1,3 +1,4 @@
+alias GameBackend.Units.Skills
 alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
@@ -225,6 +226,299 @@ Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 
+## Skills
+skills = [
+  %{
+    "name" => "muflus_crush",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 700,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "circle_hit",
+        "damage" => 64,
+        "range" => 350.0,
+        "offset" => 400
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "muflus_leap",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 8000,
+    "execution_duration_ms" => 800,
+    "activation_delay_ms" => 200,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1300,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "leap",
+        "range" => 1300.0,
+        "speed" => 50.0,
+        "radius" => 600,
+        "on_arrival_mechanic" => %{
+          "type" => "circle_hit",
+          "damage" => 92,
+          "range" => 600.0,
+          "offset" => 0
+        }
+      }
+    ]
+  },
+  %{
+    "name" => "muflus_dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 4500,
+    "execution_duration_ms" => 330,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 80.0,
+        "duration" => 330
+      }
+    ]
+  },
+  %{
+    "name" => "h4ck_slingshot",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1300,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "multi_shoot",
+        "angle_between" => 22.0,
+        "amount" => 3,
+        "speed" => 53.0,
+        "duration_ms" => 1000,
+        "remove_on_collision" => true,
+        "projectile_offset" => 100,
+        "damage" => 44,
+        "radius" => 40.0
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "h4ck_dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5500,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 90.0,
+        "duration" => 250
+      }
+    ]
+  },
+  %{
+    "name" => "h4ck_denial_of_service",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
+    "execution_duration_ms" => 200,
+    "activation_delay_ms" => 300,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1200,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "spawn_pool",
+        "name" => "denial_of_service",
+        "duration_ms" => 2500,
+        "radius" => 500.0,
+        "range" => 1200.0,
+        "effects_to_apply" => [
+          "denial_of_service"
+        ]
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "uma_avenge",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 500,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 650,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "multi_circle_hit",
+        "damage" => 22,
+        "range" => 280.0,
+        "interval_ms" => 200,
+        "amount" => 3,
+        "move_by" => 100.0,
+        "offset" => 200
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "uma_veil_radiance",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
+    "execution_duration_ms" => 300,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "circle_hit",
+        "damage" => 80,
+        "range" => 800.0,
+        "offset" => 0
+      }
+    ],
+    "effects_to_apply" => [
+      "invisible"
+    ]
+  },
+  %{
+    "name" => "uma_sneak",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5000,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 95.0,
+        "duration" => 250
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "valt_singularity",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
+    "execution_duration_ms" => 500,
+    "activation_delay_ms" => 300,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1200,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "spawn_pool",
+        "name" => "singularity",
+        "duration_ms" => 5000,
+        "radius" => 450.0,
+        "range" => 1200.0,
+        "effects_to_apply" => [
+          "singularity"
+        ]
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "valt_warp",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 6000,
+    "execution_duration_ms" => 450,
+    "inmune_while_executing" => true,
+    "activation_delay_ms" => 300,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "stamina_cost" => 1,
+    "mechanics" => [
+      %{
+        "type" => "teleport",
+        "range" => 1100,
+        "duration_ms" => 150
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "valt_antimatter",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1300,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "simple_shoot",
+        "speed" => 45.0,
+        "duration_ms" => 1100,
+        "remove_on_collision" => true,
+        "projectile_offset" => 100,
+        "radius" => 100.0,
+        "damage" => 0,
+        "on_explode_mechanics" => %{
+          "type" => "circle_hit",
+          "damage" => 58,
+          "range" => 250.0,
+          "offset" => 0
+        }
+      }
+    ],
+    "effects_to_apply" => []
+  }
+]
+
+skills =
+  Enum.map(skills, fn skill_params ->
+    {:ok, skill} =
+      Map.put(skill_params, "game_id", curse_of_mirra_id)
+      |> Skills.insert_skill()
+    {skill.name, skill.id}
+  end)
+  |> Map.new()
+
 # Characters params
 muflus_params = %{
   name: "muflus",
@@ -237,11 +531,9 @@ muflus_params = %{
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
-  skills: %{
-    "1": "muflus_crush",
-    "2": "muflus_leap",
-    "3": "muflus_dash"
-  }
+  basic_skill_id: skills["muflus_crush"],
+  ultimate_skill_id: skills["muflus_leap"],
+  dash_skill_id: skills["muflus_dash"]
 }
 
 h4ck_params = %{
@@ -255,11 +547,9 @@ h4ck_params = %{
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
-  skills: %{
-    "1": "h4ck_slingshot",
-    "2": "h4ck_denial_of_service",
-    "3": "h4ck_dash"
-  }
+  basic_skill_id: skills["h4ck_slingshot"],
+  ultimate_skill_id: skills["h4ck_denial_of_service"],
+  dash_skill_id: skills["h4ck_dash"]
 }
 
 uma_params = %{
@@ -273,11 +563,9 @@ uma_params = %{
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
-  skills: %{
-    "1": "uma_avenge",
-    "2": "uma_veil_radiance",
-    "3": "uma_sneak"
-  }
+  basic_skill_id: skills["uma_avenge"],
+  ultimate_skill_id: skills["uma_veil_radiance"],
+  dash_skill_id: skills["uma_sneak"]
 }
 
 valtimer_params = %{
@@ -291,11 +579,9 @@ valtimer_params = %{
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
-  skills: %{
-    "1": "valt_antimatter",
-    "2": "valt_singularity",
-    "3": "valt_warp"
-  }
+  basic_skill_id: skills["valt_antimatter"],
+  ultimate_skill_id: skills["valt_singularity"],
+  dash_skill_id: skills["valt_warp"]
 }
 
 # Insert characters

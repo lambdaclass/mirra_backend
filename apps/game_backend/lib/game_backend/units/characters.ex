@@ -88,7 +88,7 @@ defmodule GameBackend.Units.Characters do
       iex> get_character(wrong_id)
       {:error, :not_found}
   """
-  def get_character(id), do: Repo.get(Character, id) |> Repo.preload([:basic_skill, :ultimate_skill])
+  def get_character(id), do: Repo.get(Character, id) |> Repo.preload([:basic_skill, :ultimate_skill, :dash_skill])
 
   @doc """
   Get all Characters.
@@ -189,6 +189,10 @@ defmodule GameBackend.Units.Characters do
   """
   def get_curse_characters() do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
-    Repo.all(from(c in Character, where: ^curse_id == c.game_id))
+    q = from c in Character,
+      where: ^curse_id == c.game_id,
+      preload: [:basic_skill, :ultimate_skill, :dash_skill]
+
+    Repo.all(q)
   end
 end

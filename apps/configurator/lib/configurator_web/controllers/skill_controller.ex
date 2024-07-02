@@ -1,21 +1,19 @@
 defmodule ConfiguratorWeb.SkillController do
   use ConfiguratorWeb, :controller
 
-  alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
   alias GameBackend.Units.Skills.Mechanic
   alias GameBackend.Units.Skills.Skill
   alias GameBackend.Utils
 
   def index(conn, _params) do
-    config_skills = Skills.list_curse_config_skills()
-    render(conn, :index, config_skills: config_skills)
+    skills = Skills.list_curse_skills()
+    render(conn, :index, skills: skills)
   end
 
   def new(conn, _params) do
     changeset = Skills.change_skill(%Skill{mechanics: [%Mechanic{}]})
-    characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
-    render(conn, :new, changeset: changeset, characters: characters)
+    render(conn, :new, changeset: changeset)
   end
 
   def create(conn, %{"skill" => skill_params}) do
@@ -25,11 +23,10 @@ defmodule ConfiguratorWeb.SkillController do
       {:ok, skill} ->
         conn
         |> put_flash(:info, "Skill created successfully.")
-        |> redirect(to: ~p"/config_skills/#{skill}")
+        |> redirect(to: ~p"/skills/#{skill}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
-        render(conn, :new, changeset: changeset, characters: characters)
+        render(conn, :new, changeset: changeset)
     end
   end
 
@@ -41,8 +38,7 @@ defmodule ConfiguratorWeb.SkillController do
   def edit(conn, %{"id" => id}) do
     skill = Skills.get_skill!(id)
     changeset = Skills.change_skill(skill)
-    characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
-    render(conn, :edit, skill: skill, changeset: changeset, characters: characters)
+    render(conn, :edit, skill: skill, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "skill" => skill_params}) do
@@ -52,11 +48,10 @@ defmodule ConfiguratorWeb.SkillController do
       {:ok, skill} ->
         conn
         |> put_flash(:info, "Skill updated successfully.")
-        |> redirect(to: ~p"/config_skills/#{skill}")
+        |> redirect(to: ~p"/skills/#{skill}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        characters = Characters.get_characters_by_game(Utils.get_game_id(:curse_of_mirra))
-        render(conn, :edit, skill: skill, changeset: changeset, characters: characters)
+        render(conn, :edit, skill: skill, changeset: changeset)
     end
   end
 
@@ -66,6 +61,6 @@ defmodule ConfiguratorWeb.SkillController do
 
     conn
     |> put_flash(:info, "Skill deleted successfully.")
-    |> redirect(to: ~p"/config_skills")
+    |> redirect(to: ~p"/skills")
   end
 end

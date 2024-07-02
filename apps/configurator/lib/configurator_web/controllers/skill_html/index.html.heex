@@ -1,15 +1,14 @@
 <.header>
   Listing Config skills
   <:actions>
-    <.link href={~p"/config_skills/new"}>
+    <.link href={~p"/skills/new"}>
       <.button>New Skill</.button>
     </.link>
   </:actions>
 </.header>
 
-<.table id="config_skills" rows={@config_skills} row_click={&JS.navigate(~p"/config_skills/#{&1}")}>
+<.table id="skills" rows={@skills} row_click={&JS.navigate(~p"/skills/#{&1}")}>
   <:col :let={skill} label="Name"><%= skill.name %></:col>
-  <:col :let={skill} label="Character"><%= get_in(skill, [Access.key!(:character), Access.key!(:name)]) %></:col>
   <:col :let={skill} label="Activation delay ms"><%= skill.activation_delay_ms %></:col>
   <:col :let={skill} label="Autoaim"><%= skill.autoaim %></:col>
   <:col :let={skill} label="Block movement"><%= skill.block_movement %></:col>
@@ -54,12 +53,12 @@
   </:action>
   <:action :let={skill}>
     <div class="sr-only">
-      <.link navigate={~p"/config_skills/#{skill}"}>Show</.link>
+      <.link navigate={~p"/skills/#{skill}"}>Show</.link>
     </div>
-    <.link navigate={~p"/config_skills/#{skill}/edit"}>Edit</.link>
+    <.link navigate={~p"/skills/#{skill}/edit"}>Edit</.link>
   </:action>
   <:action :let={skill}>
-    <.link href={~p"/config_skills/#{skill}"} method="delete" data-confirm="Are you sure?">
+    <.link href={~p"/skills/#{skill}"} method="delete" data-confirm="Are you sure?">
       Delete
     </.link>
   </:action>

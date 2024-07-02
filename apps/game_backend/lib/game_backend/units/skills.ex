@@ -54,25 +54,11 @@ defmodule GameBackend.Units.Skills do
     end)
   end
 
-  @doc """
-  Returns the list of config_skills.
-
-  ## Examples
-
-      iex> list_config_skills()
-      [%Skill{}, ...]
-
-  """
-  def list_config_skills do
-    Repo.all(Skill)
-    |> Repo.preload([:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
-  end
-
-  def list_curse_config_skills() do
+  def list_curse_skills() do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
     q = from s in Skill,
       where: ^curse_id == s.game_id,
-      preload: [:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
+      preload: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
 
     Repo.all(q)
   end
@@ -93,7 +79,7 @@ defmodule GameBackend.Units.Skills do
   """
   def get_skill!(id) do
     Repo.get!(Skill, id)
-    |> Repo.preload([:character, mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
+    |> Repo.preload([mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
   end
 
   @doc """

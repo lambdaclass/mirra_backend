@@ -8,7 +8,6 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :autoaim, :boolean, default: false, null: false
       add :block_movement, :boolean, default: false, null: false
       add :can_pick_destination, :boolean, default: false, null: false
-      add :character_id, references(:characters, on_delete: :delete_all)
       add :cooldown_mechanism, :string
       add :cooldown_ms, :integer
       add :execution_duration_ms, :integer
@@ -18,7 +17,6 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :stamina_cost, :integer
     end
 
-    create index(:skills, [:character_id])
     create unique_index(:skills, [:game_id, :name])
 
     alter table(:mechanics) do
@@ -43,5 +41,10 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
 
     create index(:mechanics, [:on_arrival_mechanic_id])
     create index(:mechanics, [:on_explode_mechanic_id])
+
+    alter table :characters do
+      remove :skills
+      add :dash_skill_id, references(:skills, on_delete: :delete_all)
+    end
   end
 end
