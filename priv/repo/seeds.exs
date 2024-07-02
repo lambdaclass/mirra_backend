@@ -329,4 +329,40 @@ game_configuration_1 = %{
 {:ok, _game_configuration_1} =
   GameBackend.Configuration.create_game_configuration(game_configuration_1)
 
+golden_clock_params = %{
+  name: "golden_clock",
+  radius: 200.0,
+  effects: ["golden_clock_effect"]
+}
+
+{:ok, _golden_clock} =
+  GameBackend.Items.create_consumable_item(golden_clock_params)
+
+magic_boots_params = %{
+  name: "magic_boots",
+  radius: 200.0,
+  effects: ["magic_boots_effect"]
+}
+
+{:ok, _magic_boots} =
+  GameBackend.Items.create_consumable_item(magic_boots_params)
+
+mirra_blessing_params = %{
+  name: "mirra_blessing",
+  radius: 200.0,
+  effects: ["mirra_blessing_effect"]
+}
+
+{:ok, _mirra_blessing} =
+  GameBackend.Items.create_consumable_item(mirra_blessing_params)
+
+giant_fruit_params = %{
+  name: "giant",
+  radius: 200.0,
+  effects: ["giant_effect"]
+}
+
+{:ok, _giant_fruit} =
+  GameBackend.Items.create_consumable_item(giant_fruit_params)
+
 ################### END CURSE OF MIRRA ###################
