@@ -62,7 +62,15 @@ defmodule GameBackend.Units.Skills.Mechanic do
     ])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)
-    |> cast_assoc(:on_arrival_mechanic)
-    |> cast_assoc(:on_explode_mechanic)
+    |> cast_assoc(:on_arrival_mechanic, with: &assoc_changeset/2)
+    |> cast_assoc(:on_explode_mechanic, with: &assoc_changeset/2)
+  end
+
+  defp assoc_changeset(struct, params) do
+    changeset = changeset(struct, params)
+    case get_field(changeset, :type) do
+      nil -> %{changeset | action: :ignore}
+      _ -> changeset
+    end
   end
 end
