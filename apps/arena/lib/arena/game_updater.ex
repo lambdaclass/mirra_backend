@@ -673,10 +673,10 @@ defmodule Arena.GameUpdater do
         enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
-          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
       })
       |> Map.put(:status, :PREPARING)
-      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms)
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
 
