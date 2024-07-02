@@ -28,7 +28,9 @@
   <:col :let={game_configuration} label="Item spawn interval ms"><%= game_configuration.item_spawn_interval_ms %></:col>
   <:col :let={game_configuration} label="Bots enabled"><%= game_configuration.bots_enabled %></:col>
   <:col :let={game_configuration} label="Zone enabled"><%= game_configuration.zone_enabled %></:col>
-  <:col :let={game_configuration} label="Bounties options amount"><%= game_configuration.bounties_options_amount %></:col>
+  <:col :let={game_configuration} label="Bounties options amount">
+    <%= game_configuration.bounties_options_amount %>
+  </:col>
 
   <:action :let={game_configuration}>
     <div class="sr-only">
