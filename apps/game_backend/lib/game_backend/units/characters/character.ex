@@ -64,7 +64,7 @@ defmodule GameBackend.Units.Characters.Character do
       :base_defense,
       :basic_skill_id,
       :dash_skill_id,
-      :ultimate_skill_id,
+      :ultimate_skill_id
     ])
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)

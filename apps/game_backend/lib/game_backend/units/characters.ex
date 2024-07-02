@@ -189,9 +189,12 @@ defmodule GameBackend.Units.Characters do
   """
   def get_curse_characters() do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
-    q = from c in Character,
-      where: ^curse_id == c.game_id,
-      preload: [:basic_skill, :ultimate_skill, :dash_skill]
+
+    q =
+      from(c in Character,
+        where: ^curse_id == c.game_id,
+        preload: [:basic_skill, :ultimate_skill, :dash_skill]
+      )
 
     Repo.all(q)
   end

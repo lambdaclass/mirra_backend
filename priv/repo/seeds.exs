@@ -515,6 +515,7 @@ skills =
     {:ok, skill} =
       Map.put(skill_params, "game_id", curse_of_mirra_id)
       |> Skills.insert_skill()
+
     {skill.name, skill.id}
   end)
   |> Map.new()

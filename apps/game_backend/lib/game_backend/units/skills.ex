@@ -56,9 +56,12 @@ defmodule GameBackend.Units.Skills do
 
   def list_curse_skills() do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
-    q = from s in Skill,
-      where: ^curse_id == s.game_id,
-      preload: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
+
+    q =
+      from(s in Skill,
+        where: ^curse_id == s.game_id,
+        preload: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
+      )
 
     Repo.all(q)
   end
@@ -79,7 +82,7 @@ defmodule GameBackend.Units.Skills do
   """
   def get_skill!(id) do
     Repo.get!(Skill, id)
-    |> Repo.preload([mechanics: [:on_arrival_mechanic, :on_explode_mechanic]])
+    |> Repo.preload(mechanics: [:on_arrival_mechanic, :on_explode_mechanic])
   end
 
   @doc """
