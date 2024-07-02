@@ -19,6 +19,7 @@ defmodule GameBackend.Repo.Migrations.AddGameConfiguration do
       add :item_spawn_interval_ms, :integer
       add :bots_enabled, :boolean, default: false
       add :zone_enabled, :boolean, default: false
+      add :bounties_options_amount, :integer
 
       timestamps(type: :utc_datetime)
     end
