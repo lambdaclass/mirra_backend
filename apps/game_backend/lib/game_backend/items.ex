@@ -11,6 +11,7 @@ defmodule GameBackend.Items do
   alias Ecto.Multi
   alias GameBackend.Items.Item
   alias GameBackend.Items.ItemTemplate
+  alias GameBackend.Items.ConsumableItem
   alias GameBackend.Users.Currencies
   alias GameBackend.Repo
   alias GameBackend.Units
@@ -273,5 +274,99 @@ defmodule GameBackend.Items do
     |> Multi.run(:item, fn _, _ -> insert_item(%{user_id: user_id, template_id: template_id}) end)
     |> Multi.run(:currencies, fn _, _ -> Currencies.substract_currencies(user_id, purchase_costs_list) end)
     |> Repo.transaction()
+  end
+
+  @doc """
+  Returns the list of consumable_items.
+
+  ## Examples
+
+      iex> list_consumable_items()
+      [%ConsumableItem{}, ...]
+
+  """
+  def list_consumable_items do
+    Repo.all(ConsumableItem)
+  end
+
+  @doc """
+  Gets a single consumable_item.
+
+  Raises `Ecto.NoResultsError` if the Consumable item does not exist.
+
+  ## Examples
+
+      iex> get_consumable_item!(123)
+      %ConsumableItem{}
+
+      iex> get_consumable_item!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_consumable_item!(id), do: Repo.get!(ConsumableItem, id)
+
+  @doc """
+  Creates a consumable_item.
+
+  ## Examples
+
+      iex> create_consumable_item(%{field: value})
+      {:ok, %ConsumableItem{}}
+
+      iex> create_consumable_item(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_consumable_item(attrs \\ %{}) do
+    %ConsumableItem{}
+    |> ConsumableItem.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a consumable_item.
+
+  ## Examples
+
+      iex> update_consumable_item(consumable_item, %{field: new_value})
+      {:ok, %ConsumableItem{}}
+
+      iex> update_consumable_item(consumable_item, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_consumable_item(%ConsumableItem{} = consumable_item, attrs) do
+    consumable_item
+    |> ConsumableItem.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a consumable_item.
+
+  ## Examples
+
+      iex> delete_consumable_item(consumable_item)
+      {:ok, %ConsumableItem{}}
+
+      iex> delete_consumable_item(consumable_item)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_consumable_item(%ConsumableItem{} = consumable_item) do
+    Repo.delete(consumable_item)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking consumable_item changes.
+
+  ## Examples
+
+      iex> change_consumable_item(consumable_item)
+      %Ecto.Changeset{data: %ConsumableItem{}}
+
+  """
+  def change_consumable_item(%ConsumableItem{} = consumable_item, attrs \\ %{}) do
+    ConsumableItem.changeset(consumable_item, attrs)
   end
 end
