@@ -15,10 +15,6 @@ defmodule Gateway.Router do
     post "/match/:match_id", MatchResultsController, :create
     get "/get_bounties", QuestController, :get_bounties
 
-    scope "/characters" do
-      get "/configuration", CharacterController, :get_characters_config
-    end
-
     scope "/configuration" do
       get "/game", ConfigurationController, :get_game_configuration
       get "/characters", ConfigurationController, :get_characters_configuration
