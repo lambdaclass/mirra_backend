@@ -302,18 +302,13 @@ defmodule Arena.Game.Skill do
       y: player.position.y + skill_direction.y
     }
 
-    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-
     pool =
       Entities.new_pool(
         last_id,
         target_position,
-        pool_params.effects_to_apply,
-        pool_params.radius,
-        pool_params.duration_ms,
         player.id,
         skill_params.skill_key,
-        now
+        pool_params
       )
 
     put_in(game_state, [:pools, last_id], pool)

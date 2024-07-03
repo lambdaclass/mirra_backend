@@ -139,14 +139,16 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, skill_key, spawn_at) do
+  def new_pool(id, position, owner_id, skill_key, pool_params) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     %{
       id: id,
       category: :pool,
       shape: :circle,
       name: "Pool " <> Integer.to_string(id),
       position: position,
-      radius: radius,
+      radius: pool_params.radius,
       vertices: [],
       speed: 0.0,
       direction: %{
@@ -155,13 +157,13 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effects_to_apply: effects_to_apply,
+        effects_to_apply: pool_params.effects_to_apply,
         owner_id: owner_id,
         effects: [],
         stat_multiplier: 0,
-        duration_ms: duration_ms,
+        duration_ms: pool_params.duration_ms,
         pull_immunity: true,
-        spawn_at: spawn_at,
+        spawn_at: now,
         skill_key: skill_key
       },
       collides_with: []
