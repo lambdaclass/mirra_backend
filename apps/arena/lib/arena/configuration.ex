@@ -13,11 +13,10 @@ defmodule Arena.Configuration do
       |> File.read()
 
     config = Jason.decode!(config_json, [{:keys, :atoms}])
-    skills = parse_skills_config(config.skills)
-    characters = parse_characters_config(get_characters_config(), skills)
+    characters = parse_characters_config(get_characters_config())
     client_config = get_client_config()
 
-    %{config | skills: skills}
+    config
     |> Map.put(:characters, characters)
     |> Map.put(:client_config, client_config)
   end
@@ -40,10 +39,16 @@ defmodule Arena.Configuration do
     Jason.decode!(payload.body, [{:keys, :atoms}])
   end
 
-  defp parse_skills_config(skills_config) do
-    Enum.reduce(skills_config, [], fn skill_config, skills ->
-      skill = parse_skill_config(skill_config)
-      [skill | skills]
+  defp parse_characters_config(characters) do
+    Enum.map(characters, fn character ->
+      character_skills = %{
+        "1" => parse_skill_config(character.basic_skill),
+        "2" => parse_skill_config(character.ultimate_skill),
+        "3" => parse_skill_config(character.dash_skill)
+      }
+
+      Map.put(character, :skills, character_skills)
+      |> Map.drop([:basic_skill, :ultimate_skill, :dash_skill])
     end)
   end
 
@@ -77,53 +82,58 @@ defmodule Arena.Configuration do
     end)
   end
 
-  defp parse_mechanic_config(mechanic) when map_size(mechanic) > 1 do
-    raise "Config has mechanic with 2 values: #{inspect(mechanic)}"
+  # defp parse_mechanic_config(mechanic) when map_size(mechanic) > 1 do
+  #   raise "Config has mechanic with 2 values: #{inspect(mechanic)}"
+  # end
+
+  # defp parse_mechanic_config(mechanic) do
+  #   Map.to_list(mechanic)
+  #   |> Enum.map(&parse_mechanic_fields/1)
+  #   |> hd()
+  # end
+
+  # defp parse_mechanic_fields({:leap, attrs}) do
+  #   {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
+  # end
+
+  # defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
+  #   {name,
+  #    %{
+  #      attrs
+  #      | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)
+  #    }}
+  # end
+
+  # defp parse_mechanic_fields(mechanic) do
+  #   mechanic
+  # end
+
+  defp parse_mechanic_config(nil) do
+    nil
   end
 
   defp parse_mechanic_config(mechanic) do
-    Map.to_list(mechanic)
-    |> Enum.map(&parse_mechanic_fields/1)
-    |> hd()
+    ## Why do we even need this? Well it happens that some of our fields are represented
+    ## as Decimal. To prevent precision loss this struct its converted to a string of the float
+    ## which should be read back and converted to Decimal
+    ## The not so small problem we have is that our code expects floats so we still need to parse
+    ## the strings, but end up with regular floats
+    %{
+      mechanic
+      | angle_between: maybe_to_float(mechanic.angle_between),
+        move_by: maybe_to_float(mechanic.move_by),
+        radius: maybe_to_float(mechanic.radius),
+        range: maybe_to_float(mechanic.range),
+        speed: maybe_to_float(mechanic.speed),
+        on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
+        on_explode_mechanic: parse_mechanic_config(mechanic.on_explode_mechanic)
+    }
   end
 
-  defp parse_mechanic_fields({:leap, attrs}) do
-    {:leap, %{attrs | on_arrival_mechanic: parse_mechanic_config(attrs.on_arrival_mechanic)}}
-  end
+  defp maybe_to_float(nil), do: nil
 
-  defp parse_mechanic_fields({name, %{on_explode_mechanics: on_explode_mechanics} = attrs}) do
-    {name,
-     %{
-       attrs
-       | on_explode_mechanics: parse_mechanic_config(on_explode_mechanics)
-     }}
-  end
-
-  defp parse_mechanic_fields(mechanic) do
-    mechanic
-  end
-
-  defp parse_characters_config(characters, config_skills) do
-    Enum.map(characters, fn character ->
-      character_skills =
-        Enum.map(character.skills, fn {skill_key, skill_name} ->
-          skill = find_skill!(skill_name, config_skills)
-          {:erlang.atom_to_binary(skill_key), skill}
-        end)
-        |> Map.new()
-
-      %{character | skills: character_skills}
-    end)
-  end
-
-  defp find_skill!(skill_name, skills) do
-    skill = Enum.find(skills, fn skill -> skill.name == skill_name end)
-
-    ## This is a sanity check when loading the config
-    if skill == nil do
-      raise "Skill #{inspect(skill_name)} does not exist in config"
-    else
-      skill
-    end
+  defp maybe_to_float(float_string) do
+    {float, ""} = Float.parse(float_string)
+    float
   end
 end
