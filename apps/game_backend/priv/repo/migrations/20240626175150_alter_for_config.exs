@@ -15,6 +15,7 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :is_passive, :boolean, default: false, null: false
       add :max_autoaim_range, :integer
       add :stamina_cost, :integer
+      add :type, :string
     end
 
     create unique_index(:skills, [:game_id, :name])

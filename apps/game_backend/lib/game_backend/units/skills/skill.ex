@@ -24,6 +24,7 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:is_passive, :boolean, default: false)
     field(:max_autoaim_range, :integer)
     field(:stamina_cost, :integer)
+    field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
 
     belongs_to(:buff, Buff)
     has_many(:mechanics, Mechanic, on_replace: :delete)
@@ -51,7 +52,8 @@ defmodule GameBackend.Units.Skills.Skill do
       :inmune_while_executing,
       :is_passive,
       :max_autoaim_range,
-      :stamina_cost
+      :stamina_cost,
+      :type
     ])
     |> cast_assoc(:mechanics)
     |> unique_constraint([:game_id, :name])

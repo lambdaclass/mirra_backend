@@ -14,9 +14,9 @@
   <.input field={f[:natural_healing_interval]} type="number" label="Natural healing interval" />
   <.input field={f[:natural_healing_damage_interval]} type="number" label="Natural healing damage interval" />
 
-  <.skill_select field={f[:basic_skill_id]} label="Basic skill" skills={@skills} />
-  <.skill_select field={f[:dash_skill_id]} label="Dash skill" skills={@skills} />
-  <.skill_select field={f[:ultimate_skill_id]} label="Ultimate skill" skills={@skills} />
+  <.skill_select field={f[:basic_skill_id]} label="Basic skill" skills={@skills[:basic]} />
+  <.skill_select field={f[:dash_skill_id]} label="Dash skill" skills={@skills[:dash]} />
+  <.skill_select field={f[:ultimate_skill_id]} label="Ultimate skill" skills={@skills[:ultimate]} />
 
   <:actions>
     <.button>Save Character</.button>

@@ -11,7 +11,7 @@ defmodule ConfiguratorWeb.CharacterController do
 
   def new(conn, _params) do
     changeset = Ecto.Changeset.change(%Character{})
-    skills = GameBackend.Units.Skills.list_curse_skills()
+    skills = get_curse_skills_by_type()
     render(conn, :new, changeset: changeset, skills: skills)
   end
 
@@ -28,7 +28,7 @@ defmodule ConfiguratorWeb.CharacterController do
         |> redirect(to: ~p"/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        skills = GameBackend.Units.Skills.list_curse_skills()
+        skills = get_curse_skills_by_type()
         render(conn, :new, changeset: changeset, skills: skills)
     end
   end
@@ -41,7 +41,7 @@ defmodule ConfiguratorWeb.CharacterController do
   def edit(conn, %{"id" => id}) do
     character = Characters.get_character(id)
     changeset = Ecto.Changeset.change(character)
-    skills = GameBackend.Units.Skills.list_curse_skills()
+    skills = get_curse_skills_by_type()
     render(conn, :edit, character: character, changeset: changeset, skills: skills)
   end
 
@@ -55,7 +55,7 @@ defmodule ConfiguratorWeb.CharacterController do
         |> redirect(to: ~p"/characters/#{character}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        skills = GameBackend.Units.Skills.list_curse_skills()
+        skills = get_curse_skills_by_type()
         render(conn, :edit, character: character, changeset: changeset, skills: skills)
     end
   end
@@ -67,5 +67,10 @@ defmodule ConfiguratorWeb.CharacterController do
     conn
     |> put_flash(:success, "Character deleted successfully.")
     |> redirect(to: ~p"/characters")
+  end
+
+  defp get_curse_skills_by_type() do
+    GameBackend.Units.Skills.list_curse_skills()
+    |> Enum.group_by(& &1.type)
   end
 end

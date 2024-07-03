@@ -23,7 +23,7 @@ defmodule ConfiguratorWeb.CharacterHTML do
       type="select"
       label={@label}
       prompt="Select a skill"
-      options={Enum.map(@skills, &{&1.name, &1.id}) |> IO.inspect()}
+      options={Enum.map(@skills, &{&1.name, &1.id})}
     />
     """
   end

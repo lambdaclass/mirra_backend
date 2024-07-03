@@ -230,6 +230,7 @@ Champions.Config.import_dungeon_levels_config()
 skills = [
   %{
     "name" => "muflus_crush",
+    "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
@@ -251,6 +252,7 @@ skills = [
   },
   %{
     "name" => "muflus_leap",
+    "type" => "ultimate",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 8000,
     "execution_duration_ms" => 800,
@@ -277,6 +279,7 @@ skills = [
   },
   %{
     "name" => "muflus_dash",
+    "type" => "dash",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 4500,
     "execution_duration_ms" => 330,
@@ -296,6 +299,7 @@ skills = [
   },
   %{
     "name" => "h4ck_slingshot",
+    "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 250,
     "activation_delay_ms" => 0,
@@ -322,6 +326,7 @@ skills = [
   },
   %{
     "name" => "h4ck_dash",
+    "type" => "dash",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5500,
     "execution_duration_ms" => 250,
@@ -341,6 +346,7 @@ skills = [
   },
   %{
     "name" => "h4ck_denial_of_service",
+    "type" => "ultimate",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 200,
@@ -366,6 +372,7 @@ skills = [
   },
   %{
     "name" => "uma_avenge",
+    "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 500,
     "activation_delay_ms" => 0,
@@ -390,6 +397,7 @@ skills = [
   },
   %{
     "name" => "uma_veil_radiance",
+    "type" => "ultimate",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 300,
@@ -413,6 +421,7 @@ skills = [
   },
   %{
     "name" => "uma_sneak",
+    "type" => "dash",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 5000,
     "execution_duration_ms" => 250,
@@ -433,6 +442,7 @@ skills = [
   },
   %{
     "name" => "valt_singularity",
+    "type" => "basic",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 500,
@@ -458,6 +468,7 @@ skills = [
   },
   %{
     "name" => "valt_warp",
+    "type" => "dash",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 6000,
     "execution_duration_ms" => 450,
@@ -480,6 +491,7 @@ skills = [
   },
   %{
     "name" => "valt_antimatter",
+    "type" => "ultimate",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,

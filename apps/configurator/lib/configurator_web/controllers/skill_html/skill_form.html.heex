@@ -3,6 +3,13 @@
     Oops, something went wrong! Please check the errors below.
   </.error>
   <.input field={f[:name]} type="text" label="Name" required />
+  <.input
+    field={f[:type]}
+    type="select"
+    label="Type"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.Units.Skills.Skill, :type)}
+  />
   <.input field={f[:activation_delay_ms]} type="number" label="Activation delay ms" />
   <.input field={f[:autoaim]} type="checkbox" label="Autoaim" />
   <.input field={f[:block_movement]} type="checkbox" label="Block movement" />
