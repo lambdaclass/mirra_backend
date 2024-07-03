@@ -507,7 +507,7 @@ defmodule BotManager.Protobuf.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
-  field(:id, 3, type: :string)
+  field(:id, 3, type: :uint64)
 end
 
 defmodule BotManager.Protobuf.Item do
