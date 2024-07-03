@@ -134,7 +134,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -202,7 +203,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -220,7 +222,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -300,7 +303,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -315,7 +319,8 @@ defmodule Arena.Entities do
       vertices: vertices,
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
