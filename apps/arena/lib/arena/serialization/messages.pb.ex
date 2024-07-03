@@ -507,6 +507,7 @@ defmodule Arena.Serialization.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+  field(:id, 3, type: :string)
 end
 
 defmodule Arena.Serialization.Item do
