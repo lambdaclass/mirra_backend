@@ -194,7 +194,7 @@ config :configurator,
 
 # Configures the endpoint
 config :configurator, ConfiguratorWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: 4100],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: ConfiguratorWeb.ErrorHTML, json: ConfiguratorWeb.ErrorJSON],

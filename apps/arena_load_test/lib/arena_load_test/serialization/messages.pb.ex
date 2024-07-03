@@ -191,6 +191,8 @@ defmodule ArenaLoadTest.Serialization.ConfigGame do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
+  field(:bounty_pick_time_ms, 2, type: :float, json_name: "bountyPickTimeMs")
+  field(:start_game_time_ms, 3, type: :float, json_name: "startGameTimeMs")
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigMap do

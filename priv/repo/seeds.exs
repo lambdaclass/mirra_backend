@@ -2,7 +2,6 @@ alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
 alias GameBackend.Units.Characters
-alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
@@ -225,20 +224,8 @@ Champions.Config.import_dungeon_settlement_levels_config()
 Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
-# Insert characters
-Config.get_characters_config()
-|> Enum.each(fn char_params ->
-  Map.put(char_params, :game_id, curse_of_mirra_id)
-  |> Map.put(:faction, "none")
-  |> Characters.insert_character()
-end)
 
-################### END CURSE OF MIRRA ###################
-
-##################### Configurator #####################
-# Insert characters
-alias Configurator.Configuration
-
+# Characters params
 muflus_params = %{
   name: "muflus",
   active: true,
@@ -256,8 +243,6 @@ muflus_params = %{
     "3": "muflus_dash"
   }
 }
-
-{:ok, _muflus} = Configuration.create_character(muflus_params)
 
 h4ck_params = %{
   name: "h4ck",
@@ -277,8 +262,6 @@ h4ck_params = %{
   }
 }
 
-{:ok, _h4ck} = Configuration.create_character(h4ck_params)
-
 uma_params = %{
   name: "uma",
   active: true,
@@ -296,8 +279,6 @@ uma_params = %{
     "3": "uma_sneak"
   }
 }
-
-{:ok, _uma} = Configuration.create_character(uma_params)
 
 valtimer_params = %{
   name: "valtimer",
@@ -317,6 +298,12 @@ valtimer_params = %{
   }
 }
 
-{:ok, _valtimer} = Configuration.create_character(valtimer_params)
+# Insert characters
+[muflus_params, h4ck_params, uma_params, valtimer_params]
+|> Enum.each(fn char_params ->
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
+end)
 
-##################### End Configurator #####################
+################### END CURSE OF MIRRA ###################
