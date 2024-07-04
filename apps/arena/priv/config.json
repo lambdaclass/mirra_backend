@@ -1045,7 +1045,6 @@
             "range": 280.0,
             "interval_ms": 200,
             "amount": 3,
-            "move_by": 100.0,
             "offset": 200.0
           }
         }
