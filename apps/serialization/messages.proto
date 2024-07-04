@@ -193,9 +193,10 @@ message Player {
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
   repeated uint64 visible_players = 13;
-  bool on_bush  = 14;
-  BountyInfo default_bounty = 15;
-  bool bounty_completed = 16;
+  bool on_bush = 14;
+  bool forced_movement = 15;
+  BountyInfo default_bounty = 16;
+  bool bounty_completed = 17;
 }
 
 message Effect {

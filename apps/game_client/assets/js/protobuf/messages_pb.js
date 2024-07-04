@@ -6369,8 +6369,9 @@ proto.Player.toObject = function(includeInstance, msg) {
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
     onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     defaultBounty: (f = msg.getDefaultBounty()) && proto.BountyInfo.toObject(includeInstance, f),
-    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
+    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 17, false)
   };
 
   if (includeInstance) {
@@ -6471,11 +6472,15 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setOnBush(value);
       break;
     case 15:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setForcedMovement(value);
+      break;
+    case 16:
       var value = new proto.BountyInfo;
       reader.readMessage(value,proto.BountyInfo.deserializeBinaryFromReader);
       msg.setDefaultBounty(value);
       break;
-    case 16:
+    case 17:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBountyCompleted(value);
       break;
@@ -6606,10 +6611,17 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getForcedMovement();
+  if (f) {
+    writer.writeBool(
+      15,
+      f
+    );
+  }
   f = message.getDefaultBounty();
   if (f != null) {
     writer.writeMessage(
-      15,
+      16,
       f,
       proto.BountyInfo.serializeBinaryToWriter
     );
@@ -6617,7 +6629,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   f = message.getBountyCompleted();
   if (f) {
     writer.writeBool(
-      16,
+      17,
       f
     );
   }
@@ -6960,12 +6972,30 @@ proto.Player.prototype.setOnBush = function(value) {
 
 
 /**
- * optional BountyInfo default_bounty = 15;
+ * optional bool forced_movement = 15;
+ * @return {boolean}
+ */
+proto.Player.prototype.getForcedMovement = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setForcedMovement = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 15, value);
+};
+
+
+/**
+ * optional BountyInfo default_bounty = 16;
  * @return {?proto.BountyInfo}
  */
 proto.Player.prototype.getDefaultBounty = function() {
   return /** @type{?proto.BountyInfo} */ (
-    jspb.Message.getWrapperField(this, proto.BountyInfo, 15));
+    jspb.Message.getWrapperField(this, proto.BountyInfo, 16));
 };
 
 
@@ -6974,7 +7004,7 @@ proto.Player.prototype.getDefaultBounty = function() {
  * @return {!proto.Player} returns this
 */
 proto.Player.prototype.setDefaultBounty = function(value) {
-  return jspb.Message.setWrapperField(this, 15, value);
+  return jspb.Message.setWrapperField(this, 16, value);
 };
 
 
@@ -6992,16 +7022,16 @@ proto.Player.prototype.clearDefaultBounty = function() {
  * @return {boolean}
  */
 proto.Player.prototype.hasDefaultBounty = function() {
-  return jspb.Message.getField(this, 15) != null;
+  return jspb.Message.getField(this, 16) != null;
 };
 
 
 /**
- * optional bool bounty_completed = 16;
+ * optional bool bounty_completed = 17;
  * @return {boolean}
  */
 proto.Player.prototype.getBountyCompleted = function() {
-  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 17, false));
 };
 
 
@@ -7010,7 +7040,7 @@ proto.Player.prototype.getBountyCompleted = function() {
  * @return {!proto.Player} returns this
  */
 proto.Player.prototype.setBountyCompleted = function(value) {
-  return jspb.Message.setProto3BooleanField(this, 16, value);
+  return jspb.Message.setProto3BooleanField(this, 17, value);
 };
 
 

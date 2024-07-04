@@ -2,7 +2,6 @@ alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
 alias GameBackend.Units.Characters
-alias GameBackend.CurseOfMirra.Config
 
 curse_of_mirra_id = Utils.get_game_id(:curse_of_mirra)
 champions_of_mirra_id = Utils.get_game_id(:champions_of_mirra)
@@ -225,24 +224,12 @@ Champions.Config.import_dungeon_settlement_levels_config()
 Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
-# Insert characters
-Config.get_characters_config()
-|> Enum.each(fn char_params ->
-  Map.put(char_params, :game_id, curse_of_mirra_id)
-  |> Map.put(:faction, "none")
-  |> Characters.insert_character()
-end)
 
-################### END CURSE OF MIRRA ###################
-
-##################### Configurator #####################
-# Insert characters
-alias Configurator.Configuration
-
+# Characters params
 muflus_params = %{
   name: "muflus",
   active: true,
-  base_speed: 17.5,
+  base_speed: 0.63,
   base_size: 110.0,
   base_health: 440,
   base_stamina: 3,
@@ -257,12 +244,10 @@ muflus_params = %{
   }
 }
 
-{:ok, _muflus} = Configuration.create_character(muflus_params)
-
 h4ck_params = %{
   name: "h4ck",
   active: true,
-  base_speed: 22.5,
+  base_speed: 0.7,
   base_size: 90.0,
   base_health: 400,
   base_stamina: 3,
@@ -277,12 +262,10 @@ h4ck_params = %{
   }
 }
 
-{:ok, _h4ck} = Configuration.create_character(h4ck_params)
-
 uma_params = %{
   name: "uma",
   active: true,
-  base_speed: 20.0,
+  base_speed: 0.67,
   base_size: 95.0,
   base_health: 400,
   base_stamina: 3,
@@ -297,12 +280,10 @@ uma_params = %{
   }
 }
 
-{:ok, _uma} = Configuration.create_character(uma_params)
-
 valtimer_params = %{
   name: "valtimer",
   active: false,
-  base_speed: 20.0,
+  base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
   base_stamina: 3,
@@ -317,6 +298,12 @@ valtimer_params = %{
   }
 }
 
-{:ok, _valtimer} = Configuration.create_character(valtimer_params)
+# Insert characters
+[muflus_params, h4ck_params, uma_params, valtimer_params]
+|> Enum.each(fn char_params ->
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
+end)
 
-##################### End Configurator #####################
+################### END CURSE OF MIRRA ###################
