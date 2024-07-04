@@ -14,8 +14,10 @@ chmod +x devops/entrypoint.sh
 
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
-mix deps.compile
-mix compile
+MIX_ENV=$MIX_ENV mix compile
+MIX_ENV=$MIX_ENV mix tailwind configurator --minify
+MIX_ENV=$MIX_ENV mix esbuild configurator --minify
+MIX_ENV=$MIX_ENV mix phx.digest
 mix release ${RELEASE} --overwrite
 if [ ${RELEASE} == "central_backend" ]; then
 	mix ecto.migrate

@@ -35,6 +35,7 @@ defmodule ArenaLoadTest.Serialization.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule ArenaLoadTest.Serialization.PlayerActionType do
@@ -545,6 +546,7 @@ defmodule ArenaLoadTest.Serialization.Player do
 
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do
