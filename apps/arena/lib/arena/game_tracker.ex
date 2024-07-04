@@ -156,7 +156,7 @@ defmodule Arena.GameTracker do
         ##    https://github.com/lambdaclass/mirra_backend/issues/601
         deaths: if(player_data.death == nil, do: 0, else: 1),
         character: player_data.character,
-        position: get_player_position(player_data, winner_id, match_data),
+        position: get_player_match_place(player_data, winner_id, match_data),
         damage_taken: player_data.damage_taken,
         damage_done: player_data.damage_done,
         health_healed: player_data.health_healed,
@@ -186,8 +186,8 @@ defmodule Arena.GameTracker do
     end
   end
 
-  def get_player_position(%{id: winner_id}, winner_id, _match_data), do: winner_id
-  def get_player_position(%{position: position}, _winner_id, _match_data), do: position
+  def get_player_match_place(%{id: winner_id}, winner_id, _match_data), do: 1
+  def get_player_match_place(%{position: position}, _winner_id, _match_data), do: position
   # Default case for timeouts
-  def get_player_position(_player_info, _winner_id, match_data), do: match_data.position_on_death
+  def get_player_match_place(_player_info, _winner_id, match_data), do: match_data.position_on_death
 end
