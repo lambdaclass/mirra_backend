@@ -132,7 +132,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   # Issue https://github.com/lambdaclass/mirra_backend/issues/751
   defp maybe_create_unit_for_user(multi, results) do
     Enum.reduce(results, multi, fn result, multi ->
-      if(Users.user_has_unit_with_character_name(result["user_id"], result["character"])) do
+      if Users.user_has_unit_with_character_name(result["user_id"], result["character"]) do
         multi
       else
         Multi.run(multi, {:insert_unit, result["user_id"], result["character"]}, fn _, _ ->
