@@ -197,14 +197,14 @@ impl Entity {
         result
     }
 
-    pub fn move_entity(&mut self, ticks_to_move: f32) {
-        self.position = self.next_position(ticks_to_move);
+    pub fn move_entity(&mut self, delta_time: f32) {
+        self.position = self.next_position(delta_time);
     }
 
-    pub fn next_position(&mut self, ticks_to_move: f32) -> Position {
+    pub fn next_position(&mut self, delta_time: f32) -> Position {
         Position {
-            x: self.position.x + self.direction.x * self.speed * ticks_to_move,
-            y: self.position.y + self.direction.y * self.speed * ticks_to_move,
+            x: self.position.x + self.direction.x * self.speed * delta_time,
+            y: self.position.y + self.direction.y * self.speed * delta_time,
         }
     }
 

@@ -15,7 +15,7 @@ fn add(a: i64, b: i64) -> i64 {
 #[rustler::nif()]
 fn move_entities(
     entities: HashMap<u64, Entity>,
-    ticks_to_move: f32,
+    delta_time: f32,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
 ) -> HashMap<u64, Entity> {
@@ -23,7 +23,7 @@ fn move_entities(
 
     for entity in entities.values_mut() {
         if entity.is_moving {
-            entity.move_entity(ticks_to_move);
+            entity.move_entity(delta_time);
 
             move_entity_to_closest_available_position(entity, &external_wall, &obstacles);
         }
@@ -35,13 +35,13 @@ fn move_entities(
 #[rustler::nif()]
 fn move_entity(
     entity: Entity,
-    ticks_to_move: f32,
+    delta_time: f32,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
 ) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
-        entity.move_entity(ticks_to_move);
+        entity.move_entity(delta_time);
         move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
     }
 
@@ -145,12 +145,13 @@ fn nearest_entity_position_in_range(
     entity: Entity,
     entities: HashMap<u64, Entity>,
     range: i64,
-) -> Position {
+) -> (bool, Position) {
     let mut max_distance = range as f32;
     let mut position = Position {
         x: entity.direction.x,
         y: entity.direction.y,
     };
+    let mut use_autoaim: bool = false;
 
     for other_entity in entities.values() {
         if entity.id != other_entity.id {
@@ -163,11 +164,12 @@ fn nearest_entity_position_in_range(
                     x: difference_between_positions.x,
                     y: difference_between_positions.y,
                 };
+                use_autoaim = true;
             }
         }
     }
 
-    position
+    (use_autoaim, position)
 }
 #[rustler::nif()]
 fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {

@@ -94,6 +94,8 @@ defmodule Arena.GameUpdater do
       player_id ->
         bounties =
           GameBountiesFetcher.get_bounties()
+          |> Enum.shuffle()
+          |> Enum.take(state.game_config.game.bounties_options_amount)
 
         response = %{
           player_id: player_id,
@@ -194,12 +196,11 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    time_diff = now - game_state.server_timestamp
-    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
+    delta_time = now - game_state.server_timestamp
 
     game_state =
       game_state
-      |> Map.put(:ticks_to_move, ticks_to_move)
+      |> Map.put(:delta_time, delta_time / 1)
       # Effects
       |> remove_expired_effects()
       |> remove_effects_on_action()
@@ -207,7 +208,7 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
-      |> reduce_players_cooldowns(time_diff)
+      |> reduce_players_cooldowns(delta_time)
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
@@ -223,7 +224,7 @@ defmodule Arena.GameUpdater do
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
       # Crates
-      |> handle_destroyed_crates(state.game_config)
+      |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
@@ -247,7 +248,7 @@ defmodule Arena.GameUpdater do
     broadcast_enable_incomming_messages(state.game_state.game_id)
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
-    send(self(), :pick_default_bouty_for_missing_players)
+    send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
     send(self(), :init_obstacles_transitions)
@@ -546,7 +547,7 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info(:pick_default_bouty_for_missing_players, state) do
+  def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
       if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
         bounty = Enum.random(player.aditional_info.bounties)
@@ -566,6 +567,24 @@ defmodule Arena.GameUpdater do
         else
           game_state
         end
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:delayed_power_up_spawn, entity, amount}, state) do
+    game_state =
+      state.game_state
+      |> spawn_power_ups(state.game_config, entity, amount)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:activate_power_up, power_up_id}, state) do
+    game_state =
+      state.game_state
+      |> update_in([:power_ups, power_up_id], fn power_up ->
+        put_in(power_up, [:aditional_info, :status], :AVAILABLE)
       end)
 
     {:noreply, Map.put(state, :game_state, game_state)}
@@ -702,10 +721,14 @@ defmodule Arena.GameUpdater do
         enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
-          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
+            config.game.bounty_pick_time_ms
       })
       |> Map.put(:status, :PREPARING)
-      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(
+        :start_game_timestamp,
+        initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
+      )
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
 
@@ -923,7 +946,7 @@ defmodule Arena.GameUpdater do
   defp move_players(
          %{
            players: players,
-           ticks_to_move: ticks_to_move,
+           delta_time: delta_time,
            external_wall: external_wall,
            obstacles: obstacles,
            bushes: bushes,
@@ -940,7 +963,7 @@ defmodule Arena.GameUpdater do
     moved_players =
       players
       |> Physics.move_entities(
-        ticks_to_move,
+        delta_time,
         external_wall,
         Obstacle.get_collisionable_obstacles(obstacles)
       )
@@ -976,7 +999,7 @@ defmodule Arena.GameUpdater do
            obstacles: obstacles,
            crates: crates,
            external_wall: external_wall,
-           ticks_to_move: ticks_to_move,
+           delta_time: delta_time,
            pools: pools
          } = game_state
        ) do
@@ -996,7 +1019,7 @@ defmodule Arena.GameUpdater do
 
     moved_projectiles =
       alive_projectiles
-      |> Physics.move_entities(ticks_to_move, external_wall, %{})
+      |> Physics.move_entities(delta_time, external_wall, %{})
       |> update_collisions(
         projectiles,
         entities_to_collide_with
@@ -1184,15 +1207,20 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
-  defp handle_destroyed_crates(%{crates: crates} = game_state, game_config) do
+  defp handle_destroyed_crates(%{crates: crates} = game_state) do
     Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
       if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
         game_state
       else
         amount_of_power_ups = crate.aditional_info.amount_of_power_ups
 
+        Process.send_after(
+          self(),
+          {:delayed_power_up_spawn, crate, amount_of_power_ups},
+          crate.aditional_info.power_up_spawn_delay_ms
+        )
+
         game_state
-        |> spawn_power_ups(game_config, crate, amount_of_power_ups)
         |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
       end
     end)
@@ -1407,6 +1435,8 @@ defmodule Arena.GameUpdater do
           victim.id,
           game_config.power_ups.power_up
         )
+
+      Process.send_after(self(), {:activate_power_up, last_id}, game_config.power_ups.power_up.activation_delay_ms)
 
       game_state
       |> put_in([:power_ups, last_id], power_up)

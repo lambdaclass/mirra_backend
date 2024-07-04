@@ -2,7 +2,7 @@ defmodule Configurator.Repo.Migrations.CreateCharacters do
   use Ecto.Migration
 
   def change do
-    create table(:characters) do
+    create table(:characters_config) do
       add :name, :string
       add :active, :boolean, default: false, null: false
       add :base_speed, :decimal
