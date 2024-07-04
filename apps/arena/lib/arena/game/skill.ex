@@ -406,11 +406,10 @@ defmodule Arena.Game.Skill do
   def maybe_auto_aim(%{x: x, y: y}, skill, player, entities) when x == 0.0 and y == 0.0 do
     case skill.autoaim do
       true ->
-        nearest_entity_position_in_range =
+        {use_autoaim?, nearest_entity_position_in_range} =
           Physics.nearest_entity_position_in_range(player, entities, skill.max_autoaim_range)
-          |> maybe_normalize(not skill.can_pick_destination)
 
-        {nearest_entity_position_in_range != player.direction, nearest_entity_position_in_range}
+        {use_autoaim?, nearest_entity_position_in_range |> maybe_normalize(not skill.can_pick_destination)}
 
       false ->
         {false, player.direction |> maybe_normalize(not skill.can_pick_destination)}

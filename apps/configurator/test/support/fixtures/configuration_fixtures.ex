@@ -16,14 +16,16 @@ defmodule Configurator.ConfigurationFixtures do
         base_size: "120.5",
         base_speed: "120.5",
         base_stamina: 42,
-        name: "some name",
+        name: "some name" <> (Enum.random(1..99_999_999) |> to_string()),
         max_inventory_size: 42,
         natural_healing_damage_interval: 42,
         natural_healing_interval: 42,
         stamina_interval: 42,
-        skills: %{}
+        skills: %{},
+        game_id: 1,
+        faction: "ogre"
       })
-      |> Configurator.Configuration.create_character()
+      |> GameBackend.Units.Characters.insert_character()
 
     character
   end

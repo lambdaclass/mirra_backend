@@ -9,7 +9,7 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
     base_size: 120.5,
     base_speed: 120.5,
     base_stamina: 42,
-    name: "some name",
+    name: "some created name",
     max_inventory_size: 42,
     natural_healing_damage_interval: 42,
     natural_healing_interval: 42,
@@ -103,10 +103,7 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
     test "deletes chosen character", %{conn: conn, character: character} do
       conn = delete(conn, ~p"/characters/#{character}")
       assert redirected_to(conn) == ~p"/characters"
-
-      assert_error_sent 404, fn ->
-        get(conn, ~p"/characters/#{character}")
-      end
+      assert get_flash(conn, :success) =~ "Character deleted successfully."
     end
   end
 

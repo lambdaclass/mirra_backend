@@ -1049,7 +1049,7 @@
   },
   "game": {
     "tick_rate_ms": 30,
-    "bounty_pick_time_ms": 0,
+    "bounty_pick_time_ms": 5000,
     "start_game_time_ms": 10000,
     "end_game_interval_ms": 1000,
     "shutdown_game_wait_ms": 10000,
@@ -1063,7 +1063,8 @@
     "zone_damage": 40,
     "item_spawn_interval_ms": 7500,
     "bots_enabled": true,
-    "zone_enabled": true
+    "zone_enabled": true,
+    "bounties_options_amount": 3
   },
   "skills": [
     {
@@ -1129,7 +1130,7 @@
         {
           "leap": {
             "range": 1300.0,
-            "speed": 50.0,
+            "speed": 1.7,
             "radius": 600,
             "on_arrival_mechanic": {
               "circle_hit": {
@@ -1184,7 +1185,7 @@
           "multi_shoot": {
             "angle_between": 22.0,
             "amount": 3,
-            "speed": 53.0,
+            "speed": 1.1,
             "duration_ms": 1000,
             "remove_on_collision": true,
             "projectile_offset": 100,
@@ -1209,7 +1210,7 @@
       "mechanics": [
         {
           "dash": {
-            "speed": 90.0,
+            "speed": 4.0,
             "duration": 250
           }
         }
@@ -1229,7 +1230,7 @@
       "mechanics": [
         {
           "dash": {
-            "speed": 80.0,
+            "speed": 3.3,
             "duration": 330
           }
         }
@@ -1298,7 +1299,7 @@
       "mechanics": [
         {
           "dash": {
-            "speed": 95.0,
+            "speed": 4.0,
             "duration": 250
           }
         }
@@ -1342,7 +1343,7 @@
       "mechanics": [
         {
           "simple_shoot": {
-            "speed": 45.0,
+            "speed": 1.8,
             "duration_ms": 1100,
             "remove_on_collision": true,
             "projectile_offset": 100,
@@ -1414,7 +1415,8 @@
       "distance_to_power_up": 400,
       "power_up_damage_modifier": 0.08,
       "power_up_health_modifier": 0.08,
-      "radius": 200.0
+      "radius": 200.0,
+      "activation_delay_ms": 500
     }
   },
   "effects": [
@@ -1499,7 +1501,7 @@
       "one_time_application": true,
       "effect_mechanics": {
         "speed_boost": {
-          "modifier": 0.5,
+          "modifier": 0.02,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }
@@ -1546,7 +1548,7 @@
           "execute_multiple_times": true
         },
         "speed_boost": {
-          "modifier": -0.25,
+          "modifier": -0.009,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
@@ -1571,7 +1573,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1582,7 +1585,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1593,7 +1597,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1604,7 +1609,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1615,7 +1621,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1626,7 +1633,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1637,7 +1645,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1648,7 +1657,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     },
     {
       "position": {
@@ -1659,7 +1669,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300 
     }
   ],
   "traps": []

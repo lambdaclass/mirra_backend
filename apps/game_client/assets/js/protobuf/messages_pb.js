@@ -3217,7 +3217,9 @@ proto.ConfigGame.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigGame.toObject = function(includeInstance, msg) {
   var f, obj = {
-    tickRateMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0)
+    tickRateMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    bountyPickTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
+    startGameTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 3, 0.0)
   };
 
   if (includeInstance) {
@@ -3258,6 +3260,14 @@ proto.ConfigGame.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readFloat());
       msg.setTickRateMs(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setBountyPickTimeMs(value);
+      break;
+    case 3:
+      var value = /** @type {number} */ (reader.readFloat());
+      msg.setStartGameTimeMs(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3294,6 +3304,20 @@ proto.ConfigGame.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getBountyPickTimeMs();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      2,
+      f
+    );
+  }
+  f = message.getStartGameTimeMs();
+  if (f !== 0.0) {
+    writer.writeFloat(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -3312,6 +3336,42 @@ proto.ConfigGame.prototype.getTickRateMs = function() {
  */
 proto.ConfigGame.prototype.setTickRateMs = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional float bounty_pick_time_ms = 2;
+ * @return {number}
+ */
+proto.ConfigGame.prototype.getBountyPickTimeMs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigGame} returns this
+ */
+proto.ConfigGame.prototype.setBountyPickTimeMs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 2, value);
+};
+
+
+/**
+ * optional float start_game_time_ms = 3;
+ * @return {number}
+ */
+proto.ConfigGame.prototype.getStartGameTimeMs = function() {
+  return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigGame} returns this
+ */
+proto.ConfigGame.prototype.setStartGameTimeMs = function(value) {
+  return jspb.Message.setProto3FloatField(this, 3, value);
 };
 
 
@@ -6308,7 +6368,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
-    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false)
+    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
   };
 
   if (includeInstance) {
@@ -6407,6 +6468,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 14:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setOnBush(value);
+      break;
+    case 15:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setForcedMovement(value);
       break;
     default:
       reader.skipField();
@@ -6532,6 +6597,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       14,
+      f
+    );
+  }
+  f = message.getForcedMovement();
+  if (f) {
+    writer.writeBool(
+      15,
       f
     );
   }
@@ -6870,6 +6942,24 @@ proto.Player.prototype.getOnBush = function() {
  */
 proto.Player.prototype.setOnBush = function(value) {
   return jspb.Message.setProto3BooleanField(this, 14, value);
+};
+
+
+/**
+ * optional bool forced_movement = 15;
+ * @return {boolean}
+ */
+proto.Player.prototype.getForcedMovement = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setForcedMovement = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 15, value);
 };
 
 
@@ -11012,7 +11102,8 @@ proto.CrateStatus = {
  */
 proto.PowerUpstatus = {
   AVAILABLE: 0,
-  TAKEN: 1
+  TAKEN: 1,
+  UNAVAILABLE: 2
 };
 
 /**

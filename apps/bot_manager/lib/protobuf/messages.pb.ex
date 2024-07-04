@@ -35,6 +35,7 @@ defmodule BotManager.Protobuf.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule BotManager.Protobuf.PlayerActionType do
@@ -182,6 +183,8 @@ defmodule BotManager.Protobuf.ConfigGame do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
+  field(:bounty_pick_time_ms, 2, type: :float, json_name: "bountyPickTimeMs")
+  field(:start_game_time_ms, 3, type: :float, json_name: "startGameTimeMs")
 end
 
 defmodule BotManager.Protobuf.ConfigMap do
@@ -496,6 +499,7 @@ defmodule BotManager.Protobuf.Player do
   field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
 end
 
 defmodule BotManager.Protobuf.Effect do
