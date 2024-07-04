@@ -127,7 +127,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
     end)
   end
 
-  # FIXME This isp a TEMPORAL fix and should be removed as soon as we implement a check that block clients to play with characters
+  # TODO This is a TEMPORAL fix and should be removed as soon as we implement a check that block clients to play with characters
   # that they don't own or a way to unlock characters
   # Issue https://github.com/lambdaclass/mirra_backend/issues/751
   defp maybe_create_unit_for_user(multi, results) do
