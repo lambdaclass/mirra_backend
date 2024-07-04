@@ -1471,18 +1471,14 @@ defmodule Arena.GameUpdater do
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
     entities = Map.merge(crates, players)
 
-    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
-      if pool.aditional_info.status == :ACTIVATED do
-        Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
-          if entity_id in pool.collides_with do
-            add_pool_effects(acc, game_config, entity, pool)
-          else
-            Effect.remove_owner_effects(acc, entity_id, pool_id)
-          end
-        end)
-      else
-        game_state
-      end
+    Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
+      Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
+        if entity_id in pool.collides_with and pool.aditional_info.status == :ACTIVATED do
+          add_pool_effects(acc, game_config, entity, pool)
+        else
+          Effect.remove_owner_effects(acc, entity_id, pool.id)
+        end
+      end)
     end)
   end
 
