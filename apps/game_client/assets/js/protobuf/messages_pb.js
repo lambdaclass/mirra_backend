@@ -2394,7 +2394,7 @@ proto.GameFinished.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = msg.getPlayersMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     default:
@@ -2436,7 +2436,7 @@ proto.GameFinished.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
 };
 
@@ -2479,7 +2479,7 @@ proto.GameFinished.prototype.hasWinner = function() {
 
 
 /**
- * map<uint64, Entity> players = 2;
+ * map<uint32, Entity> players = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -2571,7 +2571,7 @@ proto.PingUpdate.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setLatency(value);
       break;
     default:
@@ -2605,7 +2605,7 @@ proto.PingUpdate.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getLatency();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -2614,7 +2614,7 @@ proto.PingUpdate.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 latency = 1;
+ * optional uint32 latency = 1;
  * @return {number}
  */
 proto.PingUpdate.prototype.getLatency = function() {
@@ -2711,7 +2711,7 @@ proto.GameJoined.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setPlayerId(value);
       break;
     case 2:
@@ -2755,7 +2755,7 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getPlayerId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -2780,7 +2780,7 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 player_id = 1;
+ * optional uint32 player_id = 1;
  * @return {number}
  */
 proto.GameJoined.prototype.getPlayerId = function() {
@@ -3597,11 +3597,11 @@ proto.ConfigCharacter.deserializeBinaryFromReader = function(msg, reader) {
       msg.setBaseSize(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setBaseHealth(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setMaxInventorySize(value);
       break;
     case 7:
@@ -3669,14 +3669,14 @@ proto.ConfigCharacter.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getBaseHealth();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       5,
       f
     );
   }
   f = message.getMaxInventorySize();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       6,
       f
     );
@@ -3761,7 +3761,7 @@ proto.ConfigCharacter.prototype.setBaseSize = function(value) {
 
 
 /**
- * optional uint64 base_health = 5;
+ * optional uint32 base_health = 5;
  * @return {number}
  */
 proto.ConfigCharacter.prototype.getBaseHealth = function() {
@@ -3779,7 +3779,7 @@ proto.ConfigCharacter.prototype.setBaseHealth = function(value) {
 
 
 /**
- * optional uint64 max_inventory_size = 6;
+ * optional uint32 max_inventory_size = 6;
  * @return {number}
  */
 proto.ConfigCharacter.prototype.getMaxInventorySize = function() {
@@ -4045,27 +4045,27 @@ proto.ConfigServerUpdate.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setTimestampDifferenceSamplesToCheckWarning(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setTimestampDifferencesSamplesMaxLength(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setShowWarningThreshold(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setStopWarningThreshold(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setMsWithoutUpdateShowWarning(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setMsWithoutUpdateDisconnect(value);
       break;
     default:
@@ -4099,42 +4099,42 @@ proto.ConfigServerUpdate.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTimestampDifferenceSamplesToCheckWarning();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
   }
   f = message.getTimestampDifferencesSamplesMaxLength();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
   }
   f = message.getShowWarningThreshold();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       3,
       f
     );
   }
   f = message.getStopWarningThreshold();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       4,
       f
     );
   }
   f = message.getMsWithoutUpdateShowWarning();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       5,
       f
     );
   }
   f = message.getMsWithoutUpdateDisconnect();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       6,
       f
     );
@@ -4143,7 +4143,7 @@ proto.ConfigServerUpdate.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 timestamp_difference_samples_to_check_warning = 1;
+ * optional uint32 timestamp_difference_samples_to_check_warning = 1;
  * @return {number}
  */
 proto.ConfigServerUpdate.prototype.getTimestampDifferenceSamplesToCheckWarning = function() {
@@ -4161,7 +4161,7 @@ proto.ConfigServerUpdate.prototype.setTimestampDifferenceSamplesToCheckWarning =
 
 
 /**
- * optional uint64 timestamp_differences_samples_max_length = 2;
+ * optional uint32 timestamp_differences_samples_max_length = 2;
  * @return {number}
  */
 proto.ConfigServerUpdate.prototype.getTimestampDifferencesSamplesMaxLength = function() {
@@ -4179,7 +4179,7 @@ proto.ConfigServerUpdate.prototype.setTimestampDifferencesSamplesMaxLength = fun
 
 
 /**
- * optional uint64 show_warning_threshold = 3;
+ * optional uint32 show_warning_threshold = 3;
  * @return {number}
  */
 proto.ConfigServerUpdate.prototype.getShowWarningThreshold = function() {
@@ -4197,7 +4197,7 @@ proto.ConfigServerUpdate.prototype.setShowWarningThreshold = function(value) {
 
 
 /**
- * optional uint64 stop_warning_threshold = 4;
+ * optional uint32 stop_warning_threshold = 4;
  * @return {number}
  */
 proto.ConfigServerUpdate.prototype.getStopWarningThreshold = function() {
@@ -4215,7 +4215,7 @@ proto.ConfigServerUpdate.prototype.setStopWarningThreshold = function(value) {
 
 
 /**
- * optional uint64 ms_without_update_show_warning = 5;
+ * optional uint32 ms_without_update_show_warning = 5;
  * @return {number}
  */
 proto.ConfigServerUpdate.prototype.getMsWithoutUpdateShowWarning = function() {
@@ -4233,7 +4233,7 @@ proto.ConfigServerUpdate.prototype.setMsWithoutUpdateShowWarning = function(valu
 
 
 /**
- * optional uint64 ms_without_update_disconnect = 6;
+ * optional uint32 ms_without_update_disconnect = 6;
  * @return {number}
  */
 proto.ConfigServerUpdate.prototype.getMsWithoutUpdateDisconnect = function() {
@@ -4330,11 +4330,11 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setCooldownMs(value);
       break;
     case 3:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setExecutionDurationMs(value);
       break;
     case 4:
@@ -4350,7 +4350,7 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
       msg.setTargettingRange(value);
       break;
     case 7:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setStaminaCost(value);
       break;
     default:
@@ -4391,14 +4391,14 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getCooldownMs();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
   }
   f = message.getExecutionDurationMs();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       3,
       f
     );
@@ -4426,7 +4426,7 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getStaminaCost();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       7,
       f
     );
@@ -4453,7 +4453,7 @@ proto.ConfigSkill.prototype.setName = function(value) {
 
 
 /**
- * optional uint64 cooldown_ms = 2;
+ * optional uint32 cooldown_ms = 2;
  * @return {number}
  */
 proto.ConfigSkill.prototype.getCooldownMs = function() {
@@ -4471,7 +4471,7 @@ proto.ConfigSkill.prototype.setCooldownMs = function(value) {
 
 
 /**
- * optional uint64 execution_duration_ms = 3;
+ * optional uint32 execution_duration_ms = 3;
  * @return {number}
  */
 proto.ConfigSkill.prototype.getExecutionDurationMs = function() {
@@ -4543,7 +4543,7 @@ proto.ConfigSkill.prototype.setTargettingRange = function(value) {
 
 
 /**
- * optional uint64 stamina_cost = 7;
+ * optional uint32 stamina_cost = 7;
  * @return {number}
  */
 proto.ConfigSkill.prototype.getStaminaCost = function() {
@@ -4661,19 +4661,19 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = msg.getPlayersMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 3:
       var value = msg.getProjectilesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 4:
       var value = msg.getPlayerTimestampsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readInt64, null, 0, 0);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readInt64, null, 0, 0);
          });
       break;
     case 5:
@@ -4693,19 +4693,19 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = msg.getDamageTakenMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readUint64, null, 0, 0);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32, null, 0, 0);
          });
       break;
     case 9:
       var value = msg.getDamageDoneMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readUint64, null, 0, 0);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32, null, 0, 0);
          });
       break;
     case 10:
       var value = msg.getPowerUpsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 11:
@@ -4719,37 +4719,37 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
     case 13:
       var value = msg.getItemsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 14:
       var value = msg.getObstaclesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 15:
       var value = msg.getPoolsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 16:
       var value = msg.getCratesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 17:
       var value = msg.getBushesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     case 18:
       var value = msg.getTrapsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
     default:
@@ -4790,15 +4790,15 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getProjectilesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getPlayerTimestampsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeInt64);
+    f.serializeBinary(4, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeInt64);
   }
   f = message.getServerTimestamp();
   if (f !== 0) {
@@ -4825,15 +4825,15 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getDamageTakenMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(8, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeUint64);
+    f.serializeBinary(8, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeUint32);
   }
   f = message.getDamageDoneMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(9, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeUint64);
+    f.serializeBinary(9, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeUint32);
   }
   f = message.getPowerUpsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getStatus();
   if (f !== 0.0) {
@@ -4851,27 +4851,27 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getItemsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(13, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(13, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getObstaclesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(14, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(14, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getPoolsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(15, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(15, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getCratesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(16, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(16, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getBushesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(17, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(17, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
   f = message.getTrapsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
   }
 };
 
@@ -4895,7 +4895,7 @@ proto.GameState.prototype.setGameId = function(value) {
 
 
 /**
- * map<uint64, Entity> players = 2;
+ * map<uint32, Entity> players = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -4918,7 +4918,7 @@ proto.GameState.prototype.clearPlayersMap = function() {
 
 
 /**
- * map<uint64, Entity> projectiles = 3;
+ * map<uint32, Entity> projectiles = 3;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -4941,7 +4941,7 @@ proto.GameState.prototype.clearProjectilesMap = function() {
 
 
 /**
- * map<uint64, int64> player_timestamps = 4;
+ * map<uint32, int64> player_timestamps = 4;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
@@ -5057,7 +5057,7 @@ proto.GameState.prototype.clearKillfeedList = function() {
 
 
 /**
- * map<uint64, uint64> damage_taken = 8;
+ * map<uint32, uint32> damage_taken = 8;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
@@ -5080,7 +5080,7 @@ proto.GameState.prototype.clearDamageTakenMap = function() {
 
 
 /**
- * map<uint64, uint64> damage_done = 9;
+ * map<uint32, uint32> damage_done = 9;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
@@ -5103,7 +5103,7 @@ proto.GameState.prototype.clearDamageDoneMap = function() {
 
 
 /**
- * map<uint64, Entity> power_ups = 10;
+ * map<uint32, Entity> power_ups = 10;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5162,7 +5162,7 @@ proto.GameState.prototype.setStartGameTimestamp = function(value) {
 
 
 /**
- * map<uint64, Entity> items = 13;
+ * map<uint32, Entity> items = 13;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5185,7 +5185,7 @@ proto.GameState.prototype.clearItemsMap = function() {
 
 
 /**
- * map<uint64, Entity> obstacles = 14;
+ * map<uint32, Entity> obstacles = 14;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5208,7 +5208,7 @@ proto.GameState.prototype.clearObstaclesMap = function() {
 
 
 /**
- * map<uint64, Entity> pools = 15;
+ * map<uint32, Entity> pools = 15;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5231,7 +5231,7 @@ proto.GameState.prototype.clearPoolsMap = function() {
 
 
 /**
- * map<uint64, Entity> crates = 16;
+ * map<uint32, Entity> crates = 16;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5254,7 +5254,7 @@ proto.GameState.prototype.clearCratesMap = function() {
 
 
 /**
- * map<uint64, Entity> bushes = 17;
+ * map<uint32, Entity> bushes = 17;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5277,7 +5277,7 @@ proto.GameState.prototype.clearBushesMap = function() {
 
 
 /**
- * map<uint64, Entity> traps = 18;
+ * map<uint32, Entity> traps = 18;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Entity>}
@@ -5429,7 +5429,7 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setId(value);
       break;
     case 2:
@@ -5459,7 +5459,7 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
       msg.addVertices(value);
       break;
     case 8:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
       for (var i = 0; i < values.length; i++) {
         msg.addCollidesWith(values[i]);
       }
@@ -5553,7 +5553,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -5604,7 +5604,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getCollidesWithList();
   if (f.length > 0) {
-    writer.writePackedUint64(
+    writer.writePackedUint32(
       8,
       f
     );
@@ -5707,7 +5707,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 id = 1;
+ * optional uint32 id = 1;
  * @return {number}
  */
 proto.Entity.prototype.getId = function() {
@@ -5872,7 +5872,7 @@ proto.Entity.prototype.clearVerticesList = function() {
 
 
 /**
- * repeated uint64 collides_with = 8;
+ * repeated uint32 collides_with = 8;
  * @return {!Array<number>}
  */
 proto.Entity.prototype.getCollidesWithList = function() {
@@ -6407,11 +6407,11 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setHealth(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setKillCount(value);
       break;
     case 3:
@@ -6420,15 +6420,15 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.addCurrentActions(value);
       break;
     case 4:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setAvailableStamina(value);
       break;
     case 5:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setMaxStamina(value);
       break;
     case 6:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setStaminaInterval(value);
       break;
     case 7:
@@ -6440,7 +6440,7 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setCharacterName(value);
       break;
     case 9:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setPowerUps(value);
       break;
     case 10:
@@ -6456,11 +6456,11 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 12:
       var value = msg.getCooldownsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint64, null, "", 0);
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readUint32, null, "", 0);
          });
       break;
     case 13:
-      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint64() : [reader.readUint64()]);
+      var values = /** @type {!Array<number>} */ (reader.isDelimited() ? reader.readPackedUint32() : [reader.readUint32()]);
       for (var i = 0; i < values.length; i++) {
         msg.addVisiblePlayers(values[i]);
       }
@@ -6504,14 +6504,14 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getHealth();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
   }
   f = message.getKillCount();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
@@ -6526,21 +6526,21 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getAvailableStamina();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       4,
       f
     );
   }
   f = message.getMaxStamina();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       5,
       f
     );
   }
   f = message.getStaminaInterval();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       6,
       f
     );
@@ -6561,7 +6561,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getPowerUps();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       9,
       f
     );
@@ -6584,11 +6584,11 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getCooldownsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint64);
+    f.serializeBinary(12, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeUint32);
   }
   f = message.getVisiblePlayersList();
   if (f.length > 0) {
-    writer.writePackedUint64(
+    writer.writePackedUint32(
       13,
       f
     );
@@ -6611,7 +6611,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 health = 1;
+ * optional uint32 health = 1;
  * @return {number}
  */
 proto.Player.prototype.getHealth = function() {
@@ -6629,7 +6629,7 @@ proto.Player.prototype.setHealth = function(value) {
 
 
 /**
- * optional uint64 kill_count = 2;
+ * optional uint32 kill_count = 2;
  * @return {number}
  */
 proto.Player.prototype.getKillCount = function() {
@@ -6685,7 +6685,7 @@ proto.Player.prototype.clearCurrentActionsList = function() {
 
 
 /**
- * optional uint64 available_stamina = 4;
+ * optional uint32 available_stamina = 4;
  * @return {number}
  */
 proto.Player.prototype.getAvailableStamina = function() {
@@ -6703,7 +6703,7 @@ proto.Player.prototype.setAvailableStamina = function(value) {
 
 
 /**
- * optional uint64 max_stamina = 5;
+ * optional uint32 max_stamina = 5;
  * @return {number}
  */
 proto.Player.prototype.getMaxStamina = function() {
@@ -6721,7 +6721,7 @@ proto.Player.prototype.setMaxStamina = function(value) {
 
 
 /**
- * optional uint64 stamina_interval = 6;
+ * optional uint32 stamina_interval = 6;
  * @return {number}
  */
 proto.Player.prototype.getStaminaInterval = function() {
@@ -6775,7 +6775,7 @@ proto.Player.prototype.setCharacterName = function(value) {
 
 
 /**
- * optional uint64 power_ups = 9;
+ * optional uint32 power_ups = 9;
  * @return {number}
  */
 proto.Player.prototype.getPowerUps = function() {
@@ -6868,7 +6868,7 @@ proto.Player.prototype.hasInventory = function() {
 
 
 /**
- * map<string, uint64> cooldowns = 12;
+ * map<string, uint32> cooldowns = 12;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,number>}
@@ -6891,7 +6891,7 @@ proto.Player.prototype.clearCooldownsMap = function() {
 
 
 /**
- * repeated uint64 visible_players = 13;
+ * repeated uint32 visible_players = 13;
  * @return {!Array<number>}
  */
 proto.Player.prototype.getVisiblePlayersList = function() {
@@ -7326,11 +7326,11 @@ proto.Projectile.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setDamage(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setOwnerId(value);
       break;
     case 3:
@@ -7372,14 +7372,14 @@ proto.Projectile.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getDamage();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
   }
   f = message.getOwnerId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
@@ -7402,7 +7402,7 @@ proto.Projectile.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 damage = 1;
+ * optional uint32 damage = 1;
  * @return {number}
  */
 proto.Projectile.prototype.getDamage = function() {
@@ -7420,7 +7420,7 @@ proto.Projectile.prototype.setDamage = function(value) {
 
 
 /**
- * optional uint64 owner_id = 2;
+ * optional uint32 owner_id = 2;
  * @return {number}
  */
 proto.Projectile.prototype.getOwnerId = function() {
@@ -7674,7 +7674,7 @@ proto.PowerUp.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setOwnerId(value);
       break;
     case 2:
@@ -7712,7 +7712,7 @@ proto.PowerUp.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getOwnerId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -7728,7 +7728,7 @@ proto.PowerUp.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 owner_id = 1;
+ * optional uint32 owner_id = 1;
  * @return {number}
  */
 proto.PowerUp.prototype.getOwnerId = function() {
@@ -7835,11 +7835,11 @@ proto.Crate.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setHealth(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setAmountOfPowerUps(value);
       break;
     case 3:
@@ -7877,14 +7877,14 @@ proto.Crate.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getHealth();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
   }
   f = message.getAmountOfPowerUps();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
@@ -7900,7 +7900,7 @@ proto.Crate.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 health = 1;
+ * optional uint32 health = 1;
  * @return {number}
  */
 proto.Crate.prototype.getHealth = function() {
@@ -7918,7 +7918,7 @@ proto.Crate.prototype.setHealth = function(value) {
 
 
 /**
- * optional uint64 amount_of_power_ups = 2;
+ * optional uint32 amount_of_power_ups = 2;
  * @return {number}
  */
 proto.Crate.prototype.getAmountOfPowerUps = function() {
@@ -8023,7 +8023,7 @@ proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setOwnerId(value);
       break;
     default:
@@ -8057,7 +8057,7 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getOwnerId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -8066,7 +8066,7 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 owner_id = 1;
+ * optional uint32 owner_id = 1;
  * @return {number}
  */
 proto.Pool.prototype.getOwnerId = function() {
@@ -8256,7 +8256,7 @@ proto.Trap.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setOwnerId(value);
       break;
     case 2:
@@ -8298,7 +8298,7 @@ proto.Trap.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getOwnerId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -8321,7 +8321,7 @@ proto.Trap.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 owner_id = 1;
+ * optional uint32 owner_id = 1;
  * @return {number}
  */
 proto.Trap.prototype.getOwnerId = function() {
@@ -8451,7 +8451,7 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
       msg.setAction(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setDuration(value);
       break;
     case 3:
@@ -8502,7 +8502,7 @@ proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getDuration();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
@@ -8545,7 +8545,7 @@ proto.PlayerAction.prototype.setAction = function(value) {
 
 
 /**
- * optional uint64 duration = 2;
+ * optional uint32 duration = 2;
  * @return {number}
  */
 proto.PlayerAction.prototype.getDuration = function() {
@@ -9189,7 +9189,7 @@ proto.UseItem.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setItem(value);
       break;
     default:
@@ -9223,7 +9223,7 @@ proto.UseItem.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getItem();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
@@ -9232,7 +9232,7 @@ proto.UseItem.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 item = 1;
+ * optional uint32 item = 1;
  * @return {number}
  */
 proto.UseItem.prototype.getItem = function() {
@@ -10520,11 +10520,11 @@ proto.KillEntry.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setKillerId(value);
       break;
     case 2:
-      var value = /** @type {number} */ (reader.readUint64());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setVictimId(value);
       break;
     default:
@@ -10558,14 +10558,14 @@ proto.KillEntry.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getKillerId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       1,
       f
     );
   }
   f = message.getVictimId();
   if (f !== 0) {
-    writer.writeUint64(
+    writer.writeUint32(
       2,
       f
     );
@@ -10574,7 +10574,7 @@ proto.KillEntry.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional uint64 killer_id = 1;
+ * optional uint32 killer_id = 1;
  * @return {number}
  */
 proto.KillEntry.prototype.getKillerId = function() {
@@ -10592,7 +10592,7 @@ proto.KillEntry.prototype.setKillerId = function(value) {
 
 
 /**
- * optional uint64 victim_id = 2;
+ * optional uint32 victim_id = 2;
  * @return {number}
  */
 proto.KillEntry.prototype.getVictimId = function() {

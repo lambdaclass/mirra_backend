@@ -45,15 +45,15 @@ message GameEvent {
 
 message GameFinished {
   Entity winner = 1;
-  map<uint64, Entity> players = 2;
+  map<uint32, Entity> players = 2;
 }
 
 message PingUpdate {
-  uint64 latency = 1;
+  uint32 latency = 1;
 }
 
 message GameJoined {
-  uint64 player_id = 1;
+  uint32 player_id = 1;
   Configuration config = 2;
   repeated BountyInfo bounties = 3;
 }
@@ -80,8 +80,8 @@ message ConfigCharacter {
   bool active = 2;
   float base_speed = 3;
   float base_size = 4;
-  uint64 base_health = 5;
-  uint64 max_inventory_size = 6;
+  uint32 base_health = 5;
+  uint32 max_inventory_size = 6;
   map<string, ConfigSkill> skills = 7;
 }
 
@@ -90,22 +90,22 @@ message ClientConfig {
 }
 
 message ConfigServerUpdate {
-  uint64 timestamp_difference_samples_to_check_warning = 1;
-  uint64 timestamp_differences_samples_max_length = 2;
-  uint64 show_warning_threshold = 3;
-  uint64 stop_warning_threshold = 4;
-  uint64 ms_without_update_show_warning = 5;
-  uint64 ms_without_update_disconnect = 6;
+  uint32 timestamp_difference_samples_to_check_warning = 1;
+  uint32 timestamp_differences_samples_max_length = 2;
+  uint32 show_warning_threshold = 3;
+  uint32 stop_warning_threshold = 4;
+  uint32 ms_without_update_show_warning = 5;
+  uint32 ms_without_update_disconnect = 6;
 }
 
 message ConfigSkill {
   string name = 1;
-  uint64 cooldown_ms = 2;
-  uint64 execution_duration_ms = 3;
+  uint32 cooldown_ms = 2;
+  uint32 execution_duration_ms = 3;
   float targetting_radius = 4;
   float targetting_angle = 5;
   float targetting_range = 6;
-  uint64 stamina_cost = 7;
+  uint32 stamina_cost = 7;
 }
 
 
@@ -114,23 +114,23 @@ message ConfigSkill {
  */
 message GameState {
   string game_id = 1;
-  map<uint64, Entity> players = 2;
-  map<uint64, Entity> projectiles = 3;
-  map<uint64, int64> player_timestamps = 4;
+  map<uint32, Entity> players = 2;
+  map<uint32, Entity> projectiles = 3;
+  map<uint32, int64> player_timestamps = 4;
   int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
-  map<uint64, uint64> damage_taken = 8;
-  map<uint64, uint64> damage_done = 9;
-  map<uint64, Entity> power_ups = 10;
+  map<uint32, uint32> damage_taken = 8;
+  map<uint32, uint32> damage_done = 9;
+  map<uint32, Entity> power_ups = 10;
   GameStatus status = 11;
   int64 start_game_timestamp = 12;
-  map<uint64, Entity> items = 13;
-  map<uint64, Entity> obstacles = 14;
-  map<uint64, Entity> pools = 15;
-  map<uint64, Entity> crates = 16;
-  map<uint64, Entity> bushes = 17;
-  map<uint64, Entity> traps = 18;
+  map<uint32, Entity> items = 13;
+  map<uint32, Entity> obstacles = 14;
+  map<uint32, Entity> pools = 15;
+  map<uint32, Entity> crates = 16;
+  map<uint32, Entity> bushes = 17;
+  map<uint32, Entity> traps = 18;
 }
 
 enum GameStatus {
@@ -155,14 +155,14 @@ enum GameStatus {
  * is_moving: true if the entity is moving
  */
 message Entity {
-  uint64 id = 1;
+  uint32 id = 1;
   string category = 2;
   string shape = 3;
   string name = 4;
   Position position = 5;
   float radius = 6;
   repeated Position vertices = 7;
-  repeated uint64 collides_with = 8;
+  repeated uint32 collides_with = 8;
   float speed = 9;
   Direction direction = 10;
   bool is_moving = 11;
@@ -180,19 +180,19 @@ message Entity {
 }
 
 message Player {
-  uint64 health = 1;
-  uint64 kill_count = 2;
+  uint32 health = 1;
+  uint32 kill_count = 2;
   repeated PlayerAction current_actions = 3;
-  uint64 available_stamina = 4;
-  uint64 max_stamina = 5;
-  uint64 stamina_interval = 6;
+  uint32 available_stamina = 4;
+  uint32 max_stamina = 5;
+  uint32 stamina_interval = 6;
   bool recharging_stamina = 7;
   string character_name = 8;
-  uint64 power_ups = 9;
+  uint32 power_ups = 9;
   repeated Effect effects = 10;
   Item inventory = 11;
-  map<string, uint64> cooldowns = 12;
-  repeated uint64 visible_players = 13;
+  map<string, uint32> cooldowns = 12;
+  repeated uint32 visible_players = 13;
   bool on_bush = 14;
   bool forced_movement = 15;
 }
@@ -207,8 +207,8 @@ message Item {
 }
 
 message Projectile {
-  uint64 damage = 1;
-  uint64 owner_id = 2;
+  uint32 damage = 1;
+  uint32 owner_id = 2;
   ProjectileStatus status = 3;
   string skill_key = 4;
 }
@@ -224,13 +224,13 @@ message Obstacle {
 }
 
 message PowerUp {
-  uint64 owner_id = 1;
+  uint32 owner_id = 1;
   PowerUpstatus status = 2;
 }
 
 message Crate {
-  uint64 health = 1;
-  uint64 amount_of_power_ups = 2;
+  uint32 health = 1;
+  uint32 amount_of_power_ups = 2;
   CrateStatus status = 3;
 }
 
@@ -246,21 +246,21 @@ enum  PowerUpstatus {
 }
 
 message Pool {
-  uint64 owner_id = 1;
+  uint32 owner_id = 1;
 }
 
 message Bush {
 }
 
 message Trap {
-  uint64 owner_id = 1;
+  uint32 owner_id = 1;
   string name = 2;
   TrapStatus status = 3;
 }
 
 message PlayerAction {
     PlayerActionType action = 1;
-    uint64 duration = 2;
+    uint32 duration = 2;
     Position destination = 3;
     Position direction = 4;
 }
@@ -298,7 +298,7 @@ message AttackParameters {
 }
 
 message UseItem {
-  uint64 item = 1;
+  uint32 item = 1;
 }
 
 message SelectBounty {
@@ -332,8 +332,8 @@ message Zone {
 }
 
 message KillEntry {
-  uint64 killer_id = 1;
-  uint64 victim_id = 2;
+  uint32 killer_id = 1;
+  uint32 victim_id = 2;
 }
 
 message BountyInfo {
