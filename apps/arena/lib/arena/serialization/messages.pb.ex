@@ -35,6 +35,7 @@ defmodule Arena.Serialization.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule Arena.Serialization.PlayerActionType do
@@ -498,6 +499,7 @@ defmodule Arena.Serialization.Player do
   field(:cooldowns, 12, repeated: true, type: Arena.Serialization.Player.CooldownsEntry, map: true)
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
 end
 
 defmodule Arena.Serialization.Effect do

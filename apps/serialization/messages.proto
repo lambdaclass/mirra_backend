@@ -193,7 +193,8 @@ message Player {
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
   repeated uint64 visible_players = 13;
-  bool on_bush  = 14;
+  bool on_bush = 14;
+  bool forced_movement = 15;
 }
 
 message Effect {
@@ -241,6 +242,7 @@ enum CrateStatus {
 enum  PowerUpstatus {
   AVAILABLE = 0;
   TAKEN = 1;
+  UNAVAILABLE = 2;
 }
 
 message Pool {
