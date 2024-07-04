@@ -581,7 +581,8 @@ defmodule Arena.GameUpdater do
       put_in(state, [:game_state, :did_timeout], true)
 
     game_state =
-      Enum.reduce(Player.alive_players(state.game_state.players), state.game_state, fn {player_id, _player}, game_state ->
+      Enum.reduce(Player.alive_players(state.game_state.players), state.game_state, fn {player_id, _player},
+                                                                                       game_state ->
         update_in(game_state, [:players, player_id], fn player ->
           Player.kill_player(player)
         end)
