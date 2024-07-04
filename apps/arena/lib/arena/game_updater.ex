@@ -557,6 +557,13 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:activate_pool, pool_id}, state) do
+    state =
+      put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :ACTIVATED)
+
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -1440,13 +1447,17 @@ defmodule Arena.GameUpdater do
     entities = Map.merge(crates, players)
 
     Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
-      Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
-        if entity_id in pool.collides_with do
-          add_pool_effects(acc, game_config, entity, pool)
-        else
-          Effect.remove_owner_effects(acc, entity_id, pool_id)
-        end
-      end)
+      if pool.aditional_info.status == :ACTIVATED do
+        Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
+          if entity_id in pool.collides_with do
+            add_pool_effects(acc, game_config, entity, pool)
+          else
+            Effect.remove_owner_effects(acc, entity_id, pool_id)
+          end
+        end)
+      else
+        game_state
+      end
     end)
   end
 
