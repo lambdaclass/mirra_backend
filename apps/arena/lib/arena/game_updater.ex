@@ -260,7 +260,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:end_game_check, last_players_ids}, state) do
-    case check_game_ended(state.game_state.players, last_players_ids, state) do
+    case check_game_ended(state.game_state.players, last_players_ids) do
       {:ongoing, players_ids} ->
         Process.send_after(
           self(),
@@ -577,9 +577,6 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:match_timeout, state) do
-    state =
-      put_in(state, [:game_state, :did_timeout], true)
-
     game_state =
       Enum.reduce(Player.alive_players(state.game_state.players), state.game_state, fn {player_id, _player},
                                                                                        game_state ->
@@ -712,7 +709,6 @@ defmodule Arena.GameUpdater do
       |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
-      |> Map.put(:did_timeout, false)
 
     {game, _} =
       Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
@@ -1237,7 +1233,7 @@ defmodule Arena.GameUpdater do
   end
 
   # Check if game has ended
-  defp check_game_ended(players, last_players_ids, state) do
+  defp check_game_ended(players, last_players_ids) do
     players_alive =
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
@@ -1249,10 +1245,6 @@ defmodule Arena.GameUpdater do
       Enum.empty?(players_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
-        player = Map.get(players, Enum.random(last_players_ids))
-        {:ended, player}
-
-      state.game_state.did_timeout ->
         player = Map.get(players, Enum.random(last_players_ids))
         {:ended, player}
 
