@@ -229,7 +229,7 @@ Champions.Config.import_dungeon_levels_config()
 muflus_params = %{
   name: "muflus",
   active: true,
-  base_speed: 17.5,
+  base_speed: 0.63,
   base_size: 110.0,
   base_health: 440,
   base_stamina: 3,
@@ -247,7 +247,7 @@ muflus_params = %{
 h4ck_params = %{
   name: "h4ck",
   active: true,
-  base_speed: 22.5,
+  base_speed: 0.7,
   base_size: 90.0,
   base_health: 400,
   base_stamina: 3,
@@ -265,7 +265,7 @@ h4ck_params = %{
 uma_params = %{
   name: "uma",
   active: true,
-  base_speed: 20.0,
+  base_speed: 0.67,
   base_size: 95.0,
   base_health: 400,
   base_stamina: 3,
@@ -283,7 +283,7 @@ uma_params = %{
 valtimer_params = %{
   name: "valtimer",
   active: false,
-  base_speed: 20.0,
+  base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
   base_stamina: 3,
