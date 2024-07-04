@@ -14,9 +14,11 @@
   <:col :let={character} label="Base size"><%= character.base_size %></:col>
   <:col :let={character} label="Base health"><%= character.base_health %></:col>
   <:col :let={character} label="Base stamina"><%= character.base_stamina %></:col>
-  <:col :let={character} label="Basic skill"><%= character.basic_skill.name %></:col>
-  <:col :let={character} label="Dash skill"><%= character.dash_skill.name %></:col>
-  <:col :let={character} label="Ultimate skill"><%= character.ultimate_skill.name %></:col>
+  <:col :let={character} label="Basic skill"><%= if character.basic_skill, do: character.basic_skill.name %></:col>
+  <:col :let={character} label="Dash skill"><%= if character.dash_skill, do: character.dash_skill.name %></:col>
+  <:col :let={character} label="Ultimate skill">
+    <%= if character.ultimate_skill, do: character.ultimate_skill.name %>
+  </:col>
 
   <:action :let={character}>
     <div class="sr-only">

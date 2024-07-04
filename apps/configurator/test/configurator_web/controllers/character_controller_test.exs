@@ -62,7 +62,7 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
       assert redirected_to(conn) == ~p"/characters/#{id}"
 
       conn = get(conn, ~p"/characters/#{id}")
-      assert html_response(conn, 200) =~ "Character #{id}"
+      assert html_response(conn, 200) =~ "Character #{@create_attrs[:name]}"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do

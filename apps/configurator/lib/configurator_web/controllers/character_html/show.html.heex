@@ -19,9 +19,9 @@
   <:item title="Max inventory size"><%= @character.max_inventory_size %></:item>
   <:item title="Natural healing interval"><%= @character.natural_healing_interval %></:item>
   <:item title="Natural healing damage interval"><%= @character.natural_healing_damage_interval %></:item>
-  <:item title="Basic skill"><%= @character.basic_skill.name %></:item>
-  <:item title="Dash skill"><%= @character.dash_skill.name %></:item>
-  <:item title="Ultimate skill"><%= @character.ultimate_skill.name %></:item>
+  <:item title="Basic skill"><%= if @character.basic_skill, do: @character.basic_skill.name %></:item>
+  <:item title="Dash skill"><%= if @character.dash_skill, do: @character.dash_skill.name %></:item>
+  <:item title="Ultimate skill"><%= if @character.ultimate_skill, do: @character.ultimate_skill.name %></:item>
 </.list>
 
 <.back navigate={~p"/characters"}>Back to characters</.back>
