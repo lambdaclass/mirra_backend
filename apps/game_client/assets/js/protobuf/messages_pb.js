@@ -11042,7 +11042,8 @@ proto.CrateStatus = {
  */
 proto.PowerUpstatus = {
   AVAILABLE: 0,
-  TAKEN: 1
+  TAKEN: 1,
+  UNAVAILABLE: 2
 };
 
 /**

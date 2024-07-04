@@ -242,6 +242,7 @@ enum CrateStatus {
 enum  PowerUpstatus {
   AVAILABLE = 0;
   TAKEN = 1;
+  UNAVAILABLE = 2;
 }
 
 message Pool {
