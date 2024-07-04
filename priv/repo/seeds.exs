@@ -306,4 +306,6 @@ valtimer_params = %{
   |> Characters.insert_character()
 end)
 
+GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
+
 ################### END CURSE OF MIRRA ###################
