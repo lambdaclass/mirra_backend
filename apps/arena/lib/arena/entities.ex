@@ -161,7 +161,7 @@ defmodule Arena.Entities do
         duration_ms: duration_ms,
         pull_immunity: true,
         spawn_at: spawn_at,
-        status: :ACTIVATING
+        status: :WAITING
       },
       collides_with: []
     }

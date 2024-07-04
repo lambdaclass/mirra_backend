@@ -283,8 +283,8 @@ enum TrapStatus{
 }
 
 enum PoolStatus{
-  ACTIVATING = 0;
-  ACTIVATED = 1;
+  WAITING = 0;
+  READY = 1;
 }
 
 /*

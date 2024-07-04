@@ -67,8 +67,8 @@ defmodule GameClient.Protobuf.PoolStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:ACTIVATING, 0)
-  field(:ACTIVATED, 1)
+  field(:WAITING, 0)
+  field(:READY, 1)
 end
 
 defmodule GameClient.Protobuf.Direction do

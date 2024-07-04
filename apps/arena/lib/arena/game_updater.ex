@@ -577,7 +577,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info({:activate_pool, pool_id}, state) do
     state =
-      put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :ACTIVATED)
+      put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
 
     {:noreply, state}
   end
@@ -1473,7 +1473,7 @@ defmodule Arena.GameUpdater do
 
     Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
-        if entity_id in pool.collides_with and pool.aditional_info.status == :ACTIVATED do
+        if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, game_config, entity, pool)
         else
           Effect.remove_owner_effects(acc, entity_id, pool.id)

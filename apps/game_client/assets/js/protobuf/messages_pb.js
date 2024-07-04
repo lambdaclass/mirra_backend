@@ -11103,8 +11103,8 @@ proto.TrapStatus = {
  * @enum {number}
  */
 proto.PoolStatus = {
-  ACTIVATING: 0,
-  ACTIVATED: 1
+  WAITING: 0,
+  READY: 1
 };
 
 goog.object.extend(exports, proto);
