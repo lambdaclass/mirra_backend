@@ -111,16 +111,20 @@ defmodule Arena.GameLauncher do
   end
 
   defp get_bot_clients(missing_clients) do
-    characters =
-      Arena.Configuration.get_game_config()
-      |> Map.get(:characters)
-      |> Enum.filter(fn character -> character.active end)
+    if System.get_env("SPAWN_BOTS") == "true" do
+      characters =
+        Arena.Configuration.get_game_config()
+        |> Map.get(:characters)
+        |> Enum.filter(fn character -> character.active end)
 
-    Enum.map(1..missing_clients//1, fn i ->
-      client_id = UUID.generate()
+      Enum.map(1..missing_clients//1, fn i ->
+        client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
-    end)
+        {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+      end)
+    else
+      []
+    end
   end
 
   defp spawn_bot_for_player(bot_clients, game_id) do
