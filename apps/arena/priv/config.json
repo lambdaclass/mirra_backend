@@ -95,7 +95,7 @@
             "y": 4300.0
           }
         ],
-        "status": "underground",
+        "base_status": "underground",
         "statuses_cycle": {
           "underground": {
             "transition_time_ms": 3000,
@@ -162,7 +162,7 @@
             "y": -1250.0
           }
         ],
-        "status": "underground",
+        "base_status": "underground",
         "statuses_cycle": {
           "underground": {
             "transition_time_ms": 3000,
