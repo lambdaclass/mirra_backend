@@ -1280,7 +1280,7 @@
       "one_time_application": true,
       "effect_mechanics": {
         "speed_boost": {
-          "modifier": 0.02,
+          "modifier": 0.5,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }
@@ -1327,7 +1327,7 @@
           "execute_multiple_times": true
         },
         "speed_boost": {
-          "modifier": -0.009,
+          "modifier": -0.25,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
