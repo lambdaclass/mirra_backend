@@ -69,6 +69,140 @@
         "vertices": []
       },
       {
+        "name": "test_spike_1",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": 2600.0,
+            "y": 3350.0
+          },
+          {
+            "x": 2350.0,
+            "y": 3700.0
+          },
+          {
+            "x": 3000.0,
+            "y": 4550.0
+          },
+          {
+            "x": 3350.0,
+            "y": 4300.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": 2600.0,
+                    "y": 3350.0
+                  },
+                  {
+                    "x": 2350.0,
+                    "y": 3700.0
+                  },
+                  {
+                    "x": 3000.0,
+                    "y": 4550.0
+                  },
+                  {
+                    "x": 3350.0,
+                    "y": 4300.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
+        "name": "test_spike_2",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": -4100.0,
+            "y": -1250.0
+          },
+          {
+            "x": -4100.0,
+            "y": -900.0
+          },
+          {
+            "x": -5500.0,
+            "y": -900.0
+          },
+          {
+            "x": -5500.0,
+            "y": -1250.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": -4100.0,
+                    "y": -1250.0
+                  },
+                  {
+                    "x": -4100.0,
+                    "y": -900.0
+                  },
+                  {
+                    "x": -5500.0,
+                    "y": -900.0
+                  },
+                  {
+                    "x": -5500.0,
+                    "y": -1250.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
         "name": "middle stone north",
         "position": {
           "x": 0.0,
