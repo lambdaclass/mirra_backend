@@ -246,8 +246,11 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:game_start, state) do
     broadcast_enable_incomming_messages(state.game_state.game_id)
+
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
+
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
@@ -585,6 +588,18 @@ defmodule Arena.GameUpdater do
       state.game_state
       |> update_in([:power_ups, power_up_id], fn power_up ->
         put_in(power_up, [:aditional_info, :status], :AVAILABLE)
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info(:match_timeout, state) do
+    game_state =
+      Enum.reduce(Player.alive_players(state.game_state.players), state.game_state, fn {player_id, _player},
+                                                                                       game_state ->
+        update_in(game_state, [:players, player_id], fn player ->
+          Player.kill_player(player)
+        end)
       end)
 
     {:noreply, Map.put(state, :game_state, game_state)}
@@ -1260,17 +1275,17 @@ defmodule Arena.GameUpdater do
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
 
-    case players_alive do
-      [player] when map_size(players) > 1 ->
-        {:ended, player}
+    cond do
+      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
+        {:ended, hd(players_alive)}
 
-      [] ->
+      Enum.empty?(players_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
         player = Map.get(players, Enum.random(last_players_ids))
         {:ended, player}
 
-      _ ->
+      true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}
     end
   end

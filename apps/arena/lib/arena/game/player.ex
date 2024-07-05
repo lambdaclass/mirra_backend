@@ -44,6 +44,18 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def kill_player(player) do
+    # The zone will be the one killing th character
+    send(self(), {:to_killfeed, 9999, player.id})
+
+    Map.update!(player, :aditional_info, fn info ->
+      %{
+        info
+        | health: 0
+      }
+    end)
+  end
+
   def trigger_natural_healings(players) do
     Enum.reduce(players, %{}, fn {player_id, player}, players_acc ->
       player = maybe_trigger_natural_heal(player, alive?(player))
