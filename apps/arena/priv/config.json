@@ -45,6 +45,7 @@
     ],
     "obstacles": [
       {
+        "name": "door",
         "position": {
           "x": -6957.6,
           "y": -1657.85
@@ -57,6 +58,7 @@
         "vertices": []
       },
       {
+        "name": "sand_cascade",
         "position": {
           "x": -3998.0,
           "y": 3939.0
