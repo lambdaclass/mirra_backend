@@ -6997,7 +6997,8 @@ proto.Effect.prototype.toObject = function(opt_includeInstance) {
 proto.Effect.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    id: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -7042,6 +7043,10 @@ proto.Effect.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint32());
       msg.setDurationMs(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setId(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7085,6 +7090,13 @@ proto.Effect.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getId();
+  if (f !== 0) {
+    writer.writeUint64(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7121,6 +7133,24 @@ proto.Effect.prototype.getDurationMs = function() {
  */
 proto.Effect.prototype.setDurationMs = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional uint64 id = 3;
+ * @return {number}
+ */
+proto.Effect.prototype.getId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Effect} returns this
+ */
+proto.Effect.prototype.setId = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
