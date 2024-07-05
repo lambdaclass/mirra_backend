@@ -205,7 +205,7 @@ defmodule Arena.Entities do
       aditional_info: %{
         collisionable: obstacle_collisionable?(params),
         statuses_cycle: params.statuses_cycle,
-        status: params.status,
+        status: params.base_status,
         type: params.type
       }
     }
@@ -457,7 +457,7 @@ defmodule Arena.Entities do
   end
 
   def obstacle_collisionable?(params) do
-    %{status: base_status, statuses_cycle: statuses_cycle} = params
+    %{base_status: base_status, statuses_cycle: statuses_cycle} = params
 
     base_status_params =
       Map.get(statuses_cycle, String.to_existing_atom(base_status))
