@@ -117,6 +117,7 @@ config :arena, Arena.Mailer, adapter: Swoosh.Adapters.Local
 
 # Amount of clients needed to start a game
 config :arena, :players_needed_in_match, 10
+config :arena, :spawn_bots, false
 
 ################################
 # App configuration: champions #
