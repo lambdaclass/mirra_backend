@@ -111,7 +111,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         owner_id: owner_id,
-        status: :AVAILABLE,
+        status: :UNAVAILABLE,
         remove_on_collision: true,
         pull_immunity: true,
         power_up_damage_modifier: power_up.power_up_damage_modifier,
@@ -232,7 +232,8 @@ defmodule Arena.Entities do
         shape: shape,
         vertices: vertices,
         health: health,
-        amount_of_power_ups: amount_of_power_ups
+        amount_of_power_ups: amount_of_power_ups,
+        power_up_spawn_delay_ms: power_up_spawn_delay_ms
       }) do
     %{
       id: id,
@@ -253,7 +254,8 @@ defmodule Arena.Entities do
         amount_of_power_ups: amount_of_power_ups,
         status: :FINE,
         pull_immunity: true,
-        effects: []
+        effects: [],
+        power_up_spawn_delay_ms: power_up_spawn_delay_ms
       },
       collides_with: []
     }
