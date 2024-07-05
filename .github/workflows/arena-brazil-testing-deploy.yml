@@ -1,6 +1,12 @@
 name: Deploy to Brazil Arena testing
 on:
   workflow_dispatch:
+    inputs:
+      spawn_bots:
+        type: boolean
+        description: Spawn additional players as bots in matches
+        required: true
+        default: true
 
 jobs:
   build-deploy:
@@ -57,6 +63,7 @@ jobs:
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          SPAWN_BOTS: ${{ inputs.spawn_bots }}
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
@@ -74,4 +81,5 @@ jobs:
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
                 DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
+                SPAWN_BOTS=${SPAWN_BOTS} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh

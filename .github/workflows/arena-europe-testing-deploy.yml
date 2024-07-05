@@ -1,6 +1,12 @@
 name: Deploy to Europe Arena testing
 on:
   workflow_dispatch:
+    inputs:
+      spawn_bots:
+        type: boolean
+        description: Spawn additional players as bots in matches
+        required: true
+        default: true
 
 jobs:
   build-deploy:
