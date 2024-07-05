@@ -1,26 +1,25 @@
 defmodule Arena.GameLauncher do
   @moduledoc false
   alias Arena.Utils
-  alias Ecto.UUID
 
   use GenServer
 
   # Time to wait to start game with any amount of clients
   @start_timeout_ms 10_000
   # The available names for bots to enter a match, we should change this in the future
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas"
-  ]
+  # @bot_names [
+  #   "TheBlackSwordman",
+  #   "SlashJava",
+  #   "SteelBallRun",
+  #   "Jeff",
+  #   "Messi",
+  #   "Stone Ocean",
+  #   "Jeepers Creepers",
+  #   "Bob",
+  #   "El javo",
+  #   "Alberso",
+  #   "Thomas"
+  # ]
 
   # API
   def start_link(_) do
@@ -110,40 +109,42 @@ defmodule Arena.GameLauncher do
     batch_start_at
   end
 
-  defp get_bot_clients(missing_clients) do
-    characters =
-      Arena.Configuration.get_game_config()
-      |> Map.get(:characters)
-      |> Enum.filter(fn character -> character.active end)
+  # We will no longer spawn bots until we can develop a way to decide this on demand
+  # https://github.com/lambdaclass/mirra_backend/issues/753
+  # defp get_bot_clients(missing_clients) do
+  #   characters =
+  #     Arena.Configuration.get_game_config()
+  #     |> Map.get(:characters)
+  #     |> Enum.filter(fn character -> character.active end)
 
-    Enum.map(1..missing_clients//1, fn i ->
-      client_id = UUID.generate()
+  #   Enum.map(1..missing_clients//1, fn i ->
+  #     client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
-    end)
-  end
+  #     {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+  #   end)
+  # end
 
-  defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-      send(self(), {:spawn_bot_for_player, bot_client, game_id})
-    end)
-  end
+  # defp spawn_bot_for_player(bot_clients, game_id) do
+  #   Enum.each(bot_clients, fn {bot_client, _, _, _} ->
+  #     send(self(), {:spawn_bot_for_player, bot_client, game_id})
+  #   end)
+  # end
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
-    bot_clients = get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+    # bot_clients = get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{
         clients: clients,
-        bot_clients: bot_clients,
+        bot_clients: [],
         game_params: game_params
       })
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
-    spawn_bot_for_player(bot_clients, game_id)
+    # spawn_bot_for_player(bot_clients, game_id)
 
     Enum.each(clients, fn {_client_id, _character_name, _player_name, from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])

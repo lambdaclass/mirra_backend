@@ -5,7 +5,6 @@ defmodule Arena.GameSocketHandler do
   require Logger
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
-  alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
   alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
@@ -160,15 +159,16 @@ defmodule Arena.GameSocketHandler do
     {:reply, {:binary, Jason.encode!(%{})}, state}
   end
 
-  @impl true
-  def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
-    spawn(fn ->
-      Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
-      |> Finch.request(Arena.Finch)
-    end)
+  # Reimplement this: https://github.com/lambdaclass/mirra_backend/issues/753
+  # @impl true
+  # def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
+  #   spawn(fn ->
+  #     Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
+  #     |> Finch.request(Arena.Finch)
+  #   end)
 
-    :ok
-  end
+  #   :ok
+  # end
 
   @impl true
   def terminate(_reason, _req, _state) do
