@@ -855,7 +855,8 @@
     "item_spawn_interval_ms": 7500,
     "bots_enabled": true,
     "zone_enabled": true,
-    "bounties_options_amount": 3
+    "bounties_options_amount": 3,
+    "match_timeout_ms": 300000
   },
   "skills": [
     {
@@ -898,6 +899,7 @@
             "duration_ms": 5000,
             "radius": 450.0,
             "range": 1200.0,
+            "activation_delay": 400,
             "effects_to_apply": ["singularity"]
           }
         }
@@ -950,6 +952,7 @@
             "duration_ms": 2500,
             "radius": 500.0,
             "range": 1200.0,
+            "activation_delay": 250,
             "effects_to_apply": ["denial_of_service"]
           }
         }
@@ -1041,7 +1044,6 @@
             "range": 280.0,
             "interval_ms": 200,
             "amount": 3,
-            "move_by": 100.0,
             "offset": 200.0
           }
         }
@@ -1351,7 +1353,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1363,7 +1365,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1375,7 +1377,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1387,7 +1389,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1399,7 +1401,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1411,7 +1413,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1423,7 +1425,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1435,7 +1437,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1447,7 +1449,7 @@
       "health": 250,
       "vertices": [],
       "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300 
+      "power_up_spawn_delay_ms": 300
     }
   ],
   "traps": []

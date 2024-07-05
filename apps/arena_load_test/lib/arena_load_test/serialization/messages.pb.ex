@@ -62,6 +62,15 @@ defmodule ArenaLoadTest.Serialization.TrapStatus do
   field(:USED, 3)
 end
 
+defmodule ArenaLoadTest.Serialization.PoolStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:WAITING, 0)
+  field(:READY, 1)
+end
+
 defmodule ArenaLoadTest.Serialization.Direction do
   @moduledoc false
 
@@ -611,6 +620,7 @@ defmodule ArenaLoadTest.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:status, 2, type: ArenaLoadTest.Serialization.PoolStatus, enum: true)
 end
 
 defmodule ArenaLoadTest.Serialization.Bush do
