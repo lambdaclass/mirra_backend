@@ -193,7 +193,7 @@ defmodule Arena.Entities do
       id: id,
       category: :obstacle,
       shape: get_shape(shape),
-      name: "Obstacle" <> Integer.to_string(id),
+      name: params.name,
       position: position,
       radius: radius,
       vertices: vertices,
