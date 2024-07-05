@@ -106,9 +106,13 @@ defmodule Arena.GameUpdater do
 
         state =
           update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
-            aditional_info
-            |> Map.put(:bounties, bounties)
-            |> Map.put(:default_bounty, Enum.random(bounties))
+            if Enum.empty?(bounties) do
+              aditional_info
+            else
+              aditional_info
+              |> Map.put(:bounties, bounties)
+              |> Map.put(:default_bounty, Enum.random(bounties))
+            end
           end)
 
         {:reply, {:ok, response}, state}
