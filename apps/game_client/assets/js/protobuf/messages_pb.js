@@ -62,6 +62,7 @@ goog.exportSymbol('proto.Player', null, global);
 goog.exportSymbol('proto.PlayerAction', null, global);
 goog.exportSymbol('proto.PlayerActionType', null, global);
 goog.exportSymbol('proto.Pool', null, global);
+goog.exportSymbol('proto.PoolStatus', null, global);
 goog.exportSymbol('proto.Position', null, global);
 goog.exportSymbol('proto.PowerUp', null, global);
 goog.exportSymbol('proto.PowerUpstatus', null, global);
@@ -8045,7 +8046,8 @@ proto.Pool.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Pool.toObject = function(includeInstance, msg) {
   var f, obj = {
-    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    status: jspb.Message.getFieldWithDefault(msg, 2, 0)
   };
 
   if (includeInstance) {
@@ -8086,6 +8088,10 @@ proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint64());
       msg.setOwnerId(value);
       break;
+    case 2:
+      var value = /** @type {!proto.PoolStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8122,6 +8128,13 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -8140,6 +8153,24 @@ proto.Pool.prototype.getOwnerId = function() {
  */
 proto.Pool.prototype.setOwnerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional PoolStatus status = 2;
+ * @return {!proto.PoolStatus}
+ */
+proto.Pool.prototype.getStatus = function() {
+  return /** @type {!proto.PoolStatus} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {!proto.PoolStatus} value
+ * @return {!proto.Pool} returns this
+ */
+proto.Pool.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
@@ -11126,6 +11157,14 @@ proto.TrapStatus = {
   PREPARED: 1,
   TRIGGERED: 2,
   USED: 3
+};
+
+/**
+ * @enum {number}
+ */
+proto.PoolStatus = {
+  WAITING: 0,
+  READY: 1
 };
 
 goog.object.extend(exports, proto);

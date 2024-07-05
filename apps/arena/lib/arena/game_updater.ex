@@ -605,6 +605,13 @@ defmodule Arena.GameUpdater do
     {:noreply, Map.put(state, :game_state, game_state)}
   end
 
+  def handle_info({:activate_pool, pool_id}, state) do
+    state =
+      put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
+
+    {:noreply, state}
+  end
+
   def handle_info({:start_obstacle_transition, obstacle_id}, state) do
     state =
       update_in(state, [:game_state, :obstacles, obstacle_id], fn obstacle ->
@@ -1514,12 +1521,12 @@ defmodule Arena.GameUpdater do
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
     entities = Map.merge(crates, players)
 
-    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+    Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
-        if entity_id in pool.collides_with do
+        if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, game_config, entity, pool)
         else
-          Effect.remove_owner_effects(acc, entity_id, pool_id)
+          Effect.remove_owner_effects(acc, entity_id, pool.id)
         end
       end)
     end)

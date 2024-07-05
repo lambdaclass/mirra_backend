@@ -249,6 +249,7 @@ enum  PowerUpstatus {
 
 message Pool {
   uint64 owner_id = 1;
+  PoolStatus status = 2;
 }
 
 message Bush {
@@ -281,6 +282,11 @@ enum TrapStatus{
   PREPARED = 1;
   TRIGGERED = 2;
   USED = 3;
+}
+
+enum PoolStatus{
+  WAITING = 0;
+  READY = 1;
 }
 
 /*

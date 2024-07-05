@@ -88,6 +88,7 @@ config :arena, ArenaWeb.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :arena, dev_routes: true
+config :arena, :spawn_bots, true
 
 ################################
 # App configuration: champions #
