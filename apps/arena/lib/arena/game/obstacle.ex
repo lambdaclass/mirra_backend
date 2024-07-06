@@ -29,17 +29,42 @@ defmodule Arena.Game.Obstacle do
     end)
   end
 
-  def start_obstacle_transition(obstacle) do
+  def update_obstacle_transition_status(game_state, %{aditional_into: %{type: "dynamic"} = obstacle}) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    case obstacle.aditional_info.status do
+      "transitioning" ->
+        if obstacle.aditional_info.time_until_transition < now do
+          handle_transition(game_state, obstacle.id)
+        else
+          game_state
+        end
+
+      _status ->
+        if obstacle.aditional_info.time_until_transition_start < now do
+          start_obstacle_transition(game_state, obstacle)
+        else
+          game_state
+        end
+    end
+  end
+
+  def update_obstacle_transition_status(game_state, _obstacle), do: game_state
+
+  def start_obstacle_transition(game_state, obstacle) do
     next_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
 
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    update_in(obstacle, [:aditional_info], fn aditional_info ->
-      aditional_info
-      |> Map.put(:status, "transitioning")
-      |> Map.put(:time_until_transition, now + next_status_params.transition_time_ms)
-    end)
+    obstacle =
+      update_in(obstacle, [:aditional_info], fn aditional_info ->
+        aditional_info
+        |> Map.put(:status, "transitioning")
+        |> Map.put(:time_until_transition, now + next_status_params.transition_time_ms)
+      end)
+
+    put_in(game_state, [:obstacles, obstacle.id], obstacle)
   end
 
   def handle_transition(game_state, obstacle_id) do

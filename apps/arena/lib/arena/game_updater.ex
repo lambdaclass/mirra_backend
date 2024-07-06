@@ -1692,31 +1692,8 @@ defmodule Arena.GameUpdater do
   end
 
   defp handle_obstacles_transitions(%{status: :RUNNING} = game_state) do
-    %{obstacles: obstacles} = game_state
-    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-
-    Enum.reduce(obstacles, game_state, fn {_obstacle_id, obstacle}, game_state ->
-      if obstacle.aditional_info.type == "dynamic" do
-        case obstacle.aditional_info.status do
-          "transitioning" ->
-            if obstacle.aditional_info.time_until_transition < now do
-              Obstacle.handle_transition(game_state, obstacle.id)
-            else
-              game_state
-            end
-
-          _status ->
-            if obstacle.aditional_info.time_until_transition_start < now do
-              update_in(game_state, [:obstacles, obstacle.id], fn obstacle ->
-                Obstacle.start_obstacle_transition(obstacle)
-              end)
-            else
-              game_state
-            end
-        end
-      else
-        game_state
-      end
+    Enum.reduce(game_state.obstacles, game_state, fn {_obstacle_id, obstacle}, game_state ->
+      Obstacle.update_obstacle_transition_status(game_state, obstacle)
     end)
   end
 
