@@ -16,19 +16,16 @@ defmodule Arena.Game.Obstacle do
   end
 
   def handle_transition_init(obstacle) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     current_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.status))
-
-    Process.send_after(
-      self(),
-      {:start_obstacle_transition, obstacle.id},
-      current_status_params.time_until_transition_ms
-    )
 
     update_in(obstacle, [:aditional_info], fn aditional_info ->
       aditional_info
       |> Map.put(:next_status, current_status_params.next_status)
       |> Map.put(:collisionable, current_status_params.make_obstacle_collisionable)
+      |> Map.put(:time_until_transition_start, now + current_status_params.time_until_transition_ms)
     end)
   end
 
@@ -36,15 +33,12 @@ defmodule Arena.Game.Obstacle do
     next_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
 
-    Process.send_after(
-      self(),
-      {:handle_obstacle_transition, obstacle.id},
-      next_status_params.transition_time_ms
-    )
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     update_in(obstacle, [:aditional_info], fn aditional_info ->
       aditional_info
       |> Map.put(:status, "transitioning")
+      |> Map.put(:time_until_transition, now + next_status_params.transition_time_ms)
     end)
   end
 
@@ -53,12 +47,6 @@ defmodule Arena.Game.Obstacle do
 
     next_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
-
-    Process.send_after(
-      self(),
-      {:start_obstacle_transition, obstacle.id},
-      next_status_params.time_until_transition_ms
-    )
 
     obstacle =
       update_in(obstacle, [:aditional_info], fn aditional_info ->
@@ -69,7 +57,7 @@ defmodule Arena.Game.Obstacle do
       end)
 
     Enum.reduce(next_status_params.on_activation_mechanics, game_state, fn mechanic, game_state ->
-      Skill.do_mechanic(game_state, obstacle, mechanic, %{})
+      Skill.do_mechanic(game_state, obstacle, mechanic, %{skill_direction: %{x: 0, y: 0}})
     end)
     |> put_in([:obstacles, obstacle.id], obstacle)
     |> maybe_move_above_players(obstacle_id)

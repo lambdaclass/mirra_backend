@@ -231,6 +231,8 @@ defmodule Arena.GameUpdater do
       |> prepare_traps()
       |> handle_trap_collisions()
       |> activate_trap_mechanics()
+      # Obstacles
+      |> handle_obstacles_transitions()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -254,7 +256,6 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
-    send(self(), :init_obstacles_transitions)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -562,19 +563,6 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info(:init_obstacles_transitions, state) do
-    game_state =
-      Enum.reduce(state.game_state.obstacles, state.game_state, fn {obstacle_id, obstacle}, game_state ->
-        if obstacle.aditional_info.type == "dynamic" do
-          put_in(game_state, [:obstacles, obstacle_id], Obstacle.handle_transition_init(obstacle))
-        else
-          game_state
-        end
-      end)
-
-    {:noreply, Map.put(state, :game_state, game_state)}
-  end
-
   def handle_info({:delayed_power_up_spawn, entity, amount}, state) do
     game_state =
       state.game_state
@@ -610,22 +598,6 @@ defmodule Arena.GameUpdater do
       put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
 
     {:noreply, state}
-  end
-
-  def handle_info({:start_obstacle_transition, obstacle_id}, state) do
-    state =
-      update_in(state, [:game_state, :obstacles, obstacle_id], fn obstacle ->
-        Obstacle.start_obstacle_transition(obstacle)
-      end)
-
-    {:noreply, state}
-  end
-
-  def handle_info({:handle_obstacle_transition, obstacle_id}, state) do
-    game_state =
-      Obstacle.handle_transition(state.game_state, obstacle_id)
-
-    {:noreply, Map.put(state, :game_state, game_state)}
   end
 
   ##########################
@@ -795,14 +767,24 @@ defmodule Arena.GameUpdater do
     Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
       last_id = last_id + 1
 
+      obstacle =
+        Entities.new_obstacle(
+          last_id,
+          obstacle
+        )
+
+      obstacle =
+        if obstacle.aditional_info.type == "dynamic" do
+          Obstacle.handle_transition_init(obstacle)
+        else
+          obstacle
+        end
+
       obstacles_acc =
         Map.put(
           obstacles_acc,
           last_id,
-          Entities.new_obstacle(
-            last_id,
-            obstacle
-          )
+          obstacle
         )
 
       {obstacles_acc, last_id}
@@ -1707,6 +1689,39 @@ defmodule Arena.GameUpdater do
     else
       game_state
     end
+  end
+
+  defp handle_obstacles_transitions(%{status: :RUNNING} = game_state) do
+    %{obstacles: obstacles} = game_state
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    Enum.reduce(obstacles, game_state, fn {_obstacle_id, obstacle}, game_state ->
+      if obstacle.aditional_info.type == "dynamic" do
+        case obstacle.aditional_info.status do
+          "transitioning" ->
+            if obstacle.aditional_info.time_until_transition < now do
+              Obstacle.handle_transition(game_state, obstacle.id)
+            else
+              game_state
+            end
+
+          _status ->
+            if obstacle.aditional_info.time_until_transition_start < now do
+              update_in(game_state, [:obstacles, obstacle.id], fn obstacle ->
+                Obstacle.start_obstacle_transition(obstacle)
+              end)
+            else
+              game_state
+            end
+        end
+      else
+        game_state
+      end
+    end)
+  end
+
+  defp handle_obstacles_transitions(game_state) do
+    game_state
   end
 
   ##########################

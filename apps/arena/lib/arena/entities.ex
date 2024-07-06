@@ -207,7 +207,9 @@ defmodule Arena.Entities do
         collisionable: obstacle_collisionable?(params),
         statuses_cycle: params.statuses_cycle,
         status: params.base_status,
-        type: params.type
+        type: params.type,
+        time_until_transition_start: nil,
+        time_until_transition: nil
       }
     }
   end
