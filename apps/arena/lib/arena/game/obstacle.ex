@@ -29,7 +29,7 @@ defmodule Arena.Game.Obstacle do
     end)
   end
 
-  def update_obstacle_transition_status(game_state, %{aditional_into: %{type: "dynamic"} = obstacle}) do
+  def update_obstacle_transition_status(game_state, %{aditional_info: %{type: "dynamic"}} = obstacle) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     case obstacle.aditional_info.status do
