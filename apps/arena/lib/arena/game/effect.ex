@@ -26,16 +26,31 @@ defmodule Arena.Game.Effect do
   def put_effect_to_entity(game_state, entity, owner_id, start_action_removal_in_ms, effect) do
     last_id = game_state.last_id + 1
 
-    entity_contain_effect? =
-      Enum.any?(entity.aditional_info.effects, fn entity_effect ->
+    same_applied_effect =
+      Enum.find(entity.aditional_info.effects, fn entity_effect ->
         entity_effect.owner_id == owner_id and entity_effect.name == effect.name
       end)
 
+    now = System.monotonic_time(:millisecond)
+
     updated_entity =
-      if entity_contain_effect? and effect.one_time_application do
-        entity
+      if same_applied_effect && effect.one_time_application do
+        removed_effect =
+          Enum.reject(entity.aditional_info.effects, fn effect -> effect.id == same_applied_effect.id end)
+
+        new_expires_at =
+          if same_applied_effect.expires_at do
+            now + same_applied_effect.duration_ms
+          else
+            nil
+          end
+
+        put_in(
+          entity,
+          [:aditional_info, :effects],
+          removed_effect ++ [Map.put(same_applied_effect, :expires_at, new_expires_at)]
+        )
       else
-        now = System.monotonic_time(:millisecond)
         action_removal_at = now + start_action_removal_in_ms
 
         expires_at =
