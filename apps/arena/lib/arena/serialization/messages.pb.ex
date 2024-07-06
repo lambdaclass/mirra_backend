@@ -62,6 +62,15 @@ defmodule Arena.Serialization.TrapStatus do
   field(:USED, 3)
 end
 
+defmodule Arena.Serialization.PoolStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:WAITING, 0)
+  field(:READY, 1)
+end
+
 defmodule Arena.Serialization.Direction do
   @moduledoc false
 
@@ -511,6 +520,7 @@ defmodule Arena.Serialization.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+  field(:id, 3, type: :uint64)
 end
 
 defmodule Arena.Serialization.Item do
@@ -565,6 +575,7 @@ defmodule Arena.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:status, 2, type: Arena.Serialization.PoolStatus, enum: true)
 end
 
 defmodule Arena.Serialization.Bush do

@@ -163,7 +163,8 @@ defmodule Arena.Entities do
         stat_multiplier: 0,
         duration_ms: duration_ms,
         pull_immunity: true,
-        spawn_at: spawn_at
+        spawn_at: spawn_at,
+        status: :WAITING
       },
       collides_with: []
     }
@@ -374,7 +375,8 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :pool do
     {:pool,
      %Arena.Serialization.Pool{
-       owner_id: entity.aditional_info.owner_id
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status
      }}
   end
 
