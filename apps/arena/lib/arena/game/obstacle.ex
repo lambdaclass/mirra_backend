@@ -48,12 +48,15 @@ defmodule Arena.Game.Obstacle do
     next_status_params =
       Map.get(obstacle.aditional_info.statuses_cycle, String.to_existing_atom(obstacle.aditional_info.next_status))
 
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     obstacle =
       update_in(obstacle, [:aditional_info], fn aditional_info ->
         aditional_info
         |> Map.put(:next_status, next_status_params.next_status)
         |> Map.put(:status, obstacle.aditional_info.next_status)
         |> Map.put(:collisionable, next_status_params.make_obstacle_collisionable)
+        |> Map.put(:time_until_transition_start, now + next_status_params.time_until_transition_ms)
       end)
 
     Enum.reduce(next_status_params.on_activation_mechanics, game_state, fn mechanic, game_state ->
