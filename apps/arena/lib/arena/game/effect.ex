@@ -35,20 +35,26 @@ defmodule Arena.Game.Effect do
 
     updated_entity =
       if same_applied_effect && effect.one_time_application do
-        removed_effect =
-          Enum.reject(entity.aditional_info.effects, fn effect -> effect.id == same_applied_effect.id end)
+        updated_effects =
+          Enum.map(entity.aditional_info.effects, fn effect ->
+            if effect.id == same_applied_effect.id do
+              new_expires_at =
+                if same_applied_effect.expires_at do
+                  now + same_applied_effect.duration_ms
+                else
+                  nil
+                end
 
-        new_expires_at =
-          if same_applied_effect.expires_at do
-            now + same_applied_effect.duration_ms
-          else
-            nil
-          end
+              Map.put(effect, :expires_at, new_expires_at)
+            else
+              effect
+            end
+          end)
 
         put_in(
           entity,
           [:aditional_info, :effects],
-          removed_effect ++ [Map.put(same_applied_effect, :expires_at, new_expires_at)]
+          updated_effects
         )
       else
         action_removal_at = now + start_action_removal_in_ms
