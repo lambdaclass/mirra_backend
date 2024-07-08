@@ -1,0 +1,8 @@
+<.header>
+  Edit Map configuration <%= @map_configuration.id %>
+  <:subtitle>Use this form to manage map_configuration records in your database.</:subtitle>
+</.header>
+
+<.map_configuration_form changeset={@changeset} action={~p"/map_configurations/#{@map_configuration}"} />
+
+<.back navigate={~p"/map_configurations"}>Back to map_configurations</.back>

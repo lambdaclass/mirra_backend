@@ -1,0 +1,18 @@
+<.header>
+  Map configuration <%= @map_configuration.id %>
+  <:subtitle>This is a map_configuration record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/map_configurations/#{@map_configuration}/edit"}>
+      <.button>Edit map_configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Radius"><%= @map_configuration.radius %></:item>
+  <:item title="Initial positions"><%= @map_configuration.initial_positions %></:item>
+  <:item title="Obstacles"><%= @map_configuration.obstacles %></:item>
+  <:item title="Bushes"><%= @map_configuration.bushes %></:item>
+</.list>
+
+<.back navigate={~p"/map_configurations"}>Back to map_configurations</.back>

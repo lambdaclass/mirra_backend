@@ -1,7 +1,7 @@
-defmodule Configurator.ConfigurationFixtures do
+defmodule GameBackend.ConfigurationFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `Configurator.Configuration` context.
+  entities via the `GameBackend.Configuration` context.
   """
 
   @doc """
@@ -28,5 +28,22 @@ defmodule Configurator.ConfigurationFixtures do
       |> GameBackend.Units.Characters.insert_character()
 
     character
+  end
+
+  @doc """
+  Generate a map_configuration.
+  """
+  def map_configuration_fixture(attrs \\ %{}) do
+    {:ok, map_configuration} =
+      attrs
+      |> Enum.into(%{
+        bushes: %{},
+        initial_positions: %{},
+        obstacles: %{},
+        radius: "120.5"
+      })
+      |> GameBackend.Configuration.create_map_configuration()
+
+    map_configuration
   end
 end

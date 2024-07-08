@@ -1,7 +1,7 @@
 defmodule ConfiguratorWeb.CharacterControllerTest do
   use ConfiguratorWeb.ConnCase
 
-  import Configurator.ConfigurationFixtures
+  import GameBackend.ConfigurationFixtures
 
   @create_attrs %{
     active: true,

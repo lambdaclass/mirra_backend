@@ -1,0 +1,26 @@
+<.header>
+  Listing Map configurations
+  <:actions>
+    <.link href={~p"/map_configurations/new"}>
+      <.button>New Map configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="map_configurations" rows={@map_configurations} row_click={&JS.navigate(~p"/map_configurations/#{&1}")}>
+  <:col :let={map_configuration} label="Radius"><%= map_configuration.radius %></:col>
+  <:col :let={map_configuration} label="Initial positions"><%= map_configuration.initial_positions %></:col>
+  <:col :let={map_configuration} label="Obstacles"><%= map_configuration.obstacles %></:col>
+  <:col :let={map_configuration} label="Bushes"><%= map_configuration.bushes %></:col>
+  <:action :let={map_configuration}>
+    <div class="sr-only">
+      <.link navigate={~p"/map_configurations/#{map_configuration}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/map_configurations/#{map_configuration}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={map_configuration}>
+    <.link href={~p"/map_configurations/#{map_configuration}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
