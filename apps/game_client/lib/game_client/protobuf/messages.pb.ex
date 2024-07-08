@@ -518,6 +518,7 @@ defmodule GameClient.Protobuf.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+  field(:id, 3, type: :uint64)
 end
 
 defmodule GameClient.Protobuf.Item do
@@ -575,6 +576,8 @@ defmodule GameClient.Protobuf.Pool do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: GameClient.Protobuf.PoolStatus, enum: true)
+  field(:effects, 3, repeated: true, type: GameClient.Protobuf.Effect)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule GameClient.Protobuf.Bush do

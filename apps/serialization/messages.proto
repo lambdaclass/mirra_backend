@@ -200,6 +200,7 @@ message Player {
 message Effect {
   string name = 1;
   uint32 duration_ms = 2;
+  uint64 id = 3;
 }
 
 message Item {
@@ -250,6 +251,8 @@ enum  PowerUpstatus {
 message Pool {
   uint64 owner_id = 1;
   PoolStatus status = 2;
+  repeated Effect effects = 3;
+  string skill_key = 4;
 }
 
 message Bush {
@@ -348,7 +351,7 @@ message BountyInfo {
   string id = 1;
   string description = 2;
   string quest_type = 3;
-  CurrencyReward reward = 4; 
+  CurrencyReward reward = 4;
 }
 
 message CurrencyReward {
