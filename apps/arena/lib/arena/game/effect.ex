@@ -38,14 +38,7 @@ defmodule Arena.Game.Effect do
         updated_effects =
           Enum.map(entity.aditional_info.effects, fn effect ->
             if effect.id == same_applied_effect.id do
-              new_expires_at =
-                if same_applied_effect.expires_at do
-                  now + same_applied_effect.duration_ms
-                else
-                  nil
-                end
-
-              Map.put(effect, :expires_at, new_expires_at)
+              refresh_effect_expires_at(same_applied_effect, now)
             else
               effect
             end
@@ -312,4 +305,15 @@ defmodule Arena.Game.Effect do
   end
 
   defp maybe_send_to_killfeed(entity, _pool_owner_id), do: entity
+
+  defp refresh_effect_expires_at(effect, start_time) do
+    new_expires_at =
+      if effect.expires_at do
+        start_time + effect.duration_ms
+      else
+        nil
+      end
+
+    Map.put(effect, :expires_at, new_expires_at)
+  end
 end
