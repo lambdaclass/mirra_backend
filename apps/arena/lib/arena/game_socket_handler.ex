@@ -197,7 +197,6 @@ defmodule Arena.GameSocketHandler do
         targetting_range: params[:range],
         offset: params[:offset] || params[:projectile_offset]
       }
-      |> IO.inspect(label: :wea)
 
     {key, Map.merge(skill, extra_params)}
   end
