@@ -491,4 +491,22 @@ defmodule GameBackend.Users do
   def get_unlocks_with_type(user_id, type) do
     Repo.all(from(u in Unlock, where: u.user_id == ^user_id and u.type == ^type, preload: [upgrade: :buffs]))
   end
+
+  @doc """
+  Returns if a unit exist for the user id using the name field from the character association.
+
+  ## Examples
+
+      iex> user_has_unit_with_character_name(user_id, "muflus")
+      true
+  """
+  def user_has_unit_with_character_name(user_id, character_name) do
+    q =
+      from(u in GameBackend.Units.Unit,
+        join: c in assoc(u, :character),
+        where: u.user_id == ^user_id and c.name == ^character_name
+      )
+
+    Repo.exists?(q)
+  end
 end

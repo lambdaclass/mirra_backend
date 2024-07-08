@@ -628,6 +628,8 @@ defmodule ArenaLoadTest.Serialization.Pool do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: ArenaLoadTest.Serialization.PoolStatus, enum: true)
+  field(:effects, 3, repeated: true, type: ArenaLoadTest.Serialization.Effect)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule ArenaLoadTest.Serialization.Bush do

@@ -576,6 +576,8 @@ defmodule BotManager.Protobuf.Pool do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: BotManager.Protobuf.PoolStatus, enum: true)
+  field(:effects, 3, repeated: true, type: BotManager.Protobuf.Effect)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule BotManager.Protobuf.Bush do
