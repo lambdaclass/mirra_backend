@@ -302,6 +302,8 @@ defmodule Arena.Game.Skill do
       y: player.position.y + skill_direction.y
     }
 
+    Process.send_after(self(), {:activate_pool, last_id}, pool_params.activation_delay)
+
     pool =
       Entities.new_pool(
         last_id,

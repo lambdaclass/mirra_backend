@@ -35,6 +35,7 @@ defmodule GameClient.Protobuf.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule GameClient.Protobuf.PlayerActionType do
@@ -59,6 +60,15 @@ defmodule GameClient.Protobuf.TrapStatus do
   field(:PREPARED, 1)
   field(:TRIGGERED, 2)
   field(:USED, 3)
+end
+
+defmodule GameClient.Protobuf.PoolStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:WAITING, 0)
+  field(:READY, 1)
 end
 
 defmodule GameClient.Protobuf.Direction do
@@ -508,6 +518,7 @@ defmodule GameClient.Protobuf.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+  field(:id, 3, type: :uint64)
 end
 
 defmodule GameClient.Protobuf.Item do
@@ -562,8 +573,9 @@ defmodule GameClient.Protobuf.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
-  field(:effects, 2, repeated: true, type: GameClient.Protobuf.Effect)
-  field(:skill_key, 3, type: :string, json_name: "skillKey")
+  field(:status, 2, type: GameClient.Protobuf.PoolStatus, enum: true)
+  field(:effects, 3, repeated: true, type: GameClient.Protobuf.Effect)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule GameClient.Protobuf.Bush do

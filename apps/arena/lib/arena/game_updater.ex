@@ -223,7 +223,7 @@ defmodule Arena.GameUpdater do
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
       # Crates
-      |> handle_destroyed_crates(state.game_config)
+      |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
@@ -250,6 +250,7 @@ defmodule Arena.GameUpdater do
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+    Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -557,6 +558,43 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:delayed_power_up_spawn, entity, amount}, state) do
+    game_state =
+      state.game_state
+      |> spawn_power_ups(state.game_config, entity, amount)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:activate_power_up, power_up_id}, state) do
+    game_state =
+      state.game_state
+      |> update_in([:power_ups, power_up_id], fn power_up ->
+        put_in(power_up, [:aditional_info, :status], :AVAILABLE)
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info(:match_timeout, state) do
+    game_state =
+      Enum.reduce(Player.alive_players(state.game_state.players), state.game_state, fn {player_id, _player},
+                                                                                       game_state ->
+        update_in(game_state, [:players, player_id], fn player ->
+          Player.kill_player(player)
+        end)
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:activate_pool, pool_id}, state) do
+    state =
+      put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
+
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -672,10 +710,14 @@ defmodule Arena.GameUpdater do
         enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
-          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
+            config.game.bounty_pick_time_ms
       })
       |> Map.put(:status, :PREPARING)
-      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(
+        :start_game_timestamp,
+        initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
+      )
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
 
@@ -1154,15 +1196,20 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
-  defp handle_destroyed_crates(%{crates: crates} = game_state, game_config) do
+  defp handle_destroyed_crates(%{crates: crates} = game_state) do
     Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
       if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
         game_state
       else
         amount_of_power_ups = crate.aditional_info.amount_of_power_ups
 
+        Process.send_after(
+          self(),
+          {:delayed_power_up_spawn, crate, amount_of_power_ups},
+          crate.aditional_info.power_up_spawn_delay_ms
+        )
+
         game_state
-        |> spawn_power_ups(game_config, crate, amount_of_power_ups)
         |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
       end
     end)
@@ -1202,17 +1249,17 @@ defmodule Arena.GameUpdater do
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
 
-    case players_alive do
-      [player] when map_size(players) > 1 ->
-        {:ended, player}
+    cond do
+      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
+        {:ended, hd(players_alive)}
 
-      [] ->
+      Enum.empty?(players_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
         player = Map.get(players, Enum.random(last_players_ids))
         {:ended, player}
 
-      _ ->
+      true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}
     end
   end
@@ -1378,6 +1425,8 @@ defmodule Arena.GameUpdater do
           game_config.power_ups.power_up
         )
 
+      Process.send_after(self(), {:activate_power_up, last_id}, game_config.power_ups.power_up.activation_delay_ms)
+
       game_state
       |> put_in([:power_ups, last_id], power_up)
       |> put_in([:last_id], last_id)
@@ -1439,12 +1488,12 @@ defmodule Arena.GameUpdater do
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
     entities = Map.merge(crates, players)
 
-    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+    Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
-        if entity_id in pool.collides_with do
+        if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, game_config, entity, pool)
         else
-          Effect.remove_owner_effects(acc, entity_id, pool_id)
+          Effect.remove_owner_effects(acc, entity_id, pool.id)
         end
       end)
     end)

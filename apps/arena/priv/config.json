@@ -855,7 +855,8 @@
     "item_spawn_interval_ms": 7500,
     "bots_enabled": true,
     "zone_enabled": true,
-    "bounties_options_amount": 3
+    "bounties_options_amount": 3,
+    "match_timeout_ms": 300000
   },
   "skills": [
     {
@@ -898,9 +899,8 @@
             "duration_ms": 5000,
             "radius": 450.0,
             "range": 1200.0,
-            "effects_to_apply": [
-              "singularity"
-            ]
+            "activation_delay": 400,
+            "effects_to_apply": ["singularity"]
           }
         }
       ],
@@ -952,9 +952,8 @@
             "duration_ms": 2500,
             "radius": 500.0,
             "range": 1200.0,
-            "effects_to_apply": [
-              "denial_of_service"
-            ]
+            "activation_delay": 250,
+            "effects_to_apply": ["denial_of_service"]
           }
         }
       ],
@@ -1045,7 +1044,6 @@
             "range": 280.0,
             "interval_ms": 200,
             "amount": 3,
-            "move_by": 100.0,
             "offset": 200.0
           }
         }
@@ -1072,9 +1070,7 @@
           }
         }
       ],
-      "effects_to_apply": [
-        "invisible"
-      ]
+      "effects_to_apply": ["invisible"]
     },
     {
       "name": "uma_sneak",
@@ -1165,33 +1161,25 @@
     {
       "name": "golden_clock",
       "radius": 200.0,
-      "effects": [
-        "golden_clock_effect"
-      ],
+      "effects": ["golden_clock_effect"],
       "mechanics": {}
     },
     {
       "name": "magic_boots",
       "radius": 200.0,
-      "effects": [
-        "magic_boots_effect"
-      ],
+      "effects": ["magic_boots_effect"],
       "mechanics": {}
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
-      "effects": [
-        "mirra_blessing_effect"
-      ],
+      "effects": ["mirra_blessing_effect"],
       "mechanics": {}
     },
     {
       "name": "giant",
       "radius": 200.0,
-      "effects": [
-        "giant_effect"
-      ],
+      "effects": ["giant_effect"],
       "mechanics": {}
     }
   ],
@@ -1214,7 +1202,8 @@
       "distance_to_power_up": 400,
       "power_up_damage_modifier": 0.08,
       "power_up_health_modifier": 0.08,
-      "radius": 200.0
+      "radius": 200.0,
+      "activation_delay_ms": 500
     }
   },
   "effects": [
@@ -1259,7 +1248,7 @@
       "consume_projectile": true,
       "effect_mechanics": {
         "buff_pool": {
-          "stat_multiplier": 0.10,
+          "stat_multiplier": 0.1,
           "additive_duration_add_ms": 1000,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
@@ -1299,7 +1288,7 @@
       "one_time_application": true,
       "effect_mechanics": {
         "speed_boost": {
-          "modifier": 0.02,
+          "modifier": 0.5,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }
@@ -1331,27 +1320,27 @@
     },
     {
       "name": "giant_effect",
-      "duration_ms": 8000,
+      "duration_ms": 9000,
       "remove_on_action": false,
       "one_time_application": true,
       "effect_mechanics": {
         "modify_radius": {
-          "modifier": 1.0,
+          "modifier": 0.4,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
         "damage_change": {
-          "modifier": 0.2,
+          "modifier": 0.25,
           "effect_delay_ms": 0,
           "execute_multiple_times": true
         },
         "speed_boost": {
-          "modifier": -0.009,
+          "modifier": -0.25,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         },
         "defense_change": {
-          "modifier": 0.3,
+          "modifier": 0.4,
           "effect_delay_ms": 0,
           "execute_multiple_times": true
         }
@@ -1371,7 +1360,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1382,7 +1372,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1393,7 +1384,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1404,7 +1396,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1415,7 +1408,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1426,7 +1420,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1437,7 +1432,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1448,7 +1444,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
@@ -1459,7 +1456,8 @@
       "radius": 150.0,
       "health": 250,
       "vertices": [],
-      "amount_of_power_ups": 1
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
     }
   ],
   "traps": []

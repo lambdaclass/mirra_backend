@@ -108,7 +108,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         owner_id: owner_id,
-        status: :AVAILABLE,
+        status: :UNAVAILABLE,
         remove_on_collision: true,
         pull_immunity: true,
         power_up_damage_modifier: power_up.power_up_damage_modifier,
@@ -161,9 +161,10 @@ defmodule Arena.Entities do
         owner_id: owner_id,
         effects: [],
         stat_multiplier: 0,
-        duration_ms: pool_params.duration_ms,
+        duration_ms: pool_params.duration_ms + pool_params.activation_delay,
         pull_immunity: true,
         spawn_at: now,
+        status: :WAITING,
         skill_key: skill_key
       },
       collides_with: []
@@ -235,7 +236,8 @@ defmodule Arena.Entities do
         shape: shape,
         vertices: vertices,
         health: health,
-        amount_of_power_ups: amount_of_power_ups
+        amount_of_power_ups: amount_of_power_ups,
+        power_up_spawn_delay_ms: power_up_spawn_delay_ms
       }) do
     %{
       id: id,
@@ -256,7 +258,8 @@ defmodule Arena.Entities do
         amount_of_power_ups: amount_of_power_ups,
         status: :FINE,
         pull_immunity: true,
-        effects: []
+        effects: [],
+        power_up_spawn_delay_ms: power_up_spawn_delay_ms
       },
       collides_with: []
     }
@@ -376,6 +379,7 @@ defmodule Arena.Entities do
     {:pool,
      %Arena.Serialization.Pool{
        owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status,
        effects: entity.aditional_info.effects,
        skill_key: entity.aditional_info.skill_key
      }}
