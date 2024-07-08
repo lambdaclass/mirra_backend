@@ -35,6 +35,7 @@ defmodule ArenaLoadTest.Serialization.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule ArenaLoadTest.Serialization.PlayerActionType do
@@ -59,6 +60,15 @@ defmodule ArenaLoadTest.Serialization.TrapStatus do
   field(:PREPARED, 1)
   field(:TRIGGERED, 2)
   field(:USED, 3)
+end
+
+defmodule ArenaLoadTest.Serialization.PoolStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:WAITING, 0)
+  field(:READY, 1)
 end
 
 defmodule ArenaLoadTest.Serialization.Direction do
@@ -545,6 +555,7 @@ defmodule ArenaLoadTest.Serialization.Player do
 
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do
@@ -554,6 +565,7 @@ defmodule ArenaLoadTest.Serialization.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+  field(:id, 3, type: :uint64)
 end
 
 defmodule ArenaLoadTest.Serialization.Item do
@@ -608,6 +620,7 @@ defmodule ArenaLoadTest.Serialization.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:status, 2, type: ArenaLoadTest.Serialization.PoolStatus, enum: true)
 end
 
 defmodule ArenaLoadTest.Serialization.Bush do

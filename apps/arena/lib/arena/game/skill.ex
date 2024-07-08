@@ -211,13 +211,15 @@ defmodule Arena.Game.Skill do
 
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
+    Process.send_after(self(), {:activate_pool, last_id}, pool_params.activation_delay)
+
     pool =
       Entities.new_pool(
         last_id,
         target_position,
         pool_params.effects_to_apply,
         pool_params.radius,
-        pool_params.duration_ms,
+        pool_params.duration_ms + pool_params.activation_delay,
         player.id,
         now
       )
