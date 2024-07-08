@@ -1546,7 +1546,7 @@ defmodule Arena.GameUpdater do
       radius: object_radius,
       vertices: [],
       speed: 0.0,
-      category: :obstacle,
+      category: :power_up,
       direction: %{x: 0.0, y: 0.0},
       is_moving: false,
       name: "Circle 1"

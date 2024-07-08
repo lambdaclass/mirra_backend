@@ -193,13 +193,17 @@ fn move_entity_to_closest_available_position(
     external_wall: &Entity,
     obstacles: &HashMap<u64, Entity>,
 ) {
-    if entity.category == Category::Player && !entity.is_inside_map(external_wall) {
+    let process_entity: bool = entity.category == Category::Player
+        || entity.category == Category::PowerUp
+        || entity.category == Category::Item;
+
+    if process_entity && !entity.is_inside_map(external_wall) {
         entity.move_to_next_valid_position_inside(external_wall);
     }
 
     let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
 
-    if !collides_with.is_empty() {
+    if process_entity && !collides_with.is_empty() {
         let collided_with: Vec<&Entity> = collides_with
             .iter()
             .map(|id| obstacles.get(id).unwrap())
