@@ -199,7 +199,7 @@ fn move_entity_to_closest_available_position(
 
     let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
 
-    if entity.category == Category::Player && !collides_with.is_empty() {
+    if !collides_with.is_empty() {
         let collided_with: Vec<&Entity> = collides_with
             .iter()
             .map(|id| obstacles.get(id).unwrap())
