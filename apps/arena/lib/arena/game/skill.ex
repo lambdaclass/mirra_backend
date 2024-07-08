@@ -287,10 +287,12 @@ defmodule Arena.Game.Skill do
     put_in(game_state, [:players, entity.id], entity)
   end
 
-  def do_mechanic(game_state, player, {:spawn_pool, pool_params}, %{
-        skill_direction: skill_direction,
-        auto_aim?: auto_aim?
-      }) do
+  def do_mechanic(game_state, player, {:spawn_pool, pool_params}, skill_params) do
+    %{
+      skill_direction: skill_direction,
+      auto_aim?: auto_aim?
+    } = skill_params
+
     last_id = game_state.last_id + 1
 
     skill_direction = maybe_multiply_by_range(skill_direction, auto_aim?, pool_params.range)
@@ -300,20 +302,16 @@ defmodule Arena.Game.Skill do
       y: player.position.y + skill_direction.y
     }
 
-    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-
     Process.send_after(self(), {:activate_pool, last_id}, pool_params.activation_delay)
 
-    pool =
-      Entities.new_pool(
-        last_id,
-        target_position,
-        pool_params.effects_to_apply,
-        pool_params.radius,
-        pool_params.duration_ms + pool_params.activation_delay,
-        player.id,
-        now
+    pool_params =
+      Map.merge(
+        %{id: last_id, position: target_position, owner_id: player.id, skill_key: skill_params.skill_key},
+        pool_params
       )
+
+    pool =
+      Entities.new_pool(pool_params)
 
     put_in(game_state, [:pools, last_id], pool)
     |> put_in([:last_id], last_id)

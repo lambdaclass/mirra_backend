@@ -1142,6 +1142,14 @@
                 "range": 250.0,
                 "offset": 0
               }
+            },
+            "on_collide_effects": {
+              "apply_effect_to_entity_type": [
+                "pool"
+              ],
+              "effects": [
+                "buff_singularity"
+              ]
             }
           }
         }
