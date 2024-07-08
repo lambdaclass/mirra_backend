@@ -285,6 +285,7 @@ defmodule ArenaLoadTest.Serialization.ConfigSkill do
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
+  field(:offset, 8, type: :float)
 end
 
 defmodule ArenaLoadTest.Serialization.GameState.PlayersEntry do

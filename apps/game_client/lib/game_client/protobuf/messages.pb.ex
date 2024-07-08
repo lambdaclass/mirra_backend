@@ -273,6 +273,7 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
+  field(:offset, 8, type: :float)
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
