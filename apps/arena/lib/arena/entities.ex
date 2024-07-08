@@ -134,18 +134,21 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, spawn_at) do
+  def new_pool(pool_params) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     %{
-      id: id,
+      id: pool_params.id,
       category: :pool,
       shape: :circle,
-      name: "Pool " <> Integer.to_string(id),
-      position: position,
-      radius: radius,
+      name: "Pool " <> Integer.to_string(pool_params.id),
+      position: pool_params.position,
+      radius: pool_params.radius,
       vertices: [],
       speed: 0.0,
       direction: %{
@@ -154,14 +157,15 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effects_to_apply: effects_to_apply,
-        owner_id: owner_id,
+        effects_to_apply: pool_params.effects_to_apply,
+        owner_id: pool_params.owner_id,
         effects: [],
         stat_multiplier: 0,
-        duration_ms: duration_ms,
+        duration_ms: pool_params.duration_ms + pool_params.activation_delay,
         pull_immunity: true,
-        spawn_at: spawn_at,
-        status: :WAITING
+        spawn_at: now,
+        status: :WAITING,
+        skill_key: pool_params.skill_key
       },
       collides_with: []
     }
@@ -202,7 +206,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -220,7 +225,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -302,7 +308,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -317,7 +324,8 @@ defmodule Arena.Entities do
       vertices: vertices,
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -371,7 +379,9 @@ defmodule Arena.Entities do
     {:pool,
      %Arena.Serialization.Pool{
        owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status
+       status: entity.aditional_info.status,
+       effects: entity.aditional_info.effects,
+       skill_key: entity.aditional_info.skill_key
      }}
   end
 
