@@ -25,6 +25,8 @@ defmodule Gateway.Router do
 
     post "/users", UserController, :create_guest_user
 
+    resources "/users", UserController, only: [:show]
+
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
