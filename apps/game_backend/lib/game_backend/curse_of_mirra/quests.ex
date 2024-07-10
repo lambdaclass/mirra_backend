@@ -272,6 +272,35 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
+  @doc """
+  Receives a user_id and quest_id and mark it as completed and grant the quest currency
+  """
+  def insert_completed_user_quest(user_id, quest_id) do
+    quest =
+      get_quest(quest_id)
+
+    user_quest_changeset =
+      UserQuest.changeset(%UserQuest{}, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed",
+        user_id: user_id,
+        quest_id: quest_id
+      })
+
+    Multi.new()
+    |> Multi.insert(:insert_completed_quest, user_quest_changeset)
+    |> Multi.run(:add_currency_to_user, fn _, _ ->
+      Currencies.add_currency_by_name_and_game(
+        user_id,
+        quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        quest.reward["amount"]
+      )
+    end)
+    |> Repo.transaction()
+  end
+
   #####################
   #      helpers      #
   #####################

@@ -21,7 +21,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> add_users_to_multi(results)
     |> give_prestige(results)
     |> maybe_complete_quests()
-    |> complete_or_fail_bounties(results)
     |> Repo.transaction()
   end
 
@@ -90,40 +89,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
       else
         {:error, nil}
       end
-    end)
-  end
-
-  defp complete_or_fail_bounties(multi, results) do
-    Enum.filter(results, fn result -> result["bounty_quest_id"] != nil end)
-    |> Enum.reduce(multi, fn result, multi ->
-      Multi.run(multi, {:complete_or_fail_bounty, result["user_id"]}, fn repo,
-                                                                         %{get_users: users} =
-                                                                           changes_so_far ->
-        user = Enum.find(users, fn user -> user.id == result["user_id"] end)
-
-        inserted_result =
-          Map.get(changes_so_far, {:insert, result["user_id"]})
-
-        user_quest_attrs =
-          %{
-            quest_id: result["bounty_quest_id"],
-            user_id: user.id,
-            status: "available"
-          }
-
-        user_quest_changeset = UserQuest.changeset(%UserQuest{}, user_quest_attrs)
-
-        user_quest =
-          repo.insert!(user_quest_changeset)
-          |> repo.preload([:quest])
-
-        if Quests.completed_quest?(user_quest, [inserted_result]) do
-          complete_quest_and_insert_currency(user_quest, user.id)
-        else
-          UserQuest.changeset(user_quest, %{status: "failed"})
-          |> repo.update()
-        end
-      end)
     end)
   end
 

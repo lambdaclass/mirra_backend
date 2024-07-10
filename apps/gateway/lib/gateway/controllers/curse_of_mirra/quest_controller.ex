@@ -32,4 +32,16 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
     conn
     |> send_resp(200, Jason.encode!(bounties))
   end
+
+  def complete_bounty(conn, %{"user_id" => user_id, "quest_id" => quest_id}) do
+    case Quests.insert_completed_user_quest(user_id, quest_id) do
+      {:ok, _changes} ->
+        conn
+        |> send_resp(200, "Bounty completed")
+
+      {:error, _, _, _} ->
+        conn
+        |> send_resp(400, "Error completing bounty")
+    end
+  end
 end
