@@ -134,18 +134,21 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
-  def new_pool(id, position, effects_to_apply, radius, duration_ms, owner_id, spawn_at) do
+  def new_pool(pool_params) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
     %{
-      id: id,
+      id: pool_params.id,
       category: :pool,
       shape: :circle,
-      name: "Pool " <> Integer.to_string(id),
-      position: position,
-      radius: radius,
+      name: "Pool " <> Integer.to_string(pool_params.id),
+      position: pool_params.position,
+      radius: pool_params.radius,
       vertices: [],
       speed: 0.0,
       direction: %{
@@ -154,14 +157,15 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effects_to_apply: effects_to_apply,
-        owner_id: owner_id,
+        effects_to_apply: pool_params.effects_to_apply,
+        owner_id: pool_params.owner_id,
         effects: [],
         stat_multiplier: 0,
-        duration_ms: duration_ms,
+        duration_ms: pool_params.duration_ms + pool_params.activation_delay,
         pull_immunity: true,
-        spawn_at: spawn_at,
-        status: :WAITING
+        spawn_at: now,
+        status: :WAITING,
+        skill_key: pool_params.skill_key
       },
       collides_with: []
     }
@@ -188,12 +192,12 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices}) do
+  def new_obstacle(id, %{position: position, radius: radius, shape: shape, vertices: vertices} = params) do
     %{
       id: id,
       category: :obstacle,
       shape: get_shape(shape),
-      name: "Obstacle" <> Integer.to_string(id),
+      name: params.name,
       position: position,
       radius: radius,
       vertices: vertices,
@@ -202,7 +206,15 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{
+        collisionable: obstacle_collisionable?(params),
+        statuses_cycle: params.statuses_cycle,
+        status: params.base_status,
+        type: params.type,
+        time_until_transition_start: nil,
+        time_until_transition: nil
+      }
     }
   end
 
@@ -220,7 +232,8 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -302,6 +315,25 @@ defmodule Arena.Entities do
         x: 0.0,
         y: 0.0
       },
+      is_moving: false,
+      aditional_info: %{}
+    }
+  end
+
+  def make_polygon_area(id, positions) do
+    %{
+      id: id,
+      category: :obstacle,
+      shape: :polygon,
+      name: "BashDamageArea",
+      position: %{x: 0.0, y: 0.0},
+      radius: 0.0,
+      vertices: positions,
+      speed: 0.0,
+      direction: %{
+        x: 0.0,
+        y: 0.0
+      },
       is_moving: false
     }
   end
@@ -317,7 +349,8 @@ defmodule Arena.Entities do
       vertices: vertices,
       speed: 0.0,
       direction: %{x: 0.0, y: 0.0},
-      is_moving: false
+      is_moving: false,
+      aditional_info: %{}
     }
   end
 
@@ -363,7 +396,9 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :obstacle do
     {:obstacle,
      %Arena.Serialization.Obstacle{
-       color: "red"
+       color: "red",
+       collisionable: entity.aditional_info.collisionable,
+       status: entity.aditional_info.status
      }}
   end
 
@@ -371,7 +406,9 @@ defmodule Arena.Entities do
     {:pool,
      %Arena.Serialization.Pool{
        owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status
+       status: entity.aditional_info.status,
+       effects: entity.aditional_info.effects,
+       skill_key: entity.aditional_info.skill_key
      }}
   end
 
@@ -426,5 +463,18 @@ defmodule Arena.Entities do
 
   def refresh_cooldowns(%{category: :player} = entity) do
     put_in(entity, [:aditional_info, :cooldowns], %{})
+  end
+
+  def obstacle_collisionable?(%{type: "static"}) do
+    true
+  end
+
+  def obstacle_collisionable?(params) do
+    %{base_status: base_status, statuses_cycle: statuses_cycle} = params
+
+    base_status_params =
+      Map.get(statuses_cycle, String.to_existing_atom(base_status))
+
+    base_status_params.make_obstacle_collisionable
   end
 end

@@ -223,6 +223,8 @@ enum ProjectileStatus {
 
 message Obstacle {
   string color = 1;
+  bool collisionable = 2;
+  string status = 3;
 }
 
 message PowerUp {
@@ -250,6 +252,8 @@ enum  PowerUpstatus {
 message Pool {
   uint64 owner_id = 1;
   PoolStatus status = 2;
+  repeated Effect effects = 3;
+  string skill_key = 4;
 }
 
 message Bush {

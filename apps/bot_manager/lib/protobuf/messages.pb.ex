@@ -547,6 +547,8 @@ defmodule BotManager.Protobuf.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:color, 1, type: :string)
+  field(:collisionable, 2, type: :bool)
+  field(:status, 3, type: :string)
 end
 
 defmodule BotManager.Protobuf.PowerUp do
@@ -575,6 +577,8 @@ defmodule BotManager.Protobuf.Pool do
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:status, 2, type: BotManager.Protobuf.PoolStatus, enum: true)
+  field(:effects, 3, repeated: true, type: BotManager.Protobuf.Effect)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule BotManager.Protobuf.Bush do

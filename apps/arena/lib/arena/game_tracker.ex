@@ -128,6 +128,10 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :damage_taken], fn damage_taken -> damage_taken + amount end)
   end
 
+  defp update_data(data, {:damage_done, 9999, _amount}) do
+    data
+  end
+
   defp update_data(data, {:damage_done, player_id, amount}) do
     update_in(data, [:players, player_id, :damage_done], fn damage_done -> damage_done + amount end)
   end
