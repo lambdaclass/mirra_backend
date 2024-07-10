@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Game.Obstacle
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
@@ -230,6 +231,8 @@ defmodule Arena.GameUpdater do
       |> prepare_traps()
       |> handle_trap_collisions()
       |> activate_trap_mechanics()
+      # Obstacles
+      |> handle_obstacles_transitions()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -245,12 +248,14 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:game_start, state) do
     broadcast_enable_incomming_messages(state.game_state.game_id)
+
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
+
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
-    Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -762,14 +767,24 @@ defmodule Arena.GameUpdater do
     Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
       last_id = last_id + 1
 
+      obstacle =
+        Entities.new_obstacle(
+          last_id,
+          obstacle
+        )
+
+      obstacle =
+        if obstacle.aditional_info.type == "dynamic" do
+          Obstacle.handle_transition_init(obstacle)
+        else
+          obstacle
+        end
+
       obstacles_acc =
         Map.put(
           obstacles_acc,
           last_id,
-          Entities.new_obstacle(
-            last_id,
-            obstacle
-          )
+          obstacle
         )
 
       {obstacles_acc, last_id}
@@ -954,7 +969,7 @@ defmodule Arena.GameUpdater do
       |> Physics.move_entities(
         delta_time,
         external_wall,
-        obstacles
+        Obstacle.get_collisionable_obstacles(obstacles)
       )
       |> update_collisions(players, entities_to_collide)
 
@@ -1001,7 +1016,7 @@ defmodule Arena.GameUpdater do
 
     entities_to_collide_with =
       Player.alive_players(players)
-      |> Map.merge(obstacles)
+      |> Map.merge(Obstacle.get_collisionable_obstacles(obstacles))
       |> Map.merge(crates)
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
@@ -1531,21 +1546,29 @@ defmodule Arena.GameUpdater do
       radius: object_radius,
       vertices: [],
       speed: 0.0,
-      category: :obstacle,
+      category: :power_up,
       direction: %{x: 0.0, y: 0.0},
       is_moving: false,
       name: "Circle 1"
     }
 
     entities_to_collide_with =
-      obstacles
+      Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.type == "static" end)
       |> Map.merge(%{external_wall.id => external_wall})
 
     external_wall_id = external_wall.id
 
     case Physics.check_collisions(circle, entities_to_collide_with) do
-      [^external_wall_id | []] -> circle.position
-      _ -> random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius)
+      [^external_wall_id | []] ->
+        circle.position
+
+      _ ->
+        Physics.get_closest_available_position(
+          circle.position,
+          circle,
+          external_wall,
+          entities_to_collide_with
+        )
     end
   end
 
@@ -1674,6 +1697,16 @@ defmodule Arena.GameUpdater do
     else
       game_state
     end
+  end
+
+  defp handle_obstacles_transitions(%{status: :RUNNING} = game_state) do
+    Enum.reduce(game_state.obstacles, game_state, fn {_obstacle_id, obstacle}, game_state ->
+      Obstacle.update_obstacle_transition_status(game_state, obstacle)
+    end)
+  end
+
+  defp handle_obstacles_transitions(game_state) do
+    game_state
   end
 
   ##########################

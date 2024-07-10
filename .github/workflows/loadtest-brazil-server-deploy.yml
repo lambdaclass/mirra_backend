@@ -49,6 +49,7 @@ jobs:
           PHX_HOST: ${{ vars.LOADTEST_SERVER_HOST }}
           OVERRIDE_JWT: ${{ vars.OVERRIDE_JWT }}
           PORT: ${{ vars.ARENA_PORT }}
+          GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
@@ -67,6 +68,7 @@ jobs:
                 PHX_HOST=${PHX_HOST} \
                 OVERRIDE_JWT=${OVERRIDE_JWT} \
                 PORT=${PORT} \
+                GATEWAY_URL=${GATEWAY_URL} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
