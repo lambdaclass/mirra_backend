@@ -155,6 +155,10 @@ defmodule Arena.GameTracker do
     put_in(data, [:players, player_id, :bounty_quest_id], bounty_quest_id)
   end
 
+  defp generate_player_result(nil, _player_id) do
+    %{}
+  end
+
   defp generate_player_result(match_data, player_id) do
     duration = System.monotonic_time(:millisecond) - match_data.start_at
 
