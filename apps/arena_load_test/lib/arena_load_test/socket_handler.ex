@@ -6,6 +6,7 @@ defmodule ArenaLoadTest.SocketHandler do
   use WebSockex, restart: :transient
   alias ArenaLoadTest.Serialization
   alias ArenaLoadTest.SocketSupervisor
+  alias ArenaLoadTest.Utils
 
   def start_link(client_id) do
     ws_url = ws_url(client_id)
