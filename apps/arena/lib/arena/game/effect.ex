@@ -24,57 +24,16 @@ defmodule Arena.Game.Effect do
   end
 
   def put_effect_to_entity(game_state, entity, owner_id, start_action_removal_in_ms, effect) do
-    last_id = game_state.last_id + 1
-
     same_applied_effect =
       Enum.find(entity.aditional_info.effects, fn entity_effect ->
         entity_effect.owner_id == owner_id and entity_effect.name == effect.name
       end)
 
-    now = System.monotonic_time(:millisecond)
-
-    updated_entity =
-      if same_applied_effect && effect.one_time_application do
-        updated_effects =
-          Enum.map(entity.aditional_info.effects, fn effect ->
-            if effect.id == same_applied_effect.id and same_applied_effect.expires_at do
-              Map.put(effect, :expires_at, now + same_applied_effect.duration_ms)
-            else
-              effect
-            end
-          end)
-
-        put_in(
-          entity,
-          [:aditional_info, :effects],
-          updated_effects
-        )
-      else
-        action_removal_at = now + start_action_removal_in_ms
-
-        expires_at =
-          case effect[:duration_ms] do
-            nil -> nil
-            duration_ms -> now + duration_ms
-          end
-
-        ## TODO: remove `id` from effect, unless it is really necessary
-        effect_extra_attributes = %{
-          id: last_id,
-          owner_id: owner_id,
-          expires_at: expires_at,
-          action_removal_at: action_removal_at
-        }
-
-        update_in(
-          entity,
-          [:aditional_info, :effects],
-          fn effects -> effects ++ [Map.merge(effect, effect_extra_attributes)] end
-        )
-      end
-
-    GameUpdater.update_entity_in_game_state(game_state, updated_entity)
-    |> Map.put(:last_id, last_id)
+    if same_applied_effect && effect.one_time_application do
+      refresh_entity_applied_effect_expire_time(game_state, entity, same_applied_effect)
+    else
+      add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms)
+    end
   end
 
   def remove_owner_effects(game_state, entity_id, owner_id) do
@@ -305,4 +264,57 @@ defmodule Arena.Game.Effect do
   end
 
   defp maybe_send_to_killfeed(entity, _pool_owner_id), do: entity
+
+  defp add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms) do
+    now = System.monotonic_time(:millisecond)
+
+    last_id = game_state.last_id + 1
+    action_removal_at = now + start_action_removal_in_ms
+
+    expires_at =
+      case effect[:duration_ms] do
+        nil -> nil
+        duration_ms -> now + duration_ms
+      end
+
+    ## TODO: remove `id` from effect, unless it is really necessary
+    effect_extra_attributes = %{
+      id: last_id,
+      owner_id: owner_id,
+      expires_at: expires_at,
+      action_removal_at: action_removal_at
+    }
+
+    updated_entity =
+      update_in(
+        entity,
+        [:aditional_info, :effects],
+        fn effects -> effects ++ [Map.merge(effect, effect_extra_attributes)] end
+      )
+
+    GameUpdater.update_entity_in_game_state(game_state, updated_entity)
+    |> Map.put(:last_id, last_id)
+  end
+
+  defp refresh_entity_applied_effect_expire_time(game_state, entity, same_applied_effect) do
+    now = System.monotonic_time(:millisecond)
+
+    updated_effects =
+      Enum.map(entity.aditional_info.effects, fn effect ->
+        if effect.id == same_applied_effect.id and same_applied_effect.expires_at do
+          Map.put(effect, :expires_at, now + same_applied_effect.duration_ms)
+        else
+          effect
+        end
+      end)
+
+    updated_entity =
+      put_in(
+        entity,
+        [:aditional_info, :effects],
+        updated_effects
+      )
+
+    GameUpdater.update_entity_in_game_state(game_state, updated_entity)
+  end
 end
