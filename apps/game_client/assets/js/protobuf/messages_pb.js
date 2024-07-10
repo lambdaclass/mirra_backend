@@ -4290,7 +4290,7 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    offset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0)
+    targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0)
   };
 
   if (includeInstance) {
@@ -4357,7 +4357,7 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
       break;
     case 8:
       var value = /** @type {number} */ (reader.readFloat());
-      msg.setOffset(value);
+      msg.setTargettingOffset(value);
       break;
     default:
       reader.skipField();
@@ -4437,7 +4437,7 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getOffset();
+  f = message.getTargettingOffset();
   if (f !== 0.0) {
     writer.writeFloat(
       8,
@@ -4574,10 +4574,10 @@ proto.ConfigSkill.prototype.setStaminaCost = function(value) {
 
 
 /**
- * optional float offset = 8;
+ * optional float targetting_offset = 8;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getOffset = function() {
+proto.ConfigSkill.prototype.getTargettingOffset = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 8, 0.0));
 };
 
@@ -4586,7 +4586,7 @@ proto.ConfigSkill.prototype.getOffset = function() {
  * @param {number} value
  * @return {!proto.ConfigSkill} returns this
  */
-proto.ConfigSkill.prototype.setOffset = function(value) {
+proto.ConfigSkill.prototype.setTargettingOffset = function(value) {
   return jspb.Message.setProto3FloatField(this, 8, value);
 };
 

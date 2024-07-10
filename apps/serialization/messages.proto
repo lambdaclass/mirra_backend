@@ -106,7 +106,7 @@ message ConfigSkill {
   float targetting_angle = 5;
   float targetting_range = 6;
   uint64 stamina_cost = 7;
-  float offset = 8;
+  float targetting_offset = 8;
 }
 
 

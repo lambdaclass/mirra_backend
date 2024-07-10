@@ -195,7 +195,7 @@ defmodule Arena.GameSocketHandler do
         targetting_radius: params[:radius],
         targetting_angle: params[:angle],
         targetting_range: params[:range],
-        offset: params[:offset] || params[:projectile_offset]
+        targetting_offset: params[:offset] || params[:projectile_offset]
       }
 
     {key, Map.merge(skill, extra_params)}
