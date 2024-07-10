@@ -45,22 +45,164 @@
     ],
     "obstacles": [
       {
+        "name": "door",
         "position": {
           "x": -6957.6,
           "y": -1657.85
         },
         "radius": 1800.05,
         "shape": "circle",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": []
       },
       {
+        "name": "sand_cascade",
         "position": {
           "x": -3998.0,
           "y": 3939.0
         },
         "radius": 365.55,
         "shape": "circle",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": []
+      },
+      {
+        "name": "test_spike_1",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": 2600.0,
+            "y": 3350.0
+          },
+          {
+            "x": 2250.0,
+            "y": 3600.0
+          },
+          {
+            "x": 3000.0,
+            "y": 4550.0
+          },
+          {
+            "x": 3350.0,
+            "y": 4300.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": 2600.0,
+                    "y": 3350.0
+                  },
+                  {
+                    "x": 2350.0,
+                    "y": 3700.0
+                  },
+                  {
+                    "x": 3000.0,
+                    "y": 4550.0
+                  },
+                  {
+                    "x": 3350.0,
+                    "y": 4300.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
+        "name": "test_spike_2",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": -4100.0,
+            "y": -1250.0
+          },
+          {
+            "x": -4100.0,
+            "y": -900.0
+          },
+          {
+            "x": -5500.0,
+            "y": -900.0
+          },
+          {
+            "x": -5500.0,
+            "y": -1250.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": -4100.0,
+                    "y": -1250.0
+                  },
+                  {
+                    "x": -4100.0,
+                    "y": -900.0
+                  },
+                  {
+                    "x": -5500.0,
+                    "y": -900.0
+                  },
+                  {
+                    "x": -5500.0,
+                    "y": -1250.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": true
+          }
+        }
       },
       {
         "name": "middle stone north",
@@ -70,6 +212,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "base_status": "",
+        "statuses_cycle": {},
         "vertices": [
           {
             "x": -956.0,
@@ -105,6 +250,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -499.0,
@@ -140,6 +288,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -1674.0,
@@ -183,6 +334,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 2758.0,
@@ -230,6 +384,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 3421.0,
@@ -257,6 +414,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 3970.0,
@@ -284,6 +444,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 4352.0,
@@ -323,6 +486,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -4420.0,
@@ -354,6 +520,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -4454.0,
@@ -381,6 +550,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -3980.0,
@@ -416,6 +588,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 470.0,
@@ -451,6 +626,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -770.0,
@@ -482,6 +660,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -849.0,
@@ -517,6 +698,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 1226.0,
@@ -548,6 +732,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -2511.0,
@@ -583,6 +770,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -2881.0,
@@ -614,6 +804,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -3943.0,
@@ -645,6 +838,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -4022.0,
@@ -680,6 +876,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 791.0,
@@ -715,6 +914,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 1598.0,
@@ -746,6 +948,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 2789.0,
@@ -777,6 +982,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": 3186.0,
@@ -808,6 +1016,9 @@
         },
         "radius": 0.0,
         "shape": "polygon",
+        "type": "static",
+        "statuses_cycle": {},
+        "base_status": "",
         "vertices": [
           {
             "x": -2376.0,
