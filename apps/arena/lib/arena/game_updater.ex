@@ -6,7 +6,6 @@ defmodule Arena.GameUpdater do
 
   use GenServer
   alias Arena.Game.Obstacle
-  alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
@@ -571,7 +570,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
       if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
-        GameTracker.push_event(self(), {:select_bounty, player_id, player.aditional_info.default_bounty.id})
+        GameTracker.push_event(self(), {:select_bounty, player_id, player.aditional_info.default_bounty["id"]})
       end
     end)
 
@@ -1245,7 +1244,7 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp update_bounties_states(game_state, state) do
+  defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
     actual_players =
       state.clients
       |> Enum.map(fn client_id ->
@@ -1259,14 +1258,23 @@ defmodule Arena.GameUpdater do
 
     Enum.reduce(actual_players, game_state, fn {player_id, player}, game_state ->
       if not player.aditional_info.bounty_completed and
-           Bounties.completed_bounty?(player.aditional_info.selected_bounty, [GameTracker.get_player_result(player_id)]) do
+           GameBackend.CurseOfMirra.Quests.completed_quest?(player.aditional_info.selected_bounty, [
+             GameTracker.get_player_result(player_id)
+           ]) do
         update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+          {user_id, _player_id} =
+            Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+
           Map.put(aditional_info, :bounty_completed, true)
         end)
       else
         game_state
       end
     end)
+  end
+
+  defp update_bounties_states(game_state, _state) do
+    game_state
   end
 
   ##########################

@@ -13,6 +13,19 @@ defmodule GameBackend.CurseOfMirra.Quests do
   import Ecto.Query
 
   @doc """
+  Get a %Quest{} by the id field
+
+  ## Examples
+
+      iex>get_quest(4)
+      %Quest{id: 4}
+
+  """
+  def get_quest(id) do
+    Repo.get(Quest, id)
+  end
+
+  @doc """
   Get a %Quest{} by the config_id field
 
   ## Examples
@@ -181,7 +194,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
       }) do
     user_quests
     |> Enum.reduce([], fn user_quest, acc ->
-      if completed_quest?(user_quest, arena_match_results) and user_quest.quest.type == "daily" do
+      if completed_quest?(user_quest.quest, arena_match_results) and user_quest.quest.type == "daily" do
         [user_quest | acc]
       else
         acc
@@ -274,29 +287,39 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  def completed_quest?(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
+  def completed_quest?(nil, _arena_match_results) do
+    false
+  end
+
+  def completed_quest?(quest, arena_match_results) do
+    IO.inspect(quest, label: "aber quest")
+
     progress =
       arena_match_results
       |> filter_results_that_meet_quest_conditions(quest.conditions)
       |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = String.to_atom(quest.objective["match_tracking_field"])
+        type = String.to_existing_atom(quest.objective["match_tracking_field"] || quest.objective.match_tracking_field)
 
-        acc + accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+        acc +
+          accumulate_objective_progress_by_scope(
+            quest.objective["scope"] || quest.objective.scope,
+            Map.get(arena_match_result, type)
+          )
       end)
 
-    comparator = parse_comparator(quest.objective["comparison"])
+    comparator = parse_comparator(quest.objective["comparison"] || quest.objective.comparison)
 
-    comparator.(progress, quest.objective["value"])
+    comparator.(progress, quest.objective["value"] || quest.objective.value)
   end
 
   defp filter_results_that_meet_quest_conditions(arena_match_results, conditions) do
     Enum.filter(arena_match_results, fn arena_match_result ->
       Enum.all?(conditions, fn condition ->
-        type = String.to_atom(condition["match_tracking_field"])
-        value = condition["value"]
+        type = String.to_existing_atom(condition["match_tracking_field"] || condition.match_tracking_field)
+        value = condition["value"] || condition.value
         arena_match_result_value = Map.get(arena_match_result, type)
 
-        comparator = parse_comparator(condition["comparison"])
+        comparator = parse_comparator(condition["comparison"] || condition.comparison)
 
         comparator.(arena_match_result_value, value)
       end)
