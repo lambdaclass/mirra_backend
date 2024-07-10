@@ -321,8 +321,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   def completed_quest?(quest, arena_match_results) do
-    IO.inspect(quest, label: "aber quest")
-
     progress =
       arena_match_results
       |> filter_results_that_meet_quest_conditions(quest.conditions)
