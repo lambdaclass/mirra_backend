@@ -13,8 +13,8 @@ on:
         type: choice
         description: Loadtest target server
         options:
-          - loadtest-brazil-server.curseofmirra.com
-          - loadtest-europe-server.curseofmirra.com
+          - Brazil
+          - Europe
 
 jobs:
   build-deploy:
