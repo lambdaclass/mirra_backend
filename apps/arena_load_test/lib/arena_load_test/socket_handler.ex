@@ -6,7 +6,6 @@ defmodule ArenaLoadTest.SocketHandler do
   use WebSockex, restart: :transient
   alias ArenaLoadTest.Serialization
   alias ArenaLoadTest.SocketSupervisor
-  alias ArenaLoadTest.Utils
 
   def start_link(client_id) do
     ws_url = ws_url(client_id)
@@ -30,27 +29,26 @@ defmodule ArenaLoadTest.SocketHandler do
 
   @impl true
   def handle_frame({:binary, game_state}, state) do
-    game_id = Serialization.GameState.decode(game_state).game_id
+    game_msg = Serialization.LobbyEvent.decode(game_state)
 
-    case :ets.lookup(:clients, state.client_id) do
-      [{client_id, _}] ->
-        :ets.delete(:clients, client_id)
+    case game_msg.event do
+      {:game, game_state} ->
+        game_id = game_state.game_id
+        remove_client_from_lobby_ets_table(state.client_id)
 
-      [] ->
-        raise KeyError, message: "Client with ID #{state.client_id} doesn't exist."
+        {:ok, pid} =
+          SocketSupervisor.add_new_player(
+            state.client_id,
+            game_id
+          )
+
+        true = :ets.insert(:players, {state.client_id, game_id})
+        Process.send(pid, :send_action, [])
+        {:ok, state}
+
+      {_event, _event_state} ->
+        {:ok, state}
     end
-
-    {:ok, pid} =
-      SocketSupervisor.add_new_player(
-        state.client_id,
-        game_id
-      )
-
-    true = :ets.insert(:players, {state.client_id, game_id})
-
-    Process.send(pid, :send_action, [])
-
-    {:ok, state}
   end
 
   # Private
@@ -74,5 +72,15 @@ defmodule ArenaLoadTest.SocketHandler do
   defp get_random_active_character() do
     ["muflus", "h4ck", "uma"]
     |> Enum.random()
+  end
+
+  defp remove_client_from_lobby_ets_table(client_id) do
+    case :ets.lookup(:clients, client_id) do
+      [{client_id, _}] ->
+        :ets.delete(:clients, client_id)
+
+      [] ->
+        raise KeyError, message: "Client with ID #{client_id} doesn't exist."
+    end
   end
 end
