@@ -229,7 +229,7 @@ Champions.Config.import_dungeon_levels_config()
 muflus_params = %{
   name: "muflus",
   active: true,
-  base_speed: 17.5,
+  base_speed: 0.63,
   base_size: 110.0,
   base_health: 440,
   base_stamina: 3,
@@ -247,7 +247,7 @@ muflus_params = %{
 h4ck_params = %{
   name: "h4ck",
   active: true,
-  base_speed: 22.5,
+  base_speed: 0.7,
   base_size: 90.0,
   base_health: 400,
   base_stamina: 3,
@@ -265,7 +265,7 @@ h4ck_params = %{
 uma_params = %{
   name: "uma",
   active: true,
-  base_speed: 20.0,
+  base_speed: 0.67,
   base_size: 95.0,
   base_health: 400,
   base_stamina: 3,
@@ -283,7 +283,7 @@ uma_params = %{
 valtimer_params = %{
   name: "valtimer",
   active: false,
-  base_speed: 20.0,
+  base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
   base_stamina: 3,
@@ -323,7 +323,8 @@ game_configuration_1 = %{
   item_spawn_interval_ms: 7500,
   bots_enabled: true,
   zone_enabled: true,
-  bounties_options_amount: 3
+  bounties_options_amount: 3,
+  match_timeout_ms: 300_000
 }
 
 {:ok, _game_configuration_1} =
@@ -364,5 +365,7 @@ giant_fruit_params = %{
 
 {:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
+
+GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
 
 ################### END CURSE OF MIRRA ###################

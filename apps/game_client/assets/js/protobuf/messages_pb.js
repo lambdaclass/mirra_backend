@@ -62,6 +62,7 @@ goog.exportSymbol('proto.Player', null, global);
 goog.exportSymbol('proto.PlayerAction', null, global);
 goog.exportSymbol('proto.PlayerActionType', null, global);
 goog.exportSymbol('proto.Pool', null, global);
+goog.exportSymbol('proto.PoolStatus', null, global);
 goog.exportSymbol('proto.Position', null, global);
 goog.exportSymbol('proto.PowerUp', null, global);
 goog.exportSymbol('proto.PowerUpstatus', null, global);
@@ -631,7 +632,7 @@ if (goog.DEBUG && !COMPILED) {
  * @constructor
  */
 proto.Pool = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.Pool.repeatedFields_, null);
 };
 goog.inherits(proto.Pool, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
@@ -6368,7 +6369,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
-    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false)
+    onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
+    forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
   };
 
   if (includeInstance) {
@@ -6467,6 +6469,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 14:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setOnBush(value);
+      break;
+    case 15:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setForcedMovement(value);
       break;
     default:
       reader.skipField();
@@ -6592,6 +6598,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       14,
+      f
+    );
+  }
+  f = message.getForcedMovement();
+  if (f) {
+    writer.writeBool(
+      15,
       f
     );
   }
@@ -6933,6 +6946,24 @@ proto.Player.prototype.setOnBush = function(value) {
 };
 
 
+/**
+ * optional bool forced_movement = 15;
+ * @return {boolean}
+ */
+proto.Player.prototype.getForcedMovement = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setForcedMovement = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 15, value);
+};
+
+
 
 
 
@@ -6966,7 +6997,8 @@ proto.Effect.prototype.toObject = function(opt_includeInstance) {
 proto.Effect.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    id: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -7011,6 +7043,10 @@ proto.Effect.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint32());
       msg.setDurationMs(value);
       break;
+    case 3:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setId(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7054,6 +7090,13 @@ proto.Effect.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getId();
+  if (f !== 0) {
+    writer.writeUint64(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7090,6 +7133,24 @@ proto.Effect.prototype.getDurationMs = function() {
  */
 proto.Effect.prototype.setDurationMs = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional uint64 id = 3;
+ * @return {number}
+ */
+proto.Effect.prototype.getId = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Effect} returns this
+ */
+proto.Effect.prototype.setId = function(value) {
+  return jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -7475,7 +7536,9 @@ proto.Obstacle.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Obstacle.toObject = function(includeInstance, msg) {
   var f, obj = {
-    color: jspb.Message.getFieldWithDefault(msg, 1, "")
+    color: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    collisionable: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    status: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -7516,6 +7579,14 @@ proto.Obstacle.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setColor(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setCollisionable(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setStatus(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7552,6 +7623,20 @@ proto.Obstacle.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getCollisionable();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7570,6 +7655,42 @@ proto.Obstacle.prototype.getColor = function() {
  */
 proto.Obstacle.prototype.setColor = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional bool collisionable = 2;
+ * @return {boolean}
+ */
+proto.Obstacle.prototype.getCollisionable = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Obstacle} returns this
+ */
+proto.Obstacle.prototype.setCollisionable = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional string status = 3;
+ * @return {string}
+ */
+proto.Obstacle.prototype.getStatus = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Obstacle} returns this
+ */
+proto.Obstacle.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -7924,6 +8045,13 @@ proto.Crate.prototype.setStatus = function(value) {
 
 
 
+/**
+ * List of repeated fields within this message type.
+ * @private {!Array<number>}
+ * @const
+ */
+proto.Pool.repeatedFields_ = [3];
+
 
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
@@ -7955,7 +8083,11 @@ proto.Pool.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Pool.toObject = function(includeInstance, msg) {
   var f, obj = {
-    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    status: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
+    proto.Effect.toObject, includeInstance),
+    skillKey: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -7996,6 +8128,19 @@ proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readUint64());
       msg.setOwnerId(value);
       break;
+    case 2:
+      var value = /** @type {!proto.PoolStatus} */ (reader.readEnum());
+      msg.setStatus(value);
+      break;
+    case 3:
+      var value = new proto.Effect;
+      reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
+      msg.addEffects(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSkillKey(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8032,6 +8177,28 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getStatus();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      2,
+      f
+    );
+  }
+  f = message.getEffectsList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      3,
+      f,
+      proto.Effect.serializeBinaryToWriter
+    );
+  }
+  f = message.getSkillKey();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
 };
 
 
@@ -8050,6 +8217,80 @@ proto.Pool.prototype.getOwnerId = function() {
  */
 proto.Pool.prototype.setOwnerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
+};
+
+
+/**
+ * optional PoolStatus status = 2;
+ * @return {!proto.PoolStatus}
+ */
+proto.Pool.prototype.getStatus = function() {
+  return /** @type {!proto.PoolStatus} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/**
+ * @param {!proto.PoolStatus} value
+ * @return {!proto.Pool} returns this
+ */
+proto.Pool.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3EnumField(this, 2, value);
+};
+
+
+/**
+ * repeated Effect effects = 3;
+ * @return {!Array<!proto.Effect>}
+ */
+proto.Pool.prototype.getEffectsList = function() {
+  return /** @type{!Array<!proto.Effect>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 3));
+};
+
+
+/**
+ * @param {!Array<!proto.Effect>} value
+ * @return {!proto.Pool} returns this
+*/
+proto.Pool.prototype.setEffectsList = function(value) {
+  return jspb.Message.setRepeatedWrapperField(this, 3, value);
+};
+
+
+/**
+ * @param {!proto.Effect=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.Effect}
+ */
+proto.Pool.prototype.addEffects = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.Effect, opt_index);
+};
+
+
+/**
+ * Clears the list making it empty but non-null.
+ * @return {!proto.Pool} returns this
+ */
+proto.Pool.prototype.clearEffectsList = function() {
+  return this.setEffectsList([]);
+};
+
+
+/**
+ * optional string skill_key = 4;
+ * @return {string}
+ */
+proto.Pool.prototype.getSkillKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Pool} returns this
+ */
+proto.Pool.prototype.setSkillKey = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -11012,7 +11253,8 @@ proto.CrateStatus = {
  */
 proto.PowerUpstatus = {
   AVAILABLE: 0,
-  TAKEN: 1
+  TAKEN: 1,
+  UNAVAILABLE: 2
 };
 
 /**
@@ -11035,6 +11277,14 @@ proto.TrapStatus = {
   PREPARED: 1,
   TRIGGERED: 2,
   USED: 3
+};
+
+/**
+ * @enum {number}
+ */
+proto.PoolStatus = {
+  WAITING: 0,
+  READY: 1
 };
 
 goog.object.extend(exports, proto);

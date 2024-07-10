@@ -2,10 +2,10 @@ defmodule GameBackend.CurseOfMirra.Users do
   @moduledoc """
     Module to work with users logic
   """
+  alias GameBackend.Units
   alias GameBackend.Repo
   alias GameBackend.Users.User
   alias GameBackend.Utils
-  alias GameBackend.Units.Characters
   alias GameBackend.CurseOfMirra.Config
 
   @doc """
@@ -23,20 +23,13 @@ defmodule GameBackend.CurseOfMirra.Users do
     experience = 1
     amount_of_users = Repo.aggregate(User, :count)
     username = "User_#{amount_of_users + 1}"
-    prestige = 0
     ##################################################################
 
     units =
       Enum.reduce(Config.get_characters_config(), [], fn char_params, acc ->
         acc ++
           [
-            %{
-              level: level,
-              prestige: prestige,
-              selected: true,
-              character_id:
-                Characters.get_character_id_by_name_and_game_id(char_params.name, Utils.get_game_id(:curse_of_mirra))
-            }
+            Units.get_unit_default_values(char_params.name)
           ]
       end)
 

@@ -23,6 +23,7 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:bots_enabled, :boolean)
     field(:zone_enabled, :boolean)
     field(:bounties_options_amount, :integer)
+    field(:match_timeout_ms, :integer)
 
     timestamps()
   end
@@ -44,7 +45,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :item_spawn_interval_ms,
     :bots_enabled,
     :zone_enabled,
-    :bounties_options_amount
+    :bounties_options_amount,
+    :match_timeout_ms
   ]
   @doc false
   def changeset(game_configuration, attrs) do

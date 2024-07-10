@@ -15,7 +15,7 @@ fn add(a: i64, b: i64) -> i64 {
 #[rustler::nif()]
 fn move_entities(
     entities: HashMap<u64, Entity>,
-    ticks_to_move: f32,
+    delta_time: f32,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
 ) -> HashMap<u64, Entity> {
@@ -23,7 +23,7 @@ fn move_entities(
 
     for entity in entities.values_mut() {
         if entity.is_moving {
-            entity.move_entity(ticks_to_move);
+            entity.move_entity(delta_time);
 
             move_entity_to_closest_available_position(entity, &external_wall, &obstacles);
         }
@@ -35,13 +35,13 @@ fn move_entities(
 #[rustler::nif()]
 fn move_entity(
     entity: Entity,
-    ticks_to_move: f32,
+    delta_time: f32,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
 ) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
-        entity.move_entity(ticks_to_move);
+        entity.move_entity(delta_time);
         move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
     }
 
@@ -193,13 +193,17 @@ fn move_entity_to_closest_available_position(
     external_wall: &Entity,
     obstacles: &HashMap<u64, Entity>,
 ) {
-    if entity.category == Category::Player && !entity.is_inside_map(external_wall) {
+    let process_entity: bool = entity.category == Category::Player
+        || entity.category == Category::PowerUp
+        || entity.category == Category::Item;
+
+    if process_entity && !entity.is_inside_map(external_wall) {
         entity.move_to_next_valid_position_inside(external_wall);
     }
 
     let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
 
-    if entity.category == Category::Player && !collides_with.is_empty() {
+    if process_entity && !collides_with.is_empty() {
         let collided_with: Vec<&Entity> = collides_with
             .iter()
             .map(|id| obstacles.get(id).unwrap())
