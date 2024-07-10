@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   @moduledoc """
   Matches
   """
+  alias GameBackend.Units
   alias GameBackend.Units.Unit
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Users.Currencies
@@ -16,6 +17,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   def create_arena_match_results(match_id, results) do
     Multi.new()
     |> create_arena_match_results(match_id, results)
+    |> maybe_create_unit_for_user(results)
     |> add_users_to_multi(results)
     |> give_prestige(results)
     |> maybe_complete_quests()
@@ -122,6 +124,23 @@ defmodule GameBackend.CurseOfMirra.Matches do
           |> repo.update()
         end
       end)
+    end)
+  end
+
+  # TODO This is a TEMPORAL fix and should be removed as soon as we implement a check that block clients to play with characters
+  # that they don't own or a way to unlock characters
+  # Issue https://github.com/lambdaclass/mirra_backend/issues/751
+  defp maybe_create_unit_for_user(multi, results) do
+    Enum.reduce(results, multi, fn result, multi ->
+      if Users.user_has_unit_with_character_name(result["user_id"], result["character"]) do
+        multi
+      else
+        Multi.run(multi, {:insert_unit, result["user_id"], result["character"]}, fn _, _ ->
+          Units.get_unit_default_values(result["character"])
+          |> Map.put(:user_id, result["user_id"])
+          |> Units.insert_unit()
+        end)
+      end
     end)
   end
 
