@@ -128,6 +128,10 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :damage_taken], fn damage_taken -> damage_taken + amount end)
   end
 
+  defp update_data(data, {:damage_done, 9999, _amount}) do
+    data
+  end
+
   defp update_data(data, {:damage_done, player_id, amount}) do
     update_in(data, [:players, player_id, :damage_done], fn damage_done -> damage_done + amount end)
   end
@@ -156,7 +160,7 @@ defmodule Arena.GameTracker do
         ##    https://github.com/lambdaclass/mirra_backend/issues/601
         deaths: if(player_data.death == nil, do: 0, else: 1),
         character: player_data.character,
-        position: if(player_data.id == winner_id, do: 1, else: player_data.position),
+        position: get_player_match_place(player_data, winner_id, match_data),
         damage_taken: player_data.damage_taken,
         damage_done: player_data.damage_done,
         health_healed: player_data.health_healed,
@@ -185,4 +189,9 @@ defmodule Arena.GameTracker do
         Process.send_after(self(), {:retry_request, path, payload, backoff + 1}, backoff * 500)
     end
   end
+
+  def get_player_match_place(%{id: winner_id}, winner_id, _match_data), do: 1
+  def get_player_match_place(%{position: position}, _winner_id, _match_data), do: position
+  # Default case for timeouts
+  def get_player_match_place(_player_info, _winner_id, match_data), do: match_data.position_on_death
 end

@@ -193,12 +193,14 @@ message Player {
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
   repeated uint64 visible_players = 13;
-  bool on_bush  = 14;
+  bool on_bush = 14;
+  bool forced_movement = 15;
 }
 
 message Effect {
   string name = 1;
   uint32 duration_ms = 2;
+  uint64 id = 3;
 }
 
 message Item {
@@ -220,6 +222,8 @@ enum ProjectileStatus {
 
 message Obstacle {
   string color = 1;
+  bool collisionable = 2;
+  string status = 3;
 }
 
 message PowerUp {
@@ -241,10 +245,14 @@ enum CrateStatus {
 enum  PowerUpstatus {
   AVAILABLE = 0;
   TAKEN = 1;
+  UNAVAILABLE = 2;
 }
 
 message Pool {
   uint64 owner_id = 1;
+  PoolStatus status = 2;
+  repeated Effect effects = 3;
+  string skill_key = 4;
 }
 
 message Bush {
@@ -277,6 +285,11 @@ enum TrapStatus{
   PREPARED = 1;
   TRIGGERED = 2;
   USED = 3;
+}
+
+enum PoolStatus{
+  WAITING = 0;
+  READY = 1;
 }
 
 /*
@@ -338,7 +351,7 @@ message BountyInfo {
   string id = 1;
   string description = 2;
   string quest_type = 3;
-  CurrencyReward reward = 4; 
+  CurrencyReward reward = 4;
 }
 
 message CurrencyReward {

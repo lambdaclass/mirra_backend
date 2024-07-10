@@ -44,6 +44,18 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def kill_player(player) do
+    # The zone will be the one killing th character
+    send(self(), {:to_killfeed, 9999, player.id})
+
+    Map.update!(player, :aditional_info, fn info ->
+      %{
+        info
+        | health: 0
+      }
+    end)
+  end
+
   def trigger_natural_healings(players) do
     Enum.reduce(players, %{}, fn {player_id, player}, players_acc ->
       player = maybe_trigger_natural_heal(player, alive?(player))
@@ -288,6 +300,13 @@ defmodule Arena.Game.Player do
     |> round()
   end
 
+  def calculate_real_damage(
+        _player_damage_owner,
+        damage
+      ) do
+    damage
+  end
+
   def store_item(player, item) do
     put_in(player, [:aditional_info, :inventory], item)
   end
@@ -444,8 +463,7 @@ defmodule Arena.Game.Player do
       y: position.y + direction.y
     }
 
-    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    Physics.calculate_duration(position, target_position, leap.speed) * 30
+    Physics.calculate_duration(position, target_position, leap.speed)
   end
 
   defp calculate_duration(%{mechanics: [_]} = skill, _, _, _) do

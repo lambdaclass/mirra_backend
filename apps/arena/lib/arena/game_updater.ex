@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  alias Arena.Game.Obstacle
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
@@ -195,12 +196,11 @@ defmodule Arena.GameUpdater do
   def handle_info(:update_game, %{game_state: game_state} = state) do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    time_diff = now - game_state.server_timestamp
-    ticks_to_move = time_diff / state.game_config.game.tick_rate_ms
+    delta_time = now - game_state.server_timestamp
 
     game_state =
       game_state
-      |> Map.put(:ticks_to_move, ticks_to_move)
+      |> Map.put(:delta_time, delta_time / 1)
       # Effects
       |> remove_expired_effects()
       |> remove_effects_on_action()
@@ -208,7 +208,7 @@ defmodule Arena.GameUpdater do
       |> Effect.apply_effect_mechanic_to_entities()
       # Players
       |> move_players()
-      |> reduce_players_cooldowns(time_diff)
+      |> reduce_players_cooldowns(delta_time)
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
@@ -224,13 +224,15 @@ defmodule Arena.GameUpdater do
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
       # Crates
-      |> handle_destroyed_crates(state.game_config)
+      |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
       |> prepare_traps()
       |> handle_trap_collisions()
       |> activate_trap_mechanics()
+      # Obstacles
+      |> handle_obstacles_transitions()
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -246,8 +248,11 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:game_start, state) do
     broadcast_enable_incomming_messages(state.game_state.game_id)
+
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
+
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
@@ -558,6 +563,43 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
+  def handle_info({:delayed_power_up_spawn, entity, amount}, state) do
+    game_state =
+      state.game_state
+      |> spawn_power_ups(state.game_config, entity, amount)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:activate_power_up, power_up_id}, state) do
+    game_state =
+      state.game_state
+      |> update_in([:power_ups, power_up_id], fn power_up ->
+        put_in(power_up, [:aditional_info, :status], :AVAILABLE)
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info(:match_timeout, state) do
+    game_state =
+      Enum.reduce(Player.alive_players(state.game_state.players), state.game_state, fn {player_id, _player},
+                                                                                       game_state ->
+        update_in(game_state, [:players, player_id], fn player ->
+          Player.kill_player(player)
+        end)
+      end)
+
+    {:noreply, Map.put(state, :game_state, game_state)}
+  end
+
+  def handle_info({:activate_pool, pool_id}, state) do
+    state =
+      put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
+
+    {:noreply, state}
+  end
+
   ##########################
   # End callbacks
   ##########################
@@ -673,10 +715,14 @@ defmodule Arena.GameUpdater do
         enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
-          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms
+          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
+            config.game.bounty_pick_time_ms
       })
       |> Map.put(:status, :PREPARING)
-      |> Map.put(:start_game_timestamp, initial_timestamp + config.game.start_game_time_ms)
+      |> Map.put(
+        :start_game_timestamp,
+        initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
+      )
       |> Map.put(:positions, %{})
       |> Map.put(:traps, %{})
 
@@ -721,14 +767,24 @@ defmodule Arena.GameUpdater do
     Enum.reduce(obstacles, {Map.new(), last_id}, fn obstacle, {obstacles_acc, last_id} ->
       last_id = last_id + 1
 
+      obstacle =
+        Entities.new_obstacle(
+          last_id,
+          obstacle
+        )
+
+      obstacle =
+        if obstacle.aditional_info.type == "dynamic" do
+          Obstacle.handle_transition_init(obstacle)
+        else
+          obstacle
+        end
+
       obstacles_acc =
         Map.put(
           obstacles_acc,
           last_id,
-          Entities.new_obstacle(
-            last_id,
-            obstacle
-          )
+          obstacle
         )
 
       {obstacles_acc, last_id}
@@ -894,7 +950,7 @@ defmodule Arena.GameUpdater do
   defp move_players(
          %{
            players: players,
-           ticks_to_move: ticks_to_move,
+           delta_time: delta_time,
            external_wall: external_wall,
            obstacles: obstacles,
            bushes: bushes,
@@ -911,9 +967,9 @@ defmodule Arena.GameUpdater do
     moved_players =
       players
       |> Physics.move_entities(
-        ticks_to_move,
+        delta_time,
         external_wall,
-        obstacles
+        Obstacle.get_collisionable_obstacles(obstacles)
       )
       |> update_collisions(players, entities_to_collide)
 
@@ -947,7 +1003,7 @@ defmodule Arena.GameUpdater do
            obstacles: obstacles,
            crates: crates,
            external_wall: external_wall,
-           ticks_to_move: ticks_to_move,
+           delta_time: delta_time,
            pools: pools
          } = game_state
        ) do
@@ -960,14 +1016,14 @@ defmodule Arena.GameUpdater do
 
     entities_to_collide_with =
       Player.alive_players(players)
-      |> Map.merge(obstacles)
+      |> Map.merge(Obstacle.get_collisionable_obstacles(obstacles))
       |> Map.merge(crates)
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
 
     moved_projectiles =
       alive_projectiles
-      |> Physics.move_entities(ticks_to_move, external_wall, %{})
+      |> Physics.move_entities(delta_time, external_wall, %{})
       |> update_collisions(
         projectiles,
         entities_to_collide_with
@@ -1155,15 +1211,20 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
-  defp handle_destroyed_crates(%{crates: crates} = game_state, game_config) do
+  defp handle_destroyed_crates(%{crates: crates} = game_state) do
     Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
       if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
         game_state
       else
         amount_of_power_ups = crate.aditional_info.amount_of_power_ups
 
+        Process.send_after(
+          self(),
+          {:delayed_power_up_spawn, crate, amount_of_power_ups},
+          crate.aditional_info.power_up_spawn_delay_ms
+        )
+
         game_state
-        |> spawn_power_ups(game_config, crate, amount_of_power_ups)
         |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
       end
     end)
@@ -1203,17 +1264,17 @@ defmodule Arena.GameUpdater do
       Map.values(players)
       |> Enum.filter(&Player.alive?/1)
 
-    case players_alive do
-      [player] when map_size(players) > 1 ->
-        {:ended, player}
+    cond do
+      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
+        {:ended, hd(players_alive)}
 
-      [] ->
+      Enum.empty?(players_alive) ->
         ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
         ##    but for now a random between the ones that were alive last is enough
         player = Map.get(players, Enum.random(last_players_ids))
         {:ended, player}
 
-      _ ->
+      true ->
         {:ongoing, Enum.map(players_alive, & &1.id)}
     end
   end
@@ -1379,6 +1440,8 @@ defmodule Arena.GameUpdater do
           game_config.power_ups.power_up
         )
 
+      Process.send_after(self(), {:activate_power_up, last_id}, game_config.power_ups.power_up.activation_delay_ms)
+
       game_state
       |> put_in([:power_ups, last_id], power_up)
       |> put_in([:last_id], last_id)
@@ -1440,12 +1503,12 @@ defmodule Arena.GameUpdater do
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
     entities = Map.merge(crates, players)
 
-    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+    Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
-        if entity_id in pool.collides_with do
+        if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, game_config, entity, pool)
         else
-          Effect.remove_owner_effects(acc, entity_id, pool_id)
+          Effect.remove_owner_effects(acc, entity_id, pool.id)
         end
       end)
     end)
@@ -1483,21 +1546,29 @@ defmodule Arena.GameUpdater do
       radius: object_radius,
       vertices: [],
       speed: 0.0,
-      category: :obstacle,
+      category: :power_up,
       direction: %{x: 0.0, y: 0.0},
       is_moving: false,
       name: "Circle 1"
     }
 
     entities_to_collide_with =
-      obstacles
+      Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.type == "static" end)
       |> Map.merge(%{external_wall.id => external_wall})
 
     external_wall_id = external_wall.id
 
     case Physics.check_collisions(circle, entities_to_collide_with) do
-      [^external_wall_id | []] -> circle.position
-      _ -> random_position_in_map(object_radius, external_wall, obstacles, initial_position, available_radius)
+      [^external_wall_id | []] ->
+        circle.position
+
+      _ ->
+        Physics.get_closest_available_position(
+          circle.position,
+          circle,
+          external_wall,
+          entities_to_collide_with
+        )
     end
   end
 
@@ -1626,6 +1697,16 @@ defmodule Arena.GameUpdater do
     else
       game_state
     end
+  end
+
+  defp handle_obstacles_transitions(%{status: :RUNNING} = game_state) do
+    Enum.reduce(game_state.obstacles, game_state, fn {_obstacle_id, obstacle}, game_state ->
+      Obstacle.update_obstacle_transition_status(game_state, obstacle)
+    end)
+  end
+
+  defp handle_obstacles_transitions(game_state) do
+    game_state
   end
 
   ##########################
