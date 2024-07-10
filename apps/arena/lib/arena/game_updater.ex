@@ -1261,10 +1261,6 @@ defmodule Arena.GameUpdater do
            GameBackend.CurseOfMirra.Quests.completed_quest?(player.aditional_info.selected_bounty, [
              GameTracker.get_player_result(player_id)
            ]) do
-        update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
-          Map.put(aditional_info, :bounty_completed, true)
-        end)
-
         {user_id, _player_id} =
           Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
@@ -1274,6 +1270,10 @@ defmodule Arena.GameUpdater do
 
           Finch.build(:get, "#{gateway_url}#{path}")
           |> Finch.request(Arena.Finch)
+        end)
+
+        update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
+          Map.put(aditional_info, :bounty_completed, true)
         end)
       else
         game_state
