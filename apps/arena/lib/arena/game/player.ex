@@ -300,6 +300,13 @@ defmodule Arena.Game.Player do
     |> round()
   end
 
+  def calculate_real_damage(
+        _player_damage_owner,
+        damage
+      ) do
+    damage
+  end
+
   def store_item(player, item) do
     put_in(player, [:aditional_info, :inventory], item)
   end

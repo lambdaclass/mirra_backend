@@ -7536,7 +7536,9 @@ proto.Obstacle.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Obstacle.toObject = function(includeInstance, msg) {
   var f, obj = {
-    color: jspb.Message.getFieldWithDefault(msg, 1, "")
+    color: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    collisionable: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
+    status: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -7577,6 +7579,14 @@ proto.Obstacle.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setColor(value);
       break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setCollisionable(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setStatus(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -7613,6 +7623,20 @@ proto.Obstacle.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getCollisionable();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -7631,6 +7655,42 @@ proto.Obstacle.prototype.getColor = function() {
  */
 proto.Obstacle.prototype.setColor = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional bool collisionable = 2;
+ * @return {boolean}
+ */
+proto.Obstacle.prototype.getCollisionable = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Obstacle} returns this
+ */
+proto.Obstacle.prototype.setCollisionable = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 2, value);
+};
+
+
+/**
+ * optional string status = 3;
+ * @return {string}
+ */
+proto.Obstacle.prototype.getStatus = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Obstacle} returns this
+ */
+proto.Obstacle.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
