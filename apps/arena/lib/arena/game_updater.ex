@@ -570,7 +570,7 @@ defmodule Arena.GameUpdater do
   def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
       if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
-        GameTracker.push_event(self(), {:select_bounty, player_id, player.aditional_info.default_bounty["id"]})
+        select_bounty(self(), player_id, player.aditional_info.default_bounty["id"])
       end
     end)
 
