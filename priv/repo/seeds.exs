@@ -323,13 +323,13 @@ game_configuration_1 = %{
   item_spawn_interval_ms: 7500,
   bots_enabled: true,
   zone_enabled: true,
-  bounties_options_amount: 3
+  bounties_options_amount: 3,
+  match_timeout_ms: 300_000
 }
 
 {:ok, _game_configuration_1} =
   GameBackend.Configuration.create_game_configuration(game_configuration_1)
 
 GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
-
 
 ################### END CURSE OF MIRRA ###################
