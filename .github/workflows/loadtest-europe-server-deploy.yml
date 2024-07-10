@@ -47,6 +47,7 @@ jobs:
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_SERVER_HOST }}
+          OVERRIDE_JWT: ${{ vars.OVERRIDE_JWT }}
           PORT: ${{ vars.ARENA_PORT }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -63,6 +64,7 @@ jobs:
                 RELEASE=${RELEASE} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
+                OVERRIDE_JWT=${OVERRIDE_JWT} \
                 PORT=${PORT} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
                 DATABASE_URL=${DATABASE_URL} \
