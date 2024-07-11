@@ -360,6 +360,7 @@ skills = [
       %{
         "type" => "spawn_pool",
         "name" => "denial_of_service",
+        "activation_delay" => 250,
         "duration_ms" => 2500,
         "radius" => 500.0,
         "range" => 1200.0,
@@ -456,6 +457,7 @@ skills = [
       %{
         "type" => "spawn_pool",
         "name" => "singularity",
+        "activation_delay" => 400,
         "duration_ms" => 5000,
         "radius" => 450.0,
         "range" => 1200.0,

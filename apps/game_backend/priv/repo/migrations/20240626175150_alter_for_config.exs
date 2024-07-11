@@ -16,6 +16,7 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :max_autoaim_range, :integer
       add :stamina_cost, :integer
       add :type, :string
+      add :effects_to_apply, {:array, :string}
     end
 
     create unique_index(:skills, [:game_id, :name])
@@ -36,6 +37,7 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :range, :decimal
       add :remove_on_collision, :boolean, default: false, null: false
       add :speed, :decimal
+      add :activation_delay, :integer
       add :on_arrival_mechanic_id, references(:mechanics, on_delete: :nothing)
       add :on_explode_mechanic_id, references(:mechanics, on_delete: :nothing)
     end

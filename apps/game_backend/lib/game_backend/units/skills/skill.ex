@@ -24,6 +24,7 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:is_passive, :boolean, default: false)
     field(:max_autoaim_range, :integer)
     field(:stamina_cost, :integer)
+    field(:effects_to_apply, {:array, :string})
     field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
 
     belongs_to(:buff, Buff)
@@ -53,6 +54,7 @@ defmodule GameBackend.Units.Skills.Skill do
       :is_passive,
       :max_autoaim_range,
       :stamina_cost,
+      :effects_to_apply,
       :type
     ])
     |> cast_assoc(:mechanics)

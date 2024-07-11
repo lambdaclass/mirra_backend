@@ -22,6 +22,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:range, :decimal)
     field(:remove_on_collision, :boolean, default: false)
     field(:speed, :decimal)
+    field(:activation_delay, :integer)
     field(:trigger_delay, :integer)
 
     field(:type, Ecto.Enum,
@@ -58,6 +59,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :radius,
       :range,
       :remove_on_collision,
+      :activation_delay,
       :speed
     ])
     |> cast_assoc(:apply_effects_to)
