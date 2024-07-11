@@ -4,7 +4,14 @@
   </.error>
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
-  <.input field={f[:effects]} type="select" multiple label="Effects" options={[]} />
+
+  <.inputs_for :let={fe} field={f[:effects]}>
+    <.input field={fe[:name]} type="text" label="Effect Name" />
+    <.input field={fe[:duration_ms]} type="number" label="Duration ms" step="any" />
+    <.input field={fe[:remove_on_action]} type="checkbox" label="Remove on Action" step="any" />
+    <.input field={fe[:one_time_application]} type="checkbox" label="One time Application" step="any" />
+  </.inputs_for>
+
   <:actions>
     <.button>Save Consumable item</.button>
   </:actions>
