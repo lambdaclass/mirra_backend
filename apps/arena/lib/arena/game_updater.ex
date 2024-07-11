@@ -652,7 +652,13 @@ defmodule Arena.GameUpdater do
            }}
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    schema = File.read!('apps/arena/priv/schema.txt') |> Eflatbuffers.Schema.parse!
+    color_scheme = %{direction: %{x: 4.5, y: 2.2}}
+    color_scheme_fb = Eflatbuffers.write!(color_scheme, schema)
+
+    IO.inspect(Eflatbuffers.read!(color_scheme_fb, schema))
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, color_scheme_fb})
   end
 
   defp broadcast_game_ended(winner, state) do

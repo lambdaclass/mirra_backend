@@ -1,0 +1,10 @@
+table Message {
+  direction: Direction;
+}
+
+table Direction {
+  x: float;
+  y: float;
+}
+
+root_type Message;

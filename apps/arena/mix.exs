@@ -52,7 +52,8 @@ defmodule Arena.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:plug_cowboy, "~> 2.5"},
       {:toxiproxy_ex, "~> 1.1.1"},
-      {:joken, "~> 2.6"}
+      {:joken, "~> 2.6"},
+      {:eflatbuffers, "~> 0.1.1"}
     ]
   end
 
