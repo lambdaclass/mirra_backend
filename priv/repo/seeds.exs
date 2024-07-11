@@ -332,38 +332,81 @@ game_configuration_1 = %{
 
 golden_clock_params = %{
   name: "golden_clock",
-  radius: 200.0,
-  effects: ["golden_clock_effect"]
+  radius: 200.0
 }
 
-{:ok, _golden_clock} =
+{:ok, golden_clock} =
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
 magic_boots_params = %{
   name: "magic_boots",
-  radius: 200.0,
-  effects: ["magic_boots_effect"]
+  radius: 200.0
 }
 
-{:ok, _magic_boots} =
+{:ok, magic_boots} =
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
 mirra_blessing_params = %{
   name: "mirra_blessing",
-  radius: 200.0,
-  effects: ["mirra_blessing_effect"]
+  radius: 200.0
 }
 
-{:ok, _mirra_blessing} =
+{:ok, mirra_blessing} =
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
 giant_fruit_params = %{
   name: "giant",
-  radius: 200.0,
-  effects: ["giant_effect"]
+  radius: 200.0
 }
 
-{:ok, _giant_fruit} =
+{:ok, giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
+
+
+golden_clock_effect_params = %{
+  name: "golden_clock_effect",
+  duration_ms: 9000,
+  remove_on_action: false,
+  one_time_application: true,
+  consumable_item_id: golden_clock.id
+}
+
+{:ok, _golden_clock_effect} =
+  GameBackend.CurseOfMirra.Effects.create_configuration_effect(golden_clock_effect_params)
+
+magic_boots_effect_params = %{
+  name: "magic_boots_effect",
+  duration_ms: 8000,
+  remove_on_action: false,
+  one_time_application: true,
+  consumable_item_id: magic_boots.id
+}
+
+{:ok, _magic_boots_effect} =
+  GameBackend.CurseOfMirra.Effects.create_configuration_effect(magic_boots_effect_params)
+
+mirra_blessing_effect_params = %{
+  name: "mirra_blessing_effect",
+  duration_ms: 7000,
+  remove_on_action: false,
+  one_time_application: true,
+  consumable_item_id: mirra_blessing.id
+}
+
+{:ok, _mirra_blessing_effect} =
+  GameBackend.CurseOfMirra.Effects.create_configuration_effect(mirra_blessing_effect_params)
+
+giant_effect_params = %{
+  name: "giant_effect",
+  duration_ms: 9000,
+  remove_on_action: false,
+  one_time_application: true,
+  consumable_item_id: giant_fruit.id
+}
+
+{:ok, _giant_effect} =
+  GameBackend.CurseOfMirra.Effects.create_configuration_effect(giant_effect_params)
+
+GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
 
 ################### END CURSE OF MIRRA ###################

@@ -1,12 +1,15 @@
 defmodule GameBackend.Effects.ConfigurationEffect do
-  use Ecto.Schema
+  use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Items.ConsumableItem
 
   schema "configuration_effects" do
-    field :name, :string
-    field :duration_ms, :integer
-    field :remove_on_action, :boolean, default: false
-    field :one_time_application, :boolean, default: false
+    field(:name, :string)
+    field(:duration_ms, :integer)
+    field(:remove_on_action, :boolean, default: false)
+    field(:one_time_application, :boolean, default: false)
+
+    belongs_to(:effect, ConsumableItem)
 
     timestamps(type: :utc_datetime)
   end
