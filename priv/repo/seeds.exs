@@ -390,7 +390,6 @@ skills = [
         "range" => 280.0,
         "interval_ms" => 200,
         "amount" => 3,
-        "move_by" => 100.0,
         "offset" => 200
       }
     ],
@@ -443,7 +442,7 @@ skills = [
   },
   %{
     "name" => "valt_singularity",
-    "type" => "basic",
+    "type" => "ultimate",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 9000,
     "execution_duration_ms" => 500,
@@ -493,7 +492,7 @@ skills = [
   },
   %{
     "name" => "valt_antimatter",
-    "type" => "ultimate",
+    "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 150,
