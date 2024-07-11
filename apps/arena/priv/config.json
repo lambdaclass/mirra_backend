@@ -71,7 +71,7 @@
         "vertices": []
       },
       {
-        "name": "test_spike_1",
+        "name": "top_right_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -138,7 +138,7 @@
         }
       },
       {
-        "name": "test_spike_2",
+        "name": "left_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -205,7 +205,7 @@
         }
       },
       {
-        "name": "test_spike_3",
+        "name": "center_left_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -272,7 +272,7 @@
         }
       },
       {
-        "name": "test_spike_4",
+        "name": "bottom_right_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
