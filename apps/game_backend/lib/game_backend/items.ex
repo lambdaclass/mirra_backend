@@ -287,6 +287,7 @@ defmodule GameBackend.Items do
   """
   def list_consumable_items do
     Repo.all(ConsumableItem)
+    |> Repo.preload(:effects)
   end
 
   @doc """
@@ -303,7 +304,7 @@ defmodule GameBackend.Items do
       ** (Ecto.NoResultsError)
 
   """
-  def get_consumable_item!(id), do: Repo.get!(ConsumableItem, id)
+  def get_consumable_item!(id), do: Repo.get!(ConsumableItem, id) |> Repo.preload(:effects)
 
   @doc """
   Creates a consumable_item.
