@@ -1552,24 +1552,15 @@ defmodule Arena.GameUpdater do
       name: "Circle 1"
     }
 
-    entities_to_collide_with =
+    static_obstacles =
       Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.type == "static" end)
-      |> Map.merge(%{external_wall.id => external_wall})
 
-    external_wall_id = external_wall.id
-
-    case Physics.check_collisions(circle, entities_to_collide_with) do
-      [^external_wall_id | []] ->
-        circle.position
-
-      _ ->
-        Physics.get_closest_available_position(
-          circle.position,
-          circle,
-          external_wall,
-          entities_to_collide_with
-        )
-    end
+    Physics.get_closest_available_position(
+      circle.position,
+      circle,
+      external_wall,
+      static_obstacles
+    )
   end
 
   defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
