@@ -18,6 +18,7 @@ defmodule GameClientWeb.BoardLive.Show do
     mocked_board_height = 2000
     backend_board_size = 10_000
     back_size_to_front_ratio = backend_board_size / mocked_board_width
+    map_radius = round(5520 / back_size_to_front_ratio)
 
     game_data = %{0 => %{0 => player_name(player_id)}}
 
@@ -32,7 +33,8 @@ defmodule GameClientWeb.BoardLive.Show do
        game_data: game_data,
        game_socket_handler_pid: game_socket_handler_pid,
        backend_board_size: backend_board_size,
-       back_size_to_front_ratio: back_size_to_front_ratio
+       back_size_to_front_ratio: back_size_to_front_ratio,
+       map_radius: map_radius
      )}
   end
 
