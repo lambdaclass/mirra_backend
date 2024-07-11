@@ -1553,7 +1553,7 @@ defmodule Arena.GameUpdater do
     }
 
     static_obstacles =
-      Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.type == "static" end)
+      Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collisionable end)
 
     Physics.get_closest_available_position(
       circle.position,
