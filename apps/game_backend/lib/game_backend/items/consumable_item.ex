@@ -17,7 +17,7 @@ defmodule GameBackend.Items.ConsumableItem do
   def changeset(consumable_item, attrs) do
     consumable_item
     |> cast(attrs, [:name, :radius])
-    |> cast_assoc(:effects)
+    |> cast_assoc(:effects, with: &ConfigurationEffect.changeset/2)
     |> validate_required([:name, :radius])
   end
 end
