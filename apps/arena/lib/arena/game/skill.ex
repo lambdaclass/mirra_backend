@@ -85,10 +85,10 @@ defmodule Arena.Game.Skill do
   def do_mechanic(
         game_state,
         entity,
-        %{type: "dash", speed: speed, duration: duration},
+        %{type: "dash", speed: speed, duration_ms: duration_ms},
         %{skill_direction: skill_direction} = _skill_params
       ) do
-    Process.send_after(self(), {:stop_dash, entity.id, entity.aditional_info.base_speed}, duration)
+    Process.send_after(self(), {:stop_dash, entity.id, entity.aditional_info.base_speed}, duration_ms)
 
     ## Modifying base_speed rather than speed because effects will reset the speed on game tick
     ## by modifying base_speed we ensure that the dash speed is kept as expected

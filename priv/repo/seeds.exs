@@ -266,7 +266,7 @@ skills = [
       %{
         "type" => "leap",
         "range" => 1300.0,
-        "speed" => 50.0,
+        "speed" => 1.7,
         "radius" => 600,
         "on_arrival_mechanic" => %{
           "type" => "circle_hit",
@@ -292,8 +292,8 @@ skills = [
     "mechanics" => [
       %{
         "type" => "dash",
-        "speed" => 80.0,
-        "duration" => 330
+        "speed" => 3.3,
+        "duration_ms" => 330
       }
     ]
   },
@@ -314,7 +314,7 @@ skills = [
         "type" => "multi_shoot",
         "angle_between" => 22.0,
         "amount" => 3,
-        "speed" => 53.0,
+        "speed" => 1.1,
         "duration_ms" => 1000,
         "remove_on_collision" => true,
         "projectile_offset" => 100,
@@ -339,8 +339,8 @@ skills = [
     "mechanics" => [
       %{
         "type" => "dash",
-        "speed" => 90.0,
-        "duration" => 250
+        "speed" => 4.0,
+        "duration_ms" => 250
       }
     ]
   },
@@ -434,8 +434,8 @@ skills = [
     "mechanics" => [
       %{
         "type" => "dash",
-        "speed" => 95.0,
-        "duration" => 250
+        "speed" => 4.0,
+        "duration_ms" => 250
       }
     ],
     "effects_to_apply" => []
@@ -504,7 +504,7 @@ skills = [
     "mechanics" => [
       %{
         "type" => "simple_shoot",
-        "speed" => 45.0,
+        "speed" => 1.8,
         "duration_ms" => 1100,
         "remove_on_collision" => true,
         "projectile_offset" => 100,
