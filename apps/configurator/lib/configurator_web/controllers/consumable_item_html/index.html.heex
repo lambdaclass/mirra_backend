@@ -7,14 +7,16 @@
   </:actions>
 </.header>
 
-<.table id="consumable_items" rows={@consumable_items} row_click={&JS.navigate(~p"/consumable_items/#{&1}")}>
+<.table id="consumable_items" rows={@consumable_items}>
   <:col :let={consumable_item} label="Name"><%= consumable_item.name %></:col>
   <:col :let={consumable_item} label="Radius"><%= consumable_item.radius %></:col>
-  <:col :let={consumable_item} label="Effects"><%= consumable_item.effects %></:col>
+  <:col :let={consumable_item} label="Effects">
+    <.display_effect consumable_item={consumable_item} />
+  </:col>
   <:action :let={consumable_item}>
-    <div class="sr-only">
-      <.link navigate={~p"/consumable_items/#{consumable_item}"}>Show</.link>
-    </div>
+    <.link navigate={~p"/consumable_items/#{consumable_item}"}>Show</.link>
+  </:action>
+  <:action :let={consumable_item}>
     <.link navigate={~p"/consumable_items/#{consumable_item}/edit"}>Edit</.link>
   </:action>
   <:action :let={consumable_item}>
