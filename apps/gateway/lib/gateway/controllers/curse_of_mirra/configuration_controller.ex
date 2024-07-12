@@ -4,8 +4,6 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   """
   use Gateway, :controller
   alias GameBackend.Configuration
-  alias GameBackend.Utils
-  alias GameBackend.Items
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -18,12 +16,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
         send_resp(
           conn,
           200,
-          Jason.encode!(
-            Utils.transform_to_map_from_ecto_struct(characters, [
-              :basic_skill,
-              :ultimate_skill
-            ])
-          )
+          Jason.encode!(characters)
         )
     end
   end
