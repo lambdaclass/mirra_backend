@@ -43,8 +43,8 @@ pub(crate) fn intersect_circle_polygon(
         let current_line = Position::sub(&current_vertex, &next_vertex);
         // the axis will be the perpendicular line drawn from the current line of the polygon
         axis = Position {
-            x: -current_line.y,
-            y: current_line.x,
+            x: current_line.y,
+            y: -current_line.x,
         };
 
         // FIXME normalizing on this loop may be bad
@@ -66,10 +66,6 @@ pub(crate) fn intersect_circle_polygon(
         let polygon_overlap_depth = max_polygon_cast_point - min_circle_cast_point;
 
         let min_depth = f32::min(circle_overlap_depth, polygon_overlap_depth);
-        // If we hit the polygon from the right or top we need to turn around the direction
-        if polygon_overlap_depth > circle_overlap_depth {
-            axis = Position::mult(&axis, -1.0);
-        }
 
         if invalid_axis(
             axis,
@@ -83,6 +79,10 @@ pub(crate) fn intersect_circle_polygon(
             continue;
         }
 
+        // If we hit the polygon from the right or top we need to turn around the direction
+        if polygon_overlap_depth > circle_overlap_depth {
+            axis = Position::mult(&axis, -1.0);
+        }
         if min_depth < result_depth {
             normal = axis;
             result_depth = min_depth;
@@ -112,7 +112,6 @@ pub(crate) fn intersect_circle_polygon(
     let axis_depth = f32::min(circle_overlap_depth, polygon_overlap_depth);
 
     if axis_depth < result_depth {
-        println!("circulo");
         // If we hit the polygon from the right or top we need to turn around the direction
         if polygon_overlap_depth > circle_overlap_depth {
             normal = Position {
@@ -125,7 +124,6 @@ pub(crate) fn intersect_circle_polygon(
         result_depth = axis_depth;
     }
 
-    println!(" aber normal {:?}", normal);
     (true, normal, result_depth)
 }
 
@@ -313,48 +311,30 @@ fn invalid_axis(
     let current_vertex_moved =
         Position::add(current_vertex, &Position::mult(&axis, circle.radius * 2.0));
     let mut current_vertex_point = Entity::new_point(polygon.id, current_vertex_moved);
-    let current_vertex_point_collision = current_vertex_point.collides_with(&external_wall_vector);
-    println!("aber current vertex {:?}", current_vertex);
-    println!("aber current vertex moved {:?}", current_vertex_moved);
-    println!(
-        "aber current vertex collitions{:?}",
-        current_vertex_point_collision
-    );
+    let mut current_vertex_point_collisions =
+        current_vertex_point.collides_with(&external_wall_vector);
 
     let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius * 2.0));
     let mut next_vertex_point = Entity::new_point(polygon.id, next_vertex_moved);
-    let next_vertex_point_collision = next_vertex_point.collides_with(&external_wall_vector);
-    println!("aber next vertex {:?}", next_vertex);
-    println!("aber next vertex moved {:?}", next_vertex_moved);
-    println!(
-        "aber next vertex collitions{:?}",
-        next_vertex_point_collision
-    );
+    let mut next_vertex_point_collisions = next_vertex_point.collides_with(&external_wall_vector);
 
-    if current_vertex_point_collision.is_empty() || next_vertex_point_collision.is_empty() {
+    if current_vertex_point_collisions.is_empty() && next_vertex_point_collisions.is_empty() {
         return true;
     }
 
     // Check if lines collide with same obstacle
+    current_vertex_point_collisions = current_vertex_point.collides_with(&obstacle_vector);
     let mut current_vertex_line =
         Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
-    let current_vertex_collitions = current_vertex_line.collides_with(&obstacle_vector);
+    let mut current_vertex_collitions = current_vertex_line.collides_with(&obstacle_vector);
+    current_vertex_collitions.append(&mut current_vertex_point_collisions);
 
+    next_vertex_point_collisions = next_vertex_point.collides_with(&obstacle_vector);
     let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
-    let next_vertex_collitions = next_vertex_line.collides_with(&obstacle_vector);
+    let mut next_vertex_collitions = next_vertex_line.collides_with(&obstacle_vector);
+    next_vertex_collitions.append(&mut next_vertex_point_collisions);
 
-    println!(
-        "aber current line collision ids {:?}",
-        current_vertex_collitions
-    );
-    println!("aber next line collision ids {:?}", next_vertex_collitions);
-
-    let valid = current_vertex_collitions
+    current_vertex_collitions
         .iter()
-        .any(|collision_id| next_vertex_collitions.contains(collision_id));
-
-    println!("{}", valid);
-    println!("==========================\n");
-
-    return valid;
+        .any(|collision_id| next_vertex_collitions.contains(collision_id))
 }
