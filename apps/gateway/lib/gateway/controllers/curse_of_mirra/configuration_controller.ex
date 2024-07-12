@@ -7,6 +7,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   alias GameBackend.Utils
   alias GameBackend.Items
 
+
   action_fallback Gateway.Controllers.FallbackController
 
   def get_characters_configuration(conn, _params) do
