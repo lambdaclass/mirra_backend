@@ -15,6 +15,12 @@ defmodule ConfiguratorWeb.MapConfigurationController do
   end
 
   def create(conn, %{"map_configuration" => map_configuration_params}) do
+    map_configuration_params =
+      map_configuration_params
+      |> Map.update("initial_positions", "", &parse_json/1)
+      # |> Map.update("obstacles", "", &parse_json/1)
+      # |> Map.update("bushes", "", &parse_json/1)
+
     case Configuration.create_map_configuration(map_configuration_params) do
       {:ok, map_configuration} ->
         conn
@@ -39,6 +45,11 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   def update(conn, %{"id" => id, "map_configuration" => map_configuration_params}) do
     map_configuration = Configuration.get_map_configuration!(id)
+    map_configuration_params =
+      map_configuration_params
+      |> Map.update("initial_positions", "", &parse_json/1)
+      # |> Map.update("obstacles", "", &parse_json/1)
+      # |> Map.update("bushes", "", &parse_json/1)
 
     case Configuration.update_map_configuration(map_configuration, map_configuration_params) do
       {:ok, map_configuration} ->
@@ -58,5 +69,14 @@ defmodule ConfiguratorWeb.MapConfigurationController do
     conn
     |> put_flash(:info, "Map configuration deleted successfully.")
     |> redirect(to: ~p"/map_configurations")
+  end
+
+  defp parse_json(""), do: []
+
+  defp parse_json(json_param) do
+    case Jason.decode(json_param) do
+      {:ok, json} -> json
+      {:error, _} -> json_param
+    end
   end
 end

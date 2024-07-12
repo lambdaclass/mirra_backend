@@ -9,7 +9,12 @@
 
 <.table id="map_configurations" rows={@map_configurations} row_click={&JS.navigate(~p"/map_configurations/#{&1}")}>
   <:col :let={map_configuration} label="Radius"><%= map_configuration.radius %></:col>
-  <:col :let={map_configuration} label="Initial positions"><%= map_configuration.initial_positions %></:col>
+  <:col :let={map_configuration} label="Initial positions">
+    <.button type="button" phx-click={show_modal("initial-positions-#{map_configuration.id}")}> Show </.button>
+    <.modal id={"initial-positions-#{map_configuration.id}"}>
+      <p class="whitespace-pre"><%= embed_to_string(map_configuration.initial_positions) %></p>
+    </.modal>
+  </:col>
   <:col :let={map_configuration} label="Obstacles"><%= map_configuration.obstacles %></:col>
   <:col :let={map_configuration} label="Bushes"><%= map_configuration.bushes %></:col>
   <:action :let={map_configuration}>

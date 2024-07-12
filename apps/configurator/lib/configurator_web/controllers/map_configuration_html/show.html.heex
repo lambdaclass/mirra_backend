@@ -10,7 +10,9 @@
 
 <.list>
   <:item title="Radius"><%= @map_configuration.radius %></:item>
-  <:item title="Initial positions"><%= @map_configuration.initial_positions %></:item>
+  <:item title="Initial positions">
+    <p class="whitespace-pre"><%= embed_to_string(@map_configuration.initial_positions) %></p>
+  </:item>
   <:item title="Obstacles"><%= @map_configuration.obstacles %></:item>
   <:item title="Bushes"><%= @map_configuration.bushes %></:item>
 </.list>
