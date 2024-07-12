@@ -190,11 +190,13 @@ defmodule Arena.GameSocketHandler do
     ##   we can use this "shortcut" and deal with it when the time comes
     [{_mechanic, params}] = skill.mechanics
 
-    extra_params = %{
-      targetting_radius: params[:radius],
-      targetting_angle: params[:angle],
-      targetting_range: params[:range]
-    }
+    extra_params =
+      %{
+        targetting_radius: params[:radius],
+        targetting_angle: params[:angle],
+        targetting_range: params[:range],
+        targetting_offset: params[:offset] || params[:projectile_offset]
+      }
 
     {key, Map.merge(skill, extra_params)}
   end
