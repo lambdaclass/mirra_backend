@@ -18,6 +18,6 @@ defmodule GameBackend.Effects.ConfigurationEffect do
   def changeset(configuration_effect, attrs) do
     configuration_effect
     |> cast(attrs, [:name, :duration_ms, :remove_on_action, :one_time_application, :consumable_item_id])
-    |> validate_required([:name, :duration_ms, :remove_on_action, :one_time_application, :consumable_item_id])
+    |> validate_required([:name, :duration_ms, :remove_on_action, :one_time_application])
   end
 end
