@@ -17,7 +17,7 @@ defmodule Arena.GameSocketHandler do
   @impl true
   def init(req, _opts) do
     ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
-    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Sever".
+    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Server".
     client_id =
       case :cowboy_req.parse_qs(req) do
         [{"gateway_jwt", jwt}] ->
