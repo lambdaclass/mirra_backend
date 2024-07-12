@@ -1552,14 +1552,14 @@ defmodule Arena.GameUpdater do
       name: "Circle 1"
     }
 
-    static_obstacles =
+    collisionable_obstacles =
       Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collisionable end)
 
     Physics.get_closest_available_position(
       circle.position,
       circle,
       external_wall,
-      static_obstacles
+      collisionable_obstacles
     )
   end
 
