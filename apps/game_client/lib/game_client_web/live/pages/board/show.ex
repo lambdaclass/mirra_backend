@@ -14,9 +14,9 @@ defmodule GameClientWeb.BoardLive.Show do
     {:ok, game_socket_handler_pid} =
       GameClient.ClientSocketHandler.start_link(self(), gateway_jwt, player_id, game_id)
 
-    mocked_board_width = 2000
-    mocked_board_height = 2000
-    backend_board_size = 10_000
+    mocked_board_width = 3000
+    mocked_board_height = 3000
+    backend_board_size = 15_000
     back_size_to_front_ratio = backend_board_size / mocked_board_width
     map_radius = round(5520 / back_size_to_front_ratio)
 
@@ -114,8 +114,8 @@ defmodule GameClientWeb.BoardLive.Show do
       category: entity.category,
       shape: entity.shape,
       name: entity.name,
-      x: entity.position.x / 5 + 1000,
-      y: entity.position.y / 5 + 1000,
+      x: entity.position.x / 5 + 1500,
+      y: entity.position.y / 5 + 1500,
       radius: entity.radius / 5,
       coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?(),
@@ -129,8 +129,8 @@ defmodule GameClientWeb.BoardLive.Show do
       category: entity.category,
       shape: entity.shape,
       name: entity.name,
-      x: entity.position.x / 5 + 1000,
-      y: entity.position.y / 5 + 1000,
+      x: entity.position.x / 5 + 1500,
+      y: entity.position.y / 5 + 1500,
       radius: entity.radius / 5,
       coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?()
