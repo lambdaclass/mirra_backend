@@ -194,9 +194,9 @@ defmodule GameBackend.Units.Characters do
       from(c in Character,
         where: ^curse_id == c.game_id,
         preload: [
-          basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]],
-          ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]],
-          dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
+          basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
+          ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
+          dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]
         ]
       )
 

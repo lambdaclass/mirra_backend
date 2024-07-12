@@ -5,7 +5,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
   import Ecto.Changeset
 
   alias GameBackend.Units.Skills.Skill
-  alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffect}
+  alias GameBackend.Units.Skills.Mechanics.{ApplyEffectsTo, PassiveEffect, OnCollideEffects}
 
   schema "mechanics" do
     field(:amount, :integer)
@@ -31,10 +31,11 @@ defmodule GameBackend.Units.Skills.Mechanic do
 
     belongs_to(:skill, Skill)
     belongs_to(:apply_effects_to, ApplyEffectsTo)
-    # Not yet implemented, added to define how different Mechanic types will be handled
+    has_many(:on_explode_mechanics, __MODULE__, foreign_key: :parent_mechanic_id)
     belongs_to(:passive_effects, PassiveEffect)
     belongs_to(:on_arrival_mechanic, __MODULE__)
-    belongs_to(:on_explode_mechanic, __MODULE__)
+    belongs_to(:parent_mechanic, __MODULE__, foreign_key: :parent_mechanic_id)
+    embeds_one(:on_collide_effects, OnCollideEffects)
   end
 
   def mechanic_types(), do: [:apply_effects_to, :passive_effects]
@@ -44,6 +45,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
     mechanic
     |> cast(attrs, [
       :trigger_delay,
+      :on_arrival_mechanic_id,
+      :parent_mechanic_id,
       :skill_id,
       :type,
       :amount,
@@ -64,8 +67,10 @@ defmodule GameBackend.Units.Skills.Mechanic do
     ])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)
+    |> cast_assoc(:parent_mechanic, with: &assoc_changeset/2)
     |> cast_assoc(:on_arrival_mechanic, with: &assoc_changeset/2)
-    |> cast_assoc(:on_explode_mechanic, with: &assoc_changeset/2)
+    |> cast_assoc(:on_explode_mechanics, with: &assoc_changeset/2)
+    |> cast_embed(:on_collide_effects)
   end
 
   defp assoc_changeset(struct, params) do

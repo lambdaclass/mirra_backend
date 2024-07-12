@@ -126,7 +126,7 @@ defmodule Arena.Configuration do
         range: maybe_to_float(mechanic.range),
         speed: maybe_to_float(mechanic.speed),
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
-        on_explode_mechanic: parse_mechanic_config(mechanic.on_explode_mechanic)
+        on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics)
     }
   end
 

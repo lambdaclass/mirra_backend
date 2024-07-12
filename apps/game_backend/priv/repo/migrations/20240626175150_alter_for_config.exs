@@ -39,11 +39,12 @@ defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
       add :speed, :decimal
       add :activation_delay, :integer
       add :on_arrival_mechanic_id, references(:mechanics, on_delete: :nothing)
-      add :on_explode_mechanic_id, references(:mechanics, on_delete: :nothing)
+      add :parent_mechanic_id, references(:mechanics, on_delete: :nothing)
+      add :on_collide_effects, :map
     end
 
     create index(:mechanics, [:on_arrival_mechanic_id])
-    create index(:mechanics, [:on_explode_mechanic_id])
+    create index(:mechanics, [:parent_mechanic_id])
 
     alter table :characters do
       remove :skills

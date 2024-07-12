@@ -1165,11 +1165,11 @@ defmodule Arena.GameUpdater do
   defp explode_projectiles(%{projectiles: projectiles} = game_state) do
     Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
       if projectile.aditional_info.status == :EXPLODED &&
-           Map.get(projectile.aditional_info, :on_explode_mechanic) do
+           Map.get(projectile.aditional_info, :on_explode_mechanics) do
         Skill.do_mechanic(
           game_state,
           projectile,
-          projectile.aditional_info.on_explode_mechanic,
+          projectile.aditional_info.on_explode_mechanics,
           %{skill_direction: projectile.direction}
         )
       else

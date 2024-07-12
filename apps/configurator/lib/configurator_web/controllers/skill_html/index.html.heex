@@ -39,13 +39,13 @@
           </.modal>
         <% end %>
 
-        <%= if not is_nil(mechanic.on_explode_mechanic) do %>
+        <%= if not is_nil(mechanic.on_explode_mechanics) do %>
           <.button type="button" phx-click={show_modal("on-explode-mechanic-modal")}>Show on explode mechanic</.button>
           <.modal id="on-explode-mechanic-modal">
             <.header>
               On explode mechanic
             </.header>
-            <.mechanic_show mechanic={mechanic.on_explode_mechanic} />
+            <.mechanic_show mechanic={mechanic.on_explode_mechanics} />
           </.modal>
         <% end %>
       <% end %>

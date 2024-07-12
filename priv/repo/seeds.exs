@@ -511,11 +511,21 @@ skills = [
         "projectile_offset" => 100,
         "radius" => 100.0,
         "damage" => 0,
-        "on_explode_mechanic" => %{
-          "type" => "circle_hit",
-          "damage" => 58,
-          "range" => 250.0,
-          "offset" => 0
+        "on_explode_mechanics" => [
+          %{
+            "type" => "circle_hit",
+            "damage" => 58,
+            "range" => 250.0,
+            "offset" => 0
+          }
+        ],
+        "on_collide_effects" => %{
+          "apply_effect_to_entity_type" => [
+            "pool"
+          ],
+          "effects" => [
+            "buff_singularity"
+          ]
         }
       }
     ],

@@ -60,7 +60,7 @@ defmodule GameBackend.Units.Skills do
     q =
       from(s in Skill,
         where: ^curse_id == s.game_id,
-        preload: [mechanics: [:on_arrival_mechanic, :on_explode_mechanic]]
+        preload: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics]]
       )
 
     Repo.all(q)
@@ -82,7 +82,7 @@ defmodule GameBackend.Units.Skills do
   """
   def get_skill!(id) do
     Repo.get!(Skill, id)
-    |> Repo.preload(mechanics: [:on_arrival_mechanic, :on_explode_mechanic])
+    |> Repo.preload(mechanics: [:on_arrival_mechanic, :on_explode_mechanics])
   end
 
   @doc """
