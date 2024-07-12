@@ -8,10 +8,17 @@
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Name"><%= @consumable_item.name %></:item>
-  <:item title="Radius"><%= @consumable_item.radius %></:item>
-  <:item title="Effects"><%= @consumable_item.effects %></:item>
-</.list>
-
-<.back navigate={~p"/consumable_items"}>Back to consumable_items</.back>
+<div class="flex flex-col gap-5">
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Name</dt>
+    <dd><%= @consumable_item.name %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Radius</dt>
+    <dd><%= @consumable_item.radius %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Effects</dt>
+    <dd><.display_effect consumable_item={@consumable_item} /></dd>
+  </div>
+</div>
