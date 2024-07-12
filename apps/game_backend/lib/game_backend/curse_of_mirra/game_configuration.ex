@@ -5,6 +5,28 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  @required [
+    :tick_rate_ms,
+    :bounty_pick_time_ms,
+    :start_game_time_ms,
+    :end_game_interval_ms,
+    :shutdown_game_wait_ms,
+    :natural_healing_interval_ms,
+    :zone_shrink_start_ms,
+    :zone_shrink_radius_by,
+    :zone_shrink_interval,
+    :zone_stop_interval_ms,
+    :zone_start_interval_ms,
+    :zone_damage_interval_ms,
+    :zone_damage,
+    :item_spawn_interval_ms,
+    :bots_enabled,
+    :zone_enabled,
+    :bounties_options_amount,
+    :match_timeout_ms
+  ]
+
+  @derive {Jason.Encoder, only: @required}
   schema "game_configurations" do
     field(:tick_rate_ms, :integer)
     field(:bounty_pick_time_ms, :integer)
@@ -28,26 +50,6 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     timestamps()
   end
 
-  @required [
-    :tick_rate_ms,
-    :bounty_pick_time_ms,
-    :start_game_time_ms,
-    :end_game_interval_ms,
-    :shutdown_game_wait_ms,
-    :natural_healing_interval_ms,
-    :zone_shrink_start_ms,
-    :zone_shrink_radius_by,
-    :zone_shrink_interval,
-    :zone_stop_interval_ms,
-    :zone_start_interval_ms,
-    :zone_damage_interval_ms,
-    :zone_damage,
-    :item_spawn_interval_ms,
-    :bots_enabled,
-    :zone_enabled,
-    :bounties_options_amount,
-    :match_timeout_ms
-  ]
   @doc false
   def changeset(game_configuration, attrs) do
     game_configuration
