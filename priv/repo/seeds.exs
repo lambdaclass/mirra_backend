@@ -368,7 +368,27 @@ golden_clock_effect_params = %{
   duration_ms: 9000,
   remove_on_action: false,
   one_time_application: true,
-  consumable_item_id: golden_clock.id
+  consumable_item_id: golden_clock.id,
+  mechanics: %{
+    reduce_stamina_interval: %{
+      decrease_by: 0.5,
+      execute_multiple_times: false,
+      effect_delay_ms: 0
+    },
+    refresh_stamina: %{
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    reduce_cooldowns_duration: %{
+      multiplier: 0.5,
+      execute_multiple_times: false,
+      effect_delay_ms: 0
+    },
+    refresh_cooldowns: %{
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  }
 }
 
 {:ok, _golden_clock_effect} =
@@ -379,7 +399,14 @@ magic_boots_effect_params = %{
   duration_ms: 8000,
   remove_on_action: false,
   one_time_application: true,
-  consumable_item_id: magic_boots.id
+  consumable_item_id: magic_boots.id,
+  mechanics: %{
+    speed_boost: %{
+      modifier: 0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  }
 }
 
 {:ok, _magic_boots_effect} =
@@ -390,7 +417,13 @@ mirra_blessing_effect_params = %{
   duration_ms: 7000,
   remove_on_action: false,
   one_time_application: true,
-  consumable_item_id: mirra_blessing.id
+  consumable_item_id: mirra_blessing.id,
+  mechanics: %{
+    damage_immunity: %{
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  }
 }
 
 {:ok, _mirra_blessing_effect} =
@@ -401,7 +434,29 @@ giant_effect_params = %{
   duration_ms: 9000,
   remove_on_action: false,
   one_time_application: true,
-  consumable_item_id: giant_fruit.id
+  consumable_item_id: giant_fruit.id,
+  mechanics: %{
+    modify_radius: %{
+      modifier: 0.4,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    damage_change: %{
+      modifier: 0.25,
+      effect_delay_ms: 0,
+      execute_multiple_times: true
+    },
+    speed_boost: %{
+      modifier: -0.25,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    defense_change: %{
+      modifier: 0.4,
+      effect_delay_ms: 0,
+      execute_multiple_times: true
+    }
+  }
 }
 
 {:ok, _giant_effect} =
