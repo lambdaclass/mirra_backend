@@ -81,6 +81,10 @@
         "type": "dynamic",
         "vertices": [
           {
+            "x": 3350.0,
+            "y": 4300.0
+          },
+          {
             "x": 2600.0,
             "y": 3350.0
           },
@@ -91,10 +95,6 @@
           {
             "x": 3000.0,
             "y": 4550.0
-          },
-          {
-            "x": 3350.0,
-            "y": 4300.0
           }
         ],
         "base_status": "underground",
@@ -113,6 +113,10 @@
                 "damage": 10,
                 "vertices": [
                   {
+                    "x": 3350.0,
+                    "y": 4300.0
+                  },
+                  {
                     "x": 2600.0,
                     "y": 3350.0
                   },
@@ -123,10 +127,6 @@
                   {
                     "x": 3000.0,
                     "y": 4550.0
-                  },
-                  {
-                    "x": 3350.0,
-                    "y": 4300.0
                   }
                 ]
               }
@@ -149,19 +149,19 @@
         "vertices": [
           {
             "x": -4100.0,
-            "y": -1250.0
+            "y": -900.0
           },
           {
             "x": -4100.0,
-            "y": -900.0
-          },
-          {
-            "x": -5500.0,
-            "y": -900.0
+            "y": -1250.0
           },
           {
             "x": -5500.0,
             "y": -1250.0
+          },
+          {
+            "x": -5500.0,
+            "y": -900.0
           }
         ],
         "base_status": "underground",
@@ -181,19 +181,19 @@
                 "vertices": [
                   {
                     "x": -4100.0,
-                    "y": -1250.0
+                    "y": -900.0
                   },
                   {
                     "x": -4100.0,
-                    "y": -900.0
-                  },
-                  {
-                    "x": -5500.0,
-                    "y": -900.0
+                    "y": -1250.0
                   },
                   {
                     "x": -5500.0,
                     "y": -1250.0
+                  },
+                  {
+                    "x": -5500.0,
+                    "y": -900.0
                   }
                 ]
               }
@@ -1111,7 +1111,9 @@
             "radius": 450.0,
             "range": 1200.0,
             "activation_delay": 400,
-            "effects_to_apply": ["singularity"]
+            "effects_to_apply": [
+              "singularity"
+            ]
           }
         }
       ],
@@ -1164,7 +1166,9 @@
             "radius": 500.0,
             "range": 1200.0,
             "activation_delay": 250,
-            "effects_to_apply": ["denial_of_service"]
+            "effects_to_apply": [
+              "denial_of_service"
+            ]
           }
         }
       ],
@@ -1281,7 +1285,9 @@
           }
         }
       ],
-      "effects_to_apply": ["invisible"]
+      "effects_to_apply": [
+        "invisible"
+      ]
     },
     {
       "name": "uma_sneak",
@@ -1372,25 +1378,33 @@
     {
       "name": "golden_clock",
       "radius": 200.0,
-      "effects": ["golden_clock_effect"],
+      "effects": [
+        "golden_clock_effect"
+      ],
       "mechanics": {}
     },
     {
       "name": "magic_boots",
       "radius": 200.0,
-      "effects": ["magic_boots_effect"],
+      "effects": [
+        "magic_boots_effect"
+      ],
       "mechanics": {}
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
-      "effects": ["mirra_blessing_effect"],
+      "effects": [
+        "mirra_blessing_effect"
+      ],
       "mechanics": {}
     },
     {
       "name": "giant",
       "radius": 200.0,
-      "effects": ["giant_effect"],
+      "effects": [
+        "giant_effect"
+      ],
       "mechanics": {}
     }
   ],
