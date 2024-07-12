@@ -1257,7 +1257,7 @@ defmodule Arena.GameUpdater do
       end)
 
     Enum.reduce(actual_players, game_state, fn {player_id, player}, game_state ->
-      if not player.aditional_info.bounty_completed and
+      if not player.aditional_info.bounty_completed and Player.alive?(player) and
            GameBackend.CurseOfMirra.Quests.completed_quest?(player.aditional_info.selected_bounty, [
              GameTracker.get_player_result(player_id)
            ]) do
