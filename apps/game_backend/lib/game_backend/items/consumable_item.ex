@@ -4,6 +4,7 @@ defmodule GameBackend.Items.ConsumableItem do
 
   alias GameBackend.Effects.ConfigurationEffect
 
+  @derive {Jason.Encoder, only: [:name, :radius, :effects]}
   schema "consumable_items" do
     field(:name, :string)
     field(:radius, :float)
