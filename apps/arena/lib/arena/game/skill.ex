@@ -68,6 +68,74 @@ defmodule Arena.Game.Skill do
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
+  def do_mechanic(game_state, entity, %{type: "cone_hit"} = cone_hit, %{skill_direction: skill_direction} = _skill_params) do
+    triangle_points =
+      Physics.calculate_triangle_vertices(
+        entity.position,
+        skill_direction,
+        cone_hit.range,
+        cone_hit.angle
+      )
+
+    cone_area = Entities.make_polygon(entity.id, triangle_points)
+
+    alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
+
+    players =
+      Physics.check_collisions(cone_area, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        entity_player_owner = get_entity_player_owner(game_state, entity)
+        real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
+
+        target_player =
+          Map.get(players_acc, player_id)
+          |> Player.take_damage(real_damage)
+
+        send(self(), {:damage_done, entity_player_owner.id, cone_hit.damage})
+
+        unless Player.alive?(target_player) do
+          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    # Crates
+
+    interactable_crates =
+      Crate.interactable_crates(game_state.crates)
+
+    crates =
+      Physics.check_collisions(cone_area, interactable_crates)
+      |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
+        entity_player_owner = get_entity_player_owner(game_state, entity)
+        real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
+
+        crate =
+          Map.get(crates_acc, crate_id)
+          |> Crate.take_damage(real_damage)
+
+        Map.put(crates_acc, crate_id, crate)
+      end)
+
+    %{game_state | players: players, crates: crates}
+    |> maybe_move_player(entity, cone_hit[:move_by])
+  end
+
+  def do_mechanic(game_state, entity, %{type: "multi_cone_hit"} = multi_cone_hit, skill_params) do
+    Enum.each(1..(multi_cone_hit.amount - 1), fn i ->
+      mechanic = %{multi_cone_hit | type: "cone_hit"}
+
+      Process.send_after(
+        self(),
+        {:trigger_mechanic, entity.id, mechanic, skill_params},
+        i * multi_cone_hit.interval_ms
+      )
+    end)
+
+    do_mechanic(game_state, entity, %{multi_cone_hit | type: "cone_hit"}, skill_params)
+  end
+
   def do_mechanic(game_state, entity, %{type: "multi_circle_hit"} = multi_circle_hit, skill_params) do
     Enum.each(1..(multi_circle_hit.amount - 1), fn i ->
       mechanic = %{multi_circle_hit | type: "circle_hit"}
@@ -102,6 +170,44 @@ defmodule Arena.Game.Skill do
     players = Map.put(game_state.players, entity.id, entity)
 
     %{game_state | players: players}
+  end
+
+  def do_mechanic(game_state, entity, %{type: "repeated_shot"} = repeated_shot, skill_params) do
+    remaining_amount = repeated_shot.amount - 1
+
+    if remaining_amount > 0 do
+      repeated_shot = Map.put(repeated_shot, :amount, remaining_amount)
+
+      Process.send_after(
+        self(),
+        {:trigger_mechanic, entity.id, repeated_shot, skill_params},
+        repeated_shot.interval_ms
+      )
+    end
+
+    entity_player_owner = get_entity_player_owner(game_state, entity)
+
+    last_id = game_state.last_id + 1
+
+    projectile =
+      Entities.new_projectile(
+        last_id,
+        get_position_with_offset(
+          entity_player_owner.position,
+          entity_player_owner.direction,
+          repeated_shot.projectile_offset
+        ),
+        randomize_direction_in_angle(entity.direction, repeated_shot.angle),
+        entity_player_owner.id,
+        skill_params.skill_key,
+        repeated_shot
+      )
+
+    Process.send_after(self(), {:remove_projectile, projectile.id}, repeated_shot.duration_ms)
+
+    game_state
+    |> Map.put(:last_id, last_id)
+    |> put_in([:projectiles, projectile.id], projectile)
   end
 
   def do_mechanic(
@@ -288,6 +394,11 @@ defmodule Arena.Game.Skill do
     real_position_y = position.y + offset * direction.y
 
     %{x: real_position_x, y: real_position_y}
+  end
+
+  defp randomize_direction_in_angle(direction, angle) do
+    angle = :rand.uniform() * angle - angle / 2
+    Physics.add_angle_to_direction(direction, angle)
   end
 
   @doc """
