@@ -10,7 +10,7 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
         %{"consumable_item" => consumable_item},
         socket
       ) do
-    changeset = Items.change_consumable_item(consumable_item) |> IO.inspect()
+    changeset = Items.change_consumable_item(consumable_item)
 
     socket =
       socket |> assign(:changeset, changeset) |> assign(:action, "update") |> assign(:consumable_item, consumable_item)
@@ -46,7 +46,7 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
 
   def handle_event("save", %{"consumable_item" => consumable_item_params}, socket) do
     socket =
-      case Items.create_consumable_item(consumable_item_params) |> IO.inspect() do
+      case Items.create_consumable_item(consumable_item_params) do
         {:ok, consumable_item} ->
           socket
           |> put_flash(:info, "Consumable item created successfully.")
