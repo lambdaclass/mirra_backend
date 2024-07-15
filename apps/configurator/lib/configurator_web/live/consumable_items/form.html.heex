@@ -20,6 +20,7 @@
     <.input field={fe[:duration_ms]} type="number" label="Duration ms" step="any" />
     <.input field={fe[:remove_on_action]} type="checkbox" label="Remove on Action" step="any" />
     <.input field={fe[:one_time_application]} type="checkbox" label="One time Application" step="any" />
+    <.input field={fe[:mechanics]} type="text" label="Mechanics" value={Jason.encode!(fe.data.mechanics)} />
   </.inputs_for>
 
   <:actions>
