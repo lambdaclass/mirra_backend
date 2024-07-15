@@ -109,6 +109,6 @@ defmodule GameBackend.Configuration do
       %GameConfiguration{}
   """
   def get_latest_game_configuration do
-    Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at]))
+    Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
   end
 end

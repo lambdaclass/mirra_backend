@@ -282,7 +282,7 @@ uma_params = %{
 
 valtimer_params = %{
   name: "valtimer",
-  active: false,
+  active: true,
   base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
@@ -308,7 +308,7 @@ end)
 
 game_configuration_1 = %{
   tick_rate_ms: 30,
-  bounty_pick_time_ms: 0,
+  bounty_pick_time_ms: 5000,
   start_game_time_ms: 10000,
   end_game_interval_ms: 1000,
   shutdown_game_wait_ms: 10000,
