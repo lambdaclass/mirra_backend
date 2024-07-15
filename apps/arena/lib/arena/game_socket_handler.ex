@@ -17,7 +17,7 @@ defmodule Arena.GameSocketHandler do
   @impl true
   def init(req, _opts) do
     ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
-    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Sever".
+    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Server".
     client_id =
       case :cowboy_req.parse_qs(req) do
         [{"gateway_jwt", jwt}] ->
@@ -190,11 +190,13 @@ defmodule Arena.GameSocketHandler do
     ##   we can use this "shortcut" and deal with it when the time comes
     [{_mechanic, params}] = skill.mechanics
 
-    extra_params = %{
-      targetting_radius: params[:radius],
-      targetting_angle: params[:angle],
-      targetting_range: params[:range]
-    }
+    extra_params =
+      %{
+        targetting_radius: params[:radius],
+        targetting_angle: params[:angle],
+        targetting_range: params[:range],
+        targetting_offset: params[:offset] || params[:projectile_offset]
+      }
 
     {key, Map.merge(skill, extra_params)}
   end
