@@ -50,6 +50,18 @@ pub(crate) fn intersect_circle_polygon(
         // FIXME normalizing on this loop may be bad
         axis.normalize();
 
+        if invalid_axis(
+            axis,
+            circle,
+            polygon,
+            &current_vertex,
+            &next_vertex,
+            obstacles,
+            external_wall,
+        ) {
+            continue;
+        }
+
         let (min_polygon_cast_point, max_polygon_cast_point) =
             project_vertices(&polygon.vertices, axis);
         let (min_circle_cast_point, max_circle_cast_point) = project_circle(circle, axis);
@@ -67,23 +79,11 @@ pub(crate) fn intersect_circle_polygon(
 
         let min_depth = f32::min(circle_overlap_depth, polygon_overlap_depth);
 
-        if invalid_axis(
-            axis,
-            circle,
-            polygon,
-            &current_vertex,
-            &next_vertex,
-            obstacles,
-            external_wall,
-        ) {
-            continue;
-        }
-
-        // If we hit the polygon from the right or top we need to turn around the direction
-        if polygon_overlap_depth > circle_overlap_depth {
-            axis = Position::mult(&axis, -1.0);
-        }
         if min_depth < result_depth {
+            // If we hit the polygon from the right or top we need to turn around the direction
+            if polygon_overlap_depth > circle_overlap_depth {
+                axis = Position::mult(&axis, -1.0);
+            }
             normal = axis;
             result_depth = min_depth;
         }
