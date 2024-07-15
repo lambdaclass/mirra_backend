@@ -1,4 +1,4 @@
-defmodule Configurator.Repo.Migrations.AlterSkillsForCongfi do
+defmodule Configurator.Repo.Migrations.AddConfigSkillsAndMechanics do
   use Ecto.Migration
 
   def change do
