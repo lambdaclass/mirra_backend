@@ -1,4 +1,7 @@
 defmodule GameBackend.Items.ConsumableItem do
+  @moduledoc """
+  ConsumableItem schema
+  """
   use GameBackend.Schema
   import Ecto.Changeset
 
