@@ -4,6 +4,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   """
   use Gateway, :controller
   alias GameBackend.Configuration
+  alias GameBackend.Items
 
   action_fallback Gateway.Controllers.FallbackController
 
