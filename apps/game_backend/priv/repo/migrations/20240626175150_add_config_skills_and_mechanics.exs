@@ -41,6 +41,7 @@ defmodule Configurator.Repo.Migrations.AddConfigSkillsAndMechanics do
       add :on_arrival_mechanic_id, references(:mechanics, on_delete: :nothing)
       add :parent_mechanic_id, references(:mechanics, on_delete: :nothing)
       add :on_collide_effects, :map
+      modify :skill_id, references(:skills, on_delete: :nilify_all), from: references(:skills)
     end
 
     create index(:mechanics, [:on_arrival_mechanic_id])
