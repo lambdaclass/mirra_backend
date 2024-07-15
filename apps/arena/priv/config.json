@@ -71,7 +71,7 @@
         "vertices": []
       },
       {
-        "name": "test_spike_1",
+        "name": "top_right_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -138,7 +138,7 @@
         }
       },
       {
-        "name": "test_spike_2",
+        "name": "left_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -194,6 +194,140 @@
                   {
                     "x": -5500.0,
                     "y": -900.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
+        "name": "center_left_spikes",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": -1420.0,
+            "y": 2235.0
+          },
+          {
+            "x": -1201.0,
+            "y": 2585.0
+          },
+          {
+            "x": -180.0,
+            "y": 1899.0
+          },
+          {
+            "x": -374.0,
+            "y": 1545.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": -1420.0,
+                    "y": 2235.0
+                  },
+                  {
+                    "x": -1201.0,
+                    "y": 2585.0
+                  },
+                  {
+                    "x": -180.0,
+                    "y": 1899.0
+                  },
+                  {
+                    "x": -374.0,
+                    "y": 1545.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
+        "name": "bottom_right_spikes",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": 2717.0,
+            "y": -1951.0
+          },
+          {
+            "x": 2411.0,
+            "y": -1687.0
+          },
+          {
+            "x": 3296.0,
+            "y": -832.0
+          },
+          {
+            "x": 3601.0,
+            "y": -1096.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 10000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": 2717.0,
+                    "y": -1951.0
+                  },
+                  {
+                    "x": 2411.0,
+                    "y": -1687.0
+                  },
+                  {
+                    "x": 3296.0,
+                    "y": -832.0
+                  },
+                  {
+                    "x": 3601.0,
+                    "y": -1096.0
                   }
                 ]
               }
@@ -1048,26 +1182,6 @@
       }
     ],
     "bushes": []
-  },
-  "game": {
-    "tick_rate_ms": 30,
-    "bounty_pick_time_ms": 5000,
-    "start_game_time_ms": 10000,
-    "end_game_interval_ms": 1000,
-    "shutdown_game_wait_ms": 10000,
-    "natural_healing_interval_ms": 300,
-    "zone_shrink_start_ms": 35000,
-    "zone_shrink_radius_by": 10,
-    "zone_shrink_interval": 100,
-    "zone_stop_interval_ms": 13000,
-    "zone_start_interval_ms": 20000,
-    "zone_damage_interval_ms": 1000,
-    "zone_damage": 40,
-    "item_spawn_interval_ms": 7500,
-    "bots_enabled": true,
-    "zone_enabled": true,
-    "bounties_options_amount": 3,
-    "match_timeout_ms": 300000
   },
   "skills": [
     {
