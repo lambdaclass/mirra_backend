@@ -29,7 +29,7 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   end
 
   def get_consumable_items_configuration(conn, _params) do
-    consumable_items = Items.list_consumable_items()
+    consumable_items = Items.list_consumable_items() |> Enum.filter(& &1.active)
     send_resp(conn, 200, Jason.encode!(consumable_items))
   end
 end

@@ -331,6 +331,7 @@ game_configuration_1 = %{
   GameBackend.Configuration.create_game_configuration(game_configuration_1)
 
 golden_clock_params = %{
+  active: true,
   name: "golden_clock",
   radius: 200.0,
   mechanics: %{}
@@ -340,6 +341,7 @@ golden_clock_params = %{
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
 magic_boots_params = %{
+  active: true,
   name: "magic_boots",
   radius: 200.0,
   mechanics: %{}
@@ -349,6 +351,7 @@ magic_boots_params = %{
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
 mirra_blessing_params = %{
+  active: true,
   name: "mirra_blessing",
   radius: 200.0,
   mechanics: %{}
@@ -358,6 +361,7 @@ mirra_blessing_params = %{
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
 giant_fruit_params = %{
+  active: true,
   name: "giant",
   radius: 200.0,
   mechanics: %{}
