@@ -22,7 +22,9 @@ defmodule GameBackend.Units.Characters.Character do
              :natural_healing_damage_interval,
              :base_speed,
              :base_size,
-             :skills
+             :basic_skill,
+             :ultimate_skill,
+             :dash_skill
            ]}
   schema "characters" do
     field(:game_id, :integer)
