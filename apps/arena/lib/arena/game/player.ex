@@ -315,7 +315,7 @@ defmodule Arena.Game.Player do
     player.aditional_info.inventory != nil
   end
 
-  def use_item(player, game_state, game_config) do
+  def use_item(player, game_state) do
     case player.aditional_info.inventory do
       nil ->
         game_state
