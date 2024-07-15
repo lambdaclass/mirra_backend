@@ -39,12 +39,14 @@
     <.mechanic_show :if={not is_nil(mechanic.on_arrival_mechanic)} mechanic={mechanic.on_arrival_mechanic} />
   </.modal>
 
-  <.button type="button" phx-click={show_modal("on-explode-mechanic-modal")}>Show on explode mechanic</.button>
-  <.modal id="on-explode-mechanic-modal">
+  <.button type="button" phx-click={show_modal("on-explode-mechanics-modal")}>Show on explode mechanics</.button>
+  <.modal id="on-explode-mechanics-modal">
     <.header>
-      On explode mechanic
+      On explode mechanics
     </.header>
-    <.mechanic_show :if={not is_nil(mechanic.on_explode_mechanics)} mechanic={mechanic.on_explode_mechanics} />
+    <%= for mechanic <- mechanic.on_explode_mechanics do %>
+      <.mechanic_show mechanic={mechanic} />
+    <% end %>
   </.modal>
 <% end %>
 

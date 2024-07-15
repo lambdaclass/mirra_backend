@@ -24,7 +24,7 @@
     <.button type="button" phx-click={show_modal("skill-mechanics-#{skill.id}")}>Mechanics</.button>
     <.modal id={"skill-mechanics-#{skill.id}"}>
       <.header>
-        Mechanis for the skill
+        Mechanics for the skill
       </.header>
       <%= for mechanic <- skill.mechanics do %>
         <.mechanic_show mechanic={mechanic} />
@@ -39,15 +39,15 @@
           </.modal>
         <% end %>
 
-        <%= if not is_nil(mechanic.on_explode_mechanics) do %>
-          <.button type="button" phx-click={show_modal("on-explode-mechanic-modal")}>Show on explode mechanic</.button>
-          <.modal id="on-explode-mechanic-modal">
-            <.header>
-              On explode mechanic
-            </.header>
-            <.mechanic_show mechanic={mechanic.on_explode_mechanics} />
-          </.modal>
-        <% end %>
+        <.button type="button" phx-click={show_modal("on-explode-mechanics-modal")}>Show on explode mechanics</.button>
+        <.modal id="on-explode-mechanics-modal">
+          <.header>
+            On explode mechanics
+          </.header>
+          <%= for mechanic <- mechanic.on_explode_mechanics do %>
+            <.mechanic_show mechanic={mechanic} />
+          <% end %>
+        </.modal>
       <% end %>
     </.modal>
   </:action>
