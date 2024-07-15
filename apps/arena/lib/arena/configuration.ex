@@ -15,9 +15,11 @@ defmodule Arena.Configuration do
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     characters = parse_characters_config(get_characters_config())
     client_config = get_client_config()
+    game_config = get_game_configuration()
 
     config
     |> Map.put(:characters, characters)
+    |> Map.put(:game, game_config)
     |> Map.put(:client_config, client_config)
   end
 
@@ -33,7 +35,17 @@ defmodule Arena.Configuration do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =
-      Finch.build(:get, "#{gateway_url}/curse/characters/configuration", [{"content-type", "application/json"}])
+      Finch.build(:get, "#{gateway_url}/curse/configuration/characters", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    Jason.decode!(payload.body, [{:keys, :atoms}])
+  end
+
+  defp get_game_configuration() do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+
+    {:ok, payload} =
+      Finch.build(:get, "#{gateway_url}/curse/configuration/game", [{"content-type", "application/json"}])
       |> Finch.request(Arena.Finch)
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
