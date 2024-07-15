@@ -1,4 +1,7 @@
 defmodule GameBackend.CurseOfMirra.Effects do
+  @moduledoc """
+  Module in charge of configuration effects related things
+  """
   alias GameBackend.Repo
   alias GameBackend.Effects.ConfigurationEffect
 

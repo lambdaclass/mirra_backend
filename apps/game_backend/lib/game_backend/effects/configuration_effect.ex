@@ -1,4 +1,7 @@
 defmodule GameBackend.Effects.ConfigurationEffect do
+  @moduledoc """
+  ConfigurationEffect schema
+  """
   use GameBackend.Schema
   import Ecto.Changeset
   alias GameBackend.Items.ConsumableItem
