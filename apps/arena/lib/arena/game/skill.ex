@@ -68,7 +68,12 @@ defmodule Arena.Game.Skill do
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
-  def do_mechanic(game_state, entity, %{type: "cone_hit"} = cone_hit, %{skill_direction: skill_direction} = _skill_params) do
+  def do_mechanic(
+        game_state,
+        entity,
+        %{type: "cone_hit"} = cone_hit,
+        %{skill_direction: skill_direction} = _skill_params
+      ) do
     triangle_points =
       Physics.calculate_triangle_vertices(
         entity.position,
