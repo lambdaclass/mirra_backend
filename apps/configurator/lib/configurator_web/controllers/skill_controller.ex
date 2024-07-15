@@ -57,10 +57,22 @@ defmodule ConfiguratorWeb.SkillController do
 
   def delete(conn, %{"id" => id}) do
     skill = Skills.get_skill!(id)
-    {:ok, _skill} = Skills.delete_skill(skill)
 
-    conn
-    |> put_flash(:info, "Skill deleted successfully.")
-    |> redirect(to: ~p"/skills")
+    case Skills.delete_skill(skill) do
+      {:error, %{errors: [characters: {_, [constraint: :foreign, constraint_name: "characters_basic_skill_id_fkey"]}]}} ->
+        conn
+        |> put_flash(:error, "Skill being used by a Character.")
+        |> redirect(to: ~p"/skills/#{skill}")
+
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:info, "Something went wrong.")
+        |> redirect(to: ~p"/skills/#{skill}")
+
+      {:ok, _skill} ->
+        conn
+        |> put_flash(:success, "Skill deleted successfully.")
+        |> redirect(to: ~p"/skills")
+    end
   end
 end

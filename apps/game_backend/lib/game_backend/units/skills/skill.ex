@@ -59,5 +59,6 @@ defmodule GameBackend.Units.Skills.Skill do
     ])
     |> cast_assoc(:mechanics)
     |> unique_constraint([:game_id, :name])
+    |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
   end
 end

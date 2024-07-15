@@ -98,7 +98,8 @@ defmodule GameBackend.Units.Skills do
 
   """
   def delete_skill(%Skill{} = skill) do
-    Repo.delete(skill)
+    Skill.changeset(skill)
+    |> Repo.delete()
   end
 
   @doc """
