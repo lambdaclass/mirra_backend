@@ -9,13 +9,13 @@
 
 <.table id="skills" rows={@skills} row_click={&JS.navigate(~p"/skills/#{&1}")}>
   <:col :let={skill} label="Name"><%= skill.name %></:col>
-  <:col :let={skill} label="Activation delay ms"><%= skill.activation_delay_ms %></:col>
+  <:col :let={skill} label="Activation delay (ms)"><%= skill.activation_delay_ms %></:col>
   <:col :let={skill} label="Autoaim"><%= skill.autoaim %></:col>
   <:col :let={skill} label="Block movement"><%= skill.block_movement %></:col>
   <:col :let={skill} label="Can pick destination"><%= skill.can_pick_destination %></:col>
   <:col :let={skill} label="Cooldown mechanism"><%= skill.cooldown_mechanism %></:col>
-  <:col :let={skill} label="Cooldown ms"><%= skill.cooldown_ms %></:col>
-  <:col :let={skill} label="Execution duration ms"><%= skill.execution_duration_ms %></:col>
+  <:col :let={skill} label="Cooldown (ms)"><%= skill.cooldown_ms %></:col>
+  <:col :let={skill} label="Execution duration (ms)"><%= skill.execution_duration_ms %></:col>
   <:col :let={skill} label="Inmune while executing"><%= skill.inmune_while_executing %></:col>
   <:col :let={skill} label="Is passive"><%= skill.is_passive %></:col>
   <:col :let={skill} label="Max autoaim range"><%= skill.max_autoaim_range %></:col>
