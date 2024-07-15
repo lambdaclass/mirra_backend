@@ -13,8 +13,12 @@
   <:item title="Initial positions">
     <p class="whitespace-pre"><%= embed_to_string(@map_configuration.initial_positions) %></p>
   </:item>
-  <:item title="Obstacles"><%= @map_configuration.obstacles %></:item>
-  <:item title="Bushes"><%= @map_configuration.bushes %></:item>
+  <:item title="Obstacles">
+    <p class="whitespace-pre"><%= embed_to_string(@map_configuration.obstacles) %></p>
+  </:item>
+  <:item title="Bushes">
+    <p class="whitespace-pre"><%= embed_to_string(@map_configuration.bushes) %></p>
+  </:item>
 </.list>
 
 <.back navigate={~p"/map_configurations"}>Back to map_configurations</.back>

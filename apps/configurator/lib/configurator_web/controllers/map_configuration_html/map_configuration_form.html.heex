@@ -3,12 +3,9 @@
     Oops, something went wrong! Please check the errors below.
   </.error>
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
-  <% IO.inspect(f) %>
-  <% IO.inspect(f[:initial_positions], label: "field") %>
-  <% IO.inspect(f[:initial_positions].value, label: "field.value") %>
   <.input field={f[:initial_positions]} type="textarea" label="Initial positions" value={embed_to_string(f[:initial_positions].value)}/>
-  <%!-- <.input field={f[:obstacles]} type="textarea" label="Obstacles" value={Jason.encode(f[:obstacles].value)}/>
-  <.input field={f[:bushes]} type="textarea" label="Bushes" value={Jason.encode(f[:bushes].value)}/> --%>
+  <.input field={f[:obstacles]} type="textarea" label="Obstacles" value={embed_to_string(f[:obstacles].value)}/>
+  <.input field={f[:bushes]} type="textarea" label="Bushes" value={embed_to_string(f[:bushes].value)}/>
   <:actions>
     <.button>Save Map configuration</.button>
   </:actions>
