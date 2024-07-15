@@ -6,6 +6,7 @@ defmodule Configurator.Repo.Migrations.CreateConsumableItems do
       add :name, :string
       add :radius, :float
       add :effects, {:array, :string}
+      add :mechanics, {:map, :map}
 
       timestamps(type: :utc_datetime)
     end
