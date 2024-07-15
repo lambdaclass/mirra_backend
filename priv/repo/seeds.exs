@@ -332,7 +332,8 @@ game_configuration_1 = %{
 
 golden_clock_params = %{
   name: "golden_clock",
-  radius: 200.0
+  radius: 200.0,
+  mechanics: %{}
 }
 
 {:ok, golden_clock} =
@@ -340,7 +341,8 @@ golden_clock_params = %{
 
 magic_boots_params = %{
   name: "magic_boots",
-  radius: 200.0
+  radius: 200.0,
+  mechanics: %{}
 }
 
 {:ok, magic_boots} =
@@ -348,7 +350,8 @@ magic_boots_params = %{
 
 mirra_blessing_params = %{
   name: "mirra_blessing",
-  radius: 200.0
+  radius: 200.0,
+  mechanics: %{}
 }
 
 {:ok, mirra_blessing} =
@@ -356,7 +359,8 @@ mirra_blessing_params = %{
 
 giant_fruit_params = %{
   name: "giant",
-  radius: 200.0
+  radius: 200.0,
+  mechanics: %{}
 }
 
 {:ok, giant_fruit} =
