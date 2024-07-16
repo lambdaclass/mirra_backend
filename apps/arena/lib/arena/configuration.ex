@@ -176,7 +176,7 @@ defmodule Arena.Configuration do
   end
 
   defp parse_status_cycle(%{raised: _} = status_cycle) do
-    %{ status_cycle | raised: parse_raised(status_cycle.raised) }
+    %{status_cycle | raised: parse_raised(status_cycle.raised)}
   end
 
   defp parse_status_cycle(status_cycle) do
@@ -184,7 +184,7 @@ defmodule Arena.Configuration do
   end
 
   defp parse_raised(raised) do
-    %{ raised | on_activation_mechanics: parse_raised_mechanics_config(raised.on_activation_mechanics) }
+    %{raised | on_activation_mechanics: parse_raised_mechanics_config(raised.on_activation_mechanics)}
   end
 
   defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do

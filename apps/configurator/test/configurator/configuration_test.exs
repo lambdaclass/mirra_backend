@@ -38,7 +38,9 @@ defmodule GameBackend.ConfigurationTest do
       map_configuration = map_configuration_fixture()
       update_attrs = %{radius: "456.7", initial_positions: %{}, obstacles: %{}, bushes: %{}}
 
-      assert {:ok, %MapConfiguration{} = map_configuration} = Configuration.update_map_configuration(map_configuration, update_attrs)
+      assert {:ok, %MapConfiguration{} = map_configuration} =
+               Configuration.update_map_configuration(map_configuration, update_attrs)
+
       assert map_configuration.radius == Decimal.new("456.7")
       assert map_configuration.initial_positions == %{}
       assert map_configuration.obstacles == %{}
