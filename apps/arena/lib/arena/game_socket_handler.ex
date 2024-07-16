@@ -221,6 +221,7 @@ defmodule Arena.GameSocketHandler do
          %{block_movement: false} = state
        )
        when action in [:move] do
+    Logger.info("Handling move")
     case message do
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
         GameUpdater.move(
