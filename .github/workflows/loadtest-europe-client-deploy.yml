@@ -6,15 +6,15 @@ on:
         type: choice
         description: What release to deploy
         options:
-          - arena_load_test
           - bot_manager
+          - arena_load_test
         required: true
       target_server:
         type: choice
         description: Loadtest target server
         options:
-          - loadtest-europe-server.curseofmirra.com
-          - loadtest-brazil-server.curseofmirra.com
+          - Europe
+          - Brazil
 
 jobs:
   build-deploy:
