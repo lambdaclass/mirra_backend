@@ -318,14 +318,15 @@ defmodule GameBackend.CurseOfMirra.Quests do
       arena_match_results
       |> filter_results_that_meet_quest_conditions(quest.conditions)
       |> Enum.reduce(0, fn arena_match_result, acc ->
-        arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
+        type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
         # We won't accumulate progress if the objective has a wrong field getter
+        accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
         |> case do
           nil ->
             acc
 
-          type ->
-            acc + accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+          progress ->
+            acc + progress
         end
       end)
 
@@ -337,18 +338,17 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp filter_results_that_meet_quest_conditions(arena_match_results, conditions) do
     Enum.filter(arena_match_results, fn arena_match_result ->
       Enum.all?(conditions, fn condition ->
-        case arena_match_result_field_to_atom(condition["match_tracking_field"]) do
+        type = arena_match_result_field_to_atom(condition["match_tracking_field"])
+
+        case Map.get(arena_match_result, type) do
           # We'll result in a false value in case that the quest condition has a wrong field getter
           nil ->
             false
 
-          type ->
-            value = condition["value"]
-            arena_match_result_value = Map.get(arena_match_result, type)
-
+          arena_match_result_value ->
             comparator = parse_comparator(condition["comparison"])
 
-            comparator.(arena_match_result_value, value)
+            comparator.(arena_match_result_value, condition["value"])
         end
       end)
     end)
