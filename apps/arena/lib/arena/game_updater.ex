@@ -4,6 +4,7 @@ defmodule Arena.GameUpdater do
   (player websocket).
   """
 
+  require Logger
   use GenServer
   alias Arena.Game.Obstacle
   alias Arena.GameBountiesFetcher
