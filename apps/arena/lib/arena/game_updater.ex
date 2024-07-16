@@ -112,7 +112,6 @@ defmodule Arena.GameUpdater do
             else
               aditional_info
               |> Map.put(:bounties, bounties)
-              |> Map.put(:default_bounty, Enum.random(bounties))
             end
           end)
 
@@ -162,7 +161,6 @@ defmodule Arena.GameUpdater do
           Enum.find(aditional_info.bounties, fn bounty -> bounty.id == bounty_quest_id end)
 
         aditional_info
-        |> Map.put(:bounty_selected, true)
         |> Map.put(:selected_bounty, bounty)
       end)
 
@@ -570,8 +568,9 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
-      if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
-        select_bounty(self(), player_id, player.aditional_info.default_bounty["id"])
+      if is_nil(player.aditional_info.selected_bounty) and not Enum.empty?(player.aditional_info.bounties) do
+        random_bounty = Enum.random(player.aditional_info.bounties)
+        select_bounty(self(), player_id, random_bounty.id)
       end
     end)
 
@@ -719,6 +718,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:obstacles, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
+      |> Map.put(:player_to_client_map, %{})
       |> Map.put(:pools, %{})
       |> Map.put(:killfeed, [])
       |> Map.put(:damage_taken, %{})
@@ -761,6 +761,7 @@ defmodule Arena.GameUpdater do
           |> Map.put(:last_id, last_id)
           |> Map.put(:players, players)
           |> put_in([:client_to_player_map, client_id], last_id)
+          |> put_in([:player_to_client_map, last_id], client_id)
           |> put_in([:player_timestamps, last_id], 0)
 
         {new_game, positions}
@@ -1260,8 +1261,8 @@ defmodule Arena.GameUpdater do
     Enum.reduce(actual_players, game_state, fn {player_id, player}, game_state ->
       if not player.aditional_info.bounty_completed and Player.alive?(player) and
            Bounties.completed_bounty?(player.aditional_info.selected_bounty, [GameTracker.get_player_result(player_id)]) do
-        {user_id, _player_id} =
-          Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
+        user_id =
+          Map.get(game_state.player_to_client_map, player_id)
 
         spawn(fn ->
           path = "/curse/users/#{user_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
