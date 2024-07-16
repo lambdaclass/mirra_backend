@@ -1245,7 +1245,7 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp update_bounties_states(game_state, state) do
+  defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
     actual_players =
       state.clients
       |> Enum.map(fn client_id ->
@@ -1278,6 +1278,10 @@ defmodule Arena.GameUpdater do
         game_state
       end
     end)
+  end
+
+  defp update_bounties_states(game_state, _state) do
+    game_state
   end
 
   ##########################
