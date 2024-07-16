@@ -100,13 +100,13 @@
     },
     {
         "config_id": 6,
-        "description": "Receive less than 200 damage",
+        "description": "Heal more than 200 hp",
         "type": "bounty",
         "objective": {
             "type": "damage",
-            "match_tracking_field": "damage_taken",
+            "match_tracking_field": "health_healed",
             "value": 200,
-            "comparison": "lesser_or_equal",
+            "comparison": "greater_or_equal",
             "scope": "day"
         },
         "conditions": [],

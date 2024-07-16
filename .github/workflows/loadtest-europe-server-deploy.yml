@@ -47,6 +47,7 @@ jobs:
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_SERVER_HOST }}
+          OVERRIDE_JWT: ${{ vars.OVERRIDE_JWT }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
@@ -64,6 +65,7 @@ jobs:
                 RELEASE=${RELEASE} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
+                OVERRIDE_JWT=${OVERRIDE_JWT} \
                 PORT=${PORT} \
                 GATEWAY_URL=${GATEWAY_URL} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
