@@ -644,7 +644,7 @@ defmodule Arena.GameUpdater do
              killfeed: state.killfeed,
              damage_taken: state.damage_taken,
              damage_done: state.damage_done,
-             status: state.status,
+             status: IO.inspect(state.status),
              start_game_timestamp: state.start_game_timestamp,
              obstacles: complete_entities(state.obstacles),
              crates: complete_entities(state.crates),
