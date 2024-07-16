@@ -37,9 +37,9 @@ defmodule GameBackend.ConfigurationFixtures do
     {:ok, map_configuration} =
       attrs
       |> Enum.into(%{
-        bushes: %{},
-        initial_positions: %{},
-        obstacles: %{},
+        bushes: [],
+        initial_positions: [],
+        obstacles: [],
         radius: "120.5"
       })
       |> GameBackend.Configuration.create_map_configuration()

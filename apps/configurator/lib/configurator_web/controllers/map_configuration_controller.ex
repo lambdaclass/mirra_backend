@@ -71,6 +71,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
   end
 
   defp parse_json(""), do: []
+  defp parse_json(nil), do: []
 
   defp parse_json(json_param) do
     case Jason.decode(json_param) do

@@ -3,8 +3,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
 
   import GameBackend.ConfigurationFixtures
 
-  @create_attrs %{radius: "120.5", initial_positions: %{}, obstacles: %{}, bushes: %{}}
-  @update_attrs %{radius: "456.7", initial_positions: %{}, obstacles: %{}, bushes: %{}}
+  @create_attrs %{radius: "120.5", initial_positions: "", obstacles: "", bushes: ""}
+  @update_attrs %{radius: "456.7", initial_positions: "", obstacles: "", bushes: ""}
   @invalid_attrs %{radius: nil, initial_positions: nil, obstacles: nil, bushes: nil}
 
   describe "index" do
