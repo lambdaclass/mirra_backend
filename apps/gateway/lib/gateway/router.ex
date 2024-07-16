@@ -19,6 +19,10 @@ defmodule Gateway.Router do
       get "/configuration", CharacterController, :get_characters_config
     end
 
+    scope "/configuration" do
+      get "/map", ConfigurationController, :get_map_configuration
+    end
+
     scope "/stores" do
       get "/:store_name/list_items", StoreController, :list_items
     end
