@@ -195,7 +195,6 @@ message Player {
   repeated uint64 visible_players = 13;
   bool on_bush = 14;
   bool forced_movement = 15;
-  BountyInfo default_bounty = 16;
   bool bounty_completed = 17;
 }
 

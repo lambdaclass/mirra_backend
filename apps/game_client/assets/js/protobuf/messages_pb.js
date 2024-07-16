@@ -6371,7 +6371,6 @@ proto.Player.toObject = function(includeInstance, msg) {
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
     onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
     forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
-    defaultBounty: (f = msg.getDefaultBounty()) && proto.BountyInfo.toObject(includeInstance, f),
     bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 17, false)
   };
 
@@ -6475,11 +6474,6 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 15:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setForcedMovement(value);
-      break;
-    case 16:
-      var value = new proto.BountyInfo;
-      reader.readMessage(value,proto.BountyInfo.deserializeBinaryFromReader);
-      msg.setDefaultBounty(value);
       break;
     case 17:
       var value = /** @type {boolean} */ (reader.readBool());
@@ -6617,14 +6611,6 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
     writer.writeBool(
       15,
       f
-    );
-  }
-  f = message.getDefaultBounty();
-  if (f != null) {
-    writer.writeMessage(
-      16,
-      f,
-      proto.BountyInfo.serializeBinaryToWriter
     );
   }
   f = message.getBountyCompleted();
@@ -6987,43 +6973,6 @@ proto.Player.prototype.getForcedMovement = function() {
  */
 proto.Player.prototype.setForcedMovement = function(value) {
   return jspb.Message.setProto3BooleanField(this, 15, value);
-};
-
-
-/**
- * optional BountyInfo default_bounty = 16;
- * @return {?proto.BountyInfo}
- */
-proto.Player.prototype.getDefaultBounty = function() {
-  return /** @type{?proto.BountyInfo} */ (
-    jspb.Message.getWrapperField(this, proto.BountyInfo, 16));
-};
-
-
-/**
- * @param {?proto.BountyInfo|undefined} value
- * @return {!proto.Player} returns this
-*/
-proto.Player.prototype.setDefaultBounty = function(value) {
-  return jspb.Message.setWrapperField(this, 16, value);
-};
-
-
-/**
- * Clears the message field making it undefined.
- * @return {!proto.Player} returns this
- */
-proto.Player.prototype.clearDefaultBounty = function() {
-  return this.setDefaultBounty(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {boolean}
- */
-proto.Player.prototype.hasDefaultBounty = function() {
-  return jspb.Message.getField(this, 16) != null;
 };
 
 
