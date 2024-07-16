@@ -250,7 +250,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:selecting_bounty, state) do
-    Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
+    Process.send_after(self(), :game_start, 1000)
 
     {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
