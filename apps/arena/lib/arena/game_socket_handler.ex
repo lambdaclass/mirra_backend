@@ -82,8 +82,6 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    Logger.info("Received message from client")
-
     Serialization.GameAction.decode(message)
     |> handle_decoded_message(state)
 
@@ -223,7 +221,6 @@ defmodule Arena.GameSocketHandler do
          %{block_movement: false} = state
        )
        when action in [:move] do
-    Logger.info("Received MOVE action")
     case message do
       %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
         GameUpdater.move(

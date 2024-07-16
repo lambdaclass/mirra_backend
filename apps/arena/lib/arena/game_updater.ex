@@ -235,6 +235,14 @@ defmodule Arena.GameUpdater do
       # Obstacles
       |> handle_obstacles_transitions()
 
+    game_state =
+      if game_state.status != game_state.current_status do
+        put_in(game_state, [:current_status], game_state.status)
+        |> put_in([:print_state], true)
+      else
+        game_state
+        |> put_in([:print_state], false)
+      end
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -627,7 +635,9 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_update(state) do
-    Logger.info("Game update #{state.status} #{state.server_timestamp}")
+    if state.print_state do
+      Logger.info("Game update #{state.status} #{state.server_timestamp}")
+    end
     encoded_state =
       GameEvent.encode(%GameEvent{
         event:
@@ -721,6 +731,7 @@ defmodule Arena.GameUpdater do
             config.game.bounty_pick_time_ms
       })
       |> Map.put(:status, :PREPARING)
+      |> Map.put(:current_status, nil)
       |> Map.put(
         :start_game_timestamp,
         initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
