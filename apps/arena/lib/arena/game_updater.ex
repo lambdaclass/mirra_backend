@@ -6,6 +6,7 @@ defmodule Arena.GameUpdater do
 
   use GenServer
   alias Arena.Game.Obstacle
+  alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
@@ -1244,7 +1245,7 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
+  defp update_bounties_states(game_state, state) do
     actual_players =
       state.clients
       |> Enum.map(fn client_id ->
@@ -1258,9 +1259,7 @@ defmodule Arena.GameUpdater do
 
     Enum.reduce(actual_players, game_state, fn {player_id, player}, game_state ->
       if not player.aditional_info.bounty_completed and Player.alive?(player) and
-           GameBackend.CurseOfMirra.Quests.completed_quest?(player.aditional_info.selected_bounty, [
-             GameTracker.get_player_result(player_id)
-           ]) do
+           Bounties.completed_bounty?(player.aditional_info.selected_bounty, [GameTracker.get_player_result(player_id)]) do
         {user_id, _player_id} =
           Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
 
@@ -1279,10 +1278,6 @@ defmodule Arena.GameUpdater do
         game_state
       end
     end)
-  end
-
-  defp update_bounties_states(game_state, _state) do
-    game_state
   end
 
   ##########################

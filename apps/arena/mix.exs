@@ -52,8 +52,7 @@ defmodule Arena.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:plug_cowboy, "~> 2.5"},
       {:toxiproxy_ex, "~> 1.1.1"},
-      {:joken, "~> 2.6"},
-      {:game_backend, in_umbrella: true}
+      {:joken, "~> 2.6"}
     ]
   end
 
