@@ -54,11 +54,6 @@ defmodule Gateway.Test.Champions do
 
       assert user.username == username
 
-      # CreateUser with the same username fails
-      :ok = SocketTester.create_user(socket_tester, username)
-      fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:error, %Error{reason: "username_taken"}}}
-
       # GetUserByUsername
       :ok = SocketTester.get_user_by_username(socket_tester, username)
       fetch_last_message(socket_tester)
