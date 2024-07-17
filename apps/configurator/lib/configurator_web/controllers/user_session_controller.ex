@@ -1,4 +1,5 @@
 defmodule ConfiguratorWeb.UserSessionController do
+  @moduledoc false
   use ConfiguratorWeb, :controller
 
   alias Configurator.Accounts

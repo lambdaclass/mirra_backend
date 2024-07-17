@@ -1,4 +1,5 @@
 defmodule Configurator.Accounts.User do
+  @moduledoc false
   use Configurator.Schema
   import Ecto.Changeset
 

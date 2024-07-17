@@ -1,4 +1,5 @@
 defmodule Configurator.Accounts.UserToken do
+  @moduledoc false
   use Configurator.Schema
   import Ecto.Query
   alias Configurator.Accounts.UserToken
