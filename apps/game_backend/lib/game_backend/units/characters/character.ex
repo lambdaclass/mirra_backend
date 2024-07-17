@@ -8,24 +8,6 @@ defmodule GameBackend.Units.Characters.Character do
 
   alias GameBackend.Units.Skills.Skill
 
-  @derive {Jason.Encoder,
-           only: [
-             :active,
-             :name,
-             :base_attack,
-             :base_health,
-             :base_defense,
-             :base_stamina,
-             :stamina_interval,
-             :max_inventory_size,
-             :natural_healing_interval,
-             :natural_healing_damage_interval,
-             :base_speed,
-             :base_size,
-             :basic_skill,
-             :ultimate_skill,
-             :dash_skill
-           ]}
   schema "characters" do
     field(:game_id, :integer)
     field(:active, :boolean, default: true)
