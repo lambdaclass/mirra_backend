@@ -432,6 +432,77 @@ defmodule Arena.Entities do
     nil
   end
 
+  def maybe_add_custom_info_fb(entity) when entity.category == :player do
+    %{
+      health: entity.aditional_info.health,
+      current_actions: entity.aditional_info.current_actions,
+      kill_count: entity.aditional_info.kill_count,
+      available_stamina: entity.aditional_info.available_stamina,
+      max_stamina: entity.aditional_info.max_stamina,
+      stamina_interval: entity.aditional_info.stamina_interval,
+      recharging_stamina: entity.aditional_info.recharging_stamina,
+      character_name: entity.aditional_info.character_name,
+      effects: entity.aditional_info.effects,
+      power_ups: entity.aditional_info.power_ups,
+      inventory: entity.aditional_info.inventory,
+      # cooldowns: entity.aditional_info.cooldowns,
+      visible_players: entity.aditional_info.visible_players,
+      on_bush: entity.aditional_info.on_bush,
+      forced_movement: entity.aditional_info.forced_movement
+    }
+  end
+
+  def maybe_add_custom_info_fb(entity) when entity.category == :projectile do
+    %{
+      damage: entity.aditional_info.damage,
+      owner_id: entity.aditional_info.owner_id,
+      status: entity.aditional_info.status,
+      skill_key: entity.aditional_info.skill_key
+    }
+  end
+
+  def maybe_add_custom_info_fb(entity) when entity.category == :power_up do
+    %{
+      owner_id: entity.aditional_info.owner_id,
+      status: entity.aditional_info.status
+    }
+  end
+
+  def maybe_add_custom_info_fb(entity) when entity.category == :obstacle do
+    %{
+      color: "red",
+      collisionable: entity.aditional_info.collisionable,
+      status: entity.aditional_info.status
+    }
+  end
+
+  def maybe_add_custom_info_fb(entity) when entity.category == :pool do
+    %{
+      owner_id: entity.aditional_info.owner_id,
+      status: entity.aditional_info.status,
+      effects: entity.aditional_info.effects,
+      skill_key: entity.aditional_info.skill_key
+    }
+  end
+
+  def maybe_add_custom_info_fb(entity) when entity.category == :item do
+    %{
+      name: entity.aditional_info.name
+    }
+  end
+
+  def maybe_add_custom_info_fb(entity) when entity.category == :crate do
+    %{
+      health: entity.aditional_info.health,
+      amount_of_power_ups: entity.aditional_info.amount_of_power_ups,
+      status: entity.aditional_info.status |> Atom.to_string()
+    }
+  end
+
+  def maybe_add_custom_info_fb(_entity) do
+    nil
+  end
+
   defp get_shape("polygon"), do: :polygon
   defp get_shape("circle"), do: :circle
   defp get_shape("line"), do: :line
@@ -477,4 +548,11 @@ defmodule Arena.Entities do
 
     base_status_params.make_obstacle_collisionable
   end
+
+  def get_entity_fb(%{category: :player}), do: "PlayerFB"
+  def get_entity_fb(%{category: :power_up}), do: "PowerUpFB"
+  def get_entity_fb(%{category: :projectile}), do: "ProjectileFB"
+  def get_entity_fb(%{category: :obstacle}), do: "ObstacleFB"
+  def get_entity_fb(%{category: :trap}), do: "TrapFB"
+  def get_entity_fb(%{category: :crate}), do: "CrateFB"
 end

@@ -67,13 +67,21 @@ defmodule Arena.GameSocketHandler do
     time_now = Time.utc_now()
     latency = Time.diff(time_now, last_ping_time, :millisecond)
 
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:ping, %PingUpdate{latency: latency}}
-      })
+    # encoded_msg =
+    #   GameEvent.encode(%GameEvent{
+    #     event: {:ping, %PingUpdate{latency: latency}}
+    #   })
+
+    schema = File.read!(~c"apps/arena/priv/schema.txt") |> Eflatbuffers.Schema.parse!()
+
+    data = %{
+      update_type: "PingUpdateFB",
+      update: %{latency: latency}
+    }
+    data_fb = Eflatbuffers.write!(data, schema)
 
     # Send back the player's ping
-    {:reply, {:binary, encoded_msg}, state}
+    {:reply, {:binary, data_fb}, state}
   end
 
   def websocket_handle(:ping, state) do

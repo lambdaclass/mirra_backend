@@ -134,7 +134,7 @@ defmodule Arena.GameLauncher do
   defp create_game_for_clients(clients, game_params \\ %{}) do
     bot_clients =
       if Application.get_env(:arena, :spawn_bots) do
-        get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+        [] #get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
       else
         []
       end

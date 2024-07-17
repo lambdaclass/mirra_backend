@@ -652,13 +652,40 @@ defmodule Arena.GameUpdater do
            }}
       })
 
-    schema = File.read!('apps/arena/priv/schema.txt') |> Eflatbuffers.Schema.parse!
-    color_scheme = %{direction: %{x: 4.5, y: 2.2}}
-    color_scheme_fb = Eflatbuffers.write!(color_scheme, schema)
+    # PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    broadcast_game_update_3(state)
+  end
 
-    IO.inspect(Eflatbuffers.read!(color_scheme_fb, schema))
+  defp broadcast_game_update_3(state) do
+    schema = File.read!(~c"apps/arena/priv/schema.txt") |> Eflatbuffers.Schema.parse!()
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, color_scheme_fb})
+    data = %{
+      update_type: "GameStateFB",
+      update: %{
+        game_id: state.game_id,
+        players: complete_entities_fb(state.players),
+        projectiles: complete_entities_fb(state.projectiles),
+        power_ups: complete_entities_fb(state.power_ups),
+        pools: complete_entities_fb(state.pools),
+        bushes: complete_entities_fb(state.bushes),
+        items: complete_entities_fb(state.items),
+        server_timestamp: state.server_timestamp,
+        player_timestamps: state.player_timestamps |> Map.to_list() |> Enum.map(fn {k, v} -> %{key: k, value: v} end),
+        zone: state.zone,
+        killfeed: state.killfeed,
+        damage_taken: state.damage_taken |> Map.to_list() |> Enum.map(fn {k, v} -> %{key: k, value: v} end),
+        damage_done: state.damage_done |> Map.to_list() |> Enum.map(fn {k, v} -> %{key: k, value: v} end),
+        status: state.status |> Atom.to_string(),
+        start_game_timestamp: state.start_game_timestamp,
+        obstacles: complete_entities_fb(state.obstacles),
+        crates: complete_entities_fb(state.crates),
+        traps: complete_entities_fb(state.traps)
+      }
+    }
+
+    data_fb = Eflatbuffers.write!(data, schema)
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, data_fb})
   end
 
   defp broadcast_game_ended(winner, state) do
@@ -684,6 +711,18 @@ defmodule Arena.GameUpdater do
     Map.put(entity, :category, to_string(entity.category))
     |> Map.put(:shape, to_string(entity.shape))
     |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+  end
+
+  defp complete_entities_fb(entities) do
+    entities
+    |> Enum.reduce([], fn {entity_id, entity}, acc -> [%{key: entity_id, value: complete_entity_fb(entity)} | acc] end)
+  end
+
+  defp complete_entity_fb(entity) do
+    Map.put(entity, :category, to_string(entity.category))
+    |> Map.put(:shape, to_string(entity.shape))
+    |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info_fb())
+    |> Map.put(:aditional_info_type, entity |> Entities.get_entity_fb())
   end
 
   ##########################

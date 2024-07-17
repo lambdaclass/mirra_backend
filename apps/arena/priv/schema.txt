@@ -1,10 +1,243 @@
-table Message {
-  direction: Direction;
+union GameEventUpdateFB {GameStateFB, GameJoinedFB, GameFinishedFB, PingUpdateFB, ToggleBotsFB}
+
+table GameEventFB {
+  update: GameEventUpdateFB;
 }
 
-table Direction {
+enum GameStatusFB: int { PREPARING, RUNNING, ENDED, SELECTING_BOUNTY }
+enum ProjectileStatusFB: int { ACTIVE, EXPLODED, CONSUMED }
+enum CrateStatusFB: int { FINE, DESTROYED }
+enum PowerUpStatusFB: int { AVAILABLE, TAKEN, UNAVAILABLE }
+enum PlayerActionTypeFB: int { MOVING, STARTING_SKILL_1, STARTING_SKILL_2, EXECUTING_SKILL_1, EXECUTING_SKILL_2, EXECUTING_SKILL_3 }
+enum TrapStatusFB: int { PENDING, PREPARED, TRIGGERED, USED }
+enum PoolStatusFB: int { WAITING, READY }
+
+table KillEntryFB {
+  killer_id: ulong;
+  victim_id: ulong;
+}
+
+table EntityRawFB {
+  key: ulong (key);
+  value: EntityFB;
+}
+
+table ConfigSkillRawFB {
+  key: ulong (key);
+  value: ConfigSkillFB;
+}
+
+table TimetampRawFB {
+  key: ulong (key);
+  value: ulong;
+}
+
+table ZoneFB {
+  radius: float;
+  enabled: bool;
+  next_zone_change_timestamp: ulong;
+  shrinking: bool;
+}
+
+union AditionalInfoFB {PlayerFB, ProjectileFB, ObstacleFB, PowerUpFB, ItemFB, CrateFB, BushFB, TrapFB}
+
+table EntityFB {
+  id: ulong;
+  category: string;
+  shape: string;
+  name: string;
+  position: PositionFB;
+  radius: float;
+  vertices: [PositionFB];
+  collides_with: [ulong];
+  speed: float;
+  direction: DirectionFB;
+  is_moving: bool;
+  aditional_info: AditionalInfoFB;
+}
+
+table PlayerFB {
+  health: ulong;
+  kill_count: ulong;
+  current_actions: [PlayerActionFB];
+  available_stamina: ulong;
+  max_stamina: ulong;
+  stamina_interval: ulong;
+  recharging_stamina: bool;
+  character_name: string;
+  power_ups: ulong;
+  effects: [EffectFB];
+  inventory: ItemFB;
+  cooldowns: [CooldownRawFB];
+  visible_players: [ulong];
+  on_bush: bool;
+  forced_movement: bool;
+}
+
+table ProjectileFB {
+  damage: ulong;
+  owner_id: ulong;
+  status: ProjectileStatusFB;
+  skill_key: string;
+}
+
+table CooldownRawFB {
+  key: string (key);
+  value: ulong;
+}
+
+table ObstacleFB {
+  color: string;
+  collisionable: bool;
+  status: string;
+}
+
+table PowerUpFB {
+  owner_id: ulong;
+  status: PowerUpStatusFB;
+}
+
+table CrateFB {
+  health: ulong;
+  amount_of_power_ups: ulong;
+  status: CrateStatusFB;
+}
+
+table ItemFB {
+  name: string;
+}
+
+table BushFB {
+}
+
+table TrapFB {
+  owner_id: ulong;
+  name: string;
+  status: TrapStatusFB;
+}
+
+table PlayerActionFB {
+  action: PlayerActionTypeFB;
+  duration: ulong;
+  destination: PositionFB;
+  direction: PositionFB;
+}
+
+table DirectionFB {
   x: float;
   y: float;
 }
 
-root_type Message;
+table PositionFB {
+  x: float;
+  y: float;
+}
+
+table EffectFB {
+  name: string;
+  duration_ms: ulong;
+  id: ulong;
+}
+
+table GameStateFB {
+  game_id: string;
+  server_timestamp: ulong;
+  zone: ZoneFB;
+  killfeed: [KillEntryFB];
+  status: GameStatusFB;
+  start_game_timestamp: ulong;
+  players: [EntityRawFB];
+  projectiles: [EntityRawFB];
+  power_ups: [EntityRawFB];
+  items: [EntityRawFB];
+  obstacles: [EntityRawFB];
+  pools: [EntityRawFB];
+  crates: [EntityRawFB];
+  bushes: [EntityRawFB];
+  traps: [EntityRawFB];
+  player_timestamps: [TimetampRawFB];
+  damage_taken: [TimetampRawFB];
+  damage_done: [TimetampRawFB];
+}
+
+table GameJoinedFB {
+  player_id: ulong;
+  config: ConfigurationFB;
+  bounties: [BountyInfoFB];
+}
+
+table BountyInfoFB {
+  id: string;
+  description: string;
+  quest_type: string;
+  reward: CurrencyRewardFB;
+}
+
+table CurrencyRewardFB {
+  currency: string;
+  amount: ulong;
+}
+
+table ConfigurationFB {
+  game: ConfigGameFB;
+  map: ConfigMapFB;
+  characters: [ConfigCharacterFB];
+  client_config: ClientConfigFB;
+}
+
+table ConfigGameFB {
+  tick_rate_ms: float;
+  bounty_pick_time_ms: float;
+  start_game_time_ms: float;
+}
+
+table ConfigMapFB {
+  radius: float;
+}
+
+table ConfigCharacterFB {
+  name: string;
+  active: bool;
+  base_speed: float;
+  base_size: float;
+  base_health: ulong;
+  max_inventory_size: ulong;
+  skills: [ConfigSkillRawFB];
+}
+
+table ConfigSkillFB {
+  name: string;
+  cooldown_ms: ulong;
+  execution_duration_ms: ulong;
+  targetting_radius: float;
+  targetting_angle: float;
+  targetting_range: float;
+  stamina_cost: ulong;
+}
+
+table ClientConfigFB {
+  server_update: ConfigServerUpdateFB;
+}
+
+table ConfigServerUpdateFB {
+  timestamp_difference_samples_to_check_warning: ulong;
+  timestamp_differences_samples_max_length: ulong;
+  show_warning_threshold: ulong;
+  stop_warning_threshold: ulong;
+  ms_without_update_show_warning: ulong;
+  ms_without_update_disconnect: ulong;
+}
+
+table GameFinishedFB {
+  winner: EntityFB;
+  players: [EntityRawFB];
+}
+
+table PingUpdateFB {
+  latency: ulong;
+}
+
+table ToggleBotsFB {
+}
+
+root_type GameEventFB;
