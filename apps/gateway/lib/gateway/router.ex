@@ -25,6 +25,7 @@ defmodule Gateway.Router do
     end
 
     post "/users", UserController, :create_guest_user
+    get "/users/leaderboard", UserController, :get_users_leaderboard
 
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency

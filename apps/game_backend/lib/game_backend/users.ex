@@ -509,4 +509,14 @@ defmodule GameBackend.Users do
 
     Repo.exists?(q)
   end
+
+  def get_users_sorted_by_total_unit_prestige() do
+    q =
+      from(user in User,
+        preload: [:units]
+      )
+
+    Repo.all(q)
+    |> Enum.sort_by(fn user -> Enum.reduce(user.units, 0, fn unit, acc -> acc + unit.prestige end) end, :desc)
+  end
 end
