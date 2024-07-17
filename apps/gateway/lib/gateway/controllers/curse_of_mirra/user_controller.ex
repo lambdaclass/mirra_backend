@@ -13,12 +13,8 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
   def show(conn, %{"id" => user_id}) do
     game_id = Utils.get_game_id(:curse_of_mirra)
 
-    with {:get_user, {:ok, user}} <- {:get_user, Users.get_user(user_id)},
-         {:curse_user, ^game_id} <- {:curse_user, user.game_id} do
+    with {:ok, user} <- Users.get_user_by_game_id(user_id, game_id) do
       send_resp(conn, 200, Jason.encode!(user))
-    else
-      {:get_user, _} -> send_resp(conn, 404, "User not found")
-      {:curse_user, _} -> send_resp(conn, 400, "User from another game")
     end
   end
 
