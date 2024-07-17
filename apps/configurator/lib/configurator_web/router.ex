@@ -49,6 +49,7 @@ defmodule ConfiguratorWeb.Router do
   scope "/", ConfiguratorWeb do
     pipe_through [:browser, :require_authenticated_user]
 
+    get "/", HomeController, :home
     resources "/characters", CharacterController
     resources "/game_configurations", GameConfigurationController
   end
