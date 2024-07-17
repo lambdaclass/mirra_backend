@@ -1256,9 +1256,7 @@ defmodule Arena.GameUpdater do
           |> Finch.request(Arena.Finch)
         end)
 
-        update_in(game_state, [:players, player_id, :aditional_info], fn aditional_info ->
-          Map.put(aditional_info, :bounty_completed, true)
-        end)
+        put_in(game_state, [:players, player_id, :aditional_info, :bounty_completed], true)
       else
         game_state
       end
