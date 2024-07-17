@@ -66,13 +66,13 @@ defmodule GameBackend.Users do
 
   ## Examples
 
-      iex> get_user_by_game_id("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf", 1)
+      iex> get_user_by_id_and_game_id("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf", 1)
       {:ok, %User{}}
 
-      iex> get_user_by_game_id("9483ae81-f3e8-4050-acea-13940d47d8ed", 4)
+      iex> get_user_by_id_and_game_id("9483ae81-f3e8-4050-acea-13940d47d8ed", 4)
       {:error, :not_found}
   """
-  def get_user_by_game_id(id, game_id) do
+  def get_user_by_id_and_game_id(id, game_id) do
     q =
       from(u in User,
         where: u.id == ^id and u.game_id == ^game_id,
