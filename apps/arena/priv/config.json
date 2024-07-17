@@ -71,7 +71,7 @@
         "vertices": []
       },
       {
-        "name": "test_spike_1",
+        "name": "top_right_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -103,7 +103,7 @@
             "transition_time_ms": 3000,
             "on_activation_mechanics": {},
             "next_status": "raised",
-            "time_until_transition_ms": 10000,
+            "time_until_transition_ms": 2000,
             "make_obstacle_collisionable": false
           },
           "raised": {
@@ -132,13 +132,13 @@
               }
             },
             "next_status": "underground",
-            "time_until_transition_ms": 10000,
+            "time_until_transition_ms": 2000,
             "make_obstacle_collisionable": true
           }
         }
       },
       {
-        "name": "test_spike_2",
+        "name": "left_spikes",
         "position": {
           "x": 0.0,
           "y": 0.0
@@ -148,11 +148,11 @@
         "type": "dynamic",
         "vertices": [
           {
-            "x": -4100.0,
+            "x": -4000.0,
             "y": -1250.0
           },
           {
-            "x": -4100.0,
+            "x": -4000.0,
             "y": -900.0
           },
           {
@@ -170,7 +170,7 @@
             "transition_time_ms": 3000,
             "on_activation_mechanics": {},
             "next_status": "raised",
-            "time_until_transition_ms": 10000,
+            "time_until_transition_ms": 2000,
             "make_obstacle_collisionable": false
           },
           "raised": {
@@ -180,11 +180,11 @@
                 "damage": 10,
                 "vertices": [
                   {
-                    "x": -4100.0,
+                    "x": -4000.0,
                     "y": -1250.0
                   },
                   {
-                    "x": -4100.0,
+                    "x": -4000.0,
                     "y": -900.0
                   },
                   {
@@ -199,7 +199,141 @@
               }
             },
             "next_status": "underground",
-            "time_until_transition_ms": 10000,
+            "time_until_transition_ms": 2000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
+        "name": "center_left_spikes",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": -1420.0,
+            "y": 2235.0
+          },
+          {
+            "x": -1201.0,
+            "y": 2585.0
+          },
+          {
+            "x": -180.0,
+            "y": 1899.0
+          },
+          {
+            "x": -374.0,
+            "y": 1545.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 2000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": -1420.0,
+                    "y": 2235.0
+                  },
+                  {
+                    "x": -1201.0,
+                    "y": 2585.0
+                  },
+                  {
+                    "x": -180.0,
+                    "y": 1899.0
+                  },
+                  {
+                    "x": -374.0,
+                    "y": 1545.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 2000,
+            "make_obstacle_collisionable": true
+          }
+        }
+      },
+      {
+        "name": "bottom_right_spikes",
+        "position": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.0,
+        "shape": "polygon",
+        "type": "dynamic",
+        "vertices": [
+          {
+            "x": 2717.0,
+            "y": -1951.0
+          },
+          {
+            "x": 2411.0,
+            "y": -1687.0
+          },
+          {
+            "x": 3296.0,
+            "y": -832.0
+          },
+          {
+            "x": 3601.0,
+            "y": -1096.0
+          }
+        ],
+        "base_status": "underground",
+        "statuses_cycle": {
+          "underground": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {},
+            "next_status": "raised",
+            "time_until_transition_ms": 2000,
+            "make_obstacle_collisionable": false
+          },
+          "raised": {
+            "transition_time_ms": 3000,
+            "on_activation_mechanics": {
+              "polygon_hit": {
+                "damage": 10,
+                "vertices": [
+                  {
+                    "x": 2717.0,
+                    "y": -1951.0
+                  },
+                  {
+                    "x": 2411.0,
+                    "y": -1687.0
+                  },
+                  {
+                    "x": 3296.0,
+                    "y": -832.0
+                  },
+                  {
+                    "x": 3601.0,
+                    "y": -1096.0
+                  }
+                ]
+              }
+            },
+            "next_status": "underground",
+            "time_until_transition_ms": 2000,
             "make_obstacle_collisionable": true
           }
         }
