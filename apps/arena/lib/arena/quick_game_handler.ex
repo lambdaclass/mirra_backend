@@ -5,9 +5,9 @@ defmodule Arena.QuickGameHandler do
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Authentication.GatewaySigner
   alias Arena.GameLauncher
-  alias Arena.Serialization.GameState
-  alias Arena.Serialization.JoinedLobby
-  alias Arena.Serialization.LobbyEvent
+  alias Arena.Serialization.ProtoGameState
+  alias Arena.Serialization.ProtoJoinedLobby
+  alias Arena.Serialization.ProtoLobbyEvent
 
   @behaviour :cowboy_websocket
 

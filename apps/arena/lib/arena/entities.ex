@@ -356,7 +356,7 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
-     %Arena.Serialization.Player{
+     %Arena.Serialization.ProtoPlayer{
        health: entity.aditional_info.health,
        current_actions: entity.aditional_info.current_actions,
        kill_count: entity.aditional_info.kill_count,
@@ -377,7 +377,7 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :projectile do
     {:projectile,
-     %Arena.Serialization.Projectile{
+     %Arena.Serialization.ProtoProjectile{
        damage: entity.aditional_info.damage,
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status,
@@ -387,7 +387,7 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :power_up do
     {:power_up,
-     %Arena.Serialization.PowerUp{
+     %Arena.Serialization.ProtoPowerUp{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status
      }}
@@ -395,7 +395,7 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :obstacle do
     {:obstacle,
-     %Arena.Serialization.Obstacle{
+     %Arena.Serialization.ProtoObstacle{
        color: "red",
        collisionable: entity.aditional_info.collisionable,
        status: entity.aditional_info.status
@@ -404,7 +404,7 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :pool do
     {:pool,
-     %Arena.Serialization.Pool{
+     %Arena.Serialization.ProtoPool{
        owner_id: entity.aditional_info.owner_id,
        status: entity.aditional_info.status,
        effects: entity.aditional_info.effects,
@@ -414,14 +414,14 @@ defmodule Arena.Entities do
 
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
-     %Arena.Serialization.Item{
+     %Arena.Serialization.ProtoItem{
        name: entity.aditional_info.name
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :crate do
     {:crate,
-     %Arena.Serialization.Crate{
+     %Arena.Serialization.ProtoCrate{
        health: entity.aditional_info.health,
        amount_of_power_ups: entity.aditional_info.amount_of_power_ups,
        status: entity.aditional_info.status

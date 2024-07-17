@@ -31,7 +31,7 @@ defmodule GameClient.ClientSocketHandler do
         action_type:
           {:move,
            %GameClient.Protobuf.Move{
-             direction: %GameClient.Protobuf.Direction{
+             direction: %GameClient.Protobuf.ProtoDirection{
                x: x,
                y: y
              }

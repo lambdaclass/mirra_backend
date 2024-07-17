@@ -44,7 +44,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
         action_type:
           {:move,
            %Serialization.Move{
-             direction: %Serialization.Direction{
+             direction: %Serialization.ProtoDirection{
                x: x,
                y: y
              }

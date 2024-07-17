@@ -8,7 +8,7 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
-  alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
+  alias Arena.Serialization.{ProtoGameEvent, ProtoGameJoined, ProtoPingUpdate}
 
   @behaviour :cowboy_websocket
 
@@ -52,8 +52,9 @@ defmodule Arena.GameSocketHandler do
       |> Map.put(:player_alive, true)
 
     encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
+      GameEvent.encode(%ProtoGameEvent{
+        event:
+          {:joined, %ProtoGameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
@@ -81,7 +82,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    Serialization.GameAction.decode(message)
+    Serialization.ProtoGameAction.decode(message)
     |> handle_decoded_message(state)
 
     {:ok, state}
