@@ -8,7 +8,7 @@ defmodule Configurator.Repo.Migrations.CreateConfigurationEffects do
       add :remove_on_action, :boolean, default: false, null: false
       add :one_time_application, :boolean, default: false, null: false
 
-      add :consumable_item_id, references(:consumable_items, on_delete: :nothing)
+      add :consumable_item_id, references(:consumable_items, on_delete: :delete_all)
       add :mechanics, {:map, :string}
 
       timestamps(type: :utc_datetime)
