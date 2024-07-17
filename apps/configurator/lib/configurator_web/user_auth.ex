@@ -1,4 +1,5 @@
 defmodule ConfiguratorWeb.UserAuth do
+  @moduledoc false
   use ConfiguratorWeb, :verified_routes
 
   import Plug.Conn
