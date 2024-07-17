@@ -24,11 +24,26 @@ defmodule GameBackend.Effects.ConfigurationEffect do
   @doc false
   def changeset(configuration_effect, attrs) do
     ## TODO This relationship will be addressed in another issue: https://github.com/lambdaclass/mirra_backend/issues/771
-    mechanics = Jason.decode!(attrs["mechanics"] || "{}")
-    attrs = Map.put(attrs, "mechanics", mechanics)
+
+    attrs =
+      if valid_json?(attrs["mechanics"]) do
+        mechanics = Jason.decode!(attrs["mechanics"] || "{}")
+        Map.put(attrs, "mechanics", mechanics)
+      else
+        attrs
+      end
 
     configuration_effect
     |> cast(attrs, [:name, :duration_ms, :remove_on_action, :one_time_application, :consumable_item_id, :mechanics])
     |> validate_required([:name, :duration_ms, :remove_on_action, :one_time_application])
+  end
+
+  defp valid_json?(nil), do: false
+
+  defp valid_json?(data) do
+    case Jason.decode(data) do
+      {:ok, _} -> true
+      {:error, _} -> false
+    end
   end
 end
