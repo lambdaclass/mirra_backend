@@ -3,6 +3,9 @@ defmodule GameBackend.Users.User do
   Users.
   """
 
+  @min_chars 3
+  @max_chars 9
+
   use GameBackend.Schema
   import Ecto.Changeset
   alias GameBackend.Matches.ArenaMatchResult
@@ -64,10 +67,10 @@ defmodule GameBackend.Users.User do
       :profile_picture,
       :google_user_id
     ])
-    |> unique_constraint([:game_id, :username])
     |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
+    |> validate_length(:username, min: @min_chars, max: @max_chars)
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
   end
 
