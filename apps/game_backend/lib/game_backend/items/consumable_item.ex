@@ -14,7 +14,7 @@ defmodule GameBackend.Items.ConsumableItem do
     field(:radius, :float)
     field(:mechanics, {:map, :map})
 
-    has_many(:effects, ConfigurationEffect)
+    has_many(:effects, ConfigurationEffect, on_replace: :delete)
 
     timestamps(type: :utc_datetime)
   end

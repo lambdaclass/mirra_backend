@@ -44,6 +44,15 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
     {:noreply, assign(socket, :changeset, changeset)}
   end
 
+  def handle_event("remove_effect", %{"index" => index}, socket) do
+    index = String.to_integer(index)
+    changeset = socket.assigns.changeset
+    effects = Ecto.Changeset.get_field(changeset, :effects)
+    changeset = Ecto.Changeset.put_assoc(changeset, :effects, List.delete_at(effects, index))
+
+    {:noreply, assign(socket, :changeset, changeset)}
+  end
+
   def handle_event("save", %{"consumable_item" => consumable_item_params}, socket) do
     socket =
       case Items.create_consumable_item(consumable_item_params) do
@@ -63,6 +72,14 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
 
   def handle_event("update", %{"consumable_item" => consumable_item_params}, socket) do
     consumable_item = socket.assigns.consumable_item
+
+    ## This solves an error when the effects are empty, Ecto internally interprets that if the effects is not present, it should not be updated
+    consumable_item_params =
+      if not Enum.empty?(consumable_item.effects) && not Map.has_key?(consumable_item_params, "effects") do
+        Map.put_new(consumable_item_params, "effects", [])
+      else
+        consumable_item_params
+      end
 
     socket =
       case Items.update_consumable_item(consumable_item, consumable_item_params) do
