@@ -38,7 +38,7 @@ defmodule ConfiguratorWeb.ConsumableItemsLive.Form do
   def handle_event("add_effect", _params, socket) do
     changeset = socket.assigns.changeset
     effects = Ecto.Changeset.get_field(changeset, :effects) || []
-    new_effect = %ConfigurationEffect{}
+    new_effect = %ConfigurationEffect{mechanics: %{}}
     changeset = Ecto.Changeset.put_assoc(changeset, :effects, [new_effect | effects])
 
     {:noreply, assign(socket, :changeset, changeset)}
