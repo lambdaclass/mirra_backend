@@ -2,7 +2,7 @@ defmodule Arena.GameBountiesFetcher do
   @moduledoc false
   use GenServer
 
-  @update_interval_ms 30_000
+  @update_interval_ms 300_000
 
   # API
   def start_link(_) do

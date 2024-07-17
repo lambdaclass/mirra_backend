@@ -57,7 +57,8 @@ defmodule GameClient.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:websockex, "~> 0.4.3"},
       {:exbase58, "~> 1.0.2"},
-      {:ueberauth_google, "~> 0.10"}
+      {:ueberauth_google, "~> 0.10"},
+      {:arena, in_umbrella: true}
     ]
   end
 
