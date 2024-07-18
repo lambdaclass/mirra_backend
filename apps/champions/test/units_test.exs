@@ -10,7 +10,7 @@ defmodule Champions.Test.Units do
   use ExUnit.Case
 
   setup do
-    {:ok, user} = Users.register("test_user")
+    {:ok, user} = Users.register("TestUser")
 
     {:ok, character} =
       GameBackend.Units.Characters.insert_character(%{

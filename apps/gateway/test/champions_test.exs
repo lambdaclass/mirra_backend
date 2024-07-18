@@ -68,7 +68,7 @@ defmodule Gateway.Test.Champions do
 
   describe "units" do
     test "selection", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("SelectUser")
+      {:ok, user} = Users.register("TestUser")
 
       [unit_to_unselect | _] = user.units
       slot = unit_to_unselect.slot
@@ -96,7 +96,7 @@ defmodule Gateway.Test.Champions do
 
     test "progression", %{socket_tester: socket_tester} do
       muflus = GameBackend.Units.Characters.get_character_by_name("Muflus")
-      {:ok, user} = Users.register("LevelUpUser")
+      {:ok, user} = Users.register("TestUser")
       Currencies.add_currency_by_name_and_game!(user.id, "Gold", Utils.get_game_id(:champions_of_mirra), 9999)
 
       {:ok, unit} =
@@ -229,7 +229,7 @@ defmodule Gateway.Test.Champions do
     end
 
     test "summon", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("Summon user")
+      {:ok, user} = Users.register("TestUser")
       units = Enum.count(user.units)
 
       {:ok, previous_scrolls} =
@@ -280,7 +280,7 @@ defmodule Gateway.Test.Champions do
   describe "campaigns" do
     test "get campaigns and levels", %{socket_tester: socket_tester} do
       # Register user
-      {:ok, user} = Users.register("campaign_user")
+      {:ok, user} = Users.register("TestUser")
 
       # GetCampaigns
       SocketTester.get_campaigns(socket_tester, user.id)
@@ -325,7 +325,7 @@ defmodule Gateway.Test.Champions do
 
     test "fight level", %{socket_tester: socket_tester} do
       # Register user
-      {:ok, user} = Users.register("battle_user")
+      {:ok, user} = Users.register("TestUser")
 
       # Get user's Main Campaign progress
       main_super_campaign =
@@ -356,7 +356,7 @@ defmodule Gateway.Test.Champions do
 
     test "fight level advances level in the SuperCampaignProgress", %{socket_tester: socket_tester} do
       # Register user
-      {:ok, user} = Users.register("battle_winning_user")
+      {:ok, user} = Users.register("TestUser")
 
       # Make user units very strong to win the battle
       Enum.each(user.units, fn unit ->
@@ -401,7 +401,7 @@ defmodule Gateway.Test.Champions do
       socket_tester: socket_tester
     } do
       # Register user
-      {:ok, user} = Users.register("invalid_battle_user")
+      {:ok, user} = Users.register("TestUser")
 
       # Get user's Main Campaign progress
       main_super_campaign =
@@ -442,7 +442,7 @@ defmodule Gateway.Test.Champions do
 
   describe "items" do
     test "get item", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("GetItemUser")
+      {:ok, user} = Users.register("TestUser")
 
       {:ok, epic_bow} =
         Items.insert_item_template(%{
@@ -479,7 +479,7 @@ defmodule Gateway.Test.Champions do
 
     test "equip and unequip item", %{socket_tester: socket_tester} do
       # Register user
-      {:ok, user} = Users.register("EquipItemUser")
+      {:ok, user} = Users.register("TestUser")
 
       [unit | _] = user.units
 
@@ -595,7 +595,7 @@ defmodule Gateway.Test.Champions do
 
     test "tier up item", %{socket_tester: socket_tester} do
       # Register user
-      {:ok, user} = Users.register("LevelUpItemUser")
+      {:ok, user} = Users.register("TestUser")
 
       gold_upgrade_cost = 100
 
@@ -680,7 +680,7 @@ defmodule Gateway.Test.Champions do
 
   describe "kaline tree" do
     test "kaline tree", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("KalineTreeUser")
+      {:ok, user} = Users.register("TestUser")
 
       # Kaline tree level is 1 when the user is created.
       initial_kaline_tree_level = user.kaline_tree_level.level
@@ -712,7 +712,7 @@ defmodule Gateway.Test.Champions do
     end
 
     test "leveling up the Kaline Tree increments the afk rewards", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("KalineTreeAFKRewardsUser")
+      {:ok, user} = Users.register("TestUser")
 
       # Check that the initial afk reward rates is not an empty list
       assert Enum.any?(user.kaline_tree_level.afk_reward_rates)
@@ -840,7 +840,7 @@ defmodule Gateway.Test.Champions do
 
   describe "Dungeon Settlement" do
     test "Dungeon Settlement", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("Dungeon Settlement User")
+      {:ok, user} = Users.register("TestUser")
 
       # Dungeon Settlement level is 1 when the user is created.
       initial_dungeon_settlement_level = user.dungeon_settlement_level.level
@@ -883,7 +883,7 @@ defmodule Gateway.Test.Champions do
     end
 
     test "leveling up the Dungeon Settlements increments the afk rewards", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("DungeonSettlementAFKRewardsUser")
+      {:ok, user} = Users.register("TestUser")
 
       # Chek the user is created with the right DungeonSettlementLevel
       assert user.dungeon_settlement_level.level == 1
@@ -1013,7 +1013,7 @@ defmodule Gateway.Test.Champions do
 
   describe "Dungeon Settlement Upgrades" do
     test "Dungeon Settlement Upgrades", %{socket_tester: socket_tester} do
-      {:ok, user} = Users.register("Dungeon Settlement Upgrades User")
+      {:ok, user} = Users.register("TestUser")
 
       {:ok, hp_upgrade_1} = GameBackend.Users.get_upgrade_by_name("Dungeon.HPUpgrade1")
       {:ok, _hp_upgrade_2} = GameBackend.Users.get_upgrade_by_name("Dungeon.HPUpgrade2")
