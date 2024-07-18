@@ -1448,7 +1448,7 @@ defmodule Champions.Test.BattleTest do
 
   describe "Items" do
     test "Affects unit stats", %{target_dummy: target_dummy} do
-      {:ok, user} = Users.register("Items User")
+      {:ok, user} = Users.register("TestUser")
 
       maximum_steps = 5
 
