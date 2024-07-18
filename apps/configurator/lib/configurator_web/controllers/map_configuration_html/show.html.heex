@@ -8,38 +8,4 @@
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Radius"><%= @map_configuration.radius %></:item>
-  <:item title="Initial positions">
-    <%= if (Enum.empty?(@map_configuration.initial_positions)) do %>
-      <p>N/A</p>
-    <% else %>
-      <.button type="button" phx-click={show_modal("initial-positions-#{@map_configuration.id}")}>Show</.button>
-      <.modal id={"initial-positions-#{@map_configuration.id}"}>
-        <p class="whitespace-pre"><%= embed_to_string(@map_configuration.initial_positions) %></p>
-      </.modal>
-    <% end %>
-  </:item>
-  <:item title="Obstacles">
-    <%= if (Enum.empty?(@map_configuration.obstacles)) do %>
-      <p>N/A</p>
-    <% else %>
-      <.button type="button" phx-click={show_modal("obstacles-#{@map_configuration.id}")}>Show</.button>
-      <.modal id={"obstacles-#{@map_configuration.id}"}>
-        <p class="whitespace-pre"><%= embed_to_string(@map_configuration.obstacles) %></p>
-      </.modal>
-    <% end %>
-  </:item>
-  <:item title="Bushes">
-    <%= if (Enum.empty?(@map_configuration.bushes)) do %>
-      <p>N/A</p>
-    <% else %>
-      <.button type="button" phx-click={show_modal("bushes-#{@map_configuration.id}")}>Show</.button>
-      <.modal id={"bushes-#{@map_configuration.id}"}>
-        <p class="whitespace-pre"><%= embed_to_string(@map_configuration.bushes) %></p>
-      </.modal>
-    <% end %>
-  </:item>
-</.list>
-
 <.back navigate={~p"/map_configurations"}>Back to map_configurations</.back>
