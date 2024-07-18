@@ -434,7 +434,7 @@ map_config = %{
           transition_time_ms: 3000,
           on_activation_mechanics: %{},
           next_status: "raised",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: false
         },
         raised: %{
@@ -463,7 +463,7 @@ map_config = %{
             }
           },
           next_status: "underground",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: true
         }
       }
@@ -501,7 +501,7 @@ map_config = %{
           transition_time_ms: 3000,
           on_activation_mechanics: %{},
           next_status: "raised",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: false
         },
         raised: %{
@@ -530,7 +530,7 @@ map_config = %{
             }
           },
           next_status: "underground",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: true
         }
       }
@@ -568,7 +568,7 @@ map_config = %{
           transition_time_ms: 3000,
           on_activation_mechanics: %{},
           next_status: "raised",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: false
         },
         raised: %{
@@ -597,7 +597,7 @@ map_config = %{
             }
           },
           next_status: "underground",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: true
         }
       }
@@ -635,7 +635,7 @@ map_config = %{
           transition_time_ms: 3000,
           on_activation_mechanics: %{},
           next_status: "raised",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: false
         },
         raised: %{
@@ -664,7 +664,7 @@ map_config = %{
             }
           },
           next_status: "underground",
-          time_until_transition_ms: 10000,
+          time_until_transition_ms: 2000,
           make_obstacle_collisionable: true
         }
       }

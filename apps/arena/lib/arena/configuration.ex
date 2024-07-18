@@ -17,7 +17,7 @@ defmodule Arena.Configuration do
     characters = parse_characters_config(get_characters_config(), skills)
     client_config = get_client_config()
     game_config = get_game_configuration()
-    map_config = parse_map_confg(get_map_config())
+    map_config = parse_map_config(get_map_config())
 
     %{config | skills: skills}
     |> Map.put(:characters, characters)
@@ -156,7 +156,7 @@ defmodule Arena.Configuration do
   ## which should be read back and converted to Decimal
   ## The not so small problem we have is that our code expects floats so we still need to parse
   ## the strings, but end up with regular floats
-  defp parse_map_confg(map_config) do
+  defp parse_map_config(map_config) do
     %{
       map_config
       | radius: maybe_to_float(map_config.radius),
