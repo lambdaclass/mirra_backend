@@ -32,20 +32,17 @@ defmodule GameBackend.Effects.ConfigurationEffect do
       else
         attrs
       end
-      |> IO.inspect()
 
     configuration_effect
     |> cast(attrs, [:name, :duration_ms, :remove_on_action, :one_time_application, :consumable_item_id, :mechanics])
     |> validate_required([:name, :duration_ms, :remove_on_action, :one_time_application])
-    |> IO.inspect(label: :changeset)
   end
 
   defp valid_json?(nil), do: false
 
   defp valid_json?(data) do
-    IO.inspect(data, label: :data)
 
-    case Jason.decode(data) |> IO.inspect() do
+    case Jason.decode(data) do
       {:ok, _} -> true
       {:error, _} -> false
     end
