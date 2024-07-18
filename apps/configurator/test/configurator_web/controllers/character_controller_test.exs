@@ -1,7 +1,11 @@
 defmodule ConfiguratorWeb.CharacterControllerTest do
-  use ConfiguratorWeb.ConnCase
+  use ConfiguratorWeb.ConnCase, async: true
 
-  import GameBackend.ConfigurationFixtures
+  import Configurator.ConfigurationFixtures
+  import Configurator.AccountsFixtures
+  use Plug.Test
+
+  setup [:create_authenticated_conn]
 
   @create_attrs %{
     active: true,
@@ -110,5 +114,17 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
   defp create_character(_) do
     character = character_fixture()
     %{character: character}
+  end
+
+  defp create_authenticated_conn(%{conn: conn}) do
+    user = user_fixture()
+    token = Configurator.Accounts.generate_user_session_token(user)
+
+    conn =
+      conn
+      |> Phoenix.ConnTest.init_test_session(%{})
+      |> Plug.Conn.put_session(:user_token, token)
+
+    %{conn: conn}
   end
 end
