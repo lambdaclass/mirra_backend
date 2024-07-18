@@ -30,7 +30,7 @@ import Config
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time [$level] $message $metadata\n",
-  metadata: [:status, :server_timestamp, :request_id]
+  metadata: [:status, :action, :latency_ms, :server_timestamp, :client_timestamp]
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
@@ -87,6 +87,7 @@ config :joken,
 # Configures the endpoint
 dispatch = [
   _: [
+    {"/testing", Arena.ServerSocketHandler, []},
     {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
     {"/join/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
     {"/quick_game/:client_id/:character_name/:player_name", Arena.QuickGameHandler, []},
