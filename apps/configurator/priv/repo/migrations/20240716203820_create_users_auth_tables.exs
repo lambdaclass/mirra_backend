@@ -4,17 +4,17 @@ defmodule Configurator.Repo.Migrations.CreateUsersAuthTables do
   def change do
     execute "CREATE EXTENSION IF NOT EXISTS citext", ""
 
-    create table(:users) do
+    create table(:configurator_users) do
       add :email, :citext, null: false
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
       timestamps(type: :utc_datetime)
     end
 
-    create unique_index(:users, [:email])
+    create unique_index(:configurator_users, [:email])
 
     create table(:users_tokens) do
-      add :user_id, references(:users, on_delete: :delete_all), null: false
+      add :user_id, references(:configurator_users, on_delete: :delete_all), null: false
       add :token, :binary, null: false
       add :context, :string, null: false
       add :sent_to, :string
