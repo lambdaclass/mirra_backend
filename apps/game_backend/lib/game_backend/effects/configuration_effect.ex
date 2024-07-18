@@ -41,7 +41,6 @@ defmodule GameBackend.Effects.ConfigurationEffect do
   defp valid_json?(nil), do: false
 
   defp valid_json?(data) do
-
     case Jason.decode(data) do
       {:ok, _} -> true
       {:error, _} -> false
