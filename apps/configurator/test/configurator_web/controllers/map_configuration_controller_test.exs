@@ -2,6 +2,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
   use ConfiguratorWeb.ConnCase
 
   import GameBackend.ConfigurationFixtures
+  import Configurator.AccountsFixtures
+  setup [:create_authenticated_conn]
 
   @create_attrs %{radius: "120.5", initial_positions: "", obstacles: "", bushes: ""}
   @update_attrs %{radius: "456.7", initial_positions: "", obstacles: "", bushes: ""}
@@ -80,5 +82,17 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
   defp create_map_configuration(_) do
     map_configuration = map_configuration_fixture()
     %{map_configuration: map_configuration}
+  end
+
+  defp create_authenticated_conn(%{conn: conn}) do
+    user = user_fixture()
+    token = Configurator.Accounts.generate_user_session_token(user)
+
+    conn =
+      conn
+      |> Phoenix.ConnTest.init_test_session(%{})
+      |> Plug.Conn.put_session(:user_token, token)
+
+    %{conn: conn}
   end
 end

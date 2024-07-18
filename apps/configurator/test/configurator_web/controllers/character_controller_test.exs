@@ -1,7 +1,7 @@
 defmodule ConfiguratorWeb.CharacterControllerTest do
   use ConfiguratorWeb.ConnCase, async: true
 
-  import Configurator.ConfigurationFixtures
+  import GameBackend.ConfigurationFixtures
   import Configurator.AccountsFixtures
   use Plug.Test
 
