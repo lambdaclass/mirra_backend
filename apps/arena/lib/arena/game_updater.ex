@@ -73,6 +73,7 @@ defmodule Arena.GameUpdater do
     :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
 
     :telemetry.execute([:arena, :game], %{count: 1})
+
     {:ok,
      %{
        match_id: match_id,
