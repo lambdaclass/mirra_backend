@@ -1,0 +1,53 @@
+<.header>
+  Skill: <%= @skill.name %>
+  <:subtitle>This is a skill record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/skills/#{@skill}/edit"}>
+      <.button>Edit skill</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @skill.name %></:item>
+  <:item title="Activation delay (ms)"><%= @skill.activation_delay_ms %></:item>
+  <:item title="Autoaim"><%= @skill.autoaim %></:item>
+  <:item title="Block movement"><%= @skill.block_movement %></:item>
+  <:item title="Can pick destination"><%= @skill.can_pick_destination %></:item>
+  <:item title="Cooldown mechanism"><%= @skill.cooldown_mechanism %></:item>
+  <:item title="Cooldown (ms)"><%= @skill.cooldown_ms %></:item>
+  <:item title="Execution duration (ms)"><%= @skill.execution_duration_ms %></:item>
+  <:item title="Inmune while executing"><%= @skill.inmune_while_executing %></:item>
+  <:item title="Is passive"><%= @skill.is_passive %></:item>
+  <:item title="Max autoaim range"><%= @skill.max_autoaim_range %></:item>
+  <:item title="Stamina cost"><%= @skill.stamina_cost %></:item>
+</.list>
+
+<.header>
+  Mechanics
+  <:subtitle>This are the mechanics for the skill</:subtitle>
+</.header>
+
+<%= for mechanic <- @skill.mechanics do %>
+  <.mechanic_show mechanic={mechanic} />
+
+  <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Show on arrival mechanic</.button>
+  <.modal id="on-arrival-mechanic-modal">
+    <.header>
+      On arrival mechanic
+    </.header>
+    <.mechanic_show :if={not is_nil(mechanic.on_arrival_mechanic)} mechanic={mechanic.on_arrival_mechanic} />
+  </.modal>
+
+  <.button type="button" phx-click={show_modal("on-explode-mechanics-modal")}>Show on explode mechanics</.button>
+  <.modal id="on-explode-mechanics-modal">
+    <.header>
+      On explode mechanics
+    </.header>
+    <%= for mechanic <- mechanic.on_explode_mechanics do %>
+      <.mechanic_show mechanic={mechanic} />
+    <% end %>
+  </.modal>
+<% end %>
+
+<.back navigate={~p"/skills"}>Back to skills</.back>

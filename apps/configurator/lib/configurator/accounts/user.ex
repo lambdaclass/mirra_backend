@@ -3,7 +3,7 @@ defmodule Configurator.Accounts.User do
   use Configurator.Schema
   import Ecto.Changeset
 
-  schema "users" do
+  schema "configurator_users" do
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true

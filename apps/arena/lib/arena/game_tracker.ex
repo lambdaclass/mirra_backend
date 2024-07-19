@@ -36,6 +36,10 @@ defmodule Arena.GameTracker do
     GenServer.cast(__MODULE__, {:push_event, match_pid, event})
   end
 
+  def get_player_result(player_id) do
+    GenServer.call(__MODULE__, {:get_player_result, player_id})
+  end
+
   ##########################
   # Callbacks
   ##########################
@@ -77,6 +81,13 @@ defmodule Arena.GameTracker do
 
     state = put_in(state, [:matches, match_pid], match_state)
     {:reply, :ok, state}
+  end
+
+  def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
+    match_data = get_in(state, [:matches, match_pid])
+    result = generate_player_result(match_data, player_id)
+
+    {:reply, result, state}
   end
 
   @impl true
@@ -145,31 +156,42 @@ defmodule Arena.GameTracker do
   end
 
   defp generate_results(match_data, winner_id) do
+    Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
+    |> Enum.map(fn {player_id, _player_data} ->
+      generate_player_result(match_data, player_id, winner_id)
+    end)
+  end
+
+  defp generate_player_result(nil, _player_id) do
+    %{}
+  end
+
+  defp generate_player_result(match_data, player_id, winner_id \\ nil) do
     duration = System.monotonic_time(:millisecond) - match_data.start_at
 
-    Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
-    |> Enum.map(fn {_player_id, player_data} ->
-      %{
-        user_id: get_in(match_data, [:player_to_client, player_data.id]),
-        ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
-        ##    GameUpdater should send an event when the abandon happens to mark the player
-        ##    https://github.com/lambdaclass/mirra_backend/issues/601
-        result: if(player_data.id == winner_id, do: "win", else: "loss"),
-        kills: length(player_data.kills),
-        ## TODO: this only works because you can only die once
-        ##    https://github.com/lambdaclass/mirra_backend/issues/601
-        deaths: if(player_data.death == nil, do: 0, else: 1),
-        character: player_data.character,
-        position: get_player_match_place(player_data, winner_id, match_data),
-        damage_taken: player_data.damage_taken,
-        damage_done: player_data.damage_done,
-        health_healed: player_data.health_healed,
-        killed_by: player_data.death,
-        killed_by_bot: player_data.killed_by_bot,
-        duration_ms: duration,
-        bounty_quest_id: player_data.bounty_quest_id
-      }
-    end)
+    player_data =
+      Map.get(match_data.players, player_id)
+
+    %{
+      user_id: get_in(match_data, [:player_to_client, player_data.id]),
+      ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
+      ##    GameUpdater should send an event when the abandon happens to mark the player
+      ##    https://github.com/lambdaclass/mirra_backend/issues/601
+      result: if(winner_id && player_data.id == winner_id, do: "win", else: "loss"),
+      kills: length(player_data.kills),
+      ## TODO: this only works because you can only die once
+      ##    https://github.com/lambdaclass/mirra_backend/issues/601
+      deaths: if(player_data.death == nil, do: 0, else: 1),
+      character: player_data.character,
+      position: get_player_match_place(player_data, winner_id, match_data),
+      damage_taken: player_data.damage_taken,
+      damage_done: player_data.damage_done,
+      health_healed: player_data.health_healed,
+      killed_by: player_data.death,
+      killed_by_bot: player_data.killed_by_bot,
+      duration_ms: duration,
+      bounty_quest_id: player_data.bounty_quest_id
+    }
   end
 
   defp send_request(path, payload, backoff \\ 0) do

@@ -78,7 +78,7 @@
         "conditions": [],
         "reward": {
             "currency": "Gold",
-            "amount": 4
+            "amount": 10
         }
     },
     {
@@ -95,7 +95,7 @@
         "conditions": [],
         "reward": {
             "currency": "Gold",
-            "amount": 4
+            "amount": 10
         }
     },
     {
@@ -112,7 +112,7 @@
         "conditions": [],
         "reward": {
             "currency": "Gold",
-            "amount": 4
+            "amount": 10
         }
     }
 ]

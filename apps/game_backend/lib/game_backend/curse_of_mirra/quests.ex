@@ -13,6 +13,16 @@ defmodule GameBackend.CurseOfMirra.Quests do
   import Ecto.Query
 
   @doc """
+  Get a %Quest{} by the id field
+  ## Examples
+      iex>get_quest(4)
+      %Quest{id: 4}
+  """
+  def get_quest(id) do
+    Repo.get(Quest, id)
+  end
+
+  @doc """
   Get a %Quest{} by the config_id field
 
   ## Examples
@@ -259,6 +269,35 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
+  @doc """
+  Receives a user_id and quest_id and mark it as completed and grant the quest currency
+  """
+  def insert_completed_user_quest(user_id, quest_id) do
+    quest =
+      get_quest(quest_id)
+
+    user_quest_changeset =
+      UserQuest.changeset(%UserQuest{}, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed",
+        user_id: user_id,
+        quest_id: quest_id
+      })
+
+    Multi.new()
+    |> Multi.insert(:insert_completed_quest, user_quest_changeset)
+    |> Multi.run(:add_currency_to_user, fn _, _ ->
+      Currencies.add_currency_by_name_and_game(
+        user_id,
+        quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        quest.reward["amount"]
+      )
+    end)
+    |> Repo.transaction()
+  end
+
   #####################
   #      helpers      #
   #####################
@@ -279,9 +318,16 @@ defmodule GameBackend.CurseOfMirra.Quests do
       arena_match_results
       |> filter_results_that_meet_quest_conditions(quest.conditions)
       |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = String.to_atom(quest.objective["match_tracking_field"])
+        type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
+        # We won't accumulate progress if the objective has a wrong field getter
+        accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+        |> case do
+          nil ->
+            acc
 
-        acc + accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+          progress ->
+            acc + progress
+        end
       end)
 
     comparator = parse_comparator(quest.objective["comparison"])
@@ -292,14 +338,33 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp filter_results_that_meet_quest_conditions(arena_match_results, conditions) do
     Enum.filter(arena_match_results, fn arena_match_result ->
       Enum.all?(conditions, fn condition ->
-        type = String.to_atom(condition["match_tracking_field"])
-        value = condition["value"]
-        arena_match_result_value = Map.get(arena_match_result, type)
+        type = arena_match_result_field_to_atom(condition["match_tracking_field"])
 
-        comparator = parse_comparator(condition["comparison"])
+        case Map.get(arena_match_result, type) do
+          # We'll result in a false value in case that the quest condition has a wrong field getter
+          nil ->
+            false
 
-        comparator.(arena_match_result_value, value)
+          arena_match_result_value ->
+            comparator = parse_comparator(condition["comparison"])
+
+            comparator.(arena_match_result_value, condition["value"])
+        end
       end)
     end)
   end
+
+  defp arena_match_result_field_to_atom("result"), do: :result
+  defp arena_match_result_field_to_atom("kills"), do: :kills
+  defp arena_match_result_field_to_atom("deaths"), do: :deaths
+  defp arena_match_result_field_to_atom("character"), do: :character
+  defp arena_match_result_field_to_atom("match_id"), do: :match_id
+  defp arena_match_result_field_to_atom("user_id"), do: :user_id
+  defp arena_match_result_field_to_atom("position"), do: :position
+  defp arena_match_result_field_to_atom("damage_done"), do: :damage_done
+  defp arena_match_result_field_to_atom("damage_taken"), do: :damage_taken
+  defp arena_match_result_field_to_atom("health_healed"), do: :health_healed
+  defp arena_match_result_field_to_atom("killed_by_bot"), do: :killed_by_bot
+  defp arena_match_result_field_to_atom("duration_ms"), do: :duration_ms
+  defp arena_match_result_field_to_atom(_), do: nil
 end

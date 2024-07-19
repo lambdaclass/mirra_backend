@@ -17,6 +17,11 @@ defmodule ConfiguratorWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # Other scopes may use custom stacks.
+  # scope "/api", ConfiguratorWeb do
+  #   pipe_through :api
+  # end
+
   # Enable LiveDashboard in development
   if Application.compile_env(:configurator, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
@@ -51,6 +56,7 @@ defmodule ConfiguratorWeb.Router do
 
     get "/", HomeController, :home
     resources "/characters", CharacterController
+    resources "/skills", SkillController
     resources "/game_configurations", GameConfigurationController
     resources "/consumable_items", ConsumableItemController
   end

@@ -17,6 +17,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+  alias GameBackend.Units.Unit
 
   @doc """
   Registers a user.
@@ -57,6 +58,29 @@ defmodule GameBackend.Users do
   def get_user(id) do
     user = Repo.get(User, id) |> preload()
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
+  Gets a single user with the same game_id.
+  Returns {:ok, User}.
+  Returns {:error, :not_found} if no user is found.
+
+  ## Examples
+
+      iex> get_user_by_id_and_game_id("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf", 1)
+      {:ok, %User{}}
+
+      iex> get_user_by_id_and_game_id("9483ae81-f3e8-4050-acea-13940d47d8ed", 4)
+      {:error, :not_found}
+  """
+  def get_user_by_id_and_game_id(id, game_id) do
+    q =
+      from(u in User,
+        where: u.id == ^id and u.game_id == ^game_id,
+        preload: [units: [:character, :items], currencies: :currency]
+      )
+
+    if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
   end
 
   @doc """
@@ -508,5 +532,18 @@ defmodule GameBackend.Users do
       )
 
     Repo.exists?(q)
+  end
+
+  def get_users_sorted_by_total_unit_prestige() do
+    q =
+      from(user in User,
+        left_join: unit in Unit,
+        on: user.id == unit.user_id,
+        select: %{username: user.username, prestige: sum(unit.prestige)},
+        group_by: user.id,
+        order_by: [desc: sum(unit.prestige)]
+      )
+
+    Repo.all(q)
   end
 end
