@@ -36,12 +36,6 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
-  def terminate(_, _, _) do
-    :telemetry.execute([:arena, :clients], %{count: -1})
-    :ok
-  end
-
-  @impl true
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
@@ -169,6 +163,7 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
     if Application.get_env(:arena, :spawn_bots) do
       spawn(fn ->
         Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
@@ -179,8 +174,8 @@ defmodule Arena.GameSocketHandler do
     :ok
   end
 
-  @impl true
   def terminate(_reason, _req, _state) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
     :ok
   end
 
