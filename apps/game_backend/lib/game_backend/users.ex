@@ -17,6 +17,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+  alias GameBackend.Units.Unit
 
   @doc """
   Registers a user.
@@ -531,5 +532,18 @@ defmodule GameBackend.Users do
       )
 
     Repo.exists?(q)
+  end
+
+  def get_users_sorted_by_total_unit_prestige() do
+    q =
+      from(user in User,
+        left_join: unit in Unit,
+        on: user.id == unit.user_id,
+        select: %{username: user.username, prestige: sum(unit.prestige)},
+        group_by: user.id,
+        order_by: [desc: sum(unit.prestige)]
+      )
+
+    Repo.all(q)
   end
 end

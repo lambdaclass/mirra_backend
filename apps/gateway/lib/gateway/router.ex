@@ -25,6 +25,7 @@ defmodule Gateway.Router do
     end
 
     post "/users", UserController, :create_guest_user
+    get "/users/leaderboard", UserController, :get_users_leaderboard
 
     resources "/users", UserController, only: [:show]
 
