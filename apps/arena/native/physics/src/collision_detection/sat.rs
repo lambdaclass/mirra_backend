@@ -361,5 +361,5 @@ fn invalid_axis(
         }
     }
 
-    return false;
+    false
 }
