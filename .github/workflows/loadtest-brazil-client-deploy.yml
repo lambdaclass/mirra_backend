@@ -8,6 +8,7 @@ on:
         options:
           - bot_manager
           - arena_load_test
+          - arena
         required: true
       target_server:
         type: choice
