@@ -4648,7 +4648,8 @@ proto.GameState.toObject = function(includeInstance, msg) {
     poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    externalWall: (f = msg.getExternalWall()) && proto.Entity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -4783,6 +4784,11 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 19:
+      var value = new proto.Entity;
+      reader.readMessage(value,proto.Entity.deserializeBinaryFromReader);
+      msg.setExternalWall(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -4903,6 +4909,14 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getTrapsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getExternalWall();
+  if (f != null) {
+    writer.writeMessage(
+      19,
+      f,
+      proto.Entity.serializeBinaryToWriter
+    );
   }
 };
 
@@ -5327,6 +5341,43 @@ proto.GameState.prototype.getTrapsMap = function(opt_noLazyCreate) {
 proto.GameState.prototype.clearTrapsMap = function() {
   this.getTrapsMap().clear();
   return this;
+};
+
+
+/**
+ * optional Entity external_wall = 19;
+ * @return {?proto.Entity}
+ */
+proto.GameState.prototype.getExternalWall = function() {
+  return /** @type{?proto.Entity} */ (
+    jspb.Message.getWrapperField(this, proto.Entity, 19));
+};
+
+
+/**
+ * @param {?proto.Entity|undefined} value
+ * @return {!proto.GameState} returns this
+*/
+proto.GameState.prototype.setExternalWall = function(value) {
+  return jspb.Message.setWrapperField(this, 19, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearExternalWall = function() {
+  return this.setExternalWall(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.GameState.prototype.hasExternalWall = function() {
+  return jspb.Message.getField(this, 19) != null;
 };
 
 
