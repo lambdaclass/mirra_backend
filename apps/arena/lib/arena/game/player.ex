@@ -124,14 +124,22 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
+  def change_mana(player, mana_change) do
+    update_in(player, [:aditional_info, :mana], fn mana ->
+      max(mana + mana_change, 0) |> min(player.aditional_info.max_mana)
+    end)
+  end
+
   def get_skill_if_usable(player, skill_key) do
     skill = get_in(player, [:aditional_info, :skills, skill_key])
     skill_cooldown = get_in(player, [:aditional_info, :cooldowns, skill_key])
     available_stamina = player.aditional_info.available_stamina
+    available_mana = player.aditional_info.mana
 
     case skill do
       %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
       %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
+      %{cooldown_mechanism: "mana", mana_cost: cost} when cost <= available_mana -> skill
       _ -> nil
     end
   end
@@ -448,6 +456,10 @@ defmodule Arena.Game.Player do
       _ ->
         player
     end
+  end
+
+  defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "mana", mana_cost: cost}) do
+    change_mana(player, -cost)
   end
 
   ## Yes, we are pattern matching on exactly one mechanic. As of time writing we only have one mechanic per skill
