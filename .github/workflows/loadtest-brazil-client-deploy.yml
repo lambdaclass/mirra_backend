@@ -67,6 +67,7 @@ jobs:
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
+          BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
@@ -74,6 +75,7 @@ jobs:
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          GATEWAY_URL: ${{ vars.GATEWAY_URL }}
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
