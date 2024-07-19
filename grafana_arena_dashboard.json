@@ -257,7 +257,6 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -319,7 +318,7 @@
         "x": 0,
         "y": 8
       },
-      "id": 2,
+      "id": 9,
       "options": {
         "legend": {
           "calcs": [],
@@ -340,9 +339,9 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "avg by(le) (arena_game_tick_duration_bucket)",
+          "expr": "avg by(host) (arena_game_tick_duration_measure)",
           "fullMetaSearch": false,
-          "includeNullMetadata": false,
+          "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -350,7 +349,7 @@
           "useBackend": false
         }
       ],
-      "title": "Game tick duration",
+      "title": "Game tick last duration",
       "type": "timeseries"
     },
     {
@@ -358,6 +357,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -408,7 +408,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "count"
         },
         "overrides": []
       },
@@ -418,7 +419,7 @@
         "x": 12,
         "y": 8
       },
-      "id": 4,
+      "id": 2,
       "options": {
         "legend": {
           "calcs": [],
@@ -439,9 +440,9 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "vm_total_run_queue_lengths_io",
+          "expr": "avg by(le) (arena_game_tick_duration_bucket)",
           "fullMetaSearch": false,
-          "includeNullMetadata": true,
+          "includeNullMetadata": false,
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -449,7 +450,7 @@
           "useBackend": false
         }
       ],
-      "title": "VM total run queue lengths IO",
+      "title": "(Do not use) Game tick duration",
       "type": "timeseries"
     },
     {
@@ -613,6 +614,105 @@
       "gridPos": {
         "h": 8,
         "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "vm_total_run_queue_lengths_io",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "VM total run queue lengths IO",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
         "x": 0,
         "y": 24
       },
@@ -658,13 +758,13 @@
     "list": []
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Arena",
   "uid": "fdixa7yyhidxca",
-  "version": 6,
+  "version": 3,
   "weekStart": ""
 }

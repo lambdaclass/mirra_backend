@@ -85,6 +85,7 @@ defmodule Arena.GameUpdater do
 
   def terminate(_, _state) do
     :telemetry.execute([:arena, :game], %{count: -1})
+    :telemetry.execute([:arena, :game, :tick], %{duration: 0, duration_measure: 0})
     :ok
   end
 
@@ -245,7 +246,7 @@ defmodule Arena.GameUpdater do
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
-    :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration})
+    :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
     {:noreply, %{state | game_state: game_state}}
   end
 

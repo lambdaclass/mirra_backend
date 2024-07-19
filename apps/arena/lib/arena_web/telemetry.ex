@@ -23,16 +23,6 @@ defmodule ArenaWeb.Telemetry do
 
   def metrics do
     [
-      # Phoenix Metrics
-      summary("phoenix.endpoint.start.system_time", unit: {:native, :millisecond}),
-      summary("phoenix.endpoint.stop.duration", unit: {:native, :millisecond}),
-      summary("phoenix.router_dispatch.start.system_time", tags: [:route], unit: {:native, :millisecond}),
-      summary("phoenix.router_dispatch.exception.duration", tags: [:route], unit: {:native, :millisecond}),
-      summary("phoenix.router_dispatch.stop.duration", tags: [:route], unit: {:native, :millisecond}),
-      summary("phoenix.socket_connected.duration", unit: {:native, :millisecond}),
-      summary("phoenix.channel_joined.duration", unit: {:native, :millisecond}),
-      summary("phoenix.channel_handled_in.duration", tags: [:event], unit: {:native, :millisecond}),
-
       # VM Metrics
       last_value("vm.memory.total", unit: {:byte, :kilobyte}),
       last_value("vm.total_run_queue_lengths.total"),
@@ -41,6 +31,8 @@ defmodule ArenaWeb.Telemetry do
 
       ## Arena (game) metrics
       sum("arena.game.count", description: "Number of games in progress"),
+      ## TODO: this metric is an attempt to gather data to properly set the buckets for the distribution metric below
+      last_value("arena.game.tick.duration_measure", description: "Last game tick duration", unit: {:native, :nanosecond}),
       ## TODO: Buckets probably need to be redefined, currently they all fall under the first bucket
       distribution("arena.game.tick.duration", description: "Time spent on running a game tick", unit: {:native, :nanosecond}, reporter_options: [buckets: [7_500_000.0, 15_000_000.0, 22_500_000.0]]),
       sum("arena.clients.count", description: "Number of clients (websockets) connected")
