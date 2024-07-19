@@ -55,7 +55,8 @@ defmodule Arena.Entities do
         visible_players: [],
         on_bush: false,
         bounties: [],
-        bounty_selected: false
+        selected_bounty: nil,
+        bounty_completed: false
       },
       collides_with: []
     }
@@ -374,7 +375,8 @@ defmodule Arena.Entities do
        cooldowns: entity.aditional_info.cooldowns,
        visible_players: entity.aditional_info.visible_players,
        on_bush: entity.aditional_info.on_bush,
-       forced_movement: entity.aditional_info.forced_movement
+       forced_movement: entity.aditional_info.forced_movement,
+       bounty_completed: entity.aditional_info.bounty_completed
      }}
   end
 

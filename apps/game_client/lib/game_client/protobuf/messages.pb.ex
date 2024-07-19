@@ -511,6 +511,7 @@ defmodule GameClient.Protobuf.Player do
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
+  field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
 end
 
 defmodule GameClient.Protobuf.Effect do

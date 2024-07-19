@@ -6451,7 +6451,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
     onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
-    forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false)
+    forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
+    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
   };
 
   if (includeInstance) {
@@ -6554,6 +6555,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 15:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setForcedMovement(value);
+      break;
+    case 16:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setBountyCompleted(value);
       break;
     default:
       reader.skipField();
@@ -6686,6 +6691,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       15,
+      f
+    );
+  }
+  f = message.getBountyCompleted();
+  if (f) {
+    writer.writeBool(
+      16,
       f
     );
   }
@@ -7042,6 +7054,24 @@ proto.Player.prototype.getForcedMovement = function() {
  */
 proto.Player.prototype.setForcedMovement = function(value) {
   return jspb.Message.setProto3BooleanField(this, 15, value);
+};
+
+
+/**
+ * optional bool bounty_completed = 16;
+ * @return {boolean}
+ */
+proto.Player.prototype.getBountyCompleted = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setBountyCompleted = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 16, value);
 };
 
 
