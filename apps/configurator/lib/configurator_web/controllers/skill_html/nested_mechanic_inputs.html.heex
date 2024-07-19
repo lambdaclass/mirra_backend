@@ -1,0 +1,29 @@
+<.inputs_for :let={fp} field={@parent_form[@parent_field]}>
+  <.input
+    field={fp[:type]}
+    type="select"
+    label="Type"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.Units.Skills.Mechanic, :type)}
+  />
+  <.input field={fp[:name]} type="text" label="Name" />
+  <.input field={fp[:amount]} type="number" label="Amount" />
+  <.input field={fp[:angle_between]} type="number" label="Angle between" />
+  <.input field={fp[:damage]} type="number" label="Damage" />
+  <.input field={fp[:duration_ms]} type="number" label="Duration (ms)" />
+  <.input field={fp[:interval_ms]} type="number" label="Interval (ms)" />
+  <.input field={fp[:move_by]} type="number" label="Move by" />
+  <.input field={fp[:offset]} type="number" label="Offset" />
+  <.input field={fp[:projectile_offset]} type="number" label="Projectile offset" />
+  <.input field={fp[:radius]} type="number" label="Radius" />
+  <.input field={fp[:range]} type="number" label="Range" />
+  <.input field={fp[:remove_on_collision]} type="checkbox" label="Remove on collision" />
+  <.input field={fp[:speed]} type="number" label="speed" />
+  <.input
+    field={fp[:effects_to_apply]}
+    type="select"
+    label="Effects to apply"
+    multiple
+    options={["singularity", "denial_of_service", "invisible"]}
+  />
+</.inputs_for>
