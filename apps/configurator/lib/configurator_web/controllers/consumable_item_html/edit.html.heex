@@ -1,6 +1,6 @@
 <.header>
   Edit Consumable item <%= @consumable_item.name %>
-  <:subtitle>Use this form to manage consumable_item records in your database.</:subtitle>
+  <:subtitle>Use this form to manage Consumable Item records in your database.</:subtitle>
 </.header>
 
 <%= live_render(@conn, ConfiguratorWeb.ConsumableItemsLive.Form, session: %{"consumable_item" => @consumable_item}) %>

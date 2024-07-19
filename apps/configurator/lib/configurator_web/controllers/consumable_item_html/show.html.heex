@@ -1,9 +1,9 @@
 <.header>
   Consumable item <%= @consumable_item.name %>
-  <:subtitle>This is a consumable_item record from your database.</:subtitle>
+  <:subtitle>This is a consumable item record from your database.</:subtitle>
   <:actions>
     <.link href={~p"/consumable_items/#{@consumable_item}/edit"}>
-      <.button>Edit consumable_item</.button>
+      <.button>Edit Consumable item</.button>
     </.link>
   </:actions>
 </.header>
@@ -26,3 +26,5 @@
     <dd><.display_effect consumable_item={@consumable_item} /></dd>
   </div>
 </div>
+
+<.back navigate={~p"/consumable_items"}>Back to Consumable Items</.back>
