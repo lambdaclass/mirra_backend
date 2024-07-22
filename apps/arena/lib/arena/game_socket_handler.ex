@@ -8,11 +8,10 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
-  alias Arena.Serialization.{GameEvent, GameJoined}
+  alias Arena.Serialization.GameEvent
+  alias Arena.Serialization.GameJoined
 
   @behaviour :cowboy_websocket
-
-  # @ping_interval_ms 25000
 
   @impl true
   def init(req, _opts) do
@@ -56,31 +55,16 @@ defmodule Arena.GameSocketHandler do
         event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
-    # Process.send_after(self(), :send_ping, @ping_interval_ms)
-
     {:reply, {:binary, encoded_msg}, state}
   end
 
+  # These two callbacks are needed by cowboy
   @impl true
   def websocket_handle(:pong, state) do
-  #   last_ping_time = state.last_ping_time
-  #   time_now = Time.utc_now()
-  #   Logger.info("PONG: #{time_now}")
-  #   latency = Time.diff(time_now, last_ping_time, :millisecond)
-
-  #   encoded_msg =
-  #     GameEvent.encode(%GameEvent{
-  #       event: {:ping, %PingUpdate{latency: latency}}
-  #     })
-
-    # Send back the player's ping
     {:noreply, state}
   end
 
   def websocket_handle(:ping, state) do
-  #   time_now = Time.utc_now()
-  #   Logger.info("PING: #{time_now}")
-
     {:reply, {:pong, ""}, state}
   end
 
@@ -92,15 +76,6 @@ defmodule Arena.GameSocketHandler do
     {:ok, state}
   end
 
-  # # Send a ping frame every once in a while
-  # @impl true
-  # def websocket_info(:send_ping, state) do
-  #   Process.send_after(self(), :send_ping, @ping_interval_ms)
-  #   time_now = Time.utc_now()
-  #   Logger.info("send_ping: #{time_now}")
-  #   {:reply, :ping, Map.put(state, :last_ping_time, time_now)}
-  # end
-
   # Enable incomming messages
   @impl true
   def websocket_info(:enable_incomming_messages, state) do
@@ -109,13 +84,11 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_info({:ping, game_state}, state) do
-    IO.inspect(label: :aver_ping)
     {:reply, {:binary, game_state}, state}
   end
 
   @impl true
   def websocket_info({:ping_update, game_state}, state) do
-    IO.inspect(label: :aver_ping_update)
     {:reply, {:binary, game_state}, state}
   end
 
