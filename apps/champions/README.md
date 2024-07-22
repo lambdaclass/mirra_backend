@@ -41,12 +41,6 @@ be found at <https://hexdocs.pm/champions_of_mirra>.
 {:ok, user} = Champions.Users.get_user(user_id)
 ```
 
-#### Get User by Username
-
-```
-{:ok, user} = Champions.Users.get_user_by_username("userName")
-```
-
 #### Add Currency to User
 
 ```

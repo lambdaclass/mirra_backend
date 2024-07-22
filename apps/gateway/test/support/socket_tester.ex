@@ -6,7 +6,7 @@ defmodule Gateway.SocketTester do
   Example usage:
       {_ok, pid} = SocketTester.start_link()
       SocketTester.create_user(pid, "Username")
-      SocketTester.get_user_by_username(pid, "Username")
+      SocketTester.get_user(pid, "Username")
 
   To use SocketTester in the elixir shell, you can move this file under the `lib/gateway/` directory.
   To fetch the last message received by the SocketTester, you can run:
@@ -29,7 +29,6 @@ defmodule Gateway.SocketTester do
   alias Gateway.Serialization.{
     WebSocketRequest,
     GetUser,
-    GetUserByUsername,
     CreateUser,
     GetCampaigns,
     GetCampaign,
@@ -67,16 +66,6 @@ defmodule Gateway.SocketTester do
         {:binary,
          WebSocketRequest.encode(%WebSocketRequest{
            request_type: {:get_user, %GetUser{user_id: user_id}}
-         })}
-      )
-
-  def get_user_by_username(pid, username),
-    do:
-      WebSockex.send_frame(
-        pid,
-        {:binary,
-         WebSocketRequest.encode(%WebSocketRequest{
-           request_type: {:get_user_by_username, %GetUserByUsername{username: username}}
          })}
       )
 
