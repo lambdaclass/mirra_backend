@@ -23,6 +23,7 @@ defmodule GameBackend.Units.Characters.Character do
              :base_speed,
              :base_size,
              :base_mana,
+             :initial_mana,
              :mana_recovery_strategy,
              :mana_recovery_time_interval_ms,
              :mana_recovery_time_amount,
@@ -51,6 +52,7 @@ defmodule GameBackend.Units.Characters.Character do
     field(:base_speed, :float)
     field(:base_size, :float)
     field(:base_mana, :integer)
+    field(:initial_mana, :integer)
     field(:mana_recovery_strategy, Ecto.Enum, values: [:time, :skill, :damage])
     field(:mana_recovery_time_interval_ms, :integer)
     field(:mana_recovery_time_amount, :decimal)
