@@ -7,6 +7,7 @@ defmodule GameBackend.CurseOfMirra.Users do
   alias GameBackend.Users.User
   alias GameBackend.Utils
   alias GameBackend.CurseOfMirra.Config
+  alias GameBackend.Units.Characters
 
   @doc """
   Generates a default map with its associations for a new user
@@ -26,7 +27,7 @@ defmodule GameBackend.CurseOfMirra.Users do
     ##################################################################
 
     units =
-      Enum.reduce(Config.get_characters_config(), [], fn char_params, acc ->
+      Enum.reduce(Characters.get_curse_characters(), [], fn char_params, acc ->
         acc ++
           [
             Units.get_unit_default_values(char_params.name)
