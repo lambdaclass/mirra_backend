@@ -140,7 +140,7 @@ defmodule Arena.GameUpdater do
   def handle_cast({:use_item, player_id, _timestamp}, state) do
     game_state =
       get_in(state, [:game_state, :players, player_id])
-      |> Player.use_item(state.game_state)
+      |> Player.use_item(state.game_state, state.game_config)
 
     {:noreply, %{state | game_state: game_state}}
   end

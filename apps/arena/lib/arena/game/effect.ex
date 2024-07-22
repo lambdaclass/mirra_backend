@@ -67,7 +67,7 @@ defmodule Arena.Game.Effect do
   end
 
   defp apply_stat_effect(player, effect) do
-    Enum.reduce(effect.mechanics, player, fn mechanic, player_acc ->
+    Enum.reduce(effect.effect_mechanics, player, fn mechanic, player_acc ->
       apply_stat_modifier(player_acc, mechanic)
     end)
   end
@@ -156,7 +156,7 @@ defmodule Arena.Game.Effect do
   defp apply_effect_mechanic(entity, effect, game_state) do
     now = System.monotonic_time(:millisecond)
 
-    Enum.reduce(effect.mechanics, entity, fn {mechanic_name, mechanic_params} = mechanic, entity ->
+    Enum.reduce(effect.effect_mechanics, entity, fn {mechanic_name, mechanic_params} = mechanic, entity ->
       execute_multiple_times? =
         mechanic_params.execute_multiple_times or is_nil(Map.get(mechanic_params, :last_application_time))
 
@@ -165,15 +165,15 @@ defmodule Arena.Game.Effect do
           now - Map.get(mechanic_params, :last_application_time) >= mechanic_params.effect_delay_ms
 
       if execute_multiple_times? and enough_time_passed? do
-        do_mechanics(game_state, entity, effect, mechanic)
-        |> put_in_effect(effect, [:mechanics, mechanic_name, :last_application_time], now)
+        do_effect_mechanics(game_state, entity, effect, mechanic)
+        |> put_in_effect(effect, [:effect_mechanics, mechanic_name, :last_application_time], now)
       else
         entity
       end
     end)
   end
 
-  defp do_mechanics(game_state, entity, effect, {:pull, pull_params}) do
+  defp do_effect_mechanics(game_state, entity, effect, {:pull, pull_params}) do
     case Map.get(game_state.pools, effect.owner_id) do
       nil ->
         entity
@@ -203,7 +203,7 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_mechanics(game_state, entity, effect, {:damage, damage_params}) do
+  defp do_effect_mechanics(game_state, entity, effect, {:damage, damage_params}) do
     # TODO not all effects may come from pools entities, maybe we should update this when we implement other skills that
     # applies this effect
     Map.get(game_state.pools, effect.owner_id)
@@ -222,7 +222,7 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_mechanics(game_state, entity, _effect, {:buff_pool, buff_attributes}) do
+  defp do_effect_mechanics(game_state, entity, _effect, {:buff_pool, buff_attributes}) do
     Map.get(game_state.pools, entity.id)
     |> case do
       nil ->
@@ -242,16 +242,16 @@ defmodule Arena.Game.Effect do
     end
   end
 
-  defp do_mechanics(_game_state, entity, _effect, {:refresh_stamina, _refresh_stamina}) do
+  defp do_effect_mechanics(_game_state, entity, _effect, {:refresh_stamina, _refresh_stamina}) do
     Entities.refresh_stamina(entity)
   end
 
-  defp do_mechanics(_game_state, entity, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
+  defp do_effect_mechanics(_game_state, entity, _effect, {:refresh_cooldowns, _refresh_cooldowns}) do
     Entities.refresh_cooldowns(entity)
   end
 
   ## Sink for mechanics that don't do anything
-  defp do_mechanics(_game_state, entity, _effect, _mechanic) do
+  defp do_effect_mechanics(_game_state, entity, _effect, _mechanic) do
     entity
   end
 

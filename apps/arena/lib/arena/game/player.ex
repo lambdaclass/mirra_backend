@@ -315,14 +315,15 @@ defmodule Arena.Game.Player do
     player.aditional_info.inventory != nil
   end
 
-  def use_item(player, game_state) do
+  def use_item(player, game_state, game_config) do
     case player.aditional_info.inventory do
       nil ->
         game_state
 
       item ->
         game_state =
-          Enum.reduce(item.effects, game_state, fn effect, game_state_acc ->
+          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
+            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
             Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
           end)
           |> put_in([:players, player.id, :aditional_info, :inventory], nil)
@@ -334,7 +335,7 @@ defmodule Arena.Game.Player do
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
     |> Enum.any?(fn effect ->
-      Enum.any?(effect.mechanics, fn {mechanic, _} -> mechanic == :invisible end)
+      Enum.any?(effect.effect_mechanics, fn {mechanic, _} -> mechanic == :invisible end)
     end)
   end
 
@@ -475,7 +476,7 @@ defmodule Arena.Game.Player do
       duration_ms: skill.execution_duration_ms,
       remove_on_action: false,
       one_time_application: true,
-      mechanics: %{
+      effect_mechanics: %{
         damage_immunity: %{
           execute_multiple_times: false,
           effect_delay_ms: 0
