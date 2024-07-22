@@ -8,22 +8,6 @@ defmodule GameBackend.Units.Characters.Character do
 
   alias GameBackend.Units.Skills.Skill
 
-  @derive {Jason.Encoder,
-           only: [
-             :active,
-             :name,
-             :base_attack,
-             :base_health,
-             :base_defense,
-             :base_stamina,
-             :stamina_interval,
-             :max_inventory_size,
-             :natural_healing_interval,
-             :natural_healing_damage_interval,
-             :base_speed,
-             :base_size,
-             :skills
-           ]}
   schema "characters" do
     field(:game_id, :integer)
     field(:active, :boolean, default: true)
@@ -46,11 +30,9 @@ defmodule GameBackend.Units.Characters.Character do
     field(:base_speed, :float)
     field(:base_size, :float)
 
-    # TODO This should be removed once we have the skills relationship, issue: https://github.com/lambdaclass/mirra_backend/issues/717
-    field(:skills, {:map, :string})
-
     belongs_to(:basic_skill, Skill, on_replace: :update)
     belongs_to(:ultimate_skill, Skill, on_replace: :update)
+    belongs_to(:dash_skill, Skill, on_replace: :update)
 
     timestamps()
   end
@@ -79,8 +61,10 @@ defmodule GameBackend.Units.Characters.Character do
       :max_inventory_size,
       :natural_healing_interval,
       :natural_healing_damage_interval,
-      :skills,
-      :base_defense
+      :base_defense,
+      :basic_skill_id,
+      :dash_skill_id,
+      :ultimate_skill_id
     ])
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)
