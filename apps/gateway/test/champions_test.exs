@@ -54,10 +54,12 @@ defmodule Gateway.Test.Champions do
 
       assert user.username == username
 
-      # GetUserByUsername
-      :ok = SocketTester.get_user_by_username(socket_tester, username)
+      # CreateUser with the same username creates another user with same username
+      :ok = SocketTester.create_user(socket_tester, username)
       fetch_last_message(socket_tester)
-      assert_receive %WebSocketResponse{response_type: {:user, ^user}}
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = new_user}}
+
+      assert user.username == new_user.username
 
       # GetUser
       :ok = SocketTester.get_user(socket_tester, user.id)
