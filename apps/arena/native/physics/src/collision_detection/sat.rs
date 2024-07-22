@@ -350,13 +350,28 @@ fn invalid_axis(
     // Check if the moved current point is colliding with obstacles
     current_vertex_point_collisions = current_vertex_point.collides_with(&obstacle_vector);
 
+    // Create a line entity to check collisions
+    let mut current_vertex_line =
+        Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
+
+    // Check if the projected line from the current vertex is colliding with obstacles
+    let mut current_vertex_collisions = current_vertex_line.collides_with(&obstacle_vector);
+    current_vertex_collisions.append(&mut current_vertex_point_collisions);
+
     // Check if the moved next point is colliding with obstacles
     next_vertex_point_collisions = next_vertex_point.collides_with(&obstacle_vector);
 
+    // Create a line entity to check collisions
+    let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
+
+    // Check if the projected line from the next vertex is colliding with obstacles
+    let mut next_vertex_collisions = next_vertex_line.collides_with(&obstacle_vector);
+    next_vertex_collisions.append(&mut next_vertex_point_collisions);
+
     // If the collisions from the projections of the current vertex and the ones from the next vertex have the same obstacle
     // we'll consider that axis invalid since there's not enough space for the player to be moved
-    for collision in current_vertex_point_collisions {
-        if next_vertex_point_collisions.contains(&collision) {
+    for collision_id in current_vertex_collisions {
+        if next_vertex_collisions.contains(&collision_id) {
             return true;
         }
     }
