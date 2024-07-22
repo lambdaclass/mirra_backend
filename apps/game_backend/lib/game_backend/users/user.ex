@@ -68,8 +68,8 @@ defmodule GameBackend.Users.User do
     |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
-    |> validate_length(:username, min: 2, max: 9)
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
+    |> game_validations()
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
@@ -77,5 +77,18 @@ defmodule GameBackend.Users.User do
   def kaline_tree_level_changeset(user, attrs) do
     user
     |> cast(attrs, [:kaline_tree_level])
+  end
+
+  defp game_validations(changeset) do
+    curse_of_mirra_game_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    case get_field(changeset, :game_id) do
+      ^curse_of_mirra_game_id ->
+        changeset
+        |> validate_length(:username, min: 2, max: 9)
+
+      _ ->
+        changeset
+    end
   end
 end
