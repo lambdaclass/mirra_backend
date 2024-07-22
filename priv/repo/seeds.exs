@@ -561,7 +561,14 @@ muflus_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["muflus_crush"],
   ultimate_skill_id: skills["muflus_leap"],
-  dash_skill_id: skills["muflus_dash"]
+  dash_skill_id: skills["muflus_dash"],
+  passive: %{
+    name: "heatshield",
+    type: "on_hit_received",
+    parameters: %{
+      max_damage_reduction: 20
+    }
+  }
 }
 
 h4ck_params = %{
@@ -577,7 +584,8 @@ h4ck_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["h4ck_slingshot"],
   ultimate_skill_id: skills["h4ck_denial_of_service"],
-  dash_skill_id: skills["h4ck_dash"]
+  dash_skill_id: skills["h4ck_dash"],
+  passive: %{}
 }
 
 uma_params = %{
@@ -593,7 +601,8 @@ uma_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["uma_avenge"],
   ultimate_skill_id: skills["uma_veil_radiance"],
-  dash_skill_id: skills["uma_sneak"]
+  dash_skill_id: skills["uma_sneak"],
+  passive: %{}
 }
 
 valtimer_params = %{
@@ -609,7 +618,8 @@ valtimer_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["valt_antimatter"],
   ultimate_skill_id: skills["valt_singularity"],
-  dash_skill_id: skills["valt_warp"]
+  dash_skill_id: skills["valt_warp"],
+  passive: %{}
 }
 
 # Insert characters
