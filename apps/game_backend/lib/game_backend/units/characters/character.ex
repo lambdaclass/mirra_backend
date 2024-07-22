@@ -29,6 +29,7 @@ defmodule GameBackend.Units.Characters.Character do
     field(:natural_healing_damage_interval, :integer)
     field(:base_speed, :float)
     field(:base_size, :float)
+    field(:passive, :map)
 
     belongs_to(:basic_skill, Skill, on_replace: :update)
     belongs_to(:ultimate_skill, Skill, on_replace: :update)
@@ -64,7 +65,8 @@ defmodule GameBackend.Units.Characters.Character do
       :base_defense,
       :basic_skill_id,
       :dash_skill_id,
-      :ultimate_skill_id
+      :ultimate_skill_id,
+      :passive
     ])
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)
