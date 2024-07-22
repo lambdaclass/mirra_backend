@@ -1620,7 +1620,7 @@ defmodule Arena.GameUpdater do
 
           players_close_enough? =
             Physics.distance_between_entities(player, candidate_player) <=
-              game_config.bushes.field_of_view_inside_bush
+              game_config.game.field_of_view_inside_bush
 
           if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
             [candicandidate_player_id | acc]

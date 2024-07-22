@@ -638,7 +638,8 @@ game_configuration_1 = %{
   bots_enabled: true,
   zone_enabled: true,
   bounties_options_amount: 3,
-  match_timeout_ms: 300_000
+  match_timeout_ms: 300_000,
+  field_of_view_inside_bush: 500
 }
 
 {:ok, _game_configuration_1} =
