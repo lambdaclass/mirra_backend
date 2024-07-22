@@ -56,7 +56,8 @@ defmodule Arena.Entities do
         on_bush: false,
         bounties: [],
         selected_bounty: nil,
-        bounty_completed: false
+        bounty_completed: false,
+        passive: character.passive
       },
       collides_with: []
     }
