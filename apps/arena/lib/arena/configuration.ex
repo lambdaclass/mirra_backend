@@ -12,7 +12,7 @@ defmodule Arena.Configuration do
       Application.app_dir(:arena, "priv/config.json")
       |> File.read()
 
-    config = Jason.decode!(config_json, [{:keys, :atoms!}])
+    config = Jason.decode!(config_json, [{:keys, :atoms}])
     characters = parse_characters_config(get_characters_config())
     client_config = get_client_config()
     game_config = get_game_configuration()
@@ -31,7 +31,7 @@ defmodule Arena.Configuration do
       Application.app_dir(:arena, "priv/client_config.json")
       |> File.read()
 
-    Jason.decode!(config_json, [{:keys, :atoms!}])
+    Jason.decode!(config_json, [{:keys, :atoms}])
   end
 
   defp get_characters_config() do
@@ -41,7 +41,7 @@ defmodule Arena.Configuration do
       Finch.build(:get, "#{gateway_url}/curse/configuration/characters", [{"content-type", "application/json"}])
       |> Finch.request(Arena.Finch)
 
-    Jason.decode!(payload.body, [{:keys, :atoms!}])
+    Jason.decode!(payload.body, [{:keys, :atoms}])
   end
 
   defp get_game_configuration() do
@@ -51,7 +51,7 @@ defmodule Arena.Configuration do
       Finch.build(:get, "#{gateway_url}/curse/configuration/game", [{"content-type", "application/json"}])
       |> Finch.request(Arena.Finch)
 
-    Jason.decode!(payload.body, [{:keys, :atoms!}])
+    Jason.decode!(payload.body, [{:keys, :atoms}])
   end
 
   def get_consumable_items_configuration() do
@@ -61,7 +61,7 @@ defmodule Arena.Configuration do
       Finch.build(:get, "#{gateway_url}/curse/configuration/consumable_items", [{"content-type", "application/json"}])
       |> Finch.request(Arena.Finch)
 
-    Jason.decode!(payload.body, [{:keys, :atoms!}])
+    Jason.decode!(payload.body, [{:keys, :atoms}])
   end
 
   defp parse_characters_config(characters) do
