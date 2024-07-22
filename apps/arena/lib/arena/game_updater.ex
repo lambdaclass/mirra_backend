@@ -13,7 +13,12 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
+  alias Arena.Serialization.GameEvent
+  alias Arena.Serialization.GameState
+  alias Arena.Serialization.GameFinished
+  alias Arena.Serialization.ToggleBots
+  alias Arena.Serialization.PingUpdate
+  alias Arena.Serialization.Ping
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -51,6 +56,10 @@ defmodule Arena.GameUpdater do
 
   def change_tickrate(game_pid, tickrate) do
     GenServer.cast(game_pid, {:change_tickrate, tickrate})
+  end
+
+  def pong(game_pid, ping_timestamp) do
+    GenServer.cast(game_pid, {:pong, ping_timestamp})
   end
 
   ##########################
@@ -186,6 +195,20 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
   end
 
+  def handle_cast({:pong, ping_timestamp}, state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    latency = now - ping_timestamp
+
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:ping_update, %PingUpdate{latency: latency}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:ping_update, encoded_msg})
+
+    {:noreply, state}
+  end
+
   ##########################
   # END API Callbacks
   ##########################
@@ -243,6 +266,7 @@ defmodule Arena.GameUpdater do
       |> handle_obstacles_transitions()
 
     broadcast_game_update(game_state)
+    broadcast_ping(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
@@ -660,6 +684,17 @@ defmodule Arena.GameUpdater do
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+  end
+
+  defp broadcast_ping(state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    encoded_state =
+      GameEvent.encode(%GameEvent{
+        event: {:ping, %Ping{now: now}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:ping, encoded_state})
   end
 
   defp broadcast_game_ended(winner, state) do
