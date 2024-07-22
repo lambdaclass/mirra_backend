@@ -257,8 +257,8 @@ skills = [
   %{
     "name" => "muflus_leap",
     "type" => "ultimate",
-    "cooldown_mechanism" => "time",
-    "cooldown_ms" => 8000,
+    "cooldown_mechanism" => "mana",
+    "mana_cost" => 50,
     "execution_duration_ms" => 800,
     "activation_delay_ms" => 200,
     "is_passive" => false,
@@ -351,8 +351,8 @@ skills = [
   %{
     "name" => "h4ck_denial_of_service",
     "type" => "ultimate",
-    "cooldown_mechanism" => "time",
-    "cooldown_ms" => 9000,
+    "cooldown_mechanism" => "mana",
+    "mana_cost" => 50,
     "execution_duration_ms" => 200,
     "activation_delay_ms" => 300,
     "is_passive" => false,
@@ -402,8 +402,8 @@ skills = [
   %{
     "name" => "uma_veil_radiance",
     "type" => "ultimate",
-    "cooldown_mechanism" => "time",
-    "cooldown_ms" => 9000,
+    "cooldown_mechanism" => "mana",
+    "mana_cost" => 50,
     "execution_duration_ms" => 300,
     "activation_delay_ms" => 150,
     "is_passive" => false,
@@ -447,8 +447,8 @@ skills = [
   %{
     "name" => "valt_singularity",
     "type" => "ultimate",
-    "cooldown_mechanism" => "time",
-    "cooldown_ms" => 9000,
+    "cooldown_mechanism" => "mana",
+    "mana_cost" => 50,
     "execution_duration_ms" => 500,
     "activation_delay_ms" => 300,
     "is_passive" => false,
@@ -558,7 +558,7 @@ muflus_params = %{
   stamina_interval: 2000,
   base_mana: 100,
   initial_mana: 50,
-  mana_recovery_strategy: 'damage',
+  mana_recovery_strategy: "damage",
   mana_recovery_damage_multiplier: 0.3,
   max_inventory_size: 1,
   natural_healing_interval: 1000,
@@ -578,7 +578,7 @@ h4ck_params = %{
   stamina_interval: 1800,
   base_mana: 100,
   initial_mana: 50,
-  mana_recovery_strategy: 'time',
+  mana_recovery_strategy: "time",
   mana_recovery_time_interval_ms: 1000,
   mana_recovery_time_amount: 1.0,
   max_inventory_size: 1,
@@ -599,7 +599,7 @@ uma_params = %{
   stamina_interval: 2000,
   base_mana: 100,
   initial_mana: 50,
-  mana_recovery_strategy: 'time',
+  mana_recovery_strategy: "time",
   mana_recovery_time_interval_ms: 1000,
   mana_recovery_time_amount: 1.0,
   max_inventory_size: 1,
@@ -620,7 +620,7 @@ valtimer_params = %{
   stamina_interval: 2000,
   base_mana: 100,
   initial_mana: 50,
-  mana_recovery_strategy: 'skill',
+  mana_recovery_strategy: "skill",
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
@@ -632,9 +632,10 @@ valtimer_params = %{
 # Insert characters
 [muflus_params, h4ck_params, uma_params, valtimer_params]
 |> Enum.each(fn char_params ->
-  Map.put(char_params, :game_id, curse_of_mirra_id)
-  |> Map.put(:faction, "none")
-  |> Characters.insert_character()
+  {:ok, _} =
+    Map.put(char_params, :game_id, curse_of_mirra_id)
+    |> Map.put(:faction, "none")
+    |> Characters.insert_character()
 end)
 
 game_configuration_1 = %{

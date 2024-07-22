@@ -22,10 +22,16 @@ defmodule GameBackend.Repo.Migrations.AddMana do
       WHERE game_id = 1 AND mana_recovery_strategy IS NULL
       """, "")
 
-
     alter table(:skills) do
       add :mana_cost, :integer
       add :mana_recovery_amount, :integer
     end
+
+    execute(
+      """
+      UPDATE skills
+      SET mana_cost = 100
+      WHERE game_id = 1 AND type = 'ultimate' AND mana_cost IS NULL
+      """, "")
   end
 end

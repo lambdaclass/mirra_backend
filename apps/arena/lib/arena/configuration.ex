@@ -74,6 +74,11 @@ defmodule Arena.Configuration do
     %{skill_config | mechanics: mechanics}
   end
 
+  defp parse_skill_config(%{cooldown_mechanism: "mana", mana_cost: cost} = skill_config) when cost >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
   defp parse_skill_config(skill_config) do
     case skill_config.cooldown_mechanism do
       "stamina" ->
@@ -81,6 +86,9 @@ defmodule Arena.Configuration do
 
       "time" ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      "mana" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` mana_cost should be a number greater than or equal to zero"
 
       _ ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
