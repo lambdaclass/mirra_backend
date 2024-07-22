@@ -7,7 +7,7 @@ defmodule GameBackend.Repo.Migrations.AddMana do
       add :initial_mana, :integer
       add :mana_recovery_strategy, :string
       add :mana_recovery_time_interval_ms, :integer
-      add :mana_recovery_time_amount, :decimal
+      add :mana_recovery_time_amount, :integer
       add :mana_recovery_damage_multiplier, :decimal
     end
 
@@ -18,7 +18,7 @@ defmodule GameBackend.Repo.Migrations.AddMana do
         initial_mana = 50,
         mana_recovery_strategy = 'time',
         mana_recovery_time_interval_ms = 1000,
-        mana_recovery_time_amount = 1.0
+        mana_recovery_time_amount = 10
       WHERE game_id = 1 AND mana_recovery_strategy IS NULL
       """, "")
 

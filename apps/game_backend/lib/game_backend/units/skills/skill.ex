@@ -56,6 +56,8 @@ defmodule GameBackend.Units.Skills.Skill do
       :is_passive,
       :max_autoaim_range,
       :stamina_cost,
+      :mana_cost,
+      :mana_recovery_amount,
       :effects_to_apply,
       :type
     ])

@@ -55,7 +55,7 @@ defmodule GameBackend.Units.Characters.Character do
     field(:initial_mana, :integer)
     field(:mana_recovery_strategy, Ecto.Enum, values: [:time, :skill, :damage])
     field(:mana_recovery_time_interval_ms, :integer)
-    field(:mana_recovery_time_amount, :decimal)
+    field(:mana_recovery_time_amount, :integer)
     field(:mana_recovery_damage_multiplier, :decimal)
 
     belongs_to(:basic_skill, Skill, on_replace: :update)

@@ -41,6 +41,7 @@ defmodule Arena.Entities do
         mana_recovery_strategy: character.mana_recovery_strategy,
         mana_recovery_time_interval_ms: character.mana_recovery_time_interval_ms,
         mana_recovery_time_amount: character.mana_recovery_time_amount,
+        mana_recovery_time_last_at: now,
         mana_recovery_damage_multiplier: character.mana_recovery_damage_multiplier,
         last_natural_healing_update: now,
         natural_healing_interval: character.natural_healing_interval,

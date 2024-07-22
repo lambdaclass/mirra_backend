@@ -124,6 +124,17 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
+  def recover_mana(player) do
+    now = System.monotonic_time(:millisecond)
+    time_since_last = now - player.aditional_info.mana_recovery_time_last_at
+    if time_since_last >= player.aditional_info.mana_recovery_time_interval_ms do
+      change_mana(player, player.aditional_info.mana_recovery_time_amount)
+      |> put_in([:aditional_info, :mana_recovery_time_last_at], now)
+    else
+      player
+    end
+  end
+
   def change_mana(player, mana_change) do
     update_in(player, [:aditional_info, :mana], fn mana ->
       max(mana + mana_change, 0) |> min(player.aditional_info.max_mana)
