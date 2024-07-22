@@ -67,7 +67,7 @@ defmodule GameBackend.Users.User do
     |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
-    |> validate_length(:username, min: 3, max: 9)
+    |> validate_length(:username, min: 2, max: 9)
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
   end
 
