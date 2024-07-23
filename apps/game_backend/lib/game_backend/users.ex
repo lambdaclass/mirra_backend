@@ -10,6 +10,7 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
+  alias GameBackend.CurseOfMirra.Quests
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
@@ -74,13 +75,27 @@ defmodule GameBackend.Users do
       {:error, :not_found}
   """
   def get_user_by_id_and_game_id(id, game_id) do
+    naive_today = NaiveDateTime.utc_now()
+    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
+    end_of_date = NaiveDateTime.end_of_day(naive_today)
+
+    arena_match_result_subquery =
+      from(amr in ArenaMatchResult,
+        where: amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date
+      )
+
     q =
       from(u in User,
         where: u.id == ^id and u.game_id == ^game_id,
-        preload: [units: [:character, :items], currencies: :currency]
+        preload: [units: [:character, :items], currencies: :currency, arena_match_results: ^arena_match_result_subquery]
       )
+      |> quests_preloads()
 
-    if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
+    user =
+      Repo.one(q)
+      |> add_quest_progress_and_goal()
+
+    if user, do: {:ok, user}, else: {:error, :not_found}
   end
 
   @doc """
@@ -102,6 +117,25 @@ defmodule GameBackend.Users do
         where: amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date
       )
 
+    q =
+      from(u in User,
+        where: u.id in ^ids,
+        preload: [
+          arena_match_results: ^arena_match_result_subquery,
+          currencies: :currency,
+          units: :character
+        ]
+      )
+      |> quests_preloads()
+
+    repo.all(q)
+  end
+
+  defp quests_preloads(base_query) do
+    naive_today = NaiveDateTime.utc_now()
+    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
+    end_of_date = NaiveDateTime.end_of_day(naive_today)
+
     daily_quest_subquery =
       from(user_quest in UserQuest,
         join: q in assoc(user_quest, :quest),
@@ -112,18 +146,11 @@ defmodule GameBackend.Users do
         preload: [:quest]
       )
 
-    q =
-      from(u in User,
-        where: u.id in ^ids,
-        preload: [
-          arena_match_results: ^arena_match_result_subquery,
-          currencies: :currency,
-          units: :character,
-          user_quests: ^daily_quest_subquery
-        ]
-      )
-
-    repo.all(q)
+    from(u in base_query,
+      preload: [
+        user_quests: ^daily_quest_subquery
+      ]
+    )
   end
 
   @doc """
@@ -546,4 +573,19 @@ defmodule GameBackend.Users do
 
     Repo.all(q)
   end
+
+  defp add_quest_progress_and_goal(%User{} = user) do
+    updated_quests =
+      Enum.map(user.user_quests, fn user_quest ->
+        quest_progress =
+          Quests.get_user_quest_progress(user_quest, user.arena_match_results)
+
+        Map.put(user_quest, :progress, quest_progress)
+        |> Map.put(:goal, user_quest.quest.objective["value"])
+      end)
+
+    Map.put(user, :user_quests, updated_quests)
+  end
+
+  defp add_quest_progress_and_goal(_), do: nil
 end
