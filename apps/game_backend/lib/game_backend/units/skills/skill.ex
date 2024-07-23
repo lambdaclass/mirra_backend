@@ -25,7 +25,6 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:max_autoaim_range, :integer)
     field(:stamina_cost, :integer)
     field(:mana_cost, :integer)
-    field(:mana_recovery_amount, :integer)
     field(:effects_to_apply, {:array, :string})
     field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
 
@@ -57,7 +56,6 @@ defmodule GameBackend.Units.Skills.Skill do
       :max_autoaim_range,
       :stamina_cost,
       :mana_cost,
-      :mana_recovery_amount,
       :effects_to_apply,
       :type
     ])

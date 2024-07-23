@@ -24,7 +24,6 @@ defmodule GameBackend.Repo.Migrations.AddMana do
 
     alter table(:skills) do
       add :mana_cost, :integer
-      add :mana_recovery_amount, :integer
     end
 
     execute(
