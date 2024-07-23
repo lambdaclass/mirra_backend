@@ -75,6 +75,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
+    send(self(), :send_ping)
     Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
@@ -266,10 +267,15 @@ defmodule Arena.GameUpdater do
       |> handle_obstacles_transitions()
 
     broadcast_game_update(game_state)
-    broadcast_ping(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_info(:send_ping, state) do
+    Process.send_after(self(), :send_ping, 500)
+    broadcast_ping(state.game_state)
+    {:noreply, state}
   end
 
   def handle_info(:selecting_bounty, state) do
