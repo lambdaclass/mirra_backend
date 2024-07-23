@@ -25,7 +25,8 @@ export const BoardGame = function () {
     projectile: 0x0000ff,
     item: 0x238636,
     trap: 0x6600cc,
-    crate: 0xcc9900
+    crate: 0xcc9900,
+    bush: 0x9DE7CA
   };
   let player_id;
 
@@ -243,7 +244,7 @@ export const BoardGame = function () {
             color = colors.trap;
             break;
           case "bush":
-            color = colors.trap;
+            color = colors.bush;
             break;
         }
       }
