@@ -2445,7 +2445,7 @@ proto.Ping.prototype.toObject = function(opt_includeInstance) {
  */
 proto.Ping.toObject = function(includeInstance, msg) {
   var f, obj = {
-    now: jspb.Message.getFieldWithDefault(msg, 1, 0)
+    timestampNow: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -2484,7 +2484,7 @@ proto.Ping.deserializeBinaryFromReader = function(msg, reader) {
     switch (field) {
     case 1:
       var value = /** @type {number} */ (reader.readInt64());
-      msg.setNow(value);
+      msg.setTimestampNow(value);
       break;
     default:
       reader.skipField();
@@ -2515,7 +2515,7 @@ proto.Ping.prototype.serializeBinary = function() {
  */
 proto.Ping.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getNow();
+  f = message.getTimestampNow();
   if (f !== 0) {
     writer.writeInt64(
       1,
@@ -2526,10 +2526,10 @@ proto.Ping.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional int64 now = 1;
+ * optional int64 timestamp_now = 1;
  * @return {number}
  */
-proto.Ping.prototype.getNow = function() {
+proto.Ping.prototype.getTimestampNow = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
@@ -2538,7 +2538,7 @@ proto.Ping.prototype.getNow = function() {
  * @param {number} value
  * @return {!proto.Ping} returns this
  */
-proto.Ping.prototype.setNow = function(value) {
+proto.Ping.prototype.setTimestampNow = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 

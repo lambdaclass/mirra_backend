@@ -691,7 +691,7 @@ defmodule Arena.GameUpdater do
 
     encoded_state =
       GameEvent.encode(%GameEvent{
-        event: {:ping, %Ping{now: now}}
+        event: {:ping, %Ping{timestamp_now: now}}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:ping, encoded_state})

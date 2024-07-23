@@ -45,7 +45,7 @@ message GameEvent {
 }
 
 message Ping {
-  int64 now = 1;
+  int64 timestamp_now = 1;
 }
 
 message GameFinished {

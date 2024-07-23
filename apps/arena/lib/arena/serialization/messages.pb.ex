@@ -140,7 +140,7 @@ defmodule Arena.Serialization.Ping do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:now, 1, type: :int64)
+  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
 end
 
 defmodule Arena.Serialization.GameFinished.PlayersEntry do
