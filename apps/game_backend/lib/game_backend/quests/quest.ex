@@ -8,6 +8,7 @@ defmodule GameBackend.Quests.Quest do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:description, :conditions, :objective]}
   schema "quests" do
     field(:description, :string)
     field(:type, :string)
