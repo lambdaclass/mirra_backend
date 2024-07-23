@@ -298,6 +298,23 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
+  def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
+    arena_match_results
+    |> filter_results_that_meet_quest_conditions(quest.conditions)
+    |> Enum.reduce(0, fn arena_match_result, acc ->
+      type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
+      # We won't accumulate progress if the objective has a wrong field getter
+      accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+      |> case do
+        nil ->
+          acc
+
+        progress ->
+          acc + progress
+      end
+    end)
+  end
+
   #####################
   #      helpers      #
   #####################
@@ -313,23 +330,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  def completed_quest?(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
-    progress =
-      arena_match_results
-      |> filter_results_that_meet_quest_conditions(quest.conditions)
-      |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
-        # We won't accumulate progress if the objective has a wrong field getter
-        accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
-        |> case do
-          nil ->
-            acc
-
-          progress ->
-            acc + progress
-        end
-      end)
-
+  def completed_quest?(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results) do
+    progress = get_user_quest_progress(user_quest, arena_match_results)
     comparator = parse_comparator(quest.objective["comparison"])
 
     comparator.(progress, quest.objective["value"])
