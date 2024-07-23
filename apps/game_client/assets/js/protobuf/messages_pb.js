@@ -3544,7 +3544,8 @@ proto.ConfigCharacter.toObject = function(includeInstance, msg) {
     baseSize: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     baseHealth: jspb.Message.getFieldWithDefault(msg, 5, 0),
     maxInventorySize: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    skillsMap: (f = msg.getSkillsMap()) ? f.toObject(includeInstance, proto.ConfigSkill.toObject) : []
+    skillsMap: (f = msg.getSkillsMap()) ? f.toObject(includeInstance, proto.ConfigSkill.toObject) : [],
+    baseMana: jspb.Message.getFieldWithDefault(msg, 8, 0)
   };
 
   if (includeInstance) {
@@ -3610,6 +3611,10 @@ proto.ConfigCharacter.deserializeBinaryFromReader = function(msg, reader) {
       reader.readMessage(value, function(message, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.ConfigSkill.deserializeBinaryFromReader, "", new proto.ConfigSkill());
          });
+      break;
+    case 8:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setBaseMana(value);
       break;
     default:
       reader.skipField();
@@ -3685,6 +3690,13 @@ proto.ConfigCharacter.serializeBinaryToWriter = function(message, writer) {
   f = message.getSkillsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ConfigSkill.serializeBinaryToWriter);
+  }
+  f = message.getBaseMana();
+  if (f !== 0) {
+    writer.writeUint64(
+      8,
+      f
+    );
   }
 };
 
@@ -3817,6 +3829,24 @@ proto.ConfigCharacter.prototype.getSkillsMap = function(opt_noLazyCreate) {
 proto.ConfigCharacter.prototype.clearSkillsMap = function() {
   this.getSkillsMap().clear();
   return this;
+};
+
+
+/**
+ * optional uint64 base_mana = 8;
+ * @return {number}
+ */
+proto.ConfigCharacter.prototype.getBaseMana = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 8, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigCharacter} returns this
+ */
+proto.ConfigCharacter.prototype.setBaseMana = function(value) {
+  return jspb.Message.setProto3IntField(this, 8, value);
 };
 
 
@@ -4290,7 +4320,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     targettingAngle: jspb.Message.getFloatingPointFieldWithDefault(msg, 5, 0.0),
     targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
-    targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0)
+    targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
+    manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0)
   };
 
   if (includeInstance) {
@@ -4358,6 +4389,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 8:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setTargettingOffset(value);
+      break;
+    case 9:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setManaCost(value);
       break;
     default:
       reader.skipField();
@@ -4441,6 +4476,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0.0) {
     writer.writeFloat(
       8,
+      f
+    );
+  }
+  f = message.getManaCost();
+  if (f !== 0) {
+    writer.writeUint64(
+      9,
       f
     );
   }
@@ -4588,6 +4630,24 @@ proto.ConfigSkill.prototype.getTargettingOffset = function() {
  */
 proto.ConfigSkill.prototype.setTargettingOffset = function(value) {
   return jspb.Message.setProto3FloatField(this, 8, value);
+};
+
+
+/**
+ * optional uint64 mana_cost = 9;
+ * @return {number}
+ */
+proto.ConfigSkill.prototype.getManaCost = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setManaCost = function(value) {
+  return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
@@ -6401,7 +6461,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
     onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
     forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
-    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false)
+    bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
+    mana: jspb.Message.getFieldWithDefault(msg, 17, 0)
   };
 
   if (includeInstance) {
@@ -6508,6 +6569,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 16:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setBountyCompleted(value);
+      break;
+    case 17:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setMana(value);
       break;
     default:
       reader.skipField();
@@ -6647,6 +6712,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       16,
+      f
+    );
+  }
+  f = message.getMana();
+  if (f !== 0) {
+    writer.writeUint64(
+      17,
       f
     );
   }
@@ -7021,6 +7093,24 @@ proto.Player.prototype.getBountyCompleted = function() {
  */
 proto.Player.prototype.setBountyCompleted = function(value) {
   return jspb.Message.setProto3BooleanField(this, 16, value);
+};
+
+
+/**
+ * optional uint64 mana = 17;
+ * @return {number}
+ */
+proto.Player.prototype.getMana = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 17, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setMana = function(value) {
+  return jspb.Message.setProto3IntField(this, 17, value);
 };
 
 
