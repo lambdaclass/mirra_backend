@@ -6,7 +6,9 @@ defmodule Gateway.SocketTester do
   Example usage:
       {_ok, pid} = SocketTester.start_link()
       SocketTester.create_user(pid, "Username")
-      SocketTester.get_user(pid, "Username")
+      fetch_last_message(socket_tester)
+      assert_receive %WebSocketResponse{response_type: {:user, %User{} = user}}
+      SocketTester.get_user(pid, user.id)
 
   To use SocketTester in the elixir shell, you can move this file under the `lib/gateway/` directory.
   To fetch the last message received by the SocketTester, you can run:
