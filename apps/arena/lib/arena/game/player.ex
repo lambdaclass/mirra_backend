@@ -32,6 +32,7 @@ defmodule Arena.Game.Player do
   def take_damage(player, damage) do
     defense_multiplier = 1 - player.aditional_info.bonus_defense
     damage_taken = round(damage * defense_multiplier)
+
     mana_to_recover =
       if player.aditional_info.mana_recovery_strategy == "damage" do
         round(damage / player.aditional_info.max_health * player.aditional_info.mana_recovery_damage_multiplier)
@@ -134,6 +135,7 @@ defmodule Arena.Game.Player do
   def recover_mana(player) do
     now = System.monotonic_time(:millisecond)
     time_since_last = now - player.aditional_info.mana_recovery_time_last_at
+
     if time_since_last >= player.aditional_info.mana_recovery_time_interval_ms do
       change_mana(player, player.aditional_info.mana_recovery_time_amount)
       |> put_in([:aditional_info, :mana_recovery_time_last_at], now)
