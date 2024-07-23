@@ -10,6 +10,7 @@ defmodule Arena.Game.Player do
   alias Arena.Game.Effect
   alias Arena.Game.Skill
   alias Arena.Game.Item
+  alias Arena.Game.CharacterPassive
 
   def add_action(player, action) do
     Process.send_after(self(), {:remove_skill_action, player.id, action.action}, action.duration)
@@ -32,6 +33,12 @@ defmodule Arena.Game.Player do
   def take_damage(player, damage) do
     defense_multiplier = 1 - player.aditional_info.bonus_defense
     damage_taken = round(damage * defense_multiplier)
+
+    damage_taken = if CharacterPassive.has_on_hit_passive?(player) do
+      CharacterPassive.activate_on_hit_passive(player, damage_taken)
+    else
+      damage_taken
+    end
 
     send(self(), {:damage_taken, player.id, damage_taken})
 
