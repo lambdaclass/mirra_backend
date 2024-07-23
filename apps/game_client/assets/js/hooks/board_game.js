@@ -57,7 +57,7 @@ export const BoardGame = function () {
       let selfBackEntity = Array.from(e.detail.entities).find((backEntity) => backEntity.id == e.detail.player_id)
 
       Array.from(e.detail.entities).forEach((backEntity) => {
-        if (Array.from(selfBackEntity.visible_players).includes(backEntity.id) || backEntity.category != "player" || backEntity.id == e.detail.player_id) {
+        if (Array.from(selfBackEntity.visible_players).includes(backEntity.id) || backEntity.category != "player" || backEntity.id === e.detail.player_id) {
           if (!entities.has(backEntity.id)) {
             let newEntity = this.createEntity(backEntity);
 
@@ -68,7 +68,7 @@ export const BoardGame = function () {
           this.updateEntityColor(entity, backEntity.is_colliding, backEntity);
 
           this.updateEntityPosition(entity, backEntity.x, backEntity.y);
-        } else {
+        } else if (entities.has(backEntity.id)) {
           let toRemoveEntity = entities.get(backEntity.id)
           container.removeChild(toRemoveEntity.boardObject)
           entities.delete(backEntity.id)
@@ -240,6 +240,9 @@ export const BoardGame = function () {
             color = colors.crate;
             break;
           case "trap":
+            color = colors.trap;
+            break;
+          case "bush":
             color = colors.trap;
             break;
         }
