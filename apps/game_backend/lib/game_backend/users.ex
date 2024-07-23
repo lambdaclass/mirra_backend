@@ -77,7 +77,11 @@ defmodule GameBackend.Users do
     q =
       from(u in User,
         where: u.id == ^id and u.game_id == ^game_id,
-        preload: [units: [:character, :items], currencies: :currency]
+        left_join: unit in Unit,
+        on: u.id == unit.user_id,
+        preload: [units: [:character, :items], currencies: :currency],
+        group_by: u.id,
+        select: %{u | prestige: sum(unit.prestige)}
       )
 
     if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
