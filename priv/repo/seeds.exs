@@ -559,7 +559,7 @@ muflus_params = %{
   base_mana: 100,
   initial_mana: 50,
   mana_recovery_strategy: "damage",
-  mana_recovery_damage_multiplier: 0.3,
+  mana_recovery_damage_multiplier: 50,
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,

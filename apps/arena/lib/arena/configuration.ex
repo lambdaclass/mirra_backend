@@ -59,7 +59,8 @@ defmodule Arena.Configuration do
         "3" => parse_skill_config(character.dash_skill)
       }
 
-      Map.put(character, :skills, character_skills)
+      %{character | mana_recovery_damage_multiplier: maybe_to_float(character.mana_recovery_damage_multiplier)}
+      |> Map.put(:skills, character_skills)
       |> Map.drop([:basic_skill, :ultimate_skill, :dash_skill])
     end)
   end
