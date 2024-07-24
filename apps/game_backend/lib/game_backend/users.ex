@@ -100,21 +100,28 @@ defmodule GameBackend.Users do
 
   @doc """
   Get a list of GoogleUser based on their id with the necessary preloads
-  to process daily quests.
+  to process quests.
+
+  - user_quests: status equals "available" and completed_at is nil
+    - quest where the type is daily and it was inserted the same day of the query run
+    - quest where the type is weekly and it didn't pass more than 6 days from the last sunday since they were inserted
+  - arena_match_results: it didn't pass more than 6 days from the last sunday since they were inserted
 
   ## Examples
 
-      iex> get_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
-      [%GoogleUser{}]
+      iex> get_users_with_quests_and_results(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      [%User{}]
   """
-  def get_users_with_todays_daily_quests(ids, repo \\ Repo) do
-    naive_today = NaiveDateTime.utc_now()
-    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
-    end_of_date = NaiveDateTime.end_of_day(naive_today)
+  def get_users_with_quests_and_results(ids, repo \\ Repo) do
+    date_today = Date.utc_today()
+    start_of_week = Date.beginning_of_week(date_today, :sunday)
+    end_of_week = Date.add(start_of_week, 6)
+    {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
+    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
 
     arena_match_result_subquery =
       from(amr in ArenaMatchResult,
-        where: amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date
+        where: amr.inserted_at > ^start_of_week_naive and amr.inserted_at < ^end_of_week_naive
       )
 
     q =
@@ -136,19 +143,31 @@ defmodule GameBackend.Users do
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
 
-    daily_quest_subquery =
+    start_of_week = Date.beginning_of_week(NaiveDateTime.to_date(naive_today), :sunday)
+    end_of_week = Date.add(start_of_week, 6)
+    {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
+    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
+
+    quests_subquery =
       from(user_quest in UserQuest,
+        as: :user_quest,
         join: q in assoc(user_quest, :quest),
+        as: :quest,
         where:
-          user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date and
-            is_nil(user_quest.completed_at) and
-            user_quest.status == ^"available" and q.type == "daily",
+          is_nil(user_quest.completed_at) and
+            user_quest.status == ^"available",
         preload: [:quest]
+      )
+      |> where(
+        [{:quest, quest}, {:user_quest, user_quest}],
+        (quest.type == "daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
+          (quest.type == "weekly" and user_quest.inserted_at > ^start_of_week_naive and
+             user_quest.inserted_at < ^end_of_week_naive)
       )
 
     from(u in base_query,
       preload: [
-        user_quests: ^daily_quest_subquery
+        user_quests: ^quests_subquery
       ]
     )
   end
