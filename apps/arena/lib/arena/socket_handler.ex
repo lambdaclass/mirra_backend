@@ -5,7 +5,7 @@ defmodule Arena.SocketHandler do
   require Logger
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
-  alias Arena.GameLauncher
+  alias Arena.Matchmaking
   alias Arena.Serialization.GameState
   alias Arena.Serialization.JoinedLobby
   alias Arena.Serialization.LeaveLobby
@@ -29,15 +29,16 @@ defmodule Arena.SocketHandler do
         user_id
       end
 
+    matchmaking_queue = Matchmaking.get_queue(:cowboy_req.binding(:mode, req))
     character_name = :cowboy_req.binding(:character_name, req)
     player_name = :cowboy_req.binding(:player_name, req)
-    {:cowboy_websocket, req, %{client_id: user_id, character_name: character_name, player_name: player_name}}
+    {:cowboy_websocket, req, %{client_id: user_id, matchmaking_queue: matchmaking_queue, character_name: character_name, player_name: player_name}}
   end
 
   @impl true
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
-    GameLauncher.join(state.client_id, state.character_name, state.player_name)
+    state.matchmaking_queue.join(state.client_id, state.character_name, state.player_name)
 
     joined_msg = LobbyEvent.encode(%LobbyEvent{event: {:joined, %JoinedLobby{}}})
     {:reply, {:binary, joined_msg}, state}
@@ -47,7 +48,7 @@ defmodule Arena.SocketHandler do
   def websocket_handle({:binary, message}, state) do
     case LeaveLobby.decode(message) do
       %LeaveLobby{} ->
-        :ok = GameLauncher.leave(state.client_id)
+        :ok = state.matchmaking_queue.leave(state.client_id)
         left_msg = LobbyEvent.encode(%LobbyEvent{event: {:left, %LeftLobby{}}})
         {[{:binary, left_msg}, :close], state}
 
