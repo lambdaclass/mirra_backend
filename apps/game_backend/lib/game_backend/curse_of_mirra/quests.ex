@@ -76,8 +76,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         left_join: uq in UserQuest,
         on: q.id == uq.quest_id and uq.user_id == ^user_id,
         where:
-          (is_nil(uq) or
-             ((uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date) and uq.status != "available")) and
+          (is_nil(uq) or uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date or uq.status != "available") and
             q.type == ^type,
         distinct: q.id
       )
