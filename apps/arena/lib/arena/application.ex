@@ -16,6 +16,7 @@ defmodule Arena.Application do
       # Start game launcher genserver
       Arena.Matchmaking.GameLauncher,
       Arena.Matchmaking.PairMode,
+      Arena.Matchmaking.QuickGameMode,
       Arena.GameBountiesFetcher,
       Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
