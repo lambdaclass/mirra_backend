@@ -143,6 +143,11 @@ defmodule Arena.Entities do
   def new_pool(pool_params) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
+    duration_ms =
+      if pool_params[:duration_ms] && pool_params[:activation_delay] do
+        pool_params.duration_ms + pool_params.activation_delay
+      end
+
     %{
       id: pool_params.id,
       category: :pool,
@@ -162,10 +167,10 @@ defmodule Arena.Entities do
         owner_id: pool_params.owner_id,
         effects: [],
         stat_multiplier: 0,
-        duration_ms: pool_params.duration_ms + pool_params.activation_delay,
+        duration_ms: duration_ms,
         pull_immunity: true,
         spawn_at: now,
-        status: :WAITING,
+        status: pool_params.status,
         skill_key: pool_params.skill_key
       },
       collides_with: []
