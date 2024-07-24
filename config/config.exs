@@ -88,9 +88,10 @@ config :joken,
 dispatch = [
   _: [
     {"/play/:game_id/:client_id", Arena.GameSocketHandler, []},
-    {"/join/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
     {"/join/:mode/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
     ## TODO: This can be removed after all clients move to using /join/:mode
+    {"/join/:client_id/:character_name/:player_name", Arena.SocketHandler, []},
+    ## TODO: This and Arena.QuickGameHandler can be removed after all clients move to using /join/:mode
     {"/quick_game/:client_id/:character_name/:player_name", Arena.QuickGameHandler, []},
     {:_, Plug.Cowboy.Handler, {ArenaWeb.Endpoint, []}}
   ]

@@ -31,10 +31,6 @@ defmodule Arena.Matchmaking.GameLauncher do
     GenServer.call(__MODULE__, {:join, client_id, character_name, player_name})
   end
 
-  def join_quick_game(client_id, character_name, player_name) do
-    GenServer.call(__MODULE__, {:join_quick_game, client_id, character_name, player_name})
-  end
-
   def leave(client_id) do
     GenServer.call(__MODULE__, {:leave, client_id})
   end
@@ -61,16 +57,6 @@ defmodule Arena.Matchmaking.GameLauncher do
   def handle_call({:leave, client_id}, _, state) do
     clients = Enum.reject(state.clients, fn {id, _, _, _} -> id == client_id end)
     {:reply, :ok, %{state | clients: clients}}
-  end
-
-  @impl true
-  def handle_call({:join_quick_game, client_id, character_name, player_name}, {from_pid, _}, state) do
-    create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
-      bots_enabled: false,
-      zone_enabled: false
-    })
-
-    {:reply, :ok, state}
   end
 
   @impl true

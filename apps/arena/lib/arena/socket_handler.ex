@@ -32,7 +32,14 @@ defmodule Arena.SocketHandler do
     matchmaking_queue = Matchmaking.get_queue(:cowboy_req.binding(:mode, req))
     character_name = :cowboy_req.binding(:character_name, req)
     player_name = :cowboy_req.binding(:player_name, req)
-    {:cowboy_websocket, req, %{client_id: user_id, matchmaking_queue: matchmaking_queue, character_name: character_name, player_name: player_name}}
+
+    {:cowboy_websocket, req,
+     %{
+       client_id: user_id,
+       matchmaking_queue: matchmaking_queue,
+       character_name: character_name,
+       player_name: player_name
+     }}
   end
 
   @impl true

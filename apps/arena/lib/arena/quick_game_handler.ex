@@ -2,9 +2,9 @@ defmodule Arena.QuickGameHandler do
   @moduledoc """
   Module that handles cowboy websocket requests
   """
-  alias Arena.Authentication.GatewayTokenManager
   alias Arena.Authentication.GatewaySigner
-  alias Arena.Matchmaking.GameLauncher
+  alias Arena.Authentication.GatewayTokenManager
+  alias Arena.Matchmaking.QuickGameMode
   alias Arena.Serialization.GameState
   alias Arena.Serialization.JoinedLobby
   alias Arena.Serialization.LobbyEvent
@@ -23,7 +23,7 @@ defmodule Arena.QuickGameHandler do
 
   @impl true
   def websocket_init(state) do
-    GameLauncher.join_quick_game(state.client_id, state.character_name, state.player_name)
+    QuickGameMode.join(state.client_id, state.character_name, state.player_name)
 
     joined_msg = LobbyEvent.encode(%LobbyEvent{event: {:joined, %JoinedLobby{}}})
     {:reply, {:binary, joined_msg}, state}

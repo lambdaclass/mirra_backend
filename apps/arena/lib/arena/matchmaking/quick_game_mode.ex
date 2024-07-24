@@ -41,10 +41,13 @@ defmodule Arena.Matchmaking.QuickGameMode do
 
   @impl true
   def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, state) do
-    create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{bots_enabled: false, zone_enabled: false})
+    create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
+      bots_enabled: false,
+      zone_enabled: false
+    })
+
     {:reply, :ok, state}
   end
-
 
   def handle_info(:start_game, state) do
     {game_clients, remaining_clients} = Enum.split(state.clients, Application.get_env(:arena, :players_needed_in_match))
