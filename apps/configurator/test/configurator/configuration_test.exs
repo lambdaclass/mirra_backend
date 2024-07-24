@@ -6,7 +6,7 @@ defmodule GameBackend.ConfigurationTest do
   describe "map_configurations" do
     alias GameBackend.CurseOfMirra.MapConfiguration
 
-    import GameBackend.ConfigurationFixtures
+    import Configurator.ConfigurationFixtures
 
     @invalid_attrs %{radius: nil, initial_positions: nil, obstacles: nil, bushes: nil}
 

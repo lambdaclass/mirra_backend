@@ -1,7 +1,7 @@
-defmodule GameBackend.ConfigurationFixtures do
+defmodule Configurator.ConfigurationFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `GameBackend.Configuration` context.
+  entities via the `Configurator.Configuration` context.
   """
 
   @doc """

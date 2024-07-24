@@ -1,7 +1,7 @@
 defmodule ConfiguratorWeb.MapConfigurationControllerTest do
   use ConfiguratorWeb.ConnCase
 
-  import GameBackend.ConfigurationFixtures
+  import Configurator.ConfigurationFixtures
   import Configurator.AccountsFixtures
   setup [:create_authenticated_conn]
 
