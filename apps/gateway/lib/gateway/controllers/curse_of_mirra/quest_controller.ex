@@ -44,4 +44,11 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
         |> send_resp(400, "Error completing bounty")
     end
   end
+
+  def add_quests(conn, %{"user_id" => user_id, "type" => type, "amount" => amount}) do
+    with {:ok, _changes} <- Quests.add_quests_to_user_id_by_type(user_id, type, String.to_integer(amount)) do
+      conn
+      |> send_resp(200, "Quests added")
+    end
+  end
 end

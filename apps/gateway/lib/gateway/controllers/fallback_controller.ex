@@ -4,6 +4,10 @@ defmodule Gateway.Controllers.FallbackController do
   """
   use Gateway, :controller
 
+  def call(conn, {:error, error_message}) when is_binary(error_message) do
+    send_resp(conn, 404, Jason.encode!(%{"error" => error_message}))
+  end
+
   def call(conn, {:error, :not_found}) do
     send_resp(conn, 404, Jason.encode!(%{"error" => "not found"}))
   end
@@ -46,6 +50,10 @@ defmodule Gateway.Controllers.FallbackController do
 
   def call(conn, {:can_afford, false}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "user cannot afford the cost"}))
+  end
+
+  def call(conn, {:error, :quest_type_not_implemented}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "quest type not implemented yet"}))
   end
 
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) when is_binary(failed_operation) do
