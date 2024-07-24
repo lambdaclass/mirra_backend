@@ -75,10 +75,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
         left_join: uq in UserQuest,
         on: q.id == uq.quest_id and uq.user_id == ^user_id,
         where:
-          (is_nil(uq) or uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date or not is_nil(uq.completed_at) or
-             uq.status != "available") and
+          (is_nil(uq) or (uq.inserted_at < ^start_of_date and uq.inserted_at > ^end_of_date) or uq.status != "available") and
             q.type == ^type,
-        distinct: q.id
+        distinct: uq.id
       )
 
     Repo.all(q)
@@ -157,59 +156,38 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def add_weekly_quests_to_user_id(user_id, amount) do
+  def add_quests_to_user_id_by_type(user_id, type, amount) do
     available_quests =
-      get_user_missing_quests_by_type(user_id, "weekly")
+      get_user_missing_quests_by_type(user_id, type)
       |> Enum.shuffle()
 
-    if amount > Enum.count(available_quests) do
-      {:error, :not_enough_quests_in_config}
-    else
-      {multi, _quests} =
-        Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
-          _index, {multi, [quest | next_quests]} ->
-            attrs = %{
-              user_id: user_id,
-              quest_id: quest.id,
-              status: "available"
-            }
+    amount_of_quest_available = Enum.count(available_quests)
 
-            changeset = UserQuest.changeset(%UserQuest{}, attrs)
+    cond do
+      type not in Quest.types() ->
+        {:error, :quest_type_not_implemented}
 
-            multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+      amount > amount_of_quest_available ->
+        {:error, "Not enough quests, requested: #{amount} available: #{amount_of_quest_available}"}
 
-            {multi, next_quests}
-        end)
+      true ->
+        {multi, _quests} =
+          Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
+            _index, {multi, [quest | next_quests]} ->
+              attrs = %{
+                user_id: user_id,
+                quest_id: quest.id,
+                status: "available"
+              }
 
-      Repo.transaction(multi)
-    end
-  end
+              changeset = UserQuest.changeset(%UserQuest{}, attrs)
 
-  def add_daily_quests_to_user_id(user_id, amount) do
-    available_quests =
-      get_user_missing_quests_by_type(user_id, "daily")
-      |> Enum.shuffle()
+              multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
 
-    if amount > Enum.count(available_quests) do
-      {:error, :not_enough_quests_in_config}
-    else
-      {multi, _quests} =
-        Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
-          _index, {multi, [quest | next_quests]} ->
-            attrs = %{
-              user_id: user_id,
-              quest_id: quest.id,
-              status: "available"
-            }
+              {multi, next_quests}
+          end)
 
-            changeset = UserQuest.changeset(%UserQuest{}, attrs)
-
-            multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
-
-            {multi, next_quests}
-        end)
-
-      Repo.transaction(multi)
+        Repo.transaction(multi)
     end
   end
 
