@@ -6,7 +6,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
-  alias GameBackend.Users.User
   alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest
@@ -190,21 +189,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
         Repo.transaction(multi)
     end
-  end
-
-  def get_user_quests_to_claim(%User{
-        arena_match_results: arena_match_results,
-        user_quests: user_quests
-      }) do
-    user_quests
-    |> Enum.reduce([], fn user_quest, acc ->
-      if user_quest.status == "available" and
-           completed_quest?(user_quest, arena_match_results) do
-        [user_quest | acc]
-      else
-        acc
-      end
-    end)
   end
 
   def reroll_daily_quest(daily_quest_id) do
