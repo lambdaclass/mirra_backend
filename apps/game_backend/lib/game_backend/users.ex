@@ -75,21 +75,13 @@ defmodule GameBackend.Users do
       {:error, :not_found}
   """
   def get_user_by_id_and_game_id(id, game_id) do
-    naive_today = NaiveDateTime.utc_now()
-    start_of_date = NaiveDateTime.beginning_of_day(naive_today)
-    end_of_date = NaiveDateTime.end_of_day(naive_today)
-
-    arena_match_result_subquery =
-      from(amr in ArenaMatchResult,
-        where: amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date
-      )
-
     q =
       from(u in User,
         where: u.id == ^id and u.game_id == ^game_id,
-        preload: [units: [:character, :items], currencies: :currency, arena_match_results: ^arena_match_result_subquery]
+        preload: [units: [:character, :items], currencies: :currency]
       )
       |> quests_preloads()
+      |> arena_match_results_preloads()
 
     user =
       Repo.one(q)
@@ -113,27 +105,16 @@ defmodule GameBackend.Users do
       [%User{}]
   """
   def get_users_with_quests_and_results(ids, repo \\ Repo) do
-    date_today = Date.utc_today()
-    start_of_week = Date.beginning_of_week(date_today, :sunday)
-    end_of_week = Date.add(start_of_week, 6)
-    {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
-    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
-
-    arena_match_result_subquery =
-      from(amr in ArenaMatchResult,
-        where: amr.inserted_at > ^start_of_week_naive and amr.inserted_at < ^end_of_week_naive
-      )
-
     q =
       from(u in User,
         where: u.id in ^ids,
         preload: [
-          arena_match_results: ^arena_match_result_subquery,
           currencies: :currency,
           units: :character
         ]
       )
       |> quests_preloads()
+      |> arena_match_results_preloads()
 
     repo.all(q)
   end
@@ -169,6 +150,23 @@ defmodule GameBackend.Users do
       preload: [
         user_quests: ^quests_subquery
       ]
+    )
+  end
+
+  defp arena_match_results_preloads(base_query) do
+    date_today = Date.utc_today()
+    start_of_week = Date.beginning_of_week(date_today, :sunday)
+    end_of_week = Date.add(start_of_week, 6)
+    {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
+    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
+
+    arena_match_result_subquery =
+      from(amr in ArenaMatchResult,
+        where: amr.inserted_at > ^start_of_week_naive and amr.inserted_at < ^end_of_week_naive
+      )
+
+    from(u in base_query,
+      preload: [arena_match_results: ^arena_match_result_subquery]
     )
   end
 
