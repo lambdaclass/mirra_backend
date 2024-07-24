@@ -4,7 +4,7 @@ defmodule Arena.QuickGameHandler do
   """
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Authentication.GatewaySigner
-  alias Arena.GameLauncher
+  alias Arena.Matchmaking.GameLauncher
   alias Arena.Serialization.GameState
   alias Arena.Serialization.JoinedLobby
   alias Arena.Serialization.LobbyEvent

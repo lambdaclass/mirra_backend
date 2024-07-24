@@ -1,4 +1,4 @@
-defmodule Arena.GameLauncher do
+defmodule Arena.Matchmaking.GameLauncher do
   @moduledoc false
   alias Arena.Utils
   alias Ecto.UUID
