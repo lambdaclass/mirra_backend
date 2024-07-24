@@ -545,7 +545,8 @@ defmodule GameBackend.Users do
         on: user.id == unit.user_id,
         select: %{username: user.username, prestige: sum(unit.prestige)},
         group_by: user.id,
-        order_by: [desc: sum(unit.prestige)]
+        order_by: [desc: sum(unit.prestige)],
+        limit: 100
       )
 
     Repo.all(q)
