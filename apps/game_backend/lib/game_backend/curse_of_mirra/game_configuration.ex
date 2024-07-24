@@ -5,6 +5,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Configuration.Version
+
   @required [
     :tick_rate_ms,
     :bounty_pick_time_ms,
@@ -48,6 +50,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:bounties_options_amount, :integer)
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
+
+    belongs_to(:version, Version)
 
     timestamps()
   end

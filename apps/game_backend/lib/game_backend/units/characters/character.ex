@@ -6,6 +6,7 @@ defmodule GameBackend.Units.Characters.Character do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Configuration.Version
   alias GameBackend.Units.Skills.Skill
 
   schema "characters" do
@@ -33,6 +34,8 @@ defmodule GameBackend.Units.Characters.Character do
     belongs_to(:basic_skill, Skill, on_replace: :update)
     belongs_to(:ultimate_skill, Skill, on_replace: :update)
     belongs_to(:dash_skill, Skill, on_replace: :update)
+
+    belongs_to(:version, Version)
 
     timestamps()
   end
@@ -64,7 +67,8 @@ defmodule GameBackend.Units.Characters.Character do
       :base_defense,
       :basic_skill_id,
       :dash_skill_id,
-      :ultimate_skill_id
+      :ultimate_skill_id,
+      :version_id
     ])
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)

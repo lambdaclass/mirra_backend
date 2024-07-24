@@ -2,6 +2,8 @@ defmodule GameBackend.Configuration do
   @moduledoc """
   Configuration context for GameBackend
   """
+  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Items.ConsumableItem
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Configuration.Version
   alias GameBackend.Repo
@@ -205,5 +207,39 @@ defmodule GameBackend.Configuration do
   """
   def change_version(%Version{} = version, attrs \\ %{}) do
     Version.changeset(version, attrs)
+  end
+
+  def get_version_by_name(name) do
+    Repo.get_by(Version, name: name)
+  end
+
+  def list_characters_by_version(version) do
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    q =
+      from(c in Character,
+        where: ^curse_id == c.game_id and c.version_id == ^version.id,
+        preload: [
+          basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
+          ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
+          dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]
+        ]
+      )
+
+    Repo.all(q)
+  end
+
+  def get_game_configuration_by_version(version) do
+    q =
+      from(g in GameConfiguration,
+        where: g.version_id == ^version.id
+      )
+
+    Repo.one(q)
+  end
+
+  def list_consumable_items_by_version(version) do
+    q = from(ci in ConsumableItem, where: ci.version_id == ^version.id and ci.active)
+    Repo.all(q)
   end
 end
