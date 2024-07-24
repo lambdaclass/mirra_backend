@@ -15,6 +15,7 @@ defmodule Arena.Application do
       {Finch, name: Arena.Finch},
       # Start game launcher genserver
       Arena.Matchmaking.GameLauncher,
+      Arena.Matchmaking.PairMode,
       Arena.GameBountiesFetcher,
       Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
