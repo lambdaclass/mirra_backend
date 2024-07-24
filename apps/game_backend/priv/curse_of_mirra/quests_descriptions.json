@@ -114,5 +114,64 @@
             "currency": "Gold",
             "amount": 10
         }
+    },
+    {
+        "config_id": 7,
+        "description": "Win 30 matches with Uma",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 30,
+            "comparison": "greater",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "uma",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 5000
+        }
+    },
+    {
+        "config_id": 8,
+        "description": "Get 100 kills",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "kills",
+            "value": 100,
+            "comparison": "greater",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 3000
+        }
+    },
+    {
+        "config_id": 9,
+        "description": "Deal 10.000 damage",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "damage_done",
+            "value": 10000,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10000
+        }
     }
 ]

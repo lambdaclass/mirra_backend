@@ -35,6 +35,6 @@ defmodule GameBackend.Quests.Quest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
-    |> validate_inclusion(:type, ["daily", "bounty"])
+    |> validate_inclusion(:type, ["daily", "bounty", "weekly"])
   end
 end
