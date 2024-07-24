@@ -157,6 +157,34 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
+  def add_weekly_quests_to_user_id(user_id, amount) do
+    available_quests =
+      get_user_missing_quests_by_type(user_id, "weekly")
+      |> Enum.shuffle()
+
+    if amount > Enum.count(available_quests) do
+      {:error, :not_enough_quests_in_config}
+    else
+      {multi, _quests} =
+        Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
+          _index, {multi, [quest | next_quests]} ->
+            attrs = %{
+              user_id: user_id,
+              quest_id: quest.id,
+              status: "available"
+            }
+
+            changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+            multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+
+            {multi, next_quests}
+        end)
+
+      Repo.transaction(multi)
+    end
+  end
+
   def add_daily_quests_to_user_id(user_id, amount) do
     available_quests =
       get_user_missing_quests_by_type(user_id, "daily")
@@ -189,9 +217,30 @@ defmodule GameBackend.CurseOfMirra.Quests do
         arena_match_results: arena_match_results,
         user_quests: user_quests
       }) do
+    date_today = Date.utc_today()
+
+    today_match_results =
+      Enum.filter(arena_match_results, fn arena_match_result ->
+        Date.compare(date_today, NaiveDateTime.to_date(arena_match_result.inserted_at)) == :eq
+      end)
+
     user_quests
     |> Enum.reduce([], fn user_quest, acc ->
-      if completed_quest?(user_quest, arena_match_results) and user_quest.quest.type == "daily" do
+      if user_quest.quest.type == "daily" and completed_quest?(user_quest, today_match_results) do
+        [user_quest | acc]
+      else
+        acc
+      end
+    end)
+  end
+
+  def get_user_weekly_quests_completed(%User{
+        arena_match_results: arena_match_results,
+        user_quests: user_quests
+      }) do
+    user_quests
+    |> Enum.reduce([], fn user_quest, acc ->
+      if user_quest.quest.type == "weekly" and completed_quest?(user_quest, arena_match_results) do
         [user_quest | acc]
       else
         acc

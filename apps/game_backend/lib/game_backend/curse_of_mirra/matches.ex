@@ -40,7 +40,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
     Multi.run(multi, :get_users, fn repo, _changes_so_far ->
       users =
         Enum.map(results, fn result -> result["user_id"] end)
-        |> Users.get_users_with_todays_daily_quests(repo)
+        |> Users.get_users_with_quests_and_results(repo)
 
       {:ok, users}
     end)
@@ -77,10 +77,19 @@ defmodule GameBackend.CurseOfMirra.Matches do
       correctly_updated_list =
         Enum.map(users, fn
           user ->
-            Quests.get_user_daily_quests_completed(user)
-            |> Enum.map(fn %UserQuest{} = daily_quest ->
-              complete_quest_and_insert_currency(daily_quest, user.id)
-            end)
+            daily_quests =
+              Quests.get_user_daily_quests_completed(user)
+              |> Enum.map(fn %UserQuest{} = daily_quest ->
+                complete_quest_and_insert_currency(daily_quest, user.id)
+              end)
+
+            weekly_quests =
+              Quests.get_user_weekly_quests_completed(user)
+              |> Enum.map(fn %UserQuest{} = weekly_quest ->
+                complete_quest_and_insert_currency(weekly_quest, user.id)
+              end)
+
+            Enum.concat(daily_quests, weekly_quests)
         end)
         |> List.flatten()
 
