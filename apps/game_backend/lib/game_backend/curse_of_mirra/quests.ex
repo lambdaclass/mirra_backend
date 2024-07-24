@@ -213,35 +213,13 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
-  def get_user_daily_quests_to_claim(%User{
-        arena_match_results: arena_match_results,
-        user_quests: user_quests
-      }) do
-    date_today = Date.utc_today()
-
-    today_match_results =
-      Enum.filter(arena_match_results, fn arena_match_result ->
-        Date.compare(date_today, NaiveDateTime.to_date(arena_match_result.inserted_at)) == :eq
-      end)
-
-    user_quests
-    |> Enum.reduce([], fn user_quest, acc ->
-      if user_quest.quest.type == "daily" and user_quest.status == "available" and
-           completed_quest?(user_quest, today_match_results) do
-        [user_quest | acc]
-      else
-        acc
-      end
-    end)
-  end
-
-  def get_user_weekly_quests_to_claim(%User{
+  def get_user_quests_to_claim(%User{
         arena_match_results: arena_match_results,
         user_quests: user_quests
       }) do
     user_quests
     |> Enum.reduce([], fn user_quest, acc ->
-      if user_quest.quest.type == "weekly" and user_quest.status == "available" and
+      if user_quest.status == "available" and
            completed_quest?(user_quest, arena_match_results) do
         [user_quest | acc]
       else
@@ -350,6 +328,19 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
+    arena_match_results =
+      case quest.type do
+        "daily" ->
+          date_today = Date.utc_today()
+
+          Enum.filter(arena_match_results, fn arena_match_result ->
+            Date.compare(date_today, NaiveDateTime.to_date(arena_match_result.inserted_at)) == :eq
+          end)
+
+        _ ->
+          arena_match_results
+      end
+
     arena_match_results
     |> filter_results_that_meet_quest_conditions(quest.conditions)
     |> Enum.reduce(0, fn arena_match_result, acc ->
