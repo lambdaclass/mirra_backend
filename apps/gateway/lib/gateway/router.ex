@@ -39,6 +39,7 @@ defmodule Gateway.Router do
         put "/add_quests", QuestController, :add_quests
         get "/:quest_id/reroll_daily_quest", QuestController, :reroll_daily_quest
         get "/:quest_id/complete_bounty", QuestController, :complete_bounty
+        get "/:quest_id/complete_quest", QuestController, :complete_quest
       end
 
       scope "/items" do

@@ -2,6 +2,8 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
   @moduledoc """
     Controller to control currency changes in users
   """
+  alias GameBackend.Utils
+  alias GameBackend.Users
   alias GameBackend.CurseOfMirra.Quests
   GameBackend.Users.Currencies
   use Gateway, :controller
@@ -49,6 +51,14 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
     with {:ok, _changes} <- Quests.add_quests_to_user_id_by_type(user_id, type, String.to_integer(amount)) do
       conn
       |> send_resp(200, "Quests added")
+    end
+  end
+
+  def complete_quest(conn, %{"user_id" => user_id, "quest_id" => quest_id}) do
+    with {:ok, user} <- Users.get_user_by_id_and_game_id(user_id, Utils.get_game_id(:curse_of_mirra)),
+         {:ok, _changes} <- Quests.try_to_complete_quest_for_user(user, quest_id) do
+      conn
+      |> send_resp(200, "Quests completed")
     end
   end
 end

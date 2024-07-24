@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
+  alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
@@ -77,7 +78,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         where:
           (is_nil(uq) or (uq.inserted_at < ^start_of_date and uq.inserted_at > ^end_of_date) or uq.status != "available") and
             q.type == ^type,
-        distinct: uq.id
+        distinct: q.id
       )
 
     Repo.all(q)
@@ -333,6 +334,38 @@ defmodule GameBackend.CurseOfMirra.Quests do
           acc + progress
       end
     end)
+  end
+
+  def try_to_complete_quest_for_user(user, quest_id) do
+    Enum.find(user.user_quests, fn user_quest -> user_quest.quest_id == quest_id end)
+    |> case do
+      nil ->
+        {:error, :unexistent_user_quest}
+
+      user_quest ->
+        if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results) do
+          updated_user_quest =
+            UserQuest.changeset(user_quest, %{
+              completed: true,
+              completed_at: DateTime.utc_now(),
+              status: "completed"
+            })
+
+          Multi.new()
+          |> Multi.update(:update_user_quest, updated_user_quest)
+          |> Multi.run(:add_currency, fn _, _ ->
+            Currencies.add_currency_by_name_and_game(
+              user.id,
+              user_quest.quest.reward["currency"],
+              Utils.get_game_id(:curse_of_mirra),
+              user_quest.quest.reward["amount"]
+            )
+          end)
+          |> Repo.transaction()
+        else
+          {:error, :unfinished_quest}
+        end
+    end
   end
 
   #####################

@@ -56,6 +56,14 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "quest type not implemented yet"}))
   end
 
+  def call(conn, {:error, :unfinished_quest}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "quest unfinished"}))
+  end
+
+  def call(conn, {:error, :unexistent_user_quest}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "the user doesn't have that quest"}))
+  end
+
   def call(conn, {:error, failed_operation, _failed_value, _changes_so_far}) when is_binary(failed_operation) do
     send_resp(conn, 400, Jason.encode!(%{"error" => failed_operation}))
   end

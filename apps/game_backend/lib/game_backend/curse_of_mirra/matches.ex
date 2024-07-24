@@ -4,11 +4,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   """
   alias GameBackend.Units
   alias GameBackend.Units.Unit
-  alias GameBackend.CurseOfMirra.Quests
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Quests.UserQuest
 
-  alias GameBackend.Utils
   alias GameBackend.Users
   alias Ecto.Multi
   alias GameBackend.Matches.ArenaMatchResult
@@ -20,7 +16,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> maybe_create_unit_for_user(results)
     |> add_users_to_multi(results)
     |> give_prestige(results)
-    |> maybe_complete_quests()
     |> Repo.transaction()
   end
 
@@ -69,29 +64,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     end)
   end
 
-  defp maybe_complete_quests(multi) do
-    Multi.run(multi, :insert_completed_quests_result, fn _,
-                                                         %{
-                                                           get_users: users
-                                                         } ->
-      correctly_updated_list =
-        Enum.map(users, fn
-          user ->
-            Quests.get_user_quests_to_claim(user)
-            |> Enum.map(fn %UserQuest{} = daily_quest ->
-              complete_quest_and_insert_currency(daily_quest, user.id)
-            end)
-        end)
-        |> List.flatten()
-
-      if Enum.empty?(correctly_updated_list) or Enum.all?(correctly_updated_list, fn {result, _} -> result == :ok end) do
-        {:ok, nil}
-      else
-        {:error, nil}
-      end
-    end)
-  end
-
   # TODO This is a TEMPORAL fix and should be removed as soon as we implement a check that block clients to play with characters
   # that they don't own or a way to unlock characters
   # Issue https://github.com/lambdaclass/mirra_backend/issues/751
@@ -131,9 +103,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     %{prestige: amount}
   end
 
-  defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
-  defp get_operation_result(_, _), do: {:error, nil}
-
   defp rank_name_converter("bronze"), do: 1
   defp rank_name_converter("silver"), do: 2
   defp rank_name_converter("gold"), do: 3
@@ -141,24 +110,4 @@ defmodule GameBackend.CurseOfMirra.Matches do
   defp rank_name_converter("diamond"), do: 5
   defp rank_name_converter("champion"), do: 6
   defp rank_name_converter("grandmaster"), do: 7
-
-  defp complete_quest_and_insert_currency(user_quest, user_id) do
-    updated_match =
-      UserQuest.changeset(user_quest, %{
-        completed: true,
-        completed_at: DateTime.utc_now(),
-        status: "completed"
-      })
-      |> Repo.update()
-
-    inserted_currency =
-      Currencies.add_currency_by_name_and_game(
-        user_id,
-        user_quest.quest.reward["currency"],
-        Utils.get_game_id(:curse_of_mirra),
-        user_quest.quest.reward["amount"]
-      )
-
-    get_operation_result(updated_match, inserted_currency)
-  end
 end
