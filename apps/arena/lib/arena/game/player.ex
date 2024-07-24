@@ -246,7 +246,7 @@ defmodule Arena.Game.Player do
   # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
   # position in which the player will spawn when the skill start and not when we actually execute the teleport
   # this is also optimistic since we assume the destination will be always available
-  defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+  defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [%{type: "teleport"} = teleport]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
       y: player.position.y + skill_direction.y * teleport.range
@@ -454,7 +454,7 @@ defmodule Arena.Game.Player do
   ## so to simplify my life an executive decision was made to take thas as a fact
   ## When the time comes to have more than one mechanic per skill this function will need to be refactored, good thing
   ## is that it will crash here so not something we can ignore
-  defp calculate_duration(%{mechanics: [{:leap, leap}]}, position, direction, auto_aim?) do
+  defp calculate_duration(%{mechanics: [%{type: "leap"} = leap]}, position, direction, auto_aim?) do
     ## TODO: Cap target_position to leap.range
     direction = Skill.maybe_multiply_by_range(direction, auto_aim?, leap.range)
 

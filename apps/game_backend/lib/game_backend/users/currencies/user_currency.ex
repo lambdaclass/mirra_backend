@@ -9,6 +9,7 @@ defmodule GameBackend.Users.Currencies.UserCurrency do
   alias GameBackend.Users.Currencies.Currency
   alias GameBackend.Users.User
 
+  @derive {Jason.Encoder, only: [:amount, :currency]}
   schema "user_currencies" do
     belongs_to(:currency, Currency)
     belongs_to(:user, User)
