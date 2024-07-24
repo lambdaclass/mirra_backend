@@ -132,18 +132,13 @@ defmodule GameBackend.Users do
     quests_subquery =
       from(user_quest in UserQuest,
         as: :user_quest,
-        join: q in assoc(user_quest, :quest),
+        join: quest in assoc(user_quest, :quest),
         as: :quest,
         where:
-          is_nil(user_quest.completed_at) and
-            user_quest.status == ^"available",
+          (quest.type == "daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
+            (quest.type == "weekly" and user_quest.inserted_at > ^start_of_week_naive and
+               user_quest.inserted_at < ^end_of_week_naive),
         preload: [:quest]
-      )
-      |> where(
-        [{:quest, quest}, {:user_quest, user_quest}],
-        (quest.type == "daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
-          (quest.type == "weekly" and user_quest.inserted_at > ^start_of_week_naive and
-             user_quest.inserted_at < ^end_of_week_naive)
       )
 
     from(u in base_query,

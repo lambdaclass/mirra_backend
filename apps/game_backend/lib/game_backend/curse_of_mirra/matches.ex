@@ -78,13 +78,13 @@ defmodule GameBackend.CurseOfMirra.Matches do
         Enum.map(users, fn
           user ->
             daily_quests =
-              Quests.get_user_daily_quests_completed(user)
+              Quests.get_user_daily_quests_to_claim(user)
               |> Enum.map(fn %UserQuest{} = daily_quest ->
                 complete_quest_and_insert_currency(daily_quest, user.id)
               end)
 
             weekly_quests =
-              Quests.get_user_weekly_quests_completed(user)
+              Quests.get_user_weekly_quests_to_claim(user)
               |> Enum.map(fn %UserQuest{} = weekly_quest ->
                 complete_quest_and_insert_currency(weekly_quest, user.id)
               end)

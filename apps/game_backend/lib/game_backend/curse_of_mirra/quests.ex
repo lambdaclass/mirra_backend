@@ -213,7 +213,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
-  def get_user_daily_quests_completed(%User{
+  def get_user_daily_quests_to_claim(%User{
         arena_match_results: arena_match_results,
         user_quests: user_quests
       }) do
@@ -226,7 +226,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     user_quests
     |> Enum.reduce([], fn user_quest, acc ->
-      if user_quest.quest.type == "daily" and completed_quest?(user_quest, today_match_results) do
+      if user_quest.quest.type == "daily" and user_quest.status == "available" and
+           completed_quest?(user_quest, today_match_results) do
         [user_quest | acc]
       else
         acc
@@ -234,13 +235,14 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end)
   end
 
-  def get_user_weekly_quests_completed(%User{
+  def get_user_weekly_quests_to_claim(%User{
         arena_match_results: arena_match_results,
         user_quests: user_quests
       }) do
     user_quests
     |> Enum.reduce([], fn user_quest, acc ->
-      if user_quest.quest.type == "weekly" and completed_quest?(user_quest, arena_match_results) do
+      if user_quest.quest.type == "weekly" and user_quest.status == "available" and
+           completed_quest?(user_quest, arena_match_results) do
         [user_quest | acc]
       else
         acc
