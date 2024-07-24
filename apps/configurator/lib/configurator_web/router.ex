@@ -59,6 +59,7 @@ defmodule ConfiguratorWeb.Router do
     resources "/skills", SkillController
     resources "/game_configurations", GameConfigurationController
     resources "/consumable_items", ConsumableItemController
+    resources "/versions", VersionController
   end
 
   scope "/", ConfiguratorWeb do

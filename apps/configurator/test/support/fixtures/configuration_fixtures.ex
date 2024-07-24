@@ -29,4 +29,18 @@ defmodule Configurator.ConfigurationFixtures do
 
     character
   end
+
+  @doc """
+  Generate a version.
+  """
+  def version_fixture(attrs \\ %{}) do
+    {:ok, version} =
+      attrs
+      |> Enum.into(%{
+        name: "some name"
+      })
+      |> GameBackend.Configuration.create_version()
+
+    version
+  end
 end

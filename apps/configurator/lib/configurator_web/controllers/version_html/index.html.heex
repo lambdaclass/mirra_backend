@@ -1,0 +1,25 @@
+<.header>
+  Listing Versions
+  <:actions>
+    <.link href={~p"/versions/new"}>
+      <.button>New Version</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="versions" rows={@versions} row_click={&JS.navigate(~p"/versions/#{&1}")}>
+  <:col :let={version} label="Name"><%= version.name %></:col>
+  <:action :let={version}>
+    <div class="sr-only">
+      <.link navigate={~p"/versions/#{version}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/versions/#{version}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={version}>
+    <.link href={~p"/versions/#{version}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.back navigate={~p"/"}>Configurator's home</.back>

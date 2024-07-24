@@ -1,0 +1,15 @@
+<.header>
+  Version <%= @version.id %>
+  <:subtitle>This is a version record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/versions/#{@version}/edit"}>
+      <.button>Edit version</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @version.name %></:item>
+</.list>
+
+<.back navigate={~p"/versions"}>Back to versions</.back>
