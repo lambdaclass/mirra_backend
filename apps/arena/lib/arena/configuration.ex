@@ -147,6 +147,10 @@ defmodule Arena.Configuration do
   ## The not so small problem we have is that our code expects floats so we still need to parse
   ## the strings, but end up with regular floats
   defp parse_map_config(map_config) do
+    IO.inspect(map_config)
+    ## We're looking to play in random maps
+    map_config = Enum.random(map_config)
+
     %{
       map_config
       | radius: maybe_to_float(map_config.radius),
