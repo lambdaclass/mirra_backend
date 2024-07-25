@@ -17,6 +17,7 @@ defmodule GameBackend.Users do
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+  alias GameBackend.Units.Unit
 
   @doc """
   Registers a user.
@@ -162,24 +163,6 @@ defmodule GameBackend.Users do
   def update_user(%User{} = user, params) do
     User.changeset(user, params)
     |> Repo.update()
-  end
-
-  @doc """
-  Gets a user by their username.
-
-  Returns {:error, :not_found} if no user is found.
-
-  ## Examples
-
-      iex> get_user_by_username("some_user")
-      {:ok, %User{}}
-
-      iex> get_user_by_username("non_existing_user")
-      {:error, :not_found}
-  """
-  def get_user_by_username(username) do
-    user = Repo.get_by(User, username: username) |> preload()
-    if user, do: {:ok, user}, else: {:error, :not_found}
   end
 
   @doc """
@@ -531,5 +514,18 @@ defmodule GameBackend.Users do
       )
 
     Repo.exists?(q)
+  end
+
+  def get_users_sorted_by_total_unit_prestige() do
+    q =
+      from(user in User,
+        left_join: unit in Unit,
+        on: user.id == unit.user_id,
+        select: %{username: user.username, prestige: sum(unit.prestige)},
+        group_by: user.id,
+        order_by: [desc: sum(unit.prestige)]
+      )
+
+    Repo.all(q)
   end
 end

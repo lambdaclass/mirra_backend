@@ -8,11 +8,10 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
-  alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
+  alias Arena.Serialization.GameEvent
+  alias Arena.Serialization.GameJoined
 
   @behaviour :cowboy_websocket
-
-  @ping_interval_ms 500
 
   @impl true
   def init(req, _opts) do
@@ -56,30 +55,20 @@ defmodule Arena.GameSocketHandler do
         event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
-    Process.send_after(self(), :send_ping, @ping_interval_ms)
-
     {:reply, {:binary, encoded_msg}, state}
   end
 
+  # These two callbacks are needed by cowboy
   @impl true
   def websocket_handle(:pong, state) do
-    last_ping_time = state.last_ping_time
-    time_now = Time.utc_now()
-    latency = Time.diff(time_now, last_ping_time, :millisecond)
-
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:ping, %PingUpdate{latency: latency}}
-      })
-
-    # Send back the player's ping
-    {:reply, {:binary, encoded_msg}, state}
+    {:noreply, state}
   end
 
   def websocket_handle(:ping, state) do
     {:reply, {:pong, ""}, state}
   end
 
+  @impl true
   def websocket_handle({:binary, message}, state) do
     Serialization.GameAction.decode(message)
     |> handle_decoded_message(state)
@@ -87,18 +76,20 @@ defmodule Arena.GameSocketHandler do
     {:ok, state}
   end
 
-  # Send a ping frame every once in a while
-  @impl true
-  def websocket_info(:send_ping, state) do
-    Process.send_after(self(), :send_ping, @ping_interval_ms)
-    time_now = Time.utc_now()
-    {:reply, :ping, Map.put(state, :last_ping_time, time_now)}
-  end
-
   # Enable incomming messages
   @impl true
   def websocket_info(:enable_incomming_messages, state) do
     {:ok, Map.put(state, :enable, true)}
+  end
+
+  @impl true
+  def websocket_info({:ping, game_state}, state) do
+    {:reply, {:binary, game_state}, state}
+  end
+
+  @impl true
+  def websocket_info({:ping_update, game_state}, state) do
+    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
@@ -188,21 +179,23 @@ defmodule Arena.GameSocketHandler do
   defp to_broadcast_skill({key, skill}) do
     ## TODO: This will break once a skill has more than 1 mechanic, until then
     ##   we can use this "shortcut" and deal with it when the time comes
-    [{_mechanic, params}] = skill.mechanics
+    [mechanic] = skill.mechanics
 
-    extra_params =
-      %{
-        targetting_radius: params[:radius],
-        targetting_angle: params[:angle],
-        targetting_range: params[:range],
-        targetting_offset: params[:offset] || params[:projectile_offset]
-      }
+    extra_params = %{
+      targetting_radius: mechanic[:radius],
+      targetting_angle: mechanic[:angle],
+      targetting_range: mechanic[:range],
+      targetting_offset: mechanic[:offset] || mechanic[:projectile_offset]
+    }
 
     {key, Map.merge(skill, extra_params)}
   end
 
   defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
     do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
+
+  defp handle_decoded_message(%{action_type: {:pong, pong_params}}, state),
+    do: GameUpdater.pong(state.game_pid, self(), pong_params.ping_timestamp)
 
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)

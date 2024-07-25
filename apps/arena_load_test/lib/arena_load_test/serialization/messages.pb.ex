@@ -130,13 +130,28 @@ defmodule ArenaLoadTest.Serialization.GameEvent do
   field(:joined, 1, type: ArenaLoadTest.Serialization.GameJoined, oneof: 0)
   field(:update, 2, type: ArenaLoadTest.Serialization.GameState, oneof: 0)
   field(:finished, 3, type: ArenaLoadTest.Serialization.GameFinished, oneof: 0)
-  field(:ping, 4, type: ArenaLoadTest.Serialization.PingUpdate, oneof: 0)
+
+  field(:ping_update, 4,
+    type: ArenaLoadTest.Serialization.PingUpdate,
+    json_name: "pingUpdate",
+    oneof: 0
+  )
 
   field(:toggle_bots, 5,
     type: ArenaLoadTest.Serialization.ToggleBots,
     json_name: "toggleBots",
     oneof: 0
   )
+
+  field(:ping, 6, type: ArenaLoadTest.Serialization.Ping, oneof: 0)
+end
+
+defmodule ArenaLoadTest.Serialization.Ping do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
 end
 
 defmodule ArenaLoadTest.Serialization.GameFinished.PlayersEntry do
@@ -754,7 +769,16 @@ defmodule ArenaLoadTest.Serialization.GameAction do
     oneof: 0
   )
 
+  field(:pong, 9, type: ArenaLoadTest.Serialization.Pong, oneof: 0)
   field(:timestamp, 3, type: :int64)
+end
+
+defmodule ArenaLoadTest.Serialization.Pong do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
 defmodule ArenaLoadTest.Serialization.Zone do

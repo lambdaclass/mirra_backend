@@ -25,7 +25,8 @@ export const BoardGame = function () {
     projectile: 0x0000ff,
     item: 0x238636,
     trap: 0x6600cc,
-    crate: 0xcc9900
+    crate: 0xcc9900,
+    bush: 0x9DE7CA
   };
   let player_id;
 
@@ -68,17 +69,25 @@ export const BoardGame = function () {
 
     window.addEventListener("phx:updateEntities", (e) => {
       // Updates every entity's info and position, and creates it if it doesn't exist
+      let selfBackEntity = Array.from(e.detail.entities).find((backEntity) => backEntity.id == e.detail.player_id)
+
       Array.from(e.detail.entities).forEach((backEntity) => {
-        if (!entities.has(backEntity.id)) {
-          let newEntity = this.createEntity(backEntity);
+        if (Array.from(selfBackEntity.visible_players).includes(backEntity.id) || backEntity.category != "player" || backEntity.id === e.detail.player_id) {
+          if (!entities.has(backEntity.id)) {
+            let newEntity = this.createEntity(backEntity);
 
-          container.addChild(newEntity.boardObject);
-          entities.set(backEntity.id, newEntity);
+            container.addChild(newEntity.boardObject);
+            entities.set(backEntity.id, newEntity);
+          }
+          let entity = entities.get(backEntity.id);
+          this.updateEntityColor(entity, backEntity.is_colliding, backEntity);
+
+          this.updateEntityPosition(entity, backEntity.x, backEntity.y);
+        } else if (entities.has(backEntity.id)) {
+          let toRemoveEntity = entities.get(backEntity.id)
+          container.removeChild(toRemoveEntity.boardObject)
+          entities.delete(backEntity.id)
         }
-        let entity = entities.get(backEntity.id);
-        this.updateEntityColor(entity, backEntity.is_colliding, backEntity);
-
-        this.updateEntityPosition(entity, backEntity.x, backEntity.y);
       });
     });
 
@@ -247,6 +256,9 @@ export const BoardGame = function () {
             break;
           case "trap":
             color = colors.trap;
+            break;
+          case "bush":
+            color = colors.bush;
             break;
         }
       }

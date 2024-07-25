@@ -1,0 +1,30 @@
+<.header>
+  Consumable item <%= @consumable_item.name %>
+  <:subtitle>This is a consumable item record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/consumable_items/#{@consumable_item}/edit"}>
+      <.button>Edit Consumable item</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="flex flex-col gap-5">
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Active</dt>
+    <dd><%= @consumable_item.active %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Name</dt>
+    <dd><%= @consumable_item.name %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Radius</dt>
+    <dd><%= @consumable_item.radius %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Effects</dt>
+    <dd><%= @consumable_item.effects %></dd>
+  </div>
+</div>
+
+<.back navigate={~p"/consumable_items"}>Back to Consumable Items</.back>

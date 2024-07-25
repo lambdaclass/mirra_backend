@@ -1,0 +1,65 @@
+<.header>
+  Listing Config skills
+  <:actions>
+    <.link href={~p"/skills/new"}>
+      <.button>New Skill</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="skills" rows={@skills} row_click={&JS.navigate(~p"/skills/#{&1}")}>
+  <:col :let={skill} label="Name"><%= skill.name %></:col>
+  <:col :let={skill} label="Activation delay (ms)"><%= skill.activation_delay_ms %></:col>
+  <:col :let={skill} label="Autoaim"><%= skill.autoaim %></:col>
+  <:col :let={skill} label="Block movement"><%= skill.block_movement %></:col>
+  <:col :let={skill} label="Can pick destination"><%= skill.can_pick_destination %></:col>
+  <:col :let={skill} label="Cooldown mechanism"><%= skill.cooldown_mechanism %></:col>
+  <:col :let={skill} label="Cooldown (ms)"><%= skill.cooldown_ms %></:col>
+  <:col :let={skill} label="Execution duration (ms)"><%= skill.execution_duration_ms %></:col>
+  <:col :let={skill} label="Inmune while executing"><%= skill.inmune_while_executing %></:col>
+  <:col :let={skill} label="Is passive"><%= skill.is_passive %></:col>
+  <:col :let={skill} label="Max autoaim range"><%= skill.max_autoaim_range %></:col>
+  <:col :let={skill} label="Stamina cost"><%= skill.stamina_cost %></:col>
+  <:action :let={skill}>
+    <.button type="button" phx-click={show_modal("skill-mechanics-#{skill.id}")}>Mechanics</.button>
+    <.modal id={"skill-mechanics-#{skill.id}"}>
+      <.header>
+        Mechanics for the skill
+      </.header>
+      <%= for mechanic <- skill.mechanics do %>
+        <.mechanic_show mechanic={mechanic} />
+
+        <%= if not is_nil(mechanic.on_arrival_mechanic) do %>
+          <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Show on arrival mechanic</.button>
+          <.modal id="on-arrival-mechanic-modal">
+            <.header>
+              On arrival mechanic
+            </.header>
+            <.mechanic_show mechanic={mechanic.on_arrival_mechanic} />
+          </.modal>
+        <% end %>
+
+        <.button type="button" phx-click={show_modal("on-explode-mechanics-modal")}>Show on explode mechanics</.button>
+        <.modal id="on-explode-mechanics-modal">
+          <.header>
+            On explode mechanics
+          </.header>
+          <%= for mechanic <- mechanic.on_explode_mechanics do %>
+            <.mechanic_show mechanic={mechanic} />
+          <% end %>
+        </.modal>
+      <% end %>
+    </.modal>
+  </:action>
+  <:action :let={skill}>
+    <div class="sr-only">
+      <.link navigate={~p"/skills/#{skill}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/skills/#{skill}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={skill}>
+    <.link href={~p"/skills/#{skill}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
