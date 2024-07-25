@@ -5,13 +5,14 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:radius, :initial_positions, :obstacles, :bushes]}
+  @derive {Jason.Encoder, only: [:radius, :initial_positions, :obstacles, :bushes, :pools]}
   schema "map_configurations" do
     field(:radius, :decimal)
 
     embeds_many(:initial_positions, __MODULE__.Position, on_replace: :delete)
     embeds_many(:obstacles, __MODULE__.Obstacle, on_replace: :delete)
     embeds_many(:bushes, __MODULE__.Position, on_replace: :delete)
+    embeds_many(:pools, __MODULE__.Pool, on_replace: :delete)
 
     timestamps(type: :utc_datetime)
   end
@@ -24,6 +25,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:initial_positions)
     |> cast_embed(:obstacles)
     |> cast_embed(:bushes)
+    |> cast_embed(:pools)
   end
 
   defmodule Position do
@@ -69,6 +71,47 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
       |> cast_embed(:position)
       |> cast_embed(:vertices)
       |> validate_required([:name, :position, :radius, :shape, :type])
+    end
+  end
+
+  defmodule Pool do
+    @moduledoc """
+    Pool embedded schema to be used by MapConfiguration
+    """
+    use GameBackend.Schema
+
+    @derive {Jason.Encoder, only: [:name, :position, :radius, :shape, :vertices, :effects]}
+    embedded_schema do
+      field(:name, :string)
+      field(:radius, :decimal)
+      field(:shape, Ecto.Enum, values: [:circle, :polygon])
+      field(:effects, {:array, :string})
+      embeds_one(:position, Position)
+      embeds_many(:vertices, Position)
+    end
+
+    def changeset(position, attrs) do
+      position
+      |> cast(attrs, [:name, :radius, :shape, :effects])
+      |> cast_embed(:position)
+      |> cast_embed(:vertices, drop_param: :vertices_drop, sort_param: :vertices_sort)
+      |> validate_required([:name, :position, :radius, :shape, :effects])
+      |> validate_shape()
+    end
+
+    defp validate_shape(changeset) do
+      case get_field(changeset, :shape) do
+        :polygon ->
+          if(Enum.count(get_field(changeset, :vertices)) < 3) do
+            add_error(changeset, :shape, "A polygon requires at least 3 vertices")
+          else
+            changeset
+          end
+
+        :circle ->
+          changeset
+          |> validate_number(:radius, greater_than_or_equal_to: 0)
+      end
     end
   end
 end

@@ -52,6 +52,19 @@
       <% end %>
     </dd>
   </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Pools</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.pools)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("pools-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"pools-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.pools) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
 </div>
 
 <.back navigate={~p"/map_configurations"}>Back to Map Configurations</.back>

@@ -163,7 +163,7 @@ defmodule Arena.Entities do
       },
       is_moving: false,
       aditional_info: %{
-        effects_to_apply: pool_params.effects_to_apply,
+        effects_to_apply: pool_params.effects,
         owner_id: pool_params.owner_id,
         effects: [],
         stat_multiplier: 0,
