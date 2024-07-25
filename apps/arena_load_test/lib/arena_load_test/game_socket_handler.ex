@@ -4,7 +4,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
   It handles the communication with the server as a player.
   """
   alias ArenaLoadTest.SocketSupervisor
-  alias ArenaLoadTest.Serialization
+  alias ArenaLoadTest.Serialization.ConversionProtobuf
   alias ArenaLoadTest.Utils
   use WebSockex, restart: :transient
 
@@ -39,18 +39,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
     {x, y} = create_random_movement()
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    game_action =
-      Serialization.GameActionPB.encode(%Serialization.GameActionPB{
-        action_type:
-          {:move,
-           %Serialization.MovePB{
-             direction: %Serialization.DirectionPB{
-               x: x,
-               y: y
-             }
-           }},
-        timestamp: timestamp
-      })
+    game_action = ConversionProtobuf.get_game_move_protobuf(x, y, timestamp)
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
@@ -61,21 +50,7 @@ defmodule ArenaLoadTest.GameSocketHandler do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     {x, y} = create_random_movement()
 
-    game_action =
-      Serialization.GameActionPB.encode(%Serialization.GameActionPB{
-        action_type:
-          {:attack,
-           %Serialization.AttackPB{
-             skill: get_random_available_skill(),
-             parameters: %Serialization.AttackParametersPB{
-               target: %Serialization.DirectionPB{
-                 x: x,
-                 y: y
-               }
-             }
-           }},
-        timestamp: timestamp
-      })
+    game_action = ConversionProtobuf.get_game_attack_protobuf(get_random_available_skill(), x, y, timestamp)
 
     WebSockex.cast(self(), {:send, {:binary, game_action}})
 
