@@ -25,6 +25,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:initial_positions)
     |> cast_embed(:obstacles)
     |> cast_embed(:bushes)
+    |> unique_constraint(:name)
   end
 
   defmodule Position do
