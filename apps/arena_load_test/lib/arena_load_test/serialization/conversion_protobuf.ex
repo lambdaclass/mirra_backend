@@ -1,6 +1,6 @@
 defmodule ArenaLoadTest.Serialization.ConversionProtobuf do
 
-  alias ArenaLoadTest.Serialization.{GameActionPB, MovePB, DirectionPB, AttackPB, AttackParametersPB}
+  alias ArenaLoadTest.Serialization.{GameActionPB, MovePB, DirectionPB, AttackPB, AttackParametersPB, LobbyEventPB}
 
   def get_game_move_protobuf(x, y, timestamp) do
     GameActionPB.encode(%GameActionPB{
@@ -31,5 +31,9 @@ defmodule ArenaLoadTest.Serialization.ConversionProtobuf do
            }},
         timestamp: timestamp
       })
+  end
+
+  def decode_lobby_event_protobuf(message) do
+    LobbyEventPB.decode(game_state)
   end
 end

@@ -4,7 +4,7 @@ defmodule ArenaLoadTest.SocketHandler do
   It handles the communication with the server as a new client.
   """
   use WebSockex, restart: :transient
-  alias ArenaLoadTest.Serialization
+  alias ArenaLoadTest.Serialization.ConversionProtobuf
   alias ArenaLoadTest.SocketSupervisor
   alias ArenaLoadTest.Utils
 
@@ -30,7 +30,7 @@ defmodule ArenaLoadTest.SocketHandler do
 
   @impl true
   def handle_frame({:binary, game_state}, state) do
-    game_msg = Serialization.LobbyEventPB.decode(game_state)
+    game_msg = ConversionProtobuf.decode_lobby_event_protobuf(game_state)
 
     case game_msg.event do
       {:game, game_state} ->
