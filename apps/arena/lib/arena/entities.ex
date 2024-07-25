@@ -151,11 +151,11 @@ defmodule Arena.Entities do
     %{
       id: pool_params.id,
       category: :pool,
-      shape: :circle,
+      shape: get_shape(pool_params.shape),
       name: "Pool " <> Integer.to_string(pool_params.id),
       position: pool_params.position,
       radius: pool_params.radius,
-      vertices: [],
+      vertices: pool_params.vertices,
       speed: 0.0,
       direction: %{
         x: 0.0,

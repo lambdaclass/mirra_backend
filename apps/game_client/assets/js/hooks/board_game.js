@@ -25,7 +25,8 @@ export const BoardGame = function () {
     projectile: 0x0000ff,
     item: 0x238636,
     trap: 0x6600cc,
-    crate: 0xcc9900
+    crate: 0xcc9900,
+    pool: 0x00ffff
   };
   let player_id;
 
@@ -175,6 +176,9 @@ export const BoardGame = function () {
         case "crate":
           newEntity.boardObject.zIndex = 5;
           break;
+        case "pool":
+          newEntity.boardObject.zIndex = 2;
+          break;
       }
 
       newEntity.boardObject.endFill();
@@ -233,6 +237,9 @@ export const BoardGame = function () {
             break;
           case "trap":
             color = colors.trap;
+            break;
+          case "pool":
+            color = colors.pool;
             break;
         }
       }
