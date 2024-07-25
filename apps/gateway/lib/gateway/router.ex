@@ -22,6 +22,10 @@ defmodule Gateway.Router do
       get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
     end
 
+    scope "/configuration" do
+      get "/map", ConfigurationController, :get_map_configuration
+    end
+
     scope "/stores" do
       get "/:store_name/list_items", StoreController, :list_items
     end

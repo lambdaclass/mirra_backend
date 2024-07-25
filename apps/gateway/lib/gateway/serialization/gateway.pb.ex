@@ -30,13 +30,6 @@ defmodule Gateway.Serialization.WebSocketRequest do
   oneof(:request_type, 0)
 
   field(:get_user, 1, type: Gateway.Serialization.GetUser, json_name: "getUser", oneof: 0)
-
-  field(:get_user_by_username, 2,
-    type: Gateway.Serialization.GetUserByUsername,
-    json_name: "getUserByUsername",
-    oneof: 0
-  )
-
   field(:create_user, 3, type: Gateway.Serialization.CreateUser, json_name: "createUser", oneof: 0)
 
   field(:get_campaigns, 4,

@@ -44,6 +44,11 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
     send_resp(conn, 200, Jason.encode!(game_configuration))
   end
 
+  def get_map_configuration(conn, _params) do
+    map_configuration = Configuration.get_latest_map_configuration()
+    send_resp(conn, 200, Jason.encode!(map_configuration))
+  end
+
   def get_consumable_items_configuration(conn, _params) do
     consumable_items = Items.list_consumable_items() |> Enum.filter(& &1.active)
     send_resp(conn, 200, Jason.encode!(consumable_items))
