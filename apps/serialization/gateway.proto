@@ -3,7 +3,6 @@ syntax = "proto3";
   message WebSocketRequest {
     oneof request_type {
       GetUser get_user = 1;
-      GetUserByUsername get_user_by_username = 2;
       CreateUser create_user = 3;
       GetCampaigns get_campaigns = 4;
       GetCampaign get_campaign = 5;
