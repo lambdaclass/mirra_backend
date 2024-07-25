@@ -15,6 +15,10 @@ defmodule Arena.Game.Obstacle do
     Map.filter(obstacles, fn {_obstacle_id, obstacle} -> collisionable_obstacle?(obstacle) end)
   end
 
+  def get_collisionable_obstacles_for_projectiles(obstacles) do
+    Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collide_with_projectiles end)
+  end
+
   def handle_transition_init(obstacle) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 

@@ -215,6 +215,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         collisionable: obstacle_collisionable?(params),
+        collide_with_projectiles: obstacle_collide_with_projectiles?(params),
         statuses_cycle: params.statuses_cycle,
         status: params.base_status,
         type: params.type,
@@ -472,16 +473,24 @@ defmodule Arena.Entities do
     put_in(entity, [:aditional_info, :cooldowns], %{})
   end
 
-  def obstacle_collisionable?(%{type: "static"}) do
-    true
-  end
-
-  def obstacle_collisionable?(params) do
+  def obstacle_collisionable?(%{type: "dynamic"} = params) do
     %{base_status: base_status, statuses_cycle: statuses_cycle} = params
 
     base_status_params =
       Map.get(statuses_cycle, String.to_existing_atom(base_status))
 
     base_status_params.make_obstacle_collisionable
+  end
+
+  def obstacle_collisionable?(_params) do
+    true
+  end
+
+  def obstacle_collide_with_projectiles?(%{type: "lake"}) do
+    false
+  end
+
+  def obstacle_collide_with_projectiles?(_params) do
+    true
   end
 end
