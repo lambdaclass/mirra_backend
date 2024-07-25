@@ -78,6 +78,7 @@ message ConfigGame {
 
 message ConfigMap {
   float radius = 1;
+  string name = 2;
 }
 
 message ConfigCharacter {

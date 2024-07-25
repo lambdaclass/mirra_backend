@@ -3634,7 +3634,8 @@ proto.ConfigMap.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigMap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0)
+    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3675,6 +3676,10 @@ proto.ConfigMap.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRadius(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3711,6 +3716,13 @@ proto.ConfigMap.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -3729,6 +3741,24 @@ proto.ConfigMap.prototype.getRadius = function() {
  */
 proto.ConfigMap.prototype.setRadius = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional string name = 2;
+ * @return {string}
+ */
+proto.ConfigMap.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ConfigMap} returns this
+ */
+proto.ConfigMap.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
