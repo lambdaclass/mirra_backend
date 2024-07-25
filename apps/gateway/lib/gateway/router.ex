@@ -36,7 +36,7 @@ defmodule Gateway.Router do
       get "/get_daily_reward_status", UserController, :get_daily_reward_status
 
       scope "/quest" do
-        put "/add_quests", QuestController, :add_quests
+        post "/add_quests", QuestController, :add_quests
         get "/:quest_id/reroll_daily_quest", QuestController, :reroll_daily_quest
         get "/:quest_id/complete_bounty", QuestController, :complete_bounty
         get "/:quest_id/complete_quest", QuestController, :complete_quest
