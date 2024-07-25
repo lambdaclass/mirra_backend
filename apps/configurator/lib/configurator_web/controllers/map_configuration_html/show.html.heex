@@ -1,0 +1,57 @@
+<.header>
+  Map configuration <%= @map_configuration.id %>
+  <:subtitle>This is a Map Configuration record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/map_configurations/#{@map_configuration}/edit"}>
+      <.button>Edit Map Configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="flex flex-col gap-5">
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Map Radius</dt>
+    <dd><%= @map_configuration.radius %></dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Initial positions</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.initial_positions)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("initial-positions-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"initial-positions-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.initial_positions) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Obstacles</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.obstacles)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("obstacles-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"obstacles-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.obstacles) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Bushes</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.bushes)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("bushes-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"bushes-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.bushes) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+</div>
+
+<.back navigate={~p"/map_configurations"}>Back to Map Configurations</.back>
