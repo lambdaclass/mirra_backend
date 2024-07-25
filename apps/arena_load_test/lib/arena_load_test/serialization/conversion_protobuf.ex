@@ -34,6 +34,6 @@ defmodule ArenaLoadTest.Serialization.ConversionProtobuf do
   end
 
   def decode_lobby_event_protobuf(message) do
-    LobbyEventPB.decode(game_state)
+    LobbyEventPB.decode(message)
   end
 end
