@@ -1,24 +1,43 @@
 defmodule Arena.Serialization.ConversionProtobuf do
 
-  alias Arena.Serialization.{GameActionPB, GameEventPB, GameJoinedPB, PingUpdatePB , ToggleBotsPB, GameStatePB}
+  alias Arena.Serialization.{GameActionPB, GameEventPB, GameJoinedPB, PingUpdatePB , ToggleBotsPB, GameStatePB, LeaveLobbyPB, LobbyEventPB, JoinedLobbyPB, LeftLobbyPB}
 
-  def get_game_joined_protobuf(%{player_id: player_id, config: config, bounties: bounties}) do
+  def decode_game_message(message) do
+    GameActionPB.decode(message)
+  end
+
+  def decode_lobby_message(message) do
+    case LeaveLobbyPB.decode(message) do
+      %LeaveLobbyPB{} -> :leave_lobby
+      _ -> :error
+    end
+  end
+
+  def get_left_lobby_protobuf() do
+    LobbyEventPB.encode(%LobbyEventPB{event: {:left, %LeftLobbyPB{}}})
+  end
+
+  def get_lobby_join_game_protobuf(game_id) do
+    LobbyEventPB.encode(%LobbyEventPB{event: {:game, %GameStatePB{game_id: game_id, players: %{}, projectiles: %{}}}})
+  end
+
+  def get_lobby_joined_lobby_protobuf() do
+    LobbyEventPB.encode(%LobbyEventPB{event: {:joined, %JoinedLobbyPB{}}})
+  end
+
+  def get_game_game_joined_protobuf(%{player_id: player_id, config: config, bounties: bounties}) do
     GameEventPB.encode(%GameEventPB{
         event: {:joined, %GameJoinedPB{player_id: player_id, config: config, bounties: bounties}}
       })
   end
 
-  def get_ping_update_protobuf(latency) do
+  def get_game_ping_update_protobuf(latency) do
     GameEventPB.encode(%GameEventPB{
         event: {:ping, %PingUpdatePB{latency: latency}}
       })
   end
 
-  def decode_message(message) do
-    GameActionPB.decode(message)
-  end
-
-  def get_toggle_bots_protobuf() do
+  def get_game_toggle_bots_protobuf() do
     GameEventPB.encode(%GameEventPB{
         event: {:toggle_bots, %ToggleBotsPB{}}
       })
@@ -51,7 +70,7 @@ defmodule Arena.Serialization.ConversionProtobuf do
     })
   end
 
-  def get_ended_game_protobuf(state) do
+  def get_game_ended_protobuf(state) do
     GameEventPB.encode(%GameEventPB{event: {:finished, state}})
   end
 end

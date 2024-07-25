@@ -6,7 +6,7 @@ defmodule Arena.SocketHandler do
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.GameLauncher
-  alias Arena.Serialization.{GameStatePB, JoinedLobbyPB, LeaveLobbyPB, LeftLobbyPB, LobbyEventPB}
+  alias Arena.Serialization.ConversionProtobuf
 
   @behaviour :cowboy_websocket
 
@@ -35,17 +35,18 @@ defmodule Arena.SocketHandler do
     Logger.info("Websocket INIT called")
     GameLauncher.join(state.client_id, state.character_name, state.player_name)
 
-    joined_msg = LobbyEventPB.encode(%LobbyEventPB{event: {:joined, %JoinedLobbyPB{}}})
-    {:reply, {:binary, joined_msg}, state}
+    message = ConversionProtobuf.get_lobby_joined_lobby_protobuf()
+    {:reply, {:binary, message}, state}
   end
 
   @impl true
   def websocket_handle({:binary, message}, state) do
-    case LeaveLobbyPB.decode(message) do
-      %LeaveLobbyPB{} ->
+    decoded_message = ConversionProtobuf.decode_lobby_message(message)
+    case decoded_message do
+      :leave_lobby ->
         :ok = GameLauncher.leave(state.client_id)
-        left_msg = LobbyEventPB.encode(%LobbyEventPB{event: {:left, %LeftLobbyPB{}}})
-        {[{:binary, left_msg}, :close], state}
+        message = ConversionProtobuf.get_left_lobby_protobuf()
+        {[{:binary, message}, :close], state}
 
       _ ->
         {:ok, state}
@@ -66,9 +67,8 @@ defmodule Arena.SocketHandler do
   @impl true
   def websocket_info({:join_game, game_id}, state) do
     Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
-    game = %GameStatePB{game_id: game_id, players: %{}, projectiles: %{}}
-    game_msg = LobbyEventPB.encode(%LobbyEventPB{event: {:game, game}})
-    {:reply, {:binary, game_msg}, state}
+    message = ConversionProtobuf.get_lobby_join_game_protobuf(game_id)
+    {:reply, {:binary, message}, state}
   end
 
   @impl true

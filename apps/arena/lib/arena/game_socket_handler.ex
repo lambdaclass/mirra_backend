@@ -51,7 +51,7 @@ defmodule Arena.GameSocketHandler do
       |> Map.put(:player_alive, true)
 
 
-    message = ConversionProtobuf.get_game_joined_protobuf(%{player_id: player_id, config: to_broadcast_config(config), bounties: bounties})
+    message = ConversionProtobuf.get_game_game_joined_protobuf(%{player_id: player_id, config: to_broadcast_config(config), bounties: bounties})
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 
@@ -64,7 +64,7 @@ defmodule Arena.GameSocketHandler do
     time_now = Time.utc_now()
     latency = Time.diff(time_now, last_ping_time, :millisecond)
 
-    message = ConversionProtobuf.get_ping_update_protobuf(latency)
+    message = ConversionProtobuf.get_game_ping_update_protobuf(latency)
 
     # Send back the player's ping
     {:reply, {:binary, message}, state}
@@ -75,7 +75,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    ConversionProtobuf.decode_message(message)
+    ConversionProtobuf.decode_game_message(message)
     |> handle_decoded_message(state)
 
     {:ok, state}

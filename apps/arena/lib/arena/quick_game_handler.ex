@@ -5,7 +5,7 @@ defmodule Arena.QuickGameHandler do
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Authentication.GatewaySigner
   alias Arena.GameLauncher
-  alias Arena.Serialization.{GameStatePB, JoinedLobbyPB, LobbyEventPB}
+  alias Arena.Serialization.ConversionProtobuf
 
   @behaviour :cowboy_websocket
 
@@ -23,7 +23,7 @@ defmodule Arena.QuickGameHandler do
   def websocket_init(state) do
     GameLauncher.join_quick_game(state.client_id, state.character_name, state.player_name)
 
-    joined_msg = LobbyEventPB.encode(%LobbyEventPB{event: {:joined, %JoinedLobbyPB{}}})
+    joined_msg = ConversionProtobuf.get_lobby_joined_lobby_protobuf()
     {:reply, {:binary, joined_msg}, state}
   end
 
@@ -34,8 +34,7 @@ defmodule Arena.QuickGameHandler do
 
   @impl true
   def websocket_info({:join_game, game_id}, state) do
-    game = %GameStatePB{game_id: game_id, players: %{}, projectiles: %{}}
-    game_msg = LobbyEventPB.encode(%LobbyEventPB{event: {:game, game}})
+    game_msg = ConversionProtobuf.get_lobby_join_game_protobuf(game_id)
     {:reply, {:binary, game_msg}, state}
   end
 

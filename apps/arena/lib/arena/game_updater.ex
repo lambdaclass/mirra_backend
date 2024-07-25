@@ -172,7 +172,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_cast(:toggle_bots, state) do
-    message = ConversionProtobuf.get_toggle_bots_protobuf()
+    message = ConversionProtobuf.get_game_toggle_bots_protobuf()
 
     PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, message})
 
@@ -663,7 +663,7 @@ defmodule Arena.GameUpdater do
       players: complete_entities(state.players)
     }
 
-    message = ConversionProtobuf.get_ended_game_protobuf(game_state)
+    message = ConversionProtobuf.get_game_ended_protobuf(game_state)
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, message})
   end
