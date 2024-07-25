@@ -77,7 +77,7 @@ defmodule GameBackend.Users do
     q =
       from(u in User,
         where: u.id == ^id and u.game_id == ^game_id,
-        left_join: unit in Unit,
+        join: unit in Unit,
         on: u.id == unit.user_id,
         preload: [units: [:character, :items], currencies: :currency],
         group_by: u.id,
