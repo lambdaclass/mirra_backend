@@ -58,8 +58,8 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:change_tickrate, tickrate})
   end
 
-  def pong(game_pid, ping_timestamp) do
-    GenServer.cast(game_pid, {:pong, ping_timestamp})
+  def pong(game_pid, client_pid, ping_timestamp) do
+    GenServer.cast(game_pid, {:pong, client_pid, ping_timestamp})
   end
 
   ##########################
@@ -196,7 +196,7 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
   end
 
-  def handle_cast({:pong, ping_timestamp}, state) do
+  def handle_cast({:pong, client_pid, ping_timestamp}, state) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     latency = now - ping_timestamp
 
@@ -205,7 +205,7 @@ defmodule Arena.GameUpdater do
         event: {:ping_update, %PingUpdate{latency: latency}}
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:ping_update, encoded_msg})
+    send(client_pid, {:ping_update, encoded_msg})
 
     {:noreply, state}
   end

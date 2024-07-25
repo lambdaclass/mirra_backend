@@ -195,7 +195,7 @@ defmodule Arena.GameSocketHandler do
     do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
 
   defp handle_decoded_message(%{action_type: {:pong, pong_params}}, state),
-    do: GameUpdater.pong(state.game_pid, pong_params.ping_timestamp)
+    do: GameUpdater.pong(state.game_pid, self(), pong_params.ping_timestamp)
 
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)
