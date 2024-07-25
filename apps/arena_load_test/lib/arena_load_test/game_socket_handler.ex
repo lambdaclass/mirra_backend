@@ -40,11 +40,11 @@ defmodule ArenaLoadTest.GameSocketHandler do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     game_action =
-      Serialization.GameAction.encode(%Serialization.GameAction{
+      Serialization.GameActionPB.encode(%Serialization.GameActionPB{
         action_type:
           {:move,
-           %Serialization.Move{
-             direction: %Serialization.Direction{
+           %Serialization.MovePB{
+             direction: %Serialization.DirectionPB{
                x: x,
                y: y
              }
@@ -62,13 +62,13 @@ defmodule ArenaLoadTest.GameSocketHandler do
     {x, y} = create_random_movement()
 
     game_action =
-      Serialization.GameAction.encode(%Serialization.GameAction{
+      Serialization.GameActionPB.encode(%Serialization.GameActionPB{
         action_type:
           {:attack,
-           %Serialization.Attack{
+           %Serialization.AttackPB{
              skill: get_random_available_skill(),
-             parameters: %Serialization.AttackParameters{
-               target: %Serialization.Direction{
+             parameters: %Serialization.AttackParametersPB{
+               target: %Serialization.DirectionPB{
                  x: x,
                  y: y
                }

@@ -13,7 +13,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
+  alias Arena.Serialization.ConversionProtobuf
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -172,12 +172,9 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_cast(:toggle_bots, state) do
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:toggle_bots, %ToggleBots{}}
-      })
+    message = ConversionProtobuf.get_toggle_bots_protobuf()
 
-    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, encoded_msg})
+    PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:toggle_bots, message})
 
     {:noreply, state}
   end
@@ -633,43 +630,42 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_update(state) do
-    encoded_state =
-      GameEvent.encode(%GameEvent{
-        event:
-          {:update,
-           %GameState{
-             game_id: state.game_id,
-             players: complete_entities(state.players),
-             projectiles: complete_entities(state.projectiles),
-             power_ups: complete_entities(state.power_ups),
-             pools: complete_entities(state.pools),
-             bushes: complete_entities(state.bushes),
-             items: complete_entities(state.items),
-             server_timestamp: state.server_timestamp,
-             player_timestamps: state.player_timestamps,
-             zone: state.zone,
-             killfeed: state.killfeed,
-             damage_taken: state.damage_taken,
-             damage_done: state.damage_done,
-             status: state.status,
-             start_game_timestamp: state.start_game_timestamp,
-             obstacles: complete_entities(state.obstacles),
-             crates: complete_entities(state.crates),
-             traps: complete_entities(state.traps)
-           }}
-      })
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    state_to_broadcast = %{
+      game_id: state.game_id,
+      players: complete_entities(state.players),
+      projectiles: complete_entities(state.projectiles),
+      power_ups: complete_entities(state.power_ups),
+      pools: complete_entities(state.pools),
+      bushes: complete_entities(state.bushes),
+      items: complete_entities(state.items),
+      server_timestamp: state.server_timestamp,
+      player_timestamps: state.player_timestamps,
+      zone: state.zone,
+      killfeed: state.killfeed,
+      damage_taken: state.damage_taken,
+      damage_done: state.damage_done,
+      status: state.status,
+      start_game_timestamp: state.start_game_timestamp,
+      obstacles: complete_entities(state.obstacles),
+      crates: complete_entities(state.crates),
+      traps: complete_entities(state.traps)
+    }
+
+    message = ConversionProtobuf.get_game_update_protobuf(state_to_broadcast)
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, message})
   end
 
   defp broadcast_game_ended(winner, state) do
-    game_state = %GameFinished{
+    game_state = %{
       winner: complete_entity(winner),
       players: complete_entities(state.players)
     }
 
-    encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
+    message = ConversionProtobuf.get_ended_game_protobuf(game_state)
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, message})
   end
 
   defp complete_entities(entities) do

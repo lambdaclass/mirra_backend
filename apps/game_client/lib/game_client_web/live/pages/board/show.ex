@@ -42,7 +42,7 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   def handle_info({:game_event, game_event}, socket) do
-    %{event: event} = GameClient.Protobuf.GameEvent.decode(game_event)
+    %{event: event} = GameClient.Protobuf.GameEventPB.decode(game_event)
     handle_game_event(event, socket)
   end
 

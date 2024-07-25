@@ -7,7 +7,7 @@ syntax = "proto3";
 /*
  * Direction is a vector with a magnitude of 1
  */
-message Direction {
+message DirectionPB {
   float x = 1;
   float y = 2;
 }
@@ -15,81 +15,81 @@ message Direction {
 /*
  * Position of an entity in the arena
  */
-message Position {
+message PositionPB {
   float x = 1;
   float y = 2;
 }
 
-message LobbyEvent {
+message LobbyEventPB {
   oneof event {
-    LeaveLobby leave = 1;
-    LeftLobby left = 2;
-    JoinedLobby joined = 3;
-    GameState game = 4;
+    LeaveLobbyPB leave = 1;
+    LeftLobbyPB left = 2;
+    JoinedLobbyPB joined = 3;
+    GameStatePB game = 4;
   }
 }
 
-message LeaveLobby { }
-message LeftLobby { }
-message JoinedLobby { }
+message LeaveLobbyPB { }
+message LeftLobbyPB { }
+message JoinedLobbyPB { }
 
-message GameEvent {
+message GameEventPB {
   oneof event {
-    GameJoined joined = 1;
-    GameState update = 2;
-    GameFinished finished = 3;
-    PingUpdate ping = 4;
-    ToggleBots toggle_bots = 5;
+    GameJoinedPB joined = 1;
+    GameStatePB update = 2;
+    GameFinishedPB finished = 3;
+    PingUpdatePB ping = 4;
+    ToggleBotsPB toggle_bots = 5;
   }
 }
 
-message GameFinished {
-  Entity winner = 1;
-  map<uint64, Entity> players = 2;
+message GameFinishedPB {
+  EntityPB winner = 1;
+  map<uint64, EntityPB> players = 2;
 }
 
-message PingUpdate {
+message PingUpdatePB {
   uint64 latency = 1;
 }
 
-message GameJoined {
+message GameJoinedPB {
   uint64 player_id = 1;
-  Configuration config = 2;
-  repeated BountyInfo bounties = 3;
+  ConfigurationPB config = 2;
+  repeated BountyInfoPB bounties = 3;
 }
 
-message Configuration {
-  ConfigGame game = 1;
-  ConfigMap map = 2;
-  repeated ConfigCharacter characters = 3;
-  ClientConfig client_config = 4;
+message ConfigurationPB {
+  ConfigGamePB game = 1;
+  ConfigMapPB map = 2;
+  repeated ConfigCharacterPB characters = 3;
+  ClientConfigPB client_config = 4;
 }
 
-message ConfigGame {
+message ConfigGamePB {
   float tick_rate_ms = 1;
   float bounty_pick_time_ms = 2;
   float start_game_time_ms = 3;
 }
 
-message ConfigMap {
+message ConfigMapPB {
   float radius = 1;
 }
 
-message ConfigCharacter {
+message ConfigCharacterPB {
   string name = 1;
   bool active = 2;
   float base_speed = 3;
   float base_size = 4;
   uint64 base_health = 5;
   uint64 max_inventory_size = 6;
-  map<string, ConfigSkill> skills = 7;
+  map<string, ConfigSkillPB> skills = 7;
 }
 
-message ClientConfig {
-  ConfigServerUpdate server_update = 1;
+message ClientConfigPB {
+  ConfigServerUpdatePB server_update = 1;
 }
 
-message ConfigServerUpdate {
+message ConfigServerUpdatePB {
   uint64 timestamp_difference_samples_to_check_warning = 1;
   uint64 timestamp_differences_samples_max_length = 2;
   uint64 show_warning_threshold = 3;
@@ -98,7 +98,7 @@ message ConfigServerUpdate {
   uint64 ms_without_update_disconnect = 6;
 }
 
-message ConfigSkill {
+message ConfigSkillPB {
   string name = 1;
   uint64 cooldown_ms = 2;
   uint64 execution_duration_ms = 3;
@@ -113,28 +113,28 @@ message ConfigSkill {
 /*
  * Game State
  */
-message GameState {
+message GameStatePB {
   string game_id = 1;
-  map<uint64, Entity> players = 2;
-  map<uint64, Entity> projectiles = 3;
+  map<uint64, EntityPB> players = 2;
+  map<uint64, EntityPB> projectiles = 3;
   map<uint64, int64> player_timestamps = 4;
   int64 server_timestamp = 5;
-  Zone zone = 6;
-  repeated KillEntry killfeed = 7;
+  ZonePB zone = 6;
+  repeated KillEntryPB killfeed = 7;
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
-  map<uint64, Entity> power_ups = 10;
-  GameStatus status = 11;
+  map<uint64, EntityPB> power_ups = 10;
+  GameStatusPB status = 11;
   int64 start_game_timestamp = 12;
-  map<uint64, Entity> items = 13;
-  map<uint64, Entity> obstacles = 14;
-  map<uint64, Entity> pools = 15;
-  map<uint64, Entity> crates = 16;
-  map<uint64, Entity> bushes = 17;
-  map<uint64, Entity> traps = 18;
+  map<uint64, EntityPB> items = 13;
+  map<uint64, EntityPB> obstacles = 14;
+  map<uint64, EntityPB> pools = 15;
+  map<uint64, EntityPB> crates = 16;
+  map<uint64, EntityPB> bushes = 17;
+  map<uint64, EntityPB> traps = 18;
 }
 
-enum GameStatus {
+enum GameStatusPB {
   PREPARING = 0;
   RUNNING = 1;
   ENDED = 2;
@@ -155,43 +155,43 @@ enum GameStatus {
  * direction: direction of the entity if it is moving
  * is_moving: true if the entity is moving
  */
-message Entity {
+message EntityPB {
   uint64 id = 1;
   string category = 2;
   string shape = 3;
   string name = 4;
-  Position position = 5;
+  PositionPB position = 5;
   float radius = 6;
-  repeated Position vertices = 7;
+  repeated PositionPB vertices = 7;
   repeated uint64 collides_with = 8;
   float speed = 9;
-  Direction direction = 10;
+  DirectionPB direction = 10;
   bool is_moving = 11;
   oneof aditional_info {
-    Player player = 12;
-    Projectile projectile = 13;
-    Obstacle obstacle = 14;
-    PowerUp power_up = 15;
-    Item item = 16;
-    Pool pool = 17;
-    Crate crate = 18;
-    Bush bush = 19;
-    Trap trap = 20;
+    PlayerPB player = 12;
+    ProjectilePB projectile = 13;
+    ObstaclePB obstacle = 14;
+    PowerUpPB power_up = 15;
+    ItemPB item = 16;
+    PoolPB pool = 17;
+    CratePB crate = 18;
+    BushPB bush = 19;
+    TrapPB trap = 20;
   }
 }
 
-message Player {
+message PlayerPB {
   uint64 health = 1;
   uint64 kill_count = 2;
-  repeated PlayerAction current_actions = 3;
+  repeated PlayerActionPB current_actions = 3;
   uint64 available_stamina = 4;
   uint64 max_stamina = 5;
   uint64 stamina_interval = 6;
   bool recharging_stamina = 7;
   string character_name = 8;
   uint64 power_ups = 9;
-  repeated Effect effects = 10;
-  Item inventory = 11;
+  repeated EffectPB effects = 10;
+  ItemPB inventory = 11;
   map<string, uint64> cooldowns = 12;
   repeated uint64 visible_players = 13;
   bool on_bush = 14;
@@ -199,81 +199,81 @@ message Player {
   bool bounty_completed = 16;
 }
 
-message Effect {
+message EffectPB {
   string name = 1;
   uint32 duration_ms = 2;
   uint64 id = 3;
 }
 
-message Item {
+message ItemPB {
   string name = 2;
 }
 
-message Projectile {
+message ProjectilePB {
   uint64 damage = 1;
   uint64 owner_id = 2;
-  ProjectileStatus status = 3;
+  ProjectileStatusPB status = 3;
   string skill_key = 4;
 }
 
-enum ProjectileStatus {
+enum ProjectileStatusPB {
   ACTIVE = 0;
   EXPLODED = 1;
   CONSUMED = 2;
 }
 
-message Obstacle {
+message ObstaclePB {
   string color = 1;
   bool collisionable = 2;
   string status = 3;
 }
 
-message PowerUp {
+message PowerUpPB {
   uint64 owner_id = 1;
-  PowerUpstatus status = 2;
+  PowerUpstatusPB status = 2;
 }
 
-message Crate {
+message CratePB {
   uint64 health = 1;
   uint64 amount_of_power_ups = 2;
-  CrateStatus status = 3;
+  CrateStatusPB status = 3;
 }
 
-enum CrateStatus {
+enum CrateStatusPB {
   FINE = 0;
   DESTROYED = 1;
 }
 
-enum  PowerUpstatus {
+enum  PowerUpstatusPB {
   AVAILABLE = 0;
   TAKEN = 1;
   UNAVAILABLE = 2;
 }
 
-message Pool {
+message PoolPB {
   uint64 owner_id = 1;
-  PoolStatus status = 2;
-  repeated Effect effects = 3;
+  PoolStatusPB status = 2;
+  repeated EffectPB effects = 3;
   string skill_key = 4;
 }
 
-message Bush {
+message BushPB {
 }
 
-message Trap {
+message TrapPB {
   uint64 owner_id = 1;
   string name = 2;
-  TrapStatus status = 3;
+  TrapStatusPB status = 3;
 }
 
-message PlayerAction {
-    PlayerActionType action = 1;
+message PlayerActionPB {
+    PlayerActionTypePB action = 1;
     uint64 duration = 2;
-    Position destination = 3;
-    Position direction = 4;
+    PositionPB destination = 3;
+    PositionPB direction = 4;
 }
 
-enum PlayerActionType {
+enum PlayerActionTypePB {
     MOVING = 0;
     STARTING_SKILL_1 = 1;
     STARTING_SKILL_2 = 2;
@@ -282,14 +282,14 @@ enum PlayerActionType {
     EXECUTING_SKILL_3 = 5;
 }
 
-enum TrapStatus{
+enum TrapStatusPB {
   PENDING = 0;
   PREPARED = 1;
   TRIGGERED = 2;
   USED = 3;
 }
 
-enum PoolStatus{
+enum PoolStatusPB {
   WAITING = 0;
   READY = 1;
 }
@@ -297,66 +297,70 @@ enum PoolStatus{
 /*
  * Player Actions
  */
-message Move {
-  Direction direction = 1;
+message MovePB {
+  DirectionPB direction = 1;
 }
 
-message Attack {
+message AttackPB {
   string skill = 1;
-  AttackParameters parameters = 2;
+  AttackParametersPB parameters = 2;
 }
 
-message AttackParameters {
-  Direction target = 1;
+message AttackParametersPB {
+  DirectionPB target = 1;
 }
 
-message UseItem {
+message UseItemPB {
   uint64 item = 1;
 }
 
-message SelectBounty {
+message SelectBountyPB {
   string bounty_quest_id = 1;
 }
 
-message ToggleZone { }
-message ToggleBots { }
-message ChangeTickrate {
+message ToggleZonePB {
+  bool active = 1;
+}
+message ToggleBotsPB {
+  bool active = 1;
+}
+message ChangeTickratePB {
   int64 tickrate = 1;
 }
 
-message GameAction {
+message GameActionPB {
   oneof action_type {
-    Move move = 1;
-    Attack attack = 2;
-    UseItem use_item = 4;
-    SelectBounty select_bounty = 5;
-    ToggleZone toggle_zone = 6;
-    ToggleBots toggle_bots = 7;
-    ChangeTickrate change_tickrate = 8;
+    MovePB move = 1;
+    AttackPB attack = 2;
+    UseItemPB use_item = 4;
+    SelectBountyPB select_bounty = 5;
+    ToggleZonePB toggle_zone = 6;
+    ToggleBotsPB toggle_bots = 7;
+    ChangeTickratePB change_tickrate = 8;
   }
   int64 timestamp = 3;
 }
 
-message Zone {
+message ZonePB {
   float radius = 1;
   bool enabled = 2;
   int64 next_zone_change_timestamp = 3;
   bool shrinking = 4;
 }
 
-message KillEntry {
+message KillEntryPB {
   uint64 killer_id = 1;
   uint64 victim_id = 2;
 }
 
-message BountyInfo {
+message BountyInfoPB {
   string id = 1;
   string description = 2;
   string quest_type = 3;
-  CurrencyReward reward = 4;
+  CurrencyRewardPB reward = 4;
 }
 
-message CurrencyReward {
+message CurrencyRewardPB {
   string currency  = 1;
   int64 amount = 2;
 }

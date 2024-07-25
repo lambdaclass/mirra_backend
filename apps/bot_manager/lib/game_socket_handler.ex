@@ -32,7 +32,7 @@ defmodule BotManager.GameSocketHandler do
   end
 
   def handle_frame({:binary, frame}, state) do
-    case BotManager.Protobuf.GameEvent.decode(frame) do
+    case BotManager.Protobuf.GameEventPB.decode(frame) do
       %{event: {:update, game_state}} ->
         bot_player = Map.get(game_state.players, state.player_id)
 
@@ -81,11 +81,11 @@ defmodule BotManager.GameSocketHandler do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     game_action =
-      BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
+      BotManager.Protobuf.GameActionPB.encode(%BotManager.Protobuf.GameActionPB{
         action_type:
           {:move,
-           %BotManager.Protobuf.Move{
-             direction: %BotManager.Protobuf.Direction{
+           %BotManager.Protobuf.MovePB{
+             direction: %BotManager.Protobuf.DirectionPB{
                x: direction.x,
                y: direction.y
              }
@@ -100,13 +100,13 @@ defmodule BotManager.GameSocketHandler do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
     game_action =
-      BotManager.Protobuf.GameAction.encode(%BotManager.Protobuf.GameAction{
+      BotManager.Protobuf.GameActionPB.encode(%BotManager.Protobuf.GameActionPB{
         action_type:
           {:attack,
-           %BotManager.Protobuf.Attack{
+           %BotManager.Protobuf.AttackPB{
              skill: "1",
-             parameters: %BotManager.Protobuf.AttackParameters{
-               target: %BotManager.Protobuf.Direction{
+             parameters: %BotManager.Protobuf.AttackParametersPB{
+               target: %BotManager.Protobuf.DirectionPB{
                  x: direction.x,
                  y: direction.y
                }

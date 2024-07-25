@@ -11,7 +11,7 @@ export const GameQueue = function () {
         let player = new Player(getQueueSocketUrl(gateway_jwt, player_id, character, player_name, game_mode))
 
         player.socket.addEventListener("message", (event) => {
-            lobby_event = messages.LobbyEvent.deserializeBinary(event.data);
+            lobby_event = messages.LobbyEventPB.deserializeBinary(event.data);
             if ( lobby_event.hasGame() && lobby_event.getGame().getGameId()) {
                 this.pushEvent("join_game", { game_id: lobby_event.getGame().getGameId(), player_id: player_id });
             }

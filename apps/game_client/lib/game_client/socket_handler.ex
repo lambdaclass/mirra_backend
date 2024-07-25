@@ -3,7 +3,7 @@ defmodule GameClient.SocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias GameClient.Protobuf.GameState
+  alias GameClient.Protobuf.GameStatePB
 
   @behaviour :cowboy_websocket
 
@@ -19,7 +19,7 @@ defmodule GameClient.SocketHandler do
     Logger.info("Websocket INIT called")
 
     game_state =
-      GameState.encode(%GameState{
+      GameStatePB.encode(%GameStatePB{
         game_id: nil,
         players: %{},
         projectiles: %{}
@@ -45,7 +45,7 @@ defmodule GameClient.SocketHandler do
     Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
 
     game_state =
-      GameState.encode(%GameState{
+      GameStatePB.encode(%GameStatePB{
         game_id: game_id,
         players: %{},
         projectiles: %{}

@@ -30,7 +30,7 @@ defmodule ArenaLoadTest.SocketHandler do
 
   @impl true
   def handle_frame({:binary, game_state}, state) do
-    game_msg = Serialization.LobbyEvent.decode(game_state)
+    game_msg = Serialization.LobbyEventPB.decode(game_state)
 
     case game_msg.event do
       {:game, game_state} ->

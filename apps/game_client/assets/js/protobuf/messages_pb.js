@@ -21,60 +21,60 @@ var global =
     (function () { return this; }).call(null) ||
     Function('return this')();
 
-goog.exportSymbol('proto.Attack', null, global);
-goog.exportSymbol('proto.AttackParameters', null, global);
-goog.exportSymbol('proto.BountyInfo', null, global);
-goog.exportSymbol('proto.Bush', null, global);
-goog.exportSymbol('proto.ChangeTickrate', null, global);
-goog.exportSymbol('proto.ClientConfig', null, global);
-goog.exportSymbol('proto.ConfigCharacter', null, global);
-goog.exportSymbol('proto.ConfigGame', null, global);
-goog.exportSymbol('proto.ConfigMap', null, global);
-goog.exportSymbol('proto.ConfigServerUpdate', null, global);
-goog.exportSymbol('proto.ConfigSkill', null, global);
-goog.exportSymbol('proto.Configuration', null, global);
-goog.exportSymbol('proto.Crate', null, global);
-goog.exportSymbol('proto.CrateStatus', null, global);
-goog.exportSymbol('proto.CurrencyReward', null, global);
-goog.exportSymbol('proto.Direction', null, global);
-goog.exportSymbol('proto.Effect', null, global);
-goog.exportSymbol('proto.Entity', null, global);
-goog.exportSymbol('proto.Entity.AditionalInfoCase', null, global);
-goog.exportSymbol('proto.GameAction', null, global);
-goog.exportSymbol('proto.GameAction.ActionTypeCase', null, global);
-goog.exportSymbol('proto.GameEvent', null, global);
-goog.exportSymbol('proto.GameEvent.EventCase', null, global);
-goog.exportSymbol('proto.GameFinished', null, global);
-goog.exportSymbol('proto.GameJoined', null, global);
-goog.exportSymbol('proto.GameState', null, global);
-goog.exportSymbol('proto.GameStatus', null, global);
-goog.exportSymbol('proto.Item', null, global);
-goog.exportSymbol('proto.JoinedLobby', null, global);
-goog.exportSymbol('proto.KillEntry', null, global);
-goog.exportSymbol('proto.LeaveLobby', null, global);
-goog.exportSymbol('proto.LeftLobby', null, global);
-goog.exportSymbol('proto.LobbyEvent', null, global);
-goog.exportSymbol('proto.LobbyEvent.EventCase', null, global);
-goog.exportSymbol('proto.Move', null, global);
-goog.exportSymbol('proto.Obstacle', null, global);
-goog.exportSymbol('proto.PingUpdate', null, global);
-goog.exportSymbol('proto.Player', null, global);
-goog.exportSymbol('proto.PlayerAction', null, global);
-goog.exportSymbol('proto.PlayerActionType', null, global);
-goog.exportSymbol('proto.Pool', null, global);
-goog.exportSymbol('proto.PoolStatus', null, global);
-goog.exportSymbol('proto.Position', null, global);
-goog.exportSymbol('proto.PowerUp', null, global);
-goog.exportSymbol('proto.PowerUpstatus', null, global);
-goog.exportSymbol('proto.Projectile', null, global);
-goog.exportSymbol('proto.ProjectileStatus', null, global);
-goog.exportSymbol('proto.SelectBounty', null, global);
-goog.exportSymbol('proto.ToggleBots', null, global);
-goog.exportSymbol('proto.ToggleZone', null, global);
-goog.exportSymbol('proto.Trap', null, global);
-goog.exportSymbol('proto.TrapStatus', null, global);
-goog.exportSymbol('proto.UseItem', null, global);
-goog.exportSymbol('proto.Zone', null, global);
+goog.exportSymbol('proto.AttackPB', null, global);
+goog.exportSymbol('proto.AttackParametersPB', null, global);
+goog.exportSymbol('proto.BountyInfoPB', null, global);
+goog.exportSymbol('proto.BushPB', null, global);
+goog.exportSymbol('proto.ChangeTickratePB', null, global);
+goog.exportSymbol('proto.ClientConfigPB', null, global);
+goog.exportSymbol('proto.ConfigCharacterPB', null, global);
+goog.exportSymbol('proto.ConfigGamePB', null, global);
+goog.exportSymbol('proto.ConfigMapPB', null, global);
+goog.exportSymbol('proto.ConfigServerUpdatePB', null, global);
+goog.exportSymbol('proto.ConfigSkillPB', null, global);
+goog.exportSymbol('proto.ConfigurationPB', null, global);
+goog.exportSymbol('proto.CratePB', null, global);
+goog.exportSymbol('proto.CrateStatusPB', null, global);
+goog.exportSymbol('proto.CurrencyRewardPB', null, global);
+goog.exportSymbol('proto.DirectionPB', null, global);
+goog.exportSymbol('proto.EffectPB', null, global);
+goog.exportSymbol('proto.EntityPB', null, global);
+goog.exportSymbol('proto.EntityPB.AditionalInfoCase', null, global);
+goog.exportSymbol('proto.GameActionPB', null, global);
+goog.exportSymbol('proto.GameActionPB.ActionTypeCase', null, global);
+goog.exportSymbol('proto.GameEventPB', null, global);
+goog.exportSymbol('proto.GameEventPB.EventCase', null, global);
+goog.exportSymbol('proto.GameFinishedPB', null, global);
+goog.exportSymbol('proto.GameJoinedPB', null, global);
+goog.exportSymbol('proto.GameStatePB', null, global);
+goog.exportSymbol('proto.GameStatusPB', null, global);
+goog.exportSymbol('proto.ItemPB', null, global);
+goog.exportSymbol('proto.JoinedLobbyPB', null, global);
+goog.exportSymbol('proto.KillEntryPB', null, global);
+goog.exportSymbol('proto.LeaveLobbyPB', null, global);
+goog.exportSymbol('proto.LeftLobbyPB', null, global);
+goog.exportSymbol('proto.LobbyEventPB', null, global);
+goog.exportSymbol('proto.LobbyEventPB.EventCase', null, global);
+goog.exportSymbol('proto.MovePB', null, global);
+goog.exportSymbol('proto.ObstaclePB', null, global);
+goog.exportSymbol('proto.PingUpdatePB', null, global);
+goog.exportSymbol('proto.PlayerActionPB', null, global);
+goog.exportSymbol('proto.PlayerActionTypePB', null, global);
+goog.exportSymbol('proto.PlayerPB', null, global);
+goog.exportSymbol('proto.PoolPB', null, global);
+goog.exportSymbol('proto.PoolStatusPB', null, global);
+goog.exportSymbol('proto.PositionPB', null, global);
+goog.exportSymbol('proto.PowerUpPB', null, global);
+goog.exportSymbol('proto.PowerUpstatusPB', null, global);
+goog.exportSymbol('proto.ProjectilePB', null, global);
+goog.exportSymbol('proto.ProjectileStatusPB', null, global);
+goog.exportSymbol('proto.SelectBountyPB', null, global);
+goog.exportSymbol('proto.ToggleBotsPB', null, global);
+goog.exportSymbol('proto.ToggleZonePB', null, global);
+goog.exportSymbol('proto.TrapPB', null, global);
+goog.exportSymbol('proto.TrapStatusPB', null, global);
+goog.exportSymbol('proto.UseItemPB', null, global);
+goog.exportSymbol('proto.ZonePB', null, global);
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -85,16 +85,16 @@ goog.exportSymbol('proto.Zone', null, global);
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Direction = function(opt_data) {
+proto.DirectionPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Direction, jspb.Message);
+goog.inherits(proto.DirectionPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Direction.displayName = 'proto.Direction';
+  proto.DirectionPB.displayName = 'proto.DirectionPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -106,16 +106,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Position = function(opt_data) {
+proto.PositionPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Position, jspb.Message);
+goog.inherits(proto.PositionPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Position.displayName = 'proto.Position';
+  proto.PositionPB.displayName = 'proto.PositionPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -127,16 +127,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LobbyEvent = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.LobbyEvent.oneofGroups_);
+proto.LobbyEventPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.LobbyEventPB.oneofGroups_);
 };
-goog.inherits(proto.LobbyEvent, jspb.Message);
+goog.inherits(proto.LobbyEventPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LobbyEvent.displayName = 'proto.LobbyEvent';
+  proto.LobbyEventPB.displayName = 'proto.LobbyEventPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -148,16 +148,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LeaveLobby = function(opt_data) {
+proto.LeaveLobbyPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.LeaveLobby, jspb.Message);
+goog.inherits(proto.LeaveLobbyPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LeaveLobby.displayName = 'proto.LeaveLobby';
+  proto.LeaveLobbyPB.displayName = 'proto.LeaveLobbyPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -169,16 +169,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.LeftLobby = function(opt_data) {
+proto.LeftLobbyPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.LeftLobby, jspb.Message);
+goog.inherits(proto.LeftLobbyPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.LeftLobby.displayName = 'proto.LeftLobby';
+  proto.LeftLobbyPB.displayName = 'proto.LeftLobbyPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -190,16 +190,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.JoinedLobby = function(opt_data) {
+proto.JoinedLobbyPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.JoinedLobby, jspb.Message);
+goog.inherits(proto.JoinedLobbyPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.JoinedLobby.displayName = 'proto.JoinedLobby';
+  proto.JoinedLobbyPB.displayName = 'proto.JoinedLobbyPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -211,16 +211,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GameEvent = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.GameEvent.oneofGroups_);
+proto.GameEventPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.GameEventPB.oneofGroups_);
 };
-goog.inherits(proto.GameEvent, jspb.Message);
+goog.inherits(proto.GameEventPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.GameEvent.displayName = 'proto.GameEvent';
+  proto.GameEventPB.displayName = 'proto.GameEventPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -232,16 +232,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GameFinished = function(opt_data) {
+proto.GameFinishedPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.GameFinished, jspb.Message);
+goog.inherits(proto.GameFinishedPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.GameFinished.displayName = 'proto.GameFinished';
+  proto.GameFinishedPB.displayName = 'proto.GameFinishedPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -253,16 +253,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PingUpdate = function(opt_data) {
+proto.PingUpdatePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.PingUpdate, jspb.Message);
+goog.inherits(proto.PingUpdatePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PingUpdate.displayName = 'proto.PingUpdate';
+  proto.PingUpdatePB.displayName = 'proto.PingUpdatePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -274,16 +274,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GameJoined = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.GameJoined.repeatedFields_, null);
+proto.GameJoinedPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.GameJoinedPB.repeatedFields_, null);
 };
-goog.inherits(proto.GameJoined, jspb.Message);
+goog.inherits(proto.GameJoinedPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.GameJoined.displayName = 'proto.GameJoined';
+  proto.GameJoinedPB.displayName = 'proto.GameJoinedPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -295,16 +295,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Configuration = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.Configuration.repeatedFields_, null);
+proto.ConfigurationPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.ConfigurationPB.repeatedFields_, null);
 };
-goog.inherits(proto.Configuration, jspb.Message);
+goog.inherits(proto.ConfigurationPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Configuration.displayName = 'proto.Configuration';
+  proto.ConfigurationPB.displayName = 'proto.ConfigurationPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -316,16 +316,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConfigGame = function(opt_data) {
+proto.ConfigGamePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ConfigGame, jspb.Message);
+goog.inherits(proto.ConfigGamePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConfigGame.displayName = 'proto.ConfigGame';
+  proto.ConfigGamePB.displayName = 'proto.ConfigGamePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -337,16 +337,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConfigMap = function(opt_data) {
+proto.ConfigMapPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ConfigMap, jspb.Message);
+goog.inherits(proto.ConfigMapPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConfigMap.displayName = 'proto.ConfigMap';
+  proto.ConfigMapPB.displayName = 'proto.ConfigMapPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -358,16 +358,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConfigCharacter = function(opt_data) {
+proto.ConfigCharacterPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ConfigCharacter, jspb.Message);
+goog.inherits(proto.ConfigCharacterPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConfigCharacter.displayName = 'proto.ConfigCharacter';
+  proto.ConfigCharacterPB.displayName = 'proto.ConfigCharacterPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -379,16 +379,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ClientConfig = function(opt_data) {
+proto.ClientConfigPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ClientConfig, jspb.Message);
+goog.inherits(proto.ClientConfigPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ClientConfig.displayName = 'proto.ClientConfig';
+  proto.ClientConfigPB.displayName = 'proto.ClientConfigPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -400,16 +400,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConfigServerUpdate = function(opt_data) {
+proto.ConfigServerUpdatePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ConfigServerUpdate, jspb.Message);
+goog.inherits(proto.ConfigServerUpdatePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConfigServerUpdate.displayName = 'proto.ConfigServerUpdate';
+  proto.ConfigServerUpdatePB.displayName = 'proto.ConfigServerUpdatePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -421,16 +421,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ConfigSkill = function(opt_data) {
+proto.ConfigSkillPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ConfigSkill, jspb.Message);
+goog.inherits(proto.ConfigSkillPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ConfigSkill.displayName = 'proto.ConfigSkill';
+  proto.ConfigSkillPB.displayName = 'proto.ConfigSkillPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -442,16 +442,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GameState = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.GameState.repeatedFields_, null);
+proto.GameStatePB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.GameStatePB.repeatedFields_, null);
 };
-goog.inherits(proto.GameState, jspb.Message);
+goog.inherits(proto.GameStatePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.GameState.displayName = 'proto.GameState';
+  proto.GameStatePB.displayName = 'proto.GameStatePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -463,16 +463,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Entity = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.Entity.repeatedFields_, proto.Entity.oneofGroups_);
+proto.EntityPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.EntityPB.repeatedFields_, proto.EntityPB.oneofGroups_);
 };
-goog.inherits(proto.Entity, jspb.Message);
+goog.inherits(proto.EntityPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Entity.displayName = 'proto.Entity';
+  proto.EntityPB.displayName = 'proto.EntityPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -484,16 +484,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Player = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.Player.repeatedFields_, null);
+proto.PlayerPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.PlayerPB.repeatedFields_, null);
 };
-goog.inherits(proto.Player, jspb.Message);
+goog.inherits(proto.PlayerPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Player.displayName = 'proto.Player';
+  proto.PlayerPB.displayName = 'proto.PlayerPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -505,16 +505,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Effect = function(opt_data) {
+proto.EffectPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Effect, jspb.Message);
+goog.inherits(proto.EffectPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Effect.displayName = 'proto.Effect';
+  proto.EffectPB.displayName = 'proto.EffectPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -526,16 +526,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Item = function(opt_data) {
+proto.ItemPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Item, jspb.Message);
+goog.inherits(proto.ItemPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Item.displayName = 'proto.Item';
+  proto.ItemPB.displayName = 'proto.ItemPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -547,16 +547,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Projectile = function(opt_data) {
+proto.ProjectilePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Projectile, jspb.Message);
+goog.inherits(proto.ProjectilePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Projectile.displayName = 'proto.Projectile';
+  proto.ProjectilePB.displayName = 'proto.ProjectilePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -568,16 +568,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Obstacle = function(opt_data) {
+proto.ObstaclePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Obstacle, jspb.Message);
+goog.inherits(proto.ObstaclePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Obstacle.displayName = 'proto.Obstacle';
+  proto.ObstaclePB.displayName = 'proto.ObstaclePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -589,16 +589,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PowerUp = function(opt_data) {
+proto.PowerUpPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.PowerUp, jspb.Message);
+goog.inherits(proto.PowerUpPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PowerUp.displayName = 'proto.PowerUp';
+  proto.PowerUpPB.displayName = 'proto.PowerUpPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -610,16 +610,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Crate = function(opt_data) {
+proto.CratePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Crate, jspb.Message);
+goog.inherits(proto.CratePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Crate.displayName = 'proto.Crate';
+  proto.CratePB.displayName = 'proto.CratePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -631,16 +631,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Pool = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, proto.Pool.repeatedFields_, null);
+proto.PoolPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, proto.PoolPB.repeatedFields_, null);
 };
-goog.inherits(proto.Pool, jspb.Message);
+goog.inherits(proto.PoolPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Pool.displayName = 'proto.Pool';
+  proto.PoolPB.displayName = 'proto.PoolPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -652,16 +652,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Bush = function(opt_data) {
+proto.BushPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Bush, jspb.Message);
+goog.inherits(proto.BushPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Bush.displayName = 'proto.Bush';
+  proto.BushPB.displayName = 'proto.BushPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -673,16 +673,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Trap = function(opt_data) {
+proto.TrapPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Trap, jspb.Message);
+goog.inherits(proto.TrapPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Trap.displayName = 'proto.Trap';
+  proto.TrapPB.displayName = 'proto.TrapPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -694,16 +694,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.PlayerAction = function(opt_data) {
+proto.PlayerActionPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.PlayerAction, jspb.Message);
+goog.inherits(proto.PlayerActionPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.PlayerAction.displayName = 'proto.PlayerAction';
+  proto.PlayerActionPB.displayName = 'proto.PlayerActionPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -715,16 +715,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Move = function(opt_data) {
+proto.MovePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Move, jspb.Message);
+goog.inherits(proto.MovePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Move.displayName = 'proto.Move';
+  proto.MovePB.displayName = 'proto.MovePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -736,16 +736,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Attack = function(opt_data) {
+proto.AttackPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Attack, jspb.Message);
+goog.inherits(proto.AttackPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Attack.displayName = 'proto.Attack';
+  proto.AttackPB.displayName = 'proto.AttackPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -757,16 +757,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.AttackParameters = function(opt_data) {
+proto.AttackParametersPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.AttackParameters, jspb.Message);
+goog.inherits(proto.AttackParametersPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.AttackParameters.displayName = 'proto.AttackParameters';
+  proto.AttackParametersPB.displayName = 'proto.AttackParametersPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -778,16 +778,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.UseItem = function(opt_data) {
+proto.UseItemPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.UseItem, jspb.Message);
+goog.inherits(proto.UseItemPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.UseItem.displayName = 'proto.UseItem';
+  proto.UseItemPB.displayName = 'proto.UseItemPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -799,16 +799,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.SelectBounty = function(opt_data) {
+proto.SelectBountyPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.SelectBounty, jspb.Message);
+goog.inherits(proto.SelectBountyPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.SelectBounty.displayName = 'proto.SelectBounty';
+  proto.SelectBountyPB.displayName = 'proto.SelectBountyPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -820,16 +820,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ToggleZone = function(opt_data) {
+proto.ToggleZonePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ToggleZone, jspb.Message);
+goog.inherits(proto.ToggleZonePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ToggleZone.displayName = 'proto.ToggleZone';
+  proto.ToggleZonePB.displayName = 'proto.ToggleZonePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -841,16 +841,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ToggleBots = function(opt_data) {
+proto.ToggleBotsPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ToggleBots, jspb.Message);
+goog.inherits(proto.ToggleBotsPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ToggleBots.displayName = 'proto.ToggleBots';
+  proto.ToggleBotsPB.displayName = 'proto.ToggleBotsPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -862,16 +862,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ChangeTickrate = function(opt_data) {
+proto.ChangeTickratePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ChangeTickrate, jspb.Message);
+goog.inherits(proto.ChangeTickratePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.ChangeTickrate.displayName = 'proto.ChangeTickrate';
+  proto.ChangeTickratePB.displayName = 'proto.ChangeTickratePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -883,16 +883,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.GameAction = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.GameAction.oneofGroups_);
+proto.GameActionPB = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.GameActionPB.oneofGroups_);
 };
-goog.inherits(proto.GameAction, jspb.Message);
+goog.inherits(proto.GameActionPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.GameAction.displayName = 'proto.GameAction';
+  proto.GameActionPB.displayName = 'proto.GameActionPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -904,16 +904,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Zone = function(opt_data) {
+proto.ZonePB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.Zone, jspb.Message);
+goog.inherits(proto.ZonePB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.Zone.displayName = 'proto.Zone';
+  proto.ZonePB.displayName = 'proto.ZonePB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -925,16 +925,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.KillEntry = function(opt_data) {
+proto.KillEntryPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.KillEntry, jspb.Message);
+goog.inherits(proto.KillEntryPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.KillEntry.displayName = 'proto.KillEntry';
+  proto.KillEntryPB.displayName = 'proto.KillEntryPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -946,16 +946,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.BountyInfo = function(opt_data) {
+proto.BountyInfoPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.BountyInfo, jspb.Message);
+goog.inherits(proto.BountyInfoPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.BountyInfo.displayName = 'proto.BountyInfo';
+  proto.BountyInfoPB.displayName = 'proto.BountyInfoPB';
 }
 /**
  * Generated by JsPbCodeGenerator.
@@ -967,16 +967,16 @@ if (goog.DEBUG && !COMPILED) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.CurrencyReward = function(opt_data) {
+proto.CurrencyRewardPB = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.CurrencyReward, jspb.Message);
+goog.inherits(proto.CurrencyRewardPB, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
   /**
    * @public
    * @override
    */
-  proto.CurrencyReward.displayName = 'proto.CurrencyReward';
+  proto.CurrencyRewardPB.displayName = 'proto.CurrencyRewardPB';
 }
 
 
@@ -994,8 +994,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Direction.prototype.toObject = function(opt_includeInstance) {
-  return proto.Direction.toObject(opt_includeInstance, this);
+proto.DirectionPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.DirectionPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1004,11 +1004,11 @@ proto.Direction.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Direction} msg The msg instance to transform.
+ * @param {!proto.DirectionPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Direction.toObject = function(includeInstance, msg) {
+proto.DirectionPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
@@ -1025,23 +1025,23 @@ proto.Direction.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Direction}
+ * @return {!proto.DirectionPB}
  */
-proto.Direction.deserializeBinary = function(bytes) {
+proto.DirectionPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Direction;
-  return proto.Direction.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.DirectionPB;
+  return proto.DirectionPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Direction} msg The message object to deserialize into.
+ * @param {!proto.DirectionPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Direction}
+ * @return {!proto.DirectionPB}
  */
-proto.Direction.deserializeBinaryFromReader = function(msg, reader) {
+proto.DirectionPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1069,9 +1069,9 @@ proto.Direction.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Direction.prototype.serializeBinary = function() {
+proto.DirectionPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Direction.serializeBinaryToWriter(this, writer);
+  proto.DirectionPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1079,11 +1079,11 @@ proto.Direction.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Direction} message
+ * @param {!proto.DirectionPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Direction.serializeBinaryToWriter = function(message, writer) {
+proto.DirectionPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getX();
   if (f !== 0.0) {
@@ -1106,16 +1106,16 @@ proto.Direction.serializeBinaryToWriter = function(message, writer) {
  * optional float x = 1;
  * @return {number}
  */
-proto.Direction.prototype.getX = function() {
+proto.DirectionPB.prototype.getX = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Direction} returns this
+ * @return {!proto.DirectionPB} returns this
  */
-proto.Direction.prototype.setX = function(value) {
+proto.DirectionPB.prototype.setX = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
@@ -1124,16 +1124,16 @@ proto.Direction.prototype.setX = function(value) {
  * optional float y = 2;
  * @return {number}
  */
-proto.Direction.prototype.getY = function() {
+proto.DirectionPB.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Direction} returns this
+ * @return {!proto.DirectionPB} returns this
  */
-proto.Direction.prototype.setY = function(value) {
+proto.DirectionPB.prototype.setY = function(value) {
   return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
@@ -1154,8 +1154,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Position.prototype.toObject = function(opt_includeInstance) {
-  return proto.Position.toObject(opt_includeInstance, this);
+proto.PositionPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.PositionPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1164,11 +1164,11 @@ proto.Position.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Position} msg The msg instance to transform.
+ * @param {!proto.PositionPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Position.toObject = function(includeInstance, msg) {
+proto.PositionPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     x: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     y: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0)
@@ -1185,23 +1185,23 @@ proto.Position.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Position}
+ * @return {!proto.PositionPB}
  */
-proto.Position.deserializeBinary = function(bytes) {
+proto.PositionPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Position;
-  return proto.Position.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.PositionPB;
+  return proto.PositionPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Position} msg The message object to deserialize into.
+ * @param {!proto.PositionPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Position}
+ * @return {!proto.PositionPB}
  */
-proto.Position.deserializeBinaryFromReader = function(msg, reader) {
+proto.PositionPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1229,9 +1229,9 @@ proto.Position.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Position.prototype.serializeBinary = function() {
+proto.PositionPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Position.serializeBinaryToWriter(this, writer);
+  proto.PositionPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1239,11 +1239,11 @@ proto.Position.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Position} message
+ * @param {!proto.PositionPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Position.serializeBinaryToWriter = function(message, writer) {
+proto.PositionPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getX();
   if (f !== 0.0) {
@@ -1266,16 +1266,16 @@ proto.Position.serializeBinaryToWriter = function(message, writer) {
  * optional float x = 1;
  * @return {number}
  */
-proto.Position.prototype.getX = function() {
+proto.PositionPB.prototype.getX = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Position} returns this
+ * @return {!proto.PositionPB} returns this
  */
-proto.Position.prototype.setX = function(value) {
+proto.PositionPB.prototype.setX = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
@@ -1284,16 +1284,16 @@ proto.Position.prototype.setX = function(value) {
  * optional float y = 2;
  * @return {number}
  */
-proto.Position.prototype.getY = function() {
+proto.PositionPB.prototype.getY = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Position} returns this
+ * @return {!proto.PositionPB} returns this
  */
-proto.Position.prototype.setY = function(value) {
+proto.PositionPB.prototype.setY = function(value) {
   return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
@@ -1307,12 +1307,12 @@ proto.Position.prototype.setY = function(value) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.LobbyEvent.oneofGroups_ = [[1,2,3,4]];
+proto.LobbyEventPB.oneofGroups_ = [[1,2,3,4]];
 
 /**
  * @enum {number}
  */
-proto.LobbyEvent.EventCase = {
+proto.LobbyEventPB.EventCase = {
   EVENT_NOT_SET: 0,
   LEAVE: 1,
   LEFT: 2,
@@ -1321,10 +1321,10 @@ proto.LobbyEvent.EventCase = {
 };
 
 /**
- * @return {proto.LobbyEvent.EventCase}
+ * @return {proto.LobbyEventPB.EventCase}
  */
-proto.LobbyEvent.prototype.getEventCase = function() {
-  return /** @type {proto.LobbyEvent.EventCase} */(jspb.Message.computeOneofCase(this, proto.LobbyEvent.oneofGroups_[0]));
+proto.LobbyEventPB.prototype.getEventCase = function() {
+  return /** @type {proto.LobbyEventPB.EventCase} */(jspb.Message.computeOneofCase(this, proto.LobbyEventPB.oneofGroups_[0]));
 };
 
 
@@ -1342,8 +1342,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LobbyEvent.prototype.toObject = function(opt_includeInstance) {
-  return proto.LobbyEvent.toObject(opt_includeInstance, this);
+proto.LobbyEventPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.LobbyEventPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1352,16 +1352,16 @@ proto.LobbyEvent.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LobbyEvent} msg The msg instance to transform.
+ * @param {!proto.LobbyEventPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LobbyEvent.toObject = function(includeInstance, msg) {
+proto.LobbyEventPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    leave: (f = msg.getLeave()) && proto.LeaveLobby.toObject(includeInstance, f),
-    left: (f = msg.getLeft()) && proto.LeftLobby.toObject(includeInstance, f),
-    joined: (f = msg.getJoined()) && proto.JoinedLobby.toObject(includeInstance, f),
-    game: (f = msg.getGame()) && proto.GameState.toObject(includeInstance, f)
+    leave: (f = msg.getLeave()) && proto.LeaveLobbyPB.toObject(includeInstance, f),
+    left: (f = msg.getLeft()) && proto.LeftLobbyPB.toObject(includeInstance, f),
+    joined: (f = msg.getJoined()) && proto.JoinedLobbyPB.toObject(includeInstance, f),
+    game: (f = msg.getGame()) && proto.GameStatePB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -1375,23 +1375,23 @@ proto.LobbyEvent.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LobbyEvent}
+ * @return {!proto.LobbyEventPB}
  */
-proto.LobbyEvent.deserializeBinary = function(bytes) {
+proto.LobbyEventPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LobbyEvent;
-  return proto.LobbyEvent.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.LobbyEventPB;
+  return proto.LobbyEventPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LobbyEvent} msg The message object to deserialize into.
+ * @param {!proto.LobbyEventPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LobbyEvent}
+ * @return {!proto.LobbyEventPB}
  */
-proto.LobbyEvent.deserializeBinaryFromReader = function(msg, reader) {
+proto.LobbyEventPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1399,23 +1399,23 @@ proto.LobbyEvent.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.LeaveLobby;
-      reader.readMessage(value,proto.LeaveLobby.deserializeBinaryFromReader);
+      var value = new proto.LeaveLobbyPB;
+      reader.readMessage(value,proto.LeaveLobbyPB.deserializeBinaryFromReader);
       msg.setLeave(value);
       break;
     case 2:
-      var value = new proto.LeftLobby;
-      reader.readMessage(value,proto.LeftLobby.deserializeBinaryFromReader);
+      var value = new proto.LeftLobbyPB;
+      reader.readMessage(value,proto.LeftLobbyPB.deserializeBinaryFromReader);
       msg.setLeft(value);
       break;
     case 3:
-      var value = new proto.JoinedLobby;
-      reader.readMessage(value,proto.JoinedLobby.deserializeBinaryFromReader);
+      var value = new proto.JoinedLobbyPB;
+      reader.readMessage(value,proto.JoinedLobbyPB.deserializeBinaryFromReader);
       msg.setJoined(value);
       break;
     case 4:
-      var value = new proto.GameState;
-      reader.readMessage(value,proto.GameState.deserializeBinaryFromReader);
+      var value = new proto.GameStatePB;
+      reader.readMessage(value,proto.GameStatePB.deserializeBinaryFromReader);
       msg.setGame(value);
       break;
     default:
@@ -1431,9 +1431,9 @@ proto.LobbyEvent.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LobbyEvent.prototype.serializeBinary = function() {
+proto.LobbyEventPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LobbyEvent.serializeBinaryToWriter(this, writer);
+  proto.LobbyEventPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1441,18 +1441,18 @@ proto.LobbyEvent.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LobbyEvent} message
+ * @param {!proto.LobbyEventPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LobbyEvent.serializeBinaryToWriter = function(message, writer) {
+proto.LobbyEventPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getLeave();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.LeaveLobby.serializeBinaryToWriter
+      proto.LeaveLobbyPB.serializeBinaryToWriter
     );
   }
   f = message.getLeft();
@@ -1460,7 +1460,7 @@ proto.LobbyEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.LeftLobby.serializeBinaryToWriter
+      proto.LeftLobbyPB.serializeBinaryToWriter
     );
   }
   f = message.getJoined();
@@ -1468,7 +1468,7 @@ proto.LobbyEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      proto.JoinedLobby.serializeBinaryToWriter
+      proto.JoinedLobbyPB.serializeBinaryToWriter
     );
   }
   f = message.getGame();
@@ -1476,36 +1476,36 @@ proto.LobbyEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.GameState.serializeBinaryToWriter
+      proto.GameStatePB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional LeaveLobby leave = 1;
- * @return {?proto.LeaveLobby}
+ * optional LeaveLobbyPB leave = 1;
+ * @return {?proto.LeaveLobbyPB}
  */
-proto.LobbyEvent.prototype.getLeave = function() {
-  return /** @type{?proto.LeaveLobby} */ (
-    jspb.Message.getWrapperField(this, proto.LeaveLobby, 1));
+proto.LobbyEventPB.prototype.getLeave = function() {
+  return /** @type{?proto.LeaveLobbyPB} */ (
+    jspb.Message.getWrapperField(this, proto.LeaveLobbyPB, 1));
 };
 
 
 /**
- * @param {?proto.LeaveLobby|undefined} value
- * @return {!proto.LobbyEvent} returns this
+ * @param {?proto.LeaveLobbyPB|undefined} value
+ * @return {!proto.LobbyEventPB} returns this
 */
-proto.LobbyEvent.prototype.setLeave = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1, proto.LobbyEvent.oneofGroups_[0], value);
+proto.LobbyEventPB.prototype.setLeave = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 1, proto.LobbyEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LobbyEvent} returns this
+ * @return {!proto.LobbyEventPB} returns this
  */
-proto.LobbyEvent.prototype.clearLeave = function() {
+proto.LobbyEventPB.prototype.clearLeave = function() {
   return this.setLeave(undefined);
 };
 
@@ -1514,35 +1514,35 @@ proto.LobbyEvent.prototype.clearLeave = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LobbyEvent.prototype.hasLeave = function() {
+proto.LobbyEventPB.prototype.hasLeave = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional LeftLobby left = 2;
- * @return {?proto.LeftLobby}
+ * optional LeftLobbyPB left = 2;
+ * @return {?proto.LeftLobbyPB}
  */
-proto.LobbyEvent.prototype.getLeft = function() {
-  return /** @type{?proto.LeftLobby} */ (
-    jspb.Message.getWrapperField(this, proto.LeftLobby, 2));
+proto.LobbyEventPB.prototype.getLeft = function() {
+  return /** @type{?proto.LeftLobbyPB} */ (
+    jspb.Message.getWrapperField(this, proto.LeftLobbyPB, 2));
 };
 
 
 /**
- * @param {?proto.LeftLobby|undefined} value
- * @return {!proto.LobbyEvent} returns this
+ * @param {?proto.LeftLobbyPB|undefined} value
+ * @return {!proto.LobbyEventPB} returns this
 */
-proto.LobbyEvent.prototype.setLeft = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 2, proto.LobbyEvent.oneofGroups_[0], value);
+proto.LobbyEventPB.prototype.setLeft = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 2, proto.LobbyEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LobbyEvent} returns this
+ * @return {!proto.LobbyEventPB} returns this
  */
-proto.LobbyEvent.prototype.clearLeft = function() {
+proto.LobbyEventPB.prototype.clearLeft = function() {
   return this.setLeft(undefined);
 };
 
@@ -1551,35 +1551,35 @@ proto.LobbyEvent.prototype.clearLeft = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LobbyEvent.prototype.hasLeft = function() {
+proto.LobbyEventPB.prototype.hasLeft = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * optional JoinedLobby joined = 3;
- * @return {?proto.JoinedLobby}
+ * optional JoinedLobbyPB joined = 3;
+ * @return {?proto.JoinedLobbyPB}
  */
-proto.LobbyEvent.prototype.getJoined = function() {
-  return /** @type{?proto.JoinedLobby} */ (
-    jspb.Message.getWrapperField(this, proto.JoinedLobby, 3));
+proto.LobbyEventPB.prototype.getJoined = function() {
+  return /** @type{?proto.JoinedLobbyPB} */ (
+    jspb.Message.getWrapperField(this, proto.JoinedLobbyPB, 3));
 };
 
 
 /**
- * @param {?proto.JoinedLobby|undefined} value
- * @return {!proto.LobbyEvent} returns this
+ * @param {?proto.JoinedLobbyPB|undefined} value
+ * @return {!proto.LobbyEventPB} returns this
 */
-proto.LobbyEvent.prototype.setJoined = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 3, proto.LobbyEvent.oneofGroups_[0], value);
+proto.LobbyEventPB.prototype.setJoined = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 3, proto.LobbyEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LobbyEvent} returns this
+ * @return {!proto.LobbyEventPB} returns this
  */
-proto.LobbyEvent.prototype.clearJoined = function() {
+proto.LobbyEventPB.prototype.clearJoined = function() {
   return this.setJoined(undefined);
 };
 
@@ -1588,35 +1588,35 @@ proto.LobbyEvent.prototype.clearJoined = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LobbyEvent.prototype.hasJoined = function() {
+proto.LobbyEventPB.prototype.hasJoined = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional GameState game = 4;
- * @return {?proto.GameState}
+ * optional GameStatePB game = 4;
+ * @return {?proto.GameStatePB}
  */
-proto.LobbyEvent.prototype.getGame = function() {
-  return /** @type{?proto.GameState} */ (
-    jspb.Message.getWrapperField(this, proto.GameState, 4));
+proto.LobbyEventPB.prototype.getGame = function() {
+  return /** @type{?proto.GameStatePB} */ (
+    jspb.Message.getWrapperField(this, proto.GameStatePB, 4));
 };
 
 
 /**
- * @param {?proto.GameState|undefined} value
- * @return {!proto.LobbyEvent} returns this
+ * @param {?proto.GameStatePB|undefined} value
+ * @return {!proto.LobbyEventPB} returns this
 */
-proto.LobbyEvent.prototype.setGame = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 4, proto.LobbyEvent.oneofGroups_[0], value);
+proto.LobbyEventPB.prototype.setGame = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 4, proto.LobbyEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.LobbyEvent} returns this
+ * @return {!proto.LobbyEventPB} returns this
  */
-proto.LobbyEvent.prototype.clearGame = function() {
+proto.LobbyEventPB.prototype.clearGame = function() {
   return this.setGame(undefined);
 };
 
@@ -1625,7 +1625,7 @@ proto.LobbyEvent.prototype.clearGame = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.LobbyEvent.prototype.hasGame = function() {
+proto.LobbyEventPB.prototype.hasGame = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -1646,8 +1646,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LeaveLobby.prototype.toObject = function(opt_includeInstance) {
-  return proto.LeaveLobby.toObject(opt_includeInstance, this);
+proto.LeaveLobbyPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.LeaveLobbyPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1656,11 +1656,11 @@ proto.LeaveLobby.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LeaveLobby} msg The msg instance to transform.
+ * @param {!proto.LeaveLobbyPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LeaveLobby.toObject = function(includeInstance, msg) {
+proto.LeaveLobbyPB.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -1676,23 +1676,23 @@ proto.LeaveLobby.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LeaveLobby}
+ * @return {!proto.LeaveLobbyPB}
  */
-proto.LeaveLobby.deserializeBinary = function(bytes) {
+proto.LeaveLobbyPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LeaveLobby;
-  return proto.LeaveLobby.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.LeaveLobbyPB;
+  return proto.LeaveLobbyPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LeaveLobby} msg The message object to deserialize into.
+ * @param {!proto.LeaveLobbyPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LeaveLobby}
+ * @return {!proto.LeaveLobbyPB}
  */
-proto.LeaveLobby.deserializeBinaryFromReader = function(msg, reader) {
+proto.LeaveLobbyPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1712,9 +1712,9 @@ proto.LeaveLobby.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LeaveLobby.prototype.serializeBinary = function() {
+proto.LeaveLobbyPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LeaveLobby.serializeBinaryToWriter(this, writer);
+  proto.LeaveLobbyPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1722,11 +1722,11 @@ proto.LeaveLobby.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LeaveLobby} message
+ * @param {!proto.LeaveLobbyPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LeaveLobby.serializeBinaryToWriter = function(message, writer) {
+proto.LeaveLobbyPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -1747,8 +1747,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.LeftLobby.prototype.toObject = function(opt_includeInstance) {
-  return proto.LeftLobby.toObject(opt_includeInstance, this);
+proto.LeftLobbyPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.LeftLobbyPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1757,11 +1757,11 @@ proto.LeftLobby.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.LeftLobby} msg The msg instance to transform.
+ * @param {!proto.LeftLobbyPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LeftLobby.toObject = function(includeInstance, msg) {
+proto.LeftLobbyPB.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -1777,23 +1777,23 @@ proto.LeftLobby.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.LeftLobby}
+ * @return {!proto.LeftLobbyPB}
  */
-proto.LeftLobby.deserializeBinary = function(bytes) {
+proto.LeftLobbyPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.LeftLobby;
-  return proto.LeftLobby.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.LeftLobbyPB;
+  return proto.LeftLobbyPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.LeftLobby} msg The message object to deserialize into.
+ * @param {!proto.LeftLobbyPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.LeftLobby}
+ * @return {!proto.LeftLobbyPB}
  */
-proto.LeftLobby.deserializeBinaryFromReader = function(msg, reader) {
+proto.LeftLobbyPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1813,9 +1813,9 @@ proto.LeftLobby.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.LeftLobby.prototype.serializeBinary = function() {
+proto.LeftLobbyPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.LeftLobby.serializeBinaryToWriter(this, writer);
+  proto.LeftLobbyPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1823,11 +1823,11 @@ proto.LeftLobby.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.LeftLobby} message
+ * @param {!proto.LeftLobbyPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.LeftLobby.serializeBinaryToWriter = function(message, writer) {
+proto.LeftLobbyPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -1848,8 +1848,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.JoinedLobby.prototype.toObject = function(opt_includeInstance) {
-  return proto.JoinedLobby.toObject(opt_includeInstance, this);
+proto.JoinedLobbyPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.JoinedLobbyPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1858,11 +1858,11 @@ proto.JoinedLobby.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.JoinedLobby} msg The msg instance to transform.
+ * @param {!proto.JoinedLobbyPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JoinedLobby.toObject = function(includeInstance, msg) {
+proto.JoinedLobbyPB.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -1878,23 +1878,23 @@ proto.JoinedLobby.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.JoinedLobby}
+ * @return {!proto.JoinedLobbyPB}
  */
-proto.JoinedLobby.deserializeBinary = function(bytes) {
+proto.JoinedLobbyPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.JoinedLobby;
-  return proto.JoinedLobby.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.JoinedLobbyPB;
+  return proto.JoinedLobbyPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.JoinedLobby} msg The message object to deserialize into.
+ * @param {!proto.JoinedLobbyPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.JoinedLobby}
+ * @return {!proto.JoinedLobbyPB}
  */
-proto.JoinedLobby.deserializeBinaryFromReader = function(msg, reader) {
+proto.JoinedLobbyPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1914,9 +1914,9 @@ proto.JoinedLobby.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.JoinedLobby.prototype.serializeBinary = function() {
+proto.JoinedLobbyPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.JoinedLobby.serializeBinaryToWriter(this, writer);
+  proto.JoinedLobbyPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1924,11 +1924,11 @@ proto.JoinedLobby.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.JoinedLobby} message
+ * @param {!proto.JoinedLobbyPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.JoinedLobby.serializeBinaryToWriter = function(message, writer) {
+proto.JoinedLobbyPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -1942,12 +1942,12 @@ proto.JoinedLobby.serializeBinaryToWriter = function(message, writer) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.GameEvent.oneofGroups_ = [[1,2,3,4,5]];
+proto.GameEventPB.oneofGroups_ = [[1,2,3,4,5]];
 
 /**
  * @enum {number}
  */
-proto.GameEvent.EventCase = {
+proto.GameEventPB.EventCase = {
   EVENT_NOT_SET: 0,
   JOINED: 1,
   UPDATE: 2,
@@ -1957,10 +1957,10 @@ proto.GameEvent.EventCase = {
 };
 
 /**
- * @return {proto.GameEvent.EventCase}
+ * @return {proto.GameEventPB.EventCase}
  */
-proto.GameEvent.prototype.getEventCase = function() {
-  return /** @type {proto.GameEvent.EventCase} */(jspb.Message.computeOneofCase(this, proto.GameEvent.oneofGroups_[0]));
+proto.GameEventPB.prototype.getEventCase = function() {
+  return /** @type {proto.GameEventPB.EventCase} */(jspb.Message.computeOneofCase(this, proto.GameEventPB.oneofGroups_[0]));
 };
 
 
@@ -1978,8 +1978,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GameEvent.prototype.toObject = function(opt_includeInstance) {
-  return proto.GameEvent.toObject(opt_includeInstance, this);
+proto.GameEventPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.GameEventPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -1988,17 +1988,17 @@ proto.GameEvent.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GameEvent} msg The msg instance to transform.
+ * @param {!proto.GameEventPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameEvent.toObject = function(includeInstance, msg) {
+proto.GameEventPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    joined: (f = msg.getJoined()) && proto.GameJoined.toObject(includeInstance, f),
-    update: (f = msg.getUpdate()) && proto.GameState.toObject(includeInstance, f),
-    finished: (f = msg.getFinished()) && proto.GameFinished.toObject(includeInstance, f),
-    ping: (f = msg.getPing()) && proto.PingUpdate.toObject(includeInstance, f),
-    toggleBots: (f = msg.getToggleBots()) && proto.ToggleBots.toObject(includeInstance, f)
+    joined: (f = msg.getJoined()) && proto.GameJoinedPB.toObject(includeInstance, f),
+    update: (f = msg.getUpdate()) && proto.GameStatePB.toObject(includeInstance, f),
+    finished: (f = msg.getFinished()) && proto.GameFinishedPB.toObject(includeInstance, f),
+    ping: (f = msg.getPing()) && proto.PingUpdatePB.toObject(includeInstance, f),
+    toggleBots: (f = msg.getToggleBots()) && proto.ToggleBotsPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2012,23 +2012,23 @@ proto.GameEvent.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GameEvent}
+ * @return {!proto.GameEventPB}
  */
-proto.GameEvent.deserializeBinary = function(bytes) {
+proto.GameEventPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GameEvent;
-  return proto.GameEvent.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.GameEventPB;
+  return proto.GameEventPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GameEvent} msg The message object to deserialize into.
+ * @param {!proto.GameEventPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GameEvent}
+ * @return {!proto.GameEventPB}
  */
-proto.GameEvent.deserializeBinaryFromReader = function(msg, reader) {
+proto.GameEventPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2036,28 +2036,28 @@ proto.GameEvent.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.GameJoined;
-      reader.readMessage(value,proto.GameJoined.deserializeBinaryFromReader);
+      var value = new proto.GameJoinedPB;
+      reader.readMessage(value,proto.GameJoinedPB.deserializeBinaryFromReader);
       msg.setJoined(value);
       break;
     case 2:
-      var value = new proto.GameState;
-      reader.readMessage(value,proto.GameState.deserializeBinaryFromReader);
+      var value = new proto.GameStatePB;
+      reader.readMessage(value,proto.GameStatePB.deserializeBinaryFromReader);
       msg.setUpdate(value);
       break;
     case 3:
-      var value = new proto.GameFinished;
-      reader.readMessage(value,proto.GameFinished.deserializeBinaryFromReader);
+      var value = new proto.GameFinishedPB;
+      reader.readMessage(value,proto.GameFinishedPB.deserializeBinaryFromReader);
       msg.setFinished(value);
       break;
     case 4:
-      var value = new proto.PingUpdate;
-      reader.readMessage(value,proto.PingUpdate.deserializeBinaryFromReader);
+      var value = new proto.PingUpdatePB;
+      reader.readMessage(value,proto.PingUpdatePB.deserializeBinaryFromReader);
       msg.setPing(value);
       break;
     case 5:
-      var value = new proto.ToggleBots;
-      reader.readMessage(value,proto.ToggleBots.deserializeBinaryFromReader);
+      var value = new proto.ToggleBotsPB;
+      reader.readMessage(value,proto.ToggleBotsPB.deserializeBinaryFromReader);
       msg.setToggleBots(value);
       break;
     default:
@@ -2073,9 +2073,9 @@ proto.GameEvent.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GameEvent.prototype.serializeBinary = function() {
+proto.GameEventPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GameEvent.serializeBinaryToWriter(this, writer);
+  proto.GameEventPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2083,18 +2083,18 @@ proto.GameEvent.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GameEvent} message
+ * @param {!proto.GameEventPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameEvent.serializeBinaryToWriter = function(message, writer) {
+proto.GameEventPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getJoined();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.GameJoined.serializeBinaryToWriter
+      proto.GameJoinedPB.serializeBinaryToWriter
     );
   }
   f = message.getUpdate();
@@ -2102,7 +2102,7 @@ proto.GameEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.GameState.serializeBinaryToWriter
+      proto.GameStatePB.serializeBinaryToWriter
     );
   }
   f = message.getFinished();
@@ -2110,7 +2110,7 @@ proto.GameEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      proto.GameFinished.serializeBinaryToWriter
+      proto.GameFinishedPB.serializeBinaryToWriter
     );
   }
   f = message.getPing();
@@ -2118,7 +2118,7 @@ proto.GameEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.PingUpdate.serializeBinaryToWriter
+      proto.PingUpdatePB.serializeBinaryToWriter
     );
   }
   f = message.getToggleBots();
@@ -2126,36 +2126,36 @@ proto.GameEvent.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       5,
       f,
-      proto.ToggleBots.serializeBinaryToWriter
+      proto.ToggleBotsPB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional GameJoined joined = 1;
- * @return {?proto.GameJoined}
+ * optional GameJoinedPB joined = 1;
+ * @return {?proto.GameJoinedPB}
  */
-proto.GameEvent.prototype.getJoined = function() {
-  return /** @type{?proto.GameJoined} */ (
-    jspb.Message.getWrapperField(this, proto.GameJoined, 1));
+proto.GameEventPB.prototype.getJoined = function() {
+  return /** @type{?proto.GameJoinedPB} */ (
+    jspb.Message.getWrapperField(this, proto.GameJoinedPB, 1));
 };
 
 
 /**
- * @param {?proto.GameJoined|undefined} value
- * @return {!proto.GameEvent} returns this
+ * @param {?proto.GameJoinedPB|undefined} value
+ * @return {!proto.GameEventPB} returns this
 */
-proto.GameEvent.prototype.setJoined = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1, proto.GameEvent.oneofGroups_[0], value);
+proto.GameEventPB.prototype.setJoined = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 1, proto.GameEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameEvent} returns this
+ * @return {!proto.GameEventPB} returns this
  */
-proto.GameEvent.prototype.clearJoined = function() {
+proto.GameEventPB.prototype.clearJoined = function() {
   return this.setJoined(undefined);
 };
 
@@ -2164,35 +2164,35 @@ proto.GameEvent.prototype.clearJoined = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameEvent.prototype.hasJoined = function() {
+proto.GameEventPB.prototype.hasJoined = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional GameState update = 2;
- * @return {?proto.GameState}
+ * optional GameStatePB update = 2;
+ * @return {?proto.GameStatePB}
  */
-proto.GameEvent.prototype.getUpdate = function() {
-  return /** @type{?proto.GameState} */ (
-    jspb.Message.getWrapperField(this, proto.GameState, 2));
+proto.GameEventPB.prototype.getUpdate = function() {
+  return /** @type{?proto.GameStatePB} */ (
+    jspb.Message.getWrapperField(this, proto.GameStatePB, 2));
 };
 
 
 /**
- * @param {?proto.GameState|undefined} value
- * @return {!proto.GameEvent} returns this
+ * @param {?proto.GameStatePB|undefined} value
+ * @return {!proto.GameEventPB} returns this
 */
-proto.GameEvent.prototype.setUpdate = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 2, proto.GameEvent.oneofGroups_[0], value);
+proto.GameEventPB.prototype.setUpdate = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 2, proto.GameEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameEvent} returns this
+ * @return {!proto.GameEventPB} returns this
  */
-proto.GameEvent.prototype.clearUpdate = function() {
+proto.GameEventPB.prototype.clearUpdate = function() {
   return this.setUpdate(undefined);
 };
 
@@ -2201,35 +2201,35 @@ proto.GameEvent.prototype.clearUpdate = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameEvent.prototype.hasUpdate = function() {
+proto.GameEventPB.prototype.hasUpdate = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * optional GameFinished finished = 3;
- * @return {?proto.GameFinished}
+ * optional GameFinishedPB finished = 3;
+ * @return {?proto.GameFinishedPB}
  */
-proto.GameEvent.prototype.getFinished = function() {
-  return /** @type{?proto.GameFinished} */ (
-    jspb.Message.getWrapperField(this, proto.GameFinished, 3));
+proto.GameEventPB.prototype.getFinished = function() {
+  return /** @type{?proto.GameFinishedPB} */ (
+    jspb.Message.getWrapperField(this, proto.GameFinishedPB, 3));
 };
 
 
 /**
- * @param {?proto.GameFinished|undefined} value
- * @return {!proto.GameEvent} returns this
+ * @param {?proto.GameFinishedPB|undefined} value
+ * @return {!proto.GameEventPB} returns this
 */
-proto.GameEvent.prototype.setFinished = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 3, proto.GameEvent.oneofGroups_[0], value);
+proto.GameEventPB.prototype.setFinished = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 3, proto.GameEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameEvent} returns this
+ * @return {!proto.GameEventPB} returns this
  */
-proto.GameEvent.prototype.clearFinished = function() {
+proto.GameEventPB.prototype.clearFinished = function() {
   return this.setFinished(undefined);
 };
 
@@ -2238,35 +2238,35 @@ proto.GameEvent.prototype.clearFinished = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameEvent.prototype.hasFinished = function() {
+proto.GameEventPB.prototype.hasFinished = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional PingUpdate ping = 4;
- * @return {?proto.PingUpdate}
+ * optional PingUpdatePB ping = 4;
+ * @return {?proto.PingUpdatePB}
  */
-proto.GameEvent.prototype.getPing = function() {
-  return /** @type{?proto.PingUpdate} */ (
-    jspb.Message.getWrapperField(this, proto.PingUpdate, 4));
+proto.GameEventPB.prototype.getPing = function() {
+  return /** @type{?proto.PingUpdatePB} */ (
+    jspb.Message.getWrapperField(this, proto.PingUpdatePB, 4));
 };
 
 
 /**
- * @param {?proto.PingUpdate|undefined} value
- * @return {!proto.GameEvent} returns this
+ * @param {?proto.PingUpdatePB|undefined} value
+ * @return {!proto.GameEventPB} returns this
 */
-proto.GameEvent.prototype.setPing = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 4, proto.GameEvent.oneofGroups_[0], value);
+proto.GameEventPB.prototype.setPing = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 4, proto.GameEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameEvent} returns this
+ * @return {!proto.GameEventPB} returns this
  */
-proto.GameEvent.prototype.clearPing = function() {
+proto.GameEventPB.prototype.clearPing = function() {
   return this.setPing(undefined);
 };
 
@@ -2275,35 +2275,35 @@ proto.GameEvent.prototype.clearPing = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameEvent.prototype.hasPing = function() {
+proto.GameEventPB.prototype.hasPing = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
- * optional ToggleBots toggle_bots = 5;
- * @return {?proto.ToggleBots}
+ * optional ToggleBotsPB toggle_bots = 5;
+ * @return {?proto.ToggleBotsPB}
  */
-proto.GameEvent.prototype.getToggleBots = function() {
-  return /** @type{?proto.ToggleBots} */ (
-    jspb.Message.getWrapperField(this, proto.ToggleBots, 5));
+proto.GameEventPB.prototype.getToggleBots = function() {
+  return /** @type{?proto.ToggleBotsPB} */ (
+    jspb.Message.getWrapperField(this, proto.ToggleBotsPB, 5));
 };
 
 
 /**
- * @param {?proto.ToggleBots|undefined} value
- * @return {!proto.GameEvent} returns this
+ * @param {?proto.ToggleBotsPB|undefined} value
+ * @return {!proto.GameEventPB} returns this
 */
-proto.GameEvent.prototype.setToggleBots = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 5, proto.GameEvent.oneofGroups_[0], value);
+proto.GameEventPB.prototype.setToggleBots = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 5, proto.GameEventPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameEvent} returns this
+ * @return {!proto.GameEventPB} returns this
  */
-proto.GameEvent.prototype.clearToggleBots = function() {
+proto.GameEventPB.prototype.clearToggleBots = function() {
   return this.setToggleBots(undefined);
 };
 
@@ -2312,7 +2312,7 @@ proto.GameEvent.prototype.clearToggleBots = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameEvent.prototype.hasToggleBots = function() {
+proto.GameEventPB.prototype.hasToggleBots = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -2333,8 +2333,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GameFinished.prototype.toObject = function(opt_includeInstance) {
-  return proto.GameFinished.toObject(opt_includeInstance, this);
+proto.GameFinishedPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.GameFinishedPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -2343,14 +2343,14 @@ proto.GameFinished.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GameFinished} msg The msg instance to transform.
+ * @param {!proto.GameFinishedPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameFinished.toObject = function(includeInstance, msg) {
+proto.GameFinishedPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    winner: (f = msg.getWinner()) && proto.Entity.toObject(includeInstance, f),
-    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    winner: (f = msg.getWinner()) && proto.EntityPB.toObject(includeInstance, f),
+    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : []
   };
 
   if (includeInstance) {
@@ -2364,23 +2364,23 @@ proto.GameFinished.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GameFinished}
+ * @return {!proto.GameFinishedPB}
  */
-proto.GameFinished.deserializeBinary = function(bytes) {
+proto.GameFinishedPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GameFinished;
-  return proto.GameFinished.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.GameFinishedPB;
+  return proto.GameFinishedPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GameFinished} msg The message object to deserialize into.
+ * @param {!proto.GameFinishedPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GameFinished}
+ * @return {!proto.GameFinishedPB}
  */
-proto.GameFinished.deserializeBinaryFromReader = function(msg, reader) {
+proto.GameFinishedPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2388,14 +2388,14 @@ proto.GameFinished.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.Entity;
-      reader.readMessage(value,proto.Entity.deserializeBinaryFromReader);
+      var value = new proto.EntityPB;
+      reader.readMessage(value,proto.EntityPB.deserializeBinaryFromReader);
       msg.setWinner(value);
       break;
     case 2:
       var value = msg.getPlayersMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     default:
@@ -2411,9 +2411,9 @@ proto.GameFinished.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GameFinished.prototype.serializeBinary = function() {
+proto.GameFinishedPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GameFinished.serializeBinaryToWriter(this, writer);
+  proto.GameFinishedPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2421,51 +2421,51 @@ proto.GameFinished.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GameFinished} message
+ * @param {!proto.GameFinishedPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameFinished.serializeBinaryToWriter = function(message, writer) {
+proto.GameFinishedPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getWinner();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.Entity.serializeBinaryToWriter
+      proto.EntityPB.serializeBinaryToWriter
     );
   }
   f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
 };
 
 
 /**
- * optional Entity winner = 1;
- * @return {?proto.Entity}
+ * optional EntityPB winner = 1;
+ * @return {?proto.EntityPB}
  */
-proto.GameFinished.prototype.getWinner = function() {
-  return /** @type{?proto.Entity} */ (
-    jspb.Message.getWrapperField(this, proto.Entity, 1));
+proto.GameFinishedPB.prototype.getWinner = function() {
+  return /** @type{?proto.EntityPB} */ (
+    jspb.Message.getWrapperField(this, proto.EntityPB, 1));
 };
 
 
 /**
- * @param {?proto.Entity|undefined} value
- * @return {!proto.GameFinished} returns this
+ * @param {?proto.EntityPB|undefined} value
+ * @return {!proto.GameFinishedPB} returns this
 */
-proto.GameFinished.prototype.setWinner = function(value) {
+proto.GameFinishedPB.prototype.setWinner = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameFinished} returns this
+ * @return {!proto.GameFinishedPB} returns this
  */
-proto.GameFinished.prototype.clearWinner = function() {
+proto.GameFinishedPB.prototype.clearWinner = function() {
   return this.setWinner(undefined);
 };
 
@@ -2474,29 +2474,29 @@ proto.GameFinished.prototype.clearWinner = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameFinished.prototype.hasWinner = function() {
+proto.GameFinishedPB.prototype.hasWinner = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * map<uint64, Entity> players = 2;
+ * map<uint64, EntityPB> players = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameFinished.prototype.getPlayersMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameFinishedPB.prototype.getPlayersMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 2, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameFinished} returns this
+ * @return {!proto.GameFinishedPB} returns this
  */
-proto.GameFinished.prototype.clearPlayersMap = function() {
+proto.GameFinishedPB.prototype.clearPlayersMap = function() {
   this.getPlayersMap().clear();
   return this;
 };
@@ -2518,8 +2518,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PingUpdate.prototype.toObject = function(opt_includeInstance) {
-  return proto.PingUpdate.toObject(opt_includeInstance, this);
+proto.PingUpdatePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.PingUpdatePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -2528,11 +2528,11 @@ proto.PingUpdate.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PingUpdate} msg The msg instance to transform.
+ * @param {!proto.PingUpdatePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PingUpdate.toObject = function(includeInstance, msg) {
+proto.PingUpdatePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     latency: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
@@ -2548,23 +2548,23 @@ proto.PingUpdate.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PingUpdate}
+ * @return {!proto.PingUpdatePB}
  */
-proto.PingUpdate.deserializeBinary = function(bytes) {
+proto.PingUpdatePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PingUpdate;
-  return proto.PingUpdate.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.PingUpdatePB;
+  return proto.PingUpdatePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PingUpdate} msg The message object to deserialize into.
+ * @param {!proto.PingUpdatePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PingUpdate}
+ * @return {!proto.PingUpdatePB}
  */
-proto.PingUpdate.deserializeBinaryFromReader = function(msg, reader) {
+proto.PingUpdatePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2588,9 +2588,9 @@ proto.PingUpdate.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PingUpdate.prototype.serializeBinary = function() {
+proto.PingUpdatePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PingUpdate.serializeBinaryToWriter(this, writer);
+  proto.PingUpdatePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2598,11 +2598,11 @@ proto.PingUpdate.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PingUpdate} message
+ * @param {!proto.PingUpdatePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PingUpdate.serializeBinaryToWriter = function(message, writer) {
+proto.PingUpdatePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getLatency();
   if (f !== 0) {
@@ -2618,16 +2618,16 @@ proto.PingUpdate.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 latency = 1;
  * @return {number}
  */
-proto.PingUpdate.prototype.getLatency = function() {
+proto.PingUpdatePB.prototype.getLatency = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.PingUpdate} returns this
+ * @return {!proto.PingUpdatePB} returns this
  */
-proto.PingUpdate.prototype.setLatency = function(value) {
+proto.PingUpdatePB.prototype.setLatency = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -2638,7 +2638,7 @@ proto.PingUpdate.prototype.setLatency = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.GameJoined.repeatedFields_ = [3];
+proto.GameJoinedPB.repeatedFields_ = [3];
 
 
 
@@ -2655,8 +2655,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GameJoined.prototype.toObject = function(opt_includeInstance) {
-  return proto.GameJoined.toObject(opt_includeInstance, this);
+proto.GameJoinedPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.GameJoinedPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -2665,16 +2665,16 @@ proto.GameJoined.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GameJoined} msg The msg instance to transform.
+ * @param {!proto.GameJoinedPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameJoined.toObject = function(includeInstance, msg) {
+proto.GameJoinedPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     playerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    config: (f = msg.getConfig()) && proto.Configuration.toObject(includeInstance, f),
+    config: (f = msg.getConfig()) && proto.ConfigurationPB.toObject(includeInstance, f),
     bountiesList: jspb.Message.toObjectList(msg.getBountiesList(),
-    proto.BountyInfo.toObject, includeInstance)
+    proto.BountyInfoPB.toObject, includeInstance)
   };
 
   if (includeInstance) {
@@ -2688,23 +2688,23 @@ proto.GameJoined.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GameJoined}
+ * @return {!proto.GameJoinedPB}
  */
-proto.GameJoined.deserializeBinary = function(bytes) {
+proto.GameJoinedPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GameJoined;
-  return proto.GameJoined.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.GameJoinedPB;
+  return proto.GameJoinedPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GameJoined} msg The message object to deserialize into.
+ * @param {!proto.GameJoinedPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GameJoined}
+ * @return {!proto.GameJoinedPB}
  */
-proto.GameJoined.deserializeBinaryFromReader = function(msg, reader) {
+proto.GameJoinedPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2716,13 +2716,13 @@ proto.GameJoined.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPlayerId(value);
       break;
     case 2:
-      var value = new proto.Configuration;
-      reader.readMessage(value,proto.Configuration.deserializeBinaryFromReader);
+      var value = new proto.ConfigurationPB;
+      reader.readMessage(value,proto.ConfigurationPB.deserializeBinaryFromReader);
       msg.setConfig(value);
       break;
     case 3:
-      var value = new proto.BountyInfo;
-      reader.readMessage(value,proto.BountyInfo.deserializeBinaryFromReader);
+      var value = new proto.BountyInfoPB;
+      reader.readMessage(value,proto.BountyInfoPB.deserializeBinaryFromReader);
       msg.addBounties(value);
       break;
     default:
@@ -2738,9 +2738,9 @@ proto.GameJoined.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GameJoined.prototype.serializeBinary = function() {
+proto.GameJoinedPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GameJoined.serializeBinaryToWriter(this, writer);
+  proto.GameJoinedPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2748,11 +2748,11 @@ proto.GameJoined.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GameJoined} message
+ * @param {!proto.GameJoinedPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
+proto.GameJoinedPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getPlayerId();
   if (f !== 0) {
@@ -2766,7 +2766,7 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.Configuration.serializeBinaryToWriter
+      proto.ConfigurationPB.serializeBinaryToWriter
     );
   }
   f = message.getBountiesList();
@@ -2774,7 +2774,7 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       3,
       f,
-      proto.BountyInfo.serializeBinaryToWriter
+      proto.BountyInfoPB.serializeBinaryToWriter
     );
   }
 };
@@ -2784,44 +2784,44 @@ proto.GameJoined.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 player_id = 1;
  * @return {number}
  */
-proto.GameJoined.prototype.getPlayerId = function() {
+proto.GameJoinedPB.prototype.getPlayerId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.GameJoined} returns this
+ * @return {!proto.GameJoinedPB} returns this
  */
-proto.GameJoined.prototype.setPlayerId = function(value) {
+proto.GameJoinedPB.prototype.setPlayerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional Configuration config = 2;
- * @return {?proto.Configuration}
+ * optional ConfigurationPB config = 2;
+ * @return {?proto.ConfigurationPB}
  */
-proto.GameJoined.prototype.getConfig = function() {
-  return /** @type{?proto.Configuration} */ (
-    jspb.Message.getWrapperField(this, proto.Configuration, 2));
+proto.GameJoinedPB.prototype.getConfig = function() {
+  return /** @type{?proto.ConfigurationPB} */ (
+    jspb.Message.getWrapperField(this, proto.ConfigurationPB, 2));
 };
 
 
 /**
- * @param {?proto.Configuration|undefined} value
- * @return {!proto.GameJoined} returns this
+ * @param {?proto.ConfigurationPB|undefined} value
+ * @return {!proto.GameJoinedPB} returns this
 */
-proto.GameJoined.prototype.setConfig = function(value) {
+proto.GameJoinedPB.prototype.setConfig = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameJoined} returns this
+ * @return {!proto.GameJoinedPB} returns this
  */
-proto.GameJoined.prototype.clearConfig = function() {
+proto.GameJoinedPB.prototype.clearConfig = function() {
   return this.setConfig(undefined);
 };
 
@@ -2830,45 +2830,45 @@ proto.GameJoined.prototype.clearConfig = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameJoined.prototype.hasConfig = function() {
+proto.GameJoinedPB.prototype.hasConfig = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * repeated BountyInfo bounties = 3;
- * @return {!Array<!proto.BountyInfo>}
+ * repeated BountyInfoPB bounties = 3;
+ * @return {!Array<!proto.BountyInfoPB>}
  */
-proto.GameJoined.prototype.getBountiesList = function() {
-  return /** @type{!Array<!proto.BountyInfo>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.BountyInfo, 3));
+proto.GameJoinedPB.prototype.getBountiesList = function() {
+  return /** @type{!Array<!proto.BountyInfoPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.BountyInfoPB, 3));
 };
 
 
 /**
- * @param {!Array<!proto.BountyInfo>} value
- * @return {!proto.GameJoined} returns this
+ * @param {!Array<!proto.BountyInfoPB>} value
+ * @return {!proto.GameJoinedPB} returns this
 */
-proto.GameJoined.prototype.setBountiesList = function(value) {
+proto.GameJoinedPB.prototype.setBountiesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
 /**
- * @param {!proto.BountyInfo=} opt_value
+ * @param {!proto.BountyInfoPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.BountyInfo}
+ * @return {!proto.BountyInfoPB}
  */
-proto.GameJoined.prototype.addBounties = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.BountyInfo, opt_index);
+proto.GameJoinedPB.prototype.addBounties = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.BountyInfoPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.GameJoined} returns this
+ * @return {!proto.GameJoinedPB} returns this
  */
-proto.GameJoined.prototype.clearBountiesList = function() {
+proto.GameJoinedPB.prototype.clearBountiesList = function() {
   return this.setBountiesList([]);
 };
 
@@ -2879,7 +2879,7 @@ proto.GameJoined.prototype.clearBountiesList = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Configuration.repeatedFields_ = [3];
+proto.ConfigurationPB.repeatedFields_ = [3];
 
 
 
@@ -2896,8 +2896,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Configuration.prototype.toObject = function(opt_includeInstance) {
-  return proto.Configuration.toObject(opt_includeInstance, this);
+proto.ConfigurationPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ConfigurationPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -2906,17 +2906,17 @@ proto.Configuration.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Configuration} msg The msg instance to transform.
+ * @param {!proto.ConfigurationPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Configuration.toObject = function(includeInstance, msg) {
+proto.ConfigurationPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    game: (f = msg.getGame()) && proto.ConfigGame.toObject(includeInstance, f),
-    map: (f = msg.getMap()) && proto.ConfigMap.toObject(includeInstance, f),
+    game: (f = msg.getGame()) && proto.ConfigGamePB.toObject(includeInstance, f),
+    map: (f = msg.getMap()) && proto.ConfigMapPB.toObject(includeInstance, f),
     charactersList: jspb.Message.toObjectList(msg.getCharactersList(),
-    proto.ConfigCharacter.toObject, includeInstance),
-    clientConfig: (f = msg.getClientConfig()) && proto.ClientConfig.toObject(includeInstance, f)
+    proto.ConfigCharacterPB.toObject, includeInstance),
+    clientConfig: (f = msg.getClientConfig()) && proto.ClientConfigPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -2930,23 +2930,23 @@ proto.Configuration.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Configuration}
+ * @return {!proto.ConfigurationPB}
  */
-proto.Configuration.deserializeBinary = function(bytes) {
+proto.ConfigurationPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Configuration;
-  return proto.Configuration.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ConfigurationPB;
+  return proto.ConfigurationPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Configuration} msg The message object to deserialize into.
+ * @param {!proto.ConfigurationPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Configuration}
+ * @return {!proto.ConfigurationPB}
  */
-proto.Configuration.deserializeBinaryFromReader = function(msg, reader) {
+proto.ConfigurationPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -2954,23 +2954,23 @@ proto.Configuration.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.ConfigGame;
-      reader.readMessage(value,proto.ConfigGame.deserializeBinaryFromReader);
+      var value = new proto.ConfigGamePB;
+      reader.readMessage(value,proto.ConfigGamePB.deserializeBinaryFromReader);
       msg.setGame(value);
       break;
     case 2:
-      var value = new proto.ConfigMap;
-      reader.readMessage(value,proto.ConfigMap.deserializeBinaryFromReader);
+      var value = new proto.ConfigMapPB;
+      reader.readMessage(value,proto.ConfigMapPB.deserializeBinaryFromReader);
       msg.setMap(value);
       break;
     case 3:
-      var value = new proto.ConfigCharacter;
-      reader.readMessage(value,proto.ConfigCharacter.deserializeBinaryFromReader);
+      var value = new proto.ConfigCharacterPB;
+      reader.readMessage(value,proto.ConfigCharacterPB.deserializeBinaryFromReader);
       msg.addCharacters(value);
       break;
     case 4:
-      var value = new proto.ClientConfig;
-      reader.readMessage(value,proto.ClientConfig.deserializeBinaryFromReader);
+      var value = new proto.ClientConfigPB;
+      reader.readMessage(value,proto.ClientConfigPB.deserializeBinaryFromReader);
       msg.setClientConfig(value);
       break;
     default:
@@ -2986,9 +2986,9 @@ proto.Configuration.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Configuration.prototype.serializeBinary = function() {
+proto.ConfigurationPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Configuration.serializeBinaryToWriter(this, writer);
+  proto.ConfigurationPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -2996,18 +2996,18 @@ proto.Configuration.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Configuration} message
+ * @param {!proto.ConfigurationPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Configuration.serializeBinaryToWriter = function(message, writer) {
+proto.ConfigurationPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getGame();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.ConfigGame.serializeBinaryToWriter
+      proto.ConfigGamePB.serializeBinaryToWriter
     );
   }
   f = message.getMap();
@@ -3015,7 +3015,7 @@ proto.Configuration.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.ConfigMap.serializeBinaryToWriter
+      proto.ConfigMapPB.serializeBinaryToWriter
     );
   }
   f = message.getCharactersList();
@@ -3023,7 +3023,7 @@ proto.Configuration.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       3,
       f,
-      proto.ConfigCharacter.serializeBinaryToWriter
+      proto.ConfigCharacterPB.serializeBinaryToWriter
     );
   }
   f = message.getClientConfig();
@@ -3031,36 +3031,36 @@ proto.Configuration.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.ClientConfig.serializeBinaryToWriter
+      proto.ClientConfigPB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional ConfigGame game = 1;
- * @return {?proto.ConfigGame}
+ * optional ConfigGamePB game = 1;
+ * @return {?proto.ConfigGamePB}
  */
-proto.Configuration.prototype.getGame = function() {
-  return /** @type{?proto.ConfigGame} */ (
-    jspb.Message.getWrapperField(this, proto.ConfigGame, 1));
+proto.ConfigurationPB.prototype.getGame = function() {
+  return /** @type{?proto.ConfigGamePB} */ (
+    jspb.Message.getWrapperField(this, proto.ConfigGamePB, 1));
 };
 
 
 /**
- * @param {?proto.ConfigGame|undefined} value
- * @return {!proto.Configuration} returns this
+ * @param {?proto.ConfigGamePB|undefined} value
+ * @return {!proto.ConfigurationPB} returns this
 */
-proto.Configuration.prototype.setGame = function(value) {
+proto.ConfigurationPB.prototype.setGame = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Configuration} returns this
+ * @return {!proto.ConfigurationPB} returns this
  */
-proto.Configuration.prototype.clearGame = function() {
+proto.ConfigurationPB.prototype.clearGame = function() {
   return this.setGame(undefined);
 };
 
@@ -3069,35 +3069,35 @@ proto.Configuration.prototype.clearGame = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Configuration.prototype.hasGame = function() {
+proto.ConfigurationPB.prototype.hasGame = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional ConfigMap map = 2;
- * @return {?proto.ConfigMap}
+ * optional ConfigMapPB map = 2;
+ * @return {?proto.ConfigMapPB}
  */
-proto.Configuration.prototype.getMap = function() {
-  return /** @type{?proto.ConfigMap} */ (
-    jspb.Message.getWrapperField(this, proto.ConfigMap, 2));
+proto.ConfigurationPB.prototype.getMap = function() {
+  return /** @type{?proto.ConfigMapPB} */ (
+    jspb.Message.getWrapperField(this, proto.ConfigMapPB, 2));
 };
 
 
 /**
- * @param {?proto.ConfigMap|undefined} value
- * @return {!proto.Configuration} returns this
+ * @param {?proto.ConfigMapPB|undefined} value
+ * @return {!proto.ConfigurationPB} returns this
 */
-proto.Configuration.prototype.setMap = function(value) {
+proto.ConfigurationPB.prototype.setMap = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Configuration} returns this
+ * @return {!proto.ConfigurationPB} returns this
  */
-proto.Configuration.prototype.clearMap = function() {
+proto.ConfigurationPB.prototype.clearMap = function() {
   return this.setMap(undefined);
 };
 
@@ -3106,73 +3106,73 @@ proto.Configuration.prototype.clearMap = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Configuration.prototype.hasMap = function() {
+proto.ConfigurationPB.prototype.hasMap = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * repeated ConfigCharacter characters = 3;
- * @return {!Array<!proto.ConfigCharacter>}
+ * repeated ConfigCharacterPB characters = 3;
+ * @return {!Array<!proto.ConfigCharacterPB>}
  */
-proto.Configuration.prototype.getCharactersList = function() {
-  return /** @type{!Array<!proto.ConfigCharacter>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.ConfigCharacter, 3));
+proto.ConfigurationPB.prototype.getCharactersList = function() {
+  return /** @type{!Array<!proto.ConfigCharacterPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.ConfigCharacterPB, 3));
 };
 
 
 /**
- * @param {!Array<!proto.ConfigCharacter>} value
- * @return {!proto.Configuration} returns this
+ * @param {!Array<!proto.ConfigCharacterPB>} value
+ * @return {!proto.ConfigurationPB} returns this
 */
-proto.Configuration.prototype.setCharactersList = function(value) {
+proto.ConfigurationPB.prototype.setCharactersList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
 /**
- * @param {!proto.ConfigCharacter=} opt_value
+ * @param {!proto.ConfigCharacterPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.ConfigCharacter}
+ * @return {!proto.ConfigCharacterPB}
  */
-proto.Configuration.prototype.addCharacters = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.ConfigCharacter, opt_index);
+proto.ConfigurationPB.prototype.addCharacters = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.ConfigCharacterPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Configuration} returns this
+ * @return {!proto.ConfigurationPB} returns this
  */
-proto.Configuration.prototype.clearCharactersList = function() {
+proto.ConfigurationPB.prototype.clearCharactersList = function() {
   return this.setCharactersList([]);
 };
 
 
 /**
- * optional ClientConfig client_config = 4;
- * @return {?proto.ClientConfig}
+ * optional ClientConfigPB client_config = 4;
+ * @return {?proto.ClientConfigPB}
  */
-proto.Configuration.prototype.getClientConfig = function() {
-  return /** @type{?proto.ClientConfig} */ (
-    jspb.Message.getWrapperField(this, proto.ClientConfig, 4));
+proto.ConfigurationPB.prototype.getClientConfig = function() {
+  return /** @type{?proto.ClientConfigPB} */ (
+    jspb.Message.getWrapperField(this, proto.ClientConfigPB, 4));
 };
 
 
 /**
- * @param {?proto.ClientConfig|undefined} value
- * @return {!proto.Configuration} returns this
+ * @param {?proto.ClientConfigPB|undefined} value
+ * @return {!proto.ConfigurationPB} returns this
 */
-proto.Configuration.prototype.setClientConfig = function(value) {
+proto.ConfigurationPB.prototype.setClientConfig = function(value) {
   return jspb.Message.setWrapperField(this, 4, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Configuration} returns this
+ * @return {!proto.ConfigurationPB} returns this
  */
-proto.Configuration.prototype.clearClientConfig = function() {
+proto.ConfigurationPB.prototype.clearClientConfig = function() {
   return this.setClientConfig(undefined);
 };
 
@@ -3181,7 +3181,7 @@ proto.Configuration.prototype.clearClientConfig = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Configuration.prototype.hasClientConfig = function() {
+proto.ConfigurationPB.prototype.hasClientConfig = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -3202,8 +3202,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConfigGame.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConfigGame.toObject(opt_includeInstance, this);
+proto.ConfigGamePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ConfigGamePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -3212,11 +3212,11 @@ proto.ConfigGame.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConfigGame} msg The msg instance to transform.
+ * @param {!proto.ConfigGamePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigGame.toObject = function(includeInstance, msg) {
+proto.ConfigGamePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     tickRateMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     bountyPickTimeMs: jspb.Message.getFloatingPointFieldWithDefault(msg, 2, 0.0),
@@ -3234,23 +3234,23 @@ proto.ConfigGame.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConfigGame}
+ * @return {!proto.ConfigGamePB}
  */
-proto.ConfigGame.deserializeBinary = function(bytes) {
+proto.ConfigGamePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConfigGame;
-  return proto.ConfigGame.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ConfigGamePB;
+  return proto.ConfigGamePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConfigGame} msg The message object to deserialize into.
+ * @param {!proto.ConfigGamePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConfigGame}
+ * @return {!proto.ConfigGamePB}
  */
-proto.ConfigGame.deserializeBinaryFromReader = function(msg, reader) {
+proto.ConfigGamePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3282,9 +3282,9 @@ proto.ConfigGame.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConfigGame.prototype.serializeBinary = function() {
+proto.ConfigGamePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConfigGame.serializeBinaryToWriter(this, writer);
+  proto.ConfigGamePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3292,11 +3292,11 @@ proto.ConfigGame.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConfigGame} message
+ * @param {!proto.ConfigGamePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigGame.serializeBinaryToWriter = function(message, writer) {
+proto.ConfigGamePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTickRateMs();
   if (f !== 0.0) {
@@ -3326,16 +3326,16 @@ proto.ConfigGame.serializeBinaryToWriter = function(message, writer) {
  * optional float tick_rate_ms = 1;
  * @return {number}
  */
-proto.ConfigGame.prototype.getTickRateMs = function() {
+proto.ConfigGamePB.prototype.getTickRateMs = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigGame} returns this
+ * @return {!proto.ConfigGamePB} returns this
  */
-proto.ConfigGame.prototype.setTickRateMs = function(value) {
+proto.ConfigGamePB.prototype.setTickRateMs = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
@@ -3344,16 +3344,16 @@ proto.ConfigGame.prototype.setTickRateMs = function(value) {
  * optional float bounty_pick_time_ms = 2;
  * @return {number}
  */
-proto.ConfigGame.prototype.getBountyPickTimeMs = function() {
+proto.ConfigGamePB.prototype.getBountyPickTimeMs = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 2, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigGame} returns this
+ * @return {!proto.ConfigGamePB} returns this
  */
-proto.ConfigGame.prototype.setBountyPickTimeMs = function(value) {
+proto.ConfigGamePB.prototype.setBountyPickTimeMs = function(value) {
   return jspb.Message.setProto3FloatField(this, 2, value);
 };
 
@@ -3362,16 +3362,16 @@ proto.ConfigGame.prototype.setBountyPickTimeMs = function(value) {
  * optional float start_game_time_ms = 3;
  * @return {number}
  */
-proto.ConfigGame.prototype.getStartGameTimeMs = function() {
+proto.ConfigGamePB.prototype.getStartGameTimeMs = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigGame} returns this
+ * @return {!proto.ConfigGamePB} returns this
  */
-proto.ConfigGame.prototype.setStartGameTimeMs = function(value) {
+proto.ConfigGamePB.prototype.setStartGameTimeMs = function(value) {
   return jspb.Message.setProto3FloatField(this, 3, value);
 };
 
@@ -3392,8 +3392,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConfigMap.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConfigMap.toObject(opt_includeInstance, this);
+proto.ConfigMapPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ConfigMapPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -3402,11 +3402,11 @@ proto.ConfigMap.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConfigMap} msg The msg instance to transform.
+ * @param {!proto.ConfigMapPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigMap.toObject = function(includeInstance, msg) {
+proto.ConfigMapPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0)
   };
@@ -3422,23 +3422,23 @@ proto.ConfigMap.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConfigMap}
+ * @return {!proto.ConfigMapPB}
  */
-proto.ConfigMap.deserializeBinary = function(bytes) {
+proto.ConfigMapPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConfigMap;
-  return proto.ConfigMap.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ConfigMapPB;
+  return proto.ConfigMapPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConfigMap} msg The message object to deserialize into.
+ * @param {!proto.ConfigMapPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConfigMap}
+ * @return {!proto.ConfigMapPB}
  */
-proto.ConfigMap.deserializeBinaryFromReader = function(msg, reader) {
+proto.ConfigMapPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3462,9 +3462,9 @@ proto.ConfigMap.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConfigMap.prototype.serializeBinary = function() {
+proto.ConfigMapPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConfigMap.serializeBinaryToWriter(this, writer);
+  proto.ConfigMapPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3472,11 +3472,11 @@ proto.ConfigMap.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConfigMap} message
+ * @param {!proto.ConfigMapPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigMap.serializeBinaryToWriter = function(message, writer) {
+proto.ConfigMapPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getRadius();
   if (f !== 0.0) {
@@ -3492,16 +3492,16 @@ proto.ConfigMap.serializeBinaryToWriter = function(message, writer) {
  * optional float radius = 1;
  * @return {number}
  */
-proto.ConfigMap.prototype.getRadius = function() {
+proto.ConfigMapPB.prototype.getRadius = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigMap} returns this
+ * @return {!proto.ConfigMapPB} returns this
  */
-proto.ConfigMap.prototype.setRadius = function(value) {
+proto.ConfigMapPB.prototype.setRadius = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
@@ -3522,8 +3522,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConfigCharacter.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConfigCharacter.toObject(opt_includeInstance, this);
+proto.ConfigCharacterPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ConfigCharacterPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -3532,11 +3532,11 @@ proto.ConfigCharacter.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConfigCharacter} msg The msg instance to transform.
+ * @param {!proto.ConfigCharacterPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigCharacter.toObject = function(includeInstance, msg) {
+proto.ConfigCharacterPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     active: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
@@ -3544,7 +3544,7 @@ proto.ConfigCharacter.toObject = function(includeInstance, msg) {
     baseSize: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     baseHealth: jspb.Message.getFieldWithDefault(msg, 5, 0),
     maxInventorySize: jspb.Message.getFieldWithDefault(msg, 6, 0),
-    skillsMap: (f = msg.getSkillsMap()) ? f.toObject(includeInstance, proto.ConfigSkill.toObject) : []
+    skillsMap: (f = msg.getSkillsMap()) ? f.toObject(includeInstance, proto.ConfigSkillPB.toObject) : []
   };
 
   if (includeInstance) {
@@ -3558,23 +3558,23 @@ proto.ConfigCharacter.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConfigCharacter}
+ * @return {!proto.ConfigCharacterPB}
  */
-proto.ConfigCharacter.deserializeBinary = function(bytes) {
+proto.ConfigCharacterPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConfigCharacter;
-  return proto.ConfigCharacter.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ConfigCharacterPB;
+  return proto.ConfigCharacterPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConfigCharacter} msg The message object to deserialize into.
+ * @param {!proto.ConfigCharacterPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConfigCharacter}
+ * @return {!proto.ConfigCharacterPB}
  */
-proto.ConfigCharacter.deserializeBinaryFromReader = function(msg, reader) {
+proto.ConfigCharacterPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3608,7 +3608,7 @@ proto.ConfigCharacter.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = msg.getSkillsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.ConfigSkill.deserializeBinaryFromReader, "", new proto.ConfigSkill());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readString, jspb.BinaryReader.prototype.readMessage, proto.ConfigSkillPB.deserializeBinaryFromReader, "", new proto.ConfigSkillPB());
          });
       break;
     default:
@@ -3624,9 +3624,9 @@ proto.ConfigCharacter.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConfigCharacter.prototype.serializeBinary = function() {
+proto.ConfigCharacterPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConfigCharacter.serializeBinaryToWriter(this, writer);
+  proto.ConfigCharacterPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3634,11 +3634,11 @@ proto.ConfigCharacter.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConfigCharacter} message
+ * @param {!proto.ConfigCharacterPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigCharacter.serializeBinaryToWriter = function(message, writer) {
+proto.ConfigCharacterPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getName();
   if (f.length > 0) {
@@ -3684,7 +3684,7 @@ proto.ConfigCharacter.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getSkillsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ConfigSkill.serializeBinaryToWriter);
+    f.serializeBinary(7, writer, jspb.BinaryWriter.prototype.writeString, jspb.BinaryWriter.prototype.writeMessage, proto.ConfigSkillPB.serializeBinaryToWriter);
   }
 };
 
@@ -3693,16 +3693,16 @@ proto.ConfigCharacter.serializeBinaryToWriter = function(message, writer) {
  * optional string name = 1;
  * @return {string}
  */
-proto.ConfigCharacter.prototype.getName = function() {
+proto.ConfigCharacterPB.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.setName = function(value) {
+proto.ConfigCharacterPB.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -3711,16 +3711,16 @@ proto.ConfigCharacter.prototype.setName = function(value) {
  * optional bool active = 2;
  * @return {boolean}
  */
-proto.ConfigCharacter.prototype.getActive = function() {
+proto.ConfigCharacterPB.prototype.getActive = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.setActive = function(value) {
+proto.ConfigCharacterPB.prototype.setActive = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
@@ -3729,16 +3729,16 @@ proto.ConfigCharacter.prototype.setActive = function(value) {
  * optional float base_speed = 3;
  * @return {number}
  */
-proto.ConfigCharacter.prototype.getBaseSpeed = function() {
+proto.ConfigCharacterPB.prototype.getBaseSpeed = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 3, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.setBaseSpeed = function(value) {
+proto.ConfigCharacterPB.prototype.setBaseSpeed = function(value) {
   return jspb.Message.setProto3FloatField(this, 3, value);
 };
 
@@ -3747,16 +3747,16 @@ proto.ConfigCharacter.prototype.setBaseSpeed = function(value) {
  * optional float base_size = 4;
  * @return {number}
  */
-proto.ConfigCharacter.prototype.getBaseSize = function() {
+proto.ConfigCharacterPB.prototype.getBaseSize = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.setBaseSize = function(value) {
+proto.ConfigCharacterPB.prototype.setBaseSize = function(value) {
   return jspb.Message.setProto3FloatField(this, 4, value);
 };
 
@@ -3765,16 +3765,16 @@ proto.ConfigCharacter.prototype.setBaseSize = function(value) {
  * optional uint64 base_health = 5;
  * @return {number}
  */
-proto.ConfigCharacter.prototype.getBaseHealth = function() {
+proto.ConfigCharacterPB.prototype.getBaseHealth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.setBaseHealth = function(value) {
+proto.ConfigCharacterPB.prototype.setBaseHealth = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
@@ -3783,38 +3783,38 @@ proto.ConfigCharacter.prototype.setBaseHealth = function(value) {
  * optional uint64 max_inventory_size = 6;
  * @return {number}
  */
-proto.ConfigCharacter.prototype.getMaxInventorySize = function() {
+proto.ConfigCharacterPB.prototype.getMaxInventorySize = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.setMaxInventorySize = function(value) {
+proto.ConfigCharacterPB.prototype.setMaxInventorySize = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
 /**
- * map<string, ConfigSkill> skills = 7;
+ * map<string, ConfigSkillPB> skills = 7;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<string,!proto.ConfigSkill>}
+ * @return {!jspb.Map<string,!proto.ConfigSkillPB>}
  */
-proto.ConfigCharacter.prototype.getSkillsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<string,!proto.ConfigSkill>} */ (
+proto.ConfigCharacterPB.prototype.getSkillsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<string,!proto.ConfigSkillPB>} */ (
       jspb.Message.getMapField(this, 7, opt_noLazyCreate,
-      proto.ConfigSkill));
+      proto.ConfigSkillPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.ConfigCharacter} returns this
+ * @return {!proto.ConfigCharacterPB} returns this
  */
-proto.ConfigCharacter.prototype.clearSkillsMap = function() {
+proto.ConfigCharacterPB.prototype.clearSkillsMap = function() {
   this.getSkillsMap().clear();
   return this;
 };
@@ -3836,8 +3836,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ClientConfig.prototype.toObject = function(opt_includeInstance) {
-  return proto.ClientConfig.toObject(opt_includeInstance, this);
+proto.ClientConfigPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ClientConfigPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -3846,13 +3846,13 @@ proto.ClientConfig.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ClientConfig} msg The msg instance to transform.
+ * @param {!proto.ClientConfigPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ClientConfig.toObject = function(includeInstance, msg) {
+proto.ClientConfigPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    serverUpdate: (f = msg.getServerUpdate()) && proto.ConfigServerUpdate.toObject(includeInstance, f)
+    serverUpdate: (f = msg.getServerUpdate()) && proto.ConfigServerUpdatePB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -3866,23 +3866,23 @@ proto.ClientConfig.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ClientConfig}
+ * @return {!proto.ClientConfigPB}
  */
-proto.ClientConfig.deserializeBinary = function(bytes) {
+proto.ClientConfigPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ClientConfig;
-  return proto.ClientConfig.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ClientConfigPB;
+  return proto.ClientConfigPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ClientConfig} msg The message object to deserialize into.
+ * @param {!proto.ClientConfigPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ClientConfig}
+ * @return {!proto.ClientConfigPB}
  */
-proto.ClientConfig.deserializeBinaryFromReader = function(msg, reader) {
+proto.ClientConfigPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -3890,8 +3890,8 @@ proto.ClientConfig.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.ConfigServerUpdate;
-      reader.readMessage(value,proto.ConfigServerUpdate.deserializeBinaryFromReader);
+      var value = new proto.ConfigServerUpdatePB;
+      reader.readMessage(value,proto.ConfigServerUpdatePB.deserializeBinaryFromReader);
       msg.setServerUpdate(value);
       break;
     default:
@@ -3907,9 +3907,9 @@ proto.ClientConfig.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ClientConfig.prototype.serializeBinary = function() {
+proto.ClientConfigPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ClientConfig.serializeBinaryToWriter(this, writer);
+  proto.ClientConfigPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -3917,47 +3917,47 @@ proto.ClientConfig.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ClientConfig} message
+ * @param {!proto.ClientConfigPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ClientConfig.serializeBinaryToWriter = function(message, writer) {
+proto.ClientConfigPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getServerUpdate();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.ConfigServerUpdate.serializeBinaryToWriter
+      proto.ConfigServerUpdatePB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional ConfigServerUpdate server_update = 1;
- * @return {?proto.ConfigServerUpdate}
+ * optional ConfigServerUpdatePB server_update = 1;
+ * @return {?proto.ConfigServerUpdatePB}
  */
-proto.ClientConfig.prototype.getServerUpdate = function() {
-  return /** @type{?proto.ConfigServerUpdate} */ (
-    jspb.Message.getWrapperField(this, proto.ConfigServerUpdate, 1));
+proto.ClientConfigPB.prototype.getServerUpdate = function() {
+  return /** @type{?proto.ConfigServerUpdatePB} */ (
+    jspb.Message.getWrapperField(this, proto.ConfigServerUpdatePB, 1));
 };
 
 
 /**
- * @param {?proto.ConfigServerUpdate|undefined} value
- * @return {!proto.ClientConfig} returns this
+ * @param {?proto.ConfigServerUpdatePB|undefined} value
+ * @return {!proto.ClientConfigPB} returns this
 */
-proto.ClientConfig.prototype.setServerUpdate = function(value) {
+proto.ClientConfigPB.prototype.setServerUpdate = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.ClientConfig} returns this
+ * @return {!proto.ClientConfigPB} returns this
  */
-proto.ClientConfig.prototype.clearServerUpdate = function() {
+proto.ClientConfigPB.prototype.clearServerUpdate = function() {
   return this.setServerUpdate(undefined);
 };
 
@@ -3966,7 +3966,7 @@ proto.ClientConfig.prototype.clearServerUpdate = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.ClientConfig.prototype.hasServerUpdate = function() {
+proto.ClientConfigPB.prototype.hasServerUpdate = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -3987,8 +3987,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConfigServerUpdate.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConfigServerUpdate.toObject(opt_includeInstance, this);
+proto.ConfigServerUpdatePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ConfigServerUpdatePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -3997,11 +3997,11 @@ proto.ConfigServerUpdate.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConfigServerUpdate} msg The msg instance to transform.
+ * @param {!proto.ConfigServerUpdatePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigServerUpdate.toObject = function(includeInstance, msg) {
+proto.ConfigServerUpdatePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     timestampDifferenceSamplesToCheckWarning: jspb.Message.getFieldWithDefault(msg, 1, 0),
     timestampDifferencesSamplesMaxLength: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -4022,23 +4022,23 @@ proto.ConfigServerUpdate.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConfigServerUpdate}
+ * @return {!proto.ConfigServerUpdatePB}
  */
-proto.ConfigServerUpdate.deserializeBinary = function(bytes) {
+proto.ConfigServerUpdatePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConfigServerUpdate;
-  return proto.ConfigServerUpdate.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ConfigServerUpdatePB;
+  return proto.ConfigServerUpdatePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConfigServerUpdate} msg The message object to deserialize into.
+ * @param {!proto.ConfigServerUpdatePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConfigServerUpdate}
+ * @return {!proto.ConfigServerUpdatePB}
  */
-proto.ConfigServerUpdate.deserializeBinaryFromReader = function(msg, reader) {
+proto.ConfigServerUpdatePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4082,9 +4082,9 @@ proto.ConfigServerUpdate.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConfigServerUpdate.prototype.serializeBinary = function() {
+proto.ConfigServerUpdatePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConfigServerUpdate.serializeBinaryToWriter(this, writer);
+  proto.ConfigServerUpdatePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4092,11 +4092,11 @@ proto.ConfigServerUpdate.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConfigServerUpdate} message
+ * @param {!proto.ConfigServerUpdatePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigServerUpdate.serializeBinaryToWriter = function(message, writer) {
+proto.ConfigServerUpdatePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTimestampDifferenceSamplesToCheckWarning();
   if (f !== 0) {
@@ -4147,16 +4147,16 @@ proto.ConfigServerUpdate.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 timestamp_difference_samples_to_check_warning = 1;
  * @return {number}
  */
-proto.ConfigServerUpdate.prototype.getTimestampDifferenceSamplesToCheckWarning = function() {
+proto.ConfigServerUpdatePB.prototype.getTimestampDifferenceSamplesToCheckWarning = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigServerUpdate} returns this
+ * @return {!proto.ConfigServerUpdatePB} returns this
  */
-proto.ConfigServerUpdate.prototype.setTimestampDifferenceSamplesToCheckWarning = function(value) {
+proto.ConfigServerUpdatePB.prototype.setTimestampDifferenceSamplesToCheckWarning = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -4165,16 +4165,16 @@ proto.ConfigServerUpdate.prototype.setTimestampDifferenceSamplesToCheckWarning =
  * optional uint64 timestamp_differences_samples_max_length = 2;
  * @return {number}
  */
-proto.ConfigServerUpdate.prototype.getTimestampDifferencesSamplesMaxLength = function() {
+proto.ConfigServerUpdatePB.prototype.getTimestampDifferencesSamplesMaxLength = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigServerUpdate} returns this
+ * @return {!proto.ConfigServerUpdatePB} returns this
  */
-proto.ConfigServerUpdate.prototype.setTimestampDifferencesSamplesMaxLength = function(value) {
+proto.ConfigServerUpdatePB.prototype.setTimestampDifferencesSamplesMaxLength = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -4183,16 +4183,16 @@ proto.ConfigServerUpdate.prototype.setTimestampDifferencesSamplesMaxLength = fun
  * optional uint64 show_warning_threshold = 3;
  * @return {number}
  */
-proto.ConfigServerUpdate.prototype.getShowWarningThreshold = function() {
+proto.ConfigServerUpdatePB.prototype.getShowWarningThreshold = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigServerUpdate} returns this
+ * @return {!proto.ConfigServerUpdatePB} returns this
  */
-proto.ConfigServerUpdate.prototype.setShowWarningThreshold = function(value) {
+proto.ConfigServerUpdatePB.prototype.setShowWarningThreshold = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -4201,16 +4201,16 @@ proto.ConfigServerUpdate.prototype.setShowWarningThreshold = function(value) {
  * optional uint64 stop_warning_threshold = 4;
  * @return {number}
  */
-proto.ConfigServerUpdate.prototype.getStopWarningThreshold = function() {
+proto.ConfigServerUpdatePB.prototype.getStopWarningThreshold = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigServerUpdate} returns this
+ * @return {!proto.ConfigServerUpdatePB} returns this
  */
-proto.ConfigServerUpdate.prototype.setStopWarningThreshold = function(value) {
+proto.ConfigServerUpdatePB.prototype.setStopWarningThreshold = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
@@ -4219,16 +4219,16 @@ proto.ConfigServerUpdate.prototype.setStopWarningThreshold = function(value) {
  * optional uint64 ms_without_update_show_warning = 5;
  * @return {number}
  */
-proto.ConfigServerUpdate.prototype.getMsWithoutUpdateShowWarning = function() {
+proto.ConfigServerUpdatePB.prototype.getMsWithoutUpdateShowWarning = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigServerUpdate} returns this
+ * @return {!proto.ConfigServerUpdatePB} returns this
  */
-proto.ConfigServerUpdate.prototype.setMsWithoutUpdateShowWarning = function(value) {
+proto.ConfigServerUpdatePB.prototype.setMsWithoutUpdateShowWarning = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
@@ -4237,16 +4237,16 @@ proto.ConfigServerUpdate.prototype.setMsWithoutUpdateShowWarning = function(valu
  * optional uint64 ms_without_update_disconnect = 6;
  * @return {number}
  */
-proto.ConfigServerUpdate.prototype.getMsWithoutUpdateDisconnect = function() {
+proto.ConfigServerUpdatePB.prototype.getMsWithoutUpdateDisconnect = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigServerUpdate} returns this
+ * @return {!proto.ConfigServerUpdatePB} returns this
  */
-proto.ConfigServerUpdate.prototype.setMsWithoutUpdateDisconnect = function(value) {
+proto.ConfigServerUpdatePB.prototype.setMsWithoutUpdateDisconnect = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
@@ -4267,8 +4267,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ConfigSkill.prototype.toObject = function(opt_includeInstance) {
-  return proto.ConfigSkill.toObject(opt_includeInstance, this);
+proto.ConfigSkillPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ConfigSkillPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -4277,11 +4277,11 @@ proto.ConfigSkill.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ConfigSkill} msg The msg instance to transform.
+ * @param {!proto.ConfigSkillPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigSkill.toObject = function(includeInstance, msg) {
+proto.ConfigSkillPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     cooldownMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -4304,23 +4304,23 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ConfigSkill}
+ * @return {!proto.ConfigSkillPB}
  */
-proto.ConfigSkill.deserializeBinary = function(bytes) {
+proto.ConfigSkillPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ConfigSkill;
-  return proto.ConfigSkill.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ConfigSkillPB;
+  return proto.ConfigSkillPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ConfigSkill} msg The message object to deserialize into.
+ * @param {!proto.ConfigSkillPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ConfigSkill}
+ * @return {!proto.ConfigSkillPB}
  */
-proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
+proto.ConfigSkillPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4372,9 +4372,9 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ConfigSkill.prototype.serializeBinary = function() {
+proto.ConfigSkillPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ConfigSkill.serializeBinaryToWriter(this, writer);
+  proto.ConfigSkillPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4382,11 +4382,11 @@ proto.ConfigSkill.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ConfigSkill} message
+ * @param {!proto.ConfigSkillPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
+proto.ConfigSkillPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getName();
   if (f.length > 0) {
@@ -4451,16 +4451,16 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
  * optional string name = 1;
  * @return {string}
  */
-proto.ConfigSkill.prototype.getName = function() {
+proto.ConfigSkillPB.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setName = function(value) {
+proto.ConfigSkillPB.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -4469,16 +4469,16 @@ proto.ConfigSkill.prototype.setName = function(value) {
  * optional uint64 cooldown_ms = 2;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getCooldownMs = function() {
+proto.ConfigSkillPB.prototype.getCooldownMs = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setCooldownMs = function(value) {
+proto.ConfigSkillPB.prototype.setCooldownMs = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -4487,16 +4487,16 @@ proto.ConfigSkill.prototype.setCooldownMs = function(value) {
  * optional uint64 execution_duration_ms = 3;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getExecutionDurationMs = function() {
+proto.ConfigSkillPB.prototype.getExecutionDurationMs = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setExecutionDurationMs = function(value) {
+proto.ConfigSkillPB.prototype.setExecutionDurationMs = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -4505,16 +4505,16 @@ proto.ConfigSkill.prototype.setExecutionDurationMs = function(value) {
  * optional float targetting_radius = 4;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getTargettingRadius = function() {
+proto.ConfigSkillPB.prototype.getTargettingRadius = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 4, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setTargettingRadius = function(value) {
+proto.ConfigSkillPB.prototype.setTargettingRadius = function(value) {
   return jspb.Message.setProto3FloatField(this, 4, value);
 };
 
@@ -4523,16 +4523,16 @@ proto.ConfigSkill.prototype.setTargettingRadius = function(value) {
  * optional float targetting_angle = 5;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getTargettingAngle = function() {
+proto.ConfigSkillPB.prototype.getTargettingAngle = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 5, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setTargettingAngle = function(value) {
+proto.ConfigSkillPB.prototype.setTargettingAngle = function(value) {
   return jspb.Message.setProto3FloatField(this, 5, value);
 };
 
@@ -4541,16 +4541,16 @@ proto.ConfigSkill.prototype.setTargettingAngle = function(value) {
  * optional float targetting_range = 6;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getTargettingRange = function() {
+proto.ConfigSkillPB.prototype.getTargettingRange = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setTargettingRange = function(value) {
+proto.ConfigSkillPB.prototype.setTargettingRange = function(value) {
   return jspb.Message.setProto3FloatField(this, 6, value);
 };
 
@@ -4559,16 +4559,16 @@ proto.ConfigSkill.prototype.setTargettingRange = function(value) {
  * optional uint64 stamina_cost = 7;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getStaminaCost = function() {
+proto.ConfigSkillPB.prototype.getStaminaCost = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 7, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setStaminaCost = function(value) {
+proto.ConfigSkillPB.prototype.setStaminaCost = function(value) {
   return jspb.Message.setProto3IntField(this, 7, value);
 };
 
@@ -4577,16 +4577,16 @@ proto.ConfigSkill.prototype.setStaminaCost = function(value) {
  * optional float targetting_offset = 8;
  * @return {number}
  */
-proto.ConfigSkill.prototype.getTargettingOffset = function() {
+proto.ConfigSkillPB.prototype.getTargettingOffset = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 8, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ConfigSkill} returns this
+ * @return {!proto.ConfigSkillPB} returns this
  */
-proto.ConfigSkill.prototype.setTargettingOffset = function(value) {
+proto.ConfigSkillPB.prototype.setTargettingOffset = function(value) {
   return jspb.Message.setProto3FloatField(this, 8, value);
 };
 
@@ -4597,7 +4597,7 @@ proto.ConfigSkill.prototype.setTargettingOffset = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.GameState.repeatedFields_ = [7];
+proto.GameStatePB.repeatedFields_ = [7];
 
 
 
@@ -4614,8 +4614,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GameState.prototype.toObject = function(opt_includeInstance) {
-  return proto.GameState.toObject(opt_includeInstance, this);
+proto.GameStatePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.GameStatePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -4624,31 +4624,31 @@ proto.GameState.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GameState} msg The msg instance to transform.
+ * @param {!proto.GameStatePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameState.toObject = function(includeInstance, msg) {
+proto.GameStatePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    playersMap: (f = msg.getPlayersMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
+    projectilesMap: (f = msg.getProjectilesMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
     playerTimestampsMap: (f = msg.getPlayerTimestampsMap()) ? f.toObject(includeInstance, undefined) : [],
     serverTimestamp: jspb.Message.getFieldWithDefault(msg, 5, 0),
-    zone: (f = msg.getZone()) && proto.Zone.toObject(includeInstance, f),
+    zone: (f = msg.getZone()) && proto.ZonePB.toObject(includeInstance, f),
     killfeedList: jspb.Message.toObjectList(msg.getKillfeedList(),
-    proto.KillEntry.toObject, includeInstance),
+    proto.KillEntryPB.toObject, includeInstance),
     damageTakenMap: (f = msg.getDamageTakenMap()) ? f.toObject(includeInstance, undefined) : [],
     damageDoneMap: (f = msg.getDamageDoneMap()) ? f.toObject(includeInstance, undefined) : [],
-    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    powerUpsMap: (f = msg.getPowerUpsMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
     status: jspb.Message.getFieldWithDefault(msg, 11, 0),
     startGameTimestamp: jspb.Message.getFieldWithDefault(msg, 12, 0),
-    itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    obstaclesMap: (f = msg.getObstaclesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    itemsMap: (f = msg.getItemsMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
+    obstaclesMap: (f = msg.getObstaclesMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
+    poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
+    cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
+    bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : [],
+    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.EntityPB.toObject) : []
   };
 
   if (includeInstance) {
@@ -4662,23 +4662,23 @@ proto.GameState.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GameState}
+ * @return {!proto.GameStatePB}
  */
-proto.GameState.deserializeBinary = function(bytes) {
+proto.GameStatePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GameState;
-  return proto.GameState.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.GameStatePB;
+  return proto.GameStatePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GameState} msg The message object to deserialize into.
+ * @param {!proto.GameStatePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GameState}
+ * @return {!proto.GameStatePB}
  */
-proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
+proto.GameStatePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -4692,13 +4692,13 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
     case 2:
       var value = msg.getPlayersMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 3:
       var value = msg.getProjectilesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 4:
@@ -4712,13 +4712,13 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
       msg.setServerTimestamp(value);
       break;
     case 6:
-      var value = new proto.Zone;
-      reader.readMessage(value,proto.Zone.deserializeBinaryFromReader);
+      var value = new proto.ZonePB;
+      reader.readMessage(value,proto.ZonePB.deserializeBinaryFromReader);
       msg.setZone(value);
       break;
     case 7:
-      var value = new proto.KillEntry;
-      reader.readMessage(value,proto.KillEntry.deserializeBinaryFromReader);
+      var value = new proto.KillEntryPB;
+      reader.readMessage(value,proto.KillEntryPB.deserializeBinaryFromReader);
       msg.addKillfeed(value);
       break;
     case 8:
@@ -4736,11 +4736,11 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
     case 10:
       var value = msg.getPowerUpsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 11:
-      var value = /** @type {!proto.GameStatus} */ (reader.readEnum());
+      var value = /** @type {!proto.GameStatusPB} */ (reader.readEnum());
       msg.setStatus(value);
       break;
     case 12:
@@ -4750,37 +4750,37 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
     case 13:
       var value = msg.getItemsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 14:
       var value = msg.getObstaclesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 15:
       var value = msg.getPoolsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 16:
       var value = msg.getCratesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 17:
       var value = msg.getBushesMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     case 18:
       var value = msg.getTrapsMap();
       reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
+        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.EntityPB.deserializeBinaryFromReader, 0, new proto.EntityPB());
          });
       break;
     default:
@@ -4796,9 +4796,9 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GameState.prototype.serializeBinary = function() {
+proto.GameStatePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GameState.serializeBinaryToWriter(this, writer);
+  proto.GameStatePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -4806,11 +4806,11 @@ proto.GameState.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GameState} message
+ * @param {!proto.GameStatePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameState.serializeBinaryToWriter = function(message, writer) {
+proto.GameStatePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getGameId();
   if (f.length > 0) {
@@ -4821,11 +4821,11 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getPlayersMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getProjectilesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(3, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getPlayerTimestampsMap(true);
   if (f && f.getLength() > 0) {
@@ -4843,7 +4843,7 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       6,
       f,
-      proto.Zone.serializeBinaryToWriter
+      proto.ZonePB.serializeBinaryToWriter
     );
   }
   f = message.getKillfeedList();
@@ -4851,7 +4851,7 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       7,
       f,
-      proto.KillEntry.serializeBinaryToWriter
+      proto.KillEntryPB.serializeBinaryToWriter
     );
   }
   f = message.getDamageTakenMap(true);
@@ -4864,7 +4864,7 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getPowerUpsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(10, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getStatus();
   if (f !== 0.0) {
@@ -4882,27 +4882,27 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   }
   f = message.getItemsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(13, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(13, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getObstaclesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(14, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(14, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getPoolsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(15, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(15, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getCratesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(16, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(16, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getBushesMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(17, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(17, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
   f = message.getTrapsMap(true);
   if (f && f.getLength() > 0) {
-    f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+    f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.EntityPB.serializeBinaryToWriter);
   }
 };
 
@@ -4911,61 +4911,61 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
  * optional string game_id = 1;
  * @return {string}
  */
-proto.GameState.prototype.getGameId = function() {
+proto.GameStatePB.prototype.getGameId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.setGameId = function(value) {
+proto.GameStatePB.prototype.setGameId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * map<uint64, Entity> players = 2;
+ * map<uint64, EntityPB> players = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getPlayersMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getPlayersMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 2, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearPlayersMap = function() {
+proto.GameStatePB.prototype.clearPlayersMap = function() {
   this.getPlayersMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> projectiles = 3;
+ * map<uint64, EntityPB> projectiles = 3;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getProjectilesMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getProjectilesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 3, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearProjectilesMap = function() {
+proto.GameStatePB.prototype.clearProjectilesMap = function() {
   this.getProjectilesMap().clear();
   return this;
 };
@@ -4977,7 +4977,7 @@ proto.GameState.prototype.clearProjectilesMap = function() {
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
  */
-proto.GameState.prototype.getPlayerTimestampsMap = function(opt_noLazyCreate) {
+proto.GameStatePB.prototype.getPlayerTimestampsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,number>} */ (
       jspb.Message.getMapField(this, 4, opt_noLazyCreate,
       null));
@@ -4986,9 +4986,9 @@ proto.GameState.prototype.getPlayerTimestampsMap = function(opt_noLazyCreate) {
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearPlayerTimestampsMap = function() {
+proto.GameStatePB.prototype.clearPlayerTimestampsMap = function() {
   this.getPlayerTimestampsMap().clear();
   return this;
 };
@@ -4998,44 +4998,44 @@ proto.GameState.prototype.clearPlayerTimestampsMap = function() {
  * optional int64 server_timestamp = 5;
  * @return {number}
  */
-proto.GameState.prototype.getServerTimestamp = function() {
+proto.GameStatePB.prototype.getServerTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.setServerTimestamp = function(value) {
+proto.GameStatePB.prototype.setServerTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional Zone zone = 6;
- * @return {?proto.Zone}
+ * optional ZonePB zone = 6;
+ * @return {?proto.ZonePB}
  */
-proto.GameState.prototype.getZone = function() {
-  return /** @type{?proto.Zone} */ (
-    jspb.Message.getWrapperField(this, proto.Zone, 6));
+proto.GameStatePB.prototype.getZone = function() {
+  return /** @type{?proto.ZonePB} */ (
+    jspb.Message.getWrapperField(this, proto.ZonePB, 6));
 };
 
 
 /**
- * @param {?proto.Zone|undefined} value
- * @return {!proto.GameState} returns this
+ * @param {?proto.ZonePB|undefined} value
+ * @return {!proto.GameStatePB} returns this
 */
-proto.GameState.prototype.setZone = function(value) {
+proto.GameStatePB.prototype.setZone = function(value) {
   return jspb.Message.setWrapperField(this, 6, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearZone = function() {
+proto.GameStatePB.prototype.clearZone = function() {
   return this.setZone(undefined);
 };
 
@@ -5044,45 +5044,45 @@ proto.GameState.prototype.clearZone = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameState.prototype.hasZone = function() {
+proto.GameStatePB.prototype.hasZone = function() {
   return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
- * repeated KillEntry killfeed = 7;
- * @return {!Array<!proto.KillEntry>}
+ * repeated KillEntryPB killfeed = 7;
+ * @return {!Array<!proto.KillEntryPB>}
  */
-proto.GameState.prototype.getKillfeedList = function() {
-  return /** @type{!Array<!proto.KillEntry>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.KillEntry, 7));
+proto.GameStatePB.prototype.getKillfeedList = function() {
+  return /** @type{!Array<!proto.KillEntryPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.KillEntryPB, 7));
 };
 
 
 /**
- * @param {!Array<!proto.KillEntry>} value
- * @return {!proto.GameState} returns this
+ * @param {!Array<!proto.KillEntryPB>} value
+ * @return {!proto.GameStatePB} returns this
 */
-proto.GameState.prototype.setKillfeedList = function(value) {
+proto.GameStatePB.prototype.setKillfeedList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 7, value);
 };
 
 
 /**
- * @param {!proto.KillEntry=} opt_value
+ * @param {!proto.KillEntryPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.KillEntry}
+ * @return {!proto.KillEntryPB}
  */
-proto.GameState.prototype.addKillfeed = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 7, opt_value, proto.KillEntry, opt_index);
+proto.GameStatePB.prototype.addKillfeed = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 7, opt_value, proto.KillEntryPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearKillfeedList = function() {
+proto.GameStatePB.prototype.clearKillfeedList = function() {
   return this.setKillfeedList([]);
 };
 
@@ -5093,7 +5093,7 @@ proto.GameState.prototype.clearKillfeedList = function() {
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
  */
-proto.GameState.prototype.getDamageTakenMap = function(opt_noLazyCreate) {
+proto.GameStatePB.prototype.getDamageTakenMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,number>} */ (
       jspb.Message.getMapField(this, 8, opt_noLazyCreate,
       null));
@@ -5102,9 +5102,9 @@ proto.GameState.prototype.getDamageTakenMap = function(opt_noLazyCreate) {
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearDamageTakenMap = function() {
+proto.GameStatePB.prototype.clearDamageTakenMap = function() {
   this.getDamageTakenMap().clear();
   return this;
 };
@@ -5116,7 +5116,7 @@ proto.GameState.prototype.clearDamageTakenMap = function() {
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
  */
-proto.GameState.prototype.getDamageDoneMap = function(opt_noLazyCreate) {
+proto.GameStatePB.prototype.getDamageDoneMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<number,number>} */ (
       jspb.Message.getMapField(this, 9, opt_noLazyCreate,
       null));
@@ -5125,51 +5125,51 @@ proto.GameState.prototype.getDamageDoneMap = function(opt_noLazyCreate) {
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearDamageDoneMap = function() {
+proto.GameStatePB.prototype.clearDamageDoneMap = function() {
   this.getDamageDoneMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> power_ups = 10;
+ * map<uint64, EntityPB> power_ups = 10;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getPowerUpsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getPowerUpsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 10, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearPowerUpsMap = function() {
+proto.GameStatePB.prototype.clearPowerUpsMap = function() {
   this.getPowerUpsMap().clear();
   return this;
 };
 
 
 /**
- * optional GameStatus status = 11;
- * @return {!proto.GameStatus}
+ * optional GameStatusPB status = 11;
+ * @return {!proto.GameStatusPB}
  */
-proto.GameState.prototype.getStatus = function() {
-  return /** @type {!proto.GameStatus} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+proto.GameStatePB.prototype.getStatus = function() {
+  return /** @type {!proto.GameStatusPB} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
 };
 
 
 /**
- * @param {!proto.GameStatus} value
- * @return {!proto.GameState} returns this
+ * @param {!proto.GameStatusPB} value
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.setStatus = function(value) {
+proto.GameStatePB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 11, value);
 };
 
@@ -5178,153 +5178,153 @@ proto.GameState.prototype.setStatus = function(value) {
  * optional int64 start_game_timestamp = 12;
  * @return {number}
  */
-proto.GameState.prototype.getStartGameTimestamp = function() {
+proto.GameStatePB.prototype.getStartGameTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 12, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.setStartGameTimestamp = function(value) {
+proto.GameStatePB.prototype.setStartGameTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 12, value);
 };
 
 
 /**
- * map<uint64, Entity> items = 13;
+ * map<uint64, EntityPB> items = 13;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getItemsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getItemsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 13, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearItemsMap = function() {
+proto.GameStatePB.prototype.clearItemsMap = function() {
   this.getItemsMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> obstacles = 14;
+ * map<uint64, EntityPB> obstacles = 14;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getObstaclesMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getObstaclesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 14, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearObstaclesMap = function() {
+proto.GameStatePB.prototype.clearObstaclesMap = function() {
   this.getObstaclesMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> pools = 15;
+ * map<uint64, EntityPB> pools = 15;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getPoolsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getPoolsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 15, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearPoolsMap = function() {
+proto.GameStatePB.prototype.clearPoolsMap = function() {
   this.getPoolsMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> crates = 16;
+ * map<uint64, EntityPB> crates = 16;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getCratesMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getCratesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 16, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearCratesMap = function() {
+proto.GameStatePB.prototype.clearCratesMap = function() {
   this.getCratesMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> bushes = 17;
+ * map<uint64, EntityPB> bushes = 17;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getBushesMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getBushesMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 17, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearBushesMap = function() {
+proto.GameStatePB.prototype.clearBushesMap = function() {
   this.getBushesMap().clear();
   return this;
 };
 
 
 /**
- * map<uint64, Entity> traps = 18;
+ * map<uint64, EntityPB> traps = 18;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
- * @return {!jspb.Map<number,!proto.Entity>}
+ * @return {!jspb.Map<number,!proto.EntityPB>}
  */
-proto.GameState.prototype.getTrapsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Entity>} */ (
+proto.GameStatePB.prototype.getTrapsMap = function(opt_noLazyCreate) {
+  return /** @type {!jspb.Map<number,!proto.EntityPB>} */ (
       jspb.Message.getMapField(this, 18, opt_noLazyCreate,
-      proto.Entity));
+      proto.EntityPB));
 };
 
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.GameState} returns this
+ * @return {!proto.GameStatePB} returns this
  */
-proto.GameState.prototype.clearTrapsMap = function() {
+proto.GameStatePB.prototype.clearTrapsMap = function() {
   this.getTrapsMap().clear();
   return this;
 };
@@ -5336,7 +5336,7 @@ proto.GameState.prototype.clearTrapsMap = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Entity.repeatedFields_ = [7,8];
+proto.EntityPB.repeatedFields_ = [7,8];
 
 /**
  * Oneof group definitions for this message. Each group defines the field
@@ -5346,12 +5346,12 @@ proto.Entity.repeatedFields_ = [7,8];
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.Entity.oneofGroups_ = [[12,13,14,15,16,17,18,19,20]];
+proto.EntityPB.oneofGroups_ = [[12,13,14,15,16,17,18,19,20]];
 
 /**
  * @enum {number}
  */
-proto.Entity.AditionalInfoCase = {
+proto.EntityPB.AditionalInfoCase = {
   ADITIONAL_INFO_NOT_SET: 0,
   PLAYER: 12,
   PROJECTILE: 13,
@@ -5365,10 +5365,10 @@ proto.Entity.AditionalInfoCase = {
 };
 
 /**
- * @return {proto.Entity.AditionalInfoCase}
+ * @return {proto.EntityPB.AditionalInfoCase}
  */
-proto.Entity.prototype.getAditionalInfoCase = function() {
-  return /** @type {proto.Entity.AditionalInfoCase} */(jspb.Message.computeOneofCase(this, proto.Entity.oneofGroups_[0]));
+proto.EntityPB.prototype.getAditionalInfoCase = function() {
+  return /** @type {proto.EntityPB.AditionalInfoCase} */(jspb.Message.computeOneofCase(this, proto.EntityPB.oneofGroups_[0]));
 };
 
 
@@ -5386,8 +5386,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Entity.prototype.toObject = function(opt_includeInstance) {
-  return proto.Entity.toObject(opt_includeInstance, this);
+proto.EntityPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.EntityPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -5396,33 +5396,33 @@ proto.Entity.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Entity} msg The msg instance to transform.
+ * @param {!proto.EntityPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Entity.toObject = function(includeInstance, msg) {
+proto.EntityPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, 0),
     category: jspb.Message.getFieldWithDefault(msg, 2, ""),
     shape: jspb.Message.getFieldWithDefault(msg, 3, ""),
     name: jspb.Message.getFieldWithDefault(msg, 4, ""),
-    position: (f = msg.getPosition()) && proto.Position.toObject(includeInstance, f),
+    position: (f = msg.getPosition()) && proto.PositionPB.toObject(includeInstance, f),
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     verticesList: jspb.Message.toObjectList(msg.getVerticesList(),
-    proto.Position.toObject, includeInstance),
+    proto.PositionPB.toObject, includeInstance),
     collidesWithList: (f = jspb.Message.getRepeatedField(msg, 8)) == null ? undefined : f,
     speed: jspb.Message.getFloatingPointFieldWithDefault(msg, 9, 0.0),
-    direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f),
+    direction: (f = msg.getDirection()) && proto.DirectionPB.toObject(includeInstance, f),
     isMoving: jspb.Message.getBooleanFieldWithDefault(msg, 11, false),
-    player: (f = msg.getPlayer()) && proto.Player.toObject(includeInstance, f),
-    projectile: (f = msg.getProjectile()) && proto.Projectile.toObject(includeInstance, f),
-    obstacle: (f = msg.getObstacle()) && proto.Obstacle.toObject(includeInstance, f),
-    powerUp: (f = msg.getPowerUp()) && proto.PowerUp.toObject(includeInstance, f),
-    item: (f = msg.getItem()) && proto.Item.toObject(includeInstance, f),
-    pool: (f = msg.getPool()) && proto.Pool.toObject(includeInstance, f),
-    crate: (f = msg.getCrate()) && proto.Crate.toObject(includeInstance, f),
-    bush: (f = msg.getBush()) && proto.Bush.toObject(includeInstance, f),
-    trap: (f = msg.getTrap()) && proto.Trap.toObject(includeInstance, f)
+    player: (f = msg.getPlayer()) && proto.PlayerPB.toObject(includeInstance, f),
+    projectile: (f = msg.getProjectile()) && proto.ProjectilePB.toObject(includeInstance, f),
+    obstacle: (f = msg.getObstacle()) && proto.ObstaclePB.toObject(includeInstance, f),
+    powerUp: (f = msg.getPowerUp()) && proto.PowerUpPB.toObject(includeInstance, f),
+    item: (f = msg.getItem()) && proto.ItemPB.toObject(includeInstance, f),
+    pool: (f = msg.getPool()) && proto.PoolPB.toObject(includeInstance, f),
+    crate: (f = msg.getCrate()) && proto.CratePB.toObject(includeInstance, f),
+    bush: (f = msg.getBush()) && proto.BushPB.toObject(includeInstance, f),
+    trap: (f = msg.getTrap()) && proto.TrapPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5436,23 +5436,23 @@ proto.Entity.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Entity}
+ * @return {!proto.EntityPB}
  */
-proto.Entity.deserializeBinary = function(bytes) {
+proto.EntityPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Entity;
-  return proto.Entity.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.EntityPB;
+  return proto.EntityPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Entity} msg The message object to deserialize into.
+ * @param {!proto.EntityPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Entity}
+ * @return {!proto.EntityPB}
  */
-proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
+proto.EntityPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -5476,8 +5476,8 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 5:
-      var value = new proto.Position;
-      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      var value = new proto.PositionPB;
+      reader.readMessage(value,proto.PositionPB.deserializeBinaryFromReader);
       msg.setPosition(value);
       break;
     case 6:
@@ -5485,8 +5485,8 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setRadius(value);
       break;
     case 7:
-      var value = new proto.Position;
-      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      var value = new proto.PositionPB;
+      reader.readMessage(value,proto.PositionPB.deserializeBinaryFromReader);
       msg.addVertices(value);
       break;
     case 8:
@@ -5500,8 +5500,8 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSpeed(value);
       break;
     case 10:
-      var value = new proto.Direction;
-      reader.readMessage(value,proto.Direction.deserializeBinaryFromReader);
+      var value = new proto.DirectionPB;
+      reader.readMessage(value,proto.DirectionPB.deserializeBinaryFromReader);
       msg.setDirection(value);
       break;
     case 11:
@@ -5509,48 +5509,48 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
       msg.setIsMoving(value);
       break;
     case 12:
-      var value = new proto.Player;
-      reader.readMessage(value,proto.Player.deserializeBinaryFromReader);
+      var value = new proto.PlayerPB;
+      reader.readMessage(value,proto.PlayerPB.deserializeBinaryFromReader);
       msg.setPlayer(value);
       break;
     case 13:
-      var value = new proto.Projectile;
-      reader.readMessage(value,proto.Projectile.deserializeBinaryFromReader);
+      var value = new proto.ProjectilePB;
+      reader.readMessage(value,proto.ProjectilePB.deserializeBinaryFromReader);
       msg.setProjectile(value);
       break;
     case 14:
-      var value = new proto.Obstacle;
-      reader.readMessage(value,proto.Obstacle.deserializeBinaryFromReader);
+      var value = new proto.ObstaclePB;
+      reader.readMessage(value,proto.ObstaclePB.deserializeBinaryFromReader);
       msg.setObstacle(value);
       break;
     case 15:
-      var value = new proto.PowerUp;
-      reader.readMessage(value,proto.PowerUp.deserializeBinaryFromReader);
+      var value = new proto.PowerUpPB;
+      reader.readMessage(value,proto.PowerUpPB.deserializeBinaryFromReader);
       msg.setPowerUp(value);
       break;
     case 16:
-      var value = new proto.Item;
-      reader.readMessage(value,proto.Item.deserializeBinaryFromReader);
+      var value = new proto.ItemPB;
+      reader.readMessage(value,proto.ItemPB.deserializeBinaryFromReader);
       msg.setItem(value);
       break;
     case 17:
-      var value = new proto.Pool;
-      reader.readMessage(value,proto.Pool.deserializeBinaryFromReader);
+      var value = new proto.PoolPB;
+      reader.readMessage(value,proto.PoolPB.deserializeBinaryFromReader);
       msg.setPool(value);
       break;
     case 18:
-      var value = new proto.Crate;
-      reader.readMessage(value,proto.Crate.deserializeBinaryFromReader);
+      var value = new proto.CratePB;
+      reader.readMessage(value,proto.CratePB.deserializeBinaryFromReader);
       msg.setCrate(value);
       break;
     case 19:
-      var value = new proto.Bush;
-      reader.readMessage(value,proto.Bush.deserializeBinaryFromReader);
+      var value = new proto.BushPB;
+      reader.readMessage(value,proto.BushPB.deserializeBinaryFromReader);
       msg.setBush(value);
       break;
     case 20:
-      var value = new proto.Trap;
-      reader.readMessage(value,proto.Trap.deserializeBinaryFromReader);
+      var value = new proto.TrapPB;
+      reader.readMessage(value,proto.TrapPB.deserializeBinaryFromReader);
       msg.setTrap(value);
       break;
     default:
@@ -5566,9 +5566,9 @@ proto.Entity.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Entity.prototype.serializeBinary = function() {
+proto.EntityPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Entity.serializeBinaryToWriter(this, writer);
+  proto.EntityPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -5576,11 +5576,11 @@ proto.Entity.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Entity} message
+ * @param {!proto.EntityPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Entity.serializeBinaryToWriter = function(message, writer) {
+proto.EntityPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getId();
   if (f !== 0) {
@@ -5615,7 +5615,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       5,
       f,
-      proto.Position.serializeBinaryToWriter
+      proto.PositionPB.serializeBinaryToWriter
     );
   }
   f = message.getRadius();
@@ -5630,7 +5630,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       7,
       f,
-      proto.Position.serializeBinaryToWriter
+      proto.PositionPB.serializeBinaryToWriter
     );
   }
   f = message.getCollidesWithList();
@@ -5652,7 +5652,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       10,
       f,
-      proto.Direction.serializeBinaryToWriter
+      proto.DirectionPB.serializeBinaryToWriter
     );
   }
   f = message.getIsMoving();
@@ -5667,7 +5667,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       12,
       f,
-      proto.Player.serializeBinaryToWriter
+      proto.PlayerPB.serializeBinaryToWriter
     );
   }
   f = message.getProjectile();
@@ -5675,7 +5675,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       13,
       f,
-      proto.Projectile.serializeBinaryToWriter
+      proto.ProjectilePB.serializeBinaryToWriter
     );
   }
   f = message.getObstacle();
@@ -5683,7 +5683,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       14,
       f,
-      proto.Obstacle.serializeBinaryToWriter
+      proto.ObstaclePB.serializeBinaryToWriter
     );
   }
   f = message.getPowerUp();
@@ -5691,7 +5691,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       15,
       f,
-      proto.PowerUp.serializeBinaryToWriter
+      proto.PowerUpPB.serializeBinaryToWriter
     );
   }
   f = message.getItem();
@@ -5699,7 +5699,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       16,
       f,
-      proto.Item.serializeBinaryToWriter
+      proto.ItemPB.serializeBinaryToWriter
     );
   }
   f = message.getPool();
@@ -5707,7 +5707,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       17,
       f,
-      proto.Pool.serializeBinaryToWriter
+      proto.PoolPB.serializeBinaryToWriter
     );
   }
   f = message.getCrate();
@@ -5715,7 +5715,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       18,
       f,
-      proto.Crate.serializeBinaryToWriter
+      proto.CratePB.serializeBinaryToWriter
     );
   }
   f = message.getBush();
@@ -5723,7 +5723,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       19,
       f,
-      proto.Bush.serializeBinaryToWriter
+      proto.BushPB.serializeBinaryToWriter
     );
   }
   f = message.getTrap();
@@ -5731,7 +5731,7 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       20,
       f,
-      proto.Trap.serializeBinaryToWriter
+      proto.TrapPB.serializeBinaryToWriter
     );
   }
 };
@@ -5741,16 +5741,16 @@ proto.Entity.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 id = 1;
  * @return {number}
  */
-proto.Entity.prototype.getId = function() {
+proto.EntityPB.prototype.getId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setId = function(value) {
+proto.EntityPB.prototype.setId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -5759,16 +5759,16 @@ proto.Entity.prototype.setId = function(value) {
  * optional string category = 2;
  * @return {string}
  */
-proto.Entity.prototype.getCategory = function() {
+proto.EntityPB.prototype.getCategory = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setCategory = function(value) {
+proto.EntityPB.prototype.setCategory = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -5777,16 +5777,16 @@ proto.Entity.prototype.setCategory = function(value) {
  * optional string shape = 3;
  * @return {string}
  */
-proto.Entity.prototype.getShape = function() {
+proto.EntityPB.prototype.getShape = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setShape = function(value) {
+proto.EntityPB.prototype.setShape = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -5795,44 +5795,44 @@ proto.Entity.prototype.setShape = function(value) {
  * optional string name = 4;
  * @return {string}
  */
-proto.Entity.prototype.getName = function() {
+proto.EntityPB.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setName = function(value) {
+proto.EntityPB.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
 /**
- * optional Position position = 5;
- * @return {?proto.Position}
+ * optional PositionPB position = 5;
+ * @return {?proto.PositionPB}
  */
-proto.Entity.prototype.getPosition = function() {
-  return /** @type{?proto.Position} */ (
-    jspb.Message.getWrapperField(this, proto.Position, 5));
+proto.EntityPB.prototype.getPosition = function() {
+  return /** @type{?proto.PositionPB} */ (
+    jspb.Message.getWrapperField(this, proto.PositionPB, 5));
 };
 
 
 /**
- * @param {?proto.Position|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.PositionPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setPosition = function(value) {
+proto.EntityPB.prototype.setPosition = function(value) {
   return jspb.Message.setWrapperField(this, 5, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearPosition = function() {
+proto.EntityPB.prototype.clearPosition = function() {
   return this.setPosition(undefined);
 };
 
@@ -5841,7 +5841,7 @@ proto.Entity.prototype.clearPosition = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasPosition = function() {
+proto.EntityPB.prototype.hasPosition = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
@@ -5850,54 +5850,54 @@ proto.Entity.prototype.hasPosition = function() {
  * optional float radius = 6;
  * @return {number}
  */
-proto.Entity.prototype.getRadius = function() {
+proto.EntityPB.prototype.getRadius = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 6, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setRadius = function(value) {
+proto.EntityPB.prototype.setRadius = function(value) {
   return jspb.Message.setProto3FloatField(this, 6, value);
 };
 
 
 /**
- * repeated Position vertices = 7;
- * @return {!Array<!proto.Position>}
+ * repeated PositionPB vertices = 7;
+ * @return {!Array<!proto.PositionPB>}
  */
-proto.Entity.prototype.getVerticesList = function() {
-  return /** @type{!Array<!proto.Position>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.Position, 7));
+proto.EntityPB.prototype.getVerticesList = function() {
+  return /** @type{!Array<!proto.PositionPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.PositionPB, 7));
 };
 
 
 /**
- * @param {!Array<!proto.Position>} value
- * @return {!proto.Entity} returns this
+ * @param {!Array<!proto.PositionPB>} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setVerticesList = function(value) {
+proto.EntityPB.prototype.setVerticesList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 7, value);
 };
 
 
 /**
- * @param {!proto.Position=} opt_value
+ * @param {!proto.PositionPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.Position}
+ * @return {!proto.PositionPB}
  */
-proto.Entity.prototype.addVertices = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 7, opt_value, proto.Position, opt_index);
+proto.EntityPB.prototype.addVertices = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 7, opt_value, proto.PositionPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearVerticesList = function() {
+proto.EntityPB.prototype.clearVerticesList = function() {
   return this.setVerticesList([]);
 };
 
@@ -5906,16 +5906,16 @@ proto.Entity.prototype.clearVerticesList = function() {
  * repeated uint64 collides_with = 8;
  * @return {!Array<number>}
  */
-proto.Entity.prototype.getCollidesWithList = function() {
+proto.EntityPB.prototype.getCollidesWithList = function() {
   return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 8));
 };
 
 
 /**
  * @param {!Array<number>} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setCollidesWithList = function(value) {
+proto.EntityPB.prototype.setCollidesWithList = function(value) {
   return jspb.Message.setField(this, 8, value || []);
 };
 
@@ -5923,18 +5923,18 @@ proto.Entity.prototype.setCollidesWithList = function(value) {
 /**
  * @param {number} value
  * @param {number=} opt_index
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.addCollidesWith = function(value, opt_index) {
+proto.EntityPB.prototype.addCollidesWith = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 8, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearCollidesWithList = function() {
+proto.EntityPB.prototype.clearCollidesWithList = function() {
   return this.setCollidesWithList([]);
 };
 
@@ -5943,44 +5943,44 @@ proto.Entity.prototype.clearCollidesWithList = function() {
  * optional float speed = 9;
  * @return {number}
  */
-proto.Entity.prototype.getSpeed = function() {
+proto.EntityPB.prototype.getSpeed = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 9, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setSpeed = function(value) {
+proto.EntityPB.prototype.setSpeed = function(value) {
   return jspb.Message.setProto3FloatField(this, 9, value);
 };
 
 
 /**
- * optional Direction direction = 10;
- * @return {?proto.Direction}
+ * optional DirectionPB direction = 10;
+ * @return {?proto.DirectionPB}
  */
-proto.Entity.prototype.getDirection = function() {
-  return /** @type{?proto.Direction} */ (
-    jspb.Message.getWrapperField(this, proto.Direction, 10));
+proto.EntityPB.prototype.getDirection = function() {
+  return /** @type{?proto.DirectionPB} */ (
+    jspb.Message.getWrapperField(this, proto.DirectionPB, 10));
 };
 
 
 /**
- * @param {?proto.Direction|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.DirectionPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setDirection = function(value) {
+proto.EntityPB.prototype.setDirection = function(value) {
   return jspb.Message.setWrapperField(this, 10, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearDirection = function() {
+proto.EntityPB.prototype.clearDirection = function() {
   return this.setDirection(undefined);
 };
 
@@ -5989,7 +5989,7 @@ proto.Entity.prototype.clearDirection = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasDirection = function() {
+proto.EntityPB.prototype.hasDirection = function() {
   return jspb.Message.getField(this, 10) != null;
 };
 
@@ -5998,44 +5998,44 @@ proto.Entity.prototype.hasDirection = function() {
  * optional bool is_moving = 11;
  * @return {boolean}
  */
-proto.Entity.prototype.getIsMoving = function() {
+proto.EntityPB.prototype.getIsMoving = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 11, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.setIsMoving = function(value) {
+proto.EntityPB.prototype.setIsMoving = function(value) {
   return jspb.Message.setProto3BooleanField(this, 11, value);
 };
 
 
 /**
- * optional Player player = 12;
- * @return {?proto.Player}
+ * optional PlayerPB player = 12;
+ * @return {?proto.PlayerPB}
  */
-proto.Entity.prototype.getPlayer = function() {
-  return /** @type{?proto.Player} */ (
-    jspb.Message.getWrapperField(this, proto.Player, 12));
+proto.EntityPB.prototype.getPlayer = function() {
+  return /** @type{?proto.PlayerPB} */ (
+    jspb.Message.getWrapperField(this, proto.PlayerPB, 12));
 };
 
 
 /**
- * @param {?proto.Player|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.PlayerPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setPlayer = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 12, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setPlayer = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 12, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearPlayer = function() {
+proto.EntityPB.prototype.clearPlayer = function() {
   return this.setPlayer(undefined);
 };
 
@@ -6044,35 +6044,35 @@ proto.Entity.prototype.clearPlayer = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasPlayer = function() {
+proto.EntityPB.prototype.hasPlayer = function() {
   return jspb.Message.getField(this, 12) != null;
 };
 
 
 /**
- * optional Projectile projectile = 13;
- * @return {?proto.Projectile}
+ * optional ProjectilePB projectile = 13;
+ * @return {?proto.ProjectilePB}
  */
-proto.Entity.prototype.getProjectile = function() {
-  return /** @type{?proto.Projectile} */ (
-    jspb.Message.getWrapperField(this, proto.Projectile, 13));
+proto.EntityPB.prototype.getProjectile = function() {
+  return /** @type{?proto.ProjectilePB} */ (
+    jspb.Message.getWrapperField(this, proto.ProjectilePB, 13));
 };
 
 
 /**
- * @param {?proto.Projectile|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.ProjectilePB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setProjectile = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 13, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setProjectile = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 13, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearProjectile = function() {
+proto.EntityPB.prototype.clearProjectile = function() {
   return this.setProjectile(undefined);
 };
 
@@ -6081,35 +6081,35 @@ proto.Entity.prototype.clearProjectile = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasProjectile = function() {
+proto.EntityPB.prototype.hasProjectile = function() {
   return jspb.Message.getField(this, 13) != null;
 };
 
 
 /**
- * optional Obstacle obstacle = 14;
- * @return {?proto.Obstacle}
+ * optional ObstaclePB obstacle = 14;
+ * @return {?proto.ObstaclePB}
  */
-proto.Entity.prototype.getObstacle = function() {
-  return /** @type{?proto.Obstacle} */ (
-    jspb.Message.getWrapperField(this, proto.Obstacle, 14));
+proto.EntityPB.prototype.getObstacle = function() {
+  return /** @type{?proto.ObstaclePB} */ (
+    jspb.Message.getWrapperField(this, proto.ObstaclePB, 14));
 };
 
 
 /**
- * @param {?proto.Obstacle|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.ObstaclePB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setObstacle = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 14, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setObstacle = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 14, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearObstacle = function() {
+proto.EntityPB.prototype.clearObstacle = function() {
   return this.setObstacle(undefined);
 };
 
@@ -6118,35 +6118,35 @@ proto.Entity.prototype.clearObstacle = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasObstacle = function() {
+proto.EntityPB.prototype.hasObstacle = function() {
   return jspb.Message.getField(this, 14) != null;
 };
 
 
 /**
- * optional PowerUp power_up = 15;
- * @return {?proto.PowerUp}
+ * optional PowerUpPB power_up = 15;
+ * @return {?proto.PowerUpPB}
  */
-proto.Entity.prototype.getPowerUp = function() {
-  return /** @type{?proto.PowerUp} */ (
-    jspb.Message.getWrapperField(this, proto.PowerUp, 15));
+proto.EntityPB.prototype.getPowerUp = function() {
+  return /** @type{?proto.PowerUpPB} */ (
+    jspb.Message.getWrapperField(this, proto.PowerUpPB, 15));
 };
 
 
 /**
- * @param {?proto.PowerUp|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.PowerUpPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setPowerUp = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 15, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setPowerUp = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 15, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearPowerUp = function() {
+proto.EntityPB.prototype.clearPowerUp = function() {
   return this.setPowerUp(undefined);
 };
 
@@ -6155,35 +6155,35 @@ proto.Entity.prototype.clearPowerUp = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasPowerUp = function() {
+proto.EntityPB.prototype.hasPowerUp = function() {
   return jspb.Message.getField(this, 15) != null;
 };
 
 
 /**
- * optional Item item = 16;
- * @return {?proto.Item}
+ * optional ItemPB item = 16;
+ * @return {?proto.ItemPB}
  */
-proto.Entity.prototype.getItem = function() {
-  return /** @type{?proto.Item} */ (
-    jspb.Message.getWrapperField(this, proto.Item, 16));
+proto.EntityPB.prototype.getItem = function() {
+  return /** @type{?proto.ItemPB} */ (
+    jspb.Message.getWrapperField(this, proto.ItemPB, 16));
 };
 
 
 /**
- * @param {?proto.Item|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.ItemPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setItem = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 16, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setItem = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 16, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearItem = function() {
+proto.EntityPB.prototype.clearItem = function() {
   return this.setItem(undefined);
 };
 
@@ -6192,35 +6192,35 @@ proto.Entity.prototype.clearItem = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasItem = function() {
+proto.EntityPB.prototype.hasItem = function() {
   return jspb.Message.getField(this, 16) != null;
 };
 
 
 /**
- * optional Pool pool = 17;
- * @return {?proto.Pool}
+ * optional PoolPB pool = 17;
+ * @return {?proto.PoolPB}
  */
-proto.Entity.prototype.getPool = function() {
-  return /** @type{?proto.Pool} */ (
-    jspb.Message.getWrapperField(this, proto.Pool, 17));
+proto.EntityPB.prototype.getPool = function() {
+  return /** @type{?proto.PoolPB} */ (
+    jspb.Message.getWrapperField(this, proto.PoolPB, 17));
 };
 
 
 /**
- * @param {?proto.Pool|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.PoolPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setPool = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 17, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setPool = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 17, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearPool = function() {
+proto.EntityPB.prototype.clearPool = function() {
   return this.setPool(undefined);
 };
 
@@ -6229,35 +6229,35 @@ proto.Entity.prototype.clearPool = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasPool = function() {
+proto.EntityPB.prototype.hasPool = function() {
   return jspb.Message.getField(this, 17) != null;
 };
 
 
 /**
- * optional Crate crate = 18;
- * @return {?proto.Crate}
+ * optional CratePB crate = 18;
+ * @return {?proto.CratePB}
  */
-proto.Entity.prototype.getCrate = function() {
-  return /** @type{?proto.Crate} */ (
-    jspb.Message.getWrapperField(this, proto.Crate, 18));
+proto.EntityPB.prototype.getCrate = function() {
+  return /** @type{?proto.CratePB} */ (
+    jspb.Message.getWrapperField(this, proto.CratePB, 18));
 };
 
 
 /**
- * @param {?proto.Crate|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.CratePB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setCrate = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 18, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setCrate = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 18, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearCrate = function() {
+proto.EntityPB.prototype.clearCrate = function() {
   return this.setCrate(undefined);
 };
 
@@ -6266,35 +6266,35 @@ proto.Entity.prototype.clearCrate = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasCrate = function() {
+proto.EntityPB.prototype.hasCrate = function() {
   return jspb.Message.getField(this, 18) != null;
 };
 
 
 /**
- * optional Bush bush = 19;
- * @return {?proto.Bush}
+ * optional BushPB bush = 19;
+ * @return {?proto.BushPB}
  */
-proto.Entity.prototype.getBush = function() {
-  return /** @type{?proto.Bush} */ (
-    jspb.Message.getWrapperField(this, proto.Bush, 19));
+proto.EntityPB.prototype.getBush = function() {
+  return /** @type{?proto.BushPB} */ (
+    jspb.Message.getWrapperField(this, proto.BushPB, 19));
 };
 
 
 /**
- * @param {?proto.Bush|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.BushPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setBush = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 19, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setBush = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 19, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearBush = function() {
+proto.EntityPB.prototype.clearBush = function() {
   return this.setBush(undefined);
 };
 
@@ -6303,35 +6303,35 @@ proto.Entity.prototype.clearBush = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasBush = function() {
+proto.EntityPB.prototype.hasBush = function() {
   return jspb.Message.getField(this, 19) != null;
 };
 
 
 /**
- * optional Trap trap = 20;
- * @return {?proto.Trap}
+ * optional TrapPB trap = 20;
+ * @return {?proto.TrapPB}
  */
-proto.Entity.prototype.getTrap = function() {
-  return /** @type{?proto.Trap} */ (
-    jspb.Message.getWrapperField(this, proto.Trap, 20));
+proto.EntityPB.prototype.getTrap = function() {
+  return /** @type{?proto.TrapPB} */ (
+    jspb.Message.getWrapperField(this, proto.TrapPB, 20));
 };
 
 
 /**
- * @param {?proto.Trap|undefined} value
- * @return {!proto.Entity} returns this
+ * @param {?proto.TrapPB|undefined} value
+ * @return {!proto.EntityPB} returns this
 */
-proto.Entity.prototype.setTrap = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 20, proto.Entity.oneofGroups_[0], value);
+proto.EntityPB.prototype.setTrap = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 20, proto.EntityPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Entity} returns this
+ * @return {!proto.EntityPB} returns this
  */
-proto.Entity.prototype.clearTrap = function() {
+proto.EntityPB.prototype.clearTrap = function() {
   return this.setTrap(undefined);
 };
 
@@ -6340,7 +6340,7 @@ proto.Entity.prototype.clearTrap = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Entity.prototype.hasTrap = function() {
+proto.EntityPB.prototype.hasTrap = function() {
   return jspb.Message.getField(this, 20) != null;
 };
 
@@ -6351,7 +6351,7 @@ proto.Entity.prototype.hasTrap = function() {
  * @private {!Array<number>}
  * @const
  */
-proto.Player.repeatedFields_ = [3,10,13];
+proto.PlayerPB.repeatedFields_ = [3,10,13];
 
 
 
@@ -6368,8 +6368,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Player.prototype.toObject = function(opt_includeInstance) {
-  return proto.Player.toObject(opt_includeInstance, this);
+proto.PlayerPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.PlayerPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -6378,16 +6378,16 @@ proto.Player.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Player} msg The msg instance to transform.
+ * @param {!proto.PlayerPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Player.toObject = function(includeInstance, msg) {
+proto.PlayerPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     health: jspb.Message.getFieldWithDefault(msg, 1, 0),
     killCount: jspb.Message.getFieldWithDefault(msg, 2, 0),
     currentActionsList: jspb.Message.toObjectList(msg.getCurrentActionsList(),
-    proto.PlayerAction.toObject, includeInstance),
+    proto.PlayerActionPB.toObject, includeInstance),
     availableStamina: jspb.Message.getFieldWithDefault(msg, 4, 0),
     maxStamina: jspb.Message.getFieldWithDefault(msg, 5, 0),
     staminaInterval: jspb.Message.getFieldWithDefault(msg, 6, 0),
@@ -6395,8 +6395,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     characterName: jspb.Message.getFieldWithDefault(msg, 8, ""),
     powerUps: jspb.Message.getFieldWithDefault(msg, 9, 0),
     effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
-    proto.Effect.toObject, includeInstance),
-    inventory: (f = msg.getInventory()) && proto.Item.toObject(includeInstance, f),
+    proto.EffectPB.toObject, includeInstance),
+    inventory: (f = msg.getInventory()) && proto.ItemPB.toObject(includeInstance, f),
     cooldownsMap: (f = msg.getCooldownsMap()) ? f.toObject(includeInstance, undefined) : [],
     visiblePlayersList: (f = jspb.Message.getRepeatedField(msg, 13)) == null ? undefined : f,
     onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
@@ -6415,23 +6415,23 @@ proto.Player.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Player}
+ * @return {!proto.PlayerPB}
  */
-proto.Player.deserializeBinary = function(bytes) {
+proto.PlayerPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Player;
-  return proto.Player.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.PlayerPB;
+  return proto.PlayerPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Player} msg The message object to deserialize into.
+ * @param {!proto.PlayerPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Player}
+ * @return {!proto.PlayerPB}
  */
-proto.Player.deserializeBinaryFromReader = function(msg, reader) {
+proto.PlayerPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -6447,8 +6447,8 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setKillCount(value);
       break;
     case 3:
-      var value = new proto.PlayerAction;
-      reader.readMessage(value,proto.PlayerAction.deserializeBinaryFromReader);
+      var value = new proto.PlayerActionPB;
+      reader.readMessage(value,proto.PlayerActionPB.deserializeBinaryFromReader);
       msg.addCurrentActions(value);
       break;
     case 4:
@@ -6476,13 +6476,13 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setPowerUps(value);
       break;
     case 10:
-      var value = new proto.Effect;
-      reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
+      var value = new proto.EffectPB;
+      reader.readMessage(value,proto.EffectPB.deserializeBinaryFromReader);
       msg.addEffects(value);
       break;
     case 11:
-      var value = new proto.Item;
-      reader.readMessage(value,proto.Item.deserializeBinaryFromReader);
+      var value = new proto.ItemPB;
+      reader.readMessage(value,proto.ItemPB.deserializeBinaryFromReader);
       msg.setInventory(value);
       break;
     case 12:
@@ -6522,9 +6522,9 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Player.prototype.serializeBinary = function() {
+proto.PlayerPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Player.serializeBinaryToWriter(this, writer);
+  proto.PlayerPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -6532,11 +6532,11 @@ proto.Player.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Player} message
+ * @param {!proto.PlayerPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Player.serializeBinaryToWriter = function(message, writer) {
+proto.PlayerPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getHealth();
   if (f !== 0) {
@@ -6557,7 +6557,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       3,
       f,
-      proto.PlayerAction.serializeBinaryToWriter
+      proto.PlayerActionPB.serializeBinaryToWriter
     );
   }
   f = message.getAvailableStamina();
@@ -6607,7 +6607,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       10,
       f,
-      proto.Effect.serializeBinaryToWriter
+      proto.EffectPB.serializeBinaryToWriter
     );
   }
   f = message.getInventory();
@@ -6615,7 +6615,7 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       11,
       f,
-      proto.Item.serializeBinaryToWriter
+      proto.ItemPB.serializeBinaryToWriter
     );
   }
   f = message.getCooldownsMap(true);
@@ -6657,16 +6657,16 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 health = 1;
  * @return {number}
  */
-proto.Player.prototype.getHealth = function() {
+proto.PlayerPB.prototype.getHealth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setHealth = function(value) {
+proto.PlayerPB.prototype.setHealth = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -6675,54 +6675,54 @@ proto.Player.prototype.setHealth = function(value) {
  * optional uint64 kill_count = 2;
  * @return {number}
  */
-proto.Player.prototype.getKillCount = function() {
+proto.PlayerPB.prototype.getKillCount = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setKillCount = function(value) {
+proto.PlayerPB.prototype.setKillCount = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * repeated PlayerAction current_actions = 3;
- * @return {!Array<!proto.PlayerAction>}
+ * repeated PlayerActionPB current_actions = 3;
+ * @return {!Array<!proto.PlayerActionPB>}
  */
-proto.Player.prototype.getCurrentActionsList = function() {
-  return /** @type{!Array<!proto.PlayerAction>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.PlayerAction, 3));
+proto.PlayerPB.prototype.getCurrentActionsList = function() {
+  return /** @type{!Array<!proto.PlayerActionPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.PlayerActionPB, 3));
 };
 
 
 /**
- * @param {!Array<!proto.PlayerAction>} value
- * @return {!proto.Player} returns this
+ * @param {!Array<!proto.PlayerActionPB>} value
+ * @return {!proto.PlayerPB} returns this
 */
-proto.Player.prototype.setCurrentActionsList = function(value) {
+proto.PlayerPB.prototype.setCurrentActionsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
 /**
- * @param {!proto.PlayerAction=} opt_value
+ * @param {!proto.PlayerActionPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.PlayerAction}
+ * @return {!proto.PlayerActionPB}
  */
-proto.Player.prototype.addCurrentActions = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.PlayerAction, opt_index);
+proto.PlayerPB.prototype.addCurrentActions = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.PlayerActionPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.clearCurrentActionsList = function() {
+proto.PlayerPB.prototype.clearCurrentActionsList = function() {
   return this.setCurrentActionsList([]);
 };
 
@@ -6731,16 +6731,16 @@ proto.Player.prototype.clearCurrentActionsList = function() {
  * optional uint64 available_stamina = 4;
  * @return {number}
  */
-proto.Player.prototype.getAvailableStamina = function() {
+proto.PlayerPB.prototype.getAvailableStamina = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setAvailableStamina = function(value) {
+proto.PlayerPB.prototype.setAvailableStamina = function(value) {
   return jspb.Message.setProto3IntField(this, 4, value);
 };
 
@@ -6749,16 +6749,16 @@ proto.Player.prototype.setAvailableStamina = function(value) {
  * optional uint64 max_stamina = 5;
  * @return {number}
  */
-proto.Player.prototype.getMaxStamina = function() {
+proto.PlayerPB.prototype.getMaxStamina = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setMaxStamina = function(value) {
+proto.PlayerPB.prototype.setMaxStamina = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
 };
 
@@ -6767,16 +6767,16 @@ proto.Player.prototype.setMaxStamina = function(value) {
  * optional uint64 stamina_interval = 6;
  * @return {number}
  */
-proto.Player.prototype.getStaminaInterval = function() {
+proto.PlayerPB.prototype.getStaminaInterval = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setStaminaInterval = function(value) {
+proto.PlayerPB.prototype.setStaminaInterval = function(value) {
   return jspb.Message.setProto3IntField(this, 6, value);
 };
 
@@ -6785,16 +6785,16 @@ proto.Player.prototype.setStaminaInterval = function(value) {
  * optional bool recharging_stamina = 7;
  * @return {boolean}
  */
-proto.Player.prototype.getRechargingStamina = function() {
+proto.PlayerPB.prototype.getRechargingStamina = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 7, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setRechargingStamina = function(value) {
+proto.PlayerPB.prototype.setRechargingStamina = function(value) {
   return jspb.Message.setProto3BooleanField(this, 7, value);
 };
 
@@ -6803,16 +6803,16 @@ proto.Player.prototype.setRechargingStamina = function(value) {
  * optional string character_name = 8;
  * @return {string}
  */
-proto.Player.prototype.getCharacterName = function() {
+proto.PlayerPB.prototype.getCharacterName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setCharacterName = function(value) {
+proto.PlayerPB.prototype.setCharacterName = function(value) {
   return jspb.Message.setProto3StringField(this, 8, value);
 };
 
@@ -6821,82 +6821,82 @@ proto.Player.prototype.setCharacterName = function(value) {
  * optional uint64 power_ups = 9;
  * @return {number}
  */
-proto.Player.prototype.getPowerUps = function() {
+proto.PlayerPB.prototype.getPowerUps = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 9, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setPowerUps = function(value) {
+proto.PlayerPB.prototype.setPowerUps = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
 };
 
 
 /**
- * repeated Effect effects = 10;
- * @return {!Array<!proto.Effect>}
+ * repeated EffectPB effects = 10;
+ * @return {!Array<!proto.EffectPB>}
  */
-proto.Player.prototype.getEffectsList = function() {
-  return /** @type{!Array<!proto.Effect>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 10));
+proto.PlayerPB.prototype.getEffectsList = function() {
+  return /** @type{!Array<!proto.EffectPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.EffectPB, 10));
 };
 
 
 /**
- * @param {!Array<!proto.Effect>} value
- * @return {!proto.Player} returns this
+ * @param {!Array<!proto.EffectPB>} value
+ * @return {!proto.PlayerPB} returns this
 */
-proto.Player.prototype.setEffectsList = function(value) {
+proto.PlayerPB.prototype.setEffectsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 10, value);
 };
 
 
 /**
- * @param {!proto.Effect=} opt_value
+ * @param {!proto.EffectPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.Effect}
+ * @return {!proto.EffectPB}
  */
-proto.Player.prototype.addEffects = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.Effect, opt_index);
+proto.PlayerPB.prototype.addEffects = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.EffectPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.clearEffectsList = function() {
+proto.PlayerPB.prototype.clearEffectsList = function() {
   return this.setEffectsList([]);
 };
 
 
 /**
- * optional Item inventory = 11;
- * @return {?proto.Item}
+ * optional ItemPB inventory = 11;
+ * @return {?proto.ItemPB}
  */
-proto.Player.prototype.getInventory = function() {
-  return /** @type{?proto.Item} */ (
-    jspb.Message.getWrapperField(this, proto.Item, 11));
+proto.PlayerPB.prototype.getInventory = function() {
+  return /** @type{?proto.ItemPB} */ (
+    jspb.Message.getWrapperField(this, proto.ItemPB, 11));
 };
 
 
 /**
- * @param {?proto.Item|undefined} value
- * @return {!proto.Player} returns this
+ * @param {?proto.ItemPB|undefined} value
+ * @return {!proto.PlayerPB} returns this
 */
-proto.Player.prototype.setInventory = function(value) {
+proto.PlayerPB.prototype.setInventory = function(value) {
   return jspb.Message.setWrapperField(this, 11, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.clearInventory = function() {
+proto.PlayerPB.prototype.clearInventory = function() {
   return this.setInventory(undefined);
 };
 
@@ -6905,7 +6905,7 @@ proto.Player.prototype.clearInventory = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Player.prototype.hasInventory = function() {
+proto.PlayerPB.prototype.hasInventory = function() {
   return jspb.Message.getField(this, 11) != null;
 };
 
@@ -6916,7 +6916,7 @@ proto.Player.prototype.hasInventory = function() {
  * empty, instead returning `undefined`
  * @return {!jspb.Map<string,number>}
  */
-proto.Player.prototype.getCooldownsMap = function(opt_noLazyCreate) {
+proto.PlayerPB.prototype.getCooldownsMap = function(opt_noLazyCreate) {
   return /** @type {!jspb.Map<string,number>} */ (
       jspb.Message.getMapField(this, 12, opt_noLazyCreate,
       null));
@@ -6925,9 +6925,9 @@ proto.Player.prototype.getCooldownsMap = function(opt_noLazyCreate) {
 
 /**
  * Clears values from the map. The map will be non-null.
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.clearCooldownsMap = function() {
+proto.PlayerPB.prototype.clearCooldownsMap = function() {
   this.getCooldownsMap().clear();
   return this;
 };
@@ -6937,16 +6937,16 @@ proto.Player.prototype.clearCooldownsMap = function() {
  * repeated uint64 visible_players = 13;
  * @return {!Array<number>}
  */
-proto.Player.prototype.getVisiblePlayersList = function() {
+proto.PlayerPB.prototype.getVisiblePlayersList = function() {
   return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 13));
 };
 
 
 /**
  * @param {!Array<number>} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setVisiblePlayersList = function(value) {
+proto.PlayerPB.prototype.setVisiblePlayersList = function(value) {
   return jspb.Message.setField(this, 13, value || []);
 };
 
@@ -6954,18 +6954,18 @@ proto.Player.prototype.setVisiblePlayersList = function(value) {
 /**
  * @param {number} value
  * @param {number=} opt_index
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.addVisiblePlayers = function(value, opt_index) {
+proto.PlayerPB.prototype.addVisiblePlayers = function(value, opt_index) {
   return jspb.Message.addToRepeatedField(this, 13, value, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.clearVisiblePlayersList = function() {
+proto.PlayerPB.prototype.clearVisiblePlayersList = function() {
   return this.setVisiblePlayersList([]);
 };
 
@@ -6974,16 +6974,16 @@ proto.Player.prototype.clearVisiblePlayersList = function() {
  * optional bool on_bush = 14;
  * @return {boolean}
  */
-proto.Player.prototype.getOnBush = function() {
+proto.PlayerPB.prototype.getOnBush = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 14, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setOnBush = function(value) {
+proto.PlayerPB.prototype.setOnBush = function(value) {
   return jspb.Message.setProto3BooleanField(this, 14, value);
 };
 
@@ -6992,16 +6992,16 @@ proto.Player.prototype.setOnBush = function(value) {
  * optional bool forced_movement = 15;
  * @return {boolean}
  */
-proto.Player.prototype.getForcedMovement = function() {
+proto.PlayerPB.prototype.getForcedMovement = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 15, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setForcedMovement = function(value) {
+proto.PlayerPB.prototype.setForcedMovement = function(value) {
   return jspb.Message.setProto3BooleanField(this, 15, value);
 };
 
@@ -7010,16 +7010,16 @@ proto.Player.prototype.setForcedMovement = function(value) {
  * optional bool bounty_completed = 16;
  * @return {boolean}
  */
-proto.Player.prototype.getBountyCompleted = function() {
+proto.PlayerPB.prototype.getBountyCompleted = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 16, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Player} returns this
+ * @return {!proto.PlayerPB} returns this
  */
-proto.Player.prototype.setBountyCompleted = function(value) {
+proto.PlayerPB.prototype.setBountyCompleted = function(value) {
   return jspb.Message.setProto3BooleanField(this, 16, value);
 };
 
@@ -7040,8 +7040,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Effect.prototype.toObject = function(opt_includeInstance) {
-  return proto.Effect.toObject(opt_includeInstance, this);
+proto.EffectPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.EffectPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -7050,11 +7050,11 @@ proto.Effect.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Effect} msg The msg instance to transform.
+ * @param {!proto.EffectPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Effect.toObject = function(includeInstance, msg) {
+proto.EffectPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 1, ""),
     durationMs: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -7072,23 +7072,23 @@ proto.Effect.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Effect}
+ * @return {!proto.EffectPB}
  */
-proto.Effect.deserializeBinary = function(bytes) {
+proto.EffectPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Effect;
-  return proto.Effect.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.EffectPB;
+  return proto.EffectPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Effect} msg The message object to deserialize into.
+ * @param {!proto.EffectPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Effect}
+ * @return {!proto.EffectPB}
  */
-proto.Effect.deserializeBinaryFromReader = function(msg, reader) {
+proto.EffectPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7120,9 +7120,9 @@ proto.Effect.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Effect.prototype.serializeBinary = function() {
+proto.EffectPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Effect.serializeBinaryToWriter(this, writer);
+  proto.EffectPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7130,11 +7130,11 @@ proto.Effect.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Effect} message
+ * @param {!proto.EffectPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Effect.serializeBinaryToWriter = function(message, writer) {
+proto.EffectPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getName();
   if (f.length > 0) {
@@ -7164,16 +7164,16 @@ proto.Effect.serializeBinaryToWriter = function(message, writer) {
  * optional string name = 1;
  * @return {string}
  */
-proto.Effect.prototype.getName = function() {
+proto.EffectPB.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Effect} returns this
+ * @return {!proto.EffectPB} returns this
  */
-proto.Effect.prototype.setName = function(value) {
+proto.EffectPB.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -7182,16 +7182,16 @@ proto.Effect.prototype.setName = function(value) {
  * optional uint32 duration_ms = 2;
  * @return {number}
  */
-proto.Effect.prototype.getDurationMs = function() {
+proto.EffectPB.prototype.getDurationMs = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Effect} returns this
+ * @return {!proto.EffectPB} returns this
  */
-proto.Effect.prototype.setDurationMs = function(value) {
+proto.EffectPB.prototype.setDurationMs = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -7200,16 +7200,16 @@ proto.Effect.prototype.setDurationMs = function(value) {
  * optional uint64 id = 3;
  * @return {number}
  */
-proto.Effect.prototype.getId = function() {
+proto.EffectPB.prototype.getId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Effect} returns this
+ * @return {!proto.EffectPB} returns this
  */
-proto.Effect.prototype.setId = function(value) {
+proto.EffectPB.prototype.setId = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -7230,8 +7230,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Item.prototype.toObject = function(opt_includeInstance) {
-  return proto.Item.toObject(opt_includeInstance, this);
+proto.ItemPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ItemPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -7240,11 +7240,11 @@ proto.Item.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Item} msg The msg instance to transform.
+ * @param {!proto.ItemPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Item.toObject = function(includeInstance, msg) {
+proto.ItemPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
@@ -7260,23 +7260,23 @@ proto.Item.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Item}
+ * @return {!proto.ItemPB}
  */
-proto.Item.deserializeBinary = function(bytes) {
+proto.ItemPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Item;
-  return proto.Item.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ItemPB;
+  return proto.ItemPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Item} msg The message object to deserialize into.
+ * @param {!proto.ItemPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Item}
+ * @return {!proto.ItemPB}
  */
-proto.Item.deserializeBinaryFromReader = function(msg, reader) {
+proto.ItemPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7300,9 +7300,9 @@ proto.Item.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Item.prototype.serializeBinary = function() {
+proto.ItemPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Item.serializeBinaryToWriter(this, writer);
+  proto.ItemPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7310,11 +7310,11 @@ proto.Item.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Item} message
+ * @param {!proto.ItemPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Item.serializeBinaryToWriter = function(message, writer) {
+proto.ItemPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getName();
   if (f.length > 0) {
@@ -7330,16 +7330,16 @@ proto.Item.serializeBinaryToWriter = function(message, writer) {
  * optional string name = 2;
  * @return {string}
  */
-proto.Item.prototype.getName = function() {
+proto.ItemPB.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Item} returns this
+ * @return {!proto.ItemPB} returns this
  */
-proto.Item.prototype.setName = function(value) {
+proto.ItemPB.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -7360,8 +7360,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Projectile.prototype.toObject = function(opt_includeInstance) {
-  return proto.Projectile.toObject(opt_includeInstance, this);
+proto.ProjectilePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ProjectilePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -7370,11 +7370,11 @@ proto.Projectile.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Projectile} msg The msg instance to transform.
+ * @param {!proto.ProjectilePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Projectile.toObject = function(includeInstance, msg) {
+proto.ProjectilePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     damage: jspb.Message.getFieldWithDefault(msg, 1, 0),
     ownerId: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -7393,23 +7393,23 @@ proto.Projectile.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Projectile}
+ * @return {!proto.ProjectilePB}
  */
-proto.Projectile.deserializeBinary = function(bytes) {
+proto.ProjectilePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Projectile;
-  return proto.Projectile.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ProjectilePB;
+  return proto.ProjectilePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Projectile} msg The message object to deserialize into.
+ * @param {!proto.ProjectilePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Projectile}
+ * @return {!proto.ProjectilePB}
  */
-proto.Projectile.deserializeBinaryFromReader = function(msg, reader) {
+proto.ProjectilePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7425,7 +7425,7 @@ proto.Projectile.deserializeBinaryFromReader = function(msg, reader) {
       msg.setOwnerId(value);
       break;
     case 3:
-      var value = /** @type {!proto.ProjectileStatus} */ (reader.readEnum());
+      var value = /** @type {!proto.ProjectileStatusPB} */ (reader.readEnum());
       msg.setStatus(value);
       break;
     case 4:
@@ -7445,9 +7445,9 @@ proto.Projectile.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Projectile.prototype.serializeBinary = function() {
+proto.ProjectilePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Projectile.serializeBinaryToWriter(this, writer);
+  proto.ProjectilePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7455,11 +7455,11 @@ proto.Projectile.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Projectile} message
+ * @param {!proto.ProjectilePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Projectile.serializeBinaryToWriter = function(message, writer) {
+proto.ProjectilePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getDamage();
   if (f !== 0) {
@@ -7496,16 +7496,16 @@ proto.Projectile.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 damage = 1;
  * @return {number}
  */
-proto.Projectile.prototype.getDamage = function() {
+proto.ProjectilePB.prototype.getDamage = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Projectile} returns this
+ * @return {!proto.ProjectilePB} returns this
  */
-proto.Projectile.prototype.setDamage = function(value) {
+proto.ProjectilePB.prototype.setDamage = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -7514,34 +7514,34 @@ proto.Projectile.prototype.setDamage = function(value) {
  * optional uint64 owner_id = 2;
  * @return {number}
  */
-proto.Projectile.prototype.getOwnerId = function() {
+proto.ProjectilePB.prototype.getOwnerId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Projectile} returns this
+ * @return {!proto.ProjectilePB} returns this
  */
-proto.Projectile.prototype.setOwnerId = function(value) {
+proto.ProjectilePB.prototype.setOwnerId = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional ProjectileStatus status = 3;
- * @return {!proto.ProjectileStatus}
+ * optional ProjectileStatusPB status = 3;
+ * @return {!proto.ProjectileStatusPB}
  */
-proto.Projectile.prototype.getStatus = function() {
-  return /** @type {!proto.ProjectileStatus} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.ProjectilePB.prototype.getStatus = function() {
+  return /** @type {!proto.ProjectileStatusPB} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
- * @param {!proto.ProjectileStatus} value
- * @return {!proto.Projectile} returns this
+ * @param {!proto.ProjectileStatusPB} value
+ * @return {!proto.ProjectilePB} returns this
  */
-proto.Projectile.prototype.setStatus = function(value) {
+proto.ProjectilePB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
@@ -7550,16 +7550,16 @@ proto.Projectile.prototype.setStatus = function(value) {
  * optional string skill_key = 4;
  * @return {string}
  */
-proto.Projectile.prototype.getSkillKey = function() {
+proto.ProjectilePB.prototype.getSkillKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Projectile} returns this
+ * @return {!proto.ProjectilePB} returns this
  */
-proto.Projectile.prototype.setSkillKey = function(value) {
+proto.ProjectilePB.prototype.setSkillKey = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -7580,8 +7580,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Obstacle.prototype.toObject = function(opt_includeInstance) {
-  return proto.Obstacle.toObject(opt_includeInstance, this);
+proto.ObstaclePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ObstaclePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -7590,11 +7590,11 @@ proto.Obstacle.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Obstacle} msg The msg instance to transform.
+ * @param {!proto.ObstaclePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Obstacle.toObject = function(includeInstance, msg) {
+proto.ObstaclePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     color: jspb.Message.getFieldWithDefault(msg, 1, ""),
     collisionable: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
@@ -7612,23 +7612,23 @@ proto.Obstacle.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Obstacle}
+ * @return {!proto.ObstaclePB}
  */
-proto.Obstacle.deserializeBinary = function(bytes) {
+proto.ObstaclePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Obstacle;
-  return proto.Obstacle.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ObstaclePB;
+  return proto.ObstaclePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Obstacle} msg The message object to deserialize into.
+ * @param {!proto.ObstaclePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Obstacle}
+ * @return {!proto.ObstaclePB}
  */
-proto.Obstacle.deserializeBinaryFromReader = function(msg, reader) {
+proto.ObstaclePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7660,9 +7660,9 @@ proto.Obstacle.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Obstacle.prototype.serializeBinary = function() {
+proto.ObstaclePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Obstacle.serializeBinaryToWriter(this, writer);
+  proto.ObstaclePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7670,11 +7670,11 @@ proto.Obstacle.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Obstacle} message
+ * @param {!proto.ObstaclePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Obstacle.serializeBinaryToWriter = function(message, writer) {
+proto.ObstaclePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getColor();
   if (f.length > 0) {
@@ -7704,16 +7704,16 @@ proto.Obstacle.serializeBinaryToWriter = function(message, writer) {
  * optional string color = 1;
  * @return {string}
  */
-proto.Obstacle.prototype.getColor = function() {
+proto.ObstaclePB.prototype.getColor = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Obstacle} returns this
+ * @return {!proto.ObstaclePB} returns this
  */
-proto.Obstacle.prototype.setColor = function(value) {
+proto.ObstaclePB.prototype.setColor = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -7722,16 +7722,16 @@ proto.Obstacle.prototype.setColor = function(value) {
  * optional bool collisionable = 2;
  * @return {boolean}
  */
-proto.Obstacle.prototype.getCollisionable = function() {
+proto.ObstaclePB.prototype.getCollisionable = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Obstacle} returns this
+ * @return {!proto.ObstaclePB} returns this
  */
-proto.Obstacle.prototype.setCollisionable = function(value) {
+proto.ObstaclePB.prototype.setCollisionable = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
@@ -7740,16 +7740,16 @@ proto.Obstacle.prototype.setCollisionable = function(value) {
  * optional string status = 3;
  * @return {string}
  */
-proto.Obstacle.prototype.getStatus = function() {
+proto.ObstaclePB.prototype.getStatus = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Obstacle} returns this
+ * @return {!proto.ObstaclePB} returns this
  */
-proto.Obstacle.prototype.setStatus = function(value) {
+proto.ObstaclePB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
@@ -7770,8 +7770,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PowerUp.prototype.toObject = function(opt_includeInstance) {
-  return proto.PowerUp.toObject(opt_includeInstance, this);
+proto.PowerUpPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.PowerUpPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -7780,11 +7780,11 @@ proto.PowerUp.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PowerUp} msg The msg instance to transform.
+ * @param {!proto.PowerUpPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PowerUp.toObject = function(includeInstance, msg) {
+proto.PowerUpPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     status: jspb.Message.getFieldWithDefault(msg, 2, 0)
@@ -7801,23 +7801,23 @@ proto.PowerUp.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PowerUp}
+ * @return {!proto.PowerUpPB}
  */
-proto.PowerUp.deserializeBinary = function(bytes) {
+proto.PowerUpPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PowerUp;
-  return proto.PowerUp.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.PowerUpPB;
+  return proto.PowerUpPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PowerUp} msg The message object to deserialize into.
+ * @param {!proto.PowerUpPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PowerUp}
+ * @return {!proto.PowerUpPB}
  */
-proto.PowerUp.deserializeBinaryFromReader = function(msg, reader) {
+proto.PowerUpPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7829,7 +7829,7 @@ proto.PowerUp.deserializeBinaryFromReader = function(msg, reader) {
       msg.setOwnerId(value);
       break;
     case 2:
-      var value = /** @type {!proto.PowerUpstatus} */ (reader.readEnum());
+      var value = /** @type {!proto.PowerUpstatusPB} */ (reader.readEnum());
       msg.setStatus(value);
       break;
     default:
@@ -7845,9 +7845,9 @@ proto.PowerUp.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PowerUp.prototype.serializeBinary = function() {
+proto.PowerUpPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PowerUp.serializeBinaryToWriter(this, writer);
+  proto.PowerUpPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -7855,11 +7855,11 @@ proto.PowerUp.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PowerUp} message
+ * @param {!proto.PowerUpPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PowerUp.serializeBinaryToWriter = function(message, writer) {
+proto.PowerUpPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getOwnerId();
   if (f !== 0) {
@@ -7882,34 +7882,34 @@ proto.PowerUp.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 owner_id = 1;
  * @return {number}
  */
-proto.PowerUp.prototype.getOwnerId = function() {
+proto.PowerUpPB.prototype.getOwnerId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.PowerUp} returns this
+ * @return {!proto.PowerUpPB} returns this
  */
-proto.PowerUp.prototype.setOwnerId = function(value) {
+proto.PowerUpPB.prototype.setOwnerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional PowerUpstatus status = 2;
- * @return {!proto.PowerUpstatus}
+ * optional PowerUpstatusPB status = 2;
+ * @return {!proto.PowerUpstatusPB}
  */
-proto.PowerUp.prototype.getStatus = function() {
-  return /** @type {!proto.PowerUpstatus} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.PowerUpPB.prototype.getStatus = function() {
+  return /** @type {!proto.PowerUpstatusPB} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
- * @param {!proto.PowerUpstatus} value
- * @return {!proto.PowerUp} returns this
+ * @param {!proto.PowerUpstatusPB} value
+ * @return {!proto.PowerUpPB} returns this
  */
-proto.PowerUp.prototype.setStatus = function(value) {
+proto.PowerUpPB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
@@ -7930,8 +7930,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Crate.prototype.toObject = function(opt_includeInstance) {
-  return proto.Crate.toObject(opt_includeInstance, this);
+proto.CratePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.CratePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -7940,11 +7940,11 @@ proto.Crate.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Crate} msg The msg instance to transform.
+ * @param {!proto.CratePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Crate.toObject = function(includeInstance, msg) {
+proto.CratePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     health: jspb.Message.getFieldWithDefault(msg, 1, 0),
     amountOfPowerUps: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -7962,23 +7962,23 @@ proto.Crate.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Crate}
+ * @return {!proto.CratePB}
  */
-proto.Crate.deserializeBinary = function(bytes) {
+proto.CratePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Crate;
-  return proto.Crate.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.CratePB;
+  return proto.CratePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Crate} msg The message object to deserialize into.
+ * @param {!proto.CratePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Crate}
+ * @return {!proto.CratePB}
  */
-proto.Crate.deserializeBinaryFromReader = function(msg, reader) {
+proto.CratePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -7994,7 +7994,7 @@ proto.Crate.deserializeBinaryFromReader = function(msg, reader) {
       msg.setAmountOfPowerUps(value);
       break;
     case 3:
-      var value = /** @type {!proto.CrateStatus} */ (reader.readEnum());
+      var value = /** @type {!proto.CrateStatusPB} */ (reader.readEnum());
       msg.setStatus(value);
       break;
     default:
@@ -8010,9 +8010,9 @@ proto.Crate.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Crate.prototype.serializeBinary = function() {
+proto.CratePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Crate.serializeBinaryToWriter(this, writer);
+  proto.CratePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8020,11 +8020,11 @@ proto.Crate.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Crate} message
+ * @param {!proto.CratePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Crate.serializeBinaryToWriter = function(message, writer) {
+proto.CratePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getHealth();
   if (f !== 0) {
@@ -8054,16 +8054,16 @@ proto.Crate.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 health = 1;
  * @return {number}
  */
-proto.Crate.prototype.getHealth = function() {
+proto.CratePB.prototype.getHealth = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Crate} returns this
+ * @return {!proto.CratePB} returns this
  */
-proto.Crate.prototype.setHealth = function(value) {
+proto.CratePB.prototype.setHealth = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -8072,34 +8072,34 @@ proto.Crate.prototype.setHealth = function(value) {
  * optional uint64 amount_of_power_ups = 2;
  * @return {number}
  */
-proto.Crate.prototype.getAmountOfPowerUps = function() {
+proto.CratePB.prototype.getAmountOfPowerUps = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Crate} returns this
+ * @return {!proto.CratePB} returns this
  */
-proto.Crate.prototype.setAmountOfPowerUps = function(value) {
+proto.CratePB.prototype.setAmountOfPowerUps = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional CrateStatus status = 3;
- * @return {!proto.CrateStatus}
+ * optional CrateStatusPB status = 3;
+ * @return {!proto.CrateStatusPB}
  */
-proto.Crate.prototype.getStatus = function() {
-  return /** @type {!proto.CrateStatus} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.CratePB.prototype.getStatus = function() {
+  return /** @type {!proto.CrateStatusPB} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
- * @param {!proto.CrateStatus} value
- * @return {!proto.Crate} returns this
+ * @param {!proto.CrateStatusPB} value
+ * @return {!proto.CratePB} returns this
  */
-proto.Crate.prototype.setStatus = function(value) {
+proto.CratePB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
@@ -8110,7 +8110,7 @@ proto.Crate.prototype.setStatus = function(value) {
  * @private {!Array<number>}
  * @const
  */
-proto.Pool.repeatedFields_ = [3];
+proto.PoolPB.repeatedFields_ = [3];
 
 
 
@@ -8127,8 +8127,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Pool.prototype.toObject = function(opt_includeInstance) {
-  return proto.Pool.toObject(opt_includeInstance, this);
+proto.PoolPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.PoolPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -8137,16 +8137,16 @@ proto.Pool.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Pool} msg The msg instance to transform.
+ * @param {!proto.PoolPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Pool.toObject = function(includeInstance, msg) {
+proto.PoolPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     status: jspb.Message.getFieldWithDefault(msg, 2, 0),
     effectsList: jspb.Message.toObjectList(msg.getEffectsList(),
-    proto.Effect.toObject, includeInstance),
+    proto.EffectPB.toObject, includeInstance),
     skillKey: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
@@ -8161,23 +8161,23 @@ proto.Pool.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Pool}
+ * @return {!proto.PoolPB}
  */
-proto.Pool.deserializeBinary = function(bytes) {
+proto.PoolPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Pool;
-  return proto.Pool.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.PoolPB;
+  return proto.PoolPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Pool} msg The message object to deserialize into.
+ * @param {!proto.PoolPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Pool}
+ * @return {!proto.PoolPB}
  */
-proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
+proto.PoolPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8189,12 +8189,12 @@ proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
       msg.setOwnerId(value);
       break;
     case 2:
-      var value = /** @type {!proto.PoolStatus} */ (reader.readEnum());
+      var value = /** @type {!proto.PoolStatusPB} */ (reader.readEnum());
       msg.setStatus(value);
       break;
     case 3:
-      var value = new proto.Effect;
-      reader.readMessage(value,proto.Effect.deserializeBinaryFromReader);
+      var value = new proto.EffectPB;
+      reader.readMessage(value,proto.EffectPB.deserializeBinaryFromReader);
       msg.addEffects(value);
       break;
     case 4:
@@ -8214,9 +8214,9 @@ proto.Pool.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Pool.prototype.serializeBinary = function() {
+proto.PoolPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Pool.serializeBinaryToWriter(this, writer);
+  proto.PoolPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8224,11 +8224,11 @@ proto.Pool.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Pool} message
+ * @param {!proto.PoolPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Pool.serializeBinaryToWriter = function(message, writer) {
+proto.PoolPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getOwnerId();
   if (f !== 0) {
@@ -8249,7 +8249,7 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
     writer.writeRepeatedMessage(
       3,
       f,
-      proto.Effect.serializeBinaryToWriter
+      proto.EffectPB.serializeBinaryToWriter
     );
   }
   f = message.getSkillKey();
@@ -8266,72 +8266,72 @@ proto.Pool.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 owner_id = 1;
  * @return {number}
  */
-proto.Pool.prototype.getOwnerId = function() {
+proto.PoolPB.prototype.getOwnerId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Pool} returns this
+ * @return {!proto.PoolPB} returns this
  */
-proto.Pool.prototype.setOwnerId = function(value) {
+proto.PoolPB.prototype.setOwnerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
 /**
- * optional PoolStatus status = 2;
- * @return {!proto.PoolStatus}
+ * optional PoolStatusPB status = 2;
+ * @return {!proto.PoolStatusPB}
  */
-proto.Pool.prototype.getStatus = function() {
-  return /** @type {!proto.PoolStatus} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.PoolPB.prototype.getStatus = function() {
+  return /** @type {!proto.PoolStatusPB} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
- * @param {!proto.PoolStatus} value
- * @return {!proto.Pool} returns this
+ * @param {!proto.PoolStatusPB} value
+ * @return {!proto.PoolPB} returns this
  */
-proto.Pool.prototype.setStatus = function(value) {
+proto.PoolPB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 2, value);
 };
 
 
 /**
- * repeated Effect effects = 3;
- * @return {!Array<!proto.Effect>}
+ * repeated EffectPB effects = 3;
+ * @return {!Array<!proto.EffectPB>}
  */
-proto.Pool.prototype.getEffectsList = function() {
-  return /** @type{!Array<!proto.Effect>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.Effect, 3));
+proto.PoolPB.prototype.getEffectsList = function() {
+  return /** @type{!Array<!proto.EffectPB>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.EffectPB, 3));
 };
 
 
 /**
- * @param {!Array<!proto.Effect>} value
- * @return {!proto.Pool} returns this
+ * @param {!Array<!proto.EffectPB>} value
+ * @return {!proto.PoolPB} returns this
 */
-proto.Pool.prototype.setEffectsList = function(value) {
+proto.PoolPB.prototype.setEffectsList = function(value) {
   return jspb.Message.setRepeatedWrapperField(this, 3, value);
 };
 
 
 /**
- * @param {!proto.Effect=} opt_value
+ * @param {!proto.EffectPB=} opt_value
  * @param {number=} opt_index
- * @return {!proto.Effect}
+ * @return {!proto.EffectPB}
  */
-proto.Pool.prototype.addEffects = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.Effect, opt_index);
+proto.PoolPB.prototype.addEffects = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 3, opt_value, proto.EffectPB, opt_index);
 };
 
 
 /**
  * Clears the list making it empty but non-null.
- * @return {!proto.Pool} returns this
+ * @return {!proto.PoolPB} returns this
  */
-proto.Pool.prototype.clearEffectsList = function() {
+proto.PoolPB.prototype.clearEffectsList = function() {
   return this.setEffectsList([]);
 };
 
@@ -8340,16 +8340,16 @@ proto.Pool.prototype.clearEffectsList = function() {
  * optional string skill_key = 4;
  * @return {string}
  */
-proto.Pool.prototype.getSkillKey = function() {
+proto.PoolPB.prototype.getSkillKey = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Pool} returns this
+ * @return {!proto.PoolPB} returns this
  */
-proto.Pool.prototype.setSkillKey = function(value) {
+proto.PoolPB.prototype.setSkillKey = function(value) {
   return jspb.Message.setProto3StringField(this, 4, value);
 };
 
@@ -8370,8 +8370,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Bush.prototype.toObject = function(opt_includeInstance) {
-  return proto.Bush.toObject(opt_includeInstance, this);
+proto.BushPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.BushPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -8380,11 +8380,11 @@ proto.Bush.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Bush} msg The msg instance to transform.
+ * @param {!proto.BushPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Bush.toObject = function(includeInstance, msg) {
+proto.BushPB.toObject = function(includeInstance, msg) {
   var f, obj = {
 
   };
@@ -8400,23 +8400,23 @@ proto.Bush.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Bush}
+ * @return {!proto.BushPB}
  */
-proto.Bush.deserializeBinary = function(bytes) {
+proto.BushPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Bush;
-  return proto.Bush.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.BushPB;
+  return proto.BushPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Bush} msg The message object to deserialize into.
+ * @param {!proto.BushPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Bush}
+ * @return {!proto.BushPB}
  */
-proto.Bush.deserializeBinaryFromReader = function(msg, reader) {
+proto.BushPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8436,9 +8436,9 @@ proto.Bush.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Bush.prototype.serializeBinary = function() {
+proto.BushPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Bush.serializeBinaryToWriter(this, writer);
+  proto.BushPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8446,11 +8446,11 @@ proto.Bush.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Bush} message
+ * @param {!proto.BushPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Bush.serializeBinaryToWriter = function(message, writer) {
+proto.BushPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
 };
 
@@ -8471,8 +8471,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Trap.prototype.toObject = function(opt_includeInstance) {
-  return proto.Trap.toObject(opt_includeInstance, this);
+proto.TrapPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.TrapPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -8481,11 +8481,11 @@ proto.Trap.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Trap} msg The msg instance to transform.
+ * @param {!proto.TrapPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Trap.toObject = function(includeInstance, msg) {
+proto.TrapPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     ownerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     name: jspb.Message.getFieldWithDefault(msg, 2, ""),
@@ -8503,23 +8503,23 @@ proto.Trap.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Trap}
+ * @return {!proto.TrapPB}
  */
-proto.Trap.deserializeBinary = function(bytes) {
+proto.TrapPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Trap;
-  return proto.Trap.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.TrapPB;
+  return proto.TrapPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Trap} msg The message object to deserialize into.
+ * @param {!proto.TrapPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Trap}
+ * @return {!proto.TrapPB}
  */
-proto.Trap.deserializeBinaryFromReader = function(msg, reader) {
+proto.TrapPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8535,7 +8535,7 @@ proto.Trap.deserializeBinaryFromReader = function(msg, reader) {
       msg.setName(value);
       break;
     case 3:
-      var value = /** @type {!proto.TrapStatus} */ (reader.readEnum());
+      var value = /** @type {!proto.TrapStatusPB} */ (reader.readEnum());
       msg.setStatus(value);
       break;
     default:
@@ -8551,9 +8551,9 @@ proto.Trap.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Trap.prototype.serializeBinary = function() {
+proto.TrapPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Trap.serializeBinaryToWriter(this, writer);
+  proto.TrapPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8561,11 +8561,11 @@ proto.Trap.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Trap} message
+ * @param {!proto.TrapPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Trap.serializeBinaryToWriter = function(message, writer) {
+proto.TrapPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getOwnerId();
   if (f !== 0) {
@@ -8595,16 +8595,16 @@ proto.Trap.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 owner_id = 1;
  * @return {number}
  */
-proto.Trap.prototype.getOwnerId = function() {
+proto.TrapPB.prototype.getOwnerId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Trap} returns this
+ * @return {!proto.TrapPB} returns this
  */
-proto.Trap.prototype.setOwnerId = function(value) {
+proto.TrapPB.prototype.setOwnerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -8613,34 +8613,34 @@ proto.Trap.prototype.setOwnerId = function(value) {
  * optional string name = 2;
  * @return {string}
  */
-proto.Trap.prototype.getName = function() {
+proto.TrapPB.prototype.getName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Trap} returns this
+ * @return {!proto.TrapPB} returns this
  */
-proto.Trap.prototype.setName = function(value) {
+proto.TrapPB.prototype.setName = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
 /**
- * optional TrapStatus status = 3;
- * @return {!proto.TrapStatus}
+ * optional TrapStatusPB status = 3;
+ * @return {!proto.TrapStatusPB}
  */
-proto.Trap.prototype.getStatus = function() {
-  return /** @type {!proto.TrapStatus} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
+proto.TrapPB.prototype.getStatus = function() {
+  return /** @type {!proto.TrapStatusPB} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
- * @param {!proto.TrapStatus} value
- * @return {!proto.Trap} returns this
+ * @param {!proto.TrapStatusPB} value
+ * @return {!proto.TrapPB} returns this
  */
-proto.Trap.prototype.setStatus = function(value) {
+proto.TrapPB.prototype.setStatus = function(value) {
   return jspb.Message.setProto3EnumField(this, 3, value);
 };
 
@@ -8661,8 +8661,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.PlayerAction.prototype.toObject = function(opt_includeInstance) {
-  return proto.PlayerAction.toObject(opt_includeInstance, this);
+proto.PlayerActionPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.PlayerActionPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -8671,16 +8671,16 @@ proto.PlayerAction.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.PlayerAction} msg The msg instance to transform.
+ * @param {!proto.PlayerActionPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PlayerAction.toObject = function(includeInstance, msg) {
+proto.PlayerActionPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     action: jspb.Message.getFieldWithDefault(msg, 1, 0),
     duration: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    destination: (f = msg.getDestination()) && proto.Position.toObject(includeInstance, f),
-    direction: (f = msg.getDirection()) && proto.Position.toObject(includeInstance, f)
+    destination: (f = msg.getDestination()) && proto.PositionPB.toObject(includeInstance, f),
+    direction: (f = msg.getDirection()) && proto.PositionPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -8694,23 +8694,23 @@ proto.PlayerAction.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.PlayerAction}
+ * @return {!proto.PlayerActionPB}
  */
-proto.PlayerAction.deserializeBinary = function(bytes) {
+proto.PlayerActionPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.PlayerAction;
-  return proto.PlayerAction.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.PlayerActionPB;
+  return proto.PlayerActionPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.PlayerAction} msg The message object to deserialize into.
+ * @param {!proto.PlayerActionPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.PlayerAction}
+ * @return {!proto.PlayerActionPB}
  */
-proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
+proto.PlayerActionPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8718,7 +8718,7 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {!proto.PlayerActionType} */ (reader.readEnum());
+      var value = /** @type {!proto.PlayerActionTypePB} */ (reader.readEnum());
       msg.setAction(value);
       break;
     case 2:
@@ -8726,13 +8726,13 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
       msg.setDuration(value);
       break;
     case 3:
-      var value = new proto.Position;
-      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      var value = new proto.PositionPB;
+      reader.readMessage(value,proto.PositionPB.deserializeBinaryFromReader);
       msg.setDestination(value);
       break;
     case 4:
-      var value = new proto.Position;
-      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      var value = new proto.PositionPB;
+      reader.readMessage(value,proto.PositionPB.deserializeBinaryFromReader);
       msg.setDirection(value);
       break;
     default:
@@ -8748,9 +8748,9 @@ proto.PlayerAction.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.PlayerAction.prototype.serializeBinary = function() {
+proto.PlayerActionPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.PlayerAction.serializeBinaryToWriter(this, writer);
+  proto.PlayerActionPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -8758,11 +8758,11 @@ proto.PlayerAction.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.PlayerAction} message
+ * @param {!proto.PlayerActionPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
+proto.PlayerActionPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getAction();
   if (f !== 0.0) {
@@ -8783,7 +8783,7 @@ proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       3,
       f,
-      proto.Position.serializeBinaryToWriter
+      proto.PositionPB.serializeBinaryToWriter
     );
   }
   f = message.getDirection();
@@ -8791,26 +8791,26 @@ proto.PlayerAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.Position.serializeBinaryToWriter
+      proto.PositionPB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional PlayerActionType action = 1;
- * @return {!proto.PlayerActionType}
+ * optional PlayerActionTypePB action = 1;
+ * @return {!proto.PlayerActionTypePB}
  */
-proto.PlayerAction.prototype.getAction = function() {
-  return /** @type {!proto.PlayerActionType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+proto.PlayerActionPB.prototype.getAction = function() {
+  return /** @type {!proto.PlayerActionTypePB} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
- * @param {!proto.PlayerActionType} value
- * @return {!proto.PlayerAction} returns this
+ * @param {!proto.PlayerActionTypePB} value
+ * @return {!proto.PlayerActionPB} returns this
  */
-proto.PlayerAction.prototype.setAction = function(value) {
+proto.PlayerActionPB.prototype.setAction = function(value) {
   return jspb.Message.setProto3EnumField(this, 1, value);
 };
 
@@ -8819,44 +8819,44 @@ proto.PlayerAction.prototype.setAction = function(value) {
  * optional uint64 duration = 2;
  * @return {number}
  */
-proto.PlayerAction.prototype.getDuration = function() {
+proto.PlayerActionPB.prototype.getDuration = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.PlayerAction} returns this
+ * @return {!proto.PlayerActionPB} returns this
  */
-proto.PlayerAction.prototype.setDuration = function(value) {
+proto.PlayerActionPB.prototype.setDuration = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional Position destination = 3;
- * @return {?proto.Position}
+ * optional PositionPB destination = 3;
+ * @return {?proto.PositionPB}
  */
-proto.PlayerAction.prototype.getDestination = function() {
-  return /** @type{?proto.Position} */ (
-    jspb.Message.getWrapperField(this, proto.Position, 3));
+proto.PlayerActionPB.prototype.getDestination = function() {
+  return /** @type{?proto.PositionPB} */ (
+    jspb.Message.getWrapperField(this, proto.PositionPB, 3));
 };
 
 
 /**
- * @param {?proto.Position|undefined} value
- * @return {!proto.PlayerAction} returns this
+ * @param {?proto.PositionPB|undefined} value
+ * @return {!proto.PlayerActionPB} returns this
 */
-proto.PlayerAction.prototype.setDestination = function(value) {
+proto.PlayerActionPB.prototype.setDestination = function(value) {
   return jspb.Message.setWrapperField(this, 3, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.PlayerAction} returns this
+ * @return {!proto.PlayerActionPB} returns this
  */
-proto.PlayerAction.prototype.clearDestination = function() {
+proto.PlayerActionPB.prototype.clearDestination = function() {
   return this.setDestination(undefined);
 };
 
@@ -8865,35 +8865,35 @@ proto.PlayerAction.prototype.clearDestination = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.PlayerAction.prototype.hasDestination = function() {
+proto.PlayerActionPB.prototype.hasDestination = function() {
   return jspb.Message.getField(this, 3) != null;
 };
 
 
 /**
- * optional Position direction = 4;
- * @return {?proto.Position}
+ * optional PositionPB direction = 4;
+ * @return {?proto.PositionPB}
  */
-proto.PlayerAction.prototype.getDirection = function() {
-  return /** @type{?proto.Position} */ (
-    jspb.Message.getWrapperField(this, proto.Position, 4));
+proto.PlayerActionPB.prototype.getDirection = function() {
+  return /** @type{?proto.PositionPB} */ (
+    jspb.Message.getWrapperField(this, proto.PositionPB, 4));
 };
 
 
 /**
- * @param {?proto.Position|undefined} value
- * @return {!proto.PlayerAction} returns this
+ * @param {?proto.PositionPB|undefined} value
+ * @return {!proto.PlayerActionPB} returns this
 */
-proto.PlayerAction.prototype.setDirection = function(value) {
+proto.PlayerActionPB.prototype.setDirection = function(value) {
   return jspb.Message.setWrapperField(this, 4, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.PlayerAction} returns this
+ * @return {!proto.PlayerActionPB} returns this
  */
-proto.PlayerAction.prototype.clearDirection = function() {
+proto.PlayerActionPB.prototype.clearDirection = function() {
   return this.setDirection(undefined);
 };
 
@@ -8902,7 +8902,7 @@ proto.PlayerAction.prototype.clearDirection = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.PlayerAction.prototype.hasDirection = function() {
+proto.PlayerActionPB.prototype.hasDirection = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -8923,8 +8923,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Move.prototype.toObject = function(opt_includeInstance) {
-  return proto.Move.toObject(opt_includeInstance, this);
+proto.MovePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.MovePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -8933,13 +8933,13 @@ proto.Move.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Move} msg The msg instance to transform.
+ * @param {!proto.MovePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Move.toObject = function(includeInstance, msg) {
+proto.MovePB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    direction: (f = msg.getDirection()) && proto.Direction.toObject(includeInstance, f)
+    direction: (f = msg.getDirection()) && proto.DirectionPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -8953,23 +8953,23 @@ proto.Move.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Move}
+ * @return {!proto.MovePB}
  */
-proto.Move.deserializeBinary = function(bytes) {
+proto.MovePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Move;
-  return proto.Move.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.MovePB;
+  return proto.MovePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Move} msg The message object to deserialize into.
+ * @param {!proto.MovePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Move}
+ * @return {!proto.MovePB}
  */
-proto.Move.deserializeBinaryFromReader = function(msg, reader) {
+proto.MovePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -8977,8 +8977,8 @@ proto.Move.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.Direction;
-      reader.readMessage(value,proto.Direction.deserializeBinaryFromReader);
+      var value = new proto.DirectionPB;
+      reader.readMessage(value,proto.DirectionPB.deserializeBinaryFromReader);
       msg.setDirection(value);
       break;
     default:
@@ -8994,9 +8994,9 @@ proto.Move.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Move.prototype.serializeBinary = function() {
+proto.MovePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Move.serializeBinaryToWriter(this, writer);
+  proto.MovePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9004,47 +9004,47 @@ proto.Move.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Move} message
+ * @param {!proto.MovePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Move.serializeBinaryToWriter = function(message, writer) {
+proto.MovePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getDirection();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.Direction.serializeBinaryToWriter
+      proto.DirectionPB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional Direction direction = 1;
- * @return {?proto.Direction}
+ * optional DirectionPB direction = 1;
+ * @return {?proto.DirectionPB}
  */
-proto.Move.prototype.getDirection = function() {
-  return /** @type{?proto.Direction} */ (
-    jspb.Message.getWrapperField(this, proto.Direction, 1));
+proto.MovePB.prototype.getDirection = function() {
+  return /** @type{?proto.DirectionPB} */ (
+    jspb.Message.getWrapperField(this, proto.DirectionPB, 1));
 };
 
 
 /**
- * @param {?proto.Direction|undefined} value
- * @return {!proto.Move} returns this
+ * @param {?proto.DirectionPB|undefined} value
+ * @return {!proto.MovePB} returns this
 */
-proto.Move.prototype.setDirection = function(value) {
+proto.MovePB.prototype.setDirection = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Move} returns this
+ * @return {!proto.MovePB} returns this
  */
-proto.Move.prototype.clearDirection = function() {
+proto.MovePB.prototype.clearDirection = function() {
   return this.setDirection(undefined);
 };
 
@@ -9053,7 +9053,7 @@ proto.Move.prototype.clearDirection = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Move.prototype.hasDirection = function() {
+proto.MovePB.prototype.hasDirection = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -9074,8 +9074,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Attack.prototype.toObject = function(opt_includeInstance) {
-  return proto.Attack.toObject(opt_includeInstance, this);
+proto.AttackPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.AttackPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9084,14 +9084,14 @@ proto.Attack.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Attack} msg The msg instance to transform.
+ * @param {!proto.AttackPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Attack.toObject = function(includeInstance, msg) {
+proto.AttackPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     skill: jspb.Message.getFieldWithDefault(msg, 1, ""),
-    parameters: (f = msg.getParameters()) && proto.AttackParameters.toObject(includeInstance, f)
+    parameters: (f = msg.getParameters()) && proto.AttackParametersPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9105,23 +9105,23 @@ proto.Attack.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Attack}
+ * @return {!proto.AttackPB}
  */
-proto.Attack.deserializeBinary = function(bytes) {
+proto.AttackPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Attack;
-  return proto.Attack.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.AttackPB;
+  return proto.AttackPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Attack} msg The message object to deserialize into.
+ * @param {!proto.AttackPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Attack}
+ * @return {!proto.AttackPB}
  */
-proto.Attack.deserializeBinaryFromReader = function(msg, reader) {
+proto.AttackPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9133,8 +9133,8 @@ proto.Attack.deserializeBinaryFromReader = function(msg, reader) {
       msg.setSkill(value);
       break;
     case 2:
-      var value = new proto.AttackParameters;
-      reader.readMessage(value,proto.AttackParameters.deserializeBinaryFromReader);
+      var value = new proto.AttackParametersPB;
+      reader.readMessage(value,proto.AttackParametersPB.deserializeBinaryFromReader);
       msg.setParameters(value);
       break;
     default:
@@ -9150,9 +9150,9 @@ proto.Attack.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Attack.prototype.serializeBinary = function() {
+proto.AttackPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Attack.serializeBinaryToWriter(this, writer);
+  proto.AttackPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9160,11 +9160,11 @@ proto.Attack.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Attack} message
+ * @param {!proto.AttackPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Attack.serializeBinaryToWriter = function(message, writer) {
+proto.AttackPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getSkill();
   if (f.length > 0) {
@@ -9178,7 +9178,7 @@ proto.Attack.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.AttackParameters.serializeBinaryToWriter
+      proto.AttackParametersPB.serializeBinaryToWriter
     );
   }
 };
@@ -9188,44 +9188,44 @@ proto.Attack.serializeBinaryToWriter = function(message, writer) {
  * optional string skill = 1;
  * @return {string}
  */
-proto.Attack.prototype.getSkill = function() {
+proto.AttackPB.prototype.getSkill = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.Attack} returns this
+ * @return {!proto.AttackPB} returns this
  */
-proto.Attack.prototype.setSkill = function(value) {
+proto.AttackPB.prototype.setSkill = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
 
 /**
- * optional AttackParameters parameters = 2;
- * @return {?proto.AttackParameters}
+ * optional AttackParametersPB parameters = 2;
+ * @return {?proto.AttackParametersPB}
  */
-proto.Attack.prototype.getParameters = function() {
-  return /** @type{?proto.AttackParameters} */ (
-    jspb.Message.getWrapperField(this, proto.AttackParameters, 2));
+proto.AttackPB.prototype.getParameters = function() {
+  return /** @type{?proto.AttackParametersPB} */ (
+    jspb.Message.getWrapperField(this, proto.AttackParametersPB, 2));
 };
 
 
 /**
- * @param {?proto.AttackParameters|undefined} value
- * @return {!proto.Attack} returns this
+ * @param {?proto.AttackParametersPB|undefined} value
+ * @return {!proto.AttackPB} returns this
 */
-proto.Attack.prototype.setParameters = function(value) {
+proto.AttackPB.prototype.setParameters = function(value) {
   return jspb.Message.setWrapperField(this, 2, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.Attack} returns this
+ * @return {!proto.AttackPB} returns this
  */
-proto.Attack.prototype.clearParameters = function() {
+proto.AttackPB.prototype.clearParameters = function() {
   return this.setParameters(undefined);
 };
 
@@ -9234,7 +9234,7 @@ proto.Attack.prototype.clearParameters = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.Attack.prototype.hasParameters = function() {
+proto.AttackPB.prototype.hasParameters = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
@@ -9255,8 +9255,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.AttackParameters.prototype.toObject = function(opt_includeInstance) {
-  return proto.AttackParameters.toObject(opt_includeInstance, this);
+proto.AttackParametersPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.AttackParametersPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9265,13 +9265,13 @@ proto.AttackParameters.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.AttackParameters} msg The msg instance to transform.
+ * @param {!proto.AttackParametersPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.AttackParameters.toObject = function(includeInstance, msg) {
+proto.AttackParametersPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    target: (f = msg.getTarget()) && proto.Direction.toObject(includeInstance, f)
+    target: (f = msg.getTarget()) && proto.DirectionPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -9285,23 +9285,23 @@ proto.AttackParameters.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.AttackParameters}
+ * @return {!proto.AttackParametersPB}
  */
-proto.AttackParameters.deserializeBinary = function(bytes) {
+proto.AttackParametersPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.AttackParameters;
-  return proto.AttackParameters.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.AttackParametersPB;
+  return proto.AttackParametersPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.AttackParameters} msg The message object to deserialize into.
+ * @param {!proto.AttackParametersPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.AttackParameters}
+ * @return {!proto.AttackParametersPB}
  */
-proto.AttackParameters.deserializeBinaryFromReader = function(msg, reader) {
+proto.AttackParametersPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9309,8 +9309,8 @@ proto.AttackParameters.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.Direction;
-      reader.readMessage(value,proto.Direction.deserializeBinaryFromReader);
+      var value = new proto.DirectionPB;
+      reader.readMessage(value,proto.DirectionPB.deserializeBinaryFromReader);
       msg.setTarget(value);
       break;
     default:
@@ -9326,9 +9326,9 @@ proto.AttackParameters.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.AttackParameters.prototype.serializeBinary = function() {
+proto.AttackParametersPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.AttackParameters.serializeBinaryToWriter(this, writer);
+  proto.AttackParametersPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9336,47 +9336,47 @@ proto.AttackParameters.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.AttackParameters} message
+ * @param {!proto.AttackParametersPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.AttackParameters.serializeBinaryToWriter = function(message, writer) {
+proto.AttackParametersPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTarget();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.Direction.serializeBinaryToWriter
+      proto.DirectionPB.serializeBinaryToWriter
     );
   }
 };
 
 
 /**
- * optional Direction target = 1;
- * @return {?proto.Direction}
+ * optional DirectionPB target = 1;
+ * @return {?proto.DirectionPB}
  */
-proto.AttackParameters.prototype.getTarget = function() {
-  return /** @type{?proto.Direction} */ (
-    jspb.Message.getWrapperField(this, proto.Direction, 1));
+proto.AttackParametersPB.prototype.getTarget = function() {
+  return /** @type{?proto.DirectionPB} */ (
+    jspb.Message.getWrapperField(this, proto.DirectionPB, 1));
 };
 
 
 /**
- * @param {?proto.Direction|undefined} value
- * @return {!proto.AttackParameters} returns this
+ * @param {?proto.DirectionPB|undefined} value
+ * @return {!proto.AttackParametersPB} returns this
 */
-proto.AttackParameters.prototype.setTarget = function(value) {
+proto.AttackParametersPB.prototype.setTarget = function(value) {
   return jspb.Message.setWrapperField(this, 1, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.AttackParameters} returns this
+ * @return {!proto.AttackParametersPB} returns this
  */
-proto.AttackParameters.prototype.clearTarget = function() {
+proto.AttackParametersPB.prototype.clearTarget = function() {
   return this.setTarget(undefined);
 };
 
@@ -9385,7 +9385,7 @@ proto.AttackParameters.prototype.clearTarget = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.AttackParameters.prototype.hasTarget = function() {
+proto.AttackParametersPB.prototype.hasTarget = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
@@ -9406,8 +9406,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.UseItem.prototype.toObject = function(opt_includeInstance) {
-  return proto.UseItem.toObject(opt_includeInstance, this);
+proto.UseItemPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.UseItemPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9416,11 +9416,11 @@ proto.UseItem.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.UseItem} msg The msg instance to transform.
+ * @param {!proto.UseItemPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UseItem.toObject = function(includeInstance, msg) {
+proto.UseItemPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     item: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
@@ -9436,23 +9436,23 @@ proto.UseItem.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.UseItem}
+ * @return {!proto.UseItemPB}
  */
-proto.UseItem.deserializeBinary = function(bytes) {
+proto.UseItemPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.UseItem;
-  return proto.UseItem.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.UseItemPB;
+  return proto.UseItemPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.UseItem} msg The message object to deserialize into.
+ * @param {!proto.UseItemPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.UseItem}
+ * @return {!proto.UseItemPB}
  */
-proto.UseItem.deserializeBinaryFromReader = function(msg, reader) {
+proto.UseItemPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9476,9 +9476,9 @@ proto.UseItem.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.UseItem.prototype.serializeBinary = function() {
+proto.UseItemPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.UseItem.serializeBinaryToWriter(this, writer);
+  proto.UseItemPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9486,11 +9486,11 @@ proto.UseItem.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.UseItem} message
+ * @param {!proto.UseItemPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.UseItem.serializeBinaryToWriter = function(message, writer) {
+proto.UseItemPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getItem();
   if (f !== 0) {
@@ -9506,16 +9506,16 @@ proto.UseItem.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 item = 1;
  * @return {number}
  */
-proto.UseItem.prototype.getItem = function() {
+proto.UseItemPB.prototype.getItem = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.UseItem} returns this
+ * @return {!proto.UseItemPB} returns this
  */
-proto.UseItem.prototype.setItem = function(value) {
+proto.UseItemPB.prototype.setItem = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -9536,8 +9536,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.SelectBounty.prototype.toObject = function(opt_includeInstance) {
-  return proto.SelectBounty.toObject(opt_includeInstance, this);
+proto.SelectBountyPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.SelectBountyPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9546,11 +9546,11 @@ proto.SelectBounty.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.SelectBounty} msg The msg instance to transform.
+ * @param {!proto.SelectBountyPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.SelectBounty.toObject = function(includeInstance, msg) {
+proto.SelectBountyPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     bountyQuestId: jspb.Message.getFieldWithDefault(msg, 1, "")
   };
@@ -9566,23 +9566,23 @@ proto.SelectBounty.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.SelectBounty}
+ * @return {!proto.SelectBountyPB}
  */
-proto.SelectBounty.deserializeBinary = function(bytes) {
+proto.SelectBountyPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.SelectBounty;
-  return proto.SelectBounty.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.SelectBountyPB;
+  return proto.SelectBountyPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.SelectBounty} msg The message object to deserialize into.
+ * @param {!proto.SelectBountyPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.SelectBounty}
+ * @return {!proto.SelectBountyPB}
  */
-proto.SelectBounty.deserializeBinaryFromReader = function(msg, reader) {
+proto.SelectBountyPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9606,9 +9606,9 @@ proto.SelectBounty.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.SelectBounty.prototype.serializeBinary = function() {
+proto.SelectBountyPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.SelectBounty.serializeBinaryToWriter(this, writer);
+  proto.SelectBountyPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9616,11 +9616,11 @@ proto.SelectBounty.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.SelectBounty} message
+ * @param {!proto.SelectBountyPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.SelectBounty.serializeBinaryToWriter = function(message, writer) {
+proto.SelectBountyPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getBountyQuestId();
   if (f.length > 0) {
@@ -9636,16 +9636,16 @@ proto.SelectBounty.serializeBinaryToWriter = function(message, writer) {
  * optional string bounty_quest_id = 1;
  * @return {string}
  */
-proto.SelectBounty.prototype.getBountyQuestId = function() {
+proto.SelectBountyPB.prototype.getBountyQuestId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.SelectBounty} returns this
+ * @return {!proto.SelectBountyPB} returns this
  */
-proto.SelectBounty.prototype.setBountyQuestId = function(value) {
+proto.SelectBountyPB.prototype.setBountyQuestId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -9666,8 +9666,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ToggleZone.prototype.toObject = function(opt_includeInstance) {
-  return proto.ToggleZone.toObject(opt_includeInstance, this);
+proto.ToggleZonePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ToggleZonePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9676,13 +9676,13 @@ proto.ToggleZone.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ToggleZone} msg The msg instance to transform.
+ * @param {!proto.ToggleZonePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ToggleZone.toObject = function(includeInstance, msg) {
+proto.ToggleZonePB.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    active: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -9696,29 +9696,33 @@ proto.ToggleZone.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ToggleZone}
+ * @return {!proto.ToggleZonePB}
  */
-proto.ToggleZone.deserializeBinary = function(bytes) {
+proto.ToggleZonePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ToggleZone;
-  return proto.ToggleZone.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ToggleZonePB;
+  return proto.ToggleZonePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ToggleZone} msg The message object to deserialize into.
+ * @param {!proto.ToggleZonePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ToggleZone}
+ * @return {!proto.ToggleZonePB}
  */
-proto.ToggleZone.deserializeBinaryFromReader = function(msg, reader) {
+proto.ToggleZonePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setActive(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -9732,9 +9736,9 @@ proto.ToggleZone.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ToggleZone.prototype.serializeBinary = function() {
+proto.ToggleZonePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ToggleZone.serializeBinaryToWriter(this, writer);
+  proto.ToggleZonePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9742,12 +9746,37 @@ proto.ToggleZone.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ToggleZone} message
+ * @param {!proto.ToggleZonePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ToggleZone.serializeBinaryToWriter = function(message, writer) {
+proto.ToggleZonePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getActive();
+  if (f) {
+    writer.writeBool(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional bool active = 1;
+ * @return {boolean}
+ */
+proto.ToggleZonePB.prototype.getActive = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.ToggleZonePB} returns this
+ */
+proto.ToggleZonePB.prototype.setActive = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -9767,8 +9796,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ToggleBots.prototype.toObject = function(opt_includeInstance) {
-  return proto.ToggleBots.toObject(opt_includeInstance, this);
+proto.ToggleBotsPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ToggleBotsPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9777,13 +9806,13 @@ proto.ToggleBots.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ToggleBots} msg The msg instance to transform.
+ * @param {!proto.ToggleBotsPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ToggleBots.toObject = function(includeInstance, msg) {
+proto.ToggleBotsPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-
+    active: jspb.Message.getBooleanFieldWithDefault(msg, 1, false)
   };
 
   if (includeInstance) {
@@ -9797,29 +9826,33 @@ proto.ToggleBots.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ToggleBots}
+ * @return {!proto.ToggleBotsPB}
  */
-proto.ToggleBots.deserializeBinary = function(bytes) {
+proto.ToggleBotsPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ToggleBots;
-  return proto.ToggleBots.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ToggleBotsPB;
+  return proto.ToggleBotsPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ToggleBots} msg The message object to deserialize into.
+ * @param {!proto.ToggleBotsPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ToggleBots}
+ * @return {!proto.ToggleBotsPB}
  */
-proto.ToggleBots.deserializeBinaryFromReader = function(msg, reader) {
+proto.ToggleBotsPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
     var field = reader.getFieldNumber();
     switch (field) {
+    case 1:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setActive(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -9833,9 +9866,9 @@ proto.ToggleBots.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ToggleBots.prototype.serializeBinary = function() {
+proto.ToggleBotsPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ToggleBots.serializeBinaryToWriter(this, writer);
+  proto.ToggleBotsPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9843,12 +9876,37 @@ proto.ToggleBots.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ToggleBots} message
+ * @param {!proto.ToggleBotsPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ToggleBots.serializeBinaryToWriter = function(message, writer) {
+proto.ToggleBotsPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getActive();
+  if (f) {
+    writer.writeBool(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional bool active = 1;
+ * @return {boolean}
+ */
+proto.ToggleBotsPB.prototype.getActive = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 1, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.ToggleBotsPB} returns this
+ */
+proto.ToggleBotsPB.prototype.setActive = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 1, value);
 };
 
 
@@ -9868,8 +9926,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ChangeTickrate.prototype.toObject = function(opt_includeInstance) {
-  return proto.ChangeTickrate.toObject(opt_includeInstance, this);
+proto.ChangeTickratePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ChangeTickratePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -9878,11 +9936,11 @@ proto.ChangeTickrate.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ChangeTickrate} msg The msg instance to transform.
+ * @param {!proto.ChangeTickratePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ChangeTickrate.toObject = function(includeInstance, msg) {
+proto.ChangeTickratePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     tickrate: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
@@ -9898,23 +9956,23 @@ proto.ChangeTickrate.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ChangeTickrate}
+ * @return {!proto.ChangeTickratePB}
  */
-proto.ChangeTickrate.deserializeBinary = function(bytes) {
+proto.ChangeTickratePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ChangeTickrate;
-  return proto.ChangeTickrate.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ChangeTickratePB;
+  return proto.ChangeTickratePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ChangeTickrate} msg The message object to deserialize into.
+ * @param {!proto.ChangeTickratePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ChangeTickrate}
+ * @return {!proto.ChangeTickratePB}
  */
-proto.ChangeTickrate.deserializeBinaryFromReader = function(msg, reader) {
+proto.ChangeTickratePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -9938,9 +9996,9 @@ proto.ChangeTickrate.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ChangeTickrate.prototype.serializeBinary = function() {
+proto.ChangeTickratePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ChangeTickrate.serializeBinaryToWriter(this, writer);
+  proto.ChangeTickratePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -9948,11 +10006,11 @@ proto.ChangeTickrate.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ChangeTickrate} message
+ * @param {!proto.ChangeTickratePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ChangeTickrate.serializeBinaryToWriter = function(message, writer) {
+proto.ChangeTickratePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getTickrate();
   if (f !== 0) {
@@ -9968,16 +10026,16 @@ proto.ChangeTickrate.serializeBinaryToWriter = function(message, writer) {
  * optional int64 tickrate = 1;
  * @return {number}
  */
-proto.ChangeTickrate.prototype.getTickrate = function() {
+proto.ChangeTickratePB.prototype.getTickrate = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.ChangeTickrate} returns this
+ * @return {!proto.ChangeTickratePB} returns this
  */
-proto.ChangeTickrate.prototype.setTickrate = function(value) {
+proto.ChangeTickratePB.prototype.setTickrate = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -9991,12 +10049,12 @@ proto.ChangeTickrate.prototype.setTickrate = function(value) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.GameAction.oneofGroups_ = [[1,2,4,5,6,7,8]];
+proto.GameActionPB.oneofGroups_ = [[1,2,4,5,6,7,8]];
 
 /**
  * @enum {number}
  */
-proto.GameAction.ActionTypeCase = {
+proto.GameActionPB.ActionTypeCase = {
   ACTION_TYPE_NOT_SET: 0,
   MOVE: 1,
   ATTACK: 2,
@@ -10008,10 +10066,10 @@ proto.GameAction.ActionTypeCase = {
 };
 
 /**
- * @return {proto.GameAction.ActionTypeCase}
+ * @return {proto.GameActionPB.ActionTypeCase}
  */
-proto.GameAction.prototype.getActionTypeCase = function() {
-  return /** @type {proto.GameAction.ActionTypeCase} */(jspb.Message.computeOneofCase(this, proto.GameAction.oneofGroups_[0]));
+proto.GameActionPB.prototype.getActionTypeCase = function() {
+  return /** @type {proto.GameActionPB.ActionTypeCase} */(jspb.Message.computeOneofCase(this, proto.GameActionPB.oneofGroups_[0]));
 };
 
 
@@ -10029,8 +10087,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.GameAction.prototype.toObject = function(opt_includeInstance) {
-  return proto.GameAction.toObject(opt_includeInstance, this);
+proto.GameActionPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.GameActionPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -10039,19 +10097,19 @@ proto.GameAction.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.GameAction} msg The msg instance to transform.
+ * @param {!proto.GameActionPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameAction.toObject = function(includeInstance, msg) {
+proto.GameActionPB.toObject = function(includeInstance, msg) {
   var f, obj = {
-    move: (f = msg.getMove()) && proto.Move.toObject(includeInstance, f),
-    attack: (f = msg.getAttack()) && proto.Attack.toObject(includeInstance, f),
-    useItem: (f = msg.getUseItem()) && proto.UseItem.toObject(includeInstance, f),
-    selectBounty: (f = msg.getSelectBounty()) && proto.SelectBounty.toObject(includeInstance, f),
-    toggleZone: (f = msg.getToggleZone()) && proto.ToggleZone.toObject(includeInstance, f),
-    toggleBots: (f = msg.getToggleBots()) && proto.ToggleBots.toObject(includeInstance, f),
-    changeTickrate: (f = msg.getChangeTickrate()) && proto.ChangeTickrate.toObject(includeInstance, f),
+    move: (f = msg.getMove()) && proto.MovePB.toObject(includeInstance, f),
+    attack: (f = msg.getAttack()) && proto.AttackPB.toObject(includeInstance, f),
+    useItem: (f = msg.getUseItem()) && proto.UseItemPB.toObject(includeInstance, f),
+    selectBounty: (f = msg.getSelectBounty()) && proto.SelectBountyPB.toObject(includeInstance, f),
+    toggleZone: (f = msg.getToggleZone()) && proto.ToggleZonePB.toObject(includeInstance, f),
+    toggleBots: (f = msg.getToggleBots()) && proto.ToggleBotsPB.toObject(includeInstance, f),
+    changeTickrate: (f = msg.getChangeTickrate()) && proto.ChangeTickratePB.toObject(includeInstance, f),
     timestamp: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
@@ -10066,23 +10124,23 @@ proto.GameAction.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.GameAction}
+ * @return {!proto.GameActionPB}
  */
-proto.GameAction.deserializeBinary = function(bytes) {
+proto.GameActionPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.GameAction;
-  return proto.GameAction.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.GameActionPB;
+  return proto.GameActionPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.GameAction} msg The message object to deserialize into.
+ * @param {!proto.GameActionPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.GameAction}
+ * @return {!proto.GameActionPB}
  */
-proto.GameAction.deserializeBinaryFromReader = function(msg, reader) {
+proto.GameActionPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -10090,38 +10148,38 @@ proto.GameAction.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = new proto.Move;
-      reader.readMessage(value,proto.Move.deserializeBinaryFromReader);
+      var value = new proto.MovePB;
+      reader.readMessage(value,proto.MovePB.deserializeBinaryFromReader);
       msg.setMove(value);
       break;
     case 2:
-      var value = new proto.Attack;
-      reader.readMessage(value,proto.Attack.deserializeBinaryFromReader);
+      var value = new proto.AttackPB;
+      reader.readMessage(value,proto.AttackPB.deserializeBinaryFromReader);
       msg.setAttack(value);
       break;
     case 4:
-      var value = new proto.UseItem;
-      reader.readMessage(value,proto.UseItem.deserializeBinaryFromReader);
+      var value = new proto.UseItemPB;
+      reader.readMessage(value,proto.UseItemPB.deserializeBinaryFromReader);
       msg.setUseItem(value);
       break;
     case 5:
-      var value = new proto.SelectBounty;
-      reader.readMessage(value,proto.SelectBounty.deserializeBinaryFromReader);
+      var value = new proto.SelectBountyPB;
+      reader.readMessage(value,proto.SelectBountyPB.deserializeBinaryFromReader);
       msg.setSelectBounty(value);
       break;
     case 6:
-      var value = new proto.ToggleZone;
-      reader.readMessage(value,proto.ToggleZone.deserializeBinaryFromReader);
+      var value = new proto.ToggleZonePB;
+      reader.readMessage(value,proto.ToggleZonePB.deserializeBinaryFromReader);
       msg.setToggleZone(value);
       break;
     case 7:
-      var value = new proto.ToggleBots;
-      reader.readMessage(value,proto.ToggleBots.deserializeBinaryFromReader);
+      var value = new proto.ToggleBotsPB;
+      reader.readMessage(value,proto.ToggleBotsPB.deserializeBinaryFromReader);
       msg.setToggleBots(value);
       break;
     case 8:
-      var value = new proto.ChangeTickrate;
-      reader.readMessage(value,proto.ChangeTickrate.deserializeBinaryFromReader);
+      var value = new proto.ChangeTickratePB;
+      reader.readMessage(value,proto.ChangeTickratePB.deserializeBinaryFromReader);
       msg.setChangeTickrate(value);
       break;
     case 3:
@@ -10141,9 +10199,9 @@ proto.GameAction.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.GameAction.prototype.serializeBinary = function() {
+proto.GameActionPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.GameAction.serializeBinaryToWriter(this, writer);
+  proto.GameActionPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -10151,18 +10209,18 @@ proto.GameAction.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.GameAction} message
+ * @param {!proto.GameActionPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.GameAction.serializeBinaryToWriter = function(message, writer) {
+proto.GameActionPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getMove();
   if (f != null) {
     writer.writeMessage(
       1,
       f,
-      proto.Move.serializeBinaryToWriter
+      proto.MovePB.serializeBinaryToWriter
     );
   }
   f = message.getAttack();
@@ -10170,7 +10228,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       2,
       f,
-      proto.Attack.serializeBinaryToWriter
+      proto.AttackPB.serializeBinaryToWriter
     );
   }
   f = message.getUseItem();
@@ -10178,7 +10236,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.UseItem.serializeBinaryToWriter
+      proto.UseItemPB.serializeBinaryToWriter
     );
   }
   f = message.getSelectBounty();
@@ -10186,7 +10244,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       5,
       f,
-      proto.SelectBounty.serializeBinaryToWriter
+      proto.SelectBountyPB.serializeBinaryToWriter
     );
   }
   f = message.getToggleZone();
@@ -10194,7 +10252,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       6,
       f,
-      proto.ToggleZone.serializeBinaryToWriter
+      proto.ToggleZonePB.serializeBinaryToWriter
     );
   }
   f = message.getToggleBots();
@@ -10202,7 +10260,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       7,
       f,
-      proto.ToggleBots.serializeBinaryToWriter
+      proto.ToggleBotsPB.serializeBinaryToWriter
     );
   }
   f = message.getChangeTickrate();
@@ -10210,7 +10268,7 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       8,
       f,
-      proto.ChangeTickrate.serializeBinaryToWriter
+      proto.ChangeTickratePB.serializeBinaryToWriter
     );
   }
   f = message.getTimestamp();
@@ -10224,29 +10282,29 @@ proto.GameAction.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional Move move = 1;
- * @return {?proto.Move}
+ * optional MovePB move = 1;
+ * @return {?proto.MovePB}
  */
-proto.GameAction.prototype.getMove = function() {
-  return /** @type{?proto.Move} */ (
-    jspb.Message.getWrapperField(this, proto.Move, 1));
+proto.GameActionPB.prototype.getMove = function() {
+  return /** @type{?proto.MovePB} */ (
+    jspb.Message.getWrapperField(this, proto.MovePB, 1));
 };
 
 
 /**
- * @param {?proto.Move|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.MovePB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setMove = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 1, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setMove = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 1, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearMove = function() {
+proto.GameActionPB.prototype.clearMove = function() {
   return this.setMove(undefined);
 };
 
@@ -10255,35 +10313,35 @@ proto.GameAction.prototype.clearMove = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasMove = function() {
+proto.GameActionPB.prototype.hasMove = function() {
   return jspb.Message.getField(this, 1) != null;
 };
 
 
 /**
- * optional Attack attack = 2;
- * @return {?proto.Attack}
+ * optional AttackPB attack = 2;
+ * @return {?proto.AttackPB}
  */
-proto.GameAction.prototype.getAttack = function() {
-  return /** @type{?proto.Attack} */ (
-    jspb.Message.getWrapperField(this, proto.Attack, 2));
+proto.GameActionPB.prototype.getAttack = function() {
+  return /** @type{?proto.AttackPB} */ (
+    jspb.Message.getWrapperField(this, proto.AttackPB, 2));
 };
 
 
 /**
- * @param {?proto.Attack|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.AttackPB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setAttack = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 2, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setAttack = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 2, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearAttack = function() {
+proto.GameActionPB.prototype.clearAttack = function() {
   return this.setAttack(undefined);
 };
 
@@ -10292,35 +10350,35 @@ proto.GameAction.prototype.clearAttack = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasAttack = function() {
+proto.GameActionPB.prototype.hasAttack = function() {
   return jspb.Message.getField(this, 2) != null;
 };
 
 
 /**
- * optional UseItem use_item = 4;
- * @return {?proto.UseItem}
+ * optional UseItemPB use_item = 4;
+ * @return {?proto.UseItemPB}
  */
-proto.GameAction.prototype.getUseItem = function() {
-  return /** @type{?proto.UseItem} */ (
-    jspb.Message.getWrapperField(this, proto.UseItem, 4));
+proto.GameActionPB.prototype.getUseItem = function() {
+  return /** @type{?proto.UseItemPB} */ (
+    jspb.Message.getWrapperField(this, proto.UseItemPB, 4));
 };
 
 
 /**
- * @param {?proto.UseItem|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.UseItemPB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setUseItem = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 4, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setUseItem = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 4, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearUseItem = function() {
+proto.GameActionPB.prototype.clearUseItem = function() {
   return this.setUseItem(undefined);
 };
 
@@ -10329,35 +10387,35 @@ proto.GameAction.prototype.clearUseItem = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasUseItem = function() {
+proto.GameActionPB.prototype.hasUseItem = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
 
 /**
- * optional SelectBounty select_bounty = 5;
- * @return {?proto.SelectBounty}
+ * optional SelectBountyPB select_bounty = 5;
+ * @return {?proto.SelectBountyPB}
  */
-proto.GameAction.prototype.getSelectBounty = function() {
-  return /** @type{?proto.SelectBounty} */ (
-    jspb.Message.getWrapperField(this, proto.SelectBounty, 5));
+proto.GameActionPB.prototype.getSelectBounty = function() {
+  return /** @type{?proto.SelectBountyPB} */ (
+    jspb.Message.getWrapperField(this, proto.SelectBountyPB, 5));
 };
 
 
 /**
- * @param {?proto.SelectBounty|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.SelectBountyPB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setSelectBounty = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 5, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setSelectBounty = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 5, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearSelectBounty = function() {
+proto.GameActionPB.prototype.clearSelectBounty = function() {
   return this.setSelectBounty(undefined);
 };
 
@@ -10366,35 +10424,35 @@ proto.GameAction.prototype.clearSelectBounty = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasSelectBounty = function() {
+proto.GameActionPB.prototype.hasSelectBounty = function() {
   return jspb.Message.getField(this, 5) != null;
 };
 
 
 /**
- * optional ToggleZone toggle_zone = 6;
- * @return {?proto.ToggleZone}
+ * optional ToggleZonePB toggle_zone = 6;
+ * @return {?proto.ToggleZonePB}
  */
-proto.GameAction.prototype.getToggleZone = function() {
-  return /** @type{?proto.ToggleZone} */ (
-    jspb.Message.getWrapperField(this, proto.ToggleZone, 6));
+proto.GameActionPB.prototype.getToggleZone = function() {
+  return /** @type{?proto.ToggleZonePB} */ (
+    jspb.Message.getWrapperField(this, proto.ToggleZonePB, 6));
 };
 
 
 /**
- * @param {?proto.ToggleZone|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.ToggleZonePB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setToggleZone = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 6, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setToggleZone = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 6, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearToggleZone = function() {
+proto.GameActionPB.prototype.clearToggleZone = function() {
   return this.setToggleZone(undefined);
 };
 
@@ -10403,35 +10461,35 @@ proto.GameAction.prototype.clearToggleZone = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasToggleZone = function() {
+proto.GameActionPB.prototype.hasToggleZone = function() {
   return jspb.Message.getField(this, 6) != null;
 };
 
 
 /**
- * optional ToggleBots toggle_bots = 7;
- * @return {?proto.ToggleBots}
+ * optional ToggleBotsPB toggle_bots = 7;
+ * @return {?proto.ToggleBotsPB}
  */
-proto.GameAction.prototype.getToggleBots = function() {
-  return /** @type{?proto.ToggleBots} */ (
-    jspb.Message.getWrapperField(this, proto.ToggleBots, 7));
+proto.GameActionPB.prototype.getToggleBots = function() {
+  return /** @type{?proto.ToggleBotsPB} */ (
+    jspb.Message.getWrapperField(this, proto.ToggleBotsPB, 7));
 };
 
 
 /**
- * @param {?proto.ToggleBots|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.ToggleBotsPB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setToggleBots = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 7, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setToggleBots = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 7, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearToggleBots = function() {
+proto.GameActionPB.prototype.clearToggleBots = function() {
   return this.setToggleBots(undefined);
 };
 
@@ -10440,35 +10498,35 @@ proto.GameAction.prototype.clearToggleBots = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasToggleBots = function() {
+proto.GameActionPB.prototype.hasToggleBots = function() {
   return jspb.Message.getField(this, 7) != null;
 };
 
 
 /**
- * optional ChangeTickrate change_tickrate = 8;
- * @return {?proto.ChangeTickrate}
+ * optional ChangeTickratePB change_tickrate = 8;
+ * @return {?proto.ChangeTickratePB}
  */
-proto.GameAction.prototype.getChangeTickrate = function() {
-  return /** @type{?proto.ChangeTickrate} */ (
-    jspb.Message.getWrapperField(this, proto.ChangeTickrate, 8));
+proto.GameActionPB.prototype.getChangeTickrate = function() {
+  return /** @type{?proto.ChangeTickratePB} */ (
+    jspb.Message.getWrapperField(this, proto.ChangeTickratePB, 8));
 };
 
 
 /**
- * @param {?proto.ChangeTickrate|undefined} value
- * @return {!proto.GameAction} returns this
+ * @param {?proto.ChangeTickratePB|undefined} value
+ * @return {!proto.GameActionPB} returns this
 */
-proto.GameAction.prototype.setChangeTickrate = function(value) {
-  return jspb.Message.setOneofWrapperField(this, 8, proto.GameAction.oneofGroups_[0], value);
+proto.GameActionPB.prototype.setChangeTickrate = function(value) {
+  return jspb.Message.setOneofWrapperField(this, 8, proto.GameActionPB.oneofGroups_[0], value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.clearChangeTickrate = function() {
+proto.GameActionPB.prototype.clearChangeTickrate = function() {
   return this.setChangeTickrate(undefined);
 };
 
@@ -10477,7 +10535,7 @@ proto.GameAction.prototype.clearChangeTickrate = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.GameAction.prototype.hasChangeTickrate = function() {
+proto.GameActionPB.prototype.hasChangeTickrate = function() {
   return jspb.Message.getField(this, 8) != null;
 };
 
@@ -10486,16 +10544,16 @@ proto.GameAction.prototype.hasChangeTickrate = function() {
  * optional int64 timestamp = 3;
  * @return {number}
  */
-proto.GameAction.prototype.getTimestamp = function() {
+proto.GameActionPB.prototype.getTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.GameAction} returns this
+ * @return {!proto.GameActionPB} returns this
  */
-proto.GameAction.prototype.setTimestamp = function(value) {
+proto.GameActionPB.prototype.setTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -10516,8 +10574,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.Zone.prototype.toObject = function(opt_includeInstance) {
-  return proto.Zone.toObject(opt_includeInstance, this);
+proto.ZonePB.prototype.toObject = function(opt_includeInstance) {
+  return proto.ZonePB.toObject(opt_includeInstance, this);
 };
 
 
@@ -10526,11 +10584,11 @@ proto.Zone.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.Zone} msg The msg instance to transform.
+ * @param {!proto.ZonePB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Zone.toObject = function(includeInstance, msg) {
+proto.ZonePB.toObject = function(includeInstance, msg) {
   var f, obj = {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
@@ -10549,23 +10607,23 @@ proto.Zone.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.Zone}
+ * @return {!proto.ZonePB}
  */
-proto.Zone.deserializeBinary = function(bytes) {
+proto.ZonePB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Zone;
-  return proto.Zone.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.ZonePB;
+  return proto.ZonePB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.Zone} msg The message object to deserialize into.
+ * @param {!proto.ZonePB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.Zone}
+ * @return {!proto.ZonePB}
  */
-proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
+proto.ZonePB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -10601,9 +10659,9 @@ proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Zone.prototype.serializeBinary = function() {
+proto.ZonePB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.Zone.serializeBinaryToWriter(this, writer);
+  proto.ZonePB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -10611,11 +10669,11 @@ proto.Zone.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.Zone} message
+ * @param {!proto.ZonePB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Zone.serializeBinaryToWriter = function(message, writer) {
+proto.ZonePB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getRadius();
   if (f !== 0.0) {
@@ -10652,16 +10710,16 @@ proto.Zone.serializeBinaryToWriter = function(message, writer) {
  * optional float radius = 1;
  * @return {number}
  */
-proto.Zone.prototype.getRadius = function() {
+proto.ZonePB.prototype.getRadius = function() {
   return /** @type {number} */ (jspb.Message.getFloatingPointFieldWithDefault(this, 1, 0.0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Zone} returns this
+ * @return {!proto.ZonePB} returns this
  */
-proto.Zone.prototype.setRadius = function(value) {
+proto.ZonePB.prototype.setRadius = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
 };
 
@@ -10670,16 +10728,16 @@ proto.Zone.prototype.setRadius = function(value) {
  * optional bool enabled = 2;
  * @return {boolean}
  */
-proto.Zone.prototype.getEnabled = function() {
+proto.ZonePB.prototype.getEnabled = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 2, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Zone} returns this
+ * @return {!proto.ZonePB} returns this
  */
-proto.Zone.prototype.setEnabled = function(value) {
+proto.ZonePB.prototype.setEnabled = function(value) {
   return jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
@@ -10688,16 +10746,16 @@ proto.Zone.prototype.setEnabled = function(value) {
  * optional int64 next_zone_change_timestamp = 3;
  * @return {number}
  */
-proto.Zone.prototype.getNextZoneChangeTimestamp = function() {
+proto.ZonePB.prototype.getNextZoneChangeTimestamp = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.Zone} returns this
+ * @return {!proto.ZonePB} returns this
  */
-proto.Zone.prototype.setNextZoneChangeTimestamp = function(value) {
+proto.ZonePB.prototype.setNextZoneChangeTimestamp = function(value) {
   return jspb.Message.setProto3IntField(this, 3, value);
 };
 
@@ -10706,16 +10764,16 @@ proto.Zone.prototype.setNextZoneChangeTimestamp = function(value) {
  * optional bool shrinking = 4;
  * @return {boolean}
  */
-proto.Zone.prototype.getShrinking = function() {
+proto.ZonePB.prototype.getShrinking = function() {
   return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 4, false));
 };
 
 
 /**
  * @param {boolean} value
- * @return {!proto.Zone} returns this
+ * @return {!proto.ZonePB} returns this
  */
-proto.Zone.prototype.setShrinking = function(value) {
+proto.ZonePB.prototype.setShrinking = function(value) {
   return jspb.Message.setProto3BooleanField(this, 4, value);
 };
 
@@ -10736,8 +10794,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.KillEntry.prototype.toObject = function(opt_includeInstance) {
-  return proto.KillEntry.toObject(opt_includeInstance, this);
+proto.KillEntryPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.KillEntryPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -10746,11 +10804,11 @@ proto.KillEntry.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.KillEntry} msg The msg instance to transform.
+ * @param {!proto.KillEntryPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.KillEntry.toObject = function(includeInstance, msg) {
+proto.KillEntryPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     killerId: jspb.Message.getFieldWithDefault(msg, 1, 0),
     victimId: jspb.Message.getFieldWithDefault(msg, 2, 0)
@@ -10767,23 +10825,23 @@ proto.KillEntry.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.KillEntry}
+ * @return {!proto.KillEntryPB}
  */
-proto.KillEntry.deserializeBinary = function(bytes) {
+proto.KillEntryPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.KillEntry;
-  return proto.KillEntry.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.KillEntryPB;
+  return proto.KillEntryPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.KillEntry} msg The message object to deserialize into.
+ * @param {!proto.KillEntryPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.KillEntry}
+ * @return {!proto.KillEntryPB}
  */
-proto.KillEntry.deserializeBinaryFromReader = function(msg, reader) {
+proto.KillEntryPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -10811,9 +10869,9 @@ proto.KillEntry.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.KillEntry.prototype.serializeBinary = function() {
+proto.KillEntryPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.KillEntry.serializeBinaryToWriter(this, writer);
+  proto.KillEntryPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -10821,11 +10879,11 @@ proto.KillEntry.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.KillEntry} message
+ * @param {!proto.KillEntryPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.KillEntry.serializeBinaryToWriter = function(message, writer) {
+proto.KillEntryPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getKillerId();
   if (f !== 0) {
@@ -10848,16 +10906,16 @@ proto.KillEntry.serializeBinaryToWriter = function(message, writer) {
  * optional uint64 killer_id = 1;
  * @return {number}
  */
-proto.KillEntry.prototype.getKillerId = function() {
+proto.KillEntryPB.prototype.getKillerId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.KillEntry} returns this
+ * @return {!proto.KillEntryPB} returns this
  */
-proto.KillEntry.prototype.setKillerId = function(value) {
+proto.KillEntryPB.prototype.setKillerId = function(value) {
   return jspb.Message.setProto3IntField(this, 1, value);
 };
 
@@ -10866,16 +10924,16 @@ proto.KillEntry.prototype.setKillerId = function(value) {
  * optional uint64 victim_id = 2;
  * @return {number}
  */
-proto.KillEntry.prototype.getVictimId = function() {
+proto.KillEntryPB.prototype.getVictimId = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.KillEntry} returns this
+ * @return {!proto.KillEntryPB} returns this
  */
-proto.KillEntry.prototype.setVictimId = function(value) {
+proto.KillEntryPB.prototype.setVictimId = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -10896,8 +10954,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.BountyInfo.prototype.toObject = function(opt_includeInstance) {
-  return proto.BountyInfo.toObject(opt_includeInstance, this);
+proto.BountyInfoPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.BountyInfoPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -10906,16 +10964,16 @@ proto.BountyInfo.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.BountyInfo} msg The msg instance to transform.
+ * @param {!proto.BountyInfoPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.BountyInfo.toObject = function(includeInstance, msg) {
+proto.BountyInfoPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     description: jspb.Message.getFieldWithDefault(msg, 2, ""),
     questType: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    reward: (f = msg.getReward()) && proto.CurrencyReward.toObject(includeInstance, f)
+    reward: (f = msg.getReward()) && proto.CurrencyRewardPB.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -10929,23 +10987,23 @@ proto.BountyInfo.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.BountyInfo}
+ * @return {!proto.BountyInfoPB}
  */
-proto.BountyInfo.deserializeBinary = function(bytes) {
+proto.BountyInfoPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.BountyInfo;
-  return proto.BountyInfo.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.BountyInfoPB;
+  return proto.BountyInfoPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.BountyInfo} msg The message object to deserialize into.
+ * @param {!proto.BountyInfoPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.BountyInfo}
+ * @return {!proto.BountyInfoPB}
  */
-proto.BountyInfo.deserializeBinaryFromReader = function(msg, reader) {
+proto.BountyInfoPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -10965,8 +11023,8 @@ proto.BountyInfo.deserializeBinaryFromReader = function(msg, reader) {
       msg.setQuestType(value);
       break;
     case 4:
-      var value = new proto.CurrencyReward;
-      reader.readMessage(value,proto.CurrencyReward.deserializeBinaryFromReader);
+      var value = new proto.CurrencyRewardPB;
+      reader.readMessage(value,proto.CurrencyRewardPB.deserializeBinaryFromReader);
       msg.setReward(value);
       break;
     default:
@@ -10982,9 +11040,9 @@ proto.BountyInfo.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.BountyInfo.prototype.serializeBinary = function() {
+proto.BountyInfoPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.BountyInfo.serializeBinaryToWriter(this, writer);
+  proto.BountyInfoPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -10992,11 +11050,11 @@ proto.BountyInfo.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.BountyInfo} message
+ * @param {!proto.BountyInfoPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.BountyInfo.serializeBinaryToWriter = function(message, writer) {
+proto.BountyInfoPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getId();
   if (f.length > 0) {
@@ -11024,7 +11082,7 @@ proto.BountyInfo.serializeBinaryToWriter = function(message, writer) {
     writer.writeMessage(
       4,
       f,
-      proto.CurrencyReward.serializeBinaryToWriter
+      proto.CurrencyRewardPB.serializeBinaryToWriter
     );
   }
 };
@@ -11034,16 +11092,16 @@ proto.BountyInfo.serializeBinaryToWriter = function(message, writer) {
  * optional string id = 1;
  * @return {string}
  */
-proto.BountyInfo.prototype.getId = function() {
+proto.BountyInfoPB.prototype.getId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.BountyInfo} returns this
+ * @return {!proto.BountyInfoPB} returns this
  */
-proto.BountyInfo.prototype.setId = function(value) {
+proto.BountyInfoPB.prototype.setId = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -11052,16 +11110,16 @@ proto.BountyInfo.prototype.setId = function(value) {
  * optional string description = 2;
  * @return {string}
  */
-proto.BountyInfo.prototype.getDescription = function() {
+proto.BountyInfoPB.prototype.getDescription = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.BountyInfo} returns this
+ * @return {!proto.BountyInfoPB} returns this
  */
-proto.BountyInfo.prototype.setDescription = function(value) {
+proto.BountyInfoPB.prototype.setDescription = function(value) {
   return jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -11070,44 +11128,44 @@ proto.BountyInfo.prototype.setDescription = function(value) {
  * optional string quest_type = 3;
  * @return {string}
  */
-proto.BountyInfo.prototype.getQuestType = function() {
+proto.BountyInfoPB.prototype.getQuestType = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.BountyInfo} returns this
+ * @return {!proto.BountyInfoPB} returns this
  */
-proto.BountyInfo.prototype.setQuestType = function(value) {
+proto.BountyInfoPB.prototype.setQuestType = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional CurrencyReward reward = 4;
- * @return {?proto.CurrencyReward}
+ * optional CurrencyRewardPB reward = 4;
+ * @return {?proto.CurrencyRewardPB}
  */
-proto.BountyInfo.prototype.getReward = function() {
-  return /** @type{?proto.CurrencyReward} */ (
-    jspb.Message.getWrapperField(this, proto.CurrencyReward, 4));
+proto.BountyInfoPB.prototype.getReward = function() {
+  return /** @type{?proto.CurrencyRewardPB} */ (
+    jspb.Message.getWrapperField(this, proto.CurrencyRewardPB, 4));
 };
 
 
 /**
- * @param {?proto.CurrencyReward|undefined} value
- * @return {!proto.BountyInfo} returns this
+ * @param {?proto.CurrencyRewardPB|undefined} value
+ * @return {!proto.BountyInfoPB} returns this
 */
-proto.BountyInfo.prototype.setReward = function(value) {
+proto.BountyInfoPB.prototype.setReward = function(value) {
   return jspb.Message.setWrapperField(this, 4, value);
 };
 
 
 /**
  * Clears the message field making it undefined.
- * @return {!proto.BountyInfo} returns this
+ * @return {!proto.BountyInfoPB} returns this
  */
-proto.BountyInfo.prototype.clearReward = function() {
+proto.BountyInfoPB.prototype.clearReward = function() {
   return this.setReward(undefined);
 };
 
@@ -11116,7 +11174,7 @@ proto.BountyInfo.prototype.clearReward = function() {
  * Returns whether this field is set.
  * @return {boolean}
  */
-proto.BountyInfo.prototype.hasReward = function() {
+proto.BountyInfoPB.prototype.hasReward = function() {
   return jspb.Message.getField(this, 4) != null;
 };
 
@@ -11137,8 +11195,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.CurrencyReward.prototype.toObject = function(opt_includeInstance) {
-  return proto.CurrencyReward.toObject(opt_includeInstance, this);
+proto.CurrencyRewardPB.prototype.toObject = function(opt_includeInstance) {
+  return proto.CurrencyRewardPB.toObject(opt_includeInstance, this);
 };
 
 
@@ -11147,11 +11205,11 @@ proto.CurrencyReward.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Deprecated. Whether to include
  *     the JSPB instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.CurrencyReward} msg The msg instance to transform.
+ * @param {!proto.CurrencyRewardPB} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.CurrencyReward.toObject = function(includeInstance, msg) {
+proto.CurrencyRewardPB.toObject = function(includeInstance, msg) {
   var f, obj = {
     currency: jspb.Message.getFieldWithDefault(msg, 1, ""),
     amount: jspb.Message.getFieldWithDefault(msg, 2, 0)
@@ -11168,23 +11226,23 @@ proto.CurrencyReward.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.CurrencyReward}
+ * @return {!proto.CurrencyRewardPB}
  */
-proto.CurrencyReward.deserializeBinary = function(bytes) {
+proto.CurrencyRewardPB.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.CurrencyReward;
-  return proto.CurrencyReward.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.CurrencyRewardPB;
+  return proto.CurrencyRewardPB.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.CurrencyReward} msg The message object to deserialize into.
+ * @param {!proto.CurrencyRewardPB} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.CurrencyReward}
+ * @return {!proto.CurrencyRewardPB}
  */
-proto.CurrencyReward.deserializeBinaryFromReader = function(msg, reader) {
+proto.CurrencyRewardPB.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -11212,9 +11270,9 @@ proto.CurrencyReward.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.CurrencyReward.prototype.serializeBinary = function() {
+proto.CurrencyRewardPB.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.CurrencyReward.serializeBinaryToWriter(this, writer);
+  proto.CurrencyRewardPB.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -11222,11 +11280,11 @@ proto.CurrencyReward.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.CurrencyReward} message
+ * @param {!proto.CurrencyRewardPB} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.CurrencyReward.serializeBinaryToWriter = function(message, writer) {
+proto.CurrencyRewardPB.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getCurrency();
   if (f.length > 0) {
@@ -11249,16 +11307,16 @@ proto.CurrencyReward.serializeBinaryToWriter = function(message, writer) {
  * optional string currency = 1;
  * @return {string}
  */
-proto.CurrencyReward.prototype.getCurrency = function() {
+proto.CurrencyRewardPB.prototype.getCurrency = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /**
  * @param {string} value
- * @return {!proto.CurrencyReward} returns this
+ * @return {!proto.CurrencyRewardPB} returns this
  */
-proto.CurrencyReward.prototype.setCurrency = function(value) {
+proto.CurrencyRewardPB.prototype.setCurrency = function(value) {
   return jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -11267,16 +11325,16 @@ proto.CurrencyReward.prototype.setCurrency = function(value) {
  * optional int64 amount = 2;
  * @return {number}
  */
-proto.CurrencyReward.prototype.getAmount = function() {
+proto.CurrencyRewardPB.prototype.getAmount = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /**
  * @param {number} value
- * @return {!proto.CurrencyReward} returns this
+ * @return {!proto.CurrencyRewardPB} returns this
  */
-proto.CurrencyReward.prototype.setAmount = function(value) {
+proto.CurrencyRewardPB.prototype.setAmount = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -11284,7 +11342,7 @@ proto.CurrencyReward.prototype.setAmount = function(value) {
 /**
  * @enum {number}
  */
-proto.GameStatus = {
+proto.GameStatusPB = {
   PREPARING: 0,
   RUNNING: 1,
   ENDED: 2,
@@ -11294,7 +11352,7 @@ proto.GameStatus = {
 /**
  * @enum {number}
  */
-proto.ProjectileStatus = {
+proto.ProjectileStatusPB = {
   ACTIVE: 0,
   EXPLODED: 1,
   CONSUMED: 2
@@ -11303,7 +11361,7 @@ proto.ProjectileStatus = {
 /**
  * @enum {number}
  */
-proto.CrateStatus = {
+proto.CrateStatusPB = {
   FINE: 0,
   DESTROYED: 1
 };
@@ -11311,7 +11369,7 @@ proto.CrateStatus = {
 /**
  * @enum {number}
  */
-proto.PowerUpstatus = {
+proto.PowerUpstatusPB = {
   AVAILABLE: 0,
   TAKEN: 1,
   UNAVAILABLE: 2
@@ -11320,7 +11378,7 @@ proto.PowerUpstatus = {
 /**
  * @enum {number}
  */
-proto.PlayerActionType = {
+proto.PlayerActionTypePB = {
   MOVING: 0,
   STARTING_SKILL_1: 1,
   STARTING_SKILL_2: 2,
@@ -11332,7 +11390,7 @@ proto.PlayerActionType = {
 /**
  * @enum {number}
  */
-proto.TrapStatus = {
+proto.TrapStatusPB = {
   PENDING: 0,
   PREPARED: 1,
   TRIGGERED: 2,
@@ -11342,7 +11400,7 @@ proto.TrapStatus = {
 /**
  * @enum {number}
  */
-proto.PoolStatus = {
+proto.PoolStatusPB = {
   WAITING: 0,
   READY: 1
 };

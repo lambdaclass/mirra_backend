@@ -6,9 +6,8 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Utils
-  alias Arena.Serialization
   alias Arena.GameUpdater
-  alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
+  alias Arena.Serialization.ConversionProtobuf
 
   @behaviour :cowboy_websocket
 
@@ -51,14 +50,12 @@ defmodule Arena.GameSocketHandler do
       |> Map.put(:game_finished, game_status == :ENDED)
       |> Map.put(:player_alive, true)
 
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
-      })
+
+    message = ConversionProtobuf.get_game_joined_protobuf(%{player_id: player_id, config: to_broadcast_config(config), bounties: bounties})
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 
-    {:reply, {:binary, encoded_msg}, state}
+    {:reply, {:binary, message}, state}
   end
 
   @impl true
@@ -67,13 +64,10 @@ defmodule Arena.GameSocketHandler do
     time_now = Time.utc_now()
     latency = Time.diff(time_now, last_ping_time, :millisecond)
 
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:ping, %PingUpdate{latency: latency}}
-      })
+    message = ConversionProtobuf.get_ping_update_protobuf(latency)
 
     # Send back the player's ping
-    {:reply, {:binary, encoded_msg}, state}
+    {:reply, {:binary, message}, state}
   end
 
   def websocket_handle(:ping, state) do
@@ -81,7 +75,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def websocket_handle({:binary, message}, state) do
-    Serialization.GameAction.decode(message)
+    ConversionProtobuf.decode_message(message)
     |> handle_decoded_message(state)
 
     {:ok, state}

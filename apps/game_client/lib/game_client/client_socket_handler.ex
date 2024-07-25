@@ -27,11 +27,11 @@ defmodule GameClient.ClientSocketHandler do
     Logger.info("Sending GameAction frame with MOVE payload")
 
     game_action =
-      GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
+      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
         action_type:
           {:move,
-           %GameClient.Protobuf.Move{
-             direction: %GameClient.Protobuf.Direction{
+           %GameClient.Protobuf.MovePB{
+             direction: %GameClient.Protobuf.DirectionPB{
                x: x,
                y: y
              }
@@ -45,13 +45,13 @@ defmodule GameClient.ClientSocketHandler do
     Logger.info("Sending GameAction frame with ATTACK payload")
 
     game_action =
-      GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
+      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
         action_type:
           {:attack,
-           %GameClient.Protobuf.Attack{
+           %GameClient.Protobuf.AttackPB{
              skill: skill,
-             parameters: %GameClient.Protobuf.AttackParameters{
-               target: %GameClient.Protobuf.Direction{
+             parameters: %GameClient.Protobuf.AttackParametersPB{
+               target: %GameClient.Protobuf.DirectionPB{
                  x: 0,
                  y: 0
                }
@@ -66,8 +66,8 @@ defmodule GameClient.ClientSocketHandler do
     Logger.info("Sending GameAction frame with USE_ITEM payload")
 
     game_action =
-      GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
-        action_type: {:use_item, %GameClient.Protobuf.UseItem{item: String.to_integer(item)}}
+      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
+        action_type: {:use_item, %GameClient.Protobuf.UseItemPB{item: String.to_integer(item)}}
       })
 
     {:reply, {:binary, game_action}, state}
@@ -77,8 +77,8 @@ defmodule GameClient.ClientSocketHandler do
     Logger.info("Sending GameAction frame with toggle_bots payload")
 
     game_action =
-      GameClient.Protobuf.GameAction.encode(%GameClient.Protobuf.GameAction{
-        action_type: {:toggle_bots, %GameClient.Protobuf.ToggleBots{}}
+      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
+        action_type: {:toggle_bots, %GameClient.Protobuf.ToggleBotsPB{}}
       })
 
     {:reply, {:binary, game_action}, state}
