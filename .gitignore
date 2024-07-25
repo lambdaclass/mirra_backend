@@ -31,8 +31,12 @@ apps/*/_build/*
 # Ignore digested assets cache.
 /apps/*/priv/static/cache_manifest.json
 
+# The directory NPM downloads your dependencies sources to.
+/assets/node_modules/
+
 # Devenv build folder
 .devenv*
 
 # Ignore google fetched certificates
 apps/gateway/priv/google.oauth2.certificates.json
+.vscode/settings.json

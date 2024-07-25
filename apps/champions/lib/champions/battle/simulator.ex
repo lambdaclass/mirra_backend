@@ -7,7 +7,7 @@ defmodule Champions.Battle.Simulator do
   The primary skill has a cooldown and it's cast when it's available if the ultimate is not.
 
   Skills possess many mechanics. The only implemented mechanic right now is `ApplyEffectsTo`, which is composed of many effects
-  and a targeting strategy. Effects are composed of `Components`, `Modifiers` and `Executions` (check module docs for more info on each).
+  and a targeting strategy. Effects are composed of `Components`, `Modifiers`, `Executions` and `ExecutionsOverTime` (check docs for more info on each).
 
   ### ApplyEffectsTo mechanics
 
@@ -24,11 +24,11 @@ defmodule Champions.Battle.Simulator do
   [x] Frontline - Heroes in slots 1 and 2
   [x] Backline - Heroes in slots 2 to 4
   [x] All
-  [ ] Self
+  [x] Self
   [ ] Factions
   [ ] Classes
-  [ ] Min (STAT)
-  [ ] Max (STAT)
+  [x] Lowest (STAT)
+  [x] Highest (STAT)
 
   It can also be chosen how many targets are affected by the effect, and if they are allies or enemies.
 
@@ -40,8 +40,9 @@ defmodule Champions.Battle.Simulator do
   would base its actions on the state of the battle at the end of the previous unit's action.
 
   ### Speed Stat
+
   Units have a `speed` stat that affects the cooldown of their basic skill. The formula is:
-  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100];`
+  `FINAL_CD = BASE_CD / [1 + MAX(-99, SPEED) / 100]`
   For now, speed is only used to calculate the cooldown of newly cast skills, meaning it's not retroactive with
   skills already on cooldown.
 
@@ -112,7 +113,14 @@ defmodule Champions.Battle.Simulator do
             operation == "Add"
           end)
           |> Enum.reduce(unit, fn {{attribute, _operation}, value}, unit_acc ->
-            Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+            if attribute == "health" do
+              # We update both :health and :max_health
+              unit_acc
+              |> Map.update(:health, value, &(&1 + value))
+              |> Map.update(:max_health, value, &(&1 + value))
+            else
+              Map.update(unit_acc, string_to_atom(attribute), value, &(&1 + value))
+            end
           end)
 
         unit_after_multiplicative_modifiers =
@@ -260,6 +268,8 @@ defmodule Champions.Battle.Simulator do
   # Calculate the new state of the battle after a step passes for a unit.
   # Updates cooldowns, casts skills and reduces self-affecting modifier durations.
   defp process_step_for_unit(unit, current_state, initial_step_state, history) do
+    current_state = Map.put(current_state, :units, Map.put(current_state.units, unit.id, unit))
+
     {new_state, new_history} =
       cond do
         not can_attack(unit, initial_step_state) ->
@@ -362,6 +372,10 @@ defmodule Champions.Battle.Simulator do
       )
       |> put_in([:units, unit.id, :modifiers], new_modifiers)
       |> put_in([:units, unit.id, :tags], new_tags)
+
+    {new_unit, new_history} = process_executions_over_time(unit, new_state.units[unit.id], new_history)
+
+    new_state = put_in(new_state, [:units, unit.id], new_unit)
 
     {new_state, new_history}
   end
@@ -654,49 +668,49 @@ defmodule Champions.Battle.Simulator do
 
   # Choose the targets for an effect with "random" as the strategy. Returns the target ids.
   # The `== target_allies` works as a negation operation when `target_allies` is `false`, and does nothing when `true`.
-  defp choose_targets_by_strategy(caster, %{count: count, type: "random", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{type: "random"} = targeting_strategy, state),
     do:
       state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
-      |> Enum.take_random(count)
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
+      |> Enum.take_random(targeting_strategy.count)
       |> Enum.map(fn {id, _unit} -> id end)
 
-  defp choose_targets_by_strategy(caster, %{count: count, type: "nearest", target_allies: target_allies}, state) do
-    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+  defp choose_targets_by_strategy(caster, %{type: "nearest"} = targeting_strategy, state) do
+    config_name = if targeting_strategy.target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
     |> Enum.map(fn {_id, unit} -> unit end)
-    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == targeting_strategy.target_allies and unit.id != caster.id end)
     |> find_by_proximity(
       Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name],
-      count
+      targeting_strategy.count
     )
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets_by_strategy(caster, %{count: count, type: "furthest", target_allies: target_allies}, state) do
-    config_name = if target_allies, do: :ally_proximities, else: :enemy_proximities
+  defp choose_targets_by_strategy(caster, %{type: "furthest"} = targeting_strategy, state) do
+    config_name = if targeting_strategy.target_allies, do: :ally_proximities, else: :enemy_proximities
 
     state.units
     |> Enum.map(fn {_id, unit} -> unit end)
-    |> Enum.filter(fn unit -> unit.team == caster.team == target_allies and unit.id != caster.id end)
+    |> Enum.filter(fn unit -> unit.team == caster.team == targeting_strategy.target_allies and unit.id != caster.id end)
     |> find_by_proximity(
       Application.get_env(:champions, :"slot_#{caster.slot}_proximities")[config_name] |> Enum.reverse(),
-      count
+      targeting_strategy.count
     )
     |> Enum.map(& &1.id)
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "backline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "backline"} = targeting_strategy, state) do
     target_team =
-      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
 
     take_unit_ids_by_slots(target_team, [3, 4, 5, 6])
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "frontline", target_allies: target_allies}, state) do
+  defp choose_targets_by_strategy(caster, %{type: "frontline"} = targeting_strategy, state) do
     target_team =
-      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      Enum.filter(state.units, fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
 
     take_unit_ids_by_slots(target_team, [1, 2])
   end
@@ -705,10 +719,32 @@ defmodule Champions.Battle.Simulator do
     [caster.id]
   end
 
-  defp choose_targets_by_strategy(caster, %{type: "all", target_allies: target_allies}, state),
+  defp choose_targets_by_strategy(caster, %{type: %{"lowest" => stat}} = targeting_strategy, state) do
+    choose_units_by_stat_and_team(
+      state.units,
+      stat,
+      targeting_strategy.count,
+      caster,
+      targeting_strategy.target_allies,
+      :desc
+    )
+  end
+
+  defp choose_targets_by_strategy(caster, %{type: %{"highest" => stat}} = targeting_strategy, state) do
+    choose_units_by_stat_and_team(
+      state.units,
+      stat,
+      targeting_strategy.count,
+      caster,
+      targeting_strategy.target_allies,
+      :asc
+    )
+  end
+
+  defp choose_targets_by_strategy(caster, %{type: "all"} = targeting_strategy, state),
     do:
       state.units
-      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == target_allies end)
+      |> Enum.filter(fn {_id, unit} -> unit.team == caster.team == targeting_strategy.target_allies end)
       |> Enum.map(fn {id, _unit} -> id end)
 
   defp find_by_proximity(units, slots_priorities, amount) do
@@ -718,6 +754,16 @@ defmodule Champions.Battle.Simulator do
       end)
 
     Enum.take(sorted_units, amount)
+  end
+
+  defp choose_units_by_stat_and_team(units, stat, count, caster, target_allies, order) do
+    target_team =
+      Enum.filter(units, fn {_id, unit} -> unit.team == caster.team == target_allies end)
+
+    Enum.map(target_team, fn {_id, unit} -> unit end)
+    |> sort_units_by_stat(stat, order)
+    |> Enum.take(count)
+    |> Enum.map(fn unit -> unit.id end)
   end
 
   defp take_unit_ids_by_slots(units, slots) do
@@ -818,8 +864,26 @@ defmodule Champions.Battle.Simulator do
           else: {target, history}
       end)
 
-    Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
-      process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
+    {target_after_executions, new_history} =
+      Enum.reduce(effect.executions, {target_after_tags, new_history}, fn execution, {target_acc, history_acc} ->
+        process_execution(execution, target_acc, caster, history_acc, effect.skill_id)
+      end)
+
+    Enum.reduce(effect.executions_over_time, {target_after_executions, new_history}, fn execution_over_time,
+                                                                                        {target_acc, _history_acc} ->
+      update_in(target_acc, [:executions_over_time], fn current_executions ->
+        [
+          %{
+            execution: execution_over_time,
+            caster: caster,
+            skill_id: effect.skill_id,
+            remaining_duration: get_duration(effect.type),
+            remaining_interval_steps: get_interval_steps(execution_over_time)
+          }
+          | current_executions
+        ]
+      end)
+      |> apply_tags(execution_over_time["apply_tags"], effect, new_history)
     end)
   end
 
@@ -851,6 +915,11 @@ defmodule Champions.Battle.Simulator do
 
   # If the effect type doesn't have a duration, then we assume it is permanent.
   defp get_duration(_type), do: -1
+
+  defp get_interval_steps(execution_over_time) do
+    # Decrement in 1 because we're already processing the execution in the next step
+    execution_over_time["interval"] - 1
+  end
 
   # Return whether an effect hits.
   defp effect_hits?(effect, target_id) when is_binary(target_id), do: !chance_to_apply_hits?(effect)
@@ -894,7 +963,7 @@ defmodule Champions.Battle.Simulator do
     steps = get_duration(effect.type)
 
     {new_tags, new_history} =
-      Enum.reduce(tags_to_apply, {[], history}, fn tag, {acc, history} ->
+      Enum.reduce(tags_to_apply || [], {[], history}, fn tag, {acc, history} ->
         Logger.info(~c"Applying tag \"#{tag}\" to unit #{format_unit_name(target)} for #{steps} steps.")
 
         new_history =
@@ -931,13 +1000,7 @@ defmodule Champions.Battle.Simulator do
          history,
          skill_id
        ) do
-    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(caster, :attack)), 0)
-
-    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
-    damage_after_defense =
-      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
-      |> Decimal.round()
-      |> Decimal.to_integer()
+    damage_after_defense = calculate_damage(caster, target, attack_ratio)
 
     Logger.info(
       "#{format_unit_name(caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Target energy recharge: #{energy_recharge}."
@@ -1048,6 +1111,110 @@ defmodule Champions.Battle.Simulator do
     {target, history}
   end
 
+  defp process_executions_over_time(unit_initial_state, current_unit, history) do
+    Enum.reduce(unit_initial_state.executions_over_time, {current_unit, history}, fn execution_over_time,
+                                                                                     {unit_acc, history_acc} ->
+      process_execution_over_time(execution_over_time, unit_acc, history_acc, unit_initial_state)
+    end)
+  end
+
+  defp process_execution_over_time(
+         %{remaining_duration: -1} = execution_over_time,
+         target,
+         history,
+         _target_initial_state
+       ) do
+    # If the execution is over, we remove it from the target
+    new_target =
+      update_in(target, [:executions_over_time], fn current_executions ->
+        Enum.filter(current_executions, fn exec -> exec != execution_over_time end)
+      end)
+
+    {new_target, history}
+  end
+
+  defp process_execution_over_time(
+         %{execution: %{"type" => "DealDamageOverTime"}, remaining_interval_steps: remaining_interval_steps} =
+           execution_over_time,
+         target,
+         history,
+         target_initial_state
+       ) do
+    if remaining_interval_steps == 0 do
+      apply_deal_damage_over_time(
+        execution_over_time,
+        target,
+        history,
+        target_initial_state
+      )
+    else
+      execution = target.executions_over_time |> Enum.find(fn exec -> exec == execution_over_time end)
+
+      new_execution_over_time =
+        Map.put(execution_over_time, :remaining_interval_steps, execution.remaining_interval_steps - 1)
+
+      new_target =
+        update_in(target, [:executions_over_time], fn current_executions ->
+          Enum.filter(current_executions, fn exec -> exec != execution end) ++ [new_execution_over_time]
+        end)
+
+      Logger.info("Remaining period: #{new_execution_over_time.remaining_interval_steps}")
+
+      {new_target, history}
+    end
+  end
+
+  defp process_execution_over_time(
+         execution_over_time,
+         target,
+         history,
+         _target_initial_state
+       ) do
+    Logger.warning(
+      "#{format_unit_name(execution_over_time.caster)} tried to apply an unknown execution over time to #{format_unit_name(target)}"
+    )
+
+    {target, history}
+  end
+
+  defp apply_deal_damage_over_time(execution_over_time, target, history, target_initial_state) do
+    damage_after_defense =
+      calculate_damage(execution_over_time.caster, target_initial_state, execution_over_time.execution["attack_ratio"])
+
+    Logger.info(
+      "#{format_unit_name(execution_over_time.caster)} dealing #{damage_after_defense} damage to #{format_unit_name(target)} (#{target.health} -> #{target.health - damage_after_defense}). Steps remaining: #{execution_over_time.remaining_duration}."
+    )
+
+    new_history =
+      add_to_history(
+        history,
+        %{
+          target_id: target.id,
+          skill_id: execution_over_time.skill_id,
+          stat_affected: %{stat: :HEALTH, amount: -damage_after_defense}
+        },
+        :execution_received
+      )
+
+    initial_interval_steps = get_interval_steps(execution_over_time.execution)
+
+    new_target =
+      target
+      |> Map.put(:health, target.health - damage_after_defense)
+      |> update_in([:executions_over_time], fn current_executions ->
+        Enum.map(current_executions, fn exec ->
+          if exec == execution_over_time do
+            Map.put(exec, :remaining_interval_steps, initial_interval_steps)
+            |> Map.put(:remaining_duration, exec.remaining_duration - 1)
+          else
+            exec
+          end
+        end)
+      end)
+
+    {new_target, new_history}
+  end
+
   # Calculate the current amount of the given attribute that the unit has, based on its modifiers.
   defp calculate_unit_stat(unit, attribute) do
     overrides = Enum.filter(unit.modifiers.overrides, &(&1.attribute == Atom.to_string(attribute)))
@@ -1108,6 +1275,20 @@ defmodule Champions.Battle.Simulator do
      ), history}
   end
 
+  # Calculates the damage dealt by an attacker to its target, considering the target's defense.
+  # We used this function to determine the damage to be dealt by an execution over time, as well as by a DealDamage execution.
+  defp calculate_damage(unit, target, attack_ratio) do
+    damage_before_defense = max(floor(attack_ratio * calculate_unit_stat(unit, :attack)), 0)
+
+    # FINAL_DMG = DMG * (100 / (100 + DEFENSE))
+    damage_after_defense =
+      Decimal.mult(damage_before_defense, Decimal.div(100, 100 + target.defense))
+      |> Decimal.round()
+      |> Decimal.to_integer()
+
+    damage_after_defense
+  end
+
   # Used to create the initial unit maps to be used during simulation.
   defp create_unit_map(%Unit{character: character} = unit, team),
     do:
@@ -1133,6 +1314,7 @@ defmodule Champions.Battle.Simulator do
            multiplicatives: [],
            overrides: []
          },
+         executions_over_time: [],
          tags: []
        }}
 
@@ -1162,20 +1344,29 @@ defmodule Champions.Battle.Simulator do
     "all",
     "frontline",
     "backline",
-    "self"
+    "self",
+    "lowest",
+    "highest"
   ]
 
   defp create_mechanics_map(%Mechanic{} = mechanic, skill_id, caster_id) do
+    targeting_strategy_type = mechanic.apply_effects_to.targeting_strategy.type
+
     apply_effects_to = %{
       effects: Enum.map(mechanic.apply_effects_to.effects, &create_effect_map(&1, skill_id)),
       targeting_strategy: %{
         # TODO: replace random for the corresponding target type name (CHoM #325)
         # type: mechanic.apply_effects_to.targeting_strategy.type,
         type:
-          if mechanic.apply_effects_to.targeting_strategy.type in @implemented_targeting_strategies do
-            mechanic.apply_effects_to.targeting_strategy.type
-          else
-            "random"
+          cond do
+            is_binary(targeting_strategy_type) && targeting_strategy_type in @implemented_targeting_strategies ->
+              targeting_strategy_type
+
+            hd(Map.keys(targeting_strategy_type)) in @implemented_targeting_strategies ->
+              targeting_strategy_type
+
+            true ->
+              "random"
           end,
         count: mechanic.apply_effects_to.targeting_strategy.count || 1,
         target_allies: mechanic.apply_effects_to.targeting_strategy.target_allies || false
@@ -1193,8 +1384,8 @@ defmodule Champions.Battle.Simulator do
   end
 
   # Used to create the initial effect maps to be used during simulation.
-  defp create_effect_map(%Effect{} = effect, skill_id),
-    do: %{
+  defp create_effect_map(%Effect{} = effect, skill_id) do
+    %{
       type:
         Enum.into(effect.type, %{}, fn
           {"type", type} -> {:type, string_to_atom(type)}
@@ -1205,8 +1396,13 @@ defmodule Champions.Battle.Simulator do
       components: effect.components,
       modifiers: Enum.map(effect.modifiers, &Map.put(&1, :skill_id, skill_id)),
       executions: effect.executions,
+      executions_over_time:
+        Enum.map(effect.executions_over_time, fn eot ->
+          Map.put(eot, "interval", div(eot["interval"], @miliseconds_per_step))
+        end),
       skill_id: skill_id
     }
+  end
 
   # Format step state for logs.
   defp format_step_state(%{
@@ -1257,6 +1453,34 @@ defmodule Champions.Battle.Simulator do
           Map.take(unit, [:id, :health, :slot, :character_id, :team])
         end)
     }
+  end
+
+  defp sort_units_by_stat(units, stat, order) do
+    Enum.sort(
+      units,
+      fn unit_1, unit_2 ->
+        unit_1_stat = calculate_unit_stat(unit_1, String.to_atom(stat))
+        unit_2_stat = calculate_unit_stat(unit_2, String.to_atom(stat))
+
+        decide_order(unit_1_stat, unit_2_stat, order)
+      end
+    )
+  end
+
+  defp decide_order(unit_1_stat, unit_2_stat, :asc) do
+    cond do
+      unit_1_stat > unit_2_stat -> true
+      unit_1_stat == unit_2_stat -> Enum.random([true, false])
+      true -> false
+    end
+  end
+
+  defp decide_order(unit_1_stat, unit_2_stat, :desc) do
+    cond do
+      unit_1_stat > unit_2_stat -> false
+      unit_1_stat == unit_2_stat -> Enum.random([true, false])
+      true -> true
+    end
   end
 
   defp string_to_atom("type"), do: :type

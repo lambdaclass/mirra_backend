@@ -14,8 +14,10 @@ chmod +x devops/entrypoint.sh
 
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only $MIX_ENV
-mix deps.compile
-mix compile
+MIX_ENV=$MIX_ENV mix compile
+MIX_ENV=$MIX_ENV mix tailwind configurator --minify
+MIX_ENV=$MIX_ENV mix esbuild configurator --minify
+MIX_ENV=$MIX_ENV mix phx.digest
 mix release ${RELEASE} --overwrite
 if [ ${RELEASE} == "central_backend" ]; then
 	mix ecto.migrate
@@ -50,11 +52,14 @@ PHX_HOST=${PHX_HOST}
 DATABASE_URL=${DATABASE_URL}
 PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
+JWT_PRIVATE_KEY_BASE_64=${JWT_PRIVATE_KEY_BASE_64}
 PORT=${PORT}
 GATEWAY_URL=${GATEWAY_URL}
+OVERRIDE_JWT=${OVERRIDE_JWT}
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 BOT_MANAGER_PORT=${BOT_MANAGER_PORT}
 BOT_MANAGER_HOST=${BOT_MANAGER_HOST}
+CONFIGURATOR_HOST=${CONFIGURATOR_HOST}
 RELEASE=${RELEASE}
 TARGET_SERVER=${TARGET_SERVER}
 LOADTEST_EUROPE_HOST=${LOADTEST_EUROPE_HOST}

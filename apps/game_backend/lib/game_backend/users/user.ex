@@ -5,12 +5,22 @@ defmodule GameBackend.Users.User do
 
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Matches.ArenaMatchResult
   alias GameBackend.Campaigns.SuperCampaignProgress
   alias GameBackend.Items.Item
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Units.Unit
-  alias GameBackend.Users.{Currencies.UserCurrency, DungeonSettlementLevel, KalineTreeLevel, GoogleUser, Unlock}
-  alias GameBackend.Quests.DailyQuest
 
+  alias GameBackend.Users.{
+    Currencies.UserCurrency,
+    Currencies.UserCurrencyCap,
+    DungeonSettlementLevel,
+    KalineTreeLevel,
+    GoogleUser,
+    Unlock
+  }
+
+  @derive {Jason.Encoder, only: [:currencies]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
@@ -26,12 +36,14 @@ defmodule GameBackend.Users.User do
     belongs_to(:kaline_tree_level, KalineTreeLevel)
     belongs_to(:google_user, GoogleUser)
 
+    has_many(:arena_match_results, ArenaMatchResult)
     has_many(:currencies, UserCurrency)
     has_many(:units, Unit, preload_order: [desc: :level])
     has_many(:items, Item)
-    has_many(:daily_quests, DailyQuest)
+    has_many(:user_quests, UserQuest)
     has_many(:super_campaign_progresses, SuperCampaignProgress)
     has_many(:unlocks, Unlock)
+    has_many(:currency_caps, UserCurrencyCap)
 
     timestamps()
   end
@@ -53,11 +65,11 @@ defmodule GameBackend.Users.User do
       :profile_picture,
       :google_user_id
     ])
-    |> unique_constraint([:game_id, :username])
     |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
+    |> game_validations()
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
@@ -65,5 +77,18 @@ defmodule GameBackend.Users.User do
   def kaline_tree_level_changeset(user, attrs) do
     user
     |> cast(attrs, [:kaline_tree_level])
+  end
+
+  defp game_validations(changeset) do
+    curse_of_mirra_game_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    case get_field(changeset, :game_id) do
+      ^curse_of_mirra_game_id ->
+        changeset
+        |> validate_length(:username, min: 2, max: 9)
+
+      _ ->
+        changeset
+    end
   end
 end

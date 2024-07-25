@@ -30,13 +30,6 @@ defmodule Gateway.Serialization.WebSocketRequest do
   oneof(:request_type, 0)
 
   field(:get_user, 1, type: Gateway.Serialization.GetUser, json_name: "getUser", oneof: 0)
-
-  field(:get_user_by_username, 2,
-    type: Gateway.Serialization.GetUserByUsername,
-    json_name: "getUserByUsername",
-    oneof: 0
-  )
-
   field(:create_user, 3, type: Gateway.Serialization.CreateUser, json_name: "createUser", oneof: 0)
 
   field(:get_campaigns, 4,
@@ -121,6 +114,12 @@ defmodule Gateway.Serialization.WebSocketRequest do
   field(:level_up_dungeon_settlement, 26,
     type: Gateway.Serialization.LevelUpDungeonSettlement,
     json_name: "levelUpDungeonSettlement",
+    oneof: 0
+  )
+
+  field(:purchase_dungeon_upgrade, 27,
+    type: Gateway.Serialization.PurchaseDungeonUpgrade,
+    json_name: "purchaseDungeonUpgrade",
     oneof: 0
   )
 end
@@ -341,6 +340,15 @@ defmodule Gateway.Serialization.LevelUpDungeonSettlement do
   field(:user_id, 1, type: :string, json_name: "userId")
 end
 
+defmodule Gateway.Serialization.PurchaseDungeonUpgrade do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:user_id, 1, type: :string, json_name: "userId")
+  field(:upgrade_id, 2, type: :string, json_name: "upgradeId")
+end
+
 defmodule Gateway.Serialization.WebSocketResponse do
   @moduledoc false
 
@@ -414,6 +422,8 @@ defmodule Gateway.Serialization.User do
     type: Gateway.Serialization.DungeonSettlementLevel,
     json_name: "dungeonSettlementLevel"
   )
+
+  field(:unlocks, 12, repeated: true, type: Gateway.Serialization.Unlock)
 end
 
 defmodule Gateway.Serialization.KalineTreeLevel do
@@ -450,7 +460,7 @@ defmodule Gateway.Serialization.DungeonSettlementLevel do
 
   field(:max_dungeon, 4, type: :uint64, json_name: "maxDungeon")
   field(:max_factional, 5, type: :uint64, json_name: "maxFactional")
-  field(:supply_limit, 6, type: :uint64, json_name: "supplyLimit")
+  field(:supply_cap, 6, type: :uint64, json_name: "supplyCap")
 
   field(:afk_reward_rates, 7,
     repeated: true,
@@ -489,7 +499,7 @@ defmodule Gateway.Serialization.AfkRewardRate do
 
   field(:kaline_tree_level_id, 1, type: :string, json_name: "kalineTreeLevelId")
   field(:currency, 2, type: Gateway.Serialization.Currency)
-  field(:rate, 3, type: :float)
+  field(:daily_rate, 3, type: :float, json_name: "dailyRate")
 end
 
 defmodule Gateway.Serialization.UserCurrency do
@@ -644,6 +654,8 @@ defmodule Gateway.Serialization.Level do
     type: Gateway.Serialization.CurrencyCost,
     json_name: "attemptCost"
   )
+
+  field(:max_units, 8, type: :uint32, json_name: "maxUnits")
 end
 
 defmodule Gateway.Serialization.CurrencyReward do
@@ -736,6 +748,37 @@ defmodule Gateway.Serialization.UserAndUnit do
 
   field(:user, 1, type: Gateway.Serialization.User)
   field(:unit, 2, type: Gateway.Serialization.Unit)
+end
+
+defmodule Gateway.Serialization.Unlock do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:upgrade, 2, type: Gateway.Serialization.Upgrade)
+end
+
+defmodule Gateway.Serialization.Upgrade do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:name, 1, type: :string)
+  field(:description, 2, type: :string)
+  field(:group, 3, type: :int32)
+  field(:cost, 4, repeated: true, type: Gateway.Serialization.CurrencyCost)
+  field(:buffs, 5, repeated: true, type: Gateway.Serialization.Buff)
+end
+
+defmodule Gateway.Serialization.Buff do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:attribute, 1, type: :string)
+  field(:value, 2, type: :float)
+  field(:operation, 3, type: :string)
 end
 
 defmodule Gateway.Serialization.BattleResult do

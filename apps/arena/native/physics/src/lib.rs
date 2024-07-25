@@ -3,6 +3,7 @@
 mod collision_detection;
 mod map;
 
+use crate::collision_detection::ear_clipping;
 use crate::map::{Category, Direction, Entity, Position};
 use std::collections::HashMap;
 
@@ -14,7 +15,7 @@ fn add(a: i64, b: i64) -> i64 {
 #[rustler::nif()]
 fn move_entities(
     entities: HashMap<u64, Entity>,
-    ticks_to_move: f32,
+    delta_time: f32,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
 ) -> HashMap<u64, Entity> {
@@ -22,7 +23,7 @@ fn move_entities(
 
     for entity in entities.values_mut() {
         if entity.is_moving {
-            entity.move_entity(ticks_to_move);
+            entity.move_entity(delta_time);
 
             move_entity_to_closest_available_position(entity, &external_wall, &obstacles);
         }
@@ -34,13 +35,13 @@ fn move_entities(
 #[rustler::nif()]
 fn move_entity(
     entity: Entity,
-    ticks_to_move: f32,
+    delta_time: f32,
     external_wall: Entity,
     obstacles: HashMap<u64, Entity>,
 ) -> Entity {
     let mut entity: Entity = entity;
     if entity.is_moving {
-        entity.move_entity(ticks_to_move);
+        entity.move_entity(delta_time);
         move_entity_to_closest_available_position(&mut entity, &external_wall, &obstacles);
     }
 
@@ -144,12 +145,13 @@ fn nearest_entity_position_in_range(
     entity: Entity,
     entities: HashMap<u64, Entity>,
     range: i64,
-) -> Position {
+) -> (bool, Position) {
     let mut max_distance = range as f32;
     let mut position = Position {
         x: entity.direction.x,
         y: entity.direction.y,
     };
+    let mut use_autoaim: bool = false;
 
     for other_entity in entities.values() {
         if entity.id != other_entity.id {
@@ -162,11 +164,12 @@ fn nearest_entity_position_in_range(
                     x: difference_between_positions.x,
                     y: difference_between_positions.y,
                 };
+                use_autoaim = true;
             }
         }
     }
 
-    position
+    (use_autoaim, position)
 }
 #[rustler::nif()]
 fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
@@ -175,18 +178,32 @@ fn distance_between_entities(entity_a: Entity, entity_b: Entity) -> f32 {
         - entity_b.radius
 }
 
+#[rustler::nif()]
+fn maybe_triangulate_concave_entities(obstacles: Vec<Entity>) -> Vec<Entity> {
+    let mut result = vec![];
+    for obstacle in obstacles {
+        let mut triangulated_polygons = ear_clipping::maybe_triangulate_polygon(obstacle);
+        result.append(&mut triangulated_polygons);
+    }
+    result
+}
+
 fn move_entity_to_closest_available_position(
     entity: &mut Entity,
     external_wall: &Entity,
     obstacles: &HashMap<u64, Entity>,
 ) {
-    if entity.category == Category::Player && !entity.is_inside_map(external_wall) {
+    let process_entity: bool = entity.category == Category::Player
+        || entity.category == Category::PowerUp
+        || entity.category == Category::Item;
+
+    if process_entity && !entity.is_inside_map(external_wall) {
         entity.move_to_next_valid_position_inside(external_wall);
     }
 
     let collides_with = entity.collides_with(&obstacles.clone().into_values().collect());
 
-    if entity.category == Category::Player && !collides_with.is_empty() {
+    if process_entity && !collides_with.is_empty() {
         let collided_with: Vec<&Entity> = collides_with
             .iter()
             .map(|id| obstacles.get(id).unwrap())
@@ -206,6 +223,9 @@ fn direction_from_positions(position_a: Position, position_b: Position) -> Direc
     let x = position_b.x - position_a.x;
     let y = position_b.y - position_a.y;
     let len = (x.powi(2) + y.powi(2)).sqrt();
+    if len == 0.0 {
+        return Direction { x: 0.0, y: 0.0 };
+    }
     Direction {
         x: x / len,
         y: y / len,
@@ -226,6 +246,7 @@ rustler::init!(
         calculate_duration,
         distance_between_entities,
         nearest_entity_position_in_range,
-        get_closest_available_position
+        get_closest_available_position,
+        maybe_triangulate_concave_entities
     ]
 );

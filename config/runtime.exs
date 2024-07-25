@@ -29,6 +29,22 @@ config :joken,
   issuer: "https://accounts.google.com",
   audience: System.get_env("GOOGLE_CLIENT_ID")
 
+if config_env() == :prod do
+  jwt_private_key_base64 =
+    System.get_env("JWT_PRIVATE_KEY_BASE_64") ||
+      raise """
+      environment variable JWT_PRIVATE_KEY_BASE_64 is missing
+      """
+
+  jwt_private_key = Base.decode64!(jwt_private_key_base64)
+
+  config :joken,
+    default_signer: [
+      signer_alg: "Ed25519",
+      key_openssh: jwt_private_key
+    ]
+end
+
 ############################
 # App configuration: arena #
 ############################
@@ -139,17 +155,52 @@ end
 ###################################
 
 if System.get_env("RELEASE") == "central_backend" or config_env() == :dev do
-  {:ok, currency_config_json} =
-    "./apps/game_backend/priv/currencies_rules.json"
-    |> File.read()
-
-  config :game_backend, :currencies_config, Jason.decode!(currency_config_json)
-
   {:ok, daily_rewards_json} =
     Application.app_dir(:game_backend, "priv/daily_rewards_rules.json")
     |> File.read()
 
   config :game_backend, :daily_rewards_config, Jason.decode!(daily_rewards_json)
+
+  arena_prestige_ranks_json =
+    Application.app_dir(:game_backend, "priv/arena_prestige_ranks.json")
+    |> File.read!()
+    |> Jason.decode!()
+
+  arena_prestige_ranks =
+    Enum.reduce(arena_prestige_ranks_json["ranks"], [], fn rank, acc ->
+      Enum.reduce(rank["sub_ranks"], acc, fn sub_rank, acc ->
+        entry = %{
+          rank: rank["rank"],
+          sub_rank: sub_rank["sub_rank"],
+          min: sub_rank["min"],
+          max: sub_rank["max"]
+        }
+
+        [entry | acc]
+      end)
+    end)
+    |> Enum.sort_by(& &1.min, :asc)
+
+  arena_prestige_rewards =
+    Enum.reduce(arena_prestige_ranks_json["rewards"], %{}, fn reward, acc ->
+      distributions =
+        Enum.reduce(reward["distributions"], [], fn distribution, acc ->
+          entry = %{
+            min: distribution["min"],
+            max: distribution["max"],
+            reward: distribution["reward"]
+          }
+
+          [entry | acc]
+        end)
+        |> Enum.sort_by(& &1.min, :asc)
+
+      Map.put(acc, reward["position"], distributions)
+    end)
+
+  config :game_backend, :arena_prestige,
+    ranks: arena_prestige_ranks,
+    rewards: arena_prestige_rewards
 
   {:ok, quest_prices_attrs} =
     Application.app_dir(:game_backend, "priv/curse_of_mirra/quest_reroll_configuration.json")
@@ -289,19 +340,12 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
-  port = String.to_integer(System.get_env("PORT") || "4100")
+  host = System.get_env("CONFIGURATOR_HOST") || "example.com"
+  port = String.to_integer(System.get_env("CONFIGURATOR_PORT") || "4100")
 
   config :configurator, ConfiguratorWeb.Endpoint,
-    url: [host: host, port: port, scheme: "https"],
-    http: [
-      # Enable IPv6 and bind on all interfaces.
-      # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
-      # See the documentation on https://hexdocs.pm/bandit/Bandit.html#t:options/0
-      # for details about using IPv6 vs IPv4 and loopback vs public addresses.
-      ip: {0, 0, 0, 0, 0, 0, 0, 0},
-      port: port
-    ],
+    url: [host: host, port: port],
+    http: [ip: {127, 0, 0, 1}, port: port],
     secret_key_base: secret_key_base
 
   # ## SSL Support

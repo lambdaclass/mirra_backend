@@ -27,7 +27,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -62,7 +63,8 @@
                   "attack_ratio": 1.16,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -97,7 +99,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -131,7 +134,8 @@
                   "attack_ratio": 1.64,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -166,7 +170,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -200,7 +205,8 @@
                   "attack_ratio": 0.79,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -235,7 +241,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -269,7 +276,8 @@
                   "attack_ratio": 2.51,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -304,7 +312,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -338,7 +347,8 @@
                   "attack_ratio": 1.8,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -373,7 +383,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -408,7 +419,8 @@
                   "type": "Heal",
                   "attack_ratio": 1.8
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -443,7 +455,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -477,7 +490,8 @@
                   "attack_ratio": 1.13,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -512,7 +526,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -548,7 +563,8 @@
                   "attack_ratio": 3.1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -585,7 +601,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -621,7 +638,8 @@
                   "attack_ratio": 3.2,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -656,7 +674,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -690,7 +709,8 @@
                   "attack_ratio": 2.36,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -725,7 +745,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -758,7 +779,8 @@
                   "type": "Heal",
                   "attack_ratio": 0.72
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -793,7 +815,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -827,7 +850,8 @@
                   "attack_ratio": 1.45,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -862,7 +886,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -891,7 +916,8 @@
                   "attack_ratio": 1.79,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -918,7 +944,8 @@
                   "type": "Heal",
                   "attack_ratio": 1.4
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -960,7 +987,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -993,12 +1021,14 @@
                   "type": "DealDamage",
                   "attack_ratio": 1.16,
                   "energy_recharge": 50
-                },
+                }                
+              ],
+              "executions_over_time": [
                 {
                   "type": "DealDamageOverTime",
                   "attack_ratio": 0.24,
-                  "energy_recharge": 50,
-                  "dot_type": "Burn"
+                  "apply_tags": ["Burn"],
+                  "interval": 2000
                 }
               ]
             }
@@ -1037,7 +1067,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1079,7 +1110,8 @@
                   "attack_ratio": 2.48,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1109,7 +1141,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1150,7 +1183,8 @@
                   "attack_ratio": 2.51,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1186,7 +1220,8 @@
                   "energy_recharge": 50,
                   "delay": 0
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1226,7 +1261,8 @@
                   "attack_ratio": 1.42,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1266,7 +1302,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1300,7 +1337,8 @@
                   "attack_ratio": 0.96,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1335,7 +1373,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1371,7 +1410,8 @@
                   "attack_ratio": 1.44,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1411,7 +1451,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1451,7 +1492,8 @@
                   "attack_ratio": 2.79,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1486,7 +1528,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1518,7 +1561,8 @@
                   "magnitude": 0.2
                 }
               ],
-              "executions": []
+              "executions": [],
+              "executions_over_time": []
             },
             {
               "type": {
@@ -1533,7 +1577,8 @@
                   "type": "Heal",
                   "attack_ratio": 0.38
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1568,7 +1613,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1597,7 +1643,8 @@
                   "type": "Heal",
                   "attack_ratio": 0.48
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1639,7 +1686,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1681,7 +1729,8 @@
                   "attack_ratio": 2.57,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1716,7 +1765,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1756,7 +1806,8 @@
                   "attack_ratio": 1.98,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -1786,7 +1837,8 @@
                   "attack_ratio": 0.8,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1827,7 +1879,8 @@
                   "attack_ratio": 2.05,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1863,7 +1916,8 @@
                   "energy_recharge": 50,
                   "delay": 0
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1886,8 +1940,7 @@
             {
               "type": {
                 "type": "duration",
-                "duration": 10000,
-                "period": 10
+                "duration": 10000
               },
               "initial_delay": 0,
               "components": [],
@@ -1898,12 +1951,14 @@
                   "attack_ratio": 0.73,
                   "energy_recharge": 50,
                   "delay": 0
-                },
+                }
+              ],
+              "executions_over_time": [
                 {
                   "type": "DealDamageOverTime",
                   "attack_ratio": 0.32,
-                  "energy_recharge": 50,
-                  "dot_type": "Burn"
+                  "apply_tags": ["Burn"],
+                  "interval": 10000
                 }
               ]
             }
@@ -1941,7 +1996,8 @@
                   "energy_recharge": 50,
                   "delay": 0
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -1979,7 +2035,8 @@
                   "energy_recharge": 50,
                   "delay": 0
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -2008,7 +2065,8 @@
                   "magnitude": 1.08
                 }
               ],
-              "executions": []
+              "executions": [],
+              "executions_over_time": []
             }
           ],
           "targeting_strategy": {
@@ -2048,7 +2106,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2081,7 +2140,8 @@
                   "attack_ratio": 0.63,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2116,7 +2176,8 @@
                   "attack_ratio": 0.78,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2151,7 +2212,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2185,10 +2247,12 @@
                   "magnitude": 1.07
                 }
               ],
-              "executions": [
+              "executions": [],
+              "executions_over_time": [
                 {
                   "type": "HealOverTime",
-                  "attack_ratio": 0.17
+                  "attack_ratio": 0.17,
+                  "interval": 5000
                 }
               ]
             }
@@ -2225,7 +2289,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2266,7 +2331,8 @@
                   "type": "AddEnergy",
                   "amount": -200
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2301,7 +2367,8 @@
                   "attack_ratio": 1,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2342,7 +2409,8 @@
                   "attack_ratio": 0.49,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2377,7 +2445,8 @@
                   "attack_ratio": 0.8,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             },
             {
               "type": {
@@ -2392,7 +2461,8 @@
                   "attack_ratio": 0.8,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }
@@ -2426,7 +2496,8 @@
                   "attack_ratio": 0.38,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             },
             {
               "type": {
@@ -2441,7 +2512,8 @@
                   "attack_ratio": 0.59,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             },
             {
               "type": {
@@ -2456,7 +2528,8 @@
                   "attack_ratio": 0.83,
                   "energy_recharge": 50
                 }
-              ]
+              ],
+              "executions_over_time": []
             }
           ]
         }

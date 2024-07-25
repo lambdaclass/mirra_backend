@@ -3,6 +3,7 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.Game.Crate
   alias Arena.GameUpdater
   alias Arena.GameTracker
   alias Arena.Utils
@@ -39,6 +40,18 @@ defmodule Arena.Game.Player do
         info
         | health: max(info.health - damage_taken, 0),
           last_damage_received: System.monotonic_time(:millisecond)
+      }
+    end)
+  end
+
+  def kill_player(player) do
+    # The zone will be the one killing th character
+    send(self(), {:to_killfeed, 9999, player.id})
+
+    Map.update!(player, :aditional_info, fn info ->
+      %{
+        info
+        | health: 0
       }
     end)
   end
@@ -182,6 +195,13 @@ defmodule Arena.Game.Player do
         {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))
+          |> case do
+            {false, _} ->
+              Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.interactable_crates(game_state.crates))
+
+            auto_aim ->
+              auto_aim
+          end
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
         Process.send_after(self(), {:block_actions, player.id}, execution_duration)
@@ -233,7 +253,7 @@ defmodule Arena.Game.Player do
   # This is a messy solution to get a mechanic result before actually running the mechanic since the client needed the
   # position in which the player will spawn when the skill start and not when we actually execute the teleport
   # this is also optimistic since we assume the destination will be always available
-  defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [{:teleport, teleport}]}) do
+  defp maybe_add_destination(action, game_state, player, skill_direction, %{mechanics: [%{type: "teleport"} = teleport]}) do
     target_position = %{
       x: player.position.x + skill_direction.x * teleport.range,
       y: player.position.y + skill_direction.y * teleport.range
@@ -285,6 +305,13 @@ defmodule Arena.Game.Player do
 
     (damage * multiplier)
     |> round()
+  end
+
+  def calculate_real_damage(
+        _player_damage_owner,
+        damage
+      ) do
+    damage
   end
 
   def store_item(player, item) do
@@ -496,7 +523,7 @@ defmodule Arena.Game.Player do
   ## so to simplify my life an executive decision was made to take thas as a fact
   ## When the time comes to have more than one mechanic per skill this function will need to be refactored, good thing
   ## is that it will crash here so not something we can ignore
-  defp calculate_duration(%{mechanics: [{:leap, leap}]}, position, direction, auto_aim?) do
+  defp calculate_duration(%{mechanics: [%{type: "leap"} = leap]}, position, direction, auto_aim?) do
     ## TODO: Cap target_position to leap.range
     direction = Skill.maybe_multiply_by_range(direction, auto_aim?, leap.range)
 
@@ -505,8 +532,7 @@ defmodule Arena.Game.Player do
       y: position.y + direction.y
     }
 
-    ## TODO: Magic number needs to be replaced with state.game_config.game.tick_rate_ms
-    Physics.calculate_duration(position, target_position, leap.speed) * 30
+    Physics.calculate_duration(position, target_position, leap.speed)
   end
 
   defp calculate_duration(%{mechanics: [_]} = skill, _, _, _) do

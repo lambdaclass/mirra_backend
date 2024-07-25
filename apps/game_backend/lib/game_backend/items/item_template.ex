@@ -21,6 +21,7 @@ defmodule GameBackend.Items.ItemTemplate do
   """
   alias GameBackend.Items.Modifier
   alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Stores.Store
 
   use GameBackend.Schema
   import Ecto.Changeset
@@ -30,10 +31,10 @@ defmodule GameBackend.Items.ItemTemplate do
     field(:name, :string)
     field(:rarity, :integer)
     field(:type, :string)
-    field(:purchasable?, :boolean)
     field(:characters, {:array, :string})
     embeds_many(:modifiers, Modifier, on_replace: :delete)
     embeds_many(:purchase_costs, CurrencyCost, on_replace: :delete)
+    belongs_to(:store, Store)
 
     # Used to reference the ItemTemplate in the game's configuration
     field(:config_id, :string)
@@ -57,8 +58,8 @@ defmodule GameBackend.Items.ItemTemplate do
       :config_id,
       :upgrades_from_config_id,
       :upgrades_from_quantity,
-      :purchasable?,
-      :characters
+      :characters,
+      :store_id
     ])
     |> validate_required([:game_id, :name, :rarity, :type, :config_id])
     |> cast_embed(:modifiers)

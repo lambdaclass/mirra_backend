@@ -10,14 +10,14 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
-
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Transaction
   alias GameBackend.Users.{Currencies, DungeonSettlementLevel, GoogleUser, KalineTreeLevel, User, Unlock, Upgrade}
+  alias GameBackend.Units.Unit
 
   @doc """
   Registers a user.
@@ -35,6 +35,11 @@ defmodule GameBackend.Users do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
+  end
+
+  def create_guest_user() do
+    CurseUsers.create_user_params()
+    |> register_user()
   end
 
   @doc """
@@ -56,15 +61,38 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a single user with the same game_id.
+  Returns {:ok, User}.
+  Returns {:error, :not_found} if no user is found.
+
+  ## Examples
+
+      iex> get_user_by_id_and_game_id("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf", 1)
+      {:ok, %User{}}
+
+      iex> get_user_by_id_and_game_id("9483ae81-f3e8-4050-acea-13940d47d8ed", 4)
+      {:error, :not_found}
+  """
+  def get_user_by_id_and_game_id(id, game_id) do
+    q =
+      from(u in User,
+        where: u.id == ^id and u.game_id == ^game_id,
+        preload: [units: [:character, :items], currencies: :currency]
+      )
+
+    if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
   Get a list of GoogleUser based on their id with the necessary preloads
   to process daily quests.
 
   ## Examples
 
-      iex> get_google_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      iex> get_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
       [%GoogleUser{}]
   """
-  def get_google_users_with_todays_daily_quests(ids, repo \\ Repo) do
+  def get_users_with_todays_daily_quests(ids, repo \\ Repo) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
@@ -75,20 +103,23 @@ defmodule GameBackend.Users do
       )
 
     daily_quest_subquery =
-      from(dq in DailyQuest,
-        where: dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and is_nil(dq.completed_at),
+      from(user_quest in UserQuest,
+        join: q in assoc(user_quest, :quest),
+        where:
+          user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date and
+            is_nil(user_quest.completed_at) and
+            user_quest.status == ^"available" and q.type == "daily",
         preload: [:quest]
       )
 
     q =
-      from(u in GoogleUser,
+      from(u in User,
         where: u.id in ^ids,
         preload: [
           arena_match_results: ^arena_match_result_subquery,
-          user: [
-            currencies: :currency,
-            daily_quests: ^daily_quest_subquery
-          ]
+          currencies: :currency,
+          units: :character,
+          user_quests: ^daily_quest_subquery
         ]
       )
 
@@ -135,24 +166,6 @@ defmodule GameBackend.Users do
   end
 
   @doc """
-  Gets a user by their username.
-
-  Returns {:error, :not_found} if no user is found.
-
-  ## Examples
-
-      iex> get_user_by_username("some_user")
-      {:ok, %User{}}
-
-      iex> get_user_by_username("non_existing_user")
-      {:error, :not_found}
-  """
-  def get_user_by_username(username) do
-    user = Repo.get_by(User, username: username) |> preload()
-    if user, do: {:ok, user}, else: {:error, :not_found}
-  end
-
-  @doc """
   Gets a GoogleUser by their email.
   Creates a GoogleUser if none is found.
   Returns {:error, changeset} if the creation failed.
@@ -166,7 +179,13 @@ defmodule GameBackend.Users do
       {:ok, %GoogleUser{}}
   """
   def find_or_create_google_user_by_email(email) do
-    case Repo.get_by(GoogleUser, email: email) do
+    q =
+      from(gu in GoogleUser,
+        where: gu.email == ^email,
+        preload: [:user]
+      )
+
+    case Repo.one(q) do
       nil -> create_google_user_by_email(email)
       user -> {:ok, user}
     end
@@ -198,20 +217,68 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a DungeonSettlementLevel by its id.
+  """
+  def get_dungeon_settlement_level(dungeon_settlement_level_id) do
+    Repo.get(DungeonSettlementLevel, dungeon_settlement_level_id)
+  end
+
+  @doc """
   Gets a DungeonSettlementLevel by its number.
 
   Returns {:error, :not_found} if no level is found.
 
   ## Examples
 
-      iex> get_dungeon_settlement_level(1)
+      iex> get_dungeon_settlement_level_by_number(1)
       %DungeonSettlementLevel{}
 
-      iex> get_dungeon_settlement_level(-1)
+      iex> get_dungeon_settlement_level_by_number(-1)
       nil
   """
-  def get_dungeon_settlement_level(level_number) do
-    Repo.get_by(DungeonSettlementLevel, level: level_number)
+  def get_dungeon_settlement_level_by_number(level_number) do
+    Repo.get_by(DungeonSettlementLevel, level: level_number) |> Repo.preload(:afk_reward_rates)
+  end
+
+  @doc """
+  Inserts a DungeonSettlementLevel into the database.
+  """
+  def insert_dungeon_settlement_level(attrs) do
+    %DungeonSettlementLevel{}
+    |> DungeonSettlementLevel.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a DungeonSettlementLevel in the database.
+  """
+  def update_dungeon_settlement_level(dungeon_settlement_level, attrs) do
+    dungeon_settlement_level
+    |> DungeonSettlementLevel.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Inserts all DungeonSettlementLevels into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_dungeon_settlement_levels(attrs_list) do
+    Enum.reduce(attrs_list, Ecto.Multi.new(), fn attrs, multi ->
+      # Cannot use Multi.insert because of the embeds_many
+      Multi.run(multi, attrs.level, fn _, _ ->
+        upsert_dungeon_settlement_level(attrs)
+      end)
+    end)
+    |> Repo.transaction()
+  end
+
+  @doc """
+  Inserts a DungeonSettlementLevel into the database. If another one already exists with the same number, it updates it instead.
+  """
+  def upsert_dungeon_settlement_level(attrs) do
+    case get_dungeon_settlement_level_by_number(attrs.level) do
+      nil -> insert_dungeon_settlement_level(attrs)
+      dungeon_settlement_level -> update_dungeon_settlement_level(dungeon_settlement_level, attrs)
+    end
   end
 
   @doc """
@@ -298,6 +365,15 @@ defmodule GameBackend.Users do
       |> Multi.run(:user_currency, fn _, _ ->
         Currencies.substract_currencies(user_id, level_up_costs)
       end)
+      |> Multi.run(:supply_cap, fn _, %{user: user} ->
+        dungeon_settlement_level = Repo.get(DungeonSettlementLevel, user.dungeon_settlement_level_id)
+
+        Currencies.update_user_currency_cap(
+          user.id,
+          {"Supplies", user.game_id},
+          dungeon_settlement_level.supply_cap
+        )
+      end)
       |> Repo.transaction()
 
     case result do
@@ -310,7 +386,7 @@ defmodule GameBackend.Users do
   defp increment_settlement_level(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
-        case get_dungeon_settlement_level(user.dungeon_settlement_level.level + 1) do
+        case get_dungeon_settlement_level_by_number(user.dungeon_settlement_level.level + 1) do
           nil ->
             {:error, :dungeon_settlement_level_not_found}
 
@@ -329,6 +405,7 @@ defmodule GameBackend.Users do
     do:
       Repo.preload(
         user,
+        unlocks: [upgrade: [:buffs, cost: :currency]],
         kaline_tree_level: [afk_reward_rates: :currency],
         dungeon_settlement_level: [afk_reward_rates: :currency, level_up_costs: :currency],
         super_campaign_progresses: :level,
@@ -361,7 +438,7 @@ defmodule GameBackend.Users do
       {:ok, %Upgrade{name: "upgrade_name"}}
   """
   def get_upgrade_by_name(name) do
-    case Repo.get_by(Upgrade, name: name) do
+    case Repo.get_by(Upgrade, name: name) |> Repo.preload(cost: :currency) do
       nil -> {:error, :not_found}
       upgrade -> {:ok, upgrade}
     end
@@ -388,6 +465,10 @@ defmodule GameBackend.Users do
         Currencies.substract_currencies(user_id, upgrade.cost)
       end)
       |> Transaction.run()
+      |> case do
+        {:ok, _} -> {:ok, get_user(user_id)}
+        _ -> {:error, :unknown_error}
+      end
     else
       {:user, false} -> {:error, :user_not_found}
       {:upgrade, _} -> {:error, :upgrade_not_found}
@@ -415,5 +496,36 @@ defmodule GameBackend.Users do
   """
   def get_unlocks_with_type(user_id, type) do
     Repo.all(from(u in Unlock, where: u.user_id == ^user_id and u.type == ^type, preload: [upgrade: :buffs]))
+  end
+
+  @doc """
+  Returns if a unit exist for the user id using the name field from the character association.
+
+  ## Examples
+
+      iex> user_has_unit_with_character_name(user_id, "muflus")
+      true
+  """
+  def user_has_unit_with_character_name(user_id, character_name) do
+    q =
+      from(u in GameBackend.Units.Unit,
+        join: c in assoc(u, :character),
+        where: u.user_id == ^user_id and c.name == ^character_name
+      )
+
+    Repo.exists?(q)
+  end
+
+  def get_users_sorted_by_total_unit_prestige() do
+    q =
+      from(user in User,
+        left_join: unit in Unit,
+        on: user.id == unit.user_id,
+        select: %{username: user.username, prestige: sum(unit.prestige)},
+        group_by: user.id,
+        order_by: [desc: sum(unit.prestige)]
+      )
+
+    Repo.all(q)
   end
 end

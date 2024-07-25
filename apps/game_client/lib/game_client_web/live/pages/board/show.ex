@@ -2,17 +2,17 @@ defmodule GameClientWeb.BoardLive.Show do
   require Logger
   use GameClientWeb, :live_view
 
-  def mount(%{"game_id" => game_id} = params, _session, socket) do
+  def mount(%{"game_id" => game_id} = params, session, socket) do
     if connected?(socket) do
-      mount_connected(params, socket)
+      mount_connected(params, session["gateway_jwt"], socket)
     else
       {:ok, assign(socket, game_id: game_id, game_status: :pending)}
     end
   end
 
-  def mount_connected(%{"game_id" => game_id, "player_id" => player_id} = _params, socket) do
+  def mount_connected(%{"game_id" => game_id, "player_id" => player_id}, gateway_jwt, socket) do
     {:ok, game_socket_handler_pid} =
-      GameClient.ClientSocketHandler.start_link(self() |> :erlang.pid_to_list(), player_id, game_id)
+      GameClient.ClientSocketHandler.start_link(self(), gateway_jwt, player_id, game_id)
 
     mocked_board_width = 2000
     mocked_board_height = 2000
@@ -63,9 +63,20 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_bots", _, socket) do
+    send(socket.assigns.game_socket_handler_pid, :toggle_bots)
+    {:noreply, socket}
+  end
+
   defp player_name(player_id), do: "P#{player_id}"
 
-  defp handle_game_event({:joined, _joined_info}, socket) do
+  defp handle_game_event({:joined, joined_info}, socket) do
+    socket =
+      assign(
+        socket,
+        game_player_id: joined_info.player_id
+      )
+
     {:noreply, socket}
   end
 
@@ -83,7 +94,7 @@ defmodule GameClientWeb.BoardLive.Show do
       ])
       |> Enum.map(&transform_entity_entry/1)
 
-    {:noreply, push_event(socket, "updateEntities", %{entities: entities})}
+    {:noreply, push_event(socket, "updateEntities", %{entities: entities, player_id: socket.assigns.game_player_id})}
   end
 
   defp handle_game_event({:finished, finished_event}, socket) do
@@ -93,6 +104,44 @@ defmodule GameClientWeb.BoardLive.Show do
 
   defp handle_game_event({:ping, ping_event}, socket) do
     {:noreply, assign(socket, :ping_latency, ping_event.latency)}
+  end
+
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+    {:noreply, socket}
+  end
+
+  defp transform_entity_entry({_entity_id, %{category: "obstacle"} = entity}) do
+    {_, aditional_info} = entity.aditional_info
+
+    %{
+      id: entity.id,
+      category: entity.category,
+      shape: entity.shape,
+      name: entity.name,
+      x: entity.position.x / 5 + 1000,
+      y: entity.position.y / 5 + 1000,
+      radius: entity.radius / 5,
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
+      is_colliding: entity.collides_with |> Enum.any?(),
+      status: aditional_info.status
+    }
+  end
+
+  defp transform_entity_entry({_entity_id, %{category: "player"} = entity}) do
+    {_, aditional_info} = entity.aditional_info
+
+    %{
+      id: entity.id,
+      category: entity.category,
+      shape: entity.shape,
+      name: entity.name,
+      x: entity.position.x / 5 + 1000,
+      y: entity.position.y / 5 + 1000,
+      radius: entity.radius / 5,
+      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
+      is_colliding: entity.collides_with |> Enum.any?(),
+      visible_players: aditional_info.visible_players
+    }
   end
 
   defp transform_entity_entry({_entity_id, entity}) do

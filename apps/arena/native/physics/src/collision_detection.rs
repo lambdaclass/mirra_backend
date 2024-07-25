@@ -1,4 +1,5 @@
 use crate::map::{Entity, Position};
+pub mod ear_clipping;
 pub mod sat;
 /*
  * Determines if a collision has occured between a point and a circle

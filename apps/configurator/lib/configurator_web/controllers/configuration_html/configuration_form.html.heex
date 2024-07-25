@@ -1,9 +1,0 @@
-<.simple_form :let={f} for={@changeset} action={@action}>
-  <.error :if={@changeset.action}>
-    Oops, something went wrong! Please check the errors below.
-  </.error>
-  <.input field={f[:data]} type="textarea" label="Data" />
-  <:actions>
-    <.button>Save Configuration</.button>
-  </:actions>
-</.simple_form>

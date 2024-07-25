@@ -5,13 +5,22 @@ defmodule GameBackend.CurseOfMirra.Quests do
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
-  alias GameBackend.Users.GoogleUser
   alias GameBackend.Users.User
-  alias GameBackend.Quests.DailyQuest
+  alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest
   alias Ecto.Multi
   import Ecto.Query
+
+  @doc """
+  Get a %Quest{} by the id field
+  ## Examples
+      iex>get_quest(4)
+      %Quest{id: 4}
+  """
+  def get_quest(id) do
+    Repo.get(Quest, id)
+  end
 
   @doc """
   Get a %Quest{} by the config_id field
@@ -24,6 +33,24 @@ defmodule GameBackend.CurseOfMirra.Quests do
   """
   def get_quest_by_config_id(quest_config_id) do
     Repo.get_by(Quest, config_id: quest_config_id)
+  end
+
+  @doc """
+  Get a list of %Quest{} by the type field
+
+  ## Examples
+
+      iex>list_quests_by_type("bounty")
+      [%Quest{type: "bounty"}]
+
+  """
+  def list_quests_by_type(type) do
+    q =
+      from(q in Quest,
+        where: q.type == ^type
+      )
+
+    Repo.all(q)
   end
 
   @doc """
@@ -45,11 +72,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     q =
       from(q in Quest,
-        left_join: dq in DailyQuest,
-        on: q.id == dq.quest_id and dq.user_id == ^user_id,
+        left_join: uq in UserQuest,
+        on: q.id == uq.quest_id and uq.user_id == ^user_id,
         where:
-          (is_nil(dq) or dq.inserted_at < ^start_of_date or dq.inserted_at > ^end_of_date or not is_nil(dq.completed_at) or
-             dq.status != "available") and
+          (is_nil(uq) or uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date or not is_nil(uq.completed_at) or
+             uq.status != "available") and
             q.type == ^type,
         distinct: q.id
       )
@@ -72,43 +99,28 @@ defmodule GameBackend.CurseOfMirra.Quests do
   end
 
   @doc """
-  Receives a DailyQuest id and returns a %DailyQuest{}
+  Receives a UserQuest id and returns a %UserQuest{}
 
   ## Examples
 
-      iex>get_daily_quest(daily_quest_id)
-      %DailyQuest{}
+      iex>get_user_quest(user_quest_id)
+      %UserQuest{}
 
   """
-  def get_daily_quest(daily_quest_id) do
-    q = from(dq in DailyQuest, preload: [:quest], where: dq.id == ^daily_quest_id)
+  def get_user_quest(user_quest_id) do
+    q = from(uq in UserQuest, preload: [:quest], where: uq.id == ^user_quest_id)
 
     Repo.one(q)
   end
 
   @doc """
-  Receives a User id and returns all %DailyQuest{} that belongs to that user
-
-  ## Examples
-
-      iex>get_users_daily_quests(user_id)
-      [%DailyQuest{}]
-
-  """
-  def get_users_daily_quests(user_id) do
-    q = from(dq in DailyQuest, preload: [:quest], where: dq.user_id == ^user_id)
-
-    Repo.all(q)
-  end
-
-  @doc """
   Receives a user id and a daily quest type.
-  Returns a list of DailyQuest for the given user where the status is :rerolled.
+  Returns a list of UserQuest for the given user where the status is :rerolled.
 
   ## Examples
 
       iex>get_user_today_rerolled_daily_quests(user_id)
-      [%DailyQuest{}]
+      [%UserQuest{}]
   """
   def get_user_today_rerolled_daily_quests(user_id) do
     naive_today = NaiveDateTime.utc_now()
@@ -116,12 +128,12 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end_of_date = NaiveDateTime.end_of_day(naive_today)
 
     q =
-      from(dq in DailyQuest,
-        join: q in assoc(dq, :quest),
+      from(uq in UserQuest,
+        join: q in assoc(uq, :quest),
         preload: [:quest],
         where:
-          dq.user_id == ^user_id and dq.inserted_at > ^start_of_date and dq.inserted_at < ^end_of_date and
-            dq.status == ^"rerolled"
+          uq.user_id == ^user_id and uq.inserted_at > ^start_of_date and uq.inserted_at < ^end_of_date and
+            uq.status == ^"rerolled" and q.type == "daily"
       )
 
     Repo.all(q)
@@ -145,9 +157,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def add_quest_to_user_id(user_id, amount, type) do
+  def add_daily_quests_to_user_id(user_id, amount) do
     available_quests =
-      get_user_missing_quests_by_type(user_id, type)
+      get_user_missing_quests_by_type(user_id, "daily")
       |> Enum.shuffle()
 
     if amount > Enum.count(available_quests) do
@@ -162,7 +174,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
               status: "available"
             }
 
-            changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
+            changeset = UserQuest.changeset(%UserQuest{}, attrs)
 
             multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
 
@@ -173,24 +185,25 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
-  def get_google_user_daily_quests_completed(%GoogleUser{
+  def get_user_daily_quests_completed(%User{
         arena_match_results: arena_match_results,
-        user: %User{daily_quests: daily_quests}
+        user_quests: user_quests
       }) do
-    Enum.reduce(daily_quests, [], fn daily_quest, acc ->
-      if completed_daily_quest?(daily_quest, arena_match_results) do
-        [daily_quest | acc]
+    user_quests
+    |> Enum.reduce([], fn user_quest, acc ->
+      if completed_quest?(user_quest, arena_match_results) and user_quest.quest.type == "daily" do
+        [user_quest | acc]
       else
         acc
       end
     end)
   end
 
-  def reroll_quest(daily_quest_id) do
+  def reroll_daily_quest(daily_quest_id) do
     reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
 
     daily_quest =
-      get_daily_quest(daily_quest_id)
+      get_user_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
       get_user_today_rerolled_daily_quests(daily_quest.user_id)
@@ -230,10 +243,10 @@ defmodule GameBackend.CurseOfMirra.Quests do
           status: "available"
         }
 
-        new_quest_changeset = DailyQuest.changeset(%DailyQuest{}, attrs)
+        new_quest_changeset = UserQuest.changeset(%UserQuest{}, attrs)
 
         finish_previous_quest_changeset =
-          DailyQuest.changeset(daily_quest, %{
+          UserQuest.changeset(daily_quest, %{
             status: "rerolled"
           })
 
@@ -256,6 +269,35 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end
   end
 
+  @doc """
+  Receives a user_id and quest_id and mark it as completed and grant the quest currency
+  """
+  def insert_completed_user_quest(user_id, quest_id) do
+    quest =
+      get_quest(quest_id)
+
+    user_quest_changeset =
+      UserQuest.changeset(%UserQuest{}, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed",
+        user_id: user_id,
+        quest_id: quest_id
+      })
+
+    Multi.new()
+    |> Multi.insert(:insert_completed_quest, user_quest_changeset)
+    |> Multi.run(:add_currency_to_user, fn _, _ ->
+      Currencies.add_currency_by_name_and_game(
+        user_id,
+        quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        quest.reward["amount"]
+      )
+    end)
+    |> Repo.transaction()
+  end
+
   #####################
   #      helpers      #
   #####################
@@ -271,14 +313,21 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  defp completed_daily_quest?(%DailyQuest{quest: %Quest{} = quest}, arena_match_results) do
+  def completed_quest?(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
     progress =
       arena_match_results
       |> filter_results_that_meet_quest_conditions(quest.conditions)
       |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = String.to_atom(quest.objective["match_tracking_field"])
+        type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
+        # We won't accumulate progress if the objective has a wrong field getter
+        accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+        |> case do
+          nil ->
+            acc
 
-        acc + accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+          progress ->
+            acc + progress
+        end
       end)
 
     comparator = parse_comparator(quest.objective["comparison"])
@@ -289,14 +338,33 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp filter_results_that_meet_quest_conditions(arena_match_results, conditions) do
     Enum.filter(arena_match_results, fn arena_match_result ->
       Enum.all?(conditions, fn condition ->
-        type = String.to_atom(condition["match_tracking_field"])
-        value = condition["value"]
-        arena_match_result_value = Map.get(arena_match_result, type)
+        type = arena_match_result_field_to_atom(condition["match_tracking_field"])
 
-        comparator = parse_comparator(condition["comparison"])
+        case Map.get(arena_match_result, type) do
+          # We'll result in a false value in case that the quest condition has a wrong field getter
+          nil ->
+            false
 
-        comparator.(arena_match_result_value, value)
+          arena_match_result_value ->
+            comparator = parse_comparator(condition["comparison"])
+
+            comparator.(arena_match_result_value, condition["value"])
+        end
       end)
     end)
   end
+
+  defp arena_match_result_field_to_atom("result"), do: :result
+  defp arena_match_result_field_to_atom("kills"), do: :kills
+  defp arena_match_result_field_to_atom("deaths"), do: :deaths
+  defp arena_match_result_field_to_atom("character"), do: :character
+  defp arena_match_result_field_to_atom("match_id"), do: :match_id
+  defp arena_match_result_field_to_atom("user_id"), do: :user_id
+  defp arena_match_result_field_to_atom("position"), do: :position
+  defp arena_match_result_field_to_atom("damage_done"), do: :damage_done
+  defp arena_match_result_field_to_atom("damage_taken"), do: :damage_taken
+  defp arena_match_result_field_to_atom("health_healed"), do: :health_healed
+  defp arena_match_result_field_to_atom("killed_by_bot"), do: :killed_by_bot
+  defp arena_match_result_field_to_atom("duration_ms"), do: :duration_ms
+  defp arena_match_result_field_to_atom(_), do: nil
 end

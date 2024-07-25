@@ -69,7 +69,8 @@ defmodule Champions.TestUtils do
         initial_delay: 0,
         components: [],
         modifiers: [],
-        executions: []
+        executions: [],
+        executions_over_time: []
       },
       params
     )

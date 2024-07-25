@@ -12,27 +12,43 @@ defmodule Gateway.Router do
   scope "/curse", Gateway.Controllers.CurseOfMirra do
     pipe_through :api
 
-    scope "/characters" do
-      get "/configuration", CharacterController, :get_characters_config
+    post "/match/:match_id", MatchResultsController, :create
+    get "/get_bounties", QuestController, :get_bounties
+
+    scope "/configuration" do
+      get "/game", ConfigurationController, :get_game_configuration
+      get "/characters", ConfigurationController, :get_characters_configuration
+      get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
     end
+
+    scope "/configuration" do
+      get "/map", ConfigurationController, :get_map_configuration
+    end
+
+    scope "/stores" do
+      get "/:store_name/list_items", StoreController, :list_items
+    end
+
+    post "/users", UserController, :create_guest_user
+    get "/users/leaderboard", UserController, :get_users_leaderboard
+
+    resources "/users", UserController, only: [:show]
 
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
       get "/get_daily_reward_status", UserController, :get_daily_reward_status
-      get "/quest/:quest_id/reroll_quest", QuestController, :reroll_quest
+      get "/quest/:quest_id/reroll_daily_quest", QuestController, :reroll_daily_quest
+      get "/quest/:quest_id/complete_bounty", QuestController, :complete_bounty
 
       scope "/items" do
         put "/equip", ItemController, :equip
-        put "/buy", ItemController, :buy
+      end
+
+      scope "/stores" do
+        put "/:store_name/buy_item", StoreController, :buy_item
       end
     end
-  end
-
-  scope "/arena", Gateway.Controllers.Arena do
-    pipe_through :api
-
-    post "/match/:match_id", MatchResultsController, :create
   end
 
   scope "/", Gateway do
@@ -40,7 +56,9 @@ defmodule Gateway.Router do
 
     get "/api/health", Controllers.HealthController, :check
 
-    get "/auth/:provider/token/:token_id", Controllers.AuthController, :validate_token
+    get "/auth/:provider/token/:token_id/:client_id", Controllers.AuthController, :validate_token
+    get "/auth/public-key", Controllers.AuthController, :public_key
+    post "/auth/refresh-token", Controllers.AuthController, :refresh_token
 
     put "/users/:user_id", Controllers.UserController, :update
   end

@@ -36,15 +36,15 @@ defmodule GameBackend.Rewards do
     if afk_reward_rate, do: {:ok, afk_reward_rate}, else: {:error, :not_found}
   end
 
-  def increment_afk_reward_rate(user_id, currency_id, rate_increment) do
+  def increment_afk_reward_rate(user_id, currency_id, daily_rate_increment) do
     case get_afk_reward_rate(user_id, currency_id) do
       {:ok, afk_reward_rate} ->
         afk_reward_rate
-        |> AfkRewardRate.changeset(%{rate: afk_reward_rate.rate + rate_increment})
+        |> AfkRewardRate.changeset(%{daily_rate: afk_reward_rate.daily_rate + daily_rate_increment})
         |> Repo.update()
 
       {:error, :not_found} ->
-        insert_afk_reward_rate(%{user_id: user_id, currency_id: currency_id, rate: rate_increment})
+        insert_afk_reward_rate(%{user_id: user_id, currency_id: currency_id, daily_rate: daily_rate_increment})
     end
   end
 

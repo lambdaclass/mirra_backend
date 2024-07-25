@@ -12,6 +12,7 @@ defmodule GameBackend.Users.KalineTreeLevel do
     field(:level, :integer)
     field(:fertilizer_level_up_cost, :integer)
     field(:gold_level_up_cost, :integer)
+    # TODO: Implement unlock features (like new supercampaigns, new mechanics, etc.)
     field(:unlock_features, {:array, :string})
 
     has_many(:afk_reward_rates, AfkRewardRate)

@@ -6,6 +6,7 @@ defmodule BotManager.Protobuf.GameStatus do
   field(:PREPARING, 0)
   field(:RUNNING, 1)
   field(:ENDED, 2)
+  field(:SELECTING_BOUNTY, 3)
 end
 
 defmodule BotManager.Protobuf.ProjectileStatus do
@@ -34,6 +35,7 @@ defmodule BotManager.Protobuf.PowerUpstatus do
 
   field(:AVAILABLE, 0)
   field(:TAKEN, 1)
+  field(:UNAVAILABLE, 2)
 end
 
 defmodule BotManager.Protobuf.PlayerActionType do
@@ -58,6 +60,15 @@ defmodule BotManager.Protobuf.TrapStatus do
   field(:PREPARED, 1)
   field(:TRIGGERED, 2)
   field(:USED, 3)
+end
+
+defmodule BotManager.Protobuf.PoolStatus do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:WAITING, 0)
+  field(:READY, 1)
 end
 
 defmodule BotManager.Protobuf.Direction do
@@ -120,6 +131,7 @@ defmodule BotManager.Protobuf.GameEvent do
   field(:update, 2, type: BotManager.Protobuf.GameState, oneof: 0)
   field(:finished, 3, type: BotManager.Protobuf.GameFinished, oneof: 0)
   field(:ping, 4, type: BotManager.Protobuf.PingUpdate, oneof: 0)
+  field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
 end
 
 defmodule BotManager.Protobuf.GameFinished.PlayersEntry do
@@ -160,6 +172,7 @@ defmodule BotManager.Protobuf.GameJoined do
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
   field(:config, 2, type: BotManager.Protobuf.Configuration)
+  field(:bounties, 3, repeated: true, type: BotManager.Protobuf.BountyInfo)
 end
 
 defmodule BotManager.Protobuf.Configuration do
@@ -170,6 +183,7 @@ defmodule BotManager.Protobuf.Configuration do
   field(:game, 1, type: BotManager.Protobuf.ConfigGame)
   field(:map, 2, type: BotManager.Protobuf.ConfigMap)
   field(:characters, 3, repeated: true, type: BotManager.Protobuf.ConfigCharacter)
+  field(:client_config, 4, type: BotManager.Protobuf.ClientConfig, json_name: "clientConfig")
 end
 
 defmodule BotManager.Protobuf.ConfigGame do
@@ -178,6 +192,8 @@ defmodule BotManager.Protobuf.ConfigGame do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:tick_rate_ms, 1, type: :float, json_name: "tickRateMs")
+  field(:bounty_pick_time_ms, 2, type: :float, json_name: "bountyPickTimeMs")
+  field(:start_game_time_ms, 3, type: :float, json_name: "startGameTimeMs")
 end
 
 defmodule BotManager.Protobuf.ConfigMap do
@@ -216,6 +232,35 @@ defmodule BotManager.Protobuf.ConfigCharacter do
   )
 end
 
+defmodule BotManager.Protobuf.ClientConfig do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:server_update, 1, type: BotManager.Protobuf.ConfigServerUpdate, json_name: "serverUpdate")
+end
+
+defmodule BotManager.Protobuf.ConfigServerUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_difference_samples_to_check_warning, 1,
+    type: :uint64,
+    json_name: "timestampDifferenceSamplesToCheckWarning"
+  )
+
+  field(:timestamp_differences_samples_max_length, 2,
+    type: :uint64,
+    json_name: "timestampDifferencesSamplesMaxLength"
+  )
+
+  field(:show_warning_threshold, 3, type: :uint64, json_name: "showWarningThreshold")
+  field(:stop_warning_threshold, 4, type: :uint64, json_name: "stopWarningThreshold")
+  field(:ms_without_update_show_warning, 5, type: :uint64, json_name: "msWithoutUpdateShowWarning")
+  field(:ms_without_update_disconnect, 6, type: :uint64, json_name: "msWithoutUpdateDisconnect")
+end
+
 defmodule BotManager.Protobuf.ConfigSkill do
   @moduledoc false
 
@@ -228,6 +273,7 @@ defmodule BotManager.Protobuf.ConfigSkill do
   field(:targetting_angle, 5, type: :float, json_name: "targettingAngle")
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
+  field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
 end
 
 defmodule BotManager.Protobuf.GameState.PlayersEntry do
@@ -463,6 +509,8 @@ defmodule BotManager.Protobuf.Player do
   field(:cooldowns, 12, repeated: true, type: BotManager.Protobuf.Player.CooldownsEntry, map: true)
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
   field(:on_bush, 14, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
+  field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
 end
 
 defmodule BotManager.Protobuf.Effect do
@@ -472,6 +520,7 @@ defmodule BotManager.Protobuf.Effect do
 
   field(:name, 1, type: :string)
   field(:duration_ms, 2, type: :uint32, json_name: "durationMs")
+  field(:id, 3, type: :uint64)
 end
 
 defmodule BotManager.Protobuf.Item do
@@ -499,6 +548,8 @@ defmodule BotManager.Protobuf.Obstacle do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:color, 1, type: :string)
+  field(:collisionable, 2, type: :bool)
+  field(:status, 3, type: :string)
 end
 
 defmodule BotManager.Protobuf.PowerUp do
@@ -526,6 +577,9 @@ defmodule BotManager.Protobuf.Pool do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
+  field(:status, 2, type: BotManager.Protobuf.PoolStatus, enum: true)
+  field(:effects, 3, repeated: true, type: BotManager.Protobuf.Effect)
+  field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
 defmodule BotManager.Protobuf.Bush do
@@ -588,6 +642,34 @@ defmodule BotManager.Protobuf.UseItem do
   field(:item, 1, type: :uint64)
 end
 
+defmodule BotManager.Protobuf.SelectBounty do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
+end
+
+defmodule BotManager.Protobuf.ToggleZone do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.ToggleBots do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+end
+
+defmodule BotManager.Protobuf.ChangeTickrate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:tickrate, 1, type: :int64)
+end
+
 defmodule BotManager.Protobuf.GameAction do
   @moduledoc false
 
@@ -598,6 +680,22 @@ defmodule BotManager.Protobuf.GameAction do
   field(:move, 1, type: BotManager.Protobuf.Move, oneof: 0)
   field(:attack, 2, type: BotManager.Protobuf.Attack, oneof: 0)
   field(:use_item, 4, type: BotManager.Protobuf.UseItem, json_name: "useItem", oneof: 0)
+
+  field(:select_bounty, 5,
+    type: BotManager.Protobuf.SelectBounty,
+    json_name: "selectBounty",
+    oneof: 0
+  )
+
+  field(:toggle_zone, 6, type: BotManager.Protobuf.ToggleZone, json_name: "toggleZone", oneof: 0)
+  field(:toggle_bots, 7, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
+
+  field(:change_tickrate, 8,
+    type: BotManager.Protobuf.ChangeTickrate,
+    json_name: "changeTickrate",
+    oneof: 0
+  )
+
   field(:timestamp, 3, type: :int64)
 end
 
@@ -619,4 +717,24 @@ defmodule BotManager.Protobuf.KillEntry do
 
   field(:killer_id, 1, type: :uint64, json_name: "killerId")
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
+end
+
+defmodule BotManager.Protobuf.BountyInfo do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:id, 1, type: :string)
+  field(:description, 2, type: :string)
+  field(:quest_type, 3, type: :string, json_name: "questType")
+  field(:reward, 4, type: BotManager.Protobuf.CurrencyReward)
+end
+
+defmodule BotManager.Protobuf.CurrencyReward do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:currency, 1, type: :string)
+  field(:amount, 2, type: :int64)
 end

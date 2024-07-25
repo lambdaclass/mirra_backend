@@ -5,9 +5,7 @@ defmodule GameBackend.Users.Currencies do
 
   import Ecto.Query, warn: false
 
-  alias GameBackend.Users.Currencies.UserCurrency
-  alias GameBackend.Users.Currencies.Currency
-  alias GameBackend.Users.Currencies.CurrencyCost
+  alias GameBackend.Users.Currencies.{Currency, CurrencyCost, UserCurrency, UserCurrencyCap}
   alias GameBackend.Repo
 
   @doc """
@@ -85,16 +83,33 @@ defmodule GameBackend.Users.Currencies do
   """
   def add_currency(user_id, currency_id, amount) do
     result =
-      with %UserCurrency{} = user_currency <- get_user_currency(user_id, currency_id),
-           changeset <-
-             UserCurrency.update_changeset(user_currency, %{
-               amount: max(user_currency.amount + amount, 0)
-             }) do
-        Repo.update(changeset)
-      else
+      case get_user_currency(user_id, currency_id) do
+        %UserCurrency{} = user_currency ->
+          new_amount =
+            case get_user_currency_cap(user_id, currency_id) do
+              %UserCurrencyCap{cap: cap} ->
+                if cap <= user_currency.amount do
+                  # Cap reached, don't add anything.
+                  user_currency.amount
+                else
+                  # Cap not reached, add the amount. We are fine with allowing overflows.
+                  user_currency.amount + amount
+                end
+
+              nil ->
+                # No cap, just add the amount.
+                user_currency.amount + amount
+            end
+            # We don't want users with negative currencies
+            |> max(0)
+
+          user_currency
+          |> UserCurrency.update_changeset(%{amount: new_amount})
+          |> Repo.update()
+
         nil ->
           # User has none of this currency, create it with given amount
-          insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: amount})
+          insert_user_currency(%{user_id: user_id, currency_id: currency_id, amount: max(amount, 0)})
       end
 
     case result do
@@ -214,4 +229,30 @@ defmodule GameBackend.Users.Currencies do
       {:ok, currency} -> add_currency(user_id, currency.id, amount)
     end
   end
+
+  @doc """
+  Inserts an UserCurrencyCap.
+  """
+  def insert_user_currency_cap(attrs) do
+    %UserCurrencyCap{}
+    |> UserCurrencyCap.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a User's UserCurrencyCap cap for a given currency.
+
+  Currency is identified by a name and a game id.
+  """
+  def update_user_currency_cap(user_id, {currency_name, game_id}, new_cap) do
+    get_user_currency_cap(user_id, get_currency_by_name_and_game!(currency_name, game_id).id)
+    |> UserCurrencyCap.update_changeset(%{cap: new_cap})
+    |> Repo.update()
+  end
+
+  @doc """
+  Get an UserCurrencyCap.
+  """
+  def get_user_currency_cap(user_id, currency_id),
+    do: Repo.one(from(uc in UserCurrencyCap, where: uc.user_id == ^user_id and uc.currency_id == ^currency_id))
 end

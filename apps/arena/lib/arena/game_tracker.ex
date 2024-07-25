@@ -21,6 +21,7 @@ defmodule Arena.GameTracker do
   end
 
   @type player_id :: pos_integer()
+  @type bounty_quest_id :: binary()
   @type player :: %{id: player_id(), character_name: binary()}
   @type event ::
           {:kill, player(), player()}
@@ -28,10 +29,15 @@ defmodule Arena.GameTracker do
           | {:damage_done, player_id(), non_neg_integer()}
           | {:heal, player_id(), non_neg_integer()}
           | {:kill_by_zone, player_id()}
+          | {:select_bounty, player_id(), bounty_quest_id()}
 
   @spec push_event(pid(), event()) :: :ok
   def push_event(match_pid, event) do
     GenServer.cast(__MODULE__, {:push_event, match_pid, event})
+  end
+
+  def get_player_result(player_id) do
+    GenServer.call(__MODULE__, {:get_player_result, player_id})
   end
 
   ##########################
@@ -58,7 +64,8 @@ defmodule Arena.GameTracker do
           damage_taken: 0,
           damage_done: 0,
           health_healed: 0,
-          killed_by_bot: false
+          killed_by_bot: false,
+          bounty_quest_id: nil
         }
 
         {player.id, player_data}
@@ -76,12 +83,19 @@ defmodule Arena.GameTracker do
     {:reply, :ok, state}
   end
 
+  def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
+    match_data = get_in(state, [:matches, match_pid])
+    result = generate_player_result(match_data, player_id)
+
+    {:reply, result, state}
+  end
+
   @impl true
   def handle_cast({:finish_tracking, match_pid, winner_id}, state) do
     match_data = get_in(state, [:matches, match_pid])
     results = generate_results(match_data, winner_id)
     payload = Jason.encode!(%{results: results})
-    send_request("/arena/match/#{match_data.match_id}", payload)
+    send_request("/curse/match/#{match_data.match_id}", payload)
     matches = Map.delete(state.matches, match_pid)
     {:noreply, %{state | matches: matches}}
   end
@@ -125,6 +139,10 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :damage_taken], fn damage_taken -> damage_taken + amount end)
   end
 
+  defp update_data(data, {:damage_done, 9999, _amount}) do
+    data
+  end
+
   defp update_data(data, {:damage_done, player_id, amount}) do
     update_in(data, [:players, player_id, :damage_done], fn damage_done -> damage_done + amount end)
   end
@@ -133,31 +151,47 @@ defmodule Arena.GameTracker do
     update_in(data, [:players, player_id, :health_healed], fn health_healed -> health_healed + amount end)
   end
 
+  defp update_data(data, {:select_bounty, player_id, bounty_quest_id}) do
+    put_in(data, [:players, player_id, :bounty_quest_id], bounty_quest_id)
+  end
+
   defp generate_results(match_data, winner_id) do
+    Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
+    |> Enum.map(fn {player_id, _player_data} ->
+      generate_player_result(match_data, player_id, winner_id)
+    end)
+  end
+
+  defp generate_player_result(nil, _player_id) do
+    %{}
+  end
+
+  defp generate_player_result(match_data, player_id, winner_id \\ nil) do
     duration = System.monotonic_time(:millisecond) - match_data.start_at
 
-    Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
-    |> Enum.map(fn {_player_id, player_data} ->
-      %{
-        user_id: get_in(match_data, [:player_to_client, player_data.id]),
-        ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
-        ##    GameUpdater should send an event when the abandon happens to mark the player
-        ##    https://github.com/lambdaclass/mirra_backend/issues/601
-        result: if(player_data.id == winner_id, do: "win", else: "loss"),
-        kills: length(player_data.kills),
-        ## TODO: this only works because you can only die once
-        ##    https://github.com/lambdaclass/mirra_backend/issues/601
-        deaths: if(player_data.death == nil, do: 0, else: 1),
-        character: player_data.character,
-        position: if(player_data.id == winner_id, do: 1, else: player_data.position),
-        damage_taken: player_data.damage_taken,
-        damage_done: player_data.damage_done,
-        health_healed: player_data.health_healed,
-        killed_by: player_data.death,
-        killed_by_bot: player_data.killed_by_bot,
-        duration_ms: duration
-      }
-    end)
+    player_data =
+      Map.get(match_data.players, player_id)
+
+    %{
+      user_id: get_in(match_data, [:player_to_client, player_data.id]),
+      ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
+      ##    GameUpdater should send an event when the abandon happens to mark the player
+      ##    https://github.com/lambdaclass/mirra_backend/issues/601
+      result: if(winner_id && player_data.id == winner_id, do: "win", else: "loss"),
+      kills: length(player_data.kills),
+      ## TODO: this only works because you can only die once
+      ##    https://github.com/lambdaclass/mirra_backend/issues/601
+      deaths: if(player_data.death == nil, do: 0, else: 1),
+      character: player_data.character,
+      position: get_player_match_place(player_data, winner_id, match_data),
+      damage_taken: player_data.damage_taken,
+      damage_done: player_data.damage_done,
+      health_healed: player_data.health_healed,
+      killed_by: player_data.death,
+      killed_by_bot: player_data.killed_by_bot,
+      duration_ms: duration,
+      bounty_quest_id: player_data.bounty_quest_id
+    }
   end
 
   defp send_request(path, payload, backoff \\ 0) do
@@ -177,4 +211,9 @@ defmodule Arena.GameTracker do
         Process.send_after(self(), {:retry_request, path, payload, backoff + 1}, backoff * 500)
     end
   end
+
+  def get_player_match_place(%{id: winner_id}, winner_id, _match_data), do: 1
+  def get_player_match_place(%{position: position}, _winner_id, _match_data), do: position
+  # Default case for timeouts
+  def get_player_match_place(_player_info, _winner_id, match_data), do: match_data.position_on_death
 end

@@ -20,6 +20,14 @@ defmodule Gateway.Controllers.FallbackController do
     send_resp(conn, 400, Jason.encode!(%{"error" => "invalid reward"}))
   end
 
+  def call(conn, {:error, :cant_afford}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "cant afford"}))
+  end
+
+  def call(conn, {:error, :quest_rerolled}) do
+    send_resp(conn, 400, Jason.encode!(%{"error" => "quest already rerolled"}))
+  end
+
   def call(conn, {:error, :item_not_found}) do
     send_resp(conn, 400, Jason.encode!(%{"error" => "item not found"}))
   end

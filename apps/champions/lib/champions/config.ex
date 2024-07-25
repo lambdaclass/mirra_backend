@@ -1,13 +1,22 @@
 defmodule Champions.Config do
   @moduledoc """
   Configuration utilities.
+
+  The functions here read configuration files from the app's priv folder and import them into the database.
+  They are meant to be used during the application's initialization (in the seeds.exs file) but can also be called during runtime.
+  These functions will overwrite existing data in the database when unique identifiers are repeated (like character names) through upserts.
+
+  Take into account that these functions do not remove existing data from the database, so if you want to remove old data, you should do it manually.
+  For example, if you initially defined characters A and B in your `characters.json` file, and later on kept only A and reimported the file, B would still be in the database.
   """
 
+  alias GameBackend.Campaigns
   alias Champions.Units
   alias GameBackend.Items
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Skills
   alias GameBackend.Users
+  alias GameBackend.Users.Currencies
   alias GameBackend.Utils
 
   @doc """
@@ -77,17 +86,9 @@ defmodule Champions.Config do
 
     Jason.decode!(item_templates_json, [{:keys, :atoms}])
     |> Enum.map(fn item_template ->
-      Map.put(item_template, :game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
-      |> update_in([:upgrade_costs], fn upgrade_costs ->
-        Enum.map(
-          upgrade_costs,
-          &%{
-            currency_id:
-              Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
-            amount: &1.amount
-          }
-        )
-      end)
+      item_template
+      |> Map.put(:game_id, GameBackend.Utils.get_game_id(:champions_of_mirra))
+      |> update_in([:upgrade_costs], &transform_currency_costs/1)
     end)
     |> Items.upsert_item_templates()
   end
@@ -132,5 +133,176 @@ defmodule Champions.Config do
         persistent: true
       )
     end)
+  end
+
+  @doc """
+  Import all SuperCampaigns and their Campaigns from 'super_campaigns.json' in the app's priv folder.
+
+  This function doesn't delete any existing SuperCampaigns or Campaigns that may have been previously created and removed in the json file.
+  """
+  def import_super_campaigns_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, super_campaigns_json} =
+      Application.app_dir(:champions, "priv/super_campaigns.json")
+      |> File.read()
+
+    super_campaigns = Jason.decode!(super_campaigns_json, [{:keys, :atoms}])
+
+    Enum.each(super_campaigns, fn super_campaign_config ->
+      super_campaign =
+        case Campaigns.insert_super_campaign(%{
+               game_id: game_id,
+               name: super_campaign_config.name
+             }) do
+          {:ok, super_campaign} ->
+            super_campaign
+
+          {:error, _changeset} ->
+            # The super_campaign already exists
+            Campaigns.get_super_campaign_by_name_and_game(super_campaign_config.name, game_id)
+        end
+
+      Enum.each(1..super_campaign_config.campaign_amount, fn campaign_number ->
+        Campaigns.insert_campaign(%{
+          game_id: game_id,
+          super_campaign_id: super_campaign.id,
+          campaign_number: campaign_number
+        })
+      end)
+    end)
+  end
+
+  def import_dungeon_settlement_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, dungeon_settlement_levels_json} =
+      Application.app_dir(:champions, "priv/dungeon_settlement_levels.json")
+      |> File.read()
+
+    Jason.decode!(dungeon_settlement_levels_json, [{:keys, :atoms}])
+    |> Enum.map(fn dungeon_settlement_level ->
+      dungeon_settlement_level
+      |> update_in([:level_up_costs], &transform_currency_costs/1)
+      |> Map.put(
+        :afk_reward_rates,
+        Enum.map(
+          dungeon_settlement_level.afk_reward_rates,
+          fn {currency, daily_rate} ->
+            %{
+              currency_id:
+                currency
+                |> Atom.to_string()
+                |> Users.Currencies.get_currency_by_name_and_game!(game_id)
+                |> Map.get(:id),
+              daily_rate: daily_rate
+            }
+          end
+        )
+      )
+    end)
+    |> Users.upsert_dungeon_settlement_levels()
+  end
+
+  defp transform_currency_costs(currency_costs) do
+    Enum.map(
+      currency_costs,
+      &%{
+        currency_id:
+          Users.Currencies.get_currency_by_name_and_game!(&1.currency, Utils.get_game_id(:champions_of_mirra)).id,
+        amount: &1.amount
+      }
+    )
+  end
+
+  def import_dungeon_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, dungeon_campaign_json} =
+      Application.app_dir(:champions, "priv/dungeon_campaign.json")
+      |> File.read()
+
+    dungeon_super_campaign =
+      Campaigns.get_super_campaign_by_name_and_game("Dungeon", game_id)
+
+    [dungeon_campaign] = dungeon_super_campaign.campaigns
+
+    Jason.decode!(dungeon_campaign_json, [{:keys, :atoms}])
+    |> Enum.map(fn level ->
+      level
+      |> transform_level_json_data()
+      |> Map.put(
+        :attempt_cost,
+        Enum.map(level.attempt_cost, fn {currency, amount} ->
+          transform_currency_amount(currency, amount, game_id)
+        end)
+      )
+      |> Map.put(:campaign_id, dungeon_campaign.id)
+    end)
+    |> Campaigns.upsert_levels()
+  end
+
+  def import_main_campaign_levels_config() do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    {:ok, main_campaign_json} =
+      Application.app_dir(:champions, "priv/main_campaign.json")
+      |> File.read()
+
+    main_super_campaign =
+      Campaigns.get_super_campaign_by_name_and_game("Main Campaign", game_id)
+
+    campaigns =
+      Enum.into(main_super_campaign.campaigns, %{}, fn %{campaign_number: cn, id: id} ->
+        {cn, id}
+      end)
+
+    Jason.decode!(main_campaign_json, [{:keys, :atoms}])
+    |> Enum.map(fn level ->
+      level
+      |> transform_level_json_data()
+      |> Map.put(:campaign_id, campaigns[level.campaign_number])
+    end)
+    |> Campaigns.upsert_levels()
+  end
+
+  defp transform_level_json_data(level) do
+    game_id = Utils.get_game_id(:champions_of_mirra)
+
+    level
+    |> Map.put(
+      :units,
+      level.characters
+      |> Enum.with_index(1)
+      |> Enum.map(fn {character, index} ->
+        %{
+          level: level.lineup_level + Enum.random(-level.lineup_level_variance..level.lineup_level_variance),
+          tier: 1,
+          rank: 1,
+          selected: true,
+          slot: index,
+          character_id:
+            Characters.get_character_id_by_name_and_game_id(character, Utils.get_game_id(:champions_of_mirra))
+        }
+      end)
+    )
+    |> Map.put(:game_id, game_id)
+    |> Map.put(
+      :currency_rewards,
+      Enum.map(level.currency_rewards, fn {currency, amount} ->
+        transform_currency_amount(currency, amount, game_id)
+      end)
+    )
+  end
+
+  defp transform_currency_amount(currency, amount, game_id) do
+    %{
+      currency_id:
+        currency
+        |> Atom.to_string()
+        |> Currencies.get_currency_by_name_and_game!(game_id)
+        |> Map.get(:id),
+      amount: amount
+    }
   end
 end

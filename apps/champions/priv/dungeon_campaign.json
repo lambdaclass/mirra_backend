@@ -1,0 +1,1052 @@
+[
+    {
+        "level_number": 1,
+        "experience_reward": 10,
+        "max_units": 1,
+        "lineup_level": 21,
+        "lineup_level_variance": 0,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Elix1r"
+        ],
+        "currency_rewards": {
+            "Gold": 2000,
+            "Arcane Crystals": 20,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 2,
+        "experience_reward": 20,
+        "max_units": 1,
+        "lineup_level": 22,
+        "lineup_level_variance": 0,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "Gold": 2000,
+            "Arcane Crystals": 20,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 3,
+        "experience_reward": 30,
+        "max_units": 1,
+        "lineup_level": 23,
+        "lineup_level_variance": 0,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Obure"
+        ],
+        "currency_rewards": {
+            "Gold": 2000,
+            "Arcane Crystals": 20,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 4,
+        "experience_reward": 40,
+        "max_units": 2,
+        "lineup_level": 24,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Romulo",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 5,
+        "experience_reward": 50,
+        "max_units": 2,
+        "lineup_level": 25,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Zanochi",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 6,
+        "experience_reward": 60,
+        "max_units": 2,
+        "lineup_level": 25,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Zil'kan",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 7,
+        "experience_reward": 70,
+        "max_units": 2,
+        "lineup_level": 26,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Jayson",
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 8,
+        "experience_reward": 80,
+        "max_units": 2,
+        "lineup_level": 27,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Elix1r",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "Gold": 4000,
+            "Arcane Crystals": 40,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 9,
+        "experience_reward": 90,
+        "max_units": 3,
+        "lineup_level": 28,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Boy Kampf",
+            "H4ck",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 10,
+        "experience_reward": 100,
+        "max_units": 3,
+        "lineup_level": 29,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kura'bara",
+            "Elix1r",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 11,
+        "experience_reward": 110,
+        "max_units": 3,
+        "lineup_level": 30,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "Kura'bara",
+            "Uma"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 12,
+        "experience_reward": 120,
+        "max_units": 3,
+        "lineup_level": 31,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kampako",
+            "Jayson",
+            "Obure"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 13,
+        "experience_reward": 130,
+        "max_units": 3,
+        "lineup_level": 32,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Muflus",
+            "Valtimer",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 14,
+        "experience_reward": 140,
+        "max_units": 3,
+        "lineup_level": 33,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Valtimer",
+            "Elix1r",
+            "Kenzu"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 15,
+        "experience_reward": 150,
+        "max_units": 3,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "Uren",
+            "Kura'bara"
+        ],
+        "currency_rewards": {
+            "Gold": 6000,
+            "Arcane Crystals": 60,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 16,
+        "experience_reward": 160,
+        "max_units": 4,
+        "lineup_level": 34,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "D'agna",
+            "H4ck",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 17,
+        "experience_reward": 170,
+        "max_units": 4,
+        "lineup_level": 35,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Otix",
+            "Zanochi",
+            "Fetra",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 18,
+        "experience_reward": 180,
+        "max_units": 4,
+        "lineup_level": 36,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Muflus",
+            "Kenzu",
+            "Boy Kampf",
+            "Obure"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 19,
+        "experience_reward": 190,
+        "max_units": 4,
+        "lineup_level": 37,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "Kura'bara",
+            "Otix",
+            "H4ck"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 20,
+        "experience_reward": 200,
+        "max_units": 4,
+        "lineup_level": 38,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Otix",
+            "Elix1r",
+            "Rust",
+            "Kura'bara"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 21,
+        "experience_reward": 210,
+        "max_units": 4,
+        "lineup_level": 39,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Boy Kampf",
+            "Uma",
+            "Kampako",
+            "Obure"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 22,
+        "experience_reward": 220,
+        "max_units": 4,
+        "lineup_level": 40,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Obure",
+            "Zil'kan",
+            "Fetra",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 23,
+        "experience_reward": 230,
+        "max_units": 4,
+        "lineup_level": 41,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Jayson",
+            "Rust",
+            "Jayson",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 24,
+        "experience_reward": 240,
+        "max_units": 4,
+        "lineup_level": 42,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "H4ck",
+            "Zil'kan",
+            "Kura'bara",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "Gold": 8000,
+            "Arcane Crystals": 80,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 25,
+        "experience_reward": 250,
+        "max_units": 5,
+        "lineup_level": 43,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Uren",
+            "Kenzu",
+            "D'agna",
+            "Otix",
+            "Muflus"
+        ],
+        "currency_rewards": {
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 26,
+        "experience_reward": 260,
+        "max_units": 5,
+        "lineup_level": 43,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "Elix1r",
+            "Uren",
+            "Zil'kan",
+            "Rust"
+        ],
+        "currency_rewards": {
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 27,
+        "experience_reward": 270,
+        "max_units": 5,
+        "lineup_level": 44,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Obure",
+            "Kura'bara",
+            "Jayson",
+            "Valtimer",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 28,
+        "experience_reward": 280,
+        "max_units": 5,
+        "lineup_level": 45,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Zil'kan",
+            "Obure",
+            "Elix1r",
+            "Jayson",
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 29,
+        "experience_reward": 290,
+        "max_units": 5,
+        "lineup_level": 46,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "Kampako",
+            "Rust",
+            "Zanochi",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 30,
+        "experience_reward": 300,
+        "max_units": 5,
+        "lineup_level": 47,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Rust",
+            "Kenzu",
+            "Uren",
+            "Jayson",
+            "Kenzu"
+        ],
+        "currency_rewards": {
+            "Gold": 10000,
+            "Arcane Crystals": 100,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 31,
+        "experience_reward": 310,
+        "max_units": 5,
+        "lineup_level": 48,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kampako",
+            "Obure",
+            "Kura'bara",
+            "D'agna",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 32,
+        "experience_reward": 320,
+        "max_units": 5,
+        "lineup_level": 49,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Fetra",
+            "Kampako",
+            "Otix",
+            "Valtimer",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 33,
+        "experience_reward": 330,
+        "max_units": 5,
+        "lineup_level": 50,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kenzu",
+            "Grimstein",
+            "D'agna",
+            "Zil'kan",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 34,
+        "experience_reward": 340,
+        "max_units": 5,
+        "lineup_level": 51,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Otix",
+            "Uma",
+            "Rust",
+            "D'agna",
+            "Zanochi"
+        ],
+        "currency_rewards": {
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 35,
+        "experience_reward": 350,
+        "max_units": 5,
+        "lineup_level": 52,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "H4ck",
+            "Muflus",
+            "Fetra",
+            "D'agna",
+            "Jayson"
+        ],
+        "currency_rewards": {
+            "Gold": 15000,
+            "Arcane Crystals": 150,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 36,
+        "experience_reward": 360,
+        "max_units": 5,
+        "lineup_level": 52,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Fetra",
+            "Uma",
+            "Zil'kan",
+            "Uma",
+            "Muflus"
+        ],
+        "currency_rewards": {
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 37,
+        "experience_reward": 370,
+        "max_units": 5,
+        "lineup_level": 53,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Rust",
+            "Grimstein",
+            "Jayson",
+            "Otix",
+            "Elix1r"
+        ],
+        "currency_rewards": {
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 38,
+        "experience_reward": 380,
+        "max_units": 5,
+        "lineup_level": 54,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kenzu",
+            "H4ck",
+            "Muflus",
+            "Uren",
+            "D'agna"
+        ],
+        "currency_rewards": {
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 39,
+        "experience_reward": 390,
+        "max_units": 5,
+        "lineup_level": 55,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Uma",
+            "Rust",
+            "Uma",
+            "H4ck",
+            "Valtimer"
+        ],
+        "currency_rewards": {
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 40,
+        "experience_reward": 400,
+        "max_units": 5,
+        "lineup_level": 56,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Muflus",
+            "Boy Kampf",
+            "Valtimer",
+            "Romulo",
+            "Rust"
+        ],
+        "currency_rewards": {
+            "Gold": 20000,
+            "Arcane Crystals": 200,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 41,
+        "experience_reward": 410,
+        "max_units": 5,
+        "lineup_level": 57,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "H4ck",
+            "Kenzu",
+            "Jayson",
+            "Kura'bara",
+            "Kampako"
+        ],
+        "currency_rewards": {
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 42,
+        "experience_reward": 420,
+        "max_units": 5,
+        "lineup_level": 58,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Otix",
+            "Muflus",
+            "Rust",
+            "D'agna",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 43,
+        "experience_reward": 430,
+        "max_units": 5,
+        "lineup_level": 59,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kampako",
+            "Romulo",
+            "Uma",
+            "Boy Kampf",
+            "Otix"
+        ],
+        "currency_rewards": {
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 44,
+        "experience_reward": 440,
+        "max_units": 5,
+        "lineup_level": 60,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Muflus",
+            "Otix",
+            "H4ck",
+            "Kenzu",
+            "Romulo"
+        ],
+        "currency_rewards": {
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 45,
+        "experience_reward": 450,
+        "max_units": 5,
+        "lineup_level": 61,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kenzu",
+            "Kampako",
+            "Zanochi",
+            "D'agna",
+            "Boy Kampf"
+        ],
+        "currency_rewards": {
+            "Gold": 25000,
+            "Arcane Crystals": 250,
+            "5* Shards": 15
+        }
+    },
+    {
+        "level_number": 46,
+        "experience_reward": 460,
+        "max_units": 5,
+        "lineup_level": 61,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Fetra",
+            "Zil'kan",
+            "Kampako",
+            "Elix1r",
+            "Uma"
+        ],
+        "currency_rewards": {
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 47,
+        "experience_reward": 470,
+        "max_units": 5,
+        "lineup_level": 62,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Kenzu",
+            "Muflus",
+            "Zil'kan",
+            "Kampako",
+            "Fetra"
+        ],
+        "currency_rewards": {
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 48,
+        "experience_reward": 480,
+        "max_units": 5,
+        "lineup_level": 63,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Grimstein",
+            "Romulo",
+            "Uma",
+            "Zanochi",
+            "Uren"
+        ],
+        "currency_rewards": {
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 49,
+        "experience_reward": 490,
+        "max_units": 5,
+        "lineup_level": 64,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Boy Kampf",
+            "Grimstein",
+            "D'agna",
+            "Valtimer",
+            "Elix1r"
+        ],
+        "currency_rewards": {
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "4* Shards": 30
+        }
+    },
+    {
+        "level_number": 50,
+        "experience_reward": 500,
+        "max_units": 5,
+        "lineup_level": 65,
+        "lineup_level_variance": 1,
+        "attempt_cost": {
+            "Supplies": 1
+        },
+        "characters": [
+            "Zanochi",
+            "Uren",
+            "H4ck",
+            "Obure",
+            "Kura'bara"
+        ],
+        "currency_rewards": {
+            "Gold": 30000,
+            "Arcane Crystals": 300,
+            "5* Shards": 15
+        }
+    }
+]

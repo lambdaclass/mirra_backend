@@ -1,0 +1,636 @@
+{
+  "rewards": [
+    {
+      "position": 1,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 699,
+          "reward": 10
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": 9
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 8
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": 7
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": 5
+        }
+      ]
+    },
+    {
+      "position": 2,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 399,
+          "reward": 8
+        },
+        {
+          "min": 400,
+          "max": 799,
+          "reward": 7
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 6
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": 5
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": 3
+        }
+      ]
+    },
+    {
+      "position": 3,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 199,
+          "reward": 6
+        },
+        {
+          "min": 200,
+          "max": 799,
+          "reward": 5
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 3
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": 3
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": 1
+        }
+      ]
+    },
+    {
+      "position": 4,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 199,
+          "reward": 5
+        },
+        {
+          "min": 200,
+          "max": 499,
+          "reward": 4
+        },
+        {
+          "min": 500,
+          "max": 799,
+          "reward": 3
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 2
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": 1
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -1
+        }
+      ]
+    },
+    {
+      "position": 5,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 4
+        },
+        {
+          "min": 50,
+          "max": 299,
+          "reward": 3
+        },
+        {
+          "min": 300,
+          "max": 599,
+          "reward": 2
+        },
+        {
+          "min": 600,
+          "max": 799,
+          "reward": 2
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": 0
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -1
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -3
+        }
+      ]
+    },
+    {
+      "position": 6,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 3
+        },
+        {
+          "min": 50,
+          "max": 99,
+          "reward": 2
+        },
+        {
+          "min": 100,
+          "max": 299,
+          "reward": 1
+        },
+        {
+          "min": 300,
+          "max": 399,
+          "reward": 0
+        },
+        {
+          "min": 400,
+          "max": 699,
+          "reward": -1
+        },
+        {
+          "min": 700,
+          "max": 899,
+          "reward": -2
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -3
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -6
+        }
+      ]
+    },
+    {
+      "position": 7,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 2
+        },
+        {
+          "min": 50,
+          "max": 99,
+          "reward": 1
+        },
+        {
+          "min": 100,
+          "max": 299,
+          "reward": 0
+        },
+        {
+          "min": 300,
+          "max": 399,
+          "reward": -1
+        },
+        {
+          "min": 400,
+          "max": 599,
+          "reward": -2
+        },
+        {
+          "min": 600,
+          "max": 799,
+          "reward": -3
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": -4
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -5
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -8
+        }
+      ]
+    },
+    {
+      "position": 8,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 1
+        },
+        {
+          "min": 50,
+          "max": 99,
+          "reward": 0
+        },
+        {
+          "min": 100,
+          "max": 199,
+          "reward": -1
+        },
+        {
+          "min": 200,
+          "max": 299,
+          "reward": -2
+        },
+        {
+          "min": 300,
+          "max": 499,
+          "reward": -3
+        },
+        {
+          "min": 500,
+          "max": 699,
+          "reward": -4
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": -5
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": -6
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -7
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -10
+        }
+      ]
+    },
+    {
+      "position": 9,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 0
+        },
+        {
+          "min": 50,
+          "max": 199,
+          "reward": -1
+        },
+        {
+          "min": 200,
+          "max": 299,
+          "reward": -2
+        },
+        {
+          "min": 300,
+          "max": 399,
+          "reward": -3
+        },
+        {
+          "min": 400,
+          "max": 499,
+          "reward": -4
+        },
+        {
+          "min": 500,
+          "max": 599,
+          "reward": -5
+        },
+        {
+          "min": 600,
+          "max": 699,
+          "reward": -6
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": -7
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": -8
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -9
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -11
+        }
+      ]
+    },
+    {
+      "position": 10,
+      "distributions": [
+        {
+          "min": 0,
+          "max": 49,
+          "reward": 0
+        },
+        {
+          "min": 50,
+          "max": 99,
+          "reward": -1
+        },
+        {
+          "min": 100,
+          "max": 199,
+          "reward": -2
+        },
+        {
+          "min": 200,
+          "max": 299,
+          "reward": -3
+        },
+        {
+          "min": 300,
+          "max": 399,
+          "reward": -4
+        },
+        {
+          "min": 400,
+          "max": 499,
+          "reward": -5
+        },
+        {
+          "min": 500,
+          "max": 599,
+          "reward": -6
+        },
+        {
+          "min": 600,
+          "max": 699,
+          "reward": -7
+        },
+        {
+          "min": 700,
+          "max": 799,
+          "reward": -8
+        },
+        {
+          "min": 800,
+          "max": 899,
+          "reward": -9
+        },
+        {
+          "min": 900,
+          "max": 999,
+          "reward": -10
+        },
+        {
+          "min": 1000,
+          "max": 2147483647,
+          "reward": -12
+        }
+      ]
+    }
+  ],
+  "ranks": [
+    {
+      "rank": "bronze",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 0,
+          "max": 9
+        },
+        {
+          "sub_rank": 2,
+          "min": 10,
+          "max": 19
+        },
+        {
+          "sub_rank": 3,
+          "min": 20,
+          "max": 29
+        },
+        {
+          "sub_rank": 4,
+          "min": 30,
+          "max": 39
+        },
+        {
+          "sub_rank": 5,
+          "min": 40,
+          "max": 49
+        }
+      ]
+    },
+    {
+      "rank": "silver",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 50,
+          "max": 69
+        },
+        {
+          "sub_rank": 2,
+          "min": 70,
+          "max": 89
+        },
+        {
+          "sub_rank": 3,
+          "min": 90,
+          "max": 109
+        },
+        {
+          "sub_rank": 4,
+          "min": 110,
+          "max": 129
+        },
+        {
+          "sub_rank": 5,
+          "min": 130,
+          "max": 149
+        }
+      ]
+    },
+    {
+      "rank": "gold",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 150,
+          "max": 179
+        },
+        {
+          "sub_rank": 2,
+          "min": 180,
+          "max": 209
+        },
+        {
+          "sub_rank": 3,
+          "min": 210,
+          "max": 239
+        },
+        {
+          "sub_rank": 4,
+          "min": 240,
+          "max": 269
+        },
+        {
+          "sub_rank": 5,
+          "min": 270,
+          "max": 299
+        }
+      ]
+    },
+    {
+      "rank": "platinum",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 300,
+          "max": 339
+        },
+        {
+          "sub_rank": 2,
+          "min": 340,
+          "max": 379
+        },
+        {
+          "sub_rank": 3,
+          "min": 380,
+          "max": 419
+        },
+        {
+          "sub_rank": 4,
+          "min": 420,
+          "max": 459
+        },
+        {
+          "sub_rank": 5,
+          "min": 460,
+          "max": 499
+        }
+      ]
+    },
+    {
+      "rank": "diamond",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 500,
+          "max": 549
+        },
+        {
+          "sub_rank": 2,
+          "min": 550,
+          "max": 599
+        },
+        {
+          "sub_rank": 3,
+          "min": 600,
+          "max": 649
+        },
+        {
+          "sub_rank": 4,
+          "min": 650,
+          "max": 699
+        },
+        {
+          "sub_rank": 5,
+          "min": 700,
+          "max": 749
+        }
+      ]
+    },
+    {
+      "rank": "champion",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 750,
+          "max": 799
+        },
+        {
+          "sub_rank": 2,
+          "min": 800,
+          "max": 849
+        },
+        {
+          "sub_rank": 3,
+          "min": 850,
+          "max": 899
+        },
+        {
+          "sub_rank": 4,
+          "min": 900,
+          "max": 949
+        },
+        {
+          "sub_rank": 5,
+          "min": 950,
+          "max": 999
+        }
+      ]
+    },
+    {
+      "rank": "grandmaster",
+      "sub_ranks": [
+        {
+          "sub_rank": 1,
+          "min": 1000,
+          "max": 2147483647
+        }
+      ]
+    }
+  ]
+}

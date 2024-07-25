@@ -19,11 +19,14 @@ export const BoardGame = function () {
     currentPlayer: 0x007cff,
     players: 0x000000,
     obstacle: 0x00aa77,
+    transitioningObstacle: 0xff944d,
+    deactivatedObstacle: 0xff0000,
     colliding: 0xff0000,
     projectile: 0x0000ff,
     item: 0x238636,
     trap: 0x6600cc,
-    crate: 0xcc9900
+    crate: 0xcc9900,
+    bush: 0x9DE7CA
   };
   let player_id;
 
@@ -52,17 +55,25 @@ export const BoardGame = function () {
 
     window.addEventListener("phx:updateEntities", (e) => {
       // Updates every entity's info and position, and creates it if it doesn't exist
+      let selfBackEntity = Array.from(e.detail.entities).find((backEntity) => backEntity.id == e.detail.player_id)
+
       Array.from(e.detail.entities).forEach((backEntity) => {
-        if (!entities.has(backEntity.id)) {
-          let newEntity = this.createEntity(backEntity);
+        if (Array.from(selfBackEntity.visible_players).includes(backEntity.id) || backEntity.category != "player" || backEntity.id === e.detail.player_id) {
+          if (!entities.has(backEntity.id)) {
+            let newEntity = this.createEntity(backEntity);
 
-          container.addChild(newEntity.boardObject);
-          entities.set(backEntity.id, newEntity);
+            container.addChild(newEntity.boardObject);
+            entities.set(backEntity.id, newEntity);
+          }
+          let entity = entities.get(backEntity.id);
+          this.updateEntityColor(entity, backEntity.is_colliding, backEntity);
+
+          this.updateEntityPosition(entity, backEntity.x, backEntity.y);
+        } else if (entities.has(backEntity.id)) {
+          let toRemoveEntity = entities.get(backEntity.id)
+          container.removeChild(toRemoveEntity.boardObject)
+          entities.delete(backEntity.id)
         }
-        let entity = entities.get(backEntity.id);
-        this.updateEntityColor(entity, backEntity.is_colliding);
-
-        this.updateEntityPosition(entity, backEntity.x, backEntity.y);
       });
     });
 
@@ -148,6 +159,7 @@ export const BoardGame = function () {
           newEntity.boardObject.drawCircle(0, 0, newEntity.radius);
           break;
         case "polygon":
+          newEntity.boardObject.lineStyle(1, 0xFF00FF, 1);
           newEntity.boardObject.drawPolygon(newEntity.coords.flat());
           break;
       }
@@ -200,7 +212,7 @@ export const BoardGame = function () {
     (this.updateDebug = function (msg) {
       document.querySelector("#board-debug span").innerHTML = msg;
     }),
-    (this.updateEntityColor = function (entity, is_colliding) {
+    (this.updateEntityColor = function (entity, is_colliding, backEntity) {
       let color;
       if (is_colliding == true) {
         color = colors.colliding;
@@ -211,7 +223,13 @@ export const BoardGame = function () {
               entity.id == player_id ? colors.currentPlayer : colors.players;
             break;
           case "obstacle":
-            color = colors.obstacle;
+            if (backEntity.status === "underground") {
+              color = colors.deactivatedObstacle;
+            } else if (backEntity.status === "transitioning") {
+              color = colors.transitioningObstacle;
+            } else {
+              color = colors.obstacle;
+            }
             break;
           case "projectile":
             color = colors.projectile;
@@ -224,6 +242,9 @@ export const BoardGame = function () {
             break;
           case "trap":
             color = colors.trap;
+            break;
+          case "bush":
+            color = colors.bush;
             break;
         }
       }

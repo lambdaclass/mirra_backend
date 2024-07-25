@@ -28,7 +28,7 @@ defmodule BotManager.GameSocketHandler do
   def handle_connect(_conn, state) do
     send(self(), :decide_action)
     send(self(), :perform_action)
-    {:ok, state}
+    {:ok, Map.put(state, :bots_enabled?, true)}
   end
 
   def handle_frame({:binary, frame}, state) do
@@ -48,6 +48,9 @@ defmodule BotManager.GameSocketHandler do
 
       %{event: {:finished, _}} ->
         exit(:shutdown)
+
+      %{event: {:toggle_bots, _}} ->
+        {:ok, Map.put(state, :bots_enabled?, not state.bots_enabled?)}
 
       _ ->
         {:ok, state}

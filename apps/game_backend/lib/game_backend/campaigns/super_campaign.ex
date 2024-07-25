@@ -23,5 +23,6 @@ defmodule GameBackend.Campaigns.SuperCampaign do
     |> cast(attrs, [:game_id, :name])
     |> cast_assoc(:campaigns)
     |> validate_required([:game_id])
+    |> unique_constraint([:name, :game_id])
   end
 end

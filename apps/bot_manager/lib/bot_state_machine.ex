@@ -6,6 +6,10 @@ defmodule BotManager.BotStateMachine do
   alias BotManager.Utils
   alias BotManager.Math.Vector
 
+  def decide_action(%{bots_enabled?: false}) do
+    {:move, %{x: 0, y: 0}}
+  end
+
   def decide_action(%{game_state: game_state, bot_player: bot_player}) do
     closest_player =
       map_directions_to_players(game_state, bot_player)

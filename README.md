@@ -3,18 +3,24 @@ Mirra Backend is an umbrella project that contains several apps within it.
 
 The objective is to split the project into multiple applications (modules) based on their responsibilities. This will allow us to add decoupled modules that can be used together without having a dependency between them.
 
-Before starting the project, make sure you have installed the following dependencies:
+## Requirements
+
+- **Protobuf:**
+To serialize our websocket messages, we use Protobuf.
+Install running:
+```bash
+brew install protobuf
+mix escript.install hex protobuf # Remember to add escripts folder to your $PATH
+# JS protobuf for game_client app.
+cd assets
+npm install google-protobuf
+npm install -g protoc-gen-js
+```
 
 - **Nix:**
 You can install the Nix package manager by running the following command in your terminal:
-
 ```bash
-$ curl \
-  --proto '=https' \
-  --tlsv1.2 \
-  -sSf \
-  -L https://install.determinate.systems/nix \
-  | sh -s -- install
+curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
 ```
 
 The installer will ask you for the sudo password, and then print the details about what steps it will perform to install Nix. You have to accept this to proceed with the installation.
@@ -23,8 +29,8 @@ Make sure there weren't any errors during the installation and, if there are non
 
 To test if Nix generally works, just run GNU hello or any other package:
 ```bash
-$ nix run nixpkgs#hello
-Hello, world!
+nix run nixpkgs#hello
+> Hello, world!
 ```
 
 For a more detailed explanation, visit the [Nixcademy installation guide](https://nixcademy.com/2024/01/15/nix-on-macos/).
@@ -33,34 +39,48 @@ For a more detailed explanation, visit the [Nixcademy installation guide](https:
 
 After installing Nix, run the following command to install devenv:
 ```bash
-$ nix-env -if https://install.devenv.sh/latest
+nix-env -if https://install.devenv.sh/latest
 ```
 
-To start all applications, run the following command:
-
+For devenv to manage caches for you, add yourself to trusted-users in nix conf:
+```bash
+# Log in as super user first
+sudo su -
+vim /etc/nix/nix.conf
+# Add the users you want to use nix store to nix.conf file
+trusted-users = root your-user
+# Restart nix-daemon
+sudo launchctl kickstart -k system/org.nixos.nix-daemon
 ```
+
+Clone the repo:
+```bash
+git clone https://github.com/lambdaclass/mirra_backend.git
+```
+
+Install the last elixir package manager inside devenv:
+```bash
+devenv shell
+mix archive.install github hexpm/hex branch latest
+```
+
+## Start applications
+
+To build and run all the applications, run the following command:
+```bash
 devenv up
 ```
-
-Then navigate to the following link to start a game: http://localhost:3000/board/1/muflus
+Then navigate to the following link to start a game: http://localhost:3000/
 
 
 If you want to have access to the Elixir console, instead do:
-
-```
+```bash
 devenv shell postgres
-```
-
-Then in another terminal:
-
-```
+# Then in another terminal:
 devenv shell
 make start
 ```
-
-Note you need to have ran `devenv up` earlier.
-
-Each of the applications, as mentioned in the previous paragraph, has a specific responsibility:
+_Note you need to have ran `devenv up` earlier._
 
 ## Applications
 
@@ -98,6 +118,7 @@ cd apps/game_client/
 make deps
 make start
 ```
+
 For more information, you can read its [documentation](apps/game_client/README.md)
 
 ### Gateway

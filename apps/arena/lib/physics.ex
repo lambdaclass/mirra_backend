@@ -11,13 +11,13 @@ defmodule Physics do
   def add(_arg1, _arg2), do: :erlang.nif_error(:nif_not_loaded)
   def check_collisions(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_entities(_entities, _ticks_to_move, _external_wall, _obstacles),
+  def move_entities(_entities, _delta_time, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_entity(_entity, _ticks_to_move, _external_wall, _obstacles),
+  def move_entity(_entity, _delta_time, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
 
-  def move_entity(_entity, _ticks_to_move, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
+  def move_entity(_entity, _delta_time, _external_wall), do: :erlang.nif_error(:nif_not_loaded)
 
   def get_closest_available_position(_entity, _new_position, _external_wall, _obstacles),
     do: :erlang.nif_error(:nif_not_loaded)
@@ -39,4 +39,6 @@ defmodule Physics do
   def distance_between_entities(_entity, _entities), do: :erlang.nif_error(:nif_not_loaded)
 
   def nearest_entity_position_in_range(_entity, _entities, _range), do: :erlang.nif_error(:nif_not_loaded)
+
+  def maybe_triangulate_concave_entities(_obstacles), do: :erlang.nif_error(:nif_not_loaded)
 end

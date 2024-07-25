@@ -3,6 +3,8 @@ defmodule Arena.GameSocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
+  alias Arena.Authentication.GatewaySigner
+  alias Arena.Authentication.GatewayTokenManager
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
@@ -14,7 +16,19 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def init(req, _opts) do
-    client_id = :cowboy_req.binding(:client_id, req)
+    ## TODO: The only reason we need this is because bots are broken, we should fix bots in a way that
+    ##  we don't need to pass a real user_id (or none at all). Ideally we could have JWT that says "Bot Server".
+    client_id =
+      case :cowboy_req.parse_qs(req) do
+        [{"gateway_jwt", jwt}] ->
+          signer = GatewaySigner.get_signer()
+          {:ok, %{"sub" => user_id}} = GatewayTokenManager.verify_and_validate(jwt, signer)
+          user_id
+
+        _ ->
+          :cowboy_req.binding(:client_id, req)
+      end
+
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
 
@@ -26,7 +40,7 @@ defmodule Arena.GameSocketHandler do
     Logger.info("Websocket INIT called")
     Phoenix.PubSub.subscribe(Arena.PubSub, state.game_id)
 
-    {:ok, %{player_id: player_id, game_config: config, game_status: game_status}} =
+    {:ok, %{player_id: player_id, game_config: config, game_status: game_status, bounties: bounties}} =
       GameUpdater.join(state.game_pid, state.client_id)
 
     state =
@@ -39,17 +53,12 @@ defmodule Arena.GameSocketHandler do
 
     encoded_msg =
       GameEvent.encode(%GameEvent{
-        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config)}}
+        event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 
     {:reply, {:binary, encoded_msg}, state}
-  end
-
-  @impl true
-  def websocket_handle(_, %{enable: false} = state) do
-    {:ok, state}
   end
 
   @impl true
@@ -71,31 +80,9 @@ defmodule Arena.GameSocketHandler do
     {:reply, {:pong, ""}, state}
   end
 
-  def websocket_handle({:binary, message}, %{block_actions: block_actions, block_movement: block_movement} = state) do
-    case Serialization.GameAction.decode(message) do
-      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
-        unless block_actions do
-          GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
-        end
-
-      %{action_type: {:use_item, _}, timestamp: timestamp} ->
-        unless block_actions do
-          GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
-        end
-
-      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
-        unless block_movement do
-          GameUpdater.move(
-            state.game_pid,
-            state.player_id,
-            {direction.x, direction.y},
-            timestamp
-          )
-        end
-
-      _ ->
-        {}
-    end
+  def websocket_handle({:binary, message}, state) do
+    Serialization.GameAction.decode(message)
+    |> handle_decoded_message(state)
 
     {:ok, state}
   end
@@ -163,6 +150,10 @@ defmodule Arena.GameSocketHandler do
     end
   end
 
+  def websocket_info({:toggle_bots, message}, state) do
+    {:reply, {:binary, message}, state}
+  end
+
   @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
@@ -171,10 +162,12 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
-    spawn(fn ->
-      Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
-      |> Finch.request(Arena.Finch)
-    end)
+    if Application.get_env(:arena, :spawn_bots) do
+      spawn(fn ->
+        Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
+        |> Finch.request(Arena.Finch)
+      end)
+    end
 
     :ok
   end
@@ -195,14 +188,72 @@ defmodule Arena.GameSocketHandler do
   defp to_broadcast_skill({key, skill}) do
     ## TODO: This will break once a skill has more than 1 mechanic, until then
     ##   we can use this "shortcut" and deal with it when the time comes
-    [{_mechanic, params}] = skill.mechanics
+    [mechanic] = skill.mechanics
 
     extra_params = %{
-      targetting_radius: params[:radius],
-      targetting_angle: params[:angle],
-      targetting_range: params[:range]
+      targetting_radius: mechanic[:radius],
+      targetting_angle: mechanic[:angle],
+      targetting_range: mechanic[:range],
+      targetting_offset: mechanic[:offset] || mechanic[:projectile_offset]
     }
 
     {key, Map.merge(skill, extra_params)}
+  end
+
+  defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
+    do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
+
+  defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
+    do: GameUpdater.toggle_zone(state.game_pid)
+
+  defp handle_decoded_message(%{action_type: {:toggle_bots, _bots_params}}, state),
+    do: GameUpdater.toggle_bots(state.game_pid)
+
+  defp handle_decoded_message(%{action_type: {:change_tickrate, tickrate_params}}, state),
+    do: GameUpdater.change_tickrate(state.game_pid, tickrate_params.tickrate)
+
+  defp handle_decoded_message(_action_type, %{enable: false} = _state), do: nil
+
+  defp handle_decoded_message(
+         %{action_type: {action, _}} = message,
+         %{block_movement: false} = state
+       )
+       when action in [:move] do
+    case message do
+      %{action_type: {:move, %{direction: direction}}, timestamp: timestamp} ->
+        GameUpdater.move(
+          state.game_pid,
+          state.player_id,
+          {direction.x, direction.y},
+          timestamp
+        )
+
+      _ ->
+        nil
+    end
+  end
+
+  defp handle_decoded_message(
+         %{action_type: {action, _}} = message,
+         %{block_actions: false} = state
+       )
+       when action in [:attack, :use_item] do
+    case message do
+      %{action_type: {:attack, %{skill: skill, parameters: params}}, timestamp: timestamp} ->
+        GameUpdater.attack(state.game_pid, state.player_id, skill, params, timestamp)
+
+      %{action_type: {:use_item, _}, timestamp: timestamp} ->
+        GameUpdater.use_item(state.game_pid, state.player_id, timestamp)
+
+      _ ->
+        nil
+    end
+  end
+
+  # We don't do anything in these messages, we already handle these actions when we have to in previous functions.
+  defp handle_decoded_message(%{action_type: {action, _}}, _state) when action in [:move, :attack, :use_item], do: nil
+
+  defp handle_decoded_message(message, _) do
+    Logger.info("Unexpected message: #{inspect(message)}")
   end
 end

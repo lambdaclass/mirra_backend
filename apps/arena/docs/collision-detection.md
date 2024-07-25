@@ -87,3 +87,56 @@ and nothing else, so we decided to take the following approach:
 1. We use the Jeffrey Thompson's implementation to detect that a collision actually happened.
 2. Using SAT we can get the normal that will resolve that collision and the amount of movement we should do 
 so the entities are no longer colliding, so when a collision occurs we will use SAT to push the entities in the direction that, with the minimum movement, will resolve that collision.
+
+
+# Polygon triangulation
+
+Most of the collision detection algorithms doesn't support concave shapes and that limitation was too harsh
+to fix it manually. To fix this we'll process concave through a triangulation algorithm that will split the 
+polygon into several triangles
+
+In comparison fixing the collision detection algorithm to support concave shapes is exponentially harder than triangulation and there's no a good defined solution to this 
+
+
+## Ear clipping triangulation algorithm
+
+The logic of the algorithm goes like this:
+1. Traverse the polygon looking for ears
+2. Once we find an ear do the following:
+   - Save the triangle formed by the current previous and next vertex
+   - Delete the current vertex from the available vertex list
+   - Start again with the cleaned up vertex list until the list length is 3
+3. Make a final triangle with the 3 remaining vertices
+
+### What defines an ear:
+To confirm that a vertex is an ear it has to meet the following criteria:
+1. The angle that's formed with the previous and following vertex must have less than 180 degrees 
+2. The triangle formed with the previous and next vertices must not contain any of the other vertex in the vertices list
+
+### Using cross product to determine convexity and triangle containment:
+
+To determine concavity we used the scalar given by the cross product between the vectors that form 
+of the three positions when we traverse the vertex of a polygons: the current previous and next positions,
+- a: current vertex
+- b: previous vertex
+- c: next vertex
+
+a->b first vector
+a->c next vector
+
+
+When this scalar is negative we can say that an angle is convex
+You can visualize this in this link: [Geogebra visualizer](https://www.geogebra.org/m/psMTGDgc)
+
+The same was used for triangle containment but the vectors used are the one from each vertex of the triangle
+related to the compared vertex. If every cross product scalar results to be negative we can ensure that 
+a point is inside the triangle
+
+For example in the following image the first iteration would be
+
+a->b first vector
+a->v next vector
+
+That scalar results negative
+![Triangle containment check by cross product usage](./images/Point%20inside%20triangle.jpg "Point inside triangle")
+

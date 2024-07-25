@@ -11,6 +11,7 @@
     pkgs.rustc
     pkgs.cargo
     pkgs.clang
+    pkgs.nodejs_21
 
   ] ++ lib.optionals pkgs.stdenv.isLinux [ 
     # Packages only for Linux

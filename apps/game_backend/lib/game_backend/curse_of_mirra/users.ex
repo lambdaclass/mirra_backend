@@ -2,10 +2,10 @@ defmodule GameBackend.CurseOfMirra.Users do
   @moduledoc """
     Module to work with users logic
   """
+  alias GameBackend.Units
   alias GameBackend.Repo
   alias GameBackend.Users.User
   alias GameBackend.Utils
-  alias GameBackend.Units.Characters
   alias GameBackend.CurseOfMirra.Config
 
   @doc """
@@ -29,12 +29,7 @@ defmodule GameBackend.CurseOfMirra.Users do
       Enum.reduce(Config.get_characters_config(), [], fn char_params, acc ->
         acc ++
           [
-            %{
-              level: level,
-              selected: true,
-              character_id:
-                Characters.get_character_id_by_name_and_game_id(char_params.name, Utils.get_game_id(:curse_of_mirra))
-            }
+            Units.get_unit_default_values(char_params.name)
           ]
       end)
 

@@ -76,6 +76,10 @@ config :ueberauth, Ueberauth,
     google: {Ueberauth.Strategy.Google, []}
   ]
 
+config :joken,
+  ## 2 hours for expiration
+  default_exp: 2 * 60 * 60
+
 ############################
 # App configuration: arena #
 ############################
@@ -113,6 +117,7 @@ config :arena, Arena.Mailer, adapter: Swoosh.Adapters.Local
 
 # Amount of clients needed to start a game
 config :arena, :players_needed_in_match, 10
+config :arena, :spawn_bots, false
 
 ################################
 # App configuration: champions #
@@ -190,7 +195,7 @@ config :configurator,
 
 # Configures the endpoint
 config :configurator, ConfiguratorWeb.Endpoint,
-  url: [host: "localhost"],
+  url: [host: "localhost", port: 4100],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: ConfiguratorWeb.ErrorHTML, json: ConfiguratorWeb.ErrorJSON],
@@ -198,6 +203,8 @@ config :configurator, ConfiguratorWeb.Endpoint,
   ],
   pubsub_server: Configurator.PubSub,
   live_view: [signing_salt: "6A8twvHJ"]
+
+config :configurator, Configurator.Repo, migration_primary_key: [type: :binary_id]
 
 ############################
 # Import environment specific config. This must remain at the bottom
