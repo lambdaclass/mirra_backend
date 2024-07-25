@@ -164,7 +164,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     amount_of_quest_available = Enum.count(available_quests)
 
     cond do
-      type not in Quest.types() ->
+      type not in Ecto.Enum.values(GameBackend.Quests.Quest, :type) ->
         {:error, :quest_type_not_implemented}
 
       amount > amount_of_quest_available ->

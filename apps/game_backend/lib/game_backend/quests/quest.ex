@@ -11,7 +11,7 @@ defmodule GameBackend.Quests.Quest do
   @derive {Jason.Encoder, only: [:description, :conditions, :objective, :id]}
   schema "quests" do
     field(:description, :string)
-    field(:type, :string)
+    field(:type, Ecto.Enum, values: [:daily, :bounty, :weekly])
     field(:objective, :map)
     field(:reward, :map)
     field(:config_id, :integer)
@@ -19,10 +19,6 @@ defmodule GameBackend.Quests.Quest do
 
     timestamps()
   end
-
-  @types ["daily", "bounty", "weekly"]
-
-  def types(), do: @types
 
   @required [
     :description,
@@ -39,6 +35,5 @@ defmodule GameBackend.Quests.Quest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
-    |> validate_inclusion(:type, @types)
   end
 end
