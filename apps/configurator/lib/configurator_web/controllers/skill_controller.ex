@@ -36,13 +36,16 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def edit(conn, %{"id" => id}) do
-    skill = Skills.get_skill!(id)
+    skill = Skills.get_skill!(id) |> IO.inspect(label: "skill")
     changeset = Skills.change_skill(skill)
     render(conn, :edit, skill: skill, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "skill" => skill_params}) do
     skill = Skills.get_skill!(id)
+
+    skill_params =
+      update_in(skill_params, ["mechanics", "0", "vertices"], fn vertices -> Jason.decode!(vertices) end)
 
     case Skills.update_skill(skill, skill_params) do
       {:ok, skill} ->

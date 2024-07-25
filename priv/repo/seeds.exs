@@ -368,6 +368,8 @@ skills = [
         "duration_ms" => 2500,
         "radius" => 500.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "denial_of_service"
         ]
@@ -464,6 +466,8 @@ skills = [
         "duration_ms" => 5000,
         "radius" => 450.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "singularity"
         ]
