@@ -36,7 +36,7 @@ defmodule ConfiguratorWeb.SkillController do
   end
 
   def edit(conn, %{"id" => id}) do
-    skill = Skills.get_skill!(id) |> IO.inspect(label: "skill")
+    skill = Skills.get_skill!(id)
     changeset = Skills.change_skill(skill)
     render(conn, :edit, skill: skill, changeset: changeset)
   end
