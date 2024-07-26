@@ -4,6 +4,8 @@ defmodule GameClient.ClientSocketHandler do
   It handles the communication with the server.
   """
 
+  alias GameClient.Serialization.ConversionProtobuf
+
   use WebSockex, restart: :transient
   require Logger
 
@@ -26,17 +28,8 @@ defmodule GameClient.ClientSocketHandler do
   def handle_info({:move, %{"x" => x, "y" => y}}, state) do
     Logger.info("Sending GameAction frame with MOVE payload")
 
-    game_action =
-      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
-        action_type:
-          {:move,
-           %GameClient.Protobuf.MovePB{
-             direction: %GameClient.Protobuf.DirectionPB{
-               x: x,
-               y: y
-             }
-           }}
-      })
+    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    game_action = ConversionProtobuf.get_game_move_protobuf(x, y, timestamp)
 
     {:reply, {:binary, game_action}, state}
   end
@@ -44,20 +37,8 @@ defmodule GameClient.ClientSocketHandler do
   def handle_info({:attack, skill}, state) do
     Logger.info("Sending GameAction frame with ATTACK payload")
 
-    game_action =
-      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
-        action_type:
-          {:attack,
-           %GameClient.Protobuf.AttackPB{
-             skill: skill,
-             parameters: %GameClient.Protobuf.AttackParametersPB{
-               target: %GameClient.Protobuf.DirectionPB{
-                 x: 0,
-                 y: 0
-               }
-             }
-           }}
-      })
+    timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    game_action = ConversionProtobuf.get_game_attack_protobuf(skill, 0, 0, timestamp)
 
     {:reply, {:binary, game_action}, state}
   end
@@ -65,10 +46,7 @@ defmodule GameClient.ClientSocketHandler do
   def handle_info({:use_item, item}, state) do
     Logger.info("Sending GameAction frame with USE_ITEM payload")
 
-    game_action =
-      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
-        action_type: {:use_item, %GameClient.Protobuf.UseItemPB{item: String.to_integer(item)}}
-      })
+    game_action = ConversionProtobuf.get_game_use_item_protobuf(item)
 
     {:reply, {:binary, game_action}, state}
   end
@@ -76,10 +54,7 @@ defmodule GameClient.ClientSocketHandler do
   def handle_info(:toggle_bots, state) do
     Logger.info("Sending GameAction frame with toggle_bots payload")
 
-    game_action =
-      GameClient.Protobuf.GameActionPB.encode(%GameClient.Protobuf.GameActionPB{
-        action_type: {:toggle_bots, %GameClient.Protobuf.ToggleBotsPB{}}
-      })
+    game_action = ConversionProtobuf.get_toggle_bots_protobuf()
 
     {:reply, {:binary, game_action}, state}
   end

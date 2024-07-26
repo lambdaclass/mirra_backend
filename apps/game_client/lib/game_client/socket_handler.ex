@@ -3,7 +3,7 @@ defmodule GameClient.SocketHandler do
   Module that handles cowboy websocket requests
   """
   require Logger
-  alias GameClient.Protobuf.GameStatePB
+  alias GameClient.Serialization.ConversionProtobuf
 
   @behaviour :cowboy_websocket
 
@@ -18,12 +18,7 @@ defmodule GameClient.SocketHandler do
   def websocket_init(state) do
     Logger.info("Websocket INIT called")
 
-    game_state =
-      GameStatePB.encode(%GameStatePB{
-        game_id: nil,
-        players: %{},
-        projectiles: %{}
-      })
+    game_state = ConversionProtobuf.get_join_game_protobuf(nil)
 
     {:reply, {:binary, game_state}, state}
   end
@@ -44,12 +39,7 @@ defmodule GameClient.SocketHandler do
   def websocket_info({:join_game, game_id}, state) do
     Logger.info("Websocket info, Message: joined game with id: #{inspect(game_id)}")
 
-    game_state =
-      GameStatePB.encode(%GameStatePB{
-        game_id: game_id,
-        players: %{},
-        projectiles: %{}
-      })
+    game_state = ConversionProtobuf.get_join_game_protobuf(game_id)
 
     {:reply, {:binary, game_state}, state}
   end

@@ -20,7 +20,7 @@ defmodule GameClient.WsClient do
 
   def send_command(pid, _command) do
     direction = %{x: 1.0, y: 0.0}
-    direction_encoded = GameClient.Protobuf.DirectionPB.encode(direction)
+    direction_encoded = ConversionProtobuf.get_direction_protobuf(direction)
 
     WebSockex.cast(pid, {:send, {:binary, direction_encoded}})
   end

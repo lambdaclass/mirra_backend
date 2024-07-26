@@ -34,7 +34,7 @@ defmodule BotManager.GameSocketHandler do
 
   def handle_frame({:binary, msg}, state) do
 
-    game_msg = ConversionProtobuf.decode_lobby_event_protobuf(msg)
+    game_msg = ConversionProtobuf.decode_game_event_protobuf(msg)
     case game_msg do
       %{event: {:update, game_state}} ->
         bot_player = Map.get(game_state.players, state.player_id)

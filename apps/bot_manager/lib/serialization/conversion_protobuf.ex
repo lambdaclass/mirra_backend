@@ -1,5 +1,5 @@
 defmodule BotManager.Serialization.ConversionProtobuf do
-  alias BotManager.Serialization.{GameActionPB, MovePB, DirectionPB, AttackPB, AttackParametersPB, LobbyEventPB}
+  alias BotManager.Serialization.{GameEventPB, GameActionPB, MovePB, DirectionPB, AttackPB, AttackParametersPB}
 
   def get_game_move_protobuf(x, y, timestamp) do
     GameActionPB.encode(%GameActionPB{
@@ -32,7 +32,7 @@ defmodule BotManager.Serialization.ConversionProtobuf do
     })
   end
 
-  def decode_lobby_event_protobuf(message) do
-    LobbyEventPB.decode(message)
+  def decode_game_event_protobuf(message) do
+    GameEventPB.decode(message)
   end
 end

@@ -2,6 +2,8 @@ defmodule GameClientWeb.BoardLive.Show do
   require Logger
   use GameClientWeb, :live_view
 
+  alias GameClient.Serialization.ConversionProtobuf
+
   def mount(%{"game_id" => game_id} = params, session, socket) do
     if connected?(socket) do
       mount_connected(params, session["gateway_jwt"], socket)
@@ -42,7 +44,7 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   def handle_info({:game_event, game_event}, socket) do
-    %{event: event} = GameClient.Protobuf.GameEventPB.decode(game_event)
+    %{event: event} = ConversionProtobuf.decode_game_event_protobuf(game_event)
     handle_game_event(event, socket)
   end
 
