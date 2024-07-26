@@ -59,6 +59,10 @@ defmodule ConfiguratorWeb.Router do
     resources "/skills", SkillController
     resources "/game_configurations", GameConfigurationController
     resources "/map_configurations", MapConfigurationController
+    get "/map_configurations/:id/edit_obstacles", MapConfigurationController, :edit_obstacles
+    put "/map_configurations/:id/update_obstacles", MapConfigurationController, :update_obstacles
+    get "/map_configurations/:id/edit_pools", MapConfigurationController, :edit_pools
+    put "/map_configurations/:id/update_pools", MapConfigurationController, :update_pools
     resources "/consumable_items", ConsumableItemController
   end
 

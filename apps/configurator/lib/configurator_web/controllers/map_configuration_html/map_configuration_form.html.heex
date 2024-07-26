@@ -11,34 +11,7 @@
   />
   <.input field={f[:obstacles]} type="textarea" label="Obstacles" value={embed_to_string(f[:obstacles].value)} />
   <.input field={f[:bushes]} type="textarea" label="Bushes" value={embed_to_string(f[:bushes].value)} />
-  <.header>
-    Pools
-  </.header>
-  <.inputs_for :let={pool_f} field={f[:pools]}>
-    <h2>Pool <%= pool_f.data.name %></h2>
-    <.input field={pool_f[:name]} type="text" label="Name" />
-    <.input field={pool_f[:radius]} type="number" label="Radius" />
-    <.input
-      field={pool_f[:shape]}
-      type="select"
-      label="Shape"
-      options={Ecto.Enum.values(GameBackend.CurseOfMirra.MapConfiguration.Pool, :shape)}
-    />
-    <.input field={pool_f[:effects]} type="select" label="effects" multiple options={["slow_field"]} />
-    <.inputs_for :let={position_f} field={pool_f[:position]}>
-      <.input field={position_f[:x]} type="number" label="X" />
-      <.input field={position_f[:y]} type="number" label="Y" />
-    </.inputs_for>
-
-    <.button type="button" phx-click={show_modal("pool-vertices-#{pool_f.data.id}")}>Edit Vertices</.button>
-    <.modal id={"pool-vertices-#{pool_f.data.id}"}>
-      <.inputs_for :let={vertices_form} field={pool_f[:vertices]}>
-        <h3>Vertex</h3>
-        <.input field={vertices_form[:x]} type="number" label="X" />
-        <.input field={vertices_form[:y]} type="number" label="Y" />
-      </.inputs_for>
-    </.modal>
-  </.inputs_for>
+  <.input field={f[:pools]} type="textarea" label="Pools" value={embed_to_string(f[:pools].value)} />
   <:actions>
     <.button>Save Map configuration</.button>
   </:actions>
