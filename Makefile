@@ -45,13 +45,13 @@ generate-arena-protos:
 
 generate-game-client-protos:
 	protoc \
-		--elixir_out=apps/game_client/lib/game_client/protobuf \
-		--elixir_opt=package_prefix=game_client.protobuf \
+		--elixir_out=apps/game_client/lib/game_client/serialization \
+		--elixir_opt=package_prefix=game_client.serialization \
 		--proto_path=apps/serialization \
 		messages.proto
 
 	protoc \
-		--js_out=import_style=commonjs:apps/game_client/assets/js/protobuf \
+		--js_out=import_style=commonjs:apps/game_client/assets/js/serialization \
 		--proto_path=apps/serialization \
 		messages.proto
 
@@ -64,7 +64,7 @@ generate-arena-load-test-protos:
 
 generate-bot-manager-protos:
 	protoc \
-		--elixir_out=apps/bot_manager/lib/protobuf \
-		--elixir_opt=package_prefix=bot_manager.protobuf \
+		--elixir_out=apps/bot_manager/lib/serialization \
+		--elixir_opt=package_prefix=bot_manager.serialization \
 		--proto_path=apps/serialization \
 		messages.proto

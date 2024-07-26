@@ -50,8 +50,12 @@ defmodule Arena.GameSocketHandler do
       |> Map.put(:game_finished, game_status == :ENDED)
       |> Map.put(:player_alive, true)
 
-
-    message = ConversionProtobuf.get_game_game_joined_protobuf(%{player_id: player_id, config: to_broadcast_config(config), bounties: bounties})
+    message =
+      ConversionProtobuf.get_game_game_joined_protobuf(%{
+        player_id: player_id,
+        config: to_broadcast_config(config),
+        bounties: bounties
+      })
 
     Process.send_after(self(), :send_ping, @ping_interval_ms)
 

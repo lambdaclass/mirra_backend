@@ -42,6 +42,7 @@ defmodule Arena.SocketHandler do
   @impl true
   def websocket_handle({:binary, message}, state) do
     decoded_message = ConversionProtobuf.decode_lobby_message(message)
+
     case decoded_message do
       :leave_lobby ->
         :ok = GameLauncher.leave(state.client_id)

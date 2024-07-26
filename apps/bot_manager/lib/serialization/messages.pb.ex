@@ -1,4 +1,4 @@
-defmodule GameClient.Protobuf.GameStatusPB do
+defmodule BotManager.Serialization.GameStatusPB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -9,7 +9,7 @@ defmodule GameClient.Protobuf.GameStatusPB do
   field(:SELECTING_BOUNTY, 3)
 end
 
-defmodule GameClient.Protobuf.ProjectileStatusPB do
+defmodule BotManager.Serialization.ProjectileStatusPB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -19,7 +19,7 @@ defmodule GameClient.Protobuf.ProjectileStatusPB do
   field(:CONSUMED, 2)
 end
 
-defmodule GameClient.Protobuf.CrateStatusPB do
+defmodule BotManager.Serialization.CrateStatusPB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -28,7 +28,7 @@ defmodule GameClient.Protobuf.CrateStatusPB do
   field(:DESTROYED, 1)
 end
 
-defmodule GameClient.Protobuf.PowerUpstatusPB do
+defmodule BotManager.Serialization.PowerUpstatusPB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -38,7 +38,7 @@ defmodule GameClient.Protobuf.PowerUpstatusPB do
   field(:UNAVAILABLE, 2)
 end
 
-defmodule GameClient.Protobuf.PlayerActionTypePB do
+defmodule BotManager.Serialization.PlayerActionTypePB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -51,7 +51,7 @@ defmodule GameClient.Protobuf.PlayerActionTypePB do
   field(:EXECUTING_SKILL_3, 5)
 end
 
-defmodule GameClient.Protobuf.TrapStatusPB do
+defmodule BotManager.Serialization.TrapStatusPB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -62,7 +62,7 @@ defmodule GameClient.Protobuf.TrapStatusPB do
   field(:USED, 3)
 end
 
-defmodule GameClient.Protobuf.PoolStatusPB do
+defmodule BotManager.Serialization.PoolStatusPB do
   @moduledoc false
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -71,7 +71,7 @@ defmodule GameClient.Protobuf.PoolStatusPB do
   field(:READY, 1)
 end
 
-defmodule GameClient.Protobuf.DirectionPB do
+defmodule BotManager.Serialization.DirectionPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -80,7 +80,7 @@ defmodule GameClient.Protobuf.DirectionPB do
   field(:y, 2, type: :float)
 end
 
-defmodule GameClient.Protobuf.PositionPB do
+defmodule BotManager.Serialization.PositionPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -89,75 +89,80 @@ defmodule GameClient.Protobuf.PositionPB do
   field(:y, 2, type: :float)
 end
 
-defmodule GameClient.Protobuf.LobbyEventPB do
+defmodule BotManager.Serialization.LobbyEventPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   oneof(:event, 0)
 
-  field(:leave, 1, type: GameClient.Protobuf.LeaveLobbyPB, oneof: 0)
-  field(:left, 2, type: GameClient.Protobuf.LeftLobbyPB, oneof: 0)
-  field(:joined, 3, type: GameClient.Protobuf.JoinedLobbyPB, oneof: 0)
-  field(:game, 4, type: GameClient.Protobuf.GameStatePB, oneof: 0)
+  field(:leave, 1, type: BotManager.Serialization.LeaveLobbyPB, oneof: 0)
+  field(:left, 2, type: BotManager.Serialization.LeftLobbyPB, oneof: 0)
+  field(:joined, 3, type: BotManager.Serialization.JoinedLobbyPB, oneof: 0)
+  field(:game, 4, type: BotManager.Serialization.GameStatePB, oneof: 0)
 end
 
-defmodule GameClient.Protobuf.LeaveLobbyPB do
+defmodule BotManager.Serialization.LeaveLobbyPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
-defmodule GameClient.Protobuf.LeftLobbyPB do
+defmodule BotManager.Serialization.LeftLobbyPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
-defmodule GameClient.Protobuf.JoinedLobbyPB do
+defmodule BotManager.Serialization.JoinedLobbyPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
-defmodule GameClient.Protobuf.GameEventPB do
+defmodule BotManager.Serialization.GameEventPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   oneof(:event, 0)
 
-  field(:joined, 1, type: GameClient.Protobuf.GameJoinedPB, oneof: 0)
-  field(:update, 2, type: GameClient.Protobuf.GameStatePB, oneof: 0)
-  field(:finished, 3, type: GameClient.Protobuf.GameFinishedPB, oneof: 0)
-  field(:ping, 4, type: GameClient.Protobuf.PingUpdatePB, oneof: 0)
-  field(:toggle_bots, 5, type: GameClient.Protobuf.ToggleBotsPB, json_name: "toggleBots", oneof: 0)
+  field(:joined, 1, type: BotManager.Serialization.GameJoinedPB, oneof: 0)
+  field(:update, 2, type: BotManager.Serialization.GameStatePB, oneof: 0)
+  field(:finished, 3, type: BotManager.Serialization.GameFinishedPB, oneof: 0)
+  field(:ping, 4, type: BotManager.Serialization.PingUpdatePB, oneof: 0)
+
+  field(:toggle_bots, 5,
+    type: BotManager.Serialization.ToggleBotsPB,
+    json_name: "toggleBots",
+    oneof: 0
+  )
 end
 
-defmodule GameClient.Protobuf.GameFinishedPB.PlayersEntry do
+defmodule BotManager.Serialization.GameFinishedPB.PlayersEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameFinishedPB do
+defmodule BotManager.Serialization.GameFinishedPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:winner, 1, type: GameClient.Protobuf.EntityPB)
+  field(:winner, 1, type: BotManager.Serialization.EntityPB)
 
   field(:players, 2,
     repeated: true,
-    type: GameClient.Protobuf.GameFinishedPB.PlayersEntry,
+    type: BotManager.Serialization.GameFinishedPB.PlayersEntry,
     map: true
   )
 end
 
-defmodule GameClient.Protobuf.PingUpdatePB do
+defmodule BotManager.Serialization.PingUpdatePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -165,28 +170,32 @@ defmodule GameClient.Protobuf.PingUpdatePB do
   field(:latency, 1, type: :uint64)
 end
 
-defmodule GameClient.Protobuf.GameJoinedPB do
+defmodule BotManager.Serialization.GameJoinedPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:player_id, 1, type: :uint64, json_name: "playerId")
-  field(:config, 2, type: GameClient.Protobuf.ConfigurationPB)
-  field(:bounties, 3, repeated: true, type: GameClient.Protobuf.BountyInfoPB)
+  field(:config, 2, type: BotManager.Serialization.ConfigurationPB)
+  field(:bounties, 3, repeated: true, type: BotManager.Serialization.BountyInfoPB)
 end
 
-defmodule GameClient.Protobuf.ConfigurationPB do
+defmodule BotManager.Serialization.ConfigurationPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:game, 1, type: GameClient.Protobuf.ConfigGamePB)
-  field(:map, 2, type: GameClient.Protobuf.ConfigMapPB)
-  field(:characters, 3, repeated: true, type: GameClient.Protobuf.ConfigCharacterPB)
-  field(:client_config, 4, type: GameClient.Protobuf.ClientConfigPB, json_name: "clientConfig")
+  field(:game, 1, type: BotManager.Serialization.ConfigGamePB)
+  field(:map, 2, type: BotManager.Serialization.ConfigMapPB)
+  field(:characters, 3, repeated: true, type: BotManager.Serialization.ConfigCharacterPB)
+
+  field(:client_config, 4,
+    type: BotManager.Serialization.ClientConfigPB,
+    json_name: "clientConfig"
+  )
 end
 
-defmodule GameClient.Protobuf.ConfigGamePB do
+defmodule BotManager.Serialization.ConfigGamePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -196,7 +205,7 @@ defmodule GameClient.Protobuf.ConfigGamePB do
   field(:start_game_time_ms, 3, type: :float, json_name: "startGameTimeMs")
 end
 
-defmodule GameClient.Protobuf.ConfigMapPB do
+defmodule BotManager.Serialization.ConfigMapPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -204,16 +213,16 @@ defmodule GameClient.Protobuf.ConfigMapPB do
   field(:radius, 1, type: :float)
 end
 
-defmodule GameClient.Protobuf.ConfigCharacterPB.SkillsEntry do
+defmodule BotManager.Serialization.ConfigCharacterPB.SkillsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :string)
-  field(:value, 2, type: GameClient.Protobuf.ConfigSkillPB)
+  field(:value, 2, type: BotManager.Serialization.ConfigSkillPB)
 end
 
-defmodule GameClient.Protobuf.ConfigCharacterPB do
+defmodule BotManager.Serialization.ConfigCharacterPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -227,23 +236,23 @@ defmodule GameClient.Protobuf.ConfigCharacterPB do
 
   field(:skills, 7,
     repeated: true,
-    type: GameClient.Protobuf.ConfigCharacterPB.SkillsEntry,
+    type: BotManager.Serialization.ConfigCharacterPB.SkillsEntry,
     map: true
   )
 end
 
-defmodule GameClient.Protobuf.ClientConfigPB do
+defmodule BotManager.Serialization.ClientConfigPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:server_update, 1,
-    type: GameClient.Protobuf.ConfigServerUpdatePB,
+    type: BotManager.Serialization.ConfigServerUpdatePB,
     json_name: "serverUpdate"
   )
 end
 
-defmodule GameClient.Protobuf.ConfigServerUpdatePB do
+defmodule BotManager.Serialization.ConfigServerUpdatePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -264,7 +273,7 @@ defmodule GameClient.Protobuf.ConfigServerUpdatePB do
   field(:ms_without_update_disconnect, 6, type: :uint64, json_name: "msWithoutUpdateDisconnect")
 end
 
-defmodule GameClient.Protobuf.ConfigSkillPB do
+defmodule BotManager.Serialization.ConfigSkillPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -279,25 +288,25 @@ defmodule GameClient.Protobuf.ConfigSkillPB do
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
 end
 
-defmodule GameClient.Protobuf.GameStatePB.PlayersEntry do
+defmodule BotManager.Serialization.GameStatePB.PlayersEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.ProjectilesEntry do
+defmodule BotManager.Serialization.GameStatePB.ProjectilesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.PlayerTimestampsEntry do
+defmodule BotManager.Serialization.GameStatePB.PlayerTimestampsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -306,7 +315,7 @@ defmodule GameClient.Protobuf.GameStatePB.PlayerTimestampsEntry do
   field(:value, 2, type: :int64)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.DamageTakenEntry do
+defmodule BotManager.Serialization.GameStatePB.DamageTakenEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -315,7 +324,7 @@ defmodule GameClient.Protobuf.GameStatePB.DamageTakenEntry do
   field(:value, 2, type: :uint64)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.DamageDoneEntry do
+defmodule BotManager.Serialization.GameStatePB.DamageDoneEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -324,132 +333,161 @@ defmodule GameClient.Protobuf.GameStatePB.DamageDoneEntry do
   field(:value, 2, type: :uint64)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.PowerUpsEntry do
+defmodule BotManager.Serialization.GameStatePB.PowerUpsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.ItemsEntry do
+defmodule BotManager.Serialization.GameStatePB.ItemsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.ObstaclesEntry do
+defmodule BotManager.Serialization.GameStatePB.ObstaclesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.PoolsEntry do
+defmodule BotManager.Serialization.GameStatePB.PoolsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.CratesEntry do
+defmodule BotManager.Serialization.GameStatePB.CratesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.BushesEntry do
+defmodule BotManager.Serialization.GameStatePB.BushesEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB.TrapsEntry do
+defmodule BotManager.Serialization.GameStatePB.TrapsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:key, 1, type: :uint64)
-  field(:value, 2, type: GameClient.Protobuf.EntityPB)
+  field(:value, 2, type: BotManager.Serialization.EntityPB)
 end
 
-defmodule GameClient.Protobuf.GameStatePB do
+defmodule BotManager.Serialization.GameStatePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:game_id, 1, type: :string, json_name: "gameId")
-  field(:players, 2, repeated: true, type: GameClient.Protobuf.GameStatePB.PlayersEntry, map: true)
+
+  field(:players, 2,
+    repeated: true,
+    type: BotManager.Serialization.GameStatePB.PlayersEntry,
+    map: true
+  )
 
   field(:projectiles, 3,
     repeated: true,
-    type: GameClient.Protobuf.GameStatePB.ProjectilesEntry,
+    type: BotManager.Serialization.GameStatePB.ProjectilesEntry,
     map: true
   )
 
   field(:player_timestamps, 4,
     repeated: true,
-    type: GameClient.Protobuf.GameStatePB.PlayerTimestampsEntry,
+    type: BotManager.Serialization.GameStatePB.PlayerTimestampsEntry,
     json_name: "playerTimestamps",
     map: true
   )
 
   field(:server_timestamp, 5, type: :int64, json_name: "serverTimestamp")
-  field(:zone, 6, type: GameClient.Protobuf.ZonePB)
-  field(:killfeed, 7, repeated: true, type: GameClient.Protobuf.KillEntryPB)
+  field(:zone, 6, type: BotManager.Serialization.ZonePB)
+  field(:killfeed, 7, repeated: true, type: BotManager.Serialization.KillEntryPB)
 
   field(:damage_taken, 8,
     repeated: true,
-    type: GameClient.Protobuf.GameStatePB.DamageTakenEntry,
+    type: BotManager.Serialization.GameStatePB.DamageTakenEntry,
     json_name: "damageTaken",
     map: true
   )
 
   field(:damage_done, 9,
     repeated: true,
-    type: GameClient.Protobuf.GameStatePB.DamageDoneEntry,
+    type: BotManager.Serialization.GameStatePB.DamageDoneEntry,
     json_name: "damageDone",
     map: true
   )
 
   field(:power_ups, 10,
     repeated: true,
-    type: GameClient.Protobuf.GameStatePB.PowerUpsEntry,
+    type: BotManager.Serialization.GameStatePB.PowerUpsEntry,
     json_name: "powerUps",
     map: true
   )
 
-  field(:status, 11, type: GameClient.Protobuf.GameStatusPB, enum: true)
+  field(:status, 11, type: BotManager.Serialization.GameStatusPB, enum: true)
   field(:start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp")
-  field(:items, 13, repeated: true, type: GameClient.Protobuf.GameStatePB.ItemsEntry, map: true)
 
-  field(:obstacles, 14,
+  field(:items, 13,
     repeated: true,
-    type: GameClient.Protobuf.GameStatePB.ObstaclesEntry,
+    type: BotManager.Serialization.GameStatePB.ItemsEntry,
     map: true
   )
 
-  field(:pools, 15, repeated: true, type: GameClient.Protobuf.GameStatePB.PoolsEntry, map: true)
-  field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameStatePB.CratesEntry, map: true)
-  field(:bushes, 17, repeated: true, type: GameClient.Protobuf.GameStatePB.BushesEntry, map: true)
-  field(:traps, 18, repeated: true, type: GameClient.Protobuf.GameStatePB.TrapsEntry, map: true)
+  field(:obstacles, 14,
+    repeated: true,
+    type: BotManager.Serialization.GameStatePB.ObstaclesEntry,
+    map: true
+  )
+
+  field(:pools, 15,
+    repeated: true,
+    type: BotManager.Serialization.GameStatePB.PoolsEntry,
+    map: true
+  )
+
+  field(:crates, 16,
+    repeated: true,
+    type: BotManager.Serialization.GameStatePB.CratesEntry,
+    map: true
+  )
+
+  field(:bushes, 17,
+    repeated: true,
+    type: BotManager.Serialization.GameStatePB.BushesEntry,
+    map: true
+  )
+
+  field(:traps, 18,
+    repeated: true,
+    type: BotManager.Serialization.GameStatePB.TrapsEntry,
+    map: true
+  )
 end
 
-defmodule GameClient.Protobuf.EntityPB do
+defmodule BotManager.Serialization.EntityPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -460,25 +498,25 @@ defmodule GameClient.Protobuf.EntityPB do
   field(:category, 2, type: :string)
   field(:shape, 3, type: :string)
   field(:name, 4, type: :string)
-  field(:position, 5, type: GameClient.Protobuf.PositionPB)
+  field(:position, 5, type: BotManager.Serialization.PositionPB)
   field(:radius, 6, type: :float)
-  field(:vertices, 7, repeated: true, type: GameClient.Protobuf.PositionPB)
+  field(:vertices, 7, repeated: true, type: BotManager.Serialization.PositionPB)
   field(:collides_with, 8, repeated: true, type: :uint64, json_name: "collidesWith")
   field(:speed, 9, type: :float)
-  field(:direction, 10, type: GameClient.Protobuf.DirectionPB)
+  field(:direction, 10, type: BotManager.Serialization.DirectionPB)
   field(:is_moving, 11, type: :bool, json_name: "isMoving")
-  field(:player, 12, type: GameClient.Protobuf.PlayerPB, oneof: 0)
-  field(:projectile, 13, type: GameClient.Protobuf.ProjectilePB, oneof: 0)
-  field(:obstacle, 14, type: GameClient.Protobuf.ObstaclePB, oneof: 0)
-  field(:power_up, 15, type: GameClient.Protobuf.PowerUpPB, json_name: "powerUp", oneof: 0)
-  field(:item, 16, type: GameClient.Protobuf.ItemPB, oneof: 0)
-  field(:pool, 17, type: GameClient.Protobuf.PoolPB, oneof: 0)
-  field(:crate, 18, type: GameClient.Protobuf.CratePB, oneof: 0)
-  field(:bush, 19, type: GameClient.Protobuf.BushPB, oneof: 0)
-  field(:trap, 20, type: GameClient.Protobuf.TrapPB, oneof: 0)
+  field(:player, 12, type: BotManager.Serialization.PlayerPB, oneof: 0)
+  field(:projectile, 13, type: BotManager.Serialization.ProjectilePB, oneof: 0)
+  field(:obstacle, 14, type: BotManager.Serialization.ObstaclePB, oneof: 0)
+  field(:power_up, 15, type: BotManager.Serialization.PowerUpPB, json_name: "powerUp", oneof: 0)
+  field(:item, 16, type: BotManager.Serialization.ItemPB, oneof: 0)
+  field(:pool, 17, type: BotManager.Serialization.PoolPB, oneof: 0)
+  field(:crate, 18, type: BotManager.Serialization.CratePB, oneof: 0)
+  field(:bush, 19, type: BotManager.Serialization.BushPB, oneof: 0)
+  field(:trap, 20, type: BotManager.Serialization.TrapPB, oneof: 0)
 end
 
-defmodule GameClient.Protobuf.PlayerPB.CooldownsEntry do
+defmodule BotManager.Serialization.PlayerPB.CooldownsEntry do
   @moduledoc false
 
   use Protobuf, map: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -487,7 +525,7 @@ defmodule GameClient.Protobuf.PlayerPB.CooldownsEntry do
   field(:value, 2, type: :uint64)
 end
 
-defmodule GameClient.Protobuf.PlayerPB do
+defmodule BotManager.Serialization.PlayerPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -497,7 +535,7 @@ defmodule GameClient.Protobuf.PlayerPB do
 
   field(:current_actions, 3,
     repeated: true,
-    type: GameClient.Protobuf.PlayerActionPB,
+    type: BotManager.Serialization.PlayerActionPB,
     json_name: "currentActions"
   )
 
@@ -507,12 +545,12 @@ defmodule GameClient.Protobuf.PlayerPB do
   field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
   field(:character_name, 8, type: :string, json_name: "characterName")
   field(:power_ups, 9, type: :uint64, json_name: "powerUps")
-  field(:effects, 10, repeated: true, type: GameClient.Protobuf.EffectPB)
-  field(:inventory, 11, type: GameClient.Protobuf.ItemPB)
+  field(:effects, 10, repeated: true, type: BotManager.Serialization.EffectPB)
+  field(:inventory, 11, type: BotManager.Serialization.ItemPB)
 
   field(:cooldowns, 12,
     repeated: true,
-    type: GameClient.Protobuf.PlayerPB.CooldownsEntry,
+    type: BotManager.Serialization.PlayerPB.CooldownsEntry,
     map: true
   )
 
@@ -522,7 +560,7 @@ defmodule GameClient.Protobuf.PlayerPB do
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
 end
 
-defmodule GameClient.Protobuf.EffectPB do
+defmodule BotManager.Serialization.EffectPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -532,7 +570,7 @@ defmodule GameClient.Protobuf.EffectPB do
   field(:id, 3, type: :uint64)
 end
 
-defmodule GameClient.Protobuf.ItemPB do
+defmodule BotManager.Serialization.ItemPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -540,18 +578,18 @@ defmodule GameClient.Protobuf.ItemPB do
   field(:name, 2, type: :string)
 end
 
-defmodule GameClient.Protobuf.ProjectilePB do
+defmodule BotManager.Serialization.ProjectilePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:damage, 1, type: :uint64)
   field(:owner_id, 2, type: :uint64, json_name: "ownerId")
-  field(:status, 3, type: GameClient.Protobuf.ProjectileStatusPB, enum: true)
+  field(:status, 3, type: BotManager.Serialization.ProjectileStatusPB, enum: true)
   field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
-defmodule GameClient.Protobuf.ObstaclePB do
+defmodule BotManager.Serialization.ObstaclePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -561,89 +599,89 @@ defmodule GameClient.Protobuf.ObstaclePB do
   field(:status, 3, type: :string)
 end
 
-defmodule GameClient.Protobuf.PowerUpPB do
+defmodule BotManager.Serialization.PowerUpPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
-  field(:status, 2, type: GameClient.Protobuf.PowerUpstatusPB, enum: true)
+  field(:status, 2, type: BotManager.Serialization.PowerUpstatusPB, enum: true)
 end
 
-defmodule GameClient.Protobuf.CratePB do
+defmodule BotManager.Serialization.CratePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:health, 1, type: :uint64)
   field(:amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps")
-  field(:status, 3, type: GameClient.Protobuf.CrateStatusPB, enum: true)
+  field(:status, 3, type: BotManager.Serialization.CrateStatusPB, enum: true)
 end
 
-defmodule GameClient.Protobuf.PoolPB do
+defmodule BotManager.Serialization.PoolPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
-  field(:status, 2, type: GameClient.Protobuf.PoolStatusPB, enum: true)
-  field(:effects, 3, repeated: true, type: GameClient.Protobuf.EffectPB)
+  field(:status, 2, type: BotManager.Serialization.PoolStatusPB, enum: true)
+  field(:effects, 3, repeated: true, type: BotManager.Serialization.EffectPB)
   field(:skill_key, 4, type: :string, json_name: "skillKey")
 end
 
-defmodule GameClient.Protobuf.BushPB do
+defmodule BotManager.Serialization.BushPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 end
 
-defmodule GameClient.Protobuf.TrapPB do
+defmodule BotManager.Serialization.TrapPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:owner_id, 1, type: :uint64, json_name: "ownerId")
   field(:name, 2, type: :string)
-  field(:status, 3, type: GameClient.Protobuf.TrapStatusPB, enum: true)
+  field(:status, 3, type: BotManager.Serialization.TrapStatusPB, enum: true)
 end
 
-defmodule GameClient.Protobuf.PlayerActionPB do
+defmodule BotManager.Serialization.PlayerActionPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:action, 1, type: GameClient.Protobuf.PlayerActionTypePB, enum: true)
+  field(:action, 1, type: BotManager.Serialization.PlayerActionTypePB, enum: true)
   field(:duration, 2, type: :uint64)
-  field(:destination, 3, type: GameClient.Protobuf.PositionPB)
-  field(:direction, 4, type: GameClient.Protobuf.PositionPB)
+  field(:destination, 3, type: BotManager.Serialization.PositionPB)
+  field(:direction, 4, type: BotManager.Serialization.PositionPB)
 end
 
-defmodule GameClient.Protobuf.MovePB do
+defmodule BotManager.Serialization.MovePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:direction, 1, type: GameClient.Protobuf.DirectionPB)
+  field(:direction, 1, type: BotManager.Serialization.DirectionPB)
 end
 
-defmodule GameClient.Protobuf.AttackPB do
+defmodule BotManager.Serialization.AttackPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:skill, 1, type: :string)
-  field(:parameters, 2, type: GameClient.Protobuf.AttackParametersPB)
+  field(:parameters, 2, type: BotManager.Serialization.AttackParametersPB)
 end
 
-defmodule GameClient.Protobuf.AttackParametersPB do
+defmodule BotManager.Serialization.AttackParametersPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:target, 1, type: GameClient.Protobuf.DirectionPB)
+  field(:target, 1, type: BotManager.Serialization.DirectionPB)
 end
 
-defmodule GameClient.Protobuf.UseItemPB do
+defmodule BotManager.Serialization.UseItemPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -651,7 +689,7 @@ defmodule GameClient.Protobuf.UseItemPB do
   field(:item, 1, type: :uint64)
 end
 
-defmodule GameClient.Protobuf.SelectBountyPB do
+defmodule BotManager.Serialization.SelectBountyPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -659,7 +697,7 @@ defmodule GameClient.Protobuf.SelectBountyPB do
   field(:bounty_quest_id, 1, type: :string, json_name: "bountyQuestId")
 end
 
-defmodule GameClient.Protobuf.ToggleZonePB do
+defmodule BotManager.Serialization.ToggleZonePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -667,7 +705,7 @@ defmodule GameClient.Protobuf.ToggleZonePB do
   field(:active, 1, type: :bool)
 end
 
-defmodule GameClient.Protobuf.ToggleBotsPB do
+defmodule BotManager.Serialization.ToggleBotsPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -675,7 +713,7 @@ defmodule GameClient.Protobuf.ToggleBotsPB do
   field(:active, 1, type: :bool)
 end
 
-defmodule GameClient.Protobuf.ChangeTickratePB do
+defmodule BotManager.Serialization.ChangeTickratePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -683,28 +721,37 @@ defmodule GameClient.Protobuf.ChangeTickratePB do
   field(:tickrate, 1, type: :int64)
 end
 
-defmodule GameClient.Protobuf.GameActionPB do
+defmodule BotManager.Serialization.GameActionPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   oneof(:action_type, 0)
 
-  field(:move, 1, type: GameClient.Protobuf.MovePB, oneof: 0)
-  field(:attack, 2, type: GameClient.Protobuf.AttackPB, oneof: 0)
-  field(:use_item, 4, type: GameClient.Protobuf.UseItemPB, json_name: "useItem", oneof: 0)
+  field(:move, 1, type: BotManager.Serialization.MovePB, oneof: 0)
+  field(:attack, 2, type: BotManager.Serialization.AttackPB, oneof: 0)
+  field(:use_item, 4, type: BotManager.Serialization.UseItemPB, json_name: "useItem", oneof: 0)
 
   field(:select_bounty, 5,
-    type: GameClient.Protobuf.SelectBountyPB,
+    type: BotManager.Serialization.SelectBountyPB,
     json_name: "selectBounty",
     oneof: 0
   )
 
-  field(:toggle_zone, 6, type: GameClient.Protobuf.ToggleZonePB, json_name: "toggleZone", oneof: 0)
-  field(:toggle_bots, 7, type: GameClient.Protobuf.ToggleBotsPB, json_name: "toggleBots", oneof: 0)
+  field(:toggle_zone, 6,
+    type: BotManager.Serialization.ToggleZonePB,
+    json_name: "toggleZone",
+    oneof: 0
+  )
+
+  field(:toggle_bots, 7,
+    type: BotManager.Serialization.ToggleBotsPB,
+    json_name: "toggleBots",
+    oneof: 0
+  )
 
   field(:change_tickrate, 8,
-    type: GameClient.Protobuf.ChangeTickratePB,
+    type: BotManager.Serialization.ChangeTickratePB,
     json_name: "changeTickrate",
     oneof: 0
   )
@@ -712,7 +759,7 @@ defmodule GameClient.Protobuf.GameActionPB do
   field(:timestamp, 3, type: :int64)
 end
 
-defmodule GameClient.Protobuf.ZonePB do
+defmodule BotManager.Serialization.ZonePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -723,7 +770,7 @@ defmodule GameClient.Protobuf.ZonePB do
   field(:shrinking, 4, type: :bool)
 end
 
-defmodule GameClient.Protobuf.KillEntryPB do
+defmodule BotManager.Serialization.KillEntryPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -732,7 +779,7 @@ defmodule GameClient.Protobuf.KillEntryPB do
   field(:victim_id, 2, type: :uint64, json_name: "victimId")
 end
 
-defmodule GameClient.Protobuf.BountyInfoPB do
+defmodule BotManager.Serialization.BountyInfoPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -740,10 +787,10 @@ defmodule GameClient.Protobuf.BountyInfoPB do
   field(:id, 1, type: :string)
   field(:description, 2, type: :string)
   field(:quest_type, 3, type: :string, json_name: "questType")
-  field(:reward, 4, type: GameClient.Protobuf.CurrencyRewardPB)
+  field(:reward, 4, type: BotManager.Serialization.CurrencyRewardPB)
 end
 
-defmodule GameClient.Protobuf.CurrencyRewardPB do
+defmodule BotManager.Serialization.CurrencyRewardPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

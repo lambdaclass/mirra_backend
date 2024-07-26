@@ -5,6 +5,7 @@ defmodule BotManager.GameSocketHandler do
   """
 
   alias BotManager.BotStateMachine
+  alias BotManager.Serialization.ConversionProtobuf
 
   use WebSockex, restart: :temporary
   require Logger
@@ -31,8 +32,10 @@ defmodule BotManager.GameSocketHandler do
     {:ok, Map.put(state, :bots_enabled?, true)}
   end
 
-  def handle_frame({:binary, frame}, state) do
-    case BotManager.Protobuf.GameEventPB.decode(frame) do
+  def handle_frame({:binary, msg}, state) do
+
+    game_msg = ConversionProtobuf.decode_lobby_event_protobuf(msg)
+    case game_msg do
       %{event: {:update, game_state}} ->
         bot_player = Map.get(game_state.players, state.player_id)
 
@@ -80,42 +83,17 @@ defmodule BotManager.GameSocketHandler do
   defp send_current_action(%{current_action: {:move, direction}}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    game_action =
-      BotManager.Protobuf.GameActionPB.encode(%BotManager.Protobuf.GameActionPB{
-        action_type:
-          {:move,
-           %BotManager.Protobuf.MovePB{
-             direction: %BotManager.Protobuf.DirectionPB{
-               x: direction.x,
-               y: direction.y
-             }
-           }},
-        timestamp: timestamp
-      })
+    message = ConversionProtobuf.get_game_move_protobuf(direction.x, direction.y, timestamp)
 
-    WebSockex.cast(self(), {:send, {:binary, game_action}})
+    WebSockex.cast(self(), {:send, {:binary, message}})
   end
 
   defp send_current_action(%{current_action: {:attack, direction}}) do
     timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    game_action =
-      BotManager.Protobuf.GameActionPB.encode(%BotManager.Protobuf.GameActionPB{
-        action_type:
-          {:attack,
-           %BotManager.Protobuf.AttackPB{
-             skill: "1",
-             parameters: %BotManager.Protobuf.AttackParametersPB{
-               target: %BotManager.Protobuf.DirectionPB{
-                 x: direction.x,
-                 y: direction.y
-               }
-             }
-           }},
-        timestamp: timestamp
-      })
+    message = ConversionProtobuf.get_game_attack_protobuf("1", direction.x, direction.y, timestamp)
 
-    WebSockex.cast(self(), {:send, {:binary, game_action}})
+    WebSockex.cast(self(), {:send, {:binary, message}})
   end
 
   defp send_current_action(_), do: nil

@@ -1,5 +1,5 @@
-defmodule ArenaLoadTest.Serialization.ConversionProtobuf do
-  alias ArenaLoadTest.Serialization.{GameActionPB, MovePB, DirectionPB, AttackPB, AttackParametersPB, LobbyEventPB}
+defmodule BotManager.Serialization.ConversionProtobuf do
+  alias BotManager.Serialization.{GameActionPB, MovePB, DirectionPB, AttackPB, AttackParametersPB, LobbyEventPB}
 
   def get_game_move_protobuf(x, y, timestamp) do
     GameActionPB.encode(%GameActionPB{

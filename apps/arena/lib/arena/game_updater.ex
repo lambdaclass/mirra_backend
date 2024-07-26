@@ -630,7 +630,6 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_update(state) do
-
     state_to_broadcast = %{
       game_id: state.game_id,
       players: complete_entities(state.players),
