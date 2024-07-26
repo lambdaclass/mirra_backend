@@ -127,33 +127,39 @@ defmodule BotManager.Serialization.GameEventPB do
 
   oneof(:event, 0)
 
-<<<<<<< HEAD:apps/bot_manager/lib/serialization/messages.pb.ex
   field(:joined, 1, type: BotManager.Serialization.GameJoinedPB, oneof: 0)
   field(:update, 2, type: BotManager.Serialization.GameStatePB, oneof: 0)
   field(:finished, 3, type: BotManager.Serialization.GameFinishedPB, oneof: 0)
-  field(:ping, 4, type: BotManager.Serialization.PingUpdatePB, oneof: 0)
 
-  field(:toggle_bots, 5,
+  field(:ping_update, 4,
+    type: BotManager.Serialization.PingUpdatePB,
+    json_name: "pingUpdate",
+    oneof: 0
+  )
+
+  field(:ping, 5, type: BotManager.Serialization.PingPB, oneof: 0)
+
+  field(:toggle_bots, 6,
     type: BotManager.Serialization.ToggleBotsPB,
     json_name: "toggleBots",
     oneof: 0
   )
-=======
-  field(:joined, 1, type: GameClient.Protobuf.GameJoined, oneof: 0)
-  field(:update, 2, type: GameClient.Protobuf.GameState, oneof: 0)
-  field(:finished, 3, type: GameClient.Protobuf.GameFinished, oneof: 0)
-  field(:ping_update, 4, type: GameClient.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
-  field(:toggle_bots, 5, type: GameClient.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
-  field(:ping, 6, type: GameClient.Protobuf.Ping, oneof: 0)
 end
 
-defmodule GameClient.Protobuf.Ping do
+defmodule BotManager.Serialization.PingPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
->>>>>>> main:apps/game_client/lib/game_client/protobuf/messages.pb.ex
+end
+
+defmodule BotManager.Serialization.PingUpdatePB do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:latency, 1, type: :uint64)
 end
 
 defmodule BotManager.Serialization.GameFinishedPB.PlayersEntry do
@@ -177,14 +183,6 @@ defmodule BotManager.Serialization.GameFinishedPB do
     type: BotManager.Serialization.GameFinishedPB.PlayersEntry,
     map: true
   )
-end
-
-defmodule BotManager.Serialization.PingUpdatePB do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:latency, 1, type: :uint64)
 end
 
 defmodule BotManager.Serialization.GameJoinedPB do
@@ -718,16 +716,12 @@ defmodule BotManager.Serialization.ToggleZonePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:active, 1, type: :bool)
 end
 
 defmodule BotManager.Serialization.ToggleBotsPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:active, 1, type: :bool)
 end
 
 defmodule BotManager.Serialization.ChangeTickratePB do
@@ -773,14 +767,11 @@ defmodule BotManager.Serialization.GameActionPB do
     oneof: 0
   )
 
-  field(:pong, 9, type: GameClient.Protobuf.Pong, oneof: 0)
+  field(:pong, 9, type: BotManager.Serialization.PongPB, oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
-<<<<<<< HEAD:apps/bot_manager/lib/serialization/messages.pb.ex
-defmodule BotManager.Serialization.ZonePB do
-=======
-defmodule GameClient.Protobuf.Pong do
+defmodule BotManager.Serialization.PongPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -788,8 +779,7 @@ defmodule GameClient.Protobuf.Pong do
   field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
-defmodule GameClient.Protobuf.Zone do
->>>>>>> main:apps/game_client/lib/game_client/protobuf/messages.pb.ex
+defmodule BotManager.Serialization.ZonePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

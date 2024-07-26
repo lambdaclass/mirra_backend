@@ -1,5 +1,16 @@
 defmodule GameClient.Serialization.ConversionProtobuf do
-  alias GameClient.Serialization.{GameStatePB, GameActionPB, ToggleBotsPB, DirectionPB, GameEventPB, AttackPB, AttackParametersPB, LobbyEventPB, MovePB, UseItemPB}
+  alias GameClient.Serialization.{
+    GameStatePB,
+    GameActionPB,
+    ToggleBotsPB,
+    DirectionPB,
+    GameEventPB,
+    AttackPB,
+    AttackParametersPB,
+    LobbyEventPB,
+    MovePB,
+    UseItemPB
+  }
 
   def get_game_move_protobuf(x, y, timestamp) do
     GameActionPB.encode(%GameActionPB{
@@ -34,22 +45,22 @@ defmodule GameClient.Serialization.ConversionProtobuf do
 
   def get_join_game_protobuf(game_id) do
     GameStatePB.encode(%GameStatePB{
-        game_id: game_id,
-        players: %{},
-        projectiles: %{}
-      })
+      game_id: game_id,
+      players: %{},
+      projectiles: %{}
+    })
   end
 
   def get_game_use_item_protobuf(item) do
     GameActionPB.encode(%GameActionPB{
-        action_type: {:use_item, %UseItemPB{item: String.to_integer(item)}}
-      })
+      action_type: {:use_item, %UseItemPB{item: String.to_integer(item)}}
+    })
   end
 
   def get_toggle_bots_protobuf() do
     GameActionPB.encode(%GameActionPB{
-        action_type: {:toggle_bots, %ToggleBotsPB{}}
-      })
+      action_type: {:toggle_bots, %ToggleBotsPB{}}
+    })
   end
 
   def get_direction_protobuf(direction) do

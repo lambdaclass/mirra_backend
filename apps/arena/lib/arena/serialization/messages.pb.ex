@@ -127,28 +127,28 @@ defmodule Arena.Serialization.GameEventPB do
 
   oneof(:event, 0)
 
-<<<<<<< HEAD
   field(:joined, 1, type: Arena.Serialization.GameJoinedPB, oneof: 0)
   field(:update, 2, type: Arena.Serialization.GameStatePB, oneof: 0)
   field(:finished, 3, type: Arena.Serialization.GameFinishedPB, oneof: 0)
-  field(:ping, 4, type: Arena.Serialization.PingUpdatePB, oneof: 0)
-  field(:toggle_bots, 5, type: Arena.Serialization.ToggleBotsPB, json_name: "toggleBots", oneof: 0)
-=======
-  field(:joined, 1, type: Arena.Serialization.GameJoined, oneof: 0)
-  field(:update, 2, type: Arena.Serialization.GameState, oneof: 0)
-  field(:finished, 3, type: Arena.Serialization.GameFinished, oneof: 0)
-  field(:ping_update, 4, type: Arena.Serialization.PingUpdate, json_name: "pingUpdate", oneof: 0)
-  field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
-  field(:ping, 6, type: Arena.Serialization.Ping, oneof: 0)
+  field(:ping_update, 4, type: Arena.Serialization.PingUpdatePB, json_name: "pingUpdate", oneof: 0)
+  field(:ping, 5, type: Arena.Serialization.PingPB, oneof: 0)
+  field(:toggle_bots, 6, type: Arena.Serialization.ToggleBotsPB, json_name: "toggleBots", oneof: 0)
 end
 
-defmodule Arena.Serialization.Ping do
+defmodule Arena.Serialization.PingPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
->>>>>>> main
+end
+
+defmodule Arena.Serialization.PingUpdatePB do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:latency, 1, type: :uint64)
 end
 
 defmodule Arena.Serialization.GameFinishedPB.PlayersEntry do
@@ -172,14 +172,6 @@ defmodule Arena.Serialization.GameFinishedPB do
     type: Arena.Serialization.GameFinishedPB.PlayersEntry,
     map: true
   )
-end
-
-defmodule Arena.Serialization.PingUpdatePB do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:latency, 1, type: :uint64)
 end
 
 defmodule Arena.Serialization.GameJoinedPB do
@@ -680,16 +672,12 @@ defmodule Arena.Serialization.ToggleZonePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:active, 1, type: :bool)
 end
 
 defmodule Arena.Serialization.ToggleBotsPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:active, 1, type: :bool)
 end
 
 defmodule Arena.Serialization.ChangeTickratePB do
@@ -726,14 +714,11 @@ defmodule Arena.Serialization.GameActionPB do
     oneof: 0
   )
 
-  field(:pong, 9, type: Arena.Serialization.Pong, oneof: 0)
+  field(:pong, 9, type: Arena.Serialization.PongPB, oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
-<<<<<<< HEAD
-defmodule Arena.Serialization.ZonePB do
-=======
-defmodule Arena.Serialization.Pong do
+defmodule Arena.Serialization.PongPB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
@@ -741,8 +726,7 @@ defmodule Arena.Serialization.Pong do
   field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
-defmodule Arena.Serialization.Zone do
->>>>>>> main
+defmodule Arena.Serialization.ZonePB do
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
