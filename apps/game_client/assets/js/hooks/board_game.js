@@ -21,6 +21,7 @@ export const BoardGame = function () {
     obstacle: 0x00aa77,
     transitioningObstacle: 0xff944d,
     deactivatedObstacle: 0xff0000,
+    lakeObstacle: 0xff7900,
     colliding: 0xff0000,
     projectile: 0x0000ff,
     item: 0x238636,
@@ -227,12 +228,22 @@ export const BoardGame = function () {
               entity.id == player_id ? colors.currentPlayer : colors.players;
             break;
           case "obstacle":
-            if (backEntity.status === "underground") {
-              color = colors.deactivatedObstacle;
-            } else if (backEntity.status === "transitioning") {
-              color = colors.transitioningObstacle;
-            } else {
-              color = colors.obstacle;
+            switch (backEntity.type) {
+              case "lake":
+                color = colors.lakeObstacle;
+                break;
+              case "dynamic":
+                if (backEntity.status === "underground") {
+                  color = colors.deactivatedObstacle;
+                } else if (backEntity.status === "transitioning") {
+                  color = colors.transitioningObstacle;
+                } else {
+                  color = colors.obstacle;
+                }
+                break;
+              default:
+                color = colors.obstacle;
+                break;
             }
             break;
           case "projectile":

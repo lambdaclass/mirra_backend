@@ -406,7 +406,8 @@ defmodule Arena.Entities do
      %Arena.Serialization.Obstacle{
        color: "red",
        collisionable: entity.aditional_info.collisionable,
-       status: entity.aditional_info.status
+       status: entity.aditional_info.status,
+       type: entity.aditional_info.type
      }}
   end
 
