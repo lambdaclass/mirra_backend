@@ -7,12 +7,7 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Authentication.GatewayTokenManager
   alias Arena.Utils
   alias Arena.GameUpdater
-<<<<<<< HEAD
   alias Arena.Serialization.ConversionProtobuf
-=======
-  alias Arena.Serialization.GameEvent
-  alias Arena.Serialization.GameJoined
->>>>>>> main
 
   @behaviour :cowboy_websocket
 
@@ -60,30 +55,13 @@ defmodule Arena.GameSocketHandler do
         bounties: bounties
       })
 
-<<<<<<< HEAD
-    Process.send_after(self(), :send_ping, @ping_interval_ms)
-
     {:reply, {:binary, message}, state}
-=======
-    {:reply, {:binary, encoded_msg}, state}
->>>>>>> main
   end
 
   # These two callbacks are needed by cowboy
   @impl true
   def websocket_handle(:pong, state) do
-<<<<<<< HEAD
-    last_ping_time = state.last_ping_time
-    time_now = Time.utc_now()
-    latency = Time.diff(time_now, last_ping_time, :millisecond)
-
-    message = ConversionProtobuf.get_game_ping_update_protobuf(latency)
-
-    # Send back the player's ping
-    {:reply, {:binary, message}, state}
-=======
     {:noreply, state}
->>>>>>> main
   end
 
   def websocket_handle(:ping, state) do

@@ -4,6 +4,8 @@ defmodule GameClient.WsClient do
   """
   use WebSockex
 
+  alias GameClient.Serialization.ConversionProtobuf
+
   def start_link(_url, state) do
     WebSockex.start_link("http://localhost:4000/play/1", __MODULE__, state)
   end

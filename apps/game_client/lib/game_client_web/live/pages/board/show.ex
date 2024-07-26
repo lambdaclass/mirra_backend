@@ -105,7 +105,7 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   defp handle_game_event({:ping, ping_event}, socket) do
-    {:noreply, assign(socket, :ping_latency, ping_event.latency)}
+    {:noreply, assign(socket, :ping_latency, ping_event.timestamp_now)}
   end
 
   defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do

@@ -1,5 +1,5 @@
 import {Player} from "../game/player.js"
-var messages = require('../protobuf/messages_pb');
+var messages = require('../serialization/messages_pb');
 
 export const GameQueue = function () {
     this.mounted = function () {

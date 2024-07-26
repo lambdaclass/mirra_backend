@@ -13,16 +13,7 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-<<<<<<< HEAD
   alias Arena.Serialization.ConversionProtobuf
-=======
-  alias Arena.Serialization.GameEvent
-  alias Arena.Serialization.GameState
-  alias Arena.Serialization.GameFinished
-  alias Arena.Serialization.ToggleBots
-  alias Arena.Serialization.PingUpdate
-  alias Arena.Serialization.Ping
->>>>>>> main
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -201,10 +192,7 @@ defmodule Arena.GameUpdater do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     latency = now - ping_timestamp
 
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:ping_update, %PingUpdate{latency: latency}}
-      })
+    encoded_msg = ConversionProtobuf.get_pong_protobuf(latency)
 
     send(client_pid, {:ping_update, encoded_msg})
 
@@ -693,10 +681,7 @@ defmodule Arena.GameUpdater do
   defp broadcast_ping(state) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
-    encoded_state =
-      GameEvent.encode(%GameEvent{
-        event: {:ping, %Ping{timestamp_now: now}}
-      })
+    encoded_state = ConversionProtobuf.get_game_ping_protobuf(now)
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:ping, encoded_state})
   end

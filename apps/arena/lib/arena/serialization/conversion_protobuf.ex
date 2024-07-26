@@ -9,7 +9,9 @@ defmodule Arena.Serialization.ConversionProtobuf do
     LeaveLobbyPB,
     LobbyEventPB,
     JoinedLobbyPB,
-    LeftLobbyPB
+    LeftLobbyPB,
+    PingPB,
+    PingUpdatePB
   }
 
   def decode_game_message(message) do
@@ -82,5 +84,17 @@ defmodule Arena.Serialization.ConversionProtobuf do
 
   def get_game_ended_protobuf(state) do
     GameEventPB.encode(%GameEventPB{event: {:finished, state}})
+  end
+
+  def get_pong_protobuf(latency) do
+    GameEventPB.encode(%GameEventPB{
+        event: {:ping_update, %PingUpdatePB{latency: latency}}
+      })
+  end
+
+  def get_game_ping_protobuf(now) do
+    GameEventPB.encode(%GameEventPB{
+        event: {:ping, %PingPB{timestamp_now: now}}
+      })
   end
 end

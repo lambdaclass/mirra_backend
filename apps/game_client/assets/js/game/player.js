@@ -1,4 +1,4 @@
-var messages = require('../protobuf/messages_pb');
+var messages = require('../serialization/messages_pb');
 
 export class Player{
     constructor(socketUrl) {
