@@ -111,7 +111,7 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   defp transform_entity_entry({_entity_id, %{category: "obstacle"} = entity}) do
-    {_, aditional_info} = entity.aditional_info |> IO.inspect(label: "aber additional")
+    {_, aditional_info} = entity.aditional_info
 
     %{
       id: entity.id,
