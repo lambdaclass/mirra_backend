@@ -106,7 +106,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
   def validate_shape(changeset) do
     case get_field(changeset, :shape) do
       :polygon ->
-        if(Enum.count(get_field(changeset, :vertices)) < 3) do
+        if Enum.count(get_field(changeset, :vertices)) < 3 do
           add_error(changeset, :shape, "A polygon requires at least 3 vertices")
         else
           changeset
