@@ -127,6 +127,7 @@ defmodule GameClient.Serialization.GameEventPB do
 
   oneof(:event, 0)
 
+<<<<<<< HEAD:apps/game_client/lib/game_client/serialization/messages.pb.ex
   field(:joined, 1, type: GameClient.Serialization.GameJoinedPB, oneof: 0)
   field(:update, 2, type: GameClient.Serialization.GameStatePB, oneof: 0)
   field(:finished, 3, type: GameClient.Serialization.GameFinishedPB, oneof: 0)
@@ -137,6 +138,22 @@ defmodule GameClient.Serialization.GameEventPB do
     json_name: "toggleBots",
     oneof: 0
   )
+=======
+  field(:joined, 1, type: BotManager.Protobuf.GameJoined, oneof: 0)
+  field(:update, 2, type: BotManager.Protobuf.GameState, oneof: 0)
+  field(:finished, 3, type: BotManager.Protobuf.GameFinished, oneof: 0)
+  field(:ping_update, 4, type: BotManager.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
+  field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
+  field(:ping, 6, type: BotManager.Protobuf.Ping, oneof: 0)
+end
+
+defmodule BotManager.Protobuf.Ping do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
+>>>>>>> main:apps/bot_manager/lib/protobuf/messages.pb.ex
 end
 
 defmodule GameClient.Serialization.GameFinishedPB.PlayersEntry do
@@ -756,10 +773,23 @@ defmodule GameClient.Serialization.GameActionPB do
     oneof: 0
   )
 
+  field(:pong, 9, type: BotManager.Protobuf.Pong, oneof: 0)
   field(:timestamp, 3, type: :int64)
 end
 
+<<<<<<< HEAD:apps/game_client/lib/game_client/serialization/messages.pb.ex
 defmodule GameClient.Serialization.ZonePB do
+=======
+defmodule BotManager.Protobuf.Pong do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
+end
+
+defmodule BotManager.Protobuf.Zone do
+>>>>>>> main:apps/bot_manager/lib/protobuf/messages.pb.ex
   @moduledoc false
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"

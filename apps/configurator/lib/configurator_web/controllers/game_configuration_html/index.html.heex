@@ -32,6 +32,9 @@
     <%= game_configuration.bounties_options_amount %>
   </:col>
   <:col :let={game_configuration} label="Match timeout ms"><%= game_configuration.match_timeout_ms %></:col>
+  <:col :let={game_configuration} label="Field of view inside bush">
+    <%= game_configuration.field_of_view_inside_bush %>
+  </:col>
 
   <:action :let={game_configuration}>
     <div class="sr-only">

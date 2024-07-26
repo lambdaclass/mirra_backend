@@ -43,4 +43,9 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
       send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt}))
     end
   end
+
+  def get_users_leaderboard(conn, _params) do
+    users = Users.get_users_sorted_by_total_unit_prestige()
+    send_resp(conn, 200, Jason.encode!(users))
+  end
 end

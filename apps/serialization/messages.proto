@@ -29,7 +29,7 @@ message LobbyEventPB {
   }
 }
 
-message LeaveLobbyPB { }
+message LeaveLobbyPB {}
 message LeftLobbyPB { }
 message JoinedLobbyPB { }
 
@@ -38,18 +38,23 @@ message GameEventPB {
     GameJoinedPB joined = 1;
     GameStatePB update = 2;
     GameFinishedPB finished = 3;
-    PingUpdatePB ping = 4;
-    ToggleBotsPB toggle_bots = 5;
+    PingUpdatePB ping_update = 4;
+    PingPB ping = 5;
+    ToggleBotsPB toggle_bots = 6;
   }
+}
+
+message PingPB {
+  int64 timestamp_now = 1;
+}
+
+message PingUpdatePB {
+  uint64 latency = 1;
 }
 
 message GameFinishedPB {
   EntityPB winner = 1;
   map<uint64, EntityPB> players = 2;
-}
-
-message PingUpdatePB {
-  uint64 latency = 1;
 }
 
 message GameJoinedPB {
@@ -318,12 +323,8 @@ message SelectBountyPB {
   string bounty_quest_id = 1;
 }
 
-message ToggleZonePB {
-  bool active = 1;
-}
-message ToggleBotsPB {
-  bool active = 1;
-}
+message ToggleZonePB { }
+message ToggleBotsPB { }
 message ChangeTickratePB {
   int64 tickrate = 1;
 }
@@ -337,8 +338,13 @@ message GameActionPB {
     ToggleZonePB toggle_zone = 6;
     ToggleBotsPB toggle_bots = 7;
     ChangeTickratePB change_tickrate = 8;
+    PongPB pong = 9;
   }
   int64 timestamp = 3;
+}
+
+message PongPB {
+  int64 ping_timestamp = 1;
 }
 
 message ZonePB {
