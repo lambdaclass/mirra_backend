@@ -6,21 +6,34 @@ defmodule Arena.Entities do
   alias Arena.Game.Player
   alias Arena.Game.Crate
 
-  def new_player(id, character_name, player_name, position, direction, config, now) do
-    character = Configuration.get_character_config(character_name, config)
+  @type new_player_params :: %{
+    id: integer,
+    team: integer(),
+    player_name: String.t,
+    position: %{x: float, y: float},
+    direction: %{x: float, y: float},
+    character_name: String.t,
+    config: map,
+    now: integer()
+  }
+
+  @spec new_player(new_player_params()) :: map()
+  def new_player(params) do
+    character = Configuration.get_character_config(params.character_name, params.config)
 
     %{
-      id: id,
+      id: params.id,
       category: :player,
       shape: :circle,
-      name: player_name,
-      position: position,
+      name: params.player_name,
+      position: params.position,
       radius: character.base_size,
       vertices: [],
       speed: character.base_speed,
-      direction: direction,
+      direction: params.direction,
       is_moving: false,
       aditional_info: %{
+        team: params.team,
         health: character.base_health,
         base_health: character.base_health,
         max_health: character.base_health,
@@ -36,15 +49,15 @@ defmodule Arena.Entities do
         stamina_interval: character.stamina_interval,
         cooldown_multiplier: 1,
         recharging_stamina: false,
-        last_natural_healing_update: now,
+        last_natural_healing_update: params.now,
         natural_healing_interval: character.natural_healing_interval,
-        last_damage_received: now,
-        last_skill_triggered: now,
+        last_damage_received: params.now,
+        last_skill_triggered: params.now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
         forced_movement: false,
         power_ups: 0,
-        power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
+        power_up_damage_modifier: params.config.power_ups.power_up.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
         pull_immunity: false,
