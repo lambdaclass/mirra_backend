@@ -821,7 +821,7 @@ defmodule Arena.GameUpdater do
         last_id = game_acc.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
-        new_player_params = %{ id: last_id, team: player.team_id, player_name: player.name, position: pos, direction: direction, character_name: player.character_name, config: config, now: now}
+        new_player_params = %{ id: last_id, team: player.team, player_name: player.name, position: pos, direction: direction, character_name: player.character_name, config: config, now: now}
 
         players =
           game_acc.players
@@ -885,7 +885,8 @@ defmodule Arena.GameUpdater do
         last_id = new_game.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
-        new_player_params = %{ id: last_id, team: last_id, player_name: player_name, position: pos, direction: direction, character_name: character_name, config: config, now: now}
+        ## FIX: Remove rem/2
+        new_player_params = %{ id: last_id, team: (rem(last_id, 2)), player_name: player_name, position: pos, direction: direction, character_name: character_name, config: config, now: now}
 
         players =
           new_game.players
