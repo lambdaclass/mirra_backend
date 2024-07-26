@@ -42,6 +42,7 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   def handle_info({:game_event, game_event}, socket) do
+    IO.inspect("me lleva game event")
     %{event: event} = GameClient.Protobuf.GameEvent.decode(game_event)
     handle_game_event(event, socket)
   end
@@ -102,11 +103,7 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, assign(socket, game_status: :finished, winner_id: finished_event.winner.id)}
   end
 
-  defp handle_game_event({:ping, _ping_event}, socket) do
-    {:noreply, socket}
-  end
-
-  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots, :ping, :ping_update] do
     {:noreply, socket}
   end
 
