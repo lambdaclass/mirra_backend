@@ -1078,7 +1078,7 @@ map_config = %{
       },
       radius: 0.0,
       shape: "polygon",
-      type: "lake",
+      type: "static",
       statuses_cycle: %{},
       base_status: "",
       vertices: [
@@ -1683,194 +1683,32 @@ map_config = %{
       shape: "polygon",
       vertices: [
         %{
-          x: 3421.0,
-          y: -1034.0
+          x: 2957.0,
+          y: 224.0
         },
         %{
-          x: 3230.0,
-          y: -759.0
+          x: 3160.0,
+          y: 295.0
         },
         %{
-          x: 3646.0,
-          y: -726.0
+          x: 3224.0,
+          y: 800.0
         },
         %{
-          x: 3970.0,
-          y: -1079.0
-        }
-      ],
-      effects_to_apply: [
-        "slow_field"
-      ]
-    },
-    %{
-      name: "oil pool north 1 b",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      vertices: [
-        %{
-          x: 3970.0,
-          y: -1079.0
+          x: 2865.0,
+          y: 1222.0
         },
         %{
-          x: 3646.0,
-          y: -726.0
+          x: 2663.0,
+          y: 1228.0
         },
         %{
-          x: 4020.0,
-          y: -520.0
+          x: 2527.0,
+          y: 1057.0
         },
         %{
-          x: 4352.0,
-          y: -882.0
-        }
-      ],
-      effects_to_apply: [
-        "slow_field"
-      ]
-    },
-    %{
-      name: "oil pool north 1 c",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      vertices: [
-        %{
-          x: 4352.0,
-          y: -882.0
-        },
-        %{
-          x: 4020.0,
-          y: -520.0
-        },
-        %{
-          x: 4230.0,
-          y: -222.0
-        },
-        %{
-          x: 4600.0,
-          y: -237.0
-        },
-        %{
-          x: 4697.0,
-          y: -508.0
-        },
-        %{
-          x: 4352.0,
-          y: -882.0
-        },
-        %{
-          x: 4020.0,
-          y: -520.0
-        }
-      ],
-      effects_to_apply: [
-        "slow_field"
-      ]
-    },
-    %{
-      name: "oil pool south 2 a",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      vertices: [
-        %{
-          x: -4420.0,
-          y: 575.0
-        },
-        %{
-          x: -4663.0,
-          y: 661.0
-        },
-        %{
-          x: -4744.0,
-          y: 840.0
-        },
-        %{
-          x: -4454.0,
-          y: 1279.0
-        },
-        %{
-          x: -4101.0,
-          y: 932.0
-        }
-      ],
-      effects_to_apply: [
-        "slow_field"
-      ]
-    },
-    %{
-      name: "oil pool south 2 b",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      vertices: [
-        %{
-          x: -4454.0,
-          y: 1279.0
-        },
-        %{
-          x: -3980.0,
-          y: 1513.0
-        },
-        %{
-          x: -3852.0,
-          y: 1140.0
-        },
-        %{
-          x: -4101.0,
-          y: 932.0
-        }
-      ],
-      effects_to_apply: [
-        "slow_field"
-      ]
-    },
-    %{
-      name: "oil pool south 2 c",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      vertices: [
-        %{
-          x: -3980.0,
-          y: 1513.0
-        },
-        %{
-          x: -3459.0,
-          y: 1473.0
-        },
-        %{
-          x: -3273.0,
-          y: 1304.0
-        },
-        %{
-          x: -3322.0,
-          y: 1188.0
-        },
-        %{
-          x: -3455.0,
-          y: 1163.0
-        },
-        %{
-          x: -3852.0,
-          y: 1140.0
+          x: 2521.0,
+          y: 833.0
         }
       ],
       effects_to_apply: [
