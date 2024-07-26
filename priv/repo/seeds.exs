@@ -1699,7 +1699,7 @@ map_config = %{
           y: -1079.0
         }
       ],
-      effects: [
+      effects_to_apply: [
         "slow_field"
       ]
     },
@@ -1729,7 +1729,7 @@ map_config = %{
           y: -882.0
         }
       ],
-      effects: [
+      effects_to_apply: [
         "slow_field"
       ]
     },
@@ -1771,7 +1771,7 @@ map_config = %{
           y: -520.0
         }
       ],
-      effects: [
+      effects_to_apply: [
         "slow_field"
       ]
     },
@@ -1805,7 +1805,7 @@ map_config = %{
           y: 932.0
         }
       ],
-      effects: [
+      effects_to_apply: [
         "slow_field"
       ]
     },
@@ -1835,7 +1835,7 @@ map_config = %{
           y: 932.0
         }
       ],
-      effects: [
+      effects_to_apply: [
         "slow_field"
       ]
     },
@@ -1873,7 +1873,7 @@ map_config = %{
           y: 1140.0
         }
       ],
-      effects: [
+      effects_to_apply: [
         "slow_field"
       ]
     }
