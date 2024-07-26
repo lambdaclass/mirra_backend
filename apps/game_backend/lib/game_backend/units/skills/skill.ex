@@ -17,7 +17,8 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:autoaim, :boolean, default: false)
     field(:block_movement, :boolean, default: false)
     field(:can_pick_destination, :boolean, default: false)
-    field(:cooldown_mechanism, Ecto.Enum, values: [:stamina, :time])
+    field(:cooldown_mechanism, Ecto.Enum, values: [:stamina, :time, :combo])
+    field(:combo_reset_timer_ms, :integer)
     field(:cooldown_ms, :integer)
     field(:execution_duration_ms, :integer)
     field(:inmune_while_executing, :boolean, default: false)
@@ -27,6 +28,7 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:effects_to_apply, {:array, :string})
     field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
 
+    belongs_to(:next_skill, __MODULE__)
     belongs_to(:buff, Buff)
     has_many(:mechanics, Mechanic, on_replace: :delete)
 
@@ -43,12 +45,14 @@ defmodule GameBackend.Units.Skills.Skill do
       :energy_regen,
       :animation_duration,
       :buff_id,
+      :next_skill_id,
       :activation_delay_ms,
       :autoaim,
       :block_movement,
       :can_pick_destination,
       :cooldown_mechanism,
       :cooldown_ms,
+      :combo_reset_timer_ms,
       :execution_duration_ms,
       :inmune_while_executing,
       :is_passive,

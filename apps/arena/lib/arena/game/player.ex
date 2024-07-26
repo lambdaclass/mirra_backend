@@ -444,7 +444,7 @@ defmodule Arena.Game.Player do
            combo_reset_timer_ms: combo_reset_timer_ms,
            stamina_cost: cost
          } = skill,
-         game_config
+         _game_config
        ) do
     player = change_stamina(player, -cost)
 
@@ -457,8 +457,12 @@ defmodule Arena.Game.Player do
         player
     end
 
-    if skill.next_skill != "" do
-      next_skill = Enum.find(game_config.skills, fn config_skill -> config_skill.name == skill.next_skill end)
+    if not is_nil(skill.next_skill) do
+      # IO.inspect(skill.next_skill, label: :aver_next_skill)
+      # IO.inspect(skill, label: :aver_skill)
+      # IO.inspect(player, label: :aver_player_player)
+
+      next_skill = skill.next_skill |> Map.put(:first_skill, Map.get(skill, :first_skill, skill))
 
       update_in(
         player,
@@ -484,16 +488,13 @@ defmodule Arena.Game.Player do
         nil ->
           player
 
-        combo_timer ->
-          base_skill =
-            Enum.find(game_config.skills, fn config_skill -> config_skill.name == combo_timer.base_skill end)
-
+        _combo_timer ->
           update_in(
             player,
             [:aditional_info, :combo_skill_timers],
             fn combo_timers -> Map.delete(combo_timers, skill_key) end
           )
-          |> put_in([:aditional_info, :skills, skill_key], base_skill)
+          |> put_in([:aditional_info, :skills, skill_key], skill.first_skill)
       end
     end
   end

@@ -955,7 +955,7 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
-  defp reduce_players_combo_skill_timers(game_state, time_diff, game_config) do
+  defp reduce_players_combo_skill_timers(game_state, time_diff, _game_config) do
     players =
       Map.new(game_state.players, fn {player_id, player} ->
         player.aditional_info.combo_skill_timers
@@ -970,7 +970,14 @@ defmodule Arena.GameUpdater do
 
         player =
           Enum.reduce(to_reset_combos, player, fn {skill_key, %{base_skill: base_skill_name}}, player ->
-            base_skill = Enum.find(game_config.skills, fn configskill -> configskill.name == base_skill_name end)
+            # IO.inspect(player, label: :aver_player)
+            # IO.inspect(to_reset_combos, label: :aver_combos)
+            # IO.inspect(player.aditional_info.skills, label: :aver_skills)
+
+            base_skill =
+              Enum.find(player.aditional_info.skills, fn {_skill_key, configskill} ->
+                configskill.name == base_skill_name
+              end)
 
             player
             |> put_in([:aditional_info, :skills, skill_key], base_skill)

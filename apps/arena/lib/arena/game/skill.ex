@@ -363,6 +363,13 @@ defmodule Arena.Game.Skill do
     %{game_state | players: players}
   end
 
+  def do_mechanic(game_state, _entity, mechanic, skill_params) do
+    # IO.inspect(mechanic, label: :aver_mechanic)
+    # IO.inspect(skill_params, label: :aver_params)
+
+    game_state
+  end
+
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
       GameUpdater.get_effects_from_config(effects, game_config)
