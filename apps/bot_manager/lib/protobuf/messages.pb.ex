@@ -130,8 +130,17 @@ defmodule BotManager.Protobuf.GameEvent do
   field(:joined, 1, type: BotManager.Protobuf.GameJoined, oneof: 0)
   field(:update, 2, type: BotManager.Protobuf.GameState, oneof: 0)
   field(:finished, 3, type: BotManager.Protobuf.GameFinished, oneof: 0)
-  field(:ping, 4, type: BotManager.Protobuf.PingUpdate, oneof: 0)
+  field(:ping_update, 4, type: BotManager.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
+  field(:ping, 6, type: BotManager.Protobuf.Ping, oneof: 0)
+end
+
+defmodule BotManager.Protobuf.Ping do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
 end
 
 defmodule BotManager.Protobuf.GameFinished.PlayersEntry do
@@ -444,6 +453,7 @@ defmodule BotManager.Protobuf.GameState do
   field(:crates, 16, repeated: true, type: BotManager.Protobuf.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: BotManager.Protobuf.GameState.BushesEntry, map: true)
   field(:traps, 18, repeated: true, type: BotManager.Protobuf.GameState.TrapsEntry, map: true)
+  field(:external_wall, 19, type: BotManager.Protobuf.Entity, json_name: "externalWall")
 end
 
 defmodule BotManager.Protobuf.Entity do
@@ -696,7 +706,16 @@ defmodule BotManager.Protobuf.GameAction do
     oneof: 0
   )
 
+  field(:pong, 9, type: BotManager.Protobuf.Pong, oneof: 0)
   field(:timestamp, 3, type: :int64)
+end
+
+defmodule BotManager.Protobuf.Pong do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
 defmodule BotManager.Protobuf.Zone do

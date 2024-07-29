@@ -29,7 +29,6 @@ defmodule Gateway.ChampionsSocketHandler do
   alias Gateway.Serialization.{
     WebSocketRequest,
     GetUser,
-    GetUserByUsername,
     CreateUser,
     GetCampaigns,
     GetCampaign,
@@ -94,9 +93,6 @@ defmodule Gateway.ChampionsSocketHandler do
   end
 
   defp handle(%GetUser{user_id: user_id}), do: Users.get_user(user_id) |> prepare_response(:user)
-
-  defp handle(%GetUserByUsername{username: username}),
-    do: Users.get_user_by_username(username) |> prepare_response(:user)
 
   defp handle(%CreateUser{username: username}),
     do: Users.register(username) |> prepare_response(:user)
