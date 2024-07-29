@@ -151,7 +151,8 @@ defmodule Arena.Configuration do
       map_config
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
-        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1)
+        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
+        bushes: Enum.map(map_config.bushes, &parse_bush/1)
     }
   end
 
@@ -162,6 +163,15 @@ defmodule Arena.Configuration do
         vertices: Enum.map(obstacle.vertices, &parse_position/1),
         radius: maybe_to_float(obstacle.radius),
         statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    }
+  end
+
+  defp parse_bush(bush) do
+    %{
+      bush
+      | position: parse_position(bush.position),
+        vertices: Enum.map(bush.vertices, &parse_position/1),
+        radius: maybe_to_float(bush.radius)
     }
   end
 

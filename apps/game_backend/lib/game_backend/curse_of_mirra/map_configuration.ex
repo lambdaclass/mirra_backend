@@ -11,7 +11,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
 
     embeds_many(:initial_positions, __MODULE__.Position, on_replace: :delete)
     embeds_many(:obstacles, __MODULE__.Obstacle, on_replace: :delete)
-    embeds_many(:bushes, __MODULE__.Position, on_replace: :delete)
+    embeds_many(:bushes, __MODULE__.Bush, on_replace: :delete)
 
     timestamps(type: :utc_datetime)
   end
@@ -69,6 +69,30 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
       |> cast_embed(:position)
       |> cast_embed(:vertices)
       |> validate_required([:name, :position, :radius, :shape, :type])
+    end
+  end
+
+  defmodule Bush do
+    @moduledoc """
+    Bush embedded schema to be used by MapConfiguration
+    """
+    use GameBackend.Schema
+
+    @derive {Jason.Encoder, only: [:name, :position, :radius, :shape, :vertices]}
+    embedded_schema do
+      field(:name, :string)
+      field(:radius, :decimal)
+      field(:shape, :string)
+      embeds_one(:position, Position)
+      embeds_many(:vertices, Position)
+    end
+
+    def changeset(position, attrs) do
+      position
+      |> cast(attrs, [:name, :radius, :shape])
+      |> cast_embed(:position)
+      |> cast_embed(:vertices)
+      |> validate_required([:name, :position, :radius, :shape])
     end
   end
 end

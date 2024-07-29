@@ -1871,7 +1871,35 @@ map_config = %{
       ]
     }
   ],
-  bushes: []
+  bushes: [
+    %{
+      name: "Middle bush",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 0.0,
+          y: 1000.0
+        },
+        %{
+          x: 1000.0,
+          y: 0.0
+        },
+        %{
+          x: 0.0,
+          y: -1000.0
+        },
+        %{
+          x: -1000.0,
+          y: 0.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    }
+  ]
 }
 
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)
