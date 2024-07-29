@@ -182,13 +182,13 @@
             "match_tracking_field": "result",
             "value": 1,
             "comparison": "greater",
-            "scope": "match"
+            "scope": "day"
         },
         "conditions": [
             {
                 "match_tracking_field": "duration_ms",
                 "value": 60000,
-                "comparison": "equal"
+                "comparison": "lesser_or_equal"
             }
         ],
         "reward": {
@@ -203,7 +203,7 @@
         "objective": {
             "match_tracking_field": "result",
             "value": 3,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "match"
         },
         "conditions": [
@@ -230,7 +230,7 @@
         "objective": {
             "match_tracking_field": "result",
             "value": 3,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "match"
         },
         "conditions": [
