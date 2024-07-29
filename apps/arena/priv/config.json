@@ -41,7 +41,9 @@
             "radius": 450.0,
             "range": 1200.0,
             "activation_delay": 400,
-            "effects_to_apply": ["singularity"]
+            "effects_to_apply": [
+              "singularity"
+            ]
           }
         }
       ],
@@ -94,7 +96,9 @@
             "radius": 500.0,
             "range": 1200.0,
             "activation_delay": 250,
-            "effects_to_apply": ["denial_of_service"]
+            "effects_to_apply": [
+              "denial_of_service"
+            ]
           }
         }
       ],
@@ -211,7 +215,9 @@
           }
         }
       ],
-      "effects_to_apply": ["invisible"]
+      "effects_to_apply": [
+        "invisible"
+      ]
     },
     {
       "name": "uma_sneak",
@@ -302,25 +308,33 @@
     {
       "name": "golden_clock",
       "radius": 200.0,
-      "effects": ["golden_clock_effect"],
+      "effects": [
+        "golden_clock_effect"
+      ],
       "mechanics": {}
     },
     {
       "name": "magic_boots",
       "radius": 200.0,
-      "effects": ["magic_boots_effect"],
+      "effects": [
+        "magic_boots_effect"
+      ],
       "mechanics": {}
     },
     {
       "name": "mirra_blessing",
       "radius": 200.0,
-      "effects": ["mirra_blessing_effect"],
+      "effects": [
+        "mirra_blessing_effect"
+      ],
       "mechanics": {}
     },
     {
       "name": "giant",
       "radius": 200.0,
-      "effects": ["giant_effect"],
+      "effects": [
+        "giant_effect"
+      ],
       "mechanics": {}
     }
   ],
@@ -331,7 +345,7 @@
         "amount_of_drops": 1
       },
       {
-        "minimum_amount": 2,
+        "minimum_amount": 3,
         "amount_of_drops": 2
       },
       {
@@ -340,9 +354,9 @@
       }
     ],
     "power_up": {
-      "distance_to_power_up": 400,
-      "power_up_damage_modifier": 0.08,
-      "power_up_health_modifier": 0.08,
+      "distance_to_power_up": 300,
+      "power_up_damage_modifier": 0.05,
+      "power_up_health_modifier": 0.05,
       "radius": 200.0,
       "activation_delay_ms": 500
     }
@@ -491,108 +505,216 @@
   "crates": [
     {
       "position": {
-        "y": 230.0,
-        "x": 260.0
+        "y": -1710.0,
+        "x": -680.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": 230.0,
-        "x": -40.0
+        "y": 860.0,
+        "x": 2347.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": -4390.0,
-        "x": 2630.0
+        "y": -220.0,
+        "x": -5400.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": -1830.0,
-        "x": 4360.0
+        "y": 5502.0,
+        "x": -1221.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": -1860.0,
-        "x": -4650.0
+        "y": 2210.0,
+        "x": 180.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": 2870.0,
-        "x": -3960.0
+        "y": -3780.0,
+        "x": 3770.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": 5010.0,
-        "x": 290.0
+        "y": 860.0,
+        "x": 5300.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": 4680.0,
-        "x": 2400.0
+        "y": 3420.0,
+        "x": 3330.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     },
     {
       "position": {
-        "y": 1730.0,
-        "x": 4950.0
+        "y": 4630.0,
+        "x": -10.0
       },
       "shape": "circle",
       "radius": 150.0,
-      "health": 250,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": 3850.0,
+        "x": -3530.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": 1770.0,
+        "x": -1610.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": 850.0,
+        "x": -3810.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": -3960.0,
+        "x": -3600.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": -1543.0,
+        "x": -2680.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": 2740.0,
+        "x": 1730.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": -420.0,
+        "x": 3740.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": -1573.0,
+        "x": 1837.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "y": -4990.0,
+        "x": -20.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 200,
       "vertices": [],
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
