@@ -685,7 +685,8 @@ defmodule Arena.GameUpdater do
              start_game_timestamp: state.start_game_timestamp,
              obstacles: complete_entities(state.obstacles),
              crates: complete_entities(state.crates),
-             traps: complete_entities(state.traps)
+             traps: complete_entities(state.traps),
+             external_wall: complete_entity(state.external_wall)
            }}
       })
 

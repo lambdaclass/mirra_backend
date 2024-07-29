@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use crate::collision_detection::sat::intersect_circle_polygon;
 use crate::collision_detection::{
     circle_circle_collision, circle_polygon_collision, line_circle_collision,
-    line_polygon_collision, point_circle_collision,
+    line_polygon_collision, point_circle_collision, point_polygon_collision,
 };
 #[derive(NifMap, Clone)]
 pub struct Polygon {
@@ -171,6 +171,11 @@ impl Entity {
                 }
                 (Shape::Point, Shape::Circle) => {
                     if point_circle_collision(self, entity) {
+                        result.push(entity.id);
+                    }
+                }
+                (Shape::Point, Shape::Polygon) => {
+                    if point_polygon_collision(self, entity) {
                         result.push(entity.id);
                     }
                 }
