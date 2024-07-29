@@ -119,7 +119,8 @@ defmodule GameClientWeb.BoardLive.Show do
       radius: entity.radius / 5,
       coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?(),
-      status: aditional_info.status
+      status: aditional_info.status,
+      type: aditional_info.type
     }
   end
 
