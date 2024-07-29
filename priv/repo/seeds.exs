@@ -231,7 +231,8 @@ Champions.Config.import_dungeon_levels_config()
 |> Configurator.Accounts.register_user()
 
 default_version_params = %{
-  name: "v1.0.0"
+  name: "v1.0.0",
+  current: true
 }
 
 {:ok, version} =

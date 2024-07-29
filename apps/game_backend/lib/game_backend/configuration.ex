@@ -3,6 +3,7 @@ defmodule GameBackend.Configuration do
   Configuration context for GameBackend
   """
   import Ecto.Query
+  alias Ecto.Multi
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
@@ -314,10 +315,27 @@ defmodule GameBackend.Configuration do
     Version.changeset(version, attrs)
   end
 
-  def get_version_by_name(name) do
-    Repo.get_by(Version, name: name)
+  @doc """
+  Gets the latest version based on the current field flag
+
+  ## Examples
+
+      iex> get_latest_version()
+      %Version{}
+  """
+
+  def get_current_version do
+    q = from(v in Version, where: v.current)
+    Repo.one(q)
   end
 
+  @doc """
+  List all characters by version
+
+  ## Examples
+      iex> list_characters_by_version(version)
+      [%Character{}, ...]
+  """
   def list_characters_by_version(version) do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
@@ -334,6 +352,13 @@ defmodule GameBackend.Configuration do
     Repo.all(q)
   end
 
+  @doc """
+  Get game configuration by version
+
+  ## Examples
+      iex> get_game_configuration_by_version(version)
+      %GameConfiguration{}
+  """
   def get_game_configuration_by_version(version) do
     q =
       from(g in GameConfiguration,
@@ -343,8 +368,46 @@ defmodule GameBackend.Configuration do
     Repo.one(q)
   end
 
+  @doc """
+  List all consumable items by version
+
+  ## Examples
+      iex> list_consumable_items_by_version(version)
+      [%ConsumableItem{}, ...]
+  """
   def list_consumable_items_by_version(version) do
     q = from(ci in ConsumableItem, where: ci.version_id == ^version.id and ci.active)
     Repo.all(q)
+  end
+
+  @doc """
+
+  """
+  def list_map_configurations_by_version(version) do
+    q = from(m in MapConfiguration, where: m.version_id == ^version.id)
+    Repo.all(q)
+  end
+
+  @doc """
+  Marks a version as current and the former one as not current
+
+  ## Examples
+      iex> mark_as_current_version(version)
+      {:ok, %Version{}}
+  """
+  def mark_as_current_version(version) do
+    former_version = get_current_version()
+
+    Multi.new()
+    |> Multi.run(:different_versions, fn _repo, _changes_so_far ->
+      if version.id == former_version.id do
+        {:error, "Version is already current one"}
+      else
+        {:ok, version}
+      end
+    end)
+    |> Multi.update(:former_version, Ecto.Changeset.change(former_version, %{current: false}))
+    |> Multi.update(:version, Ecto.Changeset.change(version, %{current: true}))
+    |> Repo.transaction()
   end
 end

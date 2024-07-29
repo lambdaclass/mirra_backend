@@ -4,6 +4,7 @@ defmodule GameBackend.Configuration.Version do
 
   schema "versions" do
     field(:name, :string)
+    field(:current, :boolean)
 
     timestamps(type: :utc_datetime)
   end
@@ -11,7 +12,7 @@ defmodule GameBackend.Configuration.Version do
   @doc false
   def changeset(version, attrs) do
     version
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :current])
     |> validate_required([:name])
   end
 end

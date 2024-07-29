@@ -9,17 +9,19 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
 
   action_fallback Gateway.Controllers.FallbackController
 
-  def game_configuration(conn, %{"version" => version} = _params) do
-    version = Configuration.get_version_by_name(version) |> IO.inspect()
+  def get_current_configuration(conn, _params) do
+    version = Configuration.get_current_version()
     characters = encode_characters(Configuration.list_characters_by_version(version))
     game_configuration = Jason.encode!(Configuration.get_game_configuration_by_version(version))
     consumable_items = Jason.encode!(Configuration.list_consumable_items_by_version(version))
+    map_configuration = Jason.encode!(Configuration.list_map_configurations_by_version(version))
 
     config =
       Jason.encode!(%{
         characters: characters,
         game_configuration: game_configuration,
-        consumable_items: consumable_items
+        consumable_items: consumable_items,
+        map_configuration: map_configuration
       })
 
     send_resp(conn, 200, config)

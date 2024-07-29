@@ -59,4 +59,20 @@ defmodule ConfiguratorWeb.VersionController do
     |> put_flash(:info, "Version deleted successfully.")
     |> redirect(to: ~p"/versions")
   end
+
+  def mark_as_current(conn, %{"id" => id}) do
+    version = Configuration.get_version!(id) |> IO.inspect(label: :llegue)
+
+    case Configuration.mark_as_current_version(version) |> IO.inspect(label: :wea) do
+      {:ok, _version} ->
+        conn
+        |> put_flash(:info, "Version marked as current.")
+        |> redirect(to: ~p"/versions")
+
+      {:error, _failed_action, _changeset, _changes_so_far} ->
+        conn
+        |> put_flash(:error, "Failed to mark version as current.")
+        |> redirect(to: ~p"/versions")
+    end
+  end
 end

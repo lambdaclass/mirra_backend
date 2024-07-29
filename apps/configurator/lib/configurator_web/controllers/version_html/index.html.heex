@@ -16,9 +16,18 @@
     <.link navigate={~p"/versions/#{version}/edit"}>Edit</.link>
   </:action>
   <:action :let={version}>
-    <.link href={~p"/versions/#{version}"} method="delete" data-confirm="Are you sure?">
+    <.link href={~p"/versions/#{version}"} method="delete">
       Delete
     </.link>
+  </:action>
+  <:action :let={version}>
+    <%= if version.current do %>
+      Current version
+    <% else %>
+      <.link href={~p"/versions/#{version}/current"} method="put" data-confirm="Are you sure?">
+        Mark as current
+      </.link>
+    <% end %>
   </:action>
 </.table>
 
