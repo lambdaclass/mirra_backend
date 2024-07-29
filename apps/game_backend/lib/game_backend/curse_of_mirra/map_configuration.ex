@@ -4,6 +4,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
   """
   use GameBackend.Schema
   import Ecto.Changeset
+  alias GameBackend.Configuration.Version
 
   @derive {Jason.Encoder, only: [:radius, :initial_positions, :obstacles, :bushes]}
   schema "map_configurations" do
@@ -13,14 +14,16 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     embeds_many(:obstacles, __MODULE__.Obstacle, on_replace: :delete)
     embeds_many(:bushes, __MODULE__.Position, on_replace: :delete)
 
+    belongs_to(:version, Version)
+
     timestamps(type: :utc_datetime)
   end
 
   @doc false
   def changeset(map_configuration, attrs) do
     map_configuration
-    |> cast(attrs, [:radius])
-    |> validate_required([:radius])
+    |> cast(attrs, [:radius, :version_id])
+    |> validate_required([:radius, :version_id])
     |> cast_embed(:initial_positions)
     |> cast_embed(:obstacles)
     |> cast_embed(:bushes)

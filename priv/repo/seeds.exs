@@ -1895,7 +1895,8 @@ map_config = %{
       ]
     }
   ],
-  bushes: []
+  bushes: [],
+  version_id: version.id
 }
 
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)

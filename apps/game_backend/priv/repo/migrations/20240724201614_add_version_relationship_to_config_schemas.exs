@@ -17,6 +17,9 @@ defmodule GameBackend.Repo.Migrations.AddVersionRelationshipToConfigSchemas do
     alter table(:game_configurations) do
       add :version_id, references(:versions)
     end
-  end
 
+    alter table(:map_configurations) do
+      add :version_id, references(:versions)
+    end
+  end
 end
