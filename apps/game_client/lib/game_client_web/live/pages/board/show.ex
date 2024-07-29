@@ -105,11 +105,7 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, assign(socket, game_status: :finished, winner_id: finished_event.winner.id)}
   end
 
-  defp handle_game_event({:ping, _ping_event}, socket) do
-    {:noreply, socket}
-  end
-
-  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots] do
+  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots, :ping, :ping_update] do
     {:noreply, socket}
   end
 

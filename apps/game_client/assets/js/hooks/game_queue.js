@@ -22,7 +22,7 @@ export const GameQueue = function () {
 function getQueueSocketUrl(gateway_jwt, player_id, character, player_name, game_mode) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
     const host = getHost()
-    return `${protocol}//${host}/${game_mode}/${player_id}/${character}/${player_name}?gateway_jwt=${gateway_jwt}`
+    return `${protocol}//${host}/join/${game_mode}/${player_id}/${character}/${player_name}?gateway_jwt=${gateway_jwt}`
 }
 
 // TODO: This will work for while the Arena is using the default wss port and
