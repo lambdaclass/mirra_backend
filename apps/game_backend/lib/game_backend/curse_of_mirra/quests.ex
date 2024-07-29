@@ -374,7 +374,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
 
-    {unactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
+    {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
 
     multi =
       Enum.reduce(active_quests_params, Multi.new(), fn
@@ -392,7 +392,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
       end)
 
     multi =
-      Enum.reduce(unactive_quests_params, multi, fn
+      Enum.reduce(inactive_quests_params, multi, fn
         quest, multi ->
           attrs = %{
             user_id: user_id,
@@ -419,7 +419,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
       end
     end)
     |> Multi.run(:check_quests_available, fn _, _ ->
-      if(Enum.empty?(active_quests_params) || Enum.empty?(unactive_quests_params)) do
+      if(Enum.empty?(active_quests_params) || Enum.empty?(inactive_quests_params)) do
         {:error, :not_enough_quests}
       else
         {:ok, :enough_available_quests}
