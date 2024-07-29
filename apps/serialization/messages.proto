@@ -137,6 +137,7 @@ message GameState {
   map<uint64, Entity> crates = 16;
   map<uint64, Entity> bushes = 17;
   map<uint64, Entity> traps = 18;
+  Entity external_wall = 19;
 }
 
 enum GameStatus {
