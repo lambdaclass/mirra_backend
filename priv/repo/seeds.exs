@@ -1033,14 +1033,14 @@ map_config = %{
       }
     },
     %{
-      name: "middle stone north",
+      name: "middle stone south",
       position: %{
         x: 0.0,
         y: 0.0
       },
       radius: 0.0,
       shape: "polygon",
-      type: "lake",
+      type: "static",
       base_status: "",
       statuses_cycle: %{},
       vertices: [
@@ -1071,14 +1071,14 @@ map_config = %{
       ]
     },
     %{
-      name: "middle stone south",
+      name: "middle stone north",
       position: %{
         x: 0.0,
         y: 0.0
       },
       radius: 0.0,
       shape: "polygon",
-      type: "static",
+      type: "lake",
       statuses_cycle: %{},
       base_status: "",
       vertices: [
