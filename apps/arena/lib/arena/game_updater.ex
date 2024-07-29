@@ -13,7 +13,12 @@ defmodule Arena.GameUpdater do
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
+  alias Arena.Serialization.GameEvent
+  alias Arena.Serialization.GameState
+  alias Arena.Serialization.GameFinished
+  alias Arena.Serialization.ToggleBots
+  alias Arena.Serialization.PingUpdate
+  alias Arena.Serialization.Ping
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -53,6 +58,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:change_tickrate, tickrate})
   end
 
+  def pong(game_pid, client_pid, ping_timestamp) do
+    GenServer.cast(game_pid, {:pong, client_pid, ping_timestamp})
+  end
+
   ##########################
   # END API
   ##########################
@@ -66,6 +75,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
+    send(self(), :send_ping)
     Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
@@ -186,6 +196,20 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
   end
 
+  def handle_cast({:pong, client_pid, ping_timestamp}, state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    latency = now - ping_timestamp
+
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:ping_update, %PingUpdate{latency: latency}}
+      })
+
+    send(client_pid, {:ping_update, encoded_msg})
+
+    {:noreply, state}
+  end
+
   ##########################
   # END API Callbacks
   ##########################
@@ -246,6 +270,12 @@ defmodule Arena.GameUpdater do
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_info(:send_ping, state) do
+    Process.send_after(self(), :send_ping, 500)
+    broadcast_ping(state.game_state)
+    {:noreply, state}
   end
 
   def handle_info(:selecting_bounty, state) do
@@ -655,11 +685,23 @@ defmodule Arena.GameUpdater do
              start_game_timestamp: state.start_game_timestamp,
              obstacles: complete_entities(state.obstacles),
              crates: complete_entities(state.crates),
-             traps: complete_entities(state.traps)
+             traps: complete_entities(state.traps),
+             external_wall: complete_entity(state.external_wall)
            }}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+  end
+
+  defp broadcast_ping(state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    encoded_state =
+      GameEvent.encode(%GameEvent{
+        event: {:ping, %Ping{timestamp_now: now}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:ping, encoded_state})
   end
 
   defp broadcast_game_ended(winner, state) do
