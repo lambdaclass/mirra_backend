@@ -53,6 +53,20 @@ export const BoardGame = function () {
 
     document.getElementById("board_container").appendChild(app.view);
 
+
+    window.addEventListener("phx:joinedGame", (e) => {
+      let zoneCircle = new Graphics();
+      zoneCircle.beginFill(0xFFFFFF)
+      zoneCircle.lineStyle(1, 0x000000, 1);
+      zoneCircle.drawCircle(
+        document.getElementById("board_game").dataset.boardWidth / 2,
+        document.getElementById("board_game").dataset.boardHeight / 2,
+        document.getElementById("board_game").dataset.mapRadius
+      );
+      zoneCircle.endFill();
+      container.addChild(zoneCircle);
+    })
+
     window.addEventListener("phx:updateEntities", (e) => {
       // Updates every entity's info and position, and creates it if it doesn't exist
       let selfBackEntity = Array.from(e.detail.entities).find((backEntity) => backEntity.id == e.detail.player_id)
