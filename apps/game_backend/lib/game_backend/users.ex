@@ -135,8 +135,8 @@ defmodule GameBackend.Users do
         join: quest in assoc(user_quest, :quest),
         as: :quest,
         where:
-          (quest.type == "daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
-            (quest.type == "weekly" and user_quest.inserted_at > ^start_of_week_naive and
+          (quest.type == ^"daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
+            (quest.type == ^"weekly" and user_quest.inserted_at > ^start_of_week_naive and
                user_quest.inserted_at < ^end_of_week_naive),
         preload: [:quest]
       )
