@@ -296,7 +296,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
         type when type in ["daily", :daily] ->
           Enum.filter(arena_match_results, fn arena_match_result ->
             user_quest.activated_at &&
-              NaiveDateTime.compare(arena_match_result.inserted_at, user_quest.activated_at) == :gt
+              NaiveDateTime.compare(arena_match_result.inserted_at, user_quest.activated_at) == :gt &&
+              NaiveDateTime.diff(arena_match_result.inserted_at, user_quest.inserted_at, :day) == 0
           end)
 
         _ ->
