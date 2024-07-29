@@ -231,6 +231,57 @@ Champions.Config.import_dungeon_levels_config()
 %{email: "admin@configurator.com", password: "letmepass1234"}
 |> Configurator.Accounts.register_user()
 
+## Mechanics
+multi_shoot = %{
+  "type" => "multi_shoot",
+  "angle_between" => 22.0,
+  "amount" => 3,
+  "speed" => 1.1,
+  "duration_ms" => 1000,
+  "remove_on_collision" => true,
+  "projectile_offset" => 100,
+  "damage" => 44,
+  "radius" => 40.0
+}
+
+singularity = %{
+  "type" => "spawn_pool",
+  "name" => "singularity",
+  "activation_delay" => 400,
+  "duration_ms" => 5000,
+  "radius" => 450.0,
+  "range" => 1200.0,
+  "effects_to_apply" => [
+    "singularity"
+  ]
+}
+
+simple_shoot = %{
+  "type" => "simple_shoot",
+  "speed" => 1.8,
+  "duration_ms" => 1100,
+  "remove_on_collision" => true,
+  "projectile_offset" => 100,
+  "radius" => 100.0,
+  "damage" => 0,
+  "on_explode_mechanics" => [
+    %{
+      "type" => "circle_hit",
+      "damage" => 58,
+      "range" => 250.0,
+      "offset" => 0
+    }
+  ],
+  "on_collide_effects" => %{
+    "apply_effect_to_entity_type" => [
+      "pool"
+    ],
+    "effects" => [
+      "buff_singularity"
+    ]
+  }
+}
+
 ## Skills
 skills = [
   %{
@@ -314,19 +365,7 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "multi_shoot",
-        "angle_between" => 22.0,
-        "amount" => 3,
-        "speed" => 1.1,
-        "duration_ms" => 1000,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "damage" => 44,
-        "radius" => 40.0
-      }
-    ],
+    "mechanics" => [multi_shoot],
     "effects_to_apply" => []
   },
   %{
@@ -457,19 +496,7 @@ skills = [
     "max_autoaim_range" => 1200,
     "can_pick_destination" => true,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "spawn_pool",
-        "name" => "singularity",
-        "activation_delay" => 400,
-        "duration_ms" => 5000,
-        "radius" => 450.0,
-        "range" => 1200.0,
-        "effects_to_apply" => [
-          "singularity"
-        ]
-      }
-    ],
+    "mechanics" => [singularity],
     "effects_to_apply" => []
   },
   %{
@@ -507,40 +534,14 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "simple_shoot",
-        "speed" => 1.8,
-        "duration_ms" => 1100,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "radius" => 100.0,
-        "damage" => 0,
-        "on_explode_mechanics" => [
-          %{
-            "type" => "circle_hit",
-            "damage" => 58,
-            "range" => 250.0,
-            "offset" => 0
-          }
-        ],
-        "on_collide_effects" => %{
-          "apply_effect_to_entity_type" => [
-            "pool"
-          ],
-          "effects" => [
-            "buff_singularity"
-          ]
-        }
-      }
-    ],
+    "mechanics" => [simple_shoot],
     "effects_to_apply" => []
   },
   %{
     "name" => "kenzu_quickstrike",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 5000,
+    "reset_combo_ms" => 0,
     "is_combo?" => true,
     "execution_duration_ms" => 100,
     "activation_delay_ms" => 0,
@@ -550,33 +551,14 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "simple_shoot",
-        "speed" => 55.0,
-        "duration_ms" => 1100,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "radius" => 100.0,
-        "damage" => 0,
-        "on_explode_mechanics" => [
-          %{
-            "circle_hit" => %{
-              "damage" => 58,
-              "range" => 250.0,
-              "offset" => 0
-            }
-          }
-        ]
-      }
-    ],
+    "mechanics" => [simple_shoot],
     "effects_to_apply" => []
   },
   %{
     "name" => "kenzu_quickstrike_second",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 5000,
+    "reset_combo_ms" => 2500,
     "is_combo?" => true,
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 0,
@@ -586,26 +568,14 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "multi_shoot",
-        "angle_between" => 22.0,
-        "amount" => 3,
-        "speed" => 65.0,
-        "duration_ms" => 1000,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "damage" => 44,
-        "radius" => 40.0
-      }
-    ],
+    "mechanics" => [multi_shoot],
     "effects_to_apply" => []
   },
   %{
     "name" => "kenzu_quickstrike_third",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 5000,
+    "reset_combo_ms" => 2500,
     "is_combo?" => true,
     "execution_duration_ms" => 450,
     "activation_delay_ms" => 0,
@@ -615,19 +585,7 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "spawn_pool",
-        "name" => "singularity",
-        "activation_delay" => 400,
-        "duration_ms" => 5000,
-        "radius" => 450.0,
-        "range" => 1200.0,
-        "effects_to_apply" => [
-          "singularity"
-        ]
-      }
-    ],
+    "mechanics" => [singularity],
     "effects_to_apply" => []
   }
 ]

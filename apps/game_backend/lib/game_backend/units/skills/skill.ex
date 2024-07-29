@@ -72,6 +72,7 @@ defmodule GameBackend.Units.Skills.Skill do
   defp validate_combo_fields(changeset) do
     is_combo? = get_field(changeset, :is_combo?)
     reset_combo_ms = get_field(changeset, :reset_combo_ms)
+
     if is_combo? and is_nil(reset_combo_ms) do
       add_error(changeset, :reset_combo_ms, "Combo reset time is needed for combo skills")
     else
