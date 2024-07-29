@@ -64,7 +64,8 @@ defmodule GameBackend.Users.User do
       :level,
       :experience,
       :profile_picture,
-      :google_user_id
+      :google_user_id,
+      :last_daily_quest_generation_at
     ])
     |> unique_constraint([:game_id, :username])
     |> cast_assoc(:unlocks)

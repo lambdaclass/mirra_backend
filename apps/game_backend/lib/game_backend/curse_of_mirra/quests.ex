@@ -393,6 +393,25 @@ defmodule GameBackend.CurseOfMirra.Quests do
       end)
 
     multi
+    |> Multi.run(:check_quests_already_generated, fn _, _ ->
+      today = Date.utc_today()
+
+      if(
+        user.last_daily_quest_generation_at &&
+          Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq]
+      ) do
+        {:error, :quests_already_generated}
+      else
+        {:ok, :pending_generation}
+      end
+    end)
+    |> Multi.run(:check_quests_available, fn _, _ ->
+      if(Enum.empty?(active_quests_params) || Enum.empty?(unactive_quests_params)) do
+        {:error, :not_enough_quests}
+      else
+        {:ok, :enough_available_quests}
+      end
+    end)
     |> Multi.update(:update_user_last_generated_quests, user_changeset)
     |> Repo.transaction()
   end
