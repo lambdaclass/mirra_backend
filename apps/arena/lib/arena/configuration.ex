@@ -78,7 +78,6 @@ defmodule Arena.Configuration do
 
   defp parse_characters_config(characters) do
     Enum.map(characters, fn character ->
-      # IO.inspect(character)
       character_skills = %{
         "1" => parse_skill_config(character.basic_skill),
         "2" => parse_skill_config(character.ultimate_skill),
@@ -92,13 +91,12 @@ defmodule Arena.Configuration do
 
   defp parse_skill_config(
          %{
-           cooldown_mechanism: mechanism,
+           cooldown_mechanism: "combo",
            combo_reset_timer_ms: combo_reset_timer_ms,
            next_skill_id: nil
          } = skill_config
        )
-       when combo_reset_timer_ms >= 0 and mechanism in [:combo, "combo"] do
-    # IO.inspect(skill_config)
+       when combo_reset_timer_ms >= 0 do
     skill_config = Map.put(skill_config, :next_skill, nil)
     mechanics = parse_mechanics_config(skill_config.mechanics)
     %{skill_config | mechanics: mechanics}
@@ -106,13 +104,12 @@ defmodule Arena.Configuration do
 
   defp parse_skill_config(
          %{
-           cooldown_mechanism: mechanism,
+           cooldown_mechanism: "combo",
            combo_reset_timer_ms: combo_reset_timer_ms,
            next_skill: next_skill
          } = skill_config
        )
-       when combo_reset_timer_ms >= 0 and mechanism in [:combo, "combo"] do
-    # IO.inspect(skill_config)
+       when combo_reset_timer_ms >= 0 do
     skill_config = Map.put(skill_config, :next_skill, parse_skill_config(next_skill))
     mechanics = parse_mechanics_config(skill_config.mechanics)
     %{skill_config | mechanics: mechanics}
@@ -129,7 +126,6 @@ defmodule Arena.Configuration do
   end
 
   defp parse_skill_config(skill_config) do
-    # IO.inspect(skill_config)
     case skill_config.cooldown_mechanism do
       "stamina" ->
         raise "Invalid Skill config for `#{skill_config[:name]}` stamina_cost should be a number greater than or equal to zero"
@@ -157,7 +153,6 @@ defmodule Arena.Configuration do
   end
 
   defp parse_mechanic_config(mechanic) do
-    IO.inspect(mechanic, label: :aver_mechanic)
     ## Why do we even need this? Well it happens that some of our fields are represented
     ## as Decimal. To prevent precision loss this struct its converted to a string of the float
     ## which should be read back and converted to Decimal
@@ -173,7 +168,6 @@ defmodule Arena.Configuration do
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
         on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics)
     }
-    |> IO.inspect(label: :aver_parsed_mechanic)
   end
 
   ## Why do we even need this? Well it happens that some of our fields are represented
