@@ -29,6 +29,7 @@ defmodule Arena.Game.Obstacle do
       aditional_info
       |> Map.put(:next_status, current_status_params.next_status)
       |> Map.put(:collisionable, current_status_params.make_obstacle_collisionable)
+      |> Map.put(:collide_with_projectiles, current_status_params.make_obstacle_collisionable)
       |> Map.put(:time_until_transition_start, now + current_status_params.time_until_transition_ms)
     end)
   end
@@ -85,6 +86,7 @@ defmodule Arena.Game.Obstacle do
         |> Map.put(:next_status, next_status_params.next_status)
         |> Map.put(:status, obstacle.aditional_info.next_status)
         |> Map.put(:collisionable, next_status_params.make_obstacle_collisionable)
+        |> Map.put(:collide_with_projectiles, next_status_params.make_obstacle_collisionable)
         |> Map.put(:time_until_transition_start, now + next_status_params.time_until_transition_ms)
       end)
 
