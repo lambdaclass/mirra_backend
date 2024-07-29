@@ -61,4 +61,12 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
       |> send_resp(200, "Quests completed")
     end
   end
+
+  def generate_daily_quests(conn, %{"user_id" => user_id}) do
+    with {:ok, _changes} <-
+           Quests.generate_daily_quests_for_user(user_id) do
+      conn
+      |> send_resp(200, "Quests generated")
+    end
+  end
 end

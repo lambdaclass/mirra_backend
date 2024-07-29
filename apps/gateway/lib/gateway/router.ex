@@ -34,6 +34,7 @@ defmodule Gateway.Router do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
       get "/get_daily_reward_status", UserController, :get_daily_reward_status
+      post "/generate_daily_quests", QuestController, :generate_daily_quests
 
       scope "/quest" do
         post "/add_quests", QuestController, :add_quests
