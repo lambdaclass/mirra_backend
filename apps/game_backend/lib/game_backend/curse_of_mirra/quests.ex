@@ -336,6 +336,18 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
           Multi.new()
           |> Multi.update(:update_user_quest, updated_user_quest)
+          |> Multi.run(:maybe_activate_quest, fn _, _ ->
+            Enum.find(user.user_quests, fn user_quest -> is_nil(user_quest.activated_at) end)
+            |> case do
+              nil ->
+                {:ok, :no_quests_left}
+
+              user_quest ->
+                user_quest
+                |> UserQuest.changeset(%{activated_at: NaiveDateTime.utc_now()})
+                |> GameBackend.Repo.update()
+            end
+          end)
           |> Multi.run(:add_currency, fn _, _ ->
             Currencies.add_currency_by_name_and_game(
               user.id,
