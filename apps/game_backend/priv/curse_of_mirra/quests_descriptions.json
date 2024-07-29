@@ -173,5 +173,81 @@
             "currency": "Gold",
             "amount": 10000
         }
+    },
+    {
+        "config_id": 10,
+        "description": "Finish a match in less than 1 minute",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "duration_ms",
+                "value": 60000,
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    },
+    {
+        "config_id": 11,
+        "description": "Win three matches with Uma",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 3,
+            "comparison": "greater",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "uma",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    },
+    {
+        "config_id": 12,
+        "description": "Win three matches with Valtimer",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 3,
+            "comparison": "greater",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "valtimer",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
     }
 ]
