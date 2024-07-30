@@ -576,6 +576,7 @@ defmodule ArenaLoadTest.Serialization.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
+  field(:team, 17, type: :uint64)
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

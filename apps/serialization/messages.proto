@@ -204,6 +204,7 @@ message Player {
   bool on_bush = 14;
   bool forced_movement = 15;
   bool bounty_completed = 16;
+  uint64 team = 17;
 }
 
 message Effect {
