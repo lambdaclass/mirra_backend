@@ -79,6 +79,14 @@ defmodule Arena.Game.Player do
     Map.filter(players, fn {_, player} -> alive?(player) and not invisible?(player) and (friendly_fire or team != player.aditional_info.team) end)
   end
 
+  def damageable_players(players, source_player_id, source_team) do
+    Map.filter(players, fn {_, player} -> is_damageable?(player, source_player_id, source_team) end)
+  end
+
+  def is_damageable?(player, source_player_id, source_team) do
+    player.id != source_player_id and source_team != player.aditional_info.team and alive?(player)
+  end
+
   def stamina_full?(player) do
     player.aditional_info.available_stamina == player.aditional_info.max_stamina
   end

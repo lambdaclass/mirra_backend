@@ -1235,7 +1235,7 @@ defmodule Arena.GameUpdater do
     |> Map.put(:crates, updated_crates)
   end
 
-  defp add_pools_collisions(
+   defp add_pools_collisions(
          %{
            players: players,
            crates: crates,
@@ -1540,12 +1540,15 @@ defmodule Arena.GameUpdater do
          _crates
        )
        when entity_id == projectile.aditional_info.owner_id,
+       ## TODO: check this because it looks like a bug
+       ##   returning the immediate next makes no sense cause we still need to to do other checks
        do: List.first(other_entities, nil)
 
   defp decide_collided_entity(projectile, [entity_id | other_entities], external_wall_id, players, crates) do
     cond do
       Map.get(players, entity_id) ->
-        if Player.alive?(Map.get(players, entity_id)) do
+        target_player = Map.get(players, entity_id)
+        if Player.is_damageable?(target_player, projectile.aditional_info.owner_id, projectile.aditional_info.owner_team) do
           entity_id
         else
           decide_collided_entity(projectile, other_entities, external_wall_id, players, crates)
@@ -1653,9 +1656,10 @@ defmodule Arena.GameUpdater do
   end
 
   defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
-    entities = Map.merge(crates, players)
-
     Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
+      players = Player.damageable_players(players, pool.aditional_info.owner_id, pool.aditional_info.owner_team)
+      entities = Map.merge(crates, players)
+
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
         if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
           add_pool_effects(acc, game_config, entity, pool)

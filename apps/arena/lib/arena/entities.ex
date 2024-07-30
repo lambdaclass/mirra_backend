@@ -79,7 +79,7 @@ defmodule Arena.Entities do
         id,
         position,
         direction,
-        owner_id,
+        owner,
         skill_key,
         config_params
       ) do
@@ -97,7 +97,8 @@ defmodule Arena.Entities do
       aditional_info: %{
         skill_key: skill_key,
         damage: config_params.damage,
-        owner_id: owner_id,
+        owner_id: owner.id,
+        owner_team: owner.aditional_info.team,
         status: :ACTIVE,
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
@@ -175,7 +176,8 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         effects_to_apply: pool_params.effects_to_apply,
-        owner_id: pool_params.owner_id,
+        owner_id: pool_params.owner.id,
+        owner_team: pool_params.owner.aditional_info.team,
         effects: [],
         stat_multiplier: 0,
         duration_ms: pool_params.duration_ms + pool_params.activation_delay,

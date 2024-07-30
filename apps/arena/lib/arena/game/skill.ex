@@ -25,12 +25,10 @@ defmodule Arena.Game.Skill do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     # Players
-    alive_players =
-      Player.alive_players(game_state.players)
-      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
+    damageable_players = Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
 
     players =
-      Physics.check_collisions(circular_damage_area, alive_players)
+      Physics.check_collisions(circular_damage_area, damageable_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
 
@@ -84,12 +82,12 @@ defmodule Arena.Game.Skill do
 
     cone_area = Entities.make_polygon(entity.id, triangle_points)
 
-    alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
+    entity_player_owner = get_entity_player_owner(game_state, entity)
+    damageable_players = Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
 
     players =
-      Physics.check_collisions(cone_area, alive_players)
+      Physics.check_collisions(cone_area, damageable_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        entity_player_owner = get_entity_player_owner(game_state, entity)
         real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
 
         target_player =
@@ -203,7 +201,7 @@ defmodule Arena.Game.Skill do
           repeated_shot.projectile_offset
         ),
         randomize_direction_in_angle(entity.direction, repeated_shot.angle),
-        entity_player_owner.id,
+        entity_player_owner,
         skill_params.skill_key,
         repeated_shot
       )
@@ -236,7 +234,7 @@ defmodule Arena.Game.Skill do
             multishot.projectile_offset
           ),
           direction,
-          entity_player_owner.id,
+          entity_player_owner,
           skill_params.skill_key,
           multishot
         )
@@ -267,7 +265,7 @@ defmodule Arena.Game.Skill do
           simple_shoot.projectile_offset
         ),
         skill_direction,
-        entity_player_owner.id,
+        entity_player_owner,
         skill_params.skill_key,
         simple_shoot
       )
@@ -321,12 +319,11 @@ defmodule Arena.Game.Skill do
 
     pool_params =
       Map.merge(
-        %{id: last_id, position: target_position, owner_id: player.id, skill_key: skill_params.skill_key},
+        %{id: last_id, position: target_position, owner: player, skill_key: skill_params.skill_key},
         pool_params
       )
 
-    pool =
-      Entities.new_pool(pool_params)
+    pool = Entities.new_pool(pool_params)
 
     put_in(game_state, [:pools, last_id], pool)
     |> put_in([:last_id], last_id)
@@ -338,12 +335,10 @@ defmodule Arena.Game.Skill do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     # Players
-    alive_players =
-      Player.alive_players(game_state.players)
-      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
+    damageable_players = Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
 
     players =
-      Physics.check_collisions(polygon_damage_area, alive_players)
+      Physics.check_collisions(polygon_damage_area, damageable_players)
       |> Enum.reduce(game_state.players, fn player_id, players_acc ->
         real_damage = Player.calculate_real_damage(entity_player_owner, polygon_hit.damage)
 
@@ -459,7 +454,7 @@ defmodule Arena.Game.Skill do
 
   # Default to zone id
   defp get_entity_player_owner(_game_state, _),
-    do: %{id: 9999}
+    do: %{id: 9999, aditional_info: %{team: 9999}}
 
   defp maybe_move_player(game_state, %{category: :player} = player, move_by)
        when not is_nil(move_by) do
