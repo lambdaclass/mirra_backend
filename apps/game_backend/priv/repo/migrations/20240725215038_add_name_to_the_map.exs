@@ -6,6 +6,6 @@ defmodule GameBackend.Repo.Migrations.AddNameToTheMap do
       add :name, :string
     end
 
-    execute("UPDATE map_configurations SET name = 'Araban'")
+    execute("UPDATE map_configurations SET name = 'Araban'",   "")
   end
 end
