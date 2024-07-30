@@ -195,6 +195,19 @@
           "execute_multiple_times": true
         }
       }
+    },
+    {
+      "name": "whirlwind",
+      "duration_ms": 5000,
+      "remove_on_action": false,
+      "one_time_application": false,
+      "effect_mechanics": {
+        "defense_change": {
+          "modifier": 0.75,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
+      }
     }
   ],
   "crates": [
