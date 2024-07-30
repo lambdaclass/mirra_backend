@@ -1872,33 +1872,6 @@ map_config = %{
     }
   ],
   bushes: [
-    # %{
-    #   name: "central bush",
-    #   position: %{
-    #     x: 0.0,
-    #     y: 0.0
-    #   },
-    #   vertices: [
-    #     %{
-    #       x: 0.0,
-    #       y: 1000.0
-    #     },
-    #     %{
-    #       x: 1000.0,
-    #       y: 0.0
-    #     },
-    #     %{
-    #       x: 0.0,
-    #       y: -1000.0
-    #     },
-    #     %{
-    #       x: -1000.0,
-    #       y: 0.0
-    #     }
-    #   ],
-    #   radius: 0.0,
-    #   shape: "polygon"
-    # },
     %{
       name: "bottom left cave bushes",
       position: %{
@@ -1952,7 +1925,7 @@ map_config = %{
         %{
           x: 2550.0,
           y: 1384.0
-        },
+        }
       ],
       radius: 0.0,
       shape: "polygon"
