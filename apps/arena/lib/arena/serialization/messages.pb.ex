@@ -454,6 +454,7 @@ defmodule Arena.Serialization.GameState do
   field(:crates, 16, repeated: true, type: Arena.Serialization.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: Arena.Serialization.GameState.BushesEntry, map: true)
   field(:traps, 18, repeated: true, type: Arena.Serialization.GameState.TrapsEntry, map: true)
+  field(:external_wall, 19, type: Arena.Serialization.Entity, json_name: "externalWall")
 end
 
 defmodule Arena.Serialization.Entity do

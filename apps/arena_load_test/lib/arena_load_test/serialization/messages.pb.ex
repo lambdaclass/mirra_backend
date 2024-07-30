@@ -501,6 +501,8 @@ defmodule ArenaLoadTest.Serialization.GameState do
     type: ArenaLoadTest.Serialization.GameState.TrapsEntry,
     map: true
   )
+
+  field(:external_wall, 19, type: ArenaLoadTest.Serialization.Entity, json_name: "externalWall")
 end
 
 defmodule ArenaLoadTest.Serialization.Entity do
