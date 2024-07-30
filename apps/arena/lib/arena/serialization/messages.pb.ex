@@ -130,8 +130,17 @@ defmodule Arena.Serialization.GameEvent do
   field(:joined, 1, type: Arena.Serialization.GameJoined, oneof: 0)
   field(:update, 2, type: Arena.Serialization.GameState, oneof: 0)
   field(:finished, 3, type: Arena.Serialization.GameFinished, oneof: 0)
-  field(:ping, 4, type: Arena.Serialization.PingUpdate, oneof: 0)
+  field(:ping_update, 4, type: Arena.Serialization.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
+  field(:ping, 6, type: Arena.Serialization.Ping, oneof: 0)
+end
+
+defmodule Arena.Serialization.Ping do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
 end
 
 defmodule Arena.Serialization.GameFinished.PlayersEntry do
@@ -202,6 +211,7 @@ defmodule Arena.Serialization.ConfigMap do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
+  field(:name, 2, type: :string)
 end
 
 defmodule Arena.Serialization.ConfigCharacter.SkillsEntry do
@@ -444,6 +454,7 @@ defmodule Arena.Serialization.GameState do
   field(:crates, 16, repeated: true, type: Arena.Serialization.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: Arena.Serialization.GameState.BushesEntry, map: true)
   field(:traps, 18, repeated: true, type: Arena.Serialization.GameState.TrapsEntry, map: true)
+  field(:external_wall, 19, type: Arena.Serialization.Entity, json_name: "externalWall")
 end
 
 defmodule Arena.Serialization.Entity do
@@ -696,7 +707,16 @@ defmodule Arena.Serialization.GameAction do
     oneof: 0
   )
 
+  field(:pong, 9, type: Arena.Serialization.Pong, oneof: 0)
   field(:timestamp, 3, type: :int64)
+end
+
+defmodule Arena.Serialization.Pong do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
 defmodule Arena.Serialization.Zone do
