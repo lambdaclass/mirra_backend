@@ -592,8 +592,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:block_actions, player_id}, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+  def handle_info({:block_actions, player_id, value}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end
 
@@ -658,7 +658,7 @@ defmodule Arena.GameUpdater do
   # Broadcast
   ##########################
 
-  defp broadcast_player_block_actions(game_id, player_id, value) do
+  def broadcast_player_block_actions(game_id, player_id, value) do
     PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
   end
 
