@@ -194,7 +194,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   def reroll_daily_quest(daily_quest_id) do
     reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
 
-    daily_quest =
+    {:ok, daily_quest} =
       get_user_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
@@ -320,48 +320,44 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end)
   end
 
-  def try_to_complete_quest_for_user(user, quest_id) do
-    Enum.find(user.user_quests, fn user_quest -> user_quest.quest_id == quest_id end)
-    |> case do
-      nil ->
-        {:error, :unexistent_user_quest}
+  def try_to_complete_quest_for_user(user, user_quest) do
+    updated_user_quest_changeset =
+      UserQuest.changeset(user_quest, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed"
+      })
 
-      user_quest ->
-        if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results) do
-          updated_user_quest =
-            UserQuest.changeset(user_quest, %{
-              completed: true,
-              completed_at: DateTime.utc_now(),
-              status: "completed"
-            })
+    Multi.new()
+    |> Multi.run(:check_quest_completed, fn _, _ ->
+      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results) do
+        {:ok, :quest_completed}
+      else
+        {:error, :unfinished_quest}
+      end
+    end)
+    |> Multi.update(:update_user_quest, updated_user_quest_changeset)
+    |> Multi.run(:maybe_activate_quest, fn _, _ ->
+      Enum.find(user.user_quests, fn user_quest -> is_nil(user_quest.activated_at) end)
+      |> case do
+        nil ->
+          {:ok, :no_quests_left}
 
-          Multi.new()
-          |> Multi.update(:update_user_quest, updated_user_quest)
-          |> Multi.run(:maybe_activate_quest, fn _, _ ->
-            Enum.find(user.user_quests, fn user_quest -> is_nil(user_quest.activated_at) end)
-            |> case do
-              nil ->
-                {:ok, :no_quests_left}
-
-              user_quest ->
-                user_quest
-                |> UserQuest.changeset(%{activated_at: NaiveDateTime.utc_now()})
-                |> GameBackend.Repo.update()
-            end
-          end)
-          |> Multi.run(:add_currency, fn _, _ ->
-            Currencies.add_currency_by_name_and_game(
-              user.id,
-              user_quest.quest.reward["currency"],
-              Utils.get_game_id(:curse_of_mirra),
-              user_quest.quest.reward["amount"]
-            )
-          end)
-          |> Repo.transaction()
-        else
-          {:error, :unfinished_quest}
-        end
-    end
+        user_quest ->
+          user_quest
+          |> UserQuest.changeset(%{activated_at: NaiveDateTime.utc_now()})
+          |> GameBackend.Repo.update()
+      end
+    end)
+    |> Multi.run(:add_currency, fn _, _ ->
+      Currencies.add_currency_by_name_and_game(
+        user.id,
+        user_quest.quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        user_quest.quest.reward["amount"]
+      )
+    end)
+    |> Repo.transaction()
   end
 
   def generate_daily_quests_for_user(user_id) do
@@ -409,17 +405,15 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Multi.run(:check_quests_already_generated, fn _, _ ->
       today = Date.utc_today()
 
-      if(
-        user.last_daily_quest_generation_at &&
-          Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq]
-      ) do
+      if user.last_daily_quest_generation_at &&
+           Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq] do
         {:error, :quests_already_generated}
       else
         {:ok, :pending_generation}
       end
     end)
     |> Multi.run(:check_quests_available, fn _, _ ->
-      if(Enum.empty?(active_quests_params) || Enum.empty?(inactive_quests_params)) do
+      if Enum.empty?(active_quests_params) || Enum.empty?(inactive_quests_params) do
         {:error, :not_enough_quests}
       else
         {:ok, :enough_available_quests}
