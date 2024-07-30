@@ -20,10 +20,7 @@ defmodule Gateway.Router do
       get "/game", ConfigurationController, :get_game_configuration
       get "/characters", ConfigurationController, :get_characters_configuration
       get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
-    end
-
-    scope "/configuration" do
-      get "/map", ConfigurationController, :get_map_configuration
+      get "/map", ConfigurationController, :get_map_configurations
     end
 
     scope "/stores" do

@@ -41,13 +41,14 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
     end
   end
 
+  @spec get_game_configuration(Plug.Conn.t(), any()) :: Plug.Conn.t()
   def get_game_configuration(conn, _params) do
     game_configuration = Configuration.get_latest_game_configuration()
     send_resp(conn, 200, Jason.encode!(game_configuration))
   end
 
-  def get_map_configuration(conn, _params) do
-    map_configuration = Configuration.get_latest_map_configuration()
+  def get_map_configurations(conn, _params) do
+    map_configuration = Configuration.list_map_configurations()
     send_resp(conn, 200, Jason.encode!(map_configuration))
   end
 
