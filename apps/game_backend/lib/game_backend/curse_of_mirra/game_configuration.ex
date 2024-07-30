@@ -26,7 +26,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :zone_enabled,
     :bounties_options_amount,
     :match_timeout_ms,
-    :field_of_view_inside_bush
+    :field_of_view_inside_bush,
+    :version_id
   ]
 
   @derive {Jason.Encoder, only: @required}
