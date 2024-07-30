@@ -76,14 +76,16 @@ defmodule Arena.Game.Player do
   end
 
   def targetable_players(players, team, friendly_fire) do
-    Map.filter(players, fn {_, player} -> alive?(player) and not invisible?(player) and (friendly_fire or team != player.aditional_info.team) end)
+    Map.filter(players, fn {_, player} ->
+      alive?(player) and not invisible?(player) and (friendly_fire or team != player.aditional_info.team)
+    end)
   end
 
   def damageable_players(players, source_player_id, source_team) do
-    Map.filter(players, fn {_, player} -> is_damageable?(player, source_player_id, source_team) end)
+    Map.filter(players, fn {_, player} -> damageable?(player, source_player_id, source_team) end)
   end
 
-  def is_damageable?(player, source_player_id, source_team) do
+  def damageable?(player, source_player_id, source_team) do
     player.id != source_player_id and source_team != player.aditional_info.team and alive?(player)
   end
 
@@ -192,7 +194,9 @@ defmodule Arena.Game.Player do
 
       skill ->
         GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
-        targetable_players = targetable_players(game_state.players, player.aditional_info.team, game_config.game.friendly_fire)
+
+        targetable_players =
+          targetable_players(game_state.players, player.aditional_info.team, game_config.game.friendly_fire)
 
         {auto_aim?, skill_direction} =
           skill_params.target

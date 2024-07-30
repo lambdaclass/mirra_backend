@@ -780,7 +780,11 @@ defmodule Arena.GameUpdater do
 
   defp new_game(game_id, config) do
     initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-    next_zone_change_timestamp =  initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
+
+    next_zone_change_timestamp =
+      initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
+        config.game.bounty_pick_time_ms
+
     start_game_timestamp = initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
 
     %{
@@ -821,7 +825,17 @@ defmodule Arena.GameUpdater do
         last_id = game_acc.last_id + 1
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
-        new_player_params = %{ id: last_id, team: player.team, player_name: player.name, position: pos, direction: direction, character_name: player.character_name, config: config, now: now}
+
+        new_player_params = %{
+          id: last_id,
+          team: player.team,
+          player_name: player.name,
+          position: pos,
+          direction: direction,
+          character_name: player.character_name,
+          config: config,
+          now: now
+        }
 
         players =
           game_acc.players
@@ -886,7 +900,16 @@ defmodule Arena.GameUpdater do
         {pos, positions} = get_next_position(positions)
         direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
         ## FIX: Remove rem/2
-        new_player_params = %{ id: last_id, team: (rem(last_id, 2)), player_name: player_name, position: pos, direction: direction, character_name: character_name, config: config, now: now}
+        new_player_params = %{
+          id: last_id,
+          team: rem(last_id, 2),
+          player_name: player_name,
+          position: pos,
+          direction: direction,
+          character_name: character_name,
+          config: config,
+          now: now
+        }
 
         players =
           new_game.players
@@ -1235,7 +1258,7 @@ defmodule Arena.GameUpdater do
     |> Map.put(:crates, updated_crates)
   end
 
-   defp add_pools_collisions(
+  defp add_pools_collisions(
          %{
            players: players,
            crates: crates,
@@ -1548,7 +1571,12 @@ defmodule Arena.GameUpdater do
     cond do
       Map.get(players, entity_id) ->
         target_player = Map.get(players, entity_id)
-        if Player.is_damageable?(target_player, projectile.aditional_info.owner_id, projectile.aditional_info.owner_team) do
+
+        if Player.damageable?(
+             target_player,
+             projectile.aditional_info.owner_id,
+             projectile.aditional_info.owner_team
+           ) do
           entity_id
         else
           decide_collided_entity(projectile, other_entities, external_wall_id, players, crates)

@@ -25,7 +25,8 @@ defmodule Arena.Game.Skill do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     # Players
-    damageable_players = Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
+    damageable_players =
+      Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
 
     players =
       Physics.check_collisions(circular_damage_area, damageable_players)
@@ -83,7 +84,9 @@ defmodule Arena.Game.Skill do
     cone_area = Entities.make_polygon(entity.id, triangle_points)
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
-    damageable_players = Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
+
+    damageable_players =
+      Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
 
     players =
       Physics.check_collisions(cone_area, damageable_players)
@@ -335,7 +338,8 @@ defmodule Arena.Game.Skill do
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
     # Players
-    damageable_players = Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
+    damageable_players =
+      Player.damageable_players(game_state.players, entity_player_owner.id, entity_player_owner.aditional_info.team)
 
     players =
       Physics.check_collisions(polygon_damage_area, damageable_players)

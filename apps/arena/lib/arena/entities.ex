@@ -7,15 +7,15 @@ defmodule Arena.Entities do
   alias Arena.Game.Crate
 
   @type new_player_params :: %{
-    id: integer,
-    team: integer(),
-    player_name: String.t,
-    position: %{x: float, y: float},
-    direction: %{x: float, y: float},
-    character_name: String.t,
-    config: map,
-    now: integer()
-  }
+          id: integer,
+          team: integer(),
+          player_name: String.t(),
+          position: %{x: float, y: float},
+          direction: %{x: float, y: float},
+          character_name: String.t(),
+          config: map,
+          now: integer()
+        }
 
   @spec new_player(new_player_params()) :: map()
   def new_player(params) do
