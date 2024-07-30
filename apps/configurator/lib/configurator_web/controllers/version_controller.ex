@@ -61,9 +61,9 @@ defmodule ConfiguratorWeb.VersionController do
   end
 
   def mark_as_current(conn, %{"id" => id}) do
-    version = Configuration.get_version!(id) |> IO.inspect(label: :llegue)
+    version = Configuration.get_version!(id)
 
-    case Configuration.mark_as_current_version(version) |> IO.inspect(label: :wea) do
+    case Configuration.mark_as_current_version(version) do
       {:ok, _version} ->
         conn
         |> put_flash(:info, "Version marked as current.")

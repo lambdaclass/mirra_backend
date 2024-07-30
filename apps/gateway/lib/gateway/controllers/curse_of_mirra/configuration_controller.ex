@@ -19,9 +19,9 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
     config =
       Jason.encode!(%{
         characters: characters,
-        game_configuration: game_configuration,
-        consumable_items: consumable_items,
-        map_configuration: map_configuration
+        game: game_configuration,
+        items: consumable_items,
+        map: map_configuration
       })
 
     send_resp(conn, 200, config)
