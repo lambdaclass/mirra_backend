@@ -587,6 +587,33 @@ skills = [
     "block_movement" => true,
     "mechanics" => [singularity],
     "effects_to_apply" => []
+  },
+  %{
+    "name" => "kenzu_whirlwind",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
+    "execution_duration_ms" => 5000,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => false,
+    "block_actions" => true,
+    "mechanics" => [
+      %{
+        "type" => "multi_circle_hit",
+        "damage" => 50,
+        "range" => 300.0,
+        "interval_ms" => 500,
+        "duration_ms" => 5000,
+        "offset" => 0
+      }
+    ],
+    "effects_to_apply" => [
+      "whirlwind"
+    ]
   }
 ]
 
@@ -688,7 +715,7 @@ kenzu_params = %{
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["kenzu_quickstrike"],
-  ultimate_skill_id: skills["valt_singularity"],
+  ultimate_skill_id: skills["kenzu_whirlwind"],
   dash_skill_id: skills["valt_warp"]
 }
 
