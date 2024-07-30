@@ -1871,7 +1871,93 @@ map_config = %{
       ]
     }
   ],
-  bushes: []
+  bushes: [
+    # %{
+    #   name: "central bush",
+    #   position: %{
+    #     x: 0.0,
+    #     y: 0.0
+    #   },
+    #   vertices: [
+    #     %{
+    #       x: 0.0,
+    #       y: 1000.0
+    #     },
+    #     %{
+    #       x: 1000.0,
+    #       y: 0.0
+    #     },
+    #     %{
+    #       x: 0.0,
+    #       y: -1000.0
+    #     },
+    #     %{
+    #       x: -1000.0,
+    #       y: 0.0
+    #     }
+    #   ],
+    #   radius: 0.0,
+    #   shape: "polygon"
+    # },
+    %{
+      name: "bottom left cave bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -1975.0,
+          y: -2015.0
+        },
+        %{
+          x: -2858.0,
+          y: -2023.0
+        },
+        %{
+          x: -3427.0,
+          y: -1306.0
+        },
+        %{
+          x: -3423.0,
+          y: -204.0
+        },
+        %{
+          x: -3170.0,
+          y: 7.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top right cave bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 951.0,
+          y: 2881.0
+        },
+        %{
+          x: 1791.0,
+          y: 3176.0
+        },
+        %{
+          x: 2806.0,
+          y: 2050.0
+        },
+        %{
+          x: 2550.0,
+          y: 1384.0
+        },
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    }
+  ]
 }
 
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)
