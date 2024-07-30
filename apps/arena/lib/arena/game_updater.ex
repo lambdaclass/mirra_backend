@@ -93,12 +93,12 @@ defmodule Arena.GameUpdater do
      }}
   end
 
-  def init(%{teams: teams, game_params: game_params}) do
+  def init(%{teams: players, game_params: game_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
     game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
 
-    game_state = new_team_game(game_id, teams, game_config)
+    game_state = new_team_game(game_id, players, game_config)
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
@@ -106,12 +106,10 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
 
     {clients_ids, bot_clients_ids} =
-      Map.values(teams)
-      |> List.flatten()
-      |> Enum.reduce({[], []}, fn client, {clients_ids_acc, bot_clients_ids_acc} ->
+      Enum.reduce(players, {[], []}, fn client, {clients_ids_acc, bot_clients_ids_acc} ->
         case client.type do
-          "human" -> {clients_ids_acc ++ [client.id], bot_clients_ids_acc}
-          "bot" -> {clients_ids_acc, bot_clients_ids_acc ++ [client.id]}
+          :human -> {clients_ids_acc ++ [client.client_id], bot_clients_ids_acc}
+          :bot -> {clients_ids_acc, bot_clients_ids_acc ++ [client.client_id]}
         end
       end)
 
@@ -813,7 +811,8 @@ defmodule Arena.GameUpdater do
       status: :PREPARING,
       start_game_timestamp: start_game_timestamp,
       positions: %{},
-      traps: %{}
+      traps: %{},
+      bushes: %{}
     }
   end
 

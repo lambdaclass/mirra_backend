@@ -41,11 +41,15 @@ defmodule Arena.Matchmaking.QuickGameMode do
 
   @impl true
   def handle_call({:join, client_id, character_name, player_name}, {from_pid, _}, state) do
-    create_game_for_clients([{client_id, character_name, player_name, from_pid}], %{
-      bots_enabled: false,
-      zone_enabled: false
-    })
+    client = %{
+      client_id: client_id,
+      character_name: character_name,
+      name: player_name,
+      from_pid: from_pid,
+      type: :human
+    }
 
+    create_game_for_clients([client], %{bots_enabled: false, zone_enabled: false})
     {:reply, :ok, state}
   end
 
@@ -75,13 +79,13 @@ defmodule Arena.Matchmaking.QuickGameMode do
     Enum.map(1..missing_clients//1, fn i ->
       client_id = UUID.generate()
 
-      {client_id, Enum.random(characters).name, Enum.at(@bot_names, i), nil}
+      %{client_id: client_id, character_name: Enum.random(characters).name, name: Enum.at(@bot_names, i), type: :bot}
     end)
   end
 
   defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn {bot_client, _, _, _} ->
-      send(self(), {:spawn_bot_for_player, bot_client, game_id})
+    Enum.each(bot_clients, fn %{client_id: bot_client_id} ->
+      send(self(), {:spawn_bot_for_player, bot_client_id, game_id})
     end)
   end
 
@@ -95,18 +99,20 @@ defmodule Arena.Matchmaking.QuickGameMode do
         []
       end
 
-    {:ok, game_pid} =
-      GenServer.start(Arena.GameUpdater, %{
-        clients: clients,
-        bot_clients: bot_clients,
-        game_params: game_params
-      })
+    ## For Battle Royale (quick game mode) there are no teams so we assing each player to a different team
+    {teams, _} =
+      Enum.reduce(clients ++ bot_clients, {[], 1}, fn client, {team_acc, team_id} ->
+        client = Map.put(client, :team, team_id)
+        {[client | team_acc], team_id + 1}
+      end)
+
+    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{teams: teams, game_params: game_params})
 
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
 
     spawn_bot_for_player(bot_clients, game_id)
 
-    Enum.each(clients, fn {_client_id, _character_name, _player_name, from_pid} ->
+    Enum.each(clients, fn %{from_pid: from_pid} ->
       Process.send(from_pid, {:join_game, game_id}, [])
       Process.send(from_pid, :leave_waiting_game, [])
     end)
