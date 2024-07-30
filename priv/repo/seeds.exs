@@ -538,7 +538,7 @@ skills = [
     "effects_to_apply" => []
   },
   %{
-    "name" => "kenzu_quickstrike",
+    "name" => "kenzu_quickslash",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 0,
@@ -555,7 +555,7 @@ skills = [
     "effects_to_apply" => []
   },
   %{
-    "name" => "kenzu_quickstrike_second",
+    "name" => "kenzu_quickslash_second",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 2500,
@@ -572,7 +572,7 @@ skills = [
     "effects_to_apply" => []
   },
   %{
-    "name" => "kenzu_quickstrike_third",
+    "name" => "kenzu_quickslash_third",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 2500,
@@ -630,8 +630,8 @@ skills =
 # Associate combo skills
 combo_skills =
   [
-    {"kenzu_quickstrike", "kenzu_quickstrike_second"},
-    {"kenzu_quickstrike_second", "kenzu_quickstrike_third"}
+    {"kenzu_quickslash", "kenzu_quickslash_second"},
+    {"kenzu_quickslash_second", "kenzu_quickslash_third"}
   ]
   |> Enum.each(fn {skill, next_skill} ->
     Repo.get(Skill, skills[skill])
@@ -714,7 +714,7 @@ kenzu_params = %{
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
-  basic_skill_id: skills["kenzu_quickstrike"],
+  basic_skill_id: skills["kenzu_quickslash"],
   ultimate_skill_id: skills["kenzu_whirlwind"],
   dash_skill_id: skills["valt_warp"]
 }
