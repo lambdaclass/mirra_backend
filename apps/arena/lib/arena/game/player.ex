@@ -75,9 +75,9 @@ defmodule Arena.Game.Player do
     Map.filter(players, fn {_, player} -> alive?(player) end)
   end
 
-  def targetable_players(players, team, friendly_fire) do
+  def targetable_players(players, team) do
     Map.filter(players, fn {_, player} ->
-      alive?(player) and not invisible?(player) and (friendly_fire or team != player.aditional_info.team)
+      alive?(player) and not invisible?(player) and team != player.aditional_info.team
     end)
   end
 
@@ -186,7 +186,7 @@ defmodule Arena.Game.Player do
     player.aditional_info.forced_movement
   end
 
-  def use_skill(player, skill_key, skill_params, %{game_state: game_state, game_config: game_config}) do
+  def use_skill(player, skill_key, skill_params, %{game_state: game_state}) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
         Process.send(self(), {:block_actions, player.id}, [])
@@ -195,12 +195,9 @@ defmodule Arena.Game.Player do
       skill ->
         GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
 
-        targetable_players =
-          targetable_players(game_state.players, player.aditional_info.team, game_config.game.friendly_fire)
-
         {auto_aim?, skill_direction} =
           skill_params.target
-          |> Skill.maybe_auto_aim(skill, player, targetable_players)
+          |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players, player.aditional_info.team))
           |> case do
             {false, _} ->
               Skill.maybe_auto_aim(skill_params.target, skill, player, Crate.interactable_crates(game_state.crates))

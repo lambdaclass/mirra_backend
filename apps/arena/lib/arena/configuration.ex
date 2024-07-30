@@ -15,8 +15,7 @@ defmodule Arena.Configuration do
     config = Jason.decode!(config_json, [{:keys, :atoms}])
     characters = parse_characters_config(get_characters_config())
     client_config = get_client_config()
-    ## Hardcoded to make configurable later on
-    game_config = get_game_configuration() |> Map.put(:friendly_fire, false)
+    game_config = get_game_configuration()
     map_config = parse_map_config(get_map_config())
     items_config = get_consumable_items_configuration()
 
