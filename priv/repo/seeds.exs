@@ -633,6 +633,30 @@ skills = [
       "whirlwind"
     ],
     "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_pounce",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5000,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1300,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "leap",
+        "range" => 1300.0,
+        "speed" => 1.7,
+        "radius" => 600,
+        "on_arrival_mechanic" => %{}
+      }
+    ],
+    "effects_to_apply" => [],
+    "version_id" => version.id
   }
 ]
 
@@ -739,7 +763,7 @@ kenzu_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["kenzu_quickslash"],
   ultimate_skill_id: skills["kenzu_whirlwind"],
-  dash_skill_id: skills["valt_warp"],
+  dash_skill_id: skills["kenzu_pounce"],
   version_id: version.id
 }
 
