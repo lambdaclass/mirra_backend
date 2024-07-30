@@ -187,10 +187,6 @@ defmodule Arena.Game.Player do
 
         GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
 
-        if Map.get(skill, :block_actions) do
-          GameUpdater.broadcast_player_block_actions(game_state.game_id, player.id, skill.block_actions)
-        end
-
         {auto_aim?, skill_direction} =
           skill_params.target
           |> Skill.maybe_auto_aim(skill, player, targetable_players(game_state.players))

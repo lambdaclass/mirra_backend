@@ -658,7 +658,7 @@ defmodule Arena.GameUpdater do
   # Broadcast
   ##########################
 
-  def broadcast_player_block_actions(game_id, player_id, value) do
+  defp broadcast_player_block_actions(game_id, player_id, value) do
     PubSub.broadcast(Arena.PubSub, game_id, {:block_actions, player_id, value})
   end
 

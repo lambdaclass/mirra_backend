@@ -600,7 +600,6 @@ skills = [
     "max_autoaim_range" => 0,
     "can_pick_destination" => false,
     "block_movement" => false,
-    "block_actions" => true,
     "mechanics" => [
       %{
         "type" => "multi_circle_hit",

@@ -16,7 +16,6 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:activation_delay_ms, :integer)
     field(:autoaim, :boolean, default: false)
     field(:block_movement, :boolean, default: false)
-    field(:block_actions, :boolean, default: false)
     field(:can_pick_destination, :boolean, default: false)
     field(:cooldown_mechanism, Ecto.Enum, values: [:stamina, :time])
     field(:cooldown_ms, :integer)
@@ -51,7 +50,6 @@ defmodule GameBackend.Units.Skills.Skill do
       :activation_delay_ms,
       :autoaim,
       :block_movement,
-      :block_actions,
       :can_pick_destination,
       :cooldown_mechanism,
       :cooldown_ms,
