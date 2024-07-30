@@ -67,15 +67,6 @@ defmodule Champions.Users do
     Users.get_user(user_id)
   end
 
-  @doc """
-  Get a user's id by their username.
-
-  Returns `{:error, :not_found}` if no user is found.
-  """
-  def get_user_by_username(username) do
-    Users.get_user_by_username(username)
-  end
-
   defp add_sample_units(user) do
     characters = Characters.get_characters_by_quality(Champions.Units.get_quality(:epic))
 
