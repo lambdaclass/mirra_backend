@@ -288,6 +288,13 @@ simple_shoot = %{
   }
 }
 
+quickslash = %{
+  "type" => "circle_hit",
+  "damage" => 60,
+  "range" => 350.0,
+  "offset" => 400
+}
+
 ## Skills
 skills = [
   %{
@@ -559,15 +566,15 @@ skills = [
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 0,
     "is_combo?" => true,
-    "execution_duration_ms" => 100,
-    "activation_delay_ms" => 0,
+    "execution_duration_ms" => 750,
+    "activation_delay_ms" => 150,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1600,
+    "max_autoaim_range" => 700,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [simple_shoot],
+    "mechanics" => [quickslash],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -577,15 +584,15 @@ skills = [
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 2500,
     "is_combo?" => true,
-    "execution_duration_ms" => 450,
-    "activation_delay_ms" => 0,
+    "execution_duration_ms" => 500,
+    "activation_delay_ms" => 100,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1600,
+    "max_autoaim_range" => 700,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [multi_shoot],
+    "mechanics" => [quickslash],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -595,15 +602,15 @@ skills = [
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 2500,
     "is_combo?" => true,
-    "execution_duration_ms" => 450,
-    "activation_delay_ms" => 0,
+    "execution_duration_ms" => 500,
+    "activation_delay_ms" => 100,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1600,
+    "max_autoaim_range" => 700,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [singularity],
+    "mechanics" => [quickslash],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
