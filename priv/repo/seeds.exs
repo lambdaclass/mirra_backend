@@ -690,6 +690,7 @@ giant_fruit_params = %{
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
 map_config = %{
+  name: "Araban",
   radius: 5520.0,
   initial_positions: [
     %{

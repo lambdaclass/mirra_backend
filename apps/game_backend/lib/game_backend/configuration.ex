@@ -206,14 +206,4 @@ defmodule GameBackend.Configuration do
   def change_map_configuration(%MapConfiguration{} = map_configuration, attrs \\ %{}) do
     MapConfiguration.changeset(map_configuration, attrs)
   end
-
-  @doc """
-  Gets the latest map configuration
-  ## Examples
-      iex> get_latest_map_configuration()
-      %MapConfiguration{}
-  """
-  def get_latest_map_configuration do
-    Repo.one(from(m in MapConfiguration, order_by: [desc: m.inserted_at], limit: 1))
-  end
 end
