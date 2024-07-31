@@ -14,10 +14,11 @@ defmodule GameClientWeb.BoardLive.Show do
     {:ok, game_socket_handler_pid} =
       GameClient.ClientSocketHandler.start_link(self(), gateway_jwt, player_id, game_id)
 
-    mocked_board_width = 2000
-    mocked_board_height = 2000
-    backend_board_size = 10_000
+    mocked_board_width = 3000
+    mocked_board_height = 3000
+    backend_board_size = 15_000
     back_size_to_front_ratio = backend_board_size / mocked_board_width
+    map_radius = 0
 
     game_data = %{0 => %{0 => player_name(player_id)}}
 
@@ -32,7 +33,8 @@ defmodule GameClientWeb.BoardLive.Show do
        game_data: game_data,
        game_socket_handler_pid: game_socket_handler_pid,
        backend_board_size: backend_board_size,
-       back_size_to_front_ratio: back_size_to_front_ratio
+       back_size_to_front_ratio: back_size_to_front_ratio,
+       map_radius: map_radius
      )}
   end
 
@@ -74,10 +76,11 @@ defmodule GameClientWeb.BoardLive.Show do
     socket =
       assign(
         socket,
-        game_player_id: joined_info.player_id
+        game_player_id: joined_info.player_id,
+        map_radius: round(joined_info.config.map.radius / socket.assigns.back_size_to_front_ratio)
       )
 
-    {:noreply, socket}
+    {:noreply, push_event(socket, "joinedGame", %{})}
   end
 
   defp handle_game_event({:update, game_state}, socket) do
@@ -92,7 +95,7 @@ defmodule GameClientWeb.BoardLive.Show do
         game_state.crates,
         game_state.traps
       ])
-      |> Enum.map(&transform_entity_entry/1)
+      |> Enum.map(fn entity -> transform_entity_entry(entity, socket) end)
 
     {:noreply, push_event(socket, "updateEntities", %{entities: entities, player_id: socket.assigns.game_player_id})}
   end
@@ -106,24 +109,30 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
-  defp transform_entity_entry({_entity_id, %{category: "obstacle"} = entity}) do
+  defp transform_entity_entry({_entity_id, %{category: "obstacle"} = entity}, socket) do
     {_, aditional_info} = entity.aditional_info
+    %{back_size_to_front_ratio: back_size_to_front_ratio, backend_board_size: backend_board_size} = socket.assigns
 
     %{
       id: entity.id,
       category: entity.category,
       shape: entity.shape,
       name: entity.name,
-      x: entity.position.x / 5 + 1000,
-      y: entity.position.y / 5 + 1000,
-      radius: entity.radius / 5,
-      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
+      x: entity.position.x / back_size_to_front_ratio + backend_board_size / 10,
+      y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
+      radius: entity.radius / back_size_to_front_ratio,
+      coords:
+        entity.vertices
+        |> Enum.map(fn vertex ->
+          [vertex.x / back_size_to_front_ratio, vertex.y / back_size_to_front_ratio]
+        end),
       is_colliding: entity.collides_with |> Enum.any?(),
       status: aditional_info.status
     }
   end
 
-  defp transform_entity_entry({_entity_id, %{category: "player"} = entity}) do
+  defp transform_entity_entry({_entity_id, %{category: "player"} = entity}, socket) do
+    %{back_size_to_front_ratio: back_size_to_front_ratio, backend_board_size: backend_board_size} = socket.assigns
     {_, aditional_info} = entity.aditional_info
 
     %{
@@ -131,25 +140,31 @@ defmodule GameClientWeb.BoardLive.Show do
       category: entity.category,
       shape: entity.shape,
       name: entity.name,
-      x: entity.position.x / 5 + 1000,
-      y: entity.position.y / 5 + 1000,
-      radius: entity.radius / 5,
+      x: entity.position.x / back_size_to_front_ratio + backend_board_size / 10,
+      y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
+      radius: entity.radius / back_size_to_front_ratio,
       coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?(),
       visible_players: aditional_info.visible_players
     }
   end
 
-  defp transform_entity_entry({_entity_id, entity}) do
+  defp transform_entity_entry({_entity_id, entity}, socket) do
+    %{back_size_to_front_ratio: back_size_to_front_ratio, backend_board_size: backend_board_size} = socket.assigns
+
     %{
       id: entity.id,
       category: entity.category,
       shape: entity.shape,
       name: entity.name,
-      x: entity.position.x / 5 + 1000,
-      y: entity.position.y / 5 + 1000,
-      radius: entity.radius / 5,
-      coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
+      x: entity.position.x / back_size_to_front_ratio + backend_board_size / 10,
+      y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
+      radius: entity.radius / back_size_to_front_ratio,
+      coords:
+        entity.vertices
+        |> Enum.map(fn vertex ->
+          [vertex.x / back_size_to_front_ratio, vertex.y / back_size_to_front_ratio]
+        end),
       is_colliding: entity.collides_with |> Enum.any?()
     }
   end
