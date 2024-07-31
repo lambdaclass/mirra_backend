@@ -762,7 +762,7 @@ map_config = %{
       vertices: []
     },
     %{
-      name: "top_right_spikes",
+      name: "right_center_spikes",
       position: %{
         x: 0.0,
         y: 0.0
@@ -772,20 +772,20 @@ map_config = %{
       type: "dynamic",
       vertices: [
         %{
-          x: 2600.0,
-          y: 3350.0
+          x: 2967.0,
+          y: 1374.0
         },
         %{
-          x: 2250.0,
-          y: 3600.0
+          x: 2709.0,
+          y: 1163.0
         },
         %{
-          x: 3000.0,
-          y: 4550.0
+          x: 4041.0,
+          y: -378.0
         },
         %{
-          x: 3350.0,
-          y: 4300.0
+          x: 4283.0,
+          y: -190.0
         }
       ],
       base_status: "underground",
@@ -804,20 +804,20 @@ map_config = %{
               damage: 10,
               vertices: [
                 %{
-                  x: 2600.0,
-                  y: 3350.0
+                  x: 2967.0,
+                  y: 1374.0
                 },
                 %{
-                  x: 2350.0,
-                  y: 3700.0
+                  x: 2709.0,
+                  y: 1163.0
                 },
                 %{
-                  x: 3000.0,
-                  y: 4550.0
+                  x: 4041.0,
+                  y: -378.0
                 },
                 %{
-                  x: 3350.0,
-                  y: 4300.0
+                  x: 4283.0,
+                  y: -190.0
                 }
               ]
             }
@@ -829,7 +829,7 @@ map_config = %{
       }
     },
     %{
-      name: "left_spikes",
+      name: "left_bottom_spikes",
       position: %{
         x: 0.0,
         y: 0.0
@@ -839,20 +839,20 @@ map_config = %{
       type: "dynamic",
       vertices: [
         %{
-          x: -4000.0,
-          y: -1250.0
+          x: -2012.0,
+          y: -1905.0
         },
         %{
-          x: -4000.0,
-          y: -900.0
+          x: -1896.0,
+          y: -2200.0
         },
         %{
-          x: -5500.0,
-          y: -900.0
+          x: -670.0,
+          y: -1343.0
         },
         %{
-          x: -5500.0,
-          y: -1250.0
+          x: -910.0,
+          y: -1087.0
         }
       ],
       base_status: "underground",
@@ -871,20 +871,20 @@ map_config = %{
               damage: 10,
               vertices: [
                 %{
-                  x: -4000.0,
-                  y: -1250.0
+                  x: -2012.0,
+                  y: -1905.0
                 },
                 %{
-                  x: -4000.0,
-                  y: -900.0
+                  x: -1896.0,
+                  y: -2200.0
                 },
                 %{
-                  x: -5500.0,
-                  y: -900.0
+                  x: -670.0,
+                  y: -1343.0
                 },
                 %{
-                  x: -5500.0,
-                  y: -1250.0
+                  x: -910.0,
+                  y: -1087.0
                 }
               ]
             }
@@ -906,20 +906,20 @@ map_config = %{
       type: "dynamic",
       vertices: [
         %{
-          x: -1420.0,
-          y: 2235.0
+          x: -700.0,
+          y: 1285.0
         },
         %{
-          x: -1201.0,
-          y: 2585.0
+          x: -475.0,
+          y: 1051.0
         },
         %{
-          x: -180.0,
-          y: 1899.0
+          x: -1240.0,
+          y: 475.0
         },
         %{
-          x: -374.0,
-          y: 1545.0
+          x: -1446.0,
+          y: 726.0
         }
       ],
       base_status: "underground",
@@ -938,20 +938,20 @@ map_config = %{
               damage: 10,
               vertices: [
                 %{
-                  x: -1420.0,
-                  y: 2235.0
+                  x: -700.0,
+                  y: -1285.0
                 },
                 %{
-                  x: -1201.0,
-                  y: 2585.0
+                  x: -475.0,
+                  y: -1051.0
                 },
                 %{
-                  x: -180.0,
-                  y: 1899.0
+                  x: -1240.0,
+                  y: -475.0
                 },
                 %{
-                  x: -374.0,
-                  y: 1545.0
+                  x: -1446.0,
+                  y: 726.0
                 }
               ]
             }
@@ -962,73 +962,207 @@ map_config = %{
         }
       }
     },
-    %{
-      name: "bottom_right_spikes",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "dynamic",
-      vertices: [
-        %{
-          x: 2717.0,
-          y: -1951.0
-        },
-        %{
-          x: 2411.0,
-          y: -1687.0
-        },
-        %{
-          x: 3296.0,
-          y: -832.0
-        },
-        %{
-          x: 3601.0,
-          y: -1096.0
-        }
-      ],
-      base_status: "underground",
-      statuses_cycle: %{
-        underground: %{
-          transition_time_ms: 3000,
-          on_activation_mechanics: %{},
-          next_status: "raised",
-          time_until_transition_ms: 2000,
-          make_obstacle_collisionable: false
-        },
-        raised: %{
-          transition_time_ms: 3000,
-          on_activation_mechanics: %{
-            polygon_hit: %{
-              damage: 10,
-              vertices: [
-                %{
-                  x: 2717.0,
-                  y: -1951.0
-                },
-                %{
-                  x: 2411.0,
-                  y: -1687.0
-                },
-                %{
-                  x: 3296.0,
-                  y: -832.0
-                },
-                %{
-                  x: 3601.0,
-                  y: -1096.0
-                }
-              ]
-            }
-          },
-          next_status: "underground",
-          time_until_transition_ms: 2000,
-          make_obstacle_collisionable: true
-        }
-      }
-    },
+    # %{
+    #   name: "left_spikes",
+    #   position: %{
+    #     x: 0.0,
+    #     y: 0.0
+    #   },
+    #   radius: 0.0,
+    #   shape: "polygon",
+    #   type: "dynamic",
+    #   vertices: [
+    #     %{
+    #       x: -4000.0,
+    #       y: -1250.0
+    #     },
+    #     %{
+    #       x: -4000.0,
+    #       y: -900.0
+    #     },
+    #     %{
+    #       x: -5500.0,
+    #       y: -900.0
+    #     },
+    #     %{
+    #       x: -5500.0,
+    #       y: -1250.0
+    #     }
+    #   ],
+    #   base_status: "underground",
+    #   statuses_cycle: %{
+    #     underground: %{
+    #       transition_time_ms: 3000,
+    #       on_activation_mechanics: %{},
+    #       next_status: "raised",
+    #       time_until_transition_ms: 2000,
+    #       make_obstacle_collisionable: false
+    #     },
+    #     raised: %{
+    #       transition_time_ms: 3000,
+    #       on_activation_mechanics: %{
+    #         polygon_hit: %{
+    #           damage: 10,
+    #           vertices: [
+    #             %{
+    #               x: -4000.0,
+    #               y: -1250.0
+    #             },
+    #             %{
+    #               x: -4000.0,
+    #               y: -900.0
+    #             },
+    #             %{
+    #               x: -5500.0,
+    #               y: -900.0
+    #             },
+    #             %{
+    #               x: -5500.0,
+    #               y: -1250.0
+    #             }
+    #           ]
+    #         }
+    #       },
+    #       next_status: "underground",
+    #       time_until_transition_ms: 2000,
+    #       make_obstacle_collisionable: true
+    #     }
+    #   }
+    # },
+    # %{
+    #   name: "center_left_spikes",
+    #   position: %{
+    #     x: 0.0,
+    #     y: 0.0
+    #   },
+    #   radius: 0.0,
+    #   shape: "polygon",
+    #   type: "dynamic",
+    #   vertices: [
+    #     %{
+    #       x: -1420.0,
+    #       y: 2235.0
+    #     },
+    #     %{
+    #       x: -1201.0,
+    #       y: 2585.0
+    #     },
+    #     %{
+    #       x: -180.0,
+    #       y: 1899.0
+    #     },
+    #     %{
+    #       x: -374.0,
+    #       y: 1545.0
+    #     }
+    #   ],
+    #   base_status: "underground",
+    #   statuses_cycle: %{
+    #     underground: %{
+    #       transition_time_ms: 3000,
+    #       on_activation_mechanics: %{},
+    #       next_status: "raised",
+    #       time_until_transition_ms: 2000,
+    #       make_obstacle_collisionable: false
+    #     },
+    #     raised: %{
+    #       transition_time_ms: 3000,
+    #       on_activation_mechanics: %{
+    #         polygon_hit: %{
+    #           damage: 10,
+    #           vertices: [
+    #             %{
+    #               x: -1420.0,
+    #               y: 2235.0
+    #             },
+    #             %{
+    #               x: -1201.0,
+    #               y: 2585.0
+    #             },
+    #             %{
+    #               x: -180.0,
+    #               y: 1899.0
+    #             },
+    #             %{
+    #               x: -374.0,
+    #               y: 1545.0
+    #             }
+    #           ]
+    #         }
+    #       },
+    #       next_status: "underground",
+    #       time_until_transition_ms: 2000,
+    #       make_obstacle_collisionable: true
+    #     }
+    #   }
+    # },
+    # %{
+    #   name: "bottom_right_spikes",
+    #   position: %{
+    #     x: 0.0,
+    #     y: 0.0
+    #   },
+    #   radius: 0.0,
+    #   shape: "polygon",
+    #   type: "dynamic",
+    #   vertices: [
+    #     %{
+    #       x: 2717.0,
+    #       y: -1951.0
+    #     },
+    #     %{
+    #       x: 2411.0,
+    #       y: -1687.0
+    #     },
+    #     %{
+    #       x: 3296.0,
+    #       y: -832.0
+    #     },
+    #     %{
+    #       x: 3601.0,
+    #       y: -1096.0
+    #     }
+    #   ],
+    #   base_status: "underground",
+    #   statuses_cycle: %{
+    #     underground: %{
+    #       transition_time_ms: 3000,
+    #       on_activation_mechanics: %{},
+    #       next_status: "raised",
+    #       time_until_transition_ms: 2000,
+    #       make_obstacle_collisionable: false
+    #     },
+    #     raised: %{
+    #       transition_time_ms: 3000,
+    #       on_activation_mechanics: %{
+    #         polygon_hit: %{
+    #           damage: 10,
+    #           vertices: [
+    #             %{
+    #               x: 2717.0,
+    #               y: -1951.0
+    #             },
+    #             %{
+    #               x: 2411.0,
+    #               y: -1687.0
+    #             },
+    #             %{
+    #               x: 3296.0,
+    #               y: -832.0
+    #             },
+    #             %{
+    #               x: 3601.0,
+    #               y: -1096.0
+    #             }
+    #           ]
+    #         }
+    #       },
+    #       next_status: "underground",
+    #       time_until_transition_ms: 2000,
+    #       make_obstacle_collisionable: true
+    #     }
+    #   }
+    # },
     %{
       name: "middle stone north",
       position: %{
@@ -1067,44 +1201,44 @@ map_config = %{
         }
       ]
     },
-    %{
-      name: "middle stone south",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: "",
-      vertices: [
-        %{
-          x: -499.0,
-          y: 1844.0
-        },
-        %{
-          x: 222.0,
-          y: 1937.0
-        },
-        %{
-          x: 737.0,
-          y: 1770.0
-        },
-        %{
-          x: 831.0,
-          y: 1570.0
-        },
-        %{
-          x: 643.0,
-          y: 1485.0
-        },
-        %{
-          x: -425.0,
-          y: 1416.0
-        }
-      ]
-    },
+    # %{
+    #   name: "middle stone south",
+    #   position: %{
+    #     x: 0.0,
+    #     y: 0.0
+    #   },
+    #   radius: 0.0,
+    #   shape: "polygon",
+    #   type: "static",
+    #   statuses_cycle: %{},
+    #   base_status: "",
+    #   vertices: [
+    #     %{
+    #       x: -499.0,
+    #       y: 1844.0
+    #     },
+    #     %{
+    #       x: 222.0,
+    #       y: 1937.0
+    #     },
+    #     %{
+    #       x: 737.0,
+    #       y: 1770.0
+    #     },
+    #     %{
+    #       x: 831.0,
+    #       y: 1570.0
+    #     },
+    #     %{
+    #       x: 643.0,
+    #       y: 1485.0
+    #     },
+    #     %{
+    #       x: -425.0,
+    #       y: 1416.0
+    #     }
+    #   ]
+    # },
     %{
       name: "carapace 1",
       position: %{
@@ -1885,20 +2019,12 @@ map_config = %{
           y: -2015.0
         },
         %{
-          x: -2858.0,
-          y: -2023.0
+          x: -2523.0,
+          y: -1388.0
         },
         %{
-          x: -3427.0,
-          y: -1306.0
-        },
-        %{
-          x: -3423.0,
-          y: -204.0
-        },
-        %{
-          x: -3170.0,
-          y: 7.0
+          x: -3188.0,
+          y: -1608.0
         }
       ],
       radius: 0.0,
@@ -1926,6 +2052,296 @@ map_config = %{
         %{
           x: 2550.0,
           y: 1384.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom left edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -3878.0,
+          y: -1941.0
+        },
+        %{
+          x: -3103.0,
+          y: -2400.0
+        },
+        %{
+          x: -4541.0,
+          y: -3590.0
+        },
+        %{
+          x: -5060.0,
+          y: -2672.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top left edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -5395.0,
+          y: 1807.0
+        },
+        %{
+          x: -4364.0,
+          y: 1902.0
+        },
+        %{
+          x: -4260.0,
+          y: 1506.0
+        },
+        %{
+          x: -4752.0,
+          y: 1010.0
+        },
+        %{
+          x: -5512.0,
+          y: 1101.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top left pass bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -3397.0,
+          y: 1450.0
+        },
+        %{
+          x: -2600.0,
+          y: 2039.0
+        },
+        %{
+          x: -2374.0,
+          y: 1759.0
+        },
+        %{
+          x: -3251.0,
+          y: 1225.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top center edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -140.0,
+          y: 5020.0
+        },
+        %{
+          x: 1203.0,
+          y: 5528.0
+        },
+        %{
+          x: 935.0,
+          y: 4892.0
+        },
+        %{
+          x: 81.0,
+          y: 4313.0
+        },
+        %{
+          x: -429.0,
+          y: 4344.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top right edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 2334.0,
+          y: 3643.0
+        },
+        %{
+          x: 3166.0,
+          y: 4813.0
+        },
+        %{
+          x: 3862.0,
+          y: 4294.0
+        },
+        %{
+          x: 2894.0,
+          y: 3179.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "right edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 4250.0,
+          y: 2290.0
+        },
+        %{
+          x: 5190.0,
+          y: 2530.0
+        },
+        %{
+          x: 5620.0,
+          y: 1520.0
+        },
+        %{
+          x: 4240.0,
+          y: 1280.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "center right bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 2750.0,
+          y: -280.0
+        },
+        %{
+          x: 3706.0,
+          y: -289.0
+        },
+        %{
+          x: 4002.0,
+          y: -836.0
+        },
+        %{
+          x: 3482.0,
+          y: -1400.0
+        },
+        %{
+          x: 2479.0,
+          y: -773.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom center bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -1185.0,
+          y: -5604.0
+        },
+        %{
+          x: 209.0,
+          y: -5853.0
+        },
+        %{
+          x: 1668.0,
+          y: -3476.0
+        },
+        %{
+          x: 1690.0,
+          y: -2870.0
+        },
+        %{
+          x: 245.0,
+          y: -3986.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom center bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -769.0,
+          y: -841.0
+        },
+        %{
+          x: 141.0,
+          y: -1261.0
+        },
+        %{
+          x: 244.0,
+          y: -763.0
+        },
+        %{
+          x: -631.0,
+          y: -459.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom right edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 4000.0,
+          y: -2220.0
+        },
+        %{
+          x: 3512.0,
+          y: -2770.0
+        },
+        %{
+          x: 4731.0,
+          y: -3211.0
+        },
+        %{
+          x: 5258.0,
+          y: -2477.0
+        },
+        %{
+          x: 4715.0,
+          y: -2155.0
         }
       ],
       radius: 0.0,
