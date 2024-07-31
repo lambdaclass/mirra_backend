@@ -226,6 +226,7 @@ defmodule ArenaLoadTest.Serialization.ConfigMap do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
+  field(:name, 2, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigCharacter.SkillsEntry do
