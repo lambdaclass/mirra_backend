@@ -226,10 +226,6 @@ Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 
-# Create user for Configurator app
-%{email: "admin@configurator.com", password: "letmepass1234"}
-|> Configurator.Accounts.register_user()
-
 ## Skills
 skills = [
   %{
