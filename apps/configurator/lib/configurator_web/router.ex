@@ -49,6 +49,10 @@ defmodule ConfiguratorWeb.Router do
     end
 
     post "/users/log_in", UserSessionController, :create
+    scope "/auth" do
+      get "/:provider", AuthController, :request
+      get "/:provider/callback", AuthController, :callback
+    end
   end
 
   scope "/", ConfiguratorWeb do
