@@ -36,7 +36,6 @@ defmodule Configurator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bcrypt_elixir, "~> 3.0"},
       {:game_backend, in_umbrella: true},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
