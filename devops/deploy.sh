@@ -2,13 +2,13 @@
 . "$HOME/.cargo/env"
 set -ex
 
-if [ -d "/tmp/mirra_backend" ]; then
-	rm -rf /tmp/mirra_backend
+if [ -d "/tmp/mirra_backend${_SERVICE_SUFFIX}" ]; then
+	rm -rf /tmp/mirra_backend${_SERVICE_SUFFIX}
 fi
 
 cd /tmp
-git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME}
-cd mirra_backend/
+git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME} mirra_backend${_SERVICE_SUFFIX}
+cd mirra_backend${_SERVICE_SUFFIX}
 
 chmod +x devops/entrypoint.sh
 
@@ -23,31 +23,31 @@ if [ ${RELEASE} == "central_backend" ]; then
 	mix ecto.migrate
 fi
 
-rm -rf $HOME/mirra_backend
-mv /tmp/mirra_backend $HOME/
+rm -rf $HOME/mirra_backend${_SERVICE_SUFFIX}
+mv /tmp/mirra_backend${_SERVICE_SUFFIX} $HOME/
 
 mkdir -p $HOME/.config/systemd/user/
 
-cat <<EOF >$HOME/.config/systemd/user/${RELEASE}.service
+cat <<EOF >$HOME/.config/systemd/user/${RELEASE}${_SERVICE_SUFFIX}.service
 [Unit]
 Description=$RELEASE
 
 [Service]
-WorkingDirectory=$HOME/mirra_backend
+WorkingDirectory=$HOME/mirra_backend${_SERVICE_SUFFIX}
 Restart=on-failure
 ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
-EnvironmentFile=$HOME/.env
+EnvironmentFile=$HOME/.env${_SERVICE_SUFFIX}
 LimitNOFILE=100000
 
 [Install]
 WantedBy=default.target
 EOF
 
-systemctl --user enable $RELEASE
+systemctl --user enable ${RELEASE}${_SERVICE_SUFFIX}
 
-cat <<EOF >$HOME/.env
+cat <<EOF >$HOME/.env${_SERVICE_SUFFIX}
 PHX_HOST=${PHX_HOST}
 DATABASE_URL=${DATABASE_URL}
 PHX_SERVER=${PHX_SERVER}
@@ -66,7 +66,7 @@ LOADTEST_EUROPE_HOST=${LOADTEST_EUROPE_HOST}
 LOADTEST_BRAZIL_HOST=${LOADTEST_BRAZIL_HOST}
 EOF
 
-systemctl --user stop $RELEASE
+systemctl --user stop ${RELEASE}${_SERVICE_SUFFIX}
 
 systemctl --user daemon-reload
-systemctl --user start $RELEASE
+systemctl --user start ${RELEASE}${_SERVICE_SUFFIX}
