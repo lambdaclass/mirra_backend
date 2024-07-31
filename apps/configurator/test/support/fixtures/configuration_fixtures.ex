@@ -34,13 +34,16 @@ defmodule Configurator.ConfigurationFixtures do
   Generate a map_configuration.
   """
   def map_configuration_fixture(attrs \\ %{}) do
+    version = version_fixture()
+
     {:ok, map_configuration} =
       attrs
       |> Enum.into(%{
         bushes: [],
         initial_positions: [],
         obstacles: [],
-        radius: "120.5"
+        radius: "120.5",
+        version_id: version.id
       })
       |> GameBackend.Configuration.create_map_configuration()
 

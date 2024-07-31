@@ -16,7 +16,8 @@ defmodule Configurator.ConfigurationTest do
     end
 
     test "create_map_configuration/1 with valid data creates a map_configuration" do
-      valid_attrs = %{radius: "120.5", initial_positions: [], obstacles: [], bushes: []}
+      version = version_fixture()
+      valid_attrs = %{radius: "120.5", initial_positions: [], obstacles: [], bushes: [], version_id: version.id}
 
       assert {:ok, %MapConfiguration{} = map_configuration} = Configuration.create_map_configuration(valid_attrs)
       assert map_configuration.radius == Decimal.new("120.5")
