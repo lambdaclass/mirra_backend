@@ -233,6 +233,7 @@ message Obstacle {
   string color = 1;
   bool collisionable = 2;
   string status = 3;
+  string type = 4;
 }
 
 message PowerUp {

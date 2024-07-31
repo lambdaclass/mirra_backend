@@ -368,6 +368,8 @@ skills = [
         "duration_ms" => 2500,
         "radius" => 500.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "denial_of_service"
         ]
@@ -464,6 +466,8 @@ skills = [
         "duration_ms" => 5000,
         "radius" => 450.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "singularity"
         ]
@@ -1164,7 +1168,7 @@ map_config = %{
     #   }
     # },
     %{
-      name: "middle stone north",
+      name: "middle stone south",
       position: %{
         x: 0.0,
         y: 0.0
@@ -2346,6 +2350,46 @@ map_config = %{
       ],
       radius: 0.0,
       shape: "polygon"
+    }
+  ],
+  pools: [
+    %{
+      name: "oil pool north a",
+      radius: 0.0,
+      shape: "polygon",
+      vertices: [
+        %{
+          x: 2957.0,
+          y: 224.0
+        },
+        %{
+          x: 3160.0,
+          y: 295.0
+        },
+        %{
+          x: 3224.0,
+          y: 800.0
+        },
+        %{
+          x: 2865.0,
+          y: 1222.0
+        },
+        %{
+          x: 2663.0,
+          y: 1228.0
+        },
+        %{
+          x: 2527.0,
+          y: 1057.0
+        },
+        %{
+          x: 2521.0,
+          y: 833.0
+        }
+      ],
+      effects_to_apply: [
+        "slow_field"
+      ]
     }
   ]
 }

@@ -127,7 +127,8 @@ defmodule GameClientWeb.BoardLive.Show do
           [vertex.x / back_size_to_front_ratio, vertex.y / back_size_to_front_ratio]
         end),
       is_colliding: entity.collides_with |> Enum.any?(),
-      status: aditional_info.status
+      status: aditional_info.status,
+      type: aditional_info.type
     }
   end
 
