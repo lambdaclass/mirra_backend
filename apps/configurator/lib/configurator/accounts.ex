@@ -8,6 +8,43 @@ defmodule Configurator.Accounts do
   alias Configurator.Accounts.UserToken
 
   @doc """
+  Finds a user by its email if it exists. Otherwise creates a new one.
+
+  ## Examples
+
+      iex> find_or_create_user("foo@example.com")
+      {:ok, %User{}}
+
+      iex> find_or_create_user("foo@example.com")
+      {:error, changeset}
+
+  """
+  def find_or_create_user(email) do
+    case Repo.get_by(User, email: email) do
+      nil -> create_user(email)
+      user -> {:ok, user}
+    end
+  end
+
+  @doc """
+  Creates a user by its email.
+
+  ## Examples
+
+      iex> create_user("foo@example.com")
+      {:ok, %User{}}
+
+      iex> create_user("foo@example.com")
+      {:error, changeset}
+
+  """
+  def create_user(email) do
+    %User{}
+    |> User.changeset(%{email: email})
+    |> Repo.insert()
+  end
+
+  @doc """
   Gets a user by email and password.
 
   ## Examples
