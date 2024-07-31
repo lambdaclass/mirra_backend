@@ -53,6 +53,8 @@ defmodule ConfiguratorWeb.Router do
       get "/:provider", AuthController, :request
       get "/:provider/callback", AuthController, :callback
     end
+
+    get "/", HomeController, :home
   end
 
   scope "/", ConfiguratorWeb do
