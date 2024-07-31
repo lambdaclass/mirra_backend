@@ -226,6 +226,7 @@ defmodule ArenaLoadTest.Serialization.ConfigMap do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
+  field(:name, 2, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.ConfigCharacter.SkillsEntry do
@@ -500,6 +501,8 @@ defmodule ArenaLoadTest.Serialization.GameState do
     type: ArenaLoadTest.Serialization.GameState.TrapsEntry,
     map: true
   )
+
+  field(:external_wall, 19, type: ArenaLoadTest.Serialization.Entity, json_name: "externalWall")
 end
 
 defmodule ArenaLoadTest.Serialization.Entity do

@@ -3634,7 +3634,8 @@ proto.ConfigMap.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ConfigMap.toObject = function(includeInstance, msg) {
   var f, obj = {
-    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0)
+    radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
+    name: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
   if (includeInstance) {
@@ -3675,6 +3676,10 @@ proto.ConfigMap.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRadius(value);
       break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setName(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3711,6 +3716,13 @@ proto.ConfigMap.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getName();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
 };
 
 
@@ -3729,6 +3741,24 @@ proto.ConfigMap.prototype.getRadius = function() {
  */
 proto.ConfigMap.prototype.setRadius = function(value) {
   return jspb.Message.setProto3FloatField(this, 1, value);
+};
+
+
+/**
+ * optional string name = 2;
+ * @return {string}
+ */
+proto.ConfigMap.prototype.getName = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.ConfigMap} returns this
+ */
+proto.ConfigMap.prototype.setName = function(value) {
+  return jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -4874,7 +4904,8 @@ proto.GameState.toObject = function(includeInstance, msg) {
     poolsMap: (f = msg.getPoolsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     cratesMap: (f = msg.getCratesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
     bushesMap: (f = msg.getBushesMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
-    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : []
+    trapsMap: (f = msg.getTrapsMap()) ? f.toObject(includeInstance, proto.Entity.toObject) : [],
+    externalWall: (f = msg.getExternalWall()) && proto.Entity.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -5009,6 +5040,11 @@ proto.GameState.deserializeBinaryFromReader = function(msg, reader) {
         jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint64, jspb.BinaryReader.prototype.readMessage, proto.Entity.deserializeBinaryFromReader, 0, new proto.Entity());
          });
       break;
+    case 19:
+      var value = new proto.Entity;
+      reader.readMessage(value,proto.Entity.deserializeBinaryFromReader);
+      msg.setExternalWall(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -5129,6 +5165,14 @@ proto.GameState.serializeBinaryToWriter = function(message, writer) {
   f = message.getTrapsMap(true);
   if (f && f.getLength() > 0) {
     f.serializeBinary(18, writer, jspb.BinaryWriter.prototype.writeUint64, jspb.BinaryWriter.prototype.writeMessage, proto.Entity.serializeBinaryToWriter);
+  }
+  f = message.getExternalWall();
+  if (f != null) {
+    writer.writeMessage(
+      19,
+      f,
+      proto.Entity.serializeBinaryToWriter
+    );
   }
 };
 
@@ -5553,6 +5597,43 @@ proto.GameState.prototype.getTrapsMap = function(opt_noLazyCreate) {
 proto.GameState.prototype.clearTrapsMap = function() {
   this.getTrapsMap().clear();
   return this;
+};
+
+
+/**
+ * optional Entity external_wall = 19;
+ * @return {?proto.Entity}
+ */
+proto.GameState.prototype.getExternalWall = function() {
+  return /** @type{?proto.Entity} */ (
+    jspb.Message.getWrapperField(this, proto.Entity, 19));
+};
+
+
+/**
+ * @param {?proto.Entity|undefined} value
+ * @return {!proto.GameState} returns this
+*/
+proto.GameState.prototype.setExternalWall = function(value) {
+  return jspb.Message.setWrapperField(this, 19, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.GameState} returns this
+ */
+proto.GameState.prototype.clearExternalWall = function() {
+  return this.setExternalWall(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.GameState.prototype.hasExternalWall = function() {
+  return jspb.Message.getField(this, 19) != null;
 };
 
 

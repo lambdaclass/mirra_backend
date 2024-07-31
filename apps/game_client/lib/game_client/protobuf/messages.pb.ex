@@ -211,6 +211,7 @@ defmodule GameClient.Protobuf.ConfigMap do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
+  field(:name, 2, type: :string)
 end
 
 defmodule GameClient.Protobuf.ConfigCharacter.SkillsEntry do
@@ -453,6 +454,7 @@ defmodule GameClient.Protobuf.GameState do
   field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: GameClient.Protobuf.GameState.BushesEntry, map: true)
   field(:traps, 18, repeated: true, type: GameClient.Protobuf.GameState.TrapsEntry, map: true)
+  field(:external_wall, 19, type: GameClient.Protobuf.Entity, json_name: "externalWall")
 end
 
 defmodule GameClient.Protobuf.Entity do

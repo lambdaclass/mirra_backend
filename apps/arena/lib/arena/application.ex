@@ -14,7 +14,9 @@ defmodule Arena.Application do
       # Start the Finch HTTP client for sending emails
       {Finch, name: Arena.Finch},
       # Start game launcher genserver
-      Arena.GameLauncher,
+      Arena.Matchmaking.GameLauncher,
+      Arena.Matchmaking.PairMode,
+      Arena.Matchmaking.QuickGameMode,
       Arena.GameBountiesFetcher,
       Arena.GameTracker,
       Arena.Authentication.GatewaySigner,
