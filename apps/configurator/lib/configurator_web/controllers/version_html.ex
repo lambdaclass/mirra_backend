@@ -1,6 +1,5 @@
 defmodule ConfiguratorWeb.VersionHTML do
   use ConfiguratorWeb, :html
-  alias GameBackend.Configuration
 
   embed_templates "version_html/*"
 
