@@ -10,6 +10,30 @@ pub(crate) fn point_circle_collision(point: &Entity, circle: &Entity) -> bool {
     let distance = calculate_distance(&point.position, &circle.position);
     distance <= circle.radius
 }
+pub(crate) fn point_polygon_collision(point: &Entity, polygon: &Entity) -> bool {
+    let mut collision = false;
+    for current in 0..polygon.vertices.len() {
+        let mut next = current + 1;
+        if next == polygon.vertices.len() {
+            next = 0
+        };
+
+        let current_vertex = polygon.vertices[current];
+        let next_vertex = polygon.vertices[next];
+
+        if ((current_vertex.y >= point.position.y && next_vertex.y < point.position.y)
+            || (current_vertex.y < point.position.y && next_vertex.y >= point.position.y))
+            && (point.position.x
+                < (next_vertex.x - current_vertex.x) * (point.position.y - current_vertex.y)
+                    / (next_vertex.y - current_vertex.y)
+                    + current_vertex.x)
+        {
+            collision = !collision;
+        }
+    }
+
+    collision
+}
 
 /*
  * Determines if a collision has occured between a line and a circle

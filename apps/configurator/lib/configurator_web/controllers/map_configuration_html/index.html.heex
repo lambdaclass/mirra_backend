@@ -1,0 +1,54 @@
+<.header>
+  Listing Map configurations
+  <:actions>
+    <.link href={~p"/map_configurations/new"}>
+      <.button>New Map configuration</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="map_configurations" rows={@map_configurations}>
+  <:col :let={map_configuration} label="name"><%= map_configuration.name %></:col>
+  <:col :let={map_configuration} label="Radius"><%= map_configuration.radius %></:col>
+  <:col :let={map_configuration} label="Initial positions">
+    <%= if (Enum.empty?(map_configuration.initial_positions)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("initial-positions-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"initial-positions-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= embed_to_string(map_configuration.initial_positions) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Obstacles">
+    <%= if (Enum.empty?(map_configuration.obstacles)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("obstacles-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"obstacles-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= embed_to_string(map_configuration.obstacles) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:col :let={map_configuration} label="Bushes">
+    <%= if (Enum.empty?(map_configuration.bushes)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("bushes-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"bushes-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= embed_to_string(map_configuration.bushes) %></p>
+      </.modal>
+    <% end %>
+  </:col>
+  <:action :let={map_configuration}>
+    <.link navigate={~p"/map_configurations/#{map_configuration}"}>View</.link>
+  </:action>
+  <:action :let={map_configuration}>
+    <.link navigate={~p"/map_configurations/#{map_configuration}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={map_configuration}>
+    <.link href={~p"/map_configurations/#{map_configuration}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

@@ -20,6 +20,7 @@ defmodule GameBackend.Users.User do
     Unlock
   }
 
+  @derive {Jason.Encoder, only: [:username, :currencies, :prestige]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
@@ -30,6 +31,7 @@ defmodule GameBackend.Users.User do
     field(:last_kaline_afk_reward_claim, :utc_datetime)
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
+    field(:prestige, :integer, virtual: true)
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -64,11 +66,11 @@ defmodule GameBackend.Users.User do
       :profile_picture,
       :google_user_id
     ])
-    |> unique_constraint([:game_id, :username])
     |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)
     |> validate_required([:game_id, :username])
     |> cast_assoc(:units, with: &GameBackend.Units.Unit.changeset/2)
+    |> game_validations()
   end
 
   def experience_changeset(user, attrs), do: user |> cast(attrs, [:experience, :level])
@@ -76,5 +78,18 @@ defmodule GameBackend.Users.User do
   def kaline_tree_level_changeset(user, attrs) do
     user
     |> cast(attrs, [:kaline_tree_level])
+  end
+
+  defp game_validations(changeset) do
+    curse_of_mirra_game_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    case get_field(changeset, :game_id) do
+      ^curse_of_mirra_game_id ->
+        changeset
+        |> validate_length(:username, min: 2, max: 9)
+
+      _ ->
+        changeset
+    end
   end
 end

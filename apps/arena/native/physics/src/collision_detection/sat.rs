@@ -43,12 +43,13 @@ pub(crate) fn intersect_circle_polygon(
         let current_line = Position::sub(&current_vertex, &next_vertex);
         // the axis will be the perpendicular line drawn from the current line of the polygon
         axis = Position {
-            x: -current_line.y,
-            y: current_line.x,
+            x: current_line.y,
+            y: -current_line.x,
         };
 
         // FIXME normalizing on this loop may be bad
         axis.normalize();
+
         if invalid_axis(
             axis,
             circle,
@@ -60,6 +61,7 @@ pub(crate) fn intersect_circle_polygon(
         ) {
             continue;
         }
+
         let (min_polygon_cast_point, max_polygon_cast_point) =
             project_vertices(&polygon.vertices, axis);
         let (min_circle_cast_point, max_circle_cast_point) = project_circle(circle, axis);
@@ -80,13 +82,9 @@ pub(crate) fn intersect_circle_polygon(
         if min_depth < result_depth {
             // If we hit the polygon from the right or top we need to turn around the direction
             if polygon_overlap_depth > circle_overlap_depth {
-                normal = Position {
-                    x: -axis.x,
-                    y: -axis.y,
-                };
-            } else {
-                normal = axis;
+                axis = Position::mult(&axis, -1.0);
             }
+            normal = axis;
             result_depth = min_depth;
         }
     }
@@ -293,10 +291,20 @@ fn dot(a: &Position, b: Position) -> f32 {
 }
 
 // We'll determine that an axis is invalid when both vertex that created that axis
-// are in contact with another obstacle in the direction of the axis, to check this
-// we'll cast a line from each vertex with a length of the cicle that's colliding and
-// check if both casted lines are colliding with the same obstacle, if this is true
-// it means that the axis is invalid since we'll end up inside another collider
+// are in contact with another obstacle in the direction of the axis or if this axis don't have ,
+// enough space to the border of the map, to check this we'll do the following:
+// 1.
+//      Taking the current vertex and next vertex as origin create one point for eah in the
+//      axis direction for a circle diameter distance, and check if both points are outside of the
+//      map area
+// 2.
+//      Project a line from each vertex with a length of the circle that's colliding and
+//      check if both projected lines are colliding with the same obstacle, if this is true
+//      it means that the axis is invalid since we'll end up inside another collider.
+//      We must also check if the origin vertex of that line is colliding with the other obstacle
+//      since out collision detection algorithm doesn't support line collisions with polygons
+//      where the line is fully inside of the polygon
+
 fn invalid_axis(
     axis: Position,
     circle: &Entity,
@@ -306,19 +314,67 @@ fn invalid_axis(
     obstacles: &HashMap<u64, Entity>,
     external_wall: &Entity,
 ) -> bool {
-    let mut obstacle_vector: Vec<Entity> = obstacles.clone().into_values().collect();
-    obstacle_vector.push(external_wall.clone());
+    let obstacle_vector: Vec<Entity> = obstacles.clone().into_values().collect();
+    let external_wall_vector = vec![external_wall.clone()];
 
-    let current_vertex_moved = Position::add(current_vertex, &Position::mult(&axis, circle.radius));
+    // Check if moved vertices are inside map
+
+    // Move current vertex in the axis direction for a circle diameter amount
+    let current_vertex_moved =
+        Position::add(current_vertex, &Position::mult(&axis, circle.radius * 2.0));
+
+    // Create a point entity to check collisions
+    let mut current_vertex_point = Entity::new_point(polygon.id, current_vertex_moved);
+
+    // Check if the moved current point is actually colliding with the map
+    let mut current_vertex_point_collisions =
+        current_vertex_point.collides_with(&external_wall_vector);
+
+    // Move next vertex in the axis direction for a circle diameter amount
+    let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius * 2.0));
+
+    // Create a point entity to check collisions
+    let mut next_vertex_point = Entity::new_point(polygon.id, next_vertex_moved);
+
+    // Check if the moved next point is actually colliding with the map
+    let mut next_vertex_point_collisions = next_vertex_point.collides_with(&external_wall_vector);
+
+    // If both point are not colliding with the map that means that this axis is not a valid one to resolve the collision since they
+    // are outside of the map boundaries
+    if current_vertex_point_collisions.is_empty() && next_vertex_point_collisions.is_empty() {
+        return true;
+    }
+
+    // Check if projected lines or vertices are colliding with same obstacle
+
+    // Check if the moved current point is colliding with obstacles
+    current_vertex_point_collisions = current_vertex_point.collides_with(&obstacle_vector);
+
+    // Create a line entity to check collisions
     let mut current_vertex_line =
         Entity::new_line(polygon.id, vec![*current_vertex, current_vertex_moved]);
-    let current_vertex_collitions = current_vertex_line.collides_with(&obstacle_vector);
 
-    let next_vertex_moved = Position::add(next_vertex, &Position::mult(&axis, circle.radius));
+    // Check if the projected line from the current vertex is colliding with obstacles
+    let mut current_vertex_collisions = current_vertex_line.collides_with(&obstacle_vector);
+    current_vertex_collisions.append(&mut current_vertex_point_collisions);
+
+    // Check if the moved next point is colliding with obstacles
+    next_vertex_point_collisions = next_vertex_point.collides_with(&obstacle_vector);
+
+    // Create a line entity to check collisions
     let mut next_vertex_line = Entity::new_line(polygon.id, vec![*next_vertex, next_vertex_moved]);
-    let next_vertex_collitions = next_vertex_line.collides_with(&obstacle_vector);
 
-    current_vertex_collitions.iter().any(|collision_id| {
-        next_vertex_collitions.contains(collision_id) && collision_id != &external_wall.id
-    }) || (current_vertex_collitions.is_empty() && next_vertex_collitions.is_empty())
+    // Check if the projected line from the next vertex is colliding with obstacles
+    let mut next_vertex_collisions = next_vertex_line.collides_with(&obstacle_vector);
+    next_vertex_collisions.append(&mut next_vertex_point_collisions);
+
+    // If the collisions from the projections of the current vertex and the ones from the next vertex have the same obstacle
+    // we'll consider that axis invalid since there's not enough space for the player to be moved
+    for collision_id in current_vertex_collisions {
+        if next_vertex_collisions.contains(&collision_id) {
+            return true;
+        }
+    }
+
+    false
 }

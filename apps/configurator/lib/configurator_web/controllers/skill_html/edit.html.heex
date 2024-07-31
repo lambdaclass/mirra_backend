@@ -1,0 +1,8 @@
+<.header>
+  Edit Skill <%= @skill.name %>
+  <:subtitle>Use this form to manage skill records in your database.</:subtitle>
+</.header>
+
+<.skill_form changeset={@changeset} action={~p"/skills/#{@skill}"} />
+
+<.back navigate={~p"/skills"}>Back to skills</.back>

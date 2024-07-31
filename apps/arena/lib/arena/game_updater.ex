@@ -6,13 +6,19 @@ defmodule Arena.GameUpdater do
 
   use GenServer
   alias Arena.Game.Obstacle
+  alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
   alias Arena.GameTracker
   alias Arena.Game.Crate
   alias Arena.Game.Effect
   alias Arena.{Configuration, Entities}
   alias Arena.Game.{Player, Skill}
-  alias Arena.Serialization.{GameEvent, GameState, GameFinished, ToggleBots}
+  alias Arena.Serialization.GameEvent
+  alias Arena.Serialization.GameState
+  alias Arena.Serialization.GameFinished
+  alias Arena.Serialization.ToggleBots
+  alias Arena.Serialization.PingUpdate
+  alias Arena.Serialization.Ping
   alias Phoenix.PubSub
   alias Arena.Utils
   alias Arena.Game.Trap
@@ -52,6 +58,10 @@ defmodule Arena.GameUpdater do
     GenServer.cast(game_pid, {:change_tickrate, tickrate})
   end
 
+  def pong(game_pid, client_pid, ping_timestamp) do
+    GenServer.cast(game_pid, {:pong, client_pid, ping_timestamp})
+  end
+
   ##########################
   # END API
   ##########################
@@ -65,6 +75,7 @@ defmodule Arena.GameUpdater do
     match_id = Ecto.UUID.generate()
 
     send(self(), :update_game)
+    send(self(), :send_ping)
     Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
@@ -156,7 +167,13 @@ defmodule Arena.GameUpdater do
     GameTracker.push_event(self(), {:select_bounty, player_id, bounty_quest_id})
 
     state =
-      put_in(state, [:game_state, :players, player_id, :aditional_info, :bounty_selected], true)
+      update_in(state, [:game_state, :players, player_id, :aditional_info], fn aditional_info ->
+        bounty =
+          Enum.find(aditional_info.bounties, fn bounty -> bounty.id == bounty_quest_id end)
+
+        aditional_info
+        |> Map.put(:selected_bounty, bounty)
+      end)
 
     {:noreply, state}
   end
@@ -185,6 +202,20 @@ defmodule Arena.GameUpdater do
 
   def handle_cast({:change_tickrate, tickrate}, state) do
     {:noreply, put_in(state, [:game_config, :game, :tick_rate_ms], tickrate)}
+  end
+
+  def handle_cast({:pong, client_pid, ping_timestamp}, state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    latency = now - ping_timestamp
+
+    encoded_msg =
+      GameEvent.encode(%GameEvent{
+        event: {:ping_update, %PingUpdate{latency: latency}}
+      })
+
+    send(client_pid, {:ping_update, encoded_msg})
+
+    {:noreply, state}
   end
 
   ##########################
@@ -223,6 +254,7 @@ defmodule Arena.GameUpdater do
       |> resolve_projectiles_effects_on_collisions(state.game_config)
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
+      |> update_bounties_states(state)
       # Projectiles
       |> update_projectiles_status()
       |> move_projectiles()
@@ -249,6 +281,12 @@ defmodule Arena.GameUpdater do
     tick_duration = System.monotonic_time() - tick_duration_start_at
     :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_info(:send_ping, state) do
+    Process.send_after(self(), :send_ping, 500)
+    broadcast_ping(state.game_state)
+    {:noreply, state}
   end
 
   def handle_info(:selecting_bounty, state) do
@@ -564,10 +602,9 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:pick_default_bounty_for_missing_players, state) do
     Enum.each(state.game_state.players, fn {player_id, player} ->
-      if not player.aditional_info.bounty_selected and not Enum.empty?(player.aditional_info.bounties) do
-        bounty = Enum.random(player.aditional_info.bounties)
-
-        GameTracker.push_event(self(), {:select_bounty, player_id, bounty.id})
+      if is_nil(player.aditional_info.selected_bounty) and not Enum.empty?(player.aditional_info.bounties) do
+        random_bounty = Enum.random(player.aditional_info.bounties)
+        select_bounty(self(), player_id, random_bounty.id)
       end
     end)
 
@@ -659,11 +696,23 @@ defmodule Arena.GameUpdater do
              start_game_timestamp: state.start_game_timestamp,
              obstacles: complete_entities(state.obstacles),
              crates: complete_entities(state.crates),
-             traps: complete_entities(state.traps)
+             traps: complete_entities(state.traps),
+             external_wall: complete_entity(state.external_wall)
            }}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+  end
+
+  defp broadcast_ping(state) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    encoded_state =
+      GameEvent.encode(%GameEvent{
+        event: {:ping, %Ping{timestamp_now: now}}
+      })
+
+    PubSub.broadcast(Arena.PubSub, state.game_id, {:ping, encoded_state})
   end
 
   defp broadcast_game_ended(winner, state) do
@@ -1241,6 +1290,36 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
+    # We only want to run this check for actual players, and we are saving their id in state.clients
+    game_state.client_to_player_map
+    |> Map.take(state.clients)
+    |> Enum.reduce(game_state, fn {client_id, player_id}, game_state ->
+      player = get_in(game_state, [:players, player_id])
+
+      if not player.aditional_info.bounty_completed and Player.alive?(player) and
+           Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
+             GameTracker.get_player_result(player_id)
+           ]) do
+        spawn(fn ->
+          path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
+          gateway_url = Application.get_env(:arena, :gateway_url)
+
+          Finch.build(:get, "#{gateway_url}#{path}")
+          |> Finch.request(Arena.Finch)
+        end)
+
+        put_in(game_state, [:players, player_id, :aditional_info, :bounty_completed], true)
+      else
+        game_state
+      end
+    end)
+  end
+
+  defp update_bounties_states(game_state, _state) do
+    game_state
+  end
+
   ##########################
   # End Game Flow
   ##########################
@@ -1594,7 +1673,7 @@ defmodule Arena.GameUpdater do
 
           players_close_enough? =
             Physics.distance_between_entities(player, candidate_player) <=
-              game_config.bushes.field_of_view_inside_bush
+              game_config.game.field_of_view_inside_bush
 
           if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
             [candicandidate_player_id | acc]
