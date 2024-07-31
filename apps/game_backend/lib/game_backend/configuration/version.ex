@@ -1,4 +1,7 @@
 defmodule GameBackend.Configuration.Version do
+  @moduledoc """
+  Version schema.
+  """
   use GameBackend.Schema
   import Ecto.Changeset
 
