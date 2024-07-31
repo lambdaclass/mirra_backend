@@ -146,6 +146,8 @@ defmodule GameClientWeb.BoardLive.Show do
       name: entity.name,
       x: entity.position.x / back_size_to_front_ratio + backend_board_size / 10,
       y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
+      back_x: entity.position.x,
+      back_y: entity.position.y,
       radius: entity.radius / back_size_to_front_ratio,
       coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?(),

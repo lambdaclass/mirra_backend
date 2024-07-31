@@ -291,7 +291,7 @@ export const BoardGame = function () {
     (this.updateEntityText = function (entity, backEntity) {
       if (entity.category == "player" && entity.debugText) {
         entity.debugText.text = "health: " + backEntity.health + "\n";
-        entity.debugText.text += "Position: x:" + (backEntity.x).toFixed(2) + " y: " + (backEntity.y).toFixed(2) + "\n";
+        entity.debugText.text += "Position: x:" + (backEntity.back_x).toFixed(2) + " y: " + (backEntity.back_y).toFixed(2) + "\n";
         entity.debugText.text += "Effects: [" + backEntity.effects.join('\n') + "]" + "\n";
         entity.debugText.x = entity.x
         entity.debugText.y = entity.y + 25
