@@ -2008,6 +2008,134 @@ map_config = %{
           y: 5248.0
         }
       ]
+    },
+    %{
+      name: "left center lava lake",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -1545.0,
+          y: 870.0
+        },
+        %{
+          x: -999.0,
+          y: 351.0
+        },
+        %{
+          x: -2401.0,
+          y: -616.0
+        },
+        %{
+          x: -2462.0,
+          y: 1121.0
+        }
+      ]
+    },
+    %{
+      name: "bridge lava lake (left)",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 801.0,
+          y: 2164.0
+        },
+        %{
+          x: -653.0,
+          y: 1486.0
+        },
+        %{
+          x: -731.0,
+          y: 1218.0
+        },
+        %{
+          x: -281.0,
+          y: 948.0
+        },
+        %{
+          x: 527.0,
+          y: 737.0
+        }
+      ]
+    },
+    %{
+      name: "bridge lava lake (right)",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 934.0,
+          y: 550.0
+        },
+        %{
+          x: 1509.0,
+          y: -465.0
+        },
+        %{
+          x: 1848.0,
+          y: -658.0
+        },
+        %{
+          x: 2186.0,
+          y: -496.0
+        },
+        %{
+          x: 1275.0,
+          y: 1939.0
+        }
+      ]
+    },
+    %{
+      name: "bottom lava lake",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -1602.0,
+          y: -2789.0
+        },
+        %{
+          x: -3395.0,
+          y: -3642.0
+        },
+        %{
+          x: -3230.0,
+          y: -4064.0
+        },
+        %{
+          x: -1381.0,
+          y: -3036.0
+        }
+      ]
     }
   ],
   bushes: [
@@ -2354,37 +2482,71 @@ map_config = %{
   ],
   pools: [
     %{
-      name: "oil pool north a",
+      name: "oil pool south",
       radius: 0.0,
       shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
       vertices: [
         %{
-          x: 2957.0,
-          y: 224.0
+          x: 333.0,
+          y: -1024.0
         },
         %{
-          x: 3160.0,
-          y: 295.0
+          x: 197.0,
+          y: -2162.0
         },
         %{
-          x: 3224.0,
-          y: 800.0
+          x: 596.0,
+          y: -2284.0
         },
         %{
-          x: 2865.0,
-          y: 1222.0
+          x: 1043.0,
+          y: -2814.0
         },
         %{
-          x: 2663.0,
-          y: 1228.0
+          x: 1400.0,
+          y: -2822.0
         },
         %{
-          x: 2527.0,
-          y: 1057.0
+          x: 2066.0,
+          y: -1680.0
         },
         %{
-          x: 2521.0,
-          y: 833.0
+          x: 1393.0,
+          y: -1184.0
+        },
+      ],
+      effects_to_apply: [
+        "slow_field"
+      ]
+    },
+    %{
+      name: "oil pool north",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -1033.0,
+          y: 3049.0
+        },
+        %{
+          x: -1309.0,
+          y: 2252.0
+        },
+        %{
+          x: 934.0,
+          y: 2305.0
+        },
+        %{
+          x: 618.0,
+          y: 3117.0
         }
       ],
       effects_to_apply: [
