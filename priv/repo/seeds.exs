@@ -534,6 +534,49 @@ skills = [
       }
     ],
     "effects_to_apply" => []
+  },
+  %{
+    "name" => "otix_carbonthrow",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1400,
+    "stamina_cost" => 1,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "position_hit",
+        "damage" => 64,
+        "shape" => "circle",
+        "radius" => 350.0,
+        "range" => 700.0
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "otix_magma_rush",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5500,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 4.0,
+        "duration_ms" => 250
+      }
+    ]
   }
 ]
 
@@ -612,8 +655,24 @@ valtimer_params = %{
   dash_skill_id: skills["valt_warp"]
 }
 
+otix_params = %{
+  name: "otix",
+  active: true,
+  base_speed: 0.68,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  basic_skill_id: skills["otix_carbonthrow"],
+  ultimate_skill_id: skills["valt_singularity"],
+  dash_skill_id: skills["otix_magma_rush"]
+}
+
 # Insert characters
-[muflus_params, h4ck_params, uma_params, valtimer_params]
+[muflus_params, h4ck_params, uma_params, valtimer_params, otix_params]
 |> Enum.each(fn char_params ->
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")

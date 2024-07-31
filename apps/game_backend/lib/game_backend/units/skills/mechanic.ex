@@ -26,7 +26,17 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:trigger_delay, :integer)
 
     field(:type, Ecto.Enum,
-      values: [:circle_hit, :spawn_pool, :leap, :multi_shoot, :dash, :multi_circle_hit, :teleport, :simple_shoot]
+      values: [
+        :circle_hit,
+        :spawn_pool,
+        :leap,
+        :multi_shoot,
+        :dash,
+        :multi_circle_hit,
+        :teleport,
+        :simple_shoot,
+        :position_hit
+      ]
     )
 
     belongs_to(:skill, Skill)
