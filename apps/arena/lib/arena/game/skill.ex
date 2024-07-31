@@ -278,6 +278,32 @@ defmodule Arena.Game.Skill do
     deal_damage_to_game_entities(game_state, entity_player_owner, circular_damage_area, position_hit.damage)
   end
 
+  def do_mechanic(game_state, entity, %{type: "multiple_pool"} = multiple_pool, skill_params) do
+    Physics.get_relative_positions_from_entity_with_angles(
+      entity,
+      multiple_pool.pools_angle,
+      multiple_pool.distance_to_pools
+    )
+    |> Enum.with_index()
+    |> Enum.reduce(game_state, fn {pool_position, index}, game_state ->
+      last_id = game_state.last_id + 1
+
+      Process.send_after(self(), {:activate_pool, last_id}, multiple_pool.activation_delay * index)
+
+      pool_params =
+        Map.merge(
+          %{id: last_id, position: pool_position, owner_id: entity.id, skill_key: skill_params.skill_key},
+          multiple_pool
+        )
+
+      pool =
+        Entities.new_pool(pool_params)
+
+      put_in(game_state, [:pools, last_id], pool)
+      |> put_in([:last_id], last_id)
+    end)
+  end
+
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
     effects_to_apply =
       GameUpdater.get_effects_from_config(effects, game_config)

@@ -25,12 +25,13 @@
   <.input field={fp[:range]} type="number" label="Range" />
   <.input field={fp[:remove_on_collision]} type="checkbox" label="Remove on collision" />
   <.input field={fp[:speed]} type="number" label="speed" />
+  <.input field={fp[:distance_to_pools]} type="number" label="Distance to pools" />
   <.input
     field={fp[:effects_to_apply]}
     type="select"
     label="Effects to apply"
     multiple
-    options={["singularity", "denial_of_service", "invisible"]}
+    options={["singularity", "denial_of_service", "invisible", "inferno"]}
   />
 
   <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Edit on arrival mechanic</.button>

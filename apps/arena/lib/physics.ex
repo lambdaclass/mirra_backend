@@ -41,4 +41,7 @@ defmodule Physics do
   def nearest_entity_position_in_range(_entity, _entities, _range), do: :erlang.nif_error(:nif_not_loaded)
 
   def maybe_triangulate_concave_entities(_obstacles), do: :erlang.nif_error(:nif_not_loaded)
+
+  def get_relative_positions_from_entity_with_angles(_entity, _angles, _distance),
+    do: :erlang.nif_error(:nif_not_loaded)
 end

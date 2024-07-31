@@ -232,6 +232,30 @@ fn direction_from_positions(position_a: Position, position_b: Position) -> Direc
     }
 }
 
+#[rustler::nif()]
+fn get_relative_positions_from_entity_with_angles(
+    entity: Entity,
+    angles: Vec<f32>,
+    distance: f32,
+) -> Vec<Position> {
+    let mut result = vec![];
+    for angle in angles {
+        let direction_angle = entity.direction.y.atan2(entity.direction.x);
+
+        let angle_x = (angle.to_radians() + direction_angle).cos();
+        let angle_y = (angle.to_radians() + direction_angle).sin();
+
+        let position = Position {
+            x: entity.position.x + distance * angle_x,
+            y: entity.position.y + distance * angle_y,
+        };
+
+        result.push(position)
+    }
+
+    return result;
+}
+
 rustler::init!(
     "Elixir.Physics",
     [
@@ -247,6 +271,7 @@ rustler::init!(
         distance_between_entities,
         nearest_entity_position_in_range,
         get_closest_available_position,
-        maybe_triangulate_concave_entities
+        maybe_triangulate_concave_entities,
+        get_relative_positions_from_entity_with_angles
     ]
 );

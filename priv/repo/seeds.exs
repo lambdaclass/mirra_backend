@@ -577,6 +577,39 @@ skills = [
         "duration_ms" => 250
       }
     ]
+  },
+  %{
+    "name" => "otix_inferno",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 10000,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "name" => "inferno",
+        "type" => "multiple_pool",
+        "interval_ms" => 200,
+        "activation_delay" => 250,
+        "duration_ms" => 4000,
+        "radius" => 200.0,
+        "effects_to_apply" => [
+          "inferno"
+        ],
+        "pools_angle" => [
+          45,
+          135,
+          225,
+          315
+        ],
+        "distance_to_pools" => 150.0
+      }
+    ]
   }
 ]
 
@@ -667,7 +700,7 @@ otix_params = %{
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["otix_carbonthrow"],
-  ultimate_skill_id: skills["valt_singularity"],
+  ultimate_skill_id: skills["otix_inferno"],
   dash_skill_id: skills["otix_magma_rush"]
 }
 

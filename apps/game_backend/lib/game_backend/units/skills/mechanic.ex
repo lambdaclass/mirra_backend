@@ -24,6 +24,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:speed, :decimal)
     field(:activation_delay, :integer)
     field(:trigger_delay, :integer)
+    field(:pools_angle, {:array, :float})
+    field(:distance_to_pools, :float)
 
     field(:type, Ecto.Enum,
       values: [
@@ -35,7 +37,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
         :multi_circle_hit,
         :teleport,
         :simple_shoot,
-        :position_hit
+        :position_hit,
+        :multiple_pool
       ]
     )
 
@@ -73,7 +76,9 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :range,
       :remove_on_collision,
       :activation_delay,
-      :speed
+      :speed,
+      :pools_angle,
+      :distance_to_pools
     ])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)
@@ -81,6 +86,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     |> cast_assoc(:on_arrival_mechanic, with: &assoc_changeset/2)
     |> cast_assoc(:on_explode_mechanics, with: &assoc_changeset/2)
     |> cast_embed(:on_collide_effects)
+    |> validate_type()
   end
 
   defp assoc_changeset(struct, params) do
@@ -89,6 +95,20 @@ defmodule GameBackend.Units.Skills.Mechanic do
     case get_field(changeset, :type) do
       nil -> %{changeset | action: :ignore}
       _ -> changeset
+    end
+  end
+
+  defp validate_type(changeset) do
+    case get_field(changeset, :type) do
+      :multiple_pool ->
+        if Enum.empty?(get_field(changeset, :pools_angle)) or get_field(changeset, :distance_to_pools) < 0 do
+          add_error(changeset, :type, "Type: multiple_pool requires pools_angles and distance_to_pools")
+        else
+          changeset
+        end
+
+      _ ->
+        changeset
     end
   end
 end
