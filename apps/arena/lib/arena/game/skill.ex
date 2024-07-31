@@ -24,47 +24,7 @@ defmodule Arena.Game.Skill do
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    # Players
-    alive_players =
-      Player.alive_players(game_state.players)
-      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
-
-    players =
-      Physics.check_collisions(circular_damage_area, alive_players)
-      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
-
-        target_player =
-          Map.get(players_acc, player_id)
-          |> Player.take_damage(real_damage)
-
-        send(self(), {:damage_done, entity_player_owner.id, circle_hit.damage})
-
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
-        end
-
-        Map.put(players_acc, player_id, target_player)
-      end)
-
-    # Crates
-
-    interactable_crates =
-      Crate.interactable_crates(game_state.crates)
-
-    crates =
-      Physics.check_collisions(circular_damage_area, interactable_crates)
-      |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
-        real_damage = Player.calculate_real_damage(entity_player_owner, circle_hit.damage)
-
-        crate =
-          Map.get(crates_acc, crate_id)
-          |> Crate.take_damage(real_damage)
-
-        Map.put(crates_acc, crate_id, crate)
-      end)
-
-    %{game_state | players: players, crates: crates}
+    deal_damage_to_game_entities(game_state, entity_player_owner, circular_damage_area, circle_hit.damage)
     |> maybe_move_player(entity, circle_hit[:move_by])
   end
 
@@ -83,47 +43,9 @@ defmodule Arena.Game.Skill do
       )
 
     cone_area = Entities.make_polygon(entity.id, triangle_points)
+    entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    alive_players = Map.filter(game_state.players, fn {_id, player} -> Player.alive?(player) end)
-
-    players =
-      Physics.check_collisions(cone_area, alive_players)
-      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        entity_player_owner = get_entity_player_owner(game_state, entity)
-        real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
-
-        target_player =
-          Map.get(players_acc, player_id)
-          |> Player.take_damage(real_damage)
-
-        send(self(), {:damage_done, entity_player_owner.id, cone_hit.damage})
-
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
-        end
-
-        Map.put(players_acc, player_id, target_player)
-      end)
-
-    # Crates
-
-    interactable_crates =
-      Crate.interactable_crates(game_state.crates)
-
-    crates =
-      Physics.check_collisions(cone_area, interactable_crates)
-      |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
-        entity_player_owner = get_entity_player_owner(game_state, entity)
-        real_damage = Player.calculate_real_damage(entity_player_owner, cone_hit.damage)
-
-        crate =
-          Map.get(crates_acc, crate_id)
-          |> Crate.take_damage(real_damage)
-
-        Map.put(crates_acc, crate_id, crate)
-      end)
-
-    %{game_state | players: players, crates: crates}
+    deal_damage_to_game_entities(game_state, entity_player_owner, cone_area, cone_hit.damage)
     |> maybe_move_player(entity, cone_hit[:move_by])
   end
 
@@ -337,30 +259,23 @@ defmodule Arena.Game.Skill do
 
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    # Players
-    alive_players =
-      Player.alive_players(game_state.players)
-      |> Map.filter(fn {_, alive_player} -> alive_player.id != entity_player_owner.id end)
+    deal_damage_to_game_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
+  end
 
-    players =
-      Physics.check_collisions(polygon_damage_area, alive_players)
-      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
-        real_damage = Player.calculate_real_damage(entity_player_owner, polygon_hit.damage)
+  def do_mechanic(game_state, entity, %{type: "position_hit"} = position_hit, skill_params) do
+    skill_direction =
+      maybe_multiply_by_range(skill_params.skill_direction, skill_params.auto_aim?, position_hit.range)
 
-        target_player =
-          Map.get(players_acc, player_id)
-          |> Player.take_damage(real_damage)
+    target_position =
+      %{
+        x: entity.position.x + skill_direction.x,
+        y: entity.position.y + skill_direction.y
+      }
 
-        send(self(), {:damage_done, entity_player_owner.id, polygon_hit.damage})
+    circular_damage_area = Entities.make_circular_area(entity.id, target_position, position_hit.radius)
+    entity_player_owner = get_entity_player_owner(game_state, entity)
 
-        unless Player.alive?(target_player) do
-          send(self(), {:to_killfeed, entity_player_owner.id, target_player.id})
-        end
-
-        Map.put(players_acc, player_id, target_player)
-      end)
-
-    %{game_state | players: players}
+    deal_damage_to_game_entities(game_state, entity_player_owner, circular_damage_area, position_hit.damage)
   end
 
   def handle_skill_effects(game_state, player, effects, execution_duration_ms, game_config) do
@@ -481,5 +396,49 @@ defmodule Arena.Game.Skill do
 
   def maybe_multiply_by_range(direction, true = _auto_aim?, _range) do
     direction
+  end
+
+  defp deal_damage_to_game_entities(game_state, player, skill_entity, damage) do
+    # Players
+    alive_players =
+      Player.alive_players(game_state.players)
+      |> Map.filter(fn {_, alive_player} -> alive_player.id != player.id end)
+
+    players =
+      Physics.check_collisions(skill_entity, alive_players)
+      |> Enum.reduce(game_state.players, fn player_id, players_acc ->
+        real_damage = Player.calculate_real_damage(player, damage)
+
+        target_player =
+          Map.get(players_acc, player_id)
+          |> Player.take_damage(real_damage)
+
+        send(self(), {:damage_done, player.id, damage})
+
+        unless Player.alive?(target_player) do
+          send(self(), {:to_killfeed, player.id, target_player.id})
+        end
+
+        Map.put(players_acc, player_id, target_player)
+      end)
+
+    # Crates
+
+    interactable_crates =
+      Crate.interactable_crates(game_state.crates)
+
+    crates =
+      Physics.check_collisions(skill_entity, interactable_crates)
+      |> Enum.reduce(game_state.crates, fn crate_id, crates_acc ->
+        real_damage = Player.calculate_real_damage(player, damage)
+
+        crate =
+          Map.get(crates_acc, crate_id)
+          |> Crate.take_damage(real_damage)
+
+        Map.put(crates_acc, crate_id, crate)
+      end)
+
+    %{game_state | players: players, crates: crates}
   end
 end
