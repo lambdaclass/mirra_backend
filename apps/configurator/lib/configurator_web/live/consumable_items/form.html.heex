@@ -2,6 +2,13 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
+
+  <.input
+    field={f[:version_id]}
+    type="select"
+    options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
+    label="Version"
+  />
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
   <.input field={f[:active]} type="checkbox" label="Active" />
