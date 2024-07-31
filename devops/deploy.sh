@@ -35,7 +35,7 @@ Description=$RELEASE
 [Service]
 WorkingDirectory=$HOME/mirra_backend${_SERVICE_SUFFIX}
 Restart=on-failure
-ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
+ExecStart=$HOME/mirra_backend${_SERVICE_SUFFIX}/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env${_SERVICE_SUFFIX}
@@ -54,6 +54,8 @@ PHX_SERVER=${PHX_SERVER}
 SECRET_KEY_BASE=${SECRET_KEY_BASE}
 JWT_PRIVATE_KEY_BASE_64=${JWT_PRIVATE_KEY_BASE_64}
 PORT=${PORT}
+_SERVICE_SUFFIX=${_SERVICE_SUFFIX}
+RELEASE_NODE=${PORT}
 GATEWAY_URL=${GATEWAY_URL}
 OVERRIDE_JWT=${OVERRIDE_JWT}
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
