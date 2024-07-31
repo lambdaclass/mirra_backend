@@ -35,7 +35,7 @@ Description=$RELEASE
 [Service]
 WorkingDirectory=$HOME/mirra_backend${_SERVICE_SUFFIX}
 Restart=on-failure
-ExecStart=$HOME/mirra_backend/devops/entrypoint.sh
+ExecStart=$HOME/mirra_backend${_SERVICE_SUFFIX}/devops/entrypoint.sh
 ExecReload=/bin/kill -HUP
 KillSignal=SIGTERM
 EnvironmentFile=$HOME/.env${_SERVICE_SUFFIX}
