@@ -253,7 +253,7 @@ fn get_relative_positions_from_entity_with_angles(
         result.push(position)
     }
 
-    return result;
+    result
 }
 
 rustler::init!(
