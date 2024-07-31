@@ -5,9 +5,6 @@ defmodule Configurator.Accounts.User do
 
   schema "configurator_users" do
     field :email, :string
-    field :password, :string, virtual: true, redact: true
-    field :hashed_password, :string, redact: true
-    field :confirmed_at, :naive_datetime
 
     timestamps(type: :utc_datetime)
   end
@@ -35,11 +32,10 @@ defmodule Configurator.Accounts.User do
       submitting the form), this option can be set to `false`.
       Defaults to `true`.
   """
-  def registration_changeset(user, attrs, opts \\ []) do
+  def changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:email])
     |> validate_email(opts)
-    |> validate_password(opts)
   end
 
   defp validate_email(changeset, opts) do
