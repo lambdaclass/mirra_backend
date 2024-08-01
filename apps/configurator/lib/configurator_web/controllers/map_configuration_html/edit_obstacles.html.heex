@@ -9,7 +9,7 @@
   <.inputs_for :let={obstacle_f} field={f[:obstacles]}>
     <h2>Obstacle <%= obstacle_f.data.name %></h2>
     <.input field={obstacle_f[:name]} type="text" label="Name" />
-    <.input field={obstacle_f[:radius]} type="number" label="Radius" />
+    <.input field={obstacle_f[:radius]} type="number" label="Radius" step="any" />
     <.input
       field={obstacle_f[:type]}
       type="select"
@@ -23,16 +23,16 @@
       options={Ecto.Enum.values(GameBackend.CurseOfMirra.MapConfiguration.Pool, :shape)}
     />
     <.inputs_for :let={position_f} field={obstacle_f[:position]}>
-      <.input field={position_f[:x]} type="number" label="X" />
-      <.input field={position_f[:y]} type="number" label="Y" />
+      <.input field={position_f[:x]} type="number" label="X" step="any" />
+      <.input field={position_f[:y]} type="number" label="Y" step="any" />
     </.inputs_for>
 
     <.button type="button" phx-click={show_modal("obstacle-vertices-#{obstacle_f.data.id}")}>Edit Vertices</.button>
     <.modal id={"obstacle-vertices-#{obstacle_f.data.id}"}>
       <.inputs_for :let={vertices_form} field={obstacle_f[:vertices]}>
         <h3>Vertex</h3>
-        <.input field={vertices_form[:x]} type="number" label="X" />
-        <.input field={vertices_form[:y]} type="number" label="Y" />
+        <.input field={vertices_form[:x]} type="number" label="X" step="any" />
+        <.input field={vertices_form[:y]} type="number" label="Y" step="any" />
       </.inputs_for>
     </.modal>
   </.inputs_for>
