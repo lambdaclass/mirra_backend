@@ -59,4 +59,61 @@ defmodule GameBackend.ConfigurationTest do
       assert %Ecto.Changeset{} = Configuration.change_map_configuration(map_configuration)
     end
   end
+
+  describe "arena_servers" do
+    alias GameBackend.ArenaServers.ArenaServer
+
+    import Configurator.ConfigurationFixtures
+
+    @invalid_attrs %{name: nil, ip: nil, url: nil, status: nil, environment: nil}
+
+    test "get_arena_server!/1 returns the arena_server with given id" do
+      arena_server = arena_server_fixture()
+      assert Configuration.get_arena_server!(arena_server.id) == arena_server
+    end
+
+    test "create_arena_server/1 with valid data creates a arena_server" do
+      valid_attrs = %{name: "some name", ip: "some ip", url: "some url", status: :active, environment: :production}
+
+      assert {:ok, %ArenaServer{} = arena_server} = Configuration.create_arena_server(valid_attrs)
+      assert arena_server.name == "some name"
+      assert arena_server.ip == "some ip"
+      assert arena_server.url == "some url"
+      assert arena_server.status == :active
+      assert arena_server.environment == :production
+    end
+
+    test "create_arena_server/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Configuration.create_arena_server(@invalid_attrs)
+    end
+
+    test "update_arena_server/2 with valid data updates the arena_server" do
+      arena_server = arena_server_fixture()
+      update_attrs = %{name: "some updated name", ip: "some updated ip", url: "some updated url", status: :inactive, environment: :development}
+
+      assert {:ok, %ArenaServer{} = arena_server} = Configuration.update_arena_server(arena_server, update_attrs)
+      assert arena_server.name == "some updated name"
+      assert arena_server.ip == "some updated ip"
+      assert arena_server.url == "some updated url"
+      assert arena_server.status == :inactive
+      assert arena_server.environment == :development
+    end
+
+    test "update_arena_server/2 with invalid data returns error changeset" do
+      arena_server = arena_server_fixture()
+      assert {:error, %Ecto.Changeset{}} = Configuration.update_arena_server(arena_server, @invalid_attrs)
+      assert arena_server == Configuration.get_arena_server!(arena_server.id)
+    end
+
+    test "delete_arena_server/1 deletes the arena_server" do
+      arena_server = arena_server_fixture()
+      assert {:ok, %ArenaServer{}} = Configuration.delete_arena_server(arena_server)
+      assert_raise Ecto.NoResultsError, fn -> Configuration.get_arena_server!(arena_server.id) end
+    end
+
+    test "change_arena_server/1 returns a arena_server changeset" do
+      arena_server = arena_server_fixture()
+      assert %Ecto.Changeset{} = Configuration.change_arena_server(arena_server)
+    end
+  end
 end

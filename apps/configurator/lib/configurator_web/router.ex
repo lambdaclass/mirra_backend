@@ -60,6 +60,7 @@ defmodule ConfiguratorWeb.Router do
     resources "/game_configurations", GameConfigurationController
     resources "/map_configurations", MapConfigurationController
     resources "/consumable_items", ConsumableItemController
+    resources "/arena_servers", ArenaServerController
   end
 
   scope "/", ConfiguratorWeb do
