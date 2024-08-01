@@ -41,6 +41,7 @@ message GameEvent {
     PingUpdate ping_update = 4;
     ToggleBots toggle_bots = 5;
     Ping ping = 6;
+    BountySelected bounty_selected = 7;
   }
 }
 
@@ -55,6 +56,10 @@ message GameFinished {
 
 message PingUpdate {
   uint64 latency = 1;
+}
+
+message BountySelected {
+  BountyInfo bounty = 1;
 }
 
 message GameJoined {
