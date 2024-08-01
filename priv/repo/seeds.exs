@@ -605,7 +605,7 @@ skills = [
       %{
         "name" => "inferno",
         "type" => "multiple_pool",
-        "interval_ms" => 200,
+        "interval_ms" => 100,
         "activation_delay" => 250,
         "duration_ms" => 4000,
         "radius" => 200.0,

@@ -317,7 +317,11 @@ defmodule Arena.Game.Skill do
     |> Enum.reduce(game_state, fn {pool_position, index}, game_state ->
       last_id = game_state.last_id + 1
 
-      Process.send_after(self(), {:activate_pool, last_id}, multiple_pool.activation_delay * index)
+      Process.send_after(
+        self(),
+        {:activate_pool, last_id},
+        multiple_pool.activation_delay + multiple_pool.interval_ms * index
+      )
 
       pool_params =
         Map.merge(
