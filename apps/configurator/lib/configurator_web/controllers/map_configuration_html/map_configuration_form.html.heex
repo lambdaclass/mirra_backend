@@ -1,15 +1,3 @@
-<.header>
-  Editing map
-  <:actions>
-    <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
-      <.button>Edit Map Obstacles</.button>
-    </.link>
-    <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
-      <.button>Edit Map Pools</.button>
-    </.link>
-  </:actions>
-</.header>
-
 <.simple_form :let={f} for={@changeset} action={@action}>
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
