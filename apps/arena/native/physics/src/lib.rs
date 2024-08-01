@@ -146,12 +146,11 @@ fn calculate_duration(
         let mut direction = Position::sub(&position_b, &position_a);
         direction.normalize();
 
-        let new_target =  Position::add(&position_a, &Position::mult(&direction, max_range));
+        let new_target = Position::add(&position_a, &Position::mult(&direction, max_range));
 
         let len = distance_between_positions(position_a, new_target);
 
         (len / speed) as u64
-
     } else {
         (len / speed) as u64
     }
