@@ -6,49 +6,37 @@ defmodule Configurator.AccountsTest do
   import Configurator.AccountsFixtures
   alias Configurator.Accounts.{User, UserToken}
 
-  describe "register_user/1" do
-    test "requires email and password to be set" do
-      {:error, changeset} = Accounts.register_user(%{})
+  describe "create_user/1" do
+    test "requires email to be set" do
+      {:error, changeset} = Accounts.create_user(nil)
 
       assert %{
-               password: ["can't be blank"],
                email: ["can't be blank"]
              } = errors_on(changeset)
     end
 
-    test "validates email and password when given" do
-      {:error, changeset} = Accounts.register_user(%{email: "not valid", password: "not valid"})
+    test "validates email when given" do
+      {:error, changeset} = Accounts.create_user("not valid")
 
       assert %{
-               email: ["must have the @ sign and no spaces"],
-               password: ["should be at least 12 character(s)"]
+               email: ["must have the @ sign and no spaces"]
              } = errors_on(changeset)
     end
 
-    test "validates maximum values for email and password for security" do
+    test "validates maximum values for email for security" do
       too_long = String.duplicate("db", 100)
-      {:error, changeset} = Accounts.register_user(%{email: too_long, password: too_long})
+      {:error, changeset} = Accounts.create_user(too_long)
       assert "should be at most 160 character(s)" in errors_on(changeset).email
-      assert "should be at most 72 character(s)" in errors_on(changeset).password
     end
 
     test "validates email uniqueness" do
       %{email: email} = user_fixture()
-      {:error, changeset} = Accounts.register_user(%{email: email})
+      {:error, changeset} = Accounts.create_user(email)
       assert "has already been taken" in errors_on(changeset).email
 
       # Now try with the upper cased email too, to check that email case is ignored.
-      {:error, changeset} = Accounts.register_user(%{email: String.upcase(email)})
+      {:error, changeset} = Accounts.create_user(String.upcase(email))
       assert "has already been taken" in errors_on(changeset).email
-    end
-
-    test "registers users with a hashed password" do
-      email = unique_user_email()
-      {:ok, user} = Accounts.register_user(valid_user_attributes(email: email))
-      assert user.email == email
-      assert is_binary(user.hashed_password)
-      assert is_nil(user.confirmed_at)
-      assert is_nil(user.password)
     end
   end
 
@@ -101,12 +89,6 @@ defmodule Configurator.AccountsTest do
       token = Accounts.generate_user_session_token(user)
       assert Accounts.delete_user_session_token(token) == :ok
       refute Accounts.get_user_by_session_token(token)
-    end
-  end
-
-  describe "inspect/2 for the User module" do
-    test "does not include password" do
-      refute inspect(%User{password: "123456"}) =~ "password: \"123456\""
     end
   end
 end

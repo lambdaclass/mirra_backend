@@ -5,20 +5,16 @@ defmodule Configurator.AccountsFixtures do
   """
 
   def unique_user_email, do: "user#{System.unique_integer()}@example.com"
-  def valid_user_password, do: "hello world!"
 
   def valid_user_attributes(attrs \\ %{}) do
-    Enum.into(attrs, %{
-      email: unique_user_email(),
-      password: valid_user_password()
-    })
+    Enum.into(attrs, unique_user_email())
   end
 
   def user_fixture(attrs \\ %{}) do
     {:ok, user} =
       attrs
       |> valid_user_attributes()
-      |> Configurator.Accounts.register_user()
+      |> Configurator.Accounts.create_user()
 
     user
   end
