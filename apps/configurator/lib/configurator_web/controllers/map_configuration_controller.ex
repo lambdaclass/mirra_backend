@@ -35,6 +35,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   def edit(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
+
     changeset = Configuration.change_map_configuration(map_configuration)
     render(conn, :edit, map_configuration: map_configuration, changeset: changeset)
   end

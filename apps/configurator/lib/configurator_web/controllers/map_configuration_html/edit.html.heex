@@ -3,6 +3,10 @@
   <:subtitle>Use this form to manage Map Configuration records in your database.</:subtitle>
 </.header>
 
-<.map_configuration_form changeset={@changeset} action={~p"/map_configurations/#{@map_configuration}"} />
+<.map_configuration_form
+  changeset={@changeset}
+  map_configuration={@map_configuration}
+  action={~p"/map_configurations/#{@map_configuration}"}
+/>
 
 <.back navigate={~p"/map_configurations"}>Back to Map Configuration</.back>
