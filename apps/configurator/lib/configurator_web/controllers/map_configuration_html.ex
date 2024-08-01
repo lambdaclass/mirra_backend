@@ -1,4 +1,5 @@
 defmodule ConfiguratorWeb.MapConfigurationHTML do
+  alias GameBackend.CurseOfMirra.MapConfiguration
   use ConfiguratorWeb, :html
 
   embed_templates "map_configuration_html/*"
@@ -8,6 +9,7 @@ defmodule ConfiguratorWeb.MapConfigurationHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
+  attr :map_configuration, MapConfiguration, required: true
 
   def map_configuration_form(assigns)
 
