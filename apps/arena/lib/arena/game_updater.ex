@@ -1390,7 +1390,12 @@ defmodule Arena.GameUpdater do
          {projectiles_acc, players_acc, crate_acc}
        )
        when not is_nil(obstacle) or collided_with_external_wall? do
-    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+    projectile =
+      if projectile.aditional_info.remove_on_collision do
+        put_in(projectile, [:aditional_info, :status], :EXPLODED)
+      else
+        projectile
+      end
 
     {
       Map.put(projectiles_acc, projectile.id, projectile),
@@ -1416,7 +1421,12 @@ defmodule Arena.GameUpdater do
       {:damage_done, projectile.aditional_info.owner_id, real_damage}
     )
 
-    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+    projectile =
+      if projectile.aditional_info.remove_on_collision do
+        put_in(projectile, [:aditional_info, :status], :EXPLODED)
+      else
+        projectile
+      end
 
     unless Player.alive?(player) do
       send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
@@ -1441,7 +1451,12 @@ defmodule Arena.GameUpdater do
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
     crate = Crate.take_damage(crate, real_damage)
 
-    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+    projectile =
+      if projectile.aditional_info.remove_on_collision do
+        put_in(projectile, [:aditional_info, :status], :EXPLODED)
+      else
+        projectile
+      end
 
     {
       Map.put(projectiles_acc, projectile.id, projectile),

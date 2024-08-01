@@ -135,9 +135,26 @@ fn get_direction_from_positions(position_a: Position, position_b: Position) -> D
 }
 
 #[rustler::nif()]
-fn calculate_duration(position_a: Position, position_b: Position, speed: f32) -> u64 {
+fn calculate_duration(
+    position_a: Position,
+    position_b: Position,
+    speed: f32,
+    max_range: f32,
+) -> u64 {
     let len = distance_between_positions(position_a, position_b);
-    (len / speed) as u64
+    if len > max_range {
+        let mut direction = Position::sub(&position_b, &position_a);
+        direction.normalize();
+
+        let new_target =  Position::add(&position_a, &Position::mult(&direction, max_range));
+
+        let len = distance_between_positions(position_a, new_target);
+
+        (len / speed) as u64
+
+    } else {
+        (len / speed) as u64
+    }
 }
 
 #[rustler::nif()]

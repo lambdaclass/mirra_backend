@@ -262,20 +262,49 @@ defmodule Arena.Game.Skill do
     deal_damage_to_game_entities(game_state, entity_player_owner, polygon_damage_area, polygon_hit.damage)
   end
 
-  def do_mechanic(game_state, entity, %{type: "position_hit"} = position_hit, skill_params) do
-    skill_direction =
-      maybe_multiply_by_range(skill_params.skill_direction, skill_params.auto_aim?, position_hit.range)
-
-    target_position =
-      %{
-        x: entity.position.x + skill_direction.x,
-        y: entity.position.y + skill_direction.y
-      }
-
-    circular_damage_area = Entities.make_circular_area(entity.id, target_position, position_hit.radius)
+  def do_mechanic(
+        game_state,
+        entity,
+        %{type: "destination_shoot"} = simple_shoot,
+        %{skill_direction: skill_direction} = skill_params
+      ) do
+    last_id = game_state.last_id + 1
     entity_player_owner = get_entity_player_owner(game_state, entity)
 
-    deal_damage_to_game_entities(game_state, entity_player_owner, circular_damage_area, position_hit.damage)
+    direction = maybe_multiply_by_range(skill_direction, skill_params.auto_aim?, simple_shoot.range)
+
+    target_position = %{
+      x: entity.position.x + direction.x,
+      y: entity.position.y + direction.y
+    }
+
+    direction =
+      Utils.normalize(%{
+        x: target_position.x - entity.position.x,
+        y: target_position.y - entity.position.y
+      })
+
+    duration_ms = Physics.calculate_duration(entity.position, target_position, simple_shoot.speed, simple_shoot.range)
+
+    projectile =
+      Entities.new_projectile(
+        last_id,
+        get_position_with_offset(
+          entity_player_owner.position,
+          skill_direction,
+          simple_shoot.projectile_offset
+        ),
+        direction,
+        entity_player_owner.id,
+        skill_params.skill_key,
+        simple_shoot
+      )
+
+    Process.send_after(self(), {:remove_projectile, projectile.id}, duration_ms)
+
+    game_state
+    |> Map.put(:last_id, last_id)
+    |> put_in([:projectiles, projectile.id], projectile)
   end
 
   def do_mechanic(game_state, entity, %{type: "multiple_pool"} = multiple_pool, skill_params) do

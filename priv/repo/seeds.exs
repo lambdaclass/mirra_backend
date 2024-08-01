@@ -549,11 +549,22 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       %{
-        "type" => "position_hit",
-        "damage" => 64,
-        "shape" => "circle",
-        "radius" => 350.0,
-        "range" => 700.0
+        "type" => "destination_shoot",
+        "speed" => 1.8,
+        "duration_ms" => 0,
+        "remove_on_collision" => false,
+        "projectile_offset" => 0,
+        "radius" => 100.0,
+        "damage" => 0,
+        "range" => 700,
+        "on_explode_mechanics" => [
+          %{
+            "type" => "circle_hit",
+            "damage" => 58,
+            "range" => 250.0,
+            "offset" => 0
+          }
+        ]
       }
     ],
     "effects_to_apply" => []
