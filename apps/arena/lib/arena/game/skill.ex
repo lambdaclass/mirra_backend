@@ -291,7 +291,7 @@ defmodule Arena.Game.Skill do
         last_id,
         get_position_with_offset(
           entity_player_owner.position,
-          skill_direction,
+          direction,
           simple_shoot.projectile_offset
         ),
         direction,
