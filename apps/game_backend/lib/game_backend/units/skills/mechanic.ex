@@ -25,7 +25,6 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:activation_delay, :integer)
     field(:trigger_delay, :integer)
     field(:pools_angle, {:array, :float})
-    field(:distance_to_pools, :float)
 
     field(:type, Ecto.Enum,
       values: [
@@ -77,8 +76,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :remove_on_collision,
       :activation_delay,
       :speed,
-      :pools_angle,
-      :distance_to_pools
+      :pools_angle
     ])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)
@@ -101,8 +99,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
   defp validate_type(changeset) do
     case get_field(changeset, :type) do
       :multiple_pool ->
-        if Enum.empty?(get_field(changeset, :pools_angle)) or get_field(changeset, :distance_to_pools) < 0 do
-          add_error(changeset, :type, "Type: multiple_pool requires pools_angles and distance_to_pools")
+        if Enum.empty?(get_field(changeset, :pools_angle)) or get_field(changeset, :range) < 0 do
+          add_error(changeset, :type, "Type: multiple_pool requires pools_angles and range")
         else
           changeset
         end

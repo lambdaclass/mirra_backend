@@ -618,7 +618,7 @@ skills = [
           225,
           315
         ],
-        "distance_to_pools" => 150.0
+        "range" => 150.0
       }
     ]
   }

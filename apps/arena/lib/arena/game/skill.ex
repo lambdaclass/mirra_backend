@@ -311,7 +311,7 @@ defmodule Arena.Game.Skill do
     Physics.get_relative_positions_from_entity_with_angles(
       entity,
       multiple_pool.pools_angle,
-      multiple_pool.distance_to_pools
+      multiple_pool.range
     )
     |> Enum.with_index()
     |> Enum.reduce(game_state, fn {pool_position, index}, game_state ->
