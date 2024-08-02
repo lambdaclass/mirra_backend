@@ -136,7 +136,8 @@ defmodule Arena.Game.Player do
     now = System.monotonic_time(:millisecond)
     time_since_last = now - player.aditional_info.mana_recovery_time_last_at
 
-    if time_since_last >= player.aditional_info.mana_recovery_time_interval_ms do
+    if player.aditional_info.mana_recovery_strategy == "time" and
+         time_since_last >= player.aditional_info.mana_recovery_time_interval_ms do
       change_mana(player, player.aditional_info.mana_recovery_time_amount)
       |> put_in([:aditional_info, :mana_recovery_time_last_at], now)
     else
