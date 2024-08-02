@@ -4,7 +4,7 @@ on:
 
 jobs:
   build-deploy:
-    name: [TESTING-EUROPE] Build and deploy to Europe testing
+    name: Build and deploy to Europe testing
     runs-on: ubuntu-latest
     environment:
       name: testing-europe
