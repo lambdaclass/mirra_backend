@@ -133,6 +133,12 @@ defmodule Arena.Serialization.GameEvent do
   field(:ping_update, 4, type: Arena.Serialization.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:ping, 6, type: Arena.Serialization.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: Arena.Serialization.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule Arena.Serialization.Ping do
@@ -172,6 +178,14 @@ defmodule Arena.Serialization.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule Arena.Serialization.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: Arena.Serialization.BountyInfo)
 end
 
 defmodule Arena.Serialization.GameJoined do
