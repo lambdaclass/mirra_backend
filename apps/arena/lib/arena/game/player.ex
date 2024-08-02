@@ -501,11 +501,11 @@ defmodule Arena.Game.Player do
     player = put_in(player, [:aditional_info, :last_combo_timestamp], now)
 
     if combo_time_ms > skill.reset_combo_ms do
-      put_in(player, [:aditional_info, :current_basic_animation], 1)
+      player = put_in(player, [:aditional_info, :current_basic_animation], 1)
 
       {player, Map.get(skill, :first_skill, skill)}
     else
-      put_in(player, [:aditional_info, :current_basic_animation], get_skill_animation(skill.name))
+      player = put_in(player, [:aditional_info, :current_basic_animation], get_skill_animation(skill.name))
 
       {player, skill}
     end
@@ -522,7 +522,6 @@ defmodule Arena.Game.Player do
       next_skill = skill.next_skill |> Map.put(:first_skill, first_skill)
 
       put_in(player, [:aditional_info, :skills, skill_key], next_skill)
-      |> put_in([:aditional_info, :current_basic_animation], 2)
     end
   end
 
