@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing-europe
-      url: https://arena-europe-testing.curseofmirra.com/
+      url: https://arena-europe-testing.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
