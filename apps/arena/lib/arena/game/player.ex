@@ -237,6 +237,13 @@ defmodule Arena.Game.Player do
           |> apply_skill_cooldown(skill_key, skill)
           |> maybe_face_player_towards_direction(skill_direction, skill.block_movement)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
+          |> update_in([:aditional_info, :last_skill_triggered_inside_bush], fn last_skill_triggered_inside_bush ->
+            if player.aditional_info.on_bush do
+              System.monotonic_time(:millisecond)
+            else
+              last_skill_triggered_inside_bush
+            end
+          end)
 
         put_in(game_state, [:players, player.id], player)
         |> maybe_make_player_invincible(player.id, skill)

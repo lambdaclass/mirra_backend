@@ -639,7 +639,8 @@ game_configuration_1 = %{
   zone_enabled: true,
   bounties_options_amount: 3,
   match_timeout_ms: 300_000,
-  field_of_view_inside_bush: 500
+  field_of_view_inside_bush: 500,
+  time_visible_in_bush_after_skill: 2000
 }
 
 {:ok, _game_configuration_1} =
