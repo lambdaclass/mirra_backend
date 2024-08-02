@@ -103,5 +103,24 @@ defmodule GameBackend.Units.Characters.Character do
     |> cast_assoc(:basic_skill)
     |> cast_assoc(:ultimate_skill)
     |> validate_required([:game_id, :name, :active, :faction])
+    |> mana_recovery_strategy_validation()
+  end
+
+  defp mana_recovery_strategy_validation(changeset) do
+    case get_field(changeset, :mana_recovery_strategy) do
+      :time ->
+        changeset
+        |> validate_required([:mana_recovery_time_interval_ms, :mana_recovery_time_amount])
+        |> validate_number(:mana_recovery_time_interval_ms, greater_than: 0)
+        |> validate_number(:mana_recovery_time_amount, greater_than: 0)
+
+      :damage ->
+        changeset
+        |> validate_required([:mana_recovery_damage_multiplier])
+        |> validate_number(:mana_recovery_damage_multiplier, greater_than_or_equal_to: 0)
+
+      _ ->
+        changeset
+    end
   end
 end

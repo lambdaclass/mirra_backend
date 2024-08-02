@@ -62,5 +62,28 @@ defmodule GameBackend.Units.Skills.Skill do
     |> cast_assoc(:mechanics)
     |> unique_constraint([:game_id, :name])
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
+    |> cooldown_mechanism_validation()
+  end
+
+  defp cooldown_mechanism_validation(changeset) do
+    case get_field(changeset, :cooldown_mechanism) do
+      :stamina ->
+        changeset
+        |> validate_required([:stamina_cost])
+        |> validate_number(:stamina_cost, greater_than_or_equal_to: 0)
+
+      :time ->
+        changeset
+        |> validate_required([:cooldown_ms])
+        |> validate_number(:cooldown_ms, greater_than_or_equal_to: 0)
+
+      :mana ->
+        changeset
+        |> validate_required([:mana_cost])
+        |> validate_number(:mana_cost, greater_than_or_equal_to: 0)
+
+      _ ->
+        changeset
+    end
   end
 end
