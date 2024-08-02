@@ -58,6 +58,7 @@ jobs:
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.HOST }}
           PORT: "400${{ inputs.sub_env }}"
+          RELEASE_NODE: "400${{ inputs.sub_env }}"
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
           BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
@@ -78,6 +79,7 @@ jobs:
                 PHX_HOST=${PHX_HOST} \
                 BOT_MANAGER_HOST=${BOT_MANAGER_HOST} \
                 PORT=${PORT} \
+                RELEASE_NODE=${RELEASE_NODE} \
                 _SERVICE_SUFFIX=${PORT} \
                 GATEWAY_URL=${GATEWAY_URL} \
                 BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
