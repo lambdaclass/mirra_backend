@@ -65,6 +65,7 @@ export const BoardGame = function () {
         document.getElementById("board_game").dataset.boardHeight / 2,
         document.getElementById("board_game").dataset.mapRadius
       );
+      zoneCircle.zIndex = 0;
       zoneCircle.endFill();
       container.addChild(zoneCircle);
     })
