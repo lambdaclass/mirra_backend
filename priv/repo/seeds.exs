@@ -643,7 +643,7 @@ game_configuration_1 = %{
   zone_enabled: true,
   bounties_options_amount: 3,
   match_timeout_ms: 300_000,
-  field_of_view_inside_bush: 500,
+  field_of_view_inside_bush: 400,
   time_visible_in_bush_after_skill: 2000
 }
 
@@ -2526,7 +2526,7 @@ map_config = %{
         %{
           x: 1393.0,
           y: -1184.0
-        },
+        }
       ],
       effects_to_apply: [
         "slow_field"
