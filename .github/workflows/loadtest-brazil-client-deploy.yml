@@ -1,4 +1,4 @@
-name: [LOADTEST-CLIENT-BRAZIL] Deploy to Brazil Loadtest Client
+name: "[LOADTEST-CLIENT-BRAZIL] Deploy to Brazil Loadtest Client"
 on:
   workflow_dispatch:
     inputs:
