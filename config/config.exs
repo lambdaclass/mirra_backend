@@ -76,6 +76,10 @@ config :ueberauth, Ueberauth,
     google: {Ueberauth.Strategy.Google, []}
   ]
 
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: "34530065098-j95rqhc70ujmhrklu7ilvcirfsm0q3dm.apps.googleusercontent.com",
+  client_secret: "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"
+
 config :joken,
   ## 2 hours for expiration
   default_exp: 2 * 60 * 60
