@@ -1,4 +1,4 @@
-name: Deploy to Brazil Loadtest Server
+name: [LOADTEST-SERVER-BRAZIL] Deploy to Brazil Loadtest Server
 on:
   workflow_dispatch:
 
