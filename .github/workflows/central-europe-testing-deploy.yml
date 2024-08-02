@@ -1,4 +1,4 @@
-name: Deploy to Europe Central testing
+name: [CENTRAL-EUROPE] Deploy to Europe Central testing
 on:
   workflow_dispatch:
 

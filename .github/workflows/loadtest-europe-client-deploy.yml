@@ -1,4 +1,4 @@
-name: Deploy to Europe Loadtest Client
+name: [LOADTEST-CLIENT-EUROPE] Deploy to Europe Loadtest Client
 on:
   workflow_dispatch:
     inputs:

@@ -1,10 +1,10 @@
-name: Deploy to Europe Arena testing
+name: [TESTING-EUROPE] Deploy to Europe Arena testing
 on:
   workflow_dispatch:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Europe testing
+    name: [TESTING-EUROPE] Build and deploy to Europe testing
     runs-on: ubuntu-latest
     environment:
       name: testing-europe
