@@ -212,6 +212,7 @@ message Player {
   bool forced_movement = 15;
   bool bounty_completed = 16;
   uint64 mana = 17;
+  uint32 current_basic_animation = 18;
 }
 
 message Effect {

@@ -6994,7 +6994,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     onBush: jspb.Message.getBooleanFieldWithDefault(msg, 14, false),
     forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
-    mana: jspb.Message.getFieldWithDefault(msg, 17, 0)
+    mana: jspb.Message.getFieldWithDefault(msg, 17, 0),
+    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0)
   };
 
   if (includeInstance) {
@@ -7105,6 +7106,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
     case 17:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setMana(value);
+      break;
+    case 18:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setCurrentBasicAnimation(value);
       break;
     default:
       reader.skipField();
@@ -7251,6 +7256,13 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint64(
       17,
+      f
+    );
+  }
+  f = message.getCurrentBasicAnimation();
+  if (f !== 0) {
+    writer.writeUint32(
+      18,
       f
     );
   }
@@ -7643,6 +7655,24 @@ proto.Player.prototype.getMana = function() {
  */
 proto.Player.prototype.setMana = function(value) {
   return jspb.Message.setProto3IntField(this, 17, value);
+};
+
+
+/**
+ * optional uint32 current_basic_animation = 18;
+ * @return {number}
+ */
+proto.Player.prototype.getCurrentBasicAnimation = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setCurrentBasicAnimation = function(value) {
+  return jspb.Message.setProto3IntField(this, 18, value);
 };
 
 
