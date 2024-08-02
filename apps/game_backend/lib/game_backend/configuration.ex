@@ -388,4 +388,14 @@ defmodule GameBackend.Configuration do
     |> Multi.update(:version, Ecto.Changeset.change(version, %{current: true}))
     |> Repo.transaction()
   end
+
+  @doc """
+  Gets the latest game configuration
+  ## Examples
+      iex> get_latest_game_configuration()
+      %GameConfiguration{}
+  """
+  def get_latest_game_configuration do
+    Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
+  end
 end
