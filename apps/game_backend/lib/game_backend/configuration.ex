@@ -106,18 +106,6 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
-  Gets the latest game configuration
-
-  ## Examples
-
-      iex> get_latest_game_configuration()
-      %GameConfiguration{}
-  """
-  def get_latest_game_configuration do
-    Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
-  end
-
-  @doc """
   Returns the list of map_configurations.
 
   ## Examples
@@ -209,16 +197,6 @@ defmodule GameBackend.Configuration do
   """
   def change_map_configuration(%MapConfiguration{} = map_configuration, attrs \\ %{}) do
     MapConfiguration.changeset(map_configuration, attrs)
-  end
-
-  @doc """
-  Gets the latest map configuration
-  ## Examples
-      iex> get_latest_map_configuration()
-      %MapConfiguration{}
-  """
-  def get_latest_map_configuration do
-    Repo.one(from(m in MapConfiguration, order_by: [desc: m.inserted_at], limit: 1))
   end
 
   @doc """
@@ -320,7 +298,7 @@ defmodule GameBackend.Configuration do
 
   ## Examples
 
-      iex> get_latest_version()
+      iex> get_current_version()
       %Version{}
   """
 
