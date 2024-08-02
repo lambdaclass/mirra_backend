@@ -163,6 +163,8 @@ defmodule Arena.GameUpdater do
         bounty =
           Enum.find(aditional_info.bounties, fn bounty -> bounty.id == bounty_quest_id end)
 
+        PubSub.broadcast(Arena.PubSub, state.game_state.game_id, {:bounty_selected, player_id, bounty})
+
         aditional_info
         |> Map.put(:selected_bounty, bounty)
       end)

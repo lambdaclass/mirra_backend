@@ -10,6 +10,7 @@ defmodule Arena.GameSocketHandler do
   alias Arena.GameUpdater
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameJoined
+  alias Arena.Serialization.BountySelected
 
   @behaviour :cowboy_websocket
 
@@ -143,6 +144,20 @@ defmodule Arena.GameSocketHandler do
 
   def websocket_info({:toggle_bots, message}, state) do
     {:reply, {:binary, message}, state}
+  end
+
+  @impl true
+  def websocket_info({:bounty_selected, player_id, bounty}, state) do
+    if state.player_id == player_id do
+      encoded_msg =
+        GameEvent.encode(%GameEvent{
+          event: {:bounty_selected, %BountySelected{bounty: bounty}}
+        })
+
+      {:reply, {:binary, encoded_msg}, state}
+    else
+      {:ok, state}
+    end
   end
 
   @impl true
