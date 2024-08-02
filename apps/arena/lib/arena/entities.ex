@@ -393,7 +393,8 @@ defmodule Arena.Entities do
        on_bush: entity.aditional_info.on_bush,
        forced_movement: entity.aditional_info.forced_movement,
        bounty_completed: entity.aditional_info.bounty_completed,
-       mana: entity.aditional_info.mana
+       mana: entity.aditional_info.mana,
+       current_basic_animation: entity.aditional_info.current_basic_animation
      }}
   end
 
