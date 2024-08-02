@@ -5,9 +5,9 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
   import Configurator.AccountsFixtures
   setup [:create_authenticated_conn]
 
-  @create_attrs %{radius: "120.5", initial_positions: "", obstacles: "", bushes: ""}
-  @update_attrs %{radius: "456.7", initial_positions: "", obstacles: "", bushes: ""}
-  @invalid_attrs %{radius: nil, initial_positions: nil, obstacles: nil, bushes: nil}
+  @create_attrs %{name: "some_map", radius: "120.5", initial_positions: "", obstacles: "", bushes: ""}
+  @update_attrs %{name: "another_map", radius: "456.7", initial_positions: "", obstacles: "", bushes: ""}
+  @invalid_attrs %{name: nil, radius: nil, initial_positions: nil, obstacles: nil, bushes: nil}
 
   describe "index" do
     test "lists all map_configurations", %{conn: conn} do
@@ -31,7 +31,7 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
       assert redirected_to(conn) == ~p"/map_configurations/#{id}"
 
       conn = get(conn, ~p"/map_configurations/#{id}")
-      assert html_response(conn, 200) =~ "Map configuration #{id}"
+      assert html_response(conn, 200) =~ "Map configuration #{@create_attrs.name}"
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
