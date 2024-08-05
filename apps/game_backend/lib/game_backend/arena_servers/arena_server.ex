@@ -1,4 +1,7 @@
 defmodule GameBackend.ArenaServers.ArenaServer do
+  @moduledoc """
+  ArenaServers
+  """
   use GameBackend.Schema
   import Ecto.Changeset
 
