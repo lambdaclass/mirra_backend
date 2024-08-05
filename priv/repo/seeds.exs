@@ -1079,7 +1079,7 @@ map_config = %{
       },
       radius: 0.0,
       shape: "polygon",
-      type: "lake",
+      type: "static",
       statuses_cycle: %{},
       base_status: "",
       vertices: [
@@ -1876,51 +1876,7 @@ map_config = %{
       ]
     }
   ],
-  bushes: [],
-  pools: [
-    %{
-      name: "oil pool north a",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      vertices: [
-        %{
-          x: 2957.0,
-          y: 224.0
-        },
-        %{
-          x: 3160.0,
-          y: 295.0
-        },
-        %{
-          x: 3224.0,
-          y: 800.0
-        },
-        %{
-          x: 2865.0,
-          y: 1222.0
-        },
-        %{
-          x: 2663.0,
-          y: 1228.0
-        },
-        %{
-          x: 2527.0,
-          y: 1057.0
-        },
-        %{
-          x: 2521.0,
-          y: 833.0
-        }
-      ],
-      effects_to_apply: [
-        "slow_field"
-      ]
-    }
-  ]
+  bushes: []
 }
 
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)
