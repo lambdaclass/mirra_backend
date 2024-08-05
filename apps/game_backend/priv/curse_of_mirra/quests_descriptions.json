@@ -6,7 +6,7 @@
         "objective": {
             "match_tracking_field": "result",
             "value": 3,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "match"
         },
         "conditions": [
@@ -33,7 +33,7 @@
         "objective": {
             "match_tracking_field": "kills",
             "value": 44,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "day"
         },
         "conditions": [],
@@ -122,7 +122,7 @@
         "objective": {
             "match_tracking_field": "result",
             "value": 30,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "match"
         },
         "conditions": [
@@ -149,7 +149,7 @@
         "objective": {
             "match_tracking_field": "kills",
             "value": 100,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "day"
         },
         "conditions": [],
@@ -181,7 +181,7 @@
         "objective": {
             "match_tracking_field": "result",
             "value": 1,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "day"
         },
         "conditions": [
