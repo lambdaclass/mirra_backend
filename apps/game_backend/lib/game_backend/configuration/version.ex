@@ -18,7 +18,7 @@ defmodule GameBackend.Configuration.Version do
     has_many(:characters, Character)
     has_many(:consumable_items, ConsumableItem)
     has_many(:skills, Skill)
-    has_one(:map_configuration, MapConfiguration)
+    has_many(:map_configurations, MapConfiguration)
     has_one(:game_configuration, GameConfiguration)
 
     timestamps(type: :utc_datetime)

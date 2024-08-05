@@ -306,10 +306,16 @@ defmodule GameBackend.Configuration do
     q = from(v in Version, where: v.current)
 
     Repo.one(q)
-    |> Repo.preload(:characters)
+    |> Repo.preload(
+      characters: [
+        basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
+        ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
+        dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]
+      ]
+    )
     |> Repo.preload(:consumable_items)
     |> Repo.preload(:skills)
-    |> Repo.preload(:map_configuration)
+    |> Repo.preload(:map_configurations)
     |> Repo.preload(:game_configuration)
   end
 
