@@ -288,9 +288,23 @@ simple_shoot = %{
   }
 }
 
-quickslash = %{
+quickslash_1 = %{
   "type" => "circle_hit",
   "damage" => 60,
+  "range" => 350.0,
+  "offset" => 400
+}
+
+quickslash_2 = %{
+  "type" => "circle_hit",
+  "damage" => 65,
+  "range" => 350.0,
+  "offset" => 400
+}
+
+quickslash_3 = %{
+  "type" => "circle_hit",
+  "damage" => 80,
   "range" => 350.0,
   "offset" => 400
 }
@@ -566,7 +580,7 @@ skills = [
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 0,
     "is_combo?" => true,
-    "execution_duration_ms" => 750,
+    "execution_duration_ms" => 350,
     "activation_delay_ms" => 150,
     "is_passive" => false,
     "autoaim" => true,
@@ -574,7 +588,7 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [quickslash],
+    "mechanics" => [quickslash_1],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -582,9 +596,9 @@ skills = [
     "name" => "kenzu_quickslash_second",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 2500,
+    "reset_combo_ms" => 800,
     "is_combo?" => true,
-    "execution_duration_ms" => 500,
+    "execution_duration_ms" => 450,
     "activation_delay_ms" => 100,
     "is_passive" => false,
     "autoaim" => true,
@@ -592,7 +606,7 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [quickslash],
+    "mechanics" => [quickslash_2],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -600,9 +614,9 @@ skills = [
     "name" => "kenzu_quickslash_third",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 2500,
+    "reset_combo_ms" => 800,
     "is_combo?" => true,
-    "execution_duration_ms" => 500,
+    "execution_duration_ms" => 800,
     "activation_delay_ms" => 100,
     "is_passive" => false,
     "autoaim" => true,
@@ -610,7 +624,7 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [quickslash],
+    "mechanics" => [quickslash_3],
     "effects_to_apply" => [],
     "version_id" => version.id
   },

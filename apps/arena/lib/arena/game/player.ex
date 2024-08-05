@@ -571,7 +571,8 @@ defmodule Arena.Game.Player do
     game_state
   end
 
-  defp get_skill_animation(skill_name) when skill_name in ["kenzu_quickslash_second", "kenzu_quickslash_third"], do: 2
+  defp get_skill_animation("kenzu_quickslash_second"), do: 2
+  defp get_skill_animation("kenzu_quickslash_third"), do: 3
 
   defp get_skill_animation(_skill_name), do: 1
 end
