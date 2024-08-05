@@ -65,36 +65,6 @@ defmodule Arena.GameUpdater do
   ##########################
   # END API
   ##########################
-
-  def init(%{clients: clients, bot_clients: bot_clients, game_params: game_params}) do
-    game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_config = Configuration.get_game_config()
-    game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
-
-    game_state = new_game(game_id, clients ++ bot_clients, game_config)
-    match_id = Ecto.UUID.generate()
-
-    send(self(), :update_game)
-    send(self(), :send_ping)
-    Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
-
-    clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
-    bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
-
-    :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
-
-    :telemetry.execute([:arena, :game], %{count: 1})
-
-    {:ok,
-     %{
-       match_id: match_id,
-       clients: clients_ids,
-       bot_clients: bot_clients_ids,
-       game_config: game_config,
-       game_state: game_state
-     }}
-  end
-
   def init(%{teams: players, game_params: game_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
     game_config = Configuration.get_game_config()
@@ -116,6 +86,8 @@ defmodule Arena.GameUpdater do
       end)
 
     :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
+
+    :telemetry.execute([:arena, :game], %{count: 1})
 
     {:ok,
      %{
@@ -864,83 +836,6 @@ defmodule Arena.GameUpdater do
       end)
 
     game_state
-  end
-
-  defp new_game(game_id, clients, config) do
-    now = System.monotonic_time(:millisecond)
-    initial_timestamp = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
-
-    new_game =
-      Map.new(game_id: game_id)
-      |> Map.put(:last_id, 0)
-      |> Map.put(:players, %{})
-      |> Map.put(:power_ups, %{})
-      |> Map.put(:projectiles, %{})
-      |> Map.put(:items, %{})
-      |> Map.put(:player_timestamps, %{})
-      |> Map.put(:obstacles, %{})
-      |> Map.put(:server_timestamp, 0)
-      |> Map.put(:client_to_player_map, %{})
-      |> Map.put(:pools, %{})
-      |> Map.put(:killfeed, [])
-      |> Map.put(:damage_taken, %{})
-      |> Map.put(:damage_done, %{})
-      |> Map.put(:crates, %{})
-      |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
-      |> Map.put(:zone, %{
-        radius: config.map.radius,
-        enabled: config.game.zone_enabled,
-        shrinking: false,
-        next_zone_change_timestamp:
-          initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
-            config.game.bounty_pick_time_ms
-      })
-      |> Map.put(:status, :PREPARING)
-      |> Map.put(
-        :start_game_timestamp,
-        initial_timestamp + config.game.start_game_time_ms + config.game.bounty_pick_time_ms
-      )
-      |> Map.put(:positions, %{})
-      |> Map.put(:traps, %{})
-      |> Map.put(:bushes, %{})
-
-    {game, _} =
-      Enum.reduce(clients, {new_game, config.map.initial_positions}, fn {client_id, character_name, player_name,
-                                                                         _from_pid},
-                                                                        {new_game, positions} ->
-        last_id = new_game.last_id + 1
-        {pos, positions} = get_next_position(positions)
-        direction = Physics.get_direction_from_positions(pos, %{x: 0.0, y: 0.0})
-        ## FIX: Remove rem/2
-        new_player_params = %{
-          id: last_id,
-          team: rem(last_id, 2),
-          player_name: player_name,
-          position: pos,
-          direction: direction,
-          character_name: character_name,
-          config: config,
-          now: now
-        }
-
-        players =
-          new_game.players
-          |> Map.put(last_id, Entities.new_player(new_player_params))
-
-        new_game =
-          new_game
-          |> Map.put(:last_id, last_id)
-          |> Map.put(:players, players)
-          |> put_in([:client_to_player_map, client_id], last_id)
-          |> put_in([:player_timestamps, last_id], 0)
-
-        {new_game, positions}
-      end)
-
-    game
-    |> initialize_obstacles(config.map.obstacles)
-    |> initialize_crates(config.crates)
-    |> initialize_bushes(config.map.bushes)
   end
 
   # Initialize obstacles
