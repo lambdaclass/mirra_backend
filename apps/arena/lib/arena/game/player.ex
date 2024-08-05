@@ -212,6 +212,8 @@ defmodule Arena.Game.Player do
         game_state
 
       skill ->
+        {player, skill} = maybe_reset_combo(player, skill)
+
         GameUpdater.broadcast_player_block_movement(game_state.game_id, player.id, skill.block_movement)
 
         {auto_aim?, skill_direction} =
@@ -264,6 +266,7 @@ defmodule Arena.Game.Player do
         player =
           add_action(player, action)
           |> apply_skill_cooldown(skill_key, skill)
+          |> update_combo_sequence(skill_key, skill)
           |> maybe_face_player_towards_direction(skill_direction, skill.block_movement)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
 
@@ -481,6 +484,33 @@ defmodule Arena.Game.Player do
 
   defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "mana", mana_cost: cost}) do
     change_mana(player, -cost)
+  end
+
+  defp maybe_reset_combo(player, %{is_combo?: false} = skill), do: {player, skill}
+
+  defp maybe_reset_combo(player, skill) do
+    now = System.monotonic_time(:millisecond)
+    combo_time_ms = now - Map.get(player.aditional_info, :last_combo_timestamp, now)
+    player = put_in(player, [:aditional_info, :last_combo_timestamp], now)
+
+    if combo_time_ms > skill.reset_combo_ms do
+      {player, Map.get(skill, :first_skill, skill)}
+    else
+      {player, skill}
+    end
+  end
+
+  defp update_combo_sequence(player, _skill_key, %{is_combo?: false}), do: player
+
+  defp update_combo_sequence(player, skill_key, skill) do
+    first_skill = Map.get(skill, :first_skill, skill)
+
+    if is_nil(skill.next_skill) do
+      put_in(player, [:aditional_info, :skills, skill_key], first_skill)
+    else
+      next_skill = skill.next_skill |> Map.put(:first_skill, first_skill)
+      put_in(player, [:aditional_info, :skills, skill_key], next_skill)
+    end
   end
 
   ## Yes, we are pattern matching on exactly one mechanic. As of time writing we only have one mechanic per skill

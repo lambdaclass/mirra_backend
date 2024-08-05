@@ -19,9 +19,11 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:can_pick_destination, :boolean, default: false)
     field(:cooldown_mechanism, Ecto.Enum, values: [:stamina, :time, :mana])
     field(:cooldown_ms, :integer)
+    field(:reset_combo_ms, :integer)
     field(:execution_duration_ms, :integer)
     field(:inmune_while_executing, :boolean, default: false)
     field(:is_passive, :boolean, default: false)
+    field(:is_combo?, :boolean, default: false)
     field(:max_autoaim_range, :integer)
     field(:stamina_cost, :integer)
     field(:mana_cost, :integer)
@@ -29,6 +31,7 @@ defmodule GameBackend.Units.Skills.Skill do
     field(:type, Ecto.Enum, values: [:basic, :dash, :ultimate])
 
     belongs_to(:buff, Buff)
+    belongs_to(:next_skill, __MODULE__)
     has_many(:mechanics, Mechanic, on_replace: :delete)
 
     timestamps()
@@ -44,15 +47,18 @@ defmodule GameBackend.Units.Skills.Skill do
       :energy_regen,
       :animation_duration,
       :buff_id,
+      :next_skill_id,
       :activation_delay_ms,
       :autoaim,
       :block_movement,
       :can_pick_destination,
       :cooldown_mechanism,
       :cooldown_ms,
+      :reset_combo_ms,
       :execution_duration_ms,
       :inmune_while_executing,
       :is_passive,
+      :is_combo?,
       :max_autoaim_range,
       :stamina_cost,
       :mana_cost,
@@ -63,6 +69,7 @@ defmodule GameBackend.Units.Skills.Skill do
     |> unique_constraint([:game_id, :name])
     |> foreign_key_constraint(:characters, name: "characters_basic_skill_id_fkey")
     |> cooldown_mechanism_validation()
+    |> validate_combo_fields()
   end
 
   defp cooldown_mechanism_validation(changeset) do
@@ -84,6 +91,17 @@ defmodule GameBackend.Units.Skills.Skill do
 
       _ ->
         changeset
+    end
+  end
+
+  defp validate_combo_fields(changeset) do
+    is_combo? = get_field(changeset, :is_combo?)
+    reset_combo_ms = get_field(changeset, :reset_combo_ms)
+
+    if is_combo? and is_nil(reset_combo_ms) do
+      add_error(changeset, :reset_combo_ms, "Combo reset time is needed for combo skills")
+    else
+      changeset
     end
   end
 end
