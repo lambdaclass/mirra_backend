@@ -1,14 +1,14 @@
-name: "[TESTING-BRAZIL] Deploy to Brazil Arena testing"
+name: "[STAGING-BRAZIL] Deploy to Brazil Arena Staging"
 on:
   workflow_dispatch:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Brazil testing
+    name: Build and deploy to Brazil staging
     runs-on: ubuntu-latest
     environment:
-      name: testing-brazil
-      url: https://arena-brazil-testing.curseofmirra.com/
+      name: staging-brazil
+      url: https://arena-brazil-staging.curseofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
@@ -20,15 +20,12 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Create ssh private key file from env var
+      - name: Add host keys
         env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
           SSH_HOST: ${{ vars.TS_ARENA_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
-          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 400 ~/.ssh/id_ed25519
           retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
       - name: Copy deploy script
