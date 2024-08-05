@@ -5,9 +5,21 @@ defmodule GameBackend.Configuration.Version do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Units.Characters.Character
+  alias GameBackend.Items.ConsumableItem
+  alias GameBackend.Units.Skills.Skill
+  alias GameBackend.CurseOfMirra.MapConfiguration
+  alias GameBackend.CurseOfMirra.GameConfiguration
+
   schema "versions" do
     field(:name, :string)
     field(:current, :boolean)
+
+    has_many(:characters, Character)
+    has_many(:consumable_items, ConsumableItem)
+    has_many(:skills, Skill)
+    has_one(:map_configuration, MapConfiguration)
+    has_one(:game_configuration, GameConfiguration)
 
     timestamps(type: :utc_datetime)
   end

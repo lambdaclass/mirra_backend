@@ -304,7 +304,13 @@ defmodule GameBackend.Configuration do
 
   def get_current_version do
     q = from(v in Version, where: v.current)
+
     Repo.one(q)
+    |> Repo.preload(:characters)
+    |> Repo.preload(:consumable_items)
+    |> Repo.preload(:skills)
+    |> Repo.preload(:map_configuration)
+    |> Repo.preload(:game_configuration)
   end
 
   @doc """
