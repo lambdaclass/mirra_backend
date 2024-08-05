@@ -60,7 +60,7 @@ defmodule Configurator.ConfigurationFixtures do
         status: :active,
         environment: :production
       })
-      |> Configurator.Configuration.create_arena_server()
+      |> GameBackend.Configuration.create_arena_server()
 
     arena_server
   end
