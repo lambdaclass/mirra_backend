@@ -38,11 +38,6 @@ defmodule GameBackend.Users do
     |> Repo.insert()
   end
 
-  def create_guest_user() do
-    CurseUsers.create_user_params()
-    |> register_user()
-  end
-
   @doc """
   Gets a single user.
   Returns {:ok, User}.
@@ -587,4 +582,107 @@ defmodule GameBackend.Users do
   end
 
   defp add_quest_progress_and_goal(_), do: nil
+
+  def insert_user_and_insert_daily_quests() do
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    Multi.new()
+    |> Multi.run(:insert_user, fn _, _ ->
+      CurseUsers.create_user_params()
+      |> register_user()
+    end)
+    |> Multi.run(:maybe_generate_quests, fn
+      _, %{insert_user: user} ->
+        quests_results = generate_daily_quests_for_user(user)
+
+        if(Enum.all?(quests_results, fn {result, _quest} -> result == :ok end)) do
+          user_changeset =
+            GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+
+          Repo.update(user_changeset)
+        else
+          {:error, :failed_to_generate_quests}
+        end
+    end)
+    |> Multi.run(:user, fn _, %{insert_user: user} ->
+      get_user_by_id_and_game_id(user.id, curse_id)
+    end)
+    |> Repo.transaction()
+  end
+
+  def get_user_and_maybe_insert_daily_quests(user_id) do
+    today = Date.utc_today()
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    Multi.new()
+    |> Multi.run(:get_user, fn _, _ ->
+      get_user_by_id_and_game_id(user_id, curse_id)
+    end)
+    |> Multi.run(:should_generate_quests, fn _, %{get_user: user} ->
+      {:ok,
+       user.last_daily_quest_generation_at &&
+         Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq]}
+    end)
+    |> Multi.run(:maybe_generate_quests, fn
+      _, %{should_generate_quests: true, get_user: user} ->
+        quests_results = generate_daily_quests_for_user(user)
+
+        if(Enum.all?(quests_results, fn {result, _quest} -> result == :ok end)) do
+          user_changeset =
+            GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+
+          Repo.update(user_changeset)
+        else
+          {:error, :failed_to_generate_quests}
+        end
+
+      _, _ ->
+        {:ok, :not_needed}
+    end)
+    |> Multi.run(:user, fn _, %{get_user: user} ->
+      get_user_by_id_and_game_id(user.id, curse_id)
+    end)
+    |> Repo.transaction()
+  end
+
+  defp generate_daily_quests_for_user(user) do
+    available_quests =
+      Quests.get_user_missing_quests_by_type(user.id, "daily")
+      |> Enum.shuffle()
+
+    {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
+
+    {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
+
+    active_quests =
+      Enum.map(active_quests_params, fn
+        quest_params ->
+          attrs = %{
+            user_id: user.id,
+            quest_id: quest_params.id,
+            status: "available",
+            activated_at: NaiveDateTime.utc_now()
+          }
+
+          changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+          Repo.insert(changeset)
+      end)
+
+    inactive_quests =
+      Enum.map(inactive_quests_params, fn
+        quest_params ->
+          attrs = %{
+            user_id: user.id,
+            quest_id: quest_params.id,
+            status: "available"
+          }
+
+          changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+          Repo.insert(changeset)
+      end)
+
+    active_quests ++ inactive_quests
+  end
 end

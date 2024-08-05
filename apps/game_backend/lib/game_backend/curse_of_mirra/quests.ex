@@ -360,69 +360,6 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def generate_daily_quests_for_user(user_id) do
-    {:ok, user} = GameBackend.Users.get_user(user_id)
-    user_changeset = GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
-
-    available_quests =
-      get_user_missing_quests_by_type(user_id, "daily")
-      |> Enum.shuffle()
-
-    {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
-
-    {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
-
-    multi =
-      Enum.reduce(active_quests_params, Multi.new(), fn
-        quest, multi ->
-          attrs = %{
-            user_id: user_id,
-            quest_id: quest.id,
-            status: "available",
-            activated_at: NaiveDateTime.utc_now()
-          }
-
-          changeset = UserQuest.changeset(%UserQuest{}, attrs)
-
-          Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
-      end)
-
-    multi =
-      Enum.reduce(inactive_quests_params, multi, fn
-        quest, multi ->
-          attrs = %{
-            user_id: user_id,
-            quest_id: quest.id,
-            status: "available"
-          }
-
-          changeset = UserQuest.changeset(%UserQuest{}, attrs)
-
-          Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
-      end)
-
-    multi
-    |> Multi.run(:check_quests_already_generated, fn _, _ ->
-      today = Date.utc_today()
-
-      if user.last_daily_quest_generation_at &&
-           Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq] do
-        {:error, :quests_already_generated}
-      else
-        {:ok, :pending_generation}
-      end
-    end)
-    |> Multi.run(:check_quests_available, fn _, _ ->
-      if Enum.empty?(active_quests_params) || Enum.empty?(inactive_quests_params) do
-        {:error, :not_enough_quests}
-      else
-        {:ok, :enough_available_quests}
-      end
-    end)
-    |> Multi.update(:update_user_last_generated_quests, user_changeset)
-    |> Repo.transaction()
-  end
-
   #####################
   #      helpers      #
   #####################

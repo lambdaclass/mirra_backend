@@ -36,7 +36,7 @@ defmodule Gateway.Controllers.AuthController do
     with {:ok, claims} <- TokenManager.verify(gateway_jwt),
          hashed_client_id = :crypto.hash(:sha256, client_id),
          {:ok, ^hashed_client_id} <- Base.url_decode64(claims["dev"]),
-         {:ok, user} <- Users.get_user(claims["sub"]) do
+         {:ok, %{user: user}} <- Users.get_user_and_maybe_insert_daily_quests(claims["sub"]) do
       new_gateway_jwt = TokenManager.generate_user_token(user, client_id)
       send_resp(conn, 200, Jason.encode!(%{gateway_jwt: new_gateway_jwt, user_id: user.id}))
     else
