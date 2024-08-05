@@ -1,4 +1,5 @@
 alias GameBackend.Units.Skills
+alias GameBackend.Units.Skills.Skill
 alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
@@ -230,6 +231,57 @@ Champions.Config.import_dungeon_levels_config()
 %{email: "admin@configurator.com", password: "letmepass1234"}
 |> Configurator.Accounts.register_user()
 
+## Mechanics
+multi_shoot = %{
+  "type" => "multi_shoot",
+  "angle_between" => 22.0,
+  "amount" => 3,
+  "speed" => 1.1,
+  "duration_ms" => 1000,
+  "remove_on_collision" => true,
+  "projectile_offset" => 100,
+  "damage" => 44,
+  "radius" => 40.0
+}
+
+singularity = %{
+  "type" => "spawn_pool",
+  "name" => "singularity",
+  "activation_delay" => 400,
+  "duration_ms" => 5000,
+  "radius" => 450.0,
+  "range" => 1200.0,
+  "effects_to_apply" => [
+    "singularity"
+  ]
+}
+
+simple_shoot = %{
+  "type" => "simple_shoot",
+  "speed" => 1.8,
+  "duration_ms" => 1100,
+  "remove_on_collision" => true,
+  "projectile_offset" => 100,
+  "radius" => 100.0,
+  "damage" => 0,
+  "on_explode_mechanics" => [
+    %{
+      "type" => "circle_hit",
+      "damage" => 58,
+      "range" => 250.0,
+      "offset" => 0
+    }
+  ],
+  "on_collide_effects" => %{
+    "apply_effect_to_entity_type" => [
+      "pool"
+    ],
+    "effects" => [
+      "buff_singularity"
+    ]
+  }
+}
+
 ## Skills
 skills = [
   %{
@@ -257,8 +309,8 @@ skills = [
   %{
     "name" => "muflus_leap",
     "type" => "ultimate",
-    "cooldown_mechanism" => "mana",
-    "mana_cost" => 100,
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 8000,
     "execution_duration_ms" => 800,
     "activation_delay_ms" => 200,
     "is_passive" => false,
@@ -313,19 +365,7 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "multi_shoot",
-        "angle_between" => 22.0,
-        "amount" => 3,
-        "speed" => 1.1,
-        "duration_ms" => 1000,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "damage" => 44,
-        "radius" => 40.0
-      }
-    ],
+    "mechanics" => [multi_shoot],
     "effects_to_apply" => []
   },
   %{
@@ -351,8 +391,8 @@ skills = [
   %{
     "name" => "h4ck_denial_of_service",
     "type" => "ultimate",
-    "cooldown_mechanism" => "mana",
-    "mana_cost" => 100,
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
     "execution_duration_ms" => 200,
     "activation_delay_ms" => 300,
     "is_passive" => false,
@@ -402,8 +442,8 @@ skills = [
   %{
     "name" => "uma_veil_radiance",
     "type" => "ultimate",
-    "cooldown_mechanism" => "mana",
-    "mana_cost" => 100,
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
     "execution_duration_ms" => 300,
     "activation_delay_ms" => 150,
     "is_passive" => false,
@@ -447,8 +487,8 @@ skills = [
   %{
     "name" => "valt_singularity",
     "type" => "ultimate",
-    "cooldown_mechanism" => "mana",
-    "mana_cost" => 100,
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
     "execution_duration_ms" => 500,
     "activation_delay_ms" => 300,
     "is_passive" => false,
@@ -456,19 +496,7 @@ skills = [
     "max_autoaim_range" => 1200,
     "can_pick_destination" => true,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "spawn_pool",
-        "name" => "singularity",
-        "activation_delay" => 400,
-        "duration_ms" => 5000,
-        "radius" => 450.0,
-        "range" => 1200.0,
-        "effects_to_apply" => [
-          "singularity"
-        ]
-      }
-    ],
+    "mechanics" => [singularity],
     "effects_to_apply" => []
   },
   %{
@@ -506,33 +534,58 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "simple_shoot",
-        "speed" => 1.8,
-        "duration_ms" => 1100,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "radius" => 100.0,
-        "damage" => 0,
-        "on_explode_mechanics" => [
-          %{
-            "type" => "circle_hit",
-            "damage" => 58,
-            "range" => 250.0,
-            "offset" => 0
-          }
-        ],
-        "on_collide_effects" => %{
-          "apply_effect_to_entity_type" => [
-            "pool"
-          ],
-          "effects" => [
-            "buff_singularity"
-          ]
-        }
-      }
-    ],
+    "mechanics" => [simple_shoot],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "kenzu_quickstrike",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "reset_combo_ms" => 0,
+    "is_combo?" => true,
+    "execution_duration_ms" => 100,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1600,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [simple_shoot],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "kenzu_quickstrike_second",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "reset_combo_ms" => 2500,
+    "is_combo?" => true,
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1600,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [multi_shoot],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "kenzu_quickstrike_third",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "reset_combo_ms" => 2500,
+    "is_combo?" => true,
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1600,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [singularity],
     "effects_to_apply" => []
   }
 ]
@@ -547,6 +600,17 @@ skills =
   end)
   |> Map.new()
 
+# Associate combo skills
+combo_skills =
+  [
+    {"kenzu_quickstrike", "kenzu_quickstrike_second"},
+    {"kenzu_quickstrike_second", "kenzu_quickstrike_third"}
+  ]
+  |> Enum.each(fn {skill, next_skill} ->
+    Repo.get(Skill, skills[skill])
+    |> Skills.update_skill(%{next_skill_id: skills[next_skill]})
+  end)
+
 # Characters params
 muflus_params = %{
   name: "muflus",
@@ -556,10 +620,6 @@ muflus_params = %{
   base_health: 440,
   base_stamina: 3,
   stamina_interval: 2000,
-  base_mana: 100,
-  initial_mana: 50,
-  mana_recovery_strategy: "damage",
-  mana_recovery_damage_multiplier: 50,
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
@@ -576,11 +636,6 @@ h4ck_params = %{
   base_health: 400,
   base_stamina: 3,
   stamina_interval: 1800,
-  base_mana: 100,
-  initial_mana: 50,
-  mana_recovery_strategy: "time",
-  mana_recovery_time_interval_ms: 1000,
-  mana_recovery_time_amount: 5,
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
@@ -597,11 +652,6 @@ uma_params = %{
   base_health: 400,
   base_stamina: 3,
   stamina_interval: 2000,
-  base_mana: 100,
-  initial_mana: 50,
-  mana_recovery_strategy: "time",
-  mana_recovery_time_interval_ms: 1000,
-  mana_recovery_time_amount: 5,
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
@@ -618,10 +668,6 @@ valtimer_params = %{
   base_health: 400,
   base_stamina: 3,
   stamina_interval: 2000,
-  base_mana: 100,
-  initial_mana: 50,
-  mana_recovery_strategy: "damage",
-  mana_recovery_damage_multiplier: 100,
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
@@ -630,13 +676,28 @@ valtimer_params = %{
   dash_skill_id: skills["valt_warp"]
 }
 
+kenzu_params = %{
+  name: "kenzu",
+  active: false,
+  base_speed: 1,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  basic_skill_id: skills["kenzu_quickstrike"],
+  ultimate_skill_id: skills["valt_singularity"],
+  dash_skill_id: skills["valt_warp"]
+}
+
 # Insert characters
-[muflus_params, h4ck_params, uma_params, valtimer_params]
+[muflus_params, h4ck_params, uma_params, valtimer_params, kenzu_params]
 |> Enum.each(fn char_params ->
-  {:ok, _} =
-    Map.put(char_params, :game_id, curse_of_mirra_id)
-    |> Map.put(:faction, "none")
-    |> Characters.insert_character()
+  Map.put(char_params, :game_id, curse_of_mirra_id)
+  |> Map.put(:faction, "none")
+  |> Characters.insert_character()
 end)
 
 game_configuration_1 = %{
