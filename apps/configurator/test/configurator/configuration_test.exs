@@ -89,7 +89,14 @@ defmodule GameBackend.ConfigurationTest do
 
     test "update_arena_server/2 with valid data updates the arena_server" do
       arena_server = arena_server_fixture()
-      update_attrs = %{name: "some updated name", ip: "some updated ip", url: "some updated url", status: :inactive, environment: :development}
+
+      update_attrs = %{
+        name: "some updated name",
+        ip: "some updated ip",
+        url: "some updated url",
+        status: :inactive,
+        environment: :development
+      }
 
       assert {:ok, %ArenaServer{} = arena_server} = Configuration.update_arena_server(arena_server, update_attrs)
       assert arena_server.name == "some updated name"

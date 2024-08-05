@@ -4,7 +4,13 @@ defmodule ConfiguratorWeb.ArenaServerControllerTest do
   import Configurator.ConfigurationFixtures
 
   @create_attrs %{name: "some name", ip: "some ip", url: "some url", status: :active, environment: :production}
-  @update_attrs %{name: "some updated name", ip: "some updated ip", url: "some updated url", status: :inactive, environment: :development}
+  @update_attrs %{
+    name: "some updated name",
+    ip: "some updated ip",
+    url: "some updated url",
+    status: :inactive,
+    environment: :development
+  }
   @invalid_attrs %{name: nil, ip: nil, url: nil, status: nil}
 
   describe "index" do

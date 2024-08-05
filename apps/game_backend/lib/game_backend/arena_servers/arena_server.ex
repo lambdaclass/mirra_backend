@@ -6,11 +6,11 @@ defmodule GameBackend.ArenaServers.ArenaServer do
   import Ecto.Changeset
 
   schema "arena_servers" do
-    field :name, :string
-    field :ip, :string
-    field :url, :string
-    field :status, Ecto.Enum, values: [:active, :inactive]
-    field :environment, Ecto.Enum, values: [:production, :development, :staging]
+    field(:name, :string)
+    field(:ip, :string)
+    field(:url, :string)
+    field(:status, Ecto.Enum, values: [:active, :inactive])
+    field(:environment, Ecto.Enum, values: [:production, :development, :staging])
 
     timestamps(type: :utc_datetime)
   end
