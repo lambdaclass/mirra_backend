@@ -678,7 +678,7 @@ valtimer_params = %{
 
 kenzu_params = %{
   name: "kenzu",
-  active: Mix.env() != :prod,
+  active: false,
   base_speed: 1,
   base_size: 100.0,
   base_health: 400,
