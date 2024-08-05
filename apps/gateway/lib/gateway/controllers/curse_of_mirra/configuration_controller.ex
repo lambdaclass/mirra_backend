@@ -12,9 +12,9 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   def get_current_configuration(conn, _params) do
     version = Configuration.get_current_version()
     characters = encode_characters(Configuration.list_characters_by_version(version))
-    game_configuration = Jason.encode!(Configuration.get_game_configuration_by_version(version))
-    consumable_items = Jason.encode!(Configuration.list_consumable_items_by_version(version))
-    map_configuration = Jason.encode!(Configuration.list_map_configurations_by_version(version))
+    game_configuration = Configuration.get_game_configuration_by_version(version)
+    consumable_items = Configuration.list_consumable_items_by_version(version)
+    map_configuration = Configuration.list_map_configurations_by_version(version)
 
     config =
       Jason.encode!(%{

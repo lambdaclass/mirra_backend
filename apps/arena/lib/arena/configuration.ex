@@ -29,18 +29,11 @@ defmodule Arena.Configuration do
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
     |> Map.update!(:map, fn maps ->
-      maps = Jason.decode!(maps, [{:keys, :atoms}])
       map = Enum.random(maps)
       parse_map_config(map)
     end)
     |> Map.update!(:characters, fn characters ->
       parse_characters_config(characters)
-    end)
-    |> Map.update!(:items, fn items ->
-      Jason.decode!(items, [{:keys, :atoms}])
-    end)
-    |> Map.update!(:game, fn game ->
-      Jason.decode!(game, [{:keys, :atoms}])
     end)
   end
 
