@@ -595,13 +595,17 @@ defmodule GameBackend.Users do
       _, %{insert_user: user} ->
         quests_results = generate_daily_quests_for_user(user)
 
-        if(Enum.all?(quests_results, fn {result, _quest} -> result == :ok end)) do
-          user_changeset =
-            GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+        any_failed_quest? = Enum.find(quests_results, fn {result, _quest} -> result == :error end)
 
-          Repo.update(user_changeset)
-        else
-          {:error, :failed_to_generate_quests}
+        case any_failed_quest? do
+          {:error, changeset} ->
+            {:error, changeset}
+
+          _ ->
+            user_changeset =
+              GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+
+            Repo.update(user_changeset)
         end
     end)
     |> Multi.run(:user, fn _, %{insert_user: user} ->
@@ -611,7 +615,6 @@ defmodule GameBackend.Users do
   end
 
   def get_user_and_maybe_insert_daily_quests(user_id) do
-    today = Date.utc_today()
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     Multi.new()
@@ -619,6 +622,8 @@ defmodule GameBackend.Users do
       get_user_by_id_and_game_id(user_id, curse_id)
     end)
     |> Multi.run(:should_generate_quests, fn _, %{get_user: user} ->
+      today = Date.utc_today()
+
       {:ok,
        user.last_daily_quest_generation_at &&
          Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq]}
@@ -627,13 +632,17 @@ defmodule GameBackend.Users do
       _, %{should_generate_quests: true, get_user: user} ->
         quests_results = generate_daily_quests_for_user(user)
 
-        if(Enum.all?(quests_results, fn {result, _quest} -> result == :ok end)) do
-          user_changeset =
-            GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+        any_failed_quest? = Enum.find(quests_results, fn {result, _quest} -> result == :error end)
 
-          Repo.update(user_changeset)
-        else
-          {:error, :failed_to_generate_quests}
+        case any_failed_quest? do
+          {:error, changeset} ->
+            {:error, changeset}
+
+          _ ->
+            user_changeset =
+              GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+
+            Repo.update(user_changeset)
         end
 
       _, _ ->
