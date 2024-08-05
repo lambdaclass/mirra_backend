@@ -701,7 +701,7 @@ valtimer_params = %{
 
 otix_params = %{
   name: "otix",
-  active: Mix.env() != :prod,
+  active: false,
   base_speed: 0.68,
   base_size: 100.0,
   base_health: 400,
