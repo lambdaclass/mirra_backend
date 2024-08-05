@@ -690,7 +690,7 @@ giant_fruit_params = %{
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
 polymorph_params = %{
-  active: true,
+  active: false,
   name: "polymorph",
   radius: 200.0,
   mechanics: %{},
