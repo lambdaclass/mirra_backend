@@ -4802,7 +4802,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
     targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
-    manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0)
+    manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
   };
 
   if (includeInstance) {
@@ -4874,6 +4875,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 9:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setManaCost(value);
+      break;
+    case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsCombo(value);
       break;
     default:
       reader.skipField();
@@ -4964,6 +4969,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint64(
       9,
+      f
+    );
+  }
+  f = message.getIsCombo();
+  if (f) {
+    writer.writeBool(
+      10,
       f
     );
   }
@@ -5129,6 +5141,24 @@ proto.ConfigSkill.prototype.getManaCost = function() {
  */
 proto.ConfigSkill.prototype.setManaCost = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
+};
+
+
+/**
+ * optional bool is_combo = 10;
+ * @return {boolean}
+ */
+proto.ConfigSkill.prototype.getIsCombo = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setIsCombo = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 

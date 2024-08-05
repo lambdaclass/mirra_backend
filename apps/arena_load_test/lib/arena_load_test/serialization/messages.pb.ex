@@ -319,6 +319,7 @@ defmodule ArenaLoadTest.Serialization.ConfigSkill do
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
   field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
+  field(:is_combo, 10, type: :bool, json_name: "isCombo")
 end
 
 defmodule ArenaLoadTest.Serialization.GameState.PlayersEntry do

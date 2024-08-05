@@ -203,7 +203,8 @@ defmodule Arena.GameSocketHandler do
       targetting_radius: mechanic[:radius],
       targetting_angle: mechanic[:angle],
       targetting_range: mechanic[:range],
-      targetting_offset: mechanic[:offset] || mechanic[:projectile_offset]
+      targetting_offset: mechanic[:offset] || mechanic[:projectile_offset],
+      is_combo: skill.is_combo?
     }
 
     {key, Map.merge(skill, extra_params)}
