@@ -10,6 +10,6 @@ defmodule ArenaWeb.HealthController do
   def version(conn, _params) do
     conn
     |> put_status(:ok)
-    |> text(Arena.MixProject.project()[:version])
+    |> text(Application.spec(:arena, :vsn))
   end
 end
