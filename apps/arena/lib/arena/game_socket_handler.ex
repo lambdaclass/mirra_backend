@@ -8,11 +8,11 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
-  alias Arena.Serialization.{GameEvent, GameJoined, PingUpdate}
+  alias Arena.Serialization.GameEvent
+  alias Arena.Serialization.GameJoined
+  alias Arena.Serialization.BountySelected
 
   @behaviour :cowboy_websocket
-
-  @ping_interval_ms 500
 
   @impl true
   def init(req, _opts) do
@@ -56,30 +56,21 @@ defmodule Arena.GameSocketHandler do
         event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
-    Process.send_after(self(), :send_ping, @ping_interval_ms)
-
+    :telemetry.execute([:arena, :clients], %{count: 1})
     {:reply, {:binary, encoded_msg}, state}
   end
 
+  # These two callbacks are needed by cowboy
   @impl true
   def websocket_handle(:pong, state) do
-    last_ping_time = state.last_ping_time
-    time_now = Time.utc_now()
-    latency = Time.diff(time_now, last_ping_time, :millisecond)
-
-    encoded_msg =
-      GameEvent.encode(%GameEvent{
-        event: {:ping, %PingUpdate{latency: latency}}
-      })
-
-    # Send back the player's ping
-    {:reply, {:binary, encoded_msg}, state}
+    {:noreply, state}
   end
 
   def websocket_handle(:ping, state) do
     {:reply, {:pong, ""}, state}
   end
 
+  @impl true
   def websocket_handle({:binary, message}, state) do
     Serialization.GameAction.decode(message)
     |> handle_decoded_message(state)
@@ -87,18 +78,20 @@ defmodule Arena.GameSocketHandler do
     {:ok, state}
   end
 
-  # Send a ping frame every once in a while
-  @impl true
-  def websocket_info(:send_ping, state) do
-    Process.send_after(self(), :send_ping, @ping_interval_ms)
-    time_now = Time.utc_now()
-    {:reply, :ping, Map.put(state, :last_ping_time, time_now)}
-  end
-
   # Enable incomming messages
   @impl true
   def websocket_info(:enable_incomming_messages, state) do
     {:ok, Map.put(state, :enable, true)}
+  end
+
+  @impl true
+  def websocket_info({:ping, game_state}, state) do
+    {:reply, {:binary, game_state}, state}
+  end
+
+  @impl true
+  def websocket_info({:ping_update, game_state}, state) do
+    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
@@ -155,6 +148,20 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
+  def websocket_info({:bounty_selected, player_id, bounty}, state) do
+    if state.player_id == player_id do
+      encoded_msg =
+        GameEvent.encode(%GameEvent{
+          event: {:bounty_selected, %BountySelected{bounty: bounty}}
+        })
+
+      {:reply, {:binary, encoded_msg}, state}
+    else
+      {:ok, state}
+    end
+  end
+
+  @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
@@ -162,6 +169,8 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
+
     if Application.get_env(:arena, :spawn_bots) do
       spawn(fn ->
         Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
@@ -172,8 +181,8 @@ defmodule Arena.GameSocketHandler do
     :ok
   end
 
-  @impl true
   def terminate(_reason, _req, _state) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
     :ok
   end
 
@@ -202,6 +211,9 @@ defmodule Arena.GameSocketHandler do
 
   defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
     do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
+
+  defp handle_decoded_message(%{action_type: {:pong, pong_params}}, state),
+    do: GameUpdater.pong(state.game_pid, self(), pong_params.ping_timestamp)
 
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)

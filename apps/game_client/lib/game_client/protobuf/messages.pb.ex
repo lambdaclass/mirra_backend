@@ -130,8 +130,23 @@ defmodule GameClient.Protobuf.GameEvent do
   field(:joined, 1, type: GameClient.Protobuf.GameJoined, oneof: 0)
   field(:update, 2, type: GameClient.Protobuf.GameState, oneof: 0)
   field(:finished, 3, type: GameClient.Protobuf.GameFinished, oneof: 0)
-  field(:ping, 4, type: GameClient.Protobuf.PingUpdate, oneof: 0)
+  field(:ping_update, 4, type: GameClient.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: GameClient.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
+  field(:ping, 6, type: GameClient.Protobuf.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: GameClient.Protobuf.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
+end
+
+defmodule GameClient.Protobuf.Ping do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
 end
 
 defmodule GameClient.Protobuf.GameFinished.PlayersEntry do
@@ -163,6 +178,14 @@ defmodule GameClient.Protobuf.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule GameClient.Protobuf.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: GameClient.Protobuf.BountyInfo)
 end
 
 defmodule GameClient.Protobuf.GameJoined do
@@ -202,6 +225,7 @@ defmodule GameClient.Protobuf.ConfigMap do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:radius, 1, type: :float)
+  field(:name, 2, type: :string)
 end
 
 defmodule GameClient.Protobuf.ConfigCharacter.SkillsEntry do
@@ -447,6 +471,7 @@ defmodule GameClient.Protobuf.GameState do
   field(:crates, 16, repeated: true, type: GameClient.Protobuf.GameState.CratesEntry, map: true)
   field(:bushes, 17, repeated: true, type: GameClient.Protobuf.GameState.BushesEntry, map: true)
   field(:traps, 18, repeated: true, type: GameClient.Protobuf.GameState.TrapsEntry, map: true)
+  field(:external_wall, 19, type: GameClient.Protobuf.Entity, json_name: "externalWall")
 end
 
 defmodule GameClient.Protobuf.Entity do
@@ -700,7 +725,16 @@ defmodule GameClient.Protobuf.GameAction do
     oneof: 0
   )
 
+  field(:pong, 9, type: GameClient.Protobuf.Pong, oneof: 0)
   field(:timestamp, 3, type: :int64)
+end
+
+defmodule GameClient.Protobuf.Pong do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:ping_timestamp, 1, type: :int64, json_name: "pingTimestamp")
 end
 
 defmodule GameClient.Protobuf.Zone do

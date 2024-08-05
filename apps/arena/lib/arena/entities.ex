@@ -143,7 +143,10 @@ defmodule Arena.Entities do
         y: 0.0
       },
       is_moving: false,
-      aditional_info: %{}
+      aditional_info: %{
+        collisionable: true,
+        status: ""
+      }
     }
   end
 

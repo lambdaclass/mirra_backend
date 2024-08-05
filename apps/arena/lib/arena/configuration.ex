@@ -16,11 +16,26 @@ defmodule Arena.Configuration do
     characters = parse_characters_config(get_characters_config())
     client_config = get_client_config()
     game_config = get_game_configuration()
+    map_config = parse_map_config(get_map_config())
+    items_config = get_consumable_items_configuration()
 
     config
     |> Map.put(:characters, characters)
     |> Map.put(:game, game_config)
+    |> Map.put(:map, map_config)
+    |> Map.put(:characters, characters)
+    |> Map.put(:items, items_config)
     |> Map.put(:client_config, client_config)
+  end
+
+  defp get_map_config() do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+
+    {:ok, payload} =
+      Finch.build(:get, "#{gateway_url}/curse/configuration/map", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    Jason.decode!(payload.body, [{:keys, :atoms}])
   end
 
   defp get_client_config() do
@@ -46,6 +61,16 @@ defmodule Arena.Configuration do
 
     {:ok, payload} =
       Finch.build(:get, "#{gateway_url}/curse/configuration/game", [{"content-type", "application/json"}])
+      |> Finch.request(Arena.Finch)
+
+    Jason.decode!(payload.body, [{:keys, :atoms}])
+  end
+
+  def get_consumable_items_configuration() do
+    gateway_url = Application.get_env(:arena, :gateway_url)
+
+    {:ok, payload} =
+      Finch.build(:get, "#{gateway_url}/curse/configuration/consumable_items", [{"content-type", "application/json"}])
       |> Finch.request(Arena.Finch)
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
@@ -125,9 +150,64 @@ defmodule Arena.Configuration do
     }
   end
 
+  ## Why do we even need this? Well it happens that some of our fields are represented
+  ## as Decimal. To prevent precision loss this struct its converted to a string of the float
+  ## which should be read back and converted to Decimal
+  ## The not so small problem we have is that our code expects floats so we still need to parse
+  ## the strings, but end up with regular floats
+  defp parse_map_config(map_config) do
+    ## We're looking to play in random maps
+    map_config = Enum.random(map_config)
+
+    %{
+      map_config
+      | radius: maybe_to_float(map_config.radius),
+        initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
+        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1)
+    }
+  end
+
+  defp parse_obstacle(obstacle) do
+    %{
+      obstacle
+      | position: parse_position(obstacle.position),
+        vertices: Enum.map(obstacle.vertices, &parse_position/1),
+        radius: maybe_to_float(obstacle.radius),
+        statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    }
+  end
+
+  defp parse_status_cycle(%{raised: _} = status_cycle) do
+    %{status_cycle | raised: parse_raised(status_cycle.raised)}
+  end
+
+  defp parse_status_cycle(status_cycle) do
+    status_cycle
+  end
+
+  defp parse_raised(raised) do
+    %{raised | on_activation_mechanics: parse_raised_mechanics_config(raised.on_activation_mechanics)}
+  end
+
+  defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do
+    %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
+  end
+
+  defp parse_position(%{x: x, y: y}) do
+    %{x: maybe_to_float(x), y: maybe_to_float(y)}
+  end
+
   defp maybe_to_float(nil), do: nil
 
-  defp maybe_to_float(float_string) do
+  defp maybe_to_float(float_integer) when is_integer(float_integer) do
+    float_integer / 1.0
+  end
+
+  defp maybe_to_float(float) when is_float(float) do
+    float
+  end
+
+  defp maybe_to_float(float_string) when is_binary(float_string) do
     {float, ""} = Float.parse(float_string)
     float
   end

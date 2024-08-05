@@ -38,9 +38,15 @@ message GameEvent {
     GameJoined joined = 1;
     GameState update = 2;
     GameFinished finished = 3;
-    PingUpdate ping = 4;
+    PingUpdate ping_update = 4;
     ToggleBots toggle_bots = 5;
+    Ping ping = 6;
+    BountySelected bounty_selected = 7;
   }
+}
+
+message Ping {
+  int64 timestamp_now = 1;
 }
 
 message GameFinished {
@@ -50,6 +56,10 @@ message GameFinished {
 
 message PingUpdate {
   uint64 latency = 1;
+}
+
+message BountySelected {
+  BountyInfo bounty = 1;
 }
 
 message GameJoined {
@@ -73,6 +83,7 @@ message ConfigGame {
 
 message ConfigMap {
   float radius = 1;
+  string name = 2;
 }
 
 message ConfigCharacter {
@@ -134,6 +145,7 @@ message GameState {
   map<uint64, Entity> crates = 16;
   map<uint64, Entity> bushes = 17;
   map<uint64, Entity> traps = 18;
+  Entity external_wall = 19;
 }
 
 enum GameStatus {
@@ -336,8 +348,13 @@ message GameAction {
     ToggleZone toggle_zone = 6;
     ToggleBots toggle_bots = 7;
     ChangeTickrate change_tickrate = 8;
+    Pong pong = 9;
   }
   int64 timestamp = 3;
+}
+
+message Pong {
+  int64 ping_timestamp = 1;
 }
 
 message Zone {
