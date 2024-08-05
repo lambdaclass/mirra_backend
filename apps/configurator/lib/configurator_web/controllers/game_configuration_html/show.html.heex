@@ -1,6 +1,6 @@
 <.header>
   Game configuration <%= @game_configuration.id %>
-  <:subtitle>This is a game_configuration record from your database.</:subtitle>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
     <.link href={~p"/game_configurations/#{@game_configuration}/edit"}>
       <.button>Edit game_configuration</.button>
