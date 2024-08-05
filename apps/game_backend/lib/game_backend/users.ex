@@ -591,7 +591,7 @@ defmodule GameBackend.Users do
       CurseUsers.create_user_params()
       |> register_user()
     end)
-    |> Multi.run(:maybe_generate_quests, fn
+    |> Multi.run(:generate_quests, fn
       _, %{insert_user: user} ->
         quests_results = generate_daily_quests_for_user(user)
 
@@ -602,10 +602,7 @@ defmodule GameBackend.Users do
             {:error, changeset}
 
           _ ->
-            user_changeset =
-              GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
-
-            Repo.update(user_changeset)
+            {:ok, :quests_generated}
         end
     end)
     |> Multi.run(:user, fn _, %{insert_user: user} ->
@@ -639,11 +636,18 @@ defmodule GameBackend.Users do
             {:error, changeset}
 
           _ ->
-            user_changeset =
-              GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
-
-            Repo.update(user_changeset)
+            {:ok, :quests_generated}
         end
+
+      _, _ ->
+        {:ok, :not_needed}
+    end)
+    |> Multi.run(:maybe_update_user_quest_generation, fn
+      _, %{should_generate_quests: true, get_user: user} ->
+        user_changeset =
+          GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+
+        Repo.update(user_changeset)
 
       _, _ ->
         {:ok, :not_needed}
