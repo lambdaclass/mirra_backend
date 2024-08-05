@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
+  alias GameBackend.Users
   alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
@@ -108,8 +109,13 @@ defmodule GameBackend.CurseOfMirra.Quests do
   """
   def get_user_quest(user_quest_id) do
     q = from(uq in UserQuest, preload: [:quest], where: uq.id == ^user_quest_id)
+    user_quest = Repo.one(q)
 
-    Repo.one(q)
+    if user_quest do
+      {:ok, user_quest}
+    else
+      {:error, :not_found}
+    end
   end
 
   @doc """
@@ -356,6 +362,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
         Utils.get_game_id(:curse_of_mirra),
         user_quest.quest.reward["amount"]
       )
+    end)
+    |> Multi.run(:updated_user, fn _, _ ->
+      Users.get_user_by_id_and_game_id(user.id, user.game_id)
     end)
     |> Repo.transaction()
   end
