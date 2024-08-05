@@ -46,6 +46,6 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
 
   def get_users_leaderboard(conn, _params) do
     users = Users.get_users_sorted_by_total_unit_prestige()
-    send_resp(conn, 200, Jason.encode!(users))
+    send_resp(conn, 200, Jason.encode!(%{users: users}))
   end
 end
