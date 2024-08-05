@@ -8,6 +8,8 @@ defmodule Configurator.ConfigurationFixtures do
   Generate a character.
   """
   def character_fixture(attrs \\ %{}) do
+    version = version_fixture()
+
     {:ok, character} =
       attrs
       |> Enum.into(%{
@@ -23,7 +25,8 @@ defmodule Configurator.ConfigurationFixtures do
         stamina_interval: 42,
         skills: %{},
         game_id: 1,
-        faction: "ogre"
+        faction: "ogre",
+        version_id: version.id
       })
       |> GameBackend.Units.Characters.insert_character()
 
