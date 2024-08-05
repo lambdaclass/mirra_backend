@@ -10,6 +10,7 @@ defmodule Arena.GameSocketHandler do
   alias Arena.GameUpdater
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameJoined
+  alias Arena.Serialization.BountySelected
 
   @behaviour :cowboy_websocket
 
@@ -55,6 +56,7 @@ defmodule Arena.GameSocketHandler do
         event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
+    :telemetry.execute([:arena, :clients], %{count: 1})
     {:reply, {:binary, encoded_msg}, state}
   end
 
@@ -146,6 +148,20 @@ defmodule Arena.GameSocketHandler do
   end
 
   @impl true
+  def websocket_info({:bounty_selected, player_id, bounty}, state) do
+    if state.player_id == player_id do
+      encoded_msg =
+        GameEvent.encode(%GameEvent{
+          event: {:bounty_selected, %BountySelected{bounty: bounty}}
+        })
+
+      {:reply, {:binary, encoded_msg}, state}
+    else
+      {:ok, state}
+    end
+  end
+
+  @impl true
   def websocket_info(message, state) do
     Logger.info("You should not be here: #{inspect(message)}")
     {:reply, {:binary, Jason.encode!(%{})}, state}
@@ -153,6 +169,8 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
+
     if Application.get_env(:arena, :spawn_bots) do
       spawn(fn ->
         Finch.build(:get, Utils.get_bot_connection_url(state.game_id, state.client_id))
@@ -163,8 +181,8 @@ defmodule Arena.GameSocketHandler do
     :ok
   end
 
-  @impl true
   def terminate(_reason, _req, _state) do
+    :telemetry.execute([:arena, :clients], %{count: -1})
     :ok
   end
 

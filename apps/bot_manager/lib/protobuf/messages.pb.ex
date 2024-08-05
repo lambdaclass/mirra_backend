@@ -133,6 +133,12 @@ defmodule BotManager.Protobuf.GameEvent do
   field(:ping_update, 4, type: BotManager.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:ping, 6, type: BotManager.Protobuf.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: BotManager.Protobuf.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule BotManager.Protobuf.Ping do
@@ -172,6 +178,14 @@ defmodule BotManager.Protobuf.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule BotManager.Protobuf.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: BotManager.Protobuf.BountyInfo)
 end
 
 defmodule BotManager.Protobuf.GameJoined do

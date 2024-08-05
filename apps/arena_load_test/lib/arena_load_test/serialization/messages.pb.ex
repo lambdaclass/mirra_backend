@@ -144,6 +144,12 @@ defmodule ArenaLoadTest.Serialization.GameEvent do
   )
 
   field(:ping, 6, type: ArenaLoadTest.Serialization.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: ArenaLoadTest.Serialization.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Ping do
@@ -183,6 +189,14 @@ defmodule ArenaLoadTest.Serialization.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule ArenaLoadTest.Serialization.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: ArenaLoadTest.Serialization.BountyInfo)
 end
 
 defmodule ArenaLoadTest.Serialization.GameJoined do
