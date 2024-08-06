@@ -254,6 +254,8 @@ defmodule GameClient.Protobuf.ConfigCharacter do
     type: GameClient.Protobuf.ConfigCharacter.SkillsEntry,
     map: true
   )
+
+  field(:base_mana, 8, type: :uint64, json_name: "baseMana")
 end
 
 defmodule GameClient.Protobuf.ClientConfig do
@@ -298,6 +300,7 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
+  field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -536,7 +539,8 @@ defmodule GameClient.Protobuf.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
-  field(:team, 17, type: :uint64)
+  field(:mana, 17, type: :uint64)
+  field(:team, 18, type: :uint64)
 end
 
 defmodule GameClient.Protobuf.Effect do
