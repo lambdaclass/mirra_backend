@@ -1893,7 +1893,7 @@ map_config = %{
       ]
     },
     %{
-      name: "left center lava lake",
+      name: "left center water lake",
       position: %{
         x: 0.0,
         y: 0.0
@@ -1935,7 +1935,7 @@ map_config = %{
       ]
     },
     %{
-      name: "bridge lava lake (left)",
+      name: "bridge water lake (left)",
       position: %{
         x: 0.0,
         y: 0.0
@@ -1965,7 +1965,7 @@ map_config = %{
       ]
     },
     %{
-      name: "bridge lava lake (right)",
+      name: "bridge water lake (right)",
       position: %{
         x: 0.0,
         y: 0.0
@@ -1999,7 +1999,7 @@ map_config = %{
       ]
     },
     %{
-      name: "bottom lava lake",
+      name: "bottom water lake",
       position: %{
         x: 0.0,
         y: 0.0
@@ -2373,7 +2373,7 @@ map_config = %{
   ],
   pools: [
     %{
-      name: "oil pool south",
+      name: "sand pool south",
       radius: 0.0,
       shape: "polygon",
       position: %{
@@ -2415,7 +2415,7 @@ map_config = %{
       ]
     },
     %{
-      name: "oil pool north",
+      name: "sand pool north",
       radius: 0.0,
       shape: "polygon",
       position: %{
