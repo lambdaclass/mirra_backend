@@ -9,6 +9,20 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
 
   action_fallback Gateway.Controllers.FallbackController
 
+  def get_current_configuration(conn, _params) do
+    version = Configuration.get_current_version()
+
+    config =
+      Jason.encode!(%{
+        characters: encode_characters(version.characters),
+        game: version.game_configuration,
+        items: version.consumable_items,
+        map: version.map_configurations
+      })
+
+    send_resp(conn, 200, config)
+  end
+
   def get_characters_configuration(conn, _params) do
     case Characters.get_curse_characters() do
       [] ->
@@ -110,7 +124,8 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
       :__struct__,
       :inserted_at,
       :updated_at,
-      :id
+      :id,
+      :version
     ])
   end
 end

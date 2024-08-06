@@ -60,7 +60,8 @@ defmodule ConfiguratorWeb.CharacterControllerTest do
 
   describe "create character" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/characters", character: @create_attrs)
+      version = version_fixture()
+      conn = post(conn, ~p"/characters", character: @create_attrs |> Map.put(:version_id, version.id))
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/characters/#{id}"

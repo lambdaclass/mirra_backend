@@ -3,6 +3,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   alias GameBackend.Configuration
   alias GameBackend.CurseOfMirra.MapConfiguration
+  alias GameBackend.Configuration
 
   def index(conn, _params) do
     map_configurations = Configuration.list_map_configurations()
@@ -30,7 +31,8 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   def show(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
-    render(conn, :show, map_configuration: map_configuration)
+    version = Configuration.get_version!(map_configuration.version_id)
+    render(conn, :show, map_configuration: map_configuration, version: version)
   end
 
   def edit(conn, %{"id" => id}) do

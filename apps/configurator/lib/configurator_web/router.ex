@@ -64,6 +64,11 @@ defmodule ConfiguratorWeb.Router do
     get "/map_configurations/:id/edit_pools", MapConfigurationController, :edit_pools
     put "/map_configurations/:id/update_pools", MapConfigurationController, :update_pools
     resources "/consumable_items", ConsumableItemController
+
+    scope "/versions" do
+      resources "/", VersionController
+      put "/:id/current", VersionController, :mark_as_current
+    end
   end
 
   scope "/", ConfiguratorWeb do
