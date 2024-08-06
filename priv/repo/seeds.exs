@@ -644,7 +644,7 @@ skills = [
     ],
     "effects_to_apply" => [
       "whirlwind"
-    ]
+    ],
     "version_id" => version.id
   }
 ]
