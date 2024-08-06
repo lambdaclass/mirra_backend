@@ -15,6 +15,10 @@ defmodule Arena.Game.Obstacle do
     Map.filter(obstacles, fn {_obstacle_id, obstacle} -> collisionable_obstacle?(obstacle) end)
   end
 
+  def get_collisionable_obstacles_for_projectiles(obstacles) do
+    Map.filter(obstacles, fn {_obstacle_id, obstacle} -> obstacle.aditional_info.collide_with_projectiles end)
+  end
+
   def handle_transition_init(obstacle) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
@@ -25,6 +29,7 @@ defmodule Arena.Game.Obstacle do
       aditional_info
       |> Map.put(:next_status, current_status_params.next_status)
       |> Map.put(:collisionable, current_status_params.make_obstacle_collisionable)
+      |> Map.put(:collide_with_projectiles, current_status_params.make_obstacle_collisionable)
       |> Map.put(:time_until_transition_start, now + current_status_params.time_until_transition_ms)
     end)
   end
@@ -81,6 +86,7 @@ defmodule Arena.Game.Obstacle do
         |> Map.put(:next_status, next_status_params.next_status)
         |> Map.put(:status, obstacle.aditional_info.next_status)
         |> Map.put(:collisionable, next_status_params.make_obstacle_collisionable)
+        |> Map.put(:collide_with_projectiles, next_status_params.make_obstacle_collisionable)
         |> Map.put(:time_until_transition_start, now + next_status_params.time_until_transition_ms)
       end)
 

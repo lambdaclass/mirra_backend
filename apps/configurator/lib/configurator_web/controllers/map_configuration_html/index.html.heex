@@ -40,6 +40,16 @@
       </.modal>
     <% end %>
   </:col>
+  <:col :let={map_configuration} label="Pools">
+    <%= if (Enum.empty?(map_configuration.pools)) do %>
+      <p>N/A</p>
+    <% else %>
+      <.button type="button" phx-click={show_modal("pools-#{map_configuration.id}")}>Show</.button>
+      <.modal id={"pools-#{map_configuration.id}"}>
+        <p class="whitespace-pre"><%= embed_to_string(map_configuration.pools) %></p>
+      </.modal>
+    <% end %>
+  </:col>
   <:action :let={map_configuration}>
     <.link navigate={~p"/map_configurations/#{map_configuration}"}>View</.link>
   </:action>

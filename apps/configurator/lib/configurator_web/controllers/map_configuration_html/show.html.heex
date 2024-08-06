@@ -5,6 +5,16 @@
     <.link href={~p"/map_configurations/#{@map_configuration}/edit"}>
       <.button>Edit Map Configuration</.button>
     </.link>
+    <%= unless Enum.empty?(@map_configuration.obstacles) do %>
+      <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
+        <.button>Edit Map Obstacles</.button>
+      </.link>
+    <% end %>
+    <%= unless Enum.empty?(@map_configuration.pools) do %>
+      <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
+        <.button>Edit Map Pools</.button>
+      </.link>
+    <% end %>
   </:actions>
 </.header>
 
@@ -52,6 +62,19 @@
         <.button type="button" phx-click={show_modal("bushes-#{@map_configuration.id}")}>Show</.button>
         <.modal id={"bushes-#{@map_configuration.id}"}>
           <p class="whitespace-pre"><%= embed_to_string(@map_configuration.bushes) %></p>
+        </.modal>
+      <% end %>
+    </dd>
+  </div>
+  <div class="flex gap-5 py-4 border-b-2 items-center">
+    <dt>Pools</dt>
+    <dd>
+      <%= if (Enum.empty?(@map_configuration.pools)) do %>
+        <p>N/A</p>
+      <% else %>
+        <.button type="button" phx-click={show_modal("pools-#{@map_configuration.id}")}>Show</.button>
+        <.modal id={"pools-#{@map_configuration.id}"}>
+          <p class="whitespace-pre"><%= embed_to_string(@map_configuration.pools) %></p>
         </.modal>
       <% end %>
     </dd>

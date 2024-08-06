@@ -259,6 +259,8 @@ singularity = %{
   "duration_ms" => 5000,
   "radius" => 450.0,
   "range" => 1200.0,
+  "shape" => "circle",
+  "vertices" => [],
   "effects_to_apply" => [
     "singularity"
   ]
@@ -431,6 +433,8 @@ skills = [
         "duration_ms" => 2500,
         "radius" => 500.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "denial_of_service"
         ]
@@ -1164,7 +1168,7 @@ map_config = %{
       }
     },
     %{
-      name: "middle stone north",
+      name: "middle stone south",
       position: %{
         x: 0.0,
         y: 0.0
@@ -1202,7 +1206,7 @@ map_config = %{
       ]
     },
     %{
-      name: "middle stone south",
+      name: "middle stone north",
       position: %{
         x: 0.0,
         y: 0.0
@@ -2007,6 +2011,7 @@ map_config = %{
     }
   ],
   bushes: [],
+  pools: [],
   version_id: version.id
 }
 

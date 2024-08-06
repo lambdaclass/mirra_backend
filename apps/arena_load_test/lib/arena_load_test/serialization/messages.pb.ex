@@ -633,6 +633,7 @@ defmodule ArenaLoadTest.Serialization.Obstacle do
   field(:color, 1, type: :string)
   field(:collisionable, 2, type: :bool)
   field(:status, 3, type: :string)
+  field(:type, 4, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.PowerUp do
