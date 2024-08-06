@@ -20,6 +20,7 @@
   <:col :let={skill} label="Is passive"><%= skill.is_passive %></:col>
   <:col :let={skill} label="Max autoaim range"><%= skill.max_autoaim_range %></:col>
   <:col :let={skill} label="Stamina cost"><%= skill.stamina_cost %></:col>
+  <:col :let={skill} label="Mana cost"><%= skill.mana_cost %></:col>
   <:action :let={skill}>
     <.button type="button" phx-click={show_modal("skill-mechanics-#{skill.id}")}>Mechanics</.button>
     <.modal id={"skill-mechanics-#{skill.id}"}>
