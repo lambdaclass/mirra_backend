@@ -1,6 +1,6 @@
 <.header>
   Character <%= @character.name %>
-  <:subtitle>This is a character record from your database.</:subtitle>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
     <.link href={~p"/characters/#{@character}/edit"}>
       <.button>Edit character</.button>

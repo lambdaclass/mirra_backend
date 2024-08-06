@@ -4,6 +4,7 @@ defmodule GameBackend.Units.Skills.Skill do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  alias GameBackend.Configuration.Version
   alias GameBackend.Users.Upgrades.Buff
   alias GameBackend.Units.Skills.Mechanic
 
@@ -33,6 +34,7 @@ defmodule GameBackend.Units.Skills.Skill do
     belongs_to(:buff, Buff)
     belongs_to(:next_skill, __MODULE__)
     has_many(:mechanics, Mechanic, on_replace: :delete)
+    belongs_to(:version, Version)
 
     timestamps()
   end
@@ -63,7 +65,8 @@ defmodule GameBackend.Units.Skills.Skill do
       :stamina_cost,
       :mana_cost,
       :effects_to_apply,
-      :type
+      :type,
+      :version_id
     ])
     |> cast_assoc(:mechanics)
     |> unique_constraint([:game_id, :name])

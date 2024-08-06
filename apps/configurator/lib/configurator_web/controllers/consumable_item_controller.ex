@@ -3,6 +3,7 @@ defmodule ConfiguratorWeb.ConsumableItemController do
 
   alias GameBackend.Items
   alias GameBackend.Items.ConsumableItem
+  alias GameBackend.Configuration
 
   def index(conn, _params) do
     consumable_items = Items.list_consumable_items()
@@ -28,7 +29,8 @@ defmodule ConfiguratorWeb.ConsumableItemController do
 
   def show(conn, %{"id" => id}) do
     consumable_item = Items.get_consumable_item!(id)
-    render(conn, :show, consumable_item: consumable_item)
+    version = Configuration.get_version!(consumable_item.version_id)
+    render(conn, :show, consumable_item: consumable_item, version: version)
   end
 
   def edit(conn, %{"id" => id}) do

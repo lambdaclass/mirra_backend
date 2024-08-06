@@ -1,6 +1,6 @@
 <.header>
   Map configuration <%= @map_configuration.name %>
-  <:subtitle>This is a Map Configuration record from your database.</:subtitle>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
     <.link href={~p"/map_configurations/#{@map_configuration}/edit"}>
       <.button>Edit Map Configuration</.button>

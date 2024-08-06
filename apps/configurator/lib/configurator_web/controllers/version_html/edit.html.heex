@@ -1,0 +1,8 @@
+<.header>
+  Edit Version <%= @version.id %>
+  <:subtitle>Use this form to manage version records in your database.</:subtitle>
+</.header>
+
+<.version_form changeset={@changeset} action={~p"/versions/#{@version}"} />
+
+<.back navigate={~p"/versions"}>Back to versions</.back>
