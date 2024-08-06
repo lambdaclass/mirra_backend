@@ -1656,6 +1656,8 @@ defmodule Arena.GameUpdater do
   end
 
   defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
+    now = System.monotonic_time(:millisecond)
+
     Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
       bush_collisions =
         Enum.filter(player.collides_with, fn collided_id ->
@@ -1677,7 +1679,12 @@ defmodule Arena.GameUpdater do
             Physics.distance_between_entities(player, candidate_player) <=
               game_config.game.field_of_view_inside_bush
 
-          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
+          enough_time_since_last_skill? =
+            now - candidate_player.aditional_info.last_skill_triggered_inside_bush <
+              game_config.game.time_visible_in_bush_after_skill
+
+          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
+               enough_time_since_last_skill? do
             [candicandidate_player_id | acc]
           else
             acc

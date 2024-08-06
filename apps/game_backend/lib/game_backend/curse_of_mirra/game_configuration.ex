@@ -24,7 +24,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :zone_enabled,
     :bounties_options_amount,
     :match_timeout_ms,
-    :field_of_view_inside_bush
+    :field_of_view_inside_bush,
+    :time_visible_in_bush_after_skill
   ]
 
   @derive {Jason.Encoder, only: @required}
@@ -48,6 +49,7 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:bounties_options_amount, :integer)
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
+    field(:time_visible_in_bush_after_skill, :integer)
 
     timestamps()
   end
