@@ -597,7 +597,7 @@ skills =
   |> Map.new()
 
 # Associate combo skills
-combo_skills =
+_combo_skills =
   [
     {"kenzu_quickstrike", "kenzu_quickstrike_second"},
     {"kenzu_quickstrike_second", "kenzu_quickstrike_third"}
@@ -729,7 +729,7 @@ golden_clock_params = %{
   effects: ["golden_clock_effect"]
 }
 
-{:ok, golden_clock} =
+{:ok, _golden_clock} =
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
 magic_boots_params = %{
@@ -740,7 +740,7 @@ magic_boots_params = %{
   effects: ["magic_boots_effect"]
 }
 
-{:ok, magic_boots} =
+{:ok, _magic_boots} =
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
 mirra_blessing_params = %{
@@ -751,7 +751,7 @@ mirra_blessing_params = %{
   effects: ["mirra_blessing_effect"]
 }
 
-{:ok, mirra_blessing} =
+{:ok, _mirra_blessing} =
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
 giant_fruit_params = %{
@@ -762,7 +762,7 @@ giant_fruit_params = %{
   effects: ["giant_effect"]
 }
 
-{:ok, giant_fruit} =
+{:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
 map_config = %{
