@@ -370,19 +370,6 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "multi_shoot",
-        "angle_between" => 22.0,
-        "amount" => 3,
-        "speed" => 1.1,
-        "duration_ms" => 1000,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "damage" => 44,
-        "radius" => 40.0
-      }
-    ],
     "mechanics" => [multi_shoot],
     "effects_to_apply" => [],
     "version_id" => version.id
@@ -816,7 +803,7 @@ polymorph_params = %{
   effects: ["polymorph_effect"]
 }
 
-{:ok, polymorph} =
+{:ok, _polymorph} =
   GameBackend.Items.create_consumable_item(polymorph_params)
 
 map_config = %{
