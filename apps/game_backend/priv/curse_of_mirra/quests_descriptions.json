@@ -182,7 +182,7 @@
             "match_tracking_field": "result",
             "value": 1,
             "comparison": "greater_or_equal",
-            "scope": "day"
+            "scope": "match"
         },
         "conditions": [
             {
