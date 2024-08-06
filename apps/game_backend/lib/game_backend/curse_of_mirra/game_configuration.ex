@@ -27,6 +27,7 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :bounties_options_amount,
     :match_timeout_ms,
     :field_of_view_inside_bush,
+    :time_visible_in_bush_after_skill,
     :version_id
   ]
 
@@ -51,6 +52,7 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:bounties_options_amount, :integer)
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
+    field(:time_visible_in_bush_after_skill, :integer)
 
     belongs_to(:version, Version)
 

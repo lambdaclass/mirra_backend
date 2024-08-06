@@ -28,6 +28,9 @@
   <:item title="Bounties options amount"><%= @game_configuration.bounties_options_amount %></:item>
   <:item title="Match timeout ms"><%= @game_configuration.match_timeout_ms %></:item>
   <:item title="Field of view inside bush"><%= @game_configuration.field_of_view_inside_bush %></:item>
+  <:item title="Time Visible After performing skill inside of bush">
+    <%= @game_configuration.time_visible_in_bush_after_skill %>
+  </:item>
 </.list>
 
 <.back navigate={~p"/game_configurations"}>Back to game_configurations</.back>

@@ -59,11 +59,13 @@ defmodule Arena.Configuration do
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
+    skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
     %{skill_config | mechanics: mechanics}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "time", cooldown_ms: cooldown} = skill_config) when cooldown >= 0 do
+    skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
     %{skill_config | mechanics: mechanics}
   end
@@ -80,6 +82,34 @@ defmodule Arena.Configuration do
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
     end
   end
+
+  defp parse_combo_config(
+         %{
+           is_combo?: true,
+           reset_combo_ms: reset_combo_ms,
+           next_skill: nil
+         } = skill_config
+       )
+       when reset_combo_ms >= 0 do
+    skill_config
+  end
+
+  defp parse_combo_config(
+         %{
+           is_combo?: true,
+           reset_combo_ms: reset_combo_ms,
+           next_skill: next_skill
+         } = skill_config
+       )
+       when reset_combo_ms >= 0 do
+    Map.put(skill_config, :next_skill, parse_skill_config(next_skill))
+  end
+
+  defp parse_combo_config(%{is_combo?: true} = skill_config) do
+    raise "Invalid Skill config for `#{skill_config[:name]}` reset_combo_ms is invalid, should be equal or greater than zero"
+  end
+
+  defp parse_combo_config(skill_config), do: skill_config
 
   defp parse_mechanics_config(mechanics_config) do
     Enum.reduce(mechanics_config, [], fn mechanic_config, acc ->
@@ -120,7 +150,8 @@ defmodule Arena.Configuration do
       map_config
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
-        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1)
+        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
+        bushes: Enum.map(map_config.bushes, &parse_bush/1)
     }
   end
 
@@ -131,6 +162,15 @@ defmodule Arena.Configuration do
         vertices: Enum.map(obstacle.vertices, &parse_position/1),
         radius: maybe_to_float(obstacle.radius),
         statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    }
+  end
+
+  defp parse_bush(bush) do
+    %{
+      bush
+      | position: parse_position(bush.position),
+        vertices: Enum.map(bush.vertices, &parse_position/1),
+        radius: maybe_to_float(bush.radius)
     }
   end
 

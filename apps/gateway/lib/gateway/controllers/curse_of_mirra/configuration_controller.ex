@@ -63,8 +63,18 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
     end)
   end
 
+  defp encode_skill(nil) do
+    nil
+  end
+
   defp encode_skill(skill) do
+    skill =
+      GameBackend.Repo.preload(skill,
+        next_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]
+      )
+
     skill
+    |> Map.put(:next_skill, encode_skill(skill.next_skill))
     |> Map.put(:mechanics, encode_mechanics(skill.mechanics))
     |> ecto_struct_to_map()
     |> Map.drop([:buff])

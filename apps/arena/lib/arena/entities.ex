@@ -40,6 +40,7 @@ defmodule Arena.Entities do
         natural_healing_interval: character.natural_healing_interval,
         last_damage_received: now,
         last_skill_triggered: now,
+        last_skill_triggered_inside_bush: now,
         natural_healing_damage_interval: character.natural_healing_damage_interval,
         character_name: character.name,
         forced_movement: false,
