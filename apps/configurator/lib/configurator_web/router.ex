@@ -43,18 +43,17 @@ defmodule ConfiguratorWeb.Router do
   scope "/", ConfiguratorWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
-    live_session :redirect_if_user_is_authenticated,
-      on_mount: [{ConfiguratorWeb.UserAuth, :redirect_if_user_is_authenticated}] do
-      live "/users/log_in", UserLoginLive, :new
+    scope "/auth" do
+      get "/:provider", AuthController, :request
+      get "/:provider/callback", AuthController, :callback
     end
 
-    post "/users/log_in", UserSessionController, :create
+    get "/", HomeController, :home
   end
 
   scope "/", ConfiguratorWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/", HomeController, :home
     resources "/characters", CharacterController
     resources "/skills", SkillController
     resources "/game_configurations", GameConfigurationController
