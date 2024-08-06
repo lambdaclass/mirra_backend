@@ -291,7 +291,6 @@ defmodule GameBackend.Configuration do
   def create_version(attrs \\ %{}) do
     %Version{}
     |> Version.changeset(attrs)
-
     |> Repo.insert()
   end
 
