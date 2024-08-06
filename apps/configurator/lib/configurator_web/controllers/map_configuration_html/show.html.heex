@@ -5,6 +5,12 @@
     <.link href={~p"/map_configurations/#{@map_configuration}/edit"}>
       <.button>Edit Map Configuration</.button>
     </.link>
+    <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
+      <.button>Edit Map Obstacles</.button>
+    </.link>
+    <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
+      <.button>Edit Map Pools</.button>
+    </.link>
   </:actions>
 </.header>
 
@@ -40,9 +46,6 @@
         <.modal id={"obstacles-#{@map_configuration.id}"}>
           <p class="whitespace-pre"><%= embed_to_string(@map_configuration.obstacles) %></p>
         </.modal>
-        <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
-          <.button>Edit Map Obstacles</.button>
-        </.link>
       <% end %>
     </dd>
   </div>
@@ -69,9 +72,6 @@
         <.modal id={"pools-#{@map_configuration.id}"}>
           <p class="whitespace-pre"><%= embed_to_string(@map_configuration.pools) %></p>
         </.modal>
-        <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
-          <.button>Edit Map Pools</.button>
-        </.link>
       <% end %>
     </dd>
   </div>
