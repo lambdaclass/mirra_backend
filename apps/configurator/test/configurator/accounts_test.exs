@@ -4,7 +4,7 @@ defmodule Configurator.AccountsTest do
   alias Configurator.Accounts
 
   import Configurator.AccountsFixtures
-  alias Configurator.Accounts.{User, UserToken}
+  alias Configurator.Accounts.UserToken
 
   describe "create_user/1" do
     test "requires email to be set" do
