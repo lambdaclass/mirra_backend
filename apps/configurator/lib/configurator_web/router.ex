@@ -61,6 +61,11 @@ defmodule ConfiguratorWeb.Router do
     resources "/map_configurations", MapConfigurationController
     resources "/consumable_items", ConsumableItemController
     resources "/arena_servers", ArenaServerController
+
+    scope "/versions" do
+      resources "/", VersionController
+      put "/:id/current", VersionController, :mark_as_current
+    end
   end
 
   scope "/", ConfiguratorWeb do

@@ -144,6 +144,12 @@ defmodule ArenaLoadTest.Serialization.GameEvent do
   )
 
   field(:ping, 6, type: ArenaLoadTest.Serialization.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: ArenaLoadTest.Serialization.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Ping do
@@ -183,6 +189,14 @@ defmodule ArenaLoadTest.Serialization.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule ArenaLoadTest.Serialization.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: ArenaLoadTest.Serialization.BountyInfo)
 end
 
 defmodule ArenaLoadTest.Serialization.GameJoined do
@@ -255,6 +269,8 @@ defmodule ArenaLoadTest.Serialization.ConfigCharacter do
     type: ArenaLoadTest.Serialization.ConfigCharacter.SkillsEntry,
     map: true
   )
+
+  field(:base_mana, 8, type: :uint64, json_name: "baseMana")
 end
 
 defmodule ArenaLoadTest.Serialization.ClientConfig do
@@ -302,6 +318,7 @@ defmodule ArenaLoadTest.Serialization.ConfigSkill do
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
+  field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
 end
 
 defmodule ArenaLoadTest.Serialization.GameState.PlayersEntry do
@@ -576,6 +593,7 @@ defmodule ArenaLoadTest.Serialization.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 17, type: :uint64)
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do

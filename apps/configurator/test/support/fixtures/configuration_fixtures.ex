@@ -8,6 +8,8 @@ defmodule Configurator.ConfigurationFixtures do
   Generate a character.
   """
   def character_fixture(attrs \\ %{}) do
+    version = version_fixture()
+
     {:ok, character} =
       attrs
       |> Enum.into(%{
@@ -23,7 +25,8 @@ defmodule Configurator.ConfigurationFixtures do
         stamina_interval: 42,
         skills: %{},
         game_id: 1,
-        faction: "ogre"
+        faction: "ogre",
+        version_id: version.id
       })
       |> GameBackend.Units.Characters.insert_character()
 
@@ -34,13 +37,16 @@ defmodule Configurator.ConfigurationFixtures do
   Generate a map_configuration.
   """
   def map_configuration_fixture(attrs \\ %{}) do
+    version = version_fixture()
+
     {:ok, map_configuration} =
       attrs
       |> Enum.into(%{
         bushes: [],
         initial_positions: [],
         obstacles: [],
-        radius: "120.5"
+        radius: "120.5",
+        version_id: version.id
       })
       |> GameBackend.Configuration.create_map_configuration()
 
@@ -63,5 +69,19 @@ defmodule Configurator.ConfigurationFixtures do
       |> GameBackend.Configuration.create_arena_server()
 
     arena_server
+  end
+
+  @doc """
+  Generate a version.
+  """
+  def version_fixture(attrs \\ %{}) do
+    {:ok, version} =
+      attrs
+      |> Enum.into(%{
+        name: "some name"
+      })
+      |> GameBackend.Configuration.create_version()
+
+    version
   end
 end

@@ -70,6 +70,10 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, socket}
   end
 
+  def handle_event("debug_mode", _, socket) do
+    {:noreply, push_event(socket, "debug_mode", %{})}
+  end
+
   defp player_name(player_id), do: "P#{player_id}"
 
   defp handle_game_event({:joined, joined_info}, socket) do
@@ -105,7 +109,8 @@ defmodule GameClientWeb.BoardLive.Show do
     {:noreply, assign(socket, game_status: :finished, winner_id: finished_event.winner.id)}
   end
 
-  defp handle_game_event({noop_event, _}, socket) when noop_event in [:toggle_bots, :ping, :ping_update] do
+  defp handle_game_event({noop_event, _}, socket)
+       when noop_event in [:toggle_bots, :ping, :ping_update, :bounty_selected] do
     {:noreply, socket}
   end
 
@@ -142,10 +147,14 @@ defmodule GameClientWeb.BoardLive.Show do
       name: entity.name,
       x: entity.position.x / back_size_to_front_ratio + backend_board_size / 10,
       y: entity.position.y / back_size_to_front_ratio + backend_board_size / 10,
+      back_x: entity.position.x,
+      back_y: entity.position.y,
       radius: entity.radius / back_size_to_front_ratio,
       coords: entity.vertices |> Enum.map(fn vertex -> [vertex.x / 5, vertex.y / 5] end),
       is_colliding: entity.collides_with |> Enum.any?(),
-      visible_players: aditional_info.visible_players
+      visible_players: aditional_info.visible_players,
+      effects: Enum.map(aditional_info.effects, fn effect -> effect.name end),
+      health: aditional_info.health
     }
   end
 

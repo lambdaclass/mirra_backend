@@ -133,6 +133,12 @@ defmodule BotManager.Protobuf.GameEvent do
   field(:ping_update, 4, type: BotManager.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: BotManager.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:ping, 6, type: BotManager.Protobuf.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: BotManager.Protobuf.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule BotManager.Protobuf.Ping do
@@ -172,6 +178,14 @@ defmodule BotManager.Protobuf.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule BotManager.Protobuf.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: BotManager.Protobuf.BountyInfo)
 end
 
 defmodule BotManager.Protobuf.GameJoined do
@@ -240,6 +254,8 @@ defmodule BotManager.Protobuf.ConfigCharacter do
     type: BotManager.Protobuf.ConfigCharacter.SkillsEntry,
     map: true
   )
+
+  field(:base_mana, 8, type: :uint64, json_name: "baseMana")
 end
 
 defmodule BotManager.Protobuf.ClientConfig do
@@ -284,6 +300,7 @@ defmodule BotManager.Protobuf.ConfigSkill do
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
+  field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
 end
 
 defmodule BotManager.Protobuf.GameState.PlayersEntry do
@@ -522,6 +539,7 @@ defmodule BotManager.Protobuf.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 17, type: :uint64)
 end
 
 defmodule BotManager.Protobuf.Effect do
