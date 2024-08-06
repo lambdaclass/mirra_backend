@@ -303,20 +303,23 @@ defmodule GameBackend.Configuration do
   """
 
   def get_current_version do
-    q = from(v in Version, where: v.current)
+    q =
+      from(v in Version,
+        where: v.current,
+        preload: [
+          :consumable_items,
+          :skills,
+          :map_configurations,
+          :game_configuration,
+          characters: [
+            [basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]],
+            [ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]],
+            [dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]]
+          ]
+        ]
+      )
 
     Repo.one(q)
-    |> Repo.preload(
-      characters: [
-        basic_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
-        ultimate_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]],
-        dash_skill: [mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]]
-      ]
-    )
-    |> Repo.preload(:consumable_items)
-    |> Repo.preload(:skills)
-    |> Repo.preload(:map_configurations)
-    |> Repo.preload(:game_configuration)
   end
 
   @doc """
