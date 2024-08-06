@@ -201,7 +201,7 @@ defmodule ConfiguratorWeb.UserAuth do
   they use the application at all, here would be a good place.
   """
   def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] do
+    if get_session(conn, :current_user) do
       conn
     else
       conn
