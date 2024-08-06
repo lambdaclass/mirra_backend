@@ -1,4 +1,5 @@
 alias GameBackend.Units.Skills
+alias GameBackend.Units.Skills.Skill
 alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
