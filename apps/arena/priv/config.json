@@ -228,8 +228,8 @@
   "crates": [
     {
       "position": {
-        "y": 230.0,
-        "x": 260.0
+        "x": 1500.0,
+        "y": -4666.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -240,8 +240,8 @@
     },
     {
       "position": {
-        "y": 230.0,
-        "x": -40.0
+        "x": 5291.0,
+        "y": -1404.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -252,8 +252,8 @@
     },
     {
       "position": {
-        "y": -4390.0,
-        "x": 2630.0
+        "x": 3381.0,
+        "y": 2850.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -264,8 +264,8 @@
     },
     {
       "position": {
-        "y": -1830.0,
-        "x": 4360.0
+        "x": 948.0,
+        "y": 3439.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -276,8 +276,8 @@
     },
     {
       "position": {
-        "y": -1860.0,
-        "x": -4650.0
+        "x": -3549.0,
+        "y": 3663.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -288,8 +288,8 @@
     },
     {
       "position": {
-        "y": 2870.0,
-        "x": -3960.0
+        "x": -5490.0,
+        "y": -370.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -300,8 +300,8 @@
     },
     {
       "position": {
-        "y": 5010.0,
-        "x": 290.0
+        "x": -3988.0,
+        "y": -3844.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -312,8 +312,8 @@
     },
     {
       "position": {
-        "y": 4680.0,
-        "x": 2400.0
+        "x": -380.0,
+        "y": -1810.0
       },
       "shape": "circle",
       "radius": 150.0,
@@ -324,8 +324,44 @@
     },
     {
       "position": {
-        "y": 1730.0,
-        "x": 4950.0
+        "x": -3070.0,
+        "y": -940.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "x": -1279.0,
+        "y": 1660.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "x": 2090.0,
+        "y": 1110.0
+      },
+      "shape": "circle",
+      "radius": 150.0,
+      "health": 250,
+      "vertices": [],
+      "amount_of_power_ups": 1,
+      "power_up_spawn_delay_ms": 300
+    },
+    {
+      "position": {
+        "x": 1600.0,
+        "y": -975.0
       },
       "shape": "circle",
       "radius": 150.0,
