@@ -44,7 +44,7 @@
     },
     {
         "config_id": 3,
-        "description": "This is curse of mirra, lose a match",
+        "description": "This is champions of mirra, lose a match",
         "type": "daily",
         "objective": {
             "match_tracking_field": "result",
