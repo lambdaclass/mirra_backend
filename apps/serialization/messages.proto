@@ -94,6 +94,7 @@ message ConfigCharacter {
   uint64 base_health = 5;
   uint64 max_inventory_size = 6;
   map<string, ConfigSkill> skills = 7;
+  uint64 base_mana = 8;
 }
 
 message ClientConfig {
@@ -118,6 +119,7 @@ message ConfigSkill {
   float targetting_range = 6;
   uint64 stamina_cost = 7;
   float targetting_offset = 8;
+  uint64 mana_cost = 9;
 }
 
 
@@ -209,6 +211,7 @@ message Player {
   bool on_bush = 14;
   bool forced_movement = 15;
   bool bounty_completed = 16;
+  uint64 mana = 17;
 }
 
 message Effect {

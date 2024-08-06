@@ -84,7 +84,8 @@ defmodule Arena.Configuration do
         "3" => parse_skill_config(character.dash_skill)
       }
 
-      Map.put(character, :skills, character_skills)
+      %{character | mana_recovery_damage_multiplier: maybe_to_float(character.mana_recovery_damage_multiplier)}
+      |> Map.put(:skills, character_skills)
       |> Map.drop([:basic_skill, :ultimate_skill, :dash_skill])
     end)
   end
@@ -101,6 +102,11 @@ defmodule Arena.Configuration do
     %{skill_config | mechanics: mechanics}
   end
 
+  defp parse_skill_config(%{cooldown_mechanism: "mana", mana_cost: cost} = skill_config) when cost >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
   defp parse_skill_config(skill_config) do
     case skill_config.cooldown_mechanism do
       "stamina" ->
@@ -108,6 +114,9 @@ defmodule Arena.Configuration do
 
       "time" ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      "mana" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` mana_cost should be a number greater than or equal to zero"
 
       _ ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
@@ -184,7 +193,8 @@ defmodule Arena.Configuration do
       map_config
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
-        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1)
+        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
+        bushes: Enum.map(map_config.bushes, &parse_bush/1)
     }
   end
 
@@ -195,6 +205,15 @@ defmodule Arena.Configuration do
         vertices: Enum.map(obstacle.vertices, &parse_position/1),
         radius: maybe_to_float(obstacle.radius),
         statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    }
+  end
+
+  defp parse_bush(bush) do
+    %{
+      bush
+      | position: parse_position(bush.position),
+        vertices: Enum.map(bush.vertices, &parse_position/1),
+        radius: maybe_to_float(bush.radius)
     }
   end
 

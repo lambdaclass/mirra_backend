@@ -745,7 +745,8 @@ game_configuration_1 = %{
   zone_enabled: true,
   bounties_options_amount: 3,
   match_timeout_ms: 300_000,
-  field_of_view_inside_bush: 500
+  field_of_view_inside_bush: 500,
+  time_visible_in_bush_after_skill: 2000
 }
 
 {:ok, _game_configuration_1} =
@@ -794,6 +795,17 @@ giant_fruit_params = %{
 
 {:ok, giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
+
+polymorph_params = %{
+  active: false,
+  name: "polymorph",
+  radius: 200.0,
+  mechanics: %{},
+  effects: ["polymorph_effect"]
+}
+
+{:ok, polymorph} =
+  GameBackend.Items.create_consumable_item(polymorph_params)
 
 map_config = %{
   name: "Araban",
