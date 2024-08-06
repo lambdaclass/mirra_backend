@@ -20,16 +20,15 @@ import Config
 ##########################
 # General configurations #
 ##########################
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: System.get_env("CONFIGURATOR_GOOGLE_CLIENT_ID"),
+  client_secret: System.get_env("CONFIGURATOR_GOOGLE_CLIENT_SECRET")
 
 config :joken,
   issuer: "https://accounts.google.com",
   audience: System.get_env("GOOGLE_CLIENT_ID")
 
 if config_env() == :prod do
-  config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-    client_id: System.get_env("CONFIGURATOR_GOOGLE_CLIENT_ID"),
-    client_secret: System.get_env("CONFIGURATOR_GOOGLE_CLIENT_SECRET")
-
   jwt_private_key_base64 =
     System.get_env("JWT_PRIVATE_KEY_BASE_64") ||
       raise """
