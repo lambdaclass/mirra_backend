@@ -53,10 +53,17 @@ defmodule ConfiguratorWeb.ArenaServerController do
 
   def delete(conn, %{"id" => id}) do
     arena_server = Configuration.get_arena_server!(id)
-    {:ok, _arena_server} = Configuration.delete_arena_server(arena_server)
 
-    conn
-    |> put_flash(:info, "Arena server deleted successfully.")
-    |> redirect(to: ~p"/arena_servers")
+    case Configuration.delete_arena_server(arena_server) do
+      {:error, _changeset} ->
+        conn
+        |> put_flash(:info, "Something went wrong.")
+        |> redirect(to: ~p"/arena_servers/#{arena_server}")
+
+      {:ok, _arena_server} ->
+        conn
+        |> put_flash(:info, "Arena server deleted successfully.")
+        |> redirect(to: ~p"/arena_servers")
+    end
   end
 end
