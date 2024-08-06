@@ -1,4 +1,4 @@
-import { Application, Container, Graphics } from "pixi.js";
+import { Application, Container, Graphics, Text } from "pixi.js";
 
 function Entity({ id, name, shape, category, x, y, coords, radius }) {
   this.id = id;
@@ -84,6 +84,7 @@ export const BoardGame = function () {
           }
           let entity = entities.get(backEntity.id);
           this.updateEntityColor(entity, backEntity.is_colliding, backEntity);
+          this.updateEntityText(entity, backEntity);
 
           this.updateEntityPosition(entity, backEntity.x, backEntity.y);
         } else if (entities.has(backEntity.id)) {
@@ -92,6 +93,29 @@ export const BoardGame = function () {
           entities.delete(backEntity.id)
         }
       });
+    });
+
+    window.addEventListener("phx:debug_mode", (e) => {
+      for (const [_, entity] of entities.entries()) {
+        if (entity.category == "player") {
+
+          if (entity.debugText) {
+            app.stage.removeChild(entity.debugText)
+            entity.debugText = null
+          } else {
+            debugText = new Text('[]', {
+              style: {
+                fontFamily: 'Arial',
+                fontSize: 24,
+                fill: 0xff1010,
+                align: 'center',
+              },
+            });
+            app.stage.addChild(debugText);
+            entity.debugText = debugText;
+          }
+        }
+      }
     });
 
     app.ticker.add(() => {
@@ -281,5 +305,14 @@ export const BoardGame = function () {
         }
       }
       entity.boardObject.tint = color;
+    }),
+    (this.updateEntityText = function (entity, backEntity) {
+      if (entity.category == "player" && entity.debugText) {
+        entity.debugText.text = "health: " + backEntity.health + "\n";
+        entity.debugText.text += "Position: x:" + (backEntity.back_x).toFixed(2) + " y: " + (backEntity.back_y).toFixed(2) + "\n";
+        entity.debugText.text += "Effects: [" + backEntity.effects.join('\n') + "]" + "\n";
+        entity.debugText.x = entity.x
+        entity.debugText.y = entity.y + 25
+      }
     })
 };

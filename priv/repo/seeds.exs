@@ -774,6 +774,17 @@ giant_fruit_params = %{
 {:ok, giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
+polymorph_params = %{
+  active: false,
+  name: "polymorph",
+  radius: 200.0,
+  mechanics: %{},
+  effects: ["polymorph_effect"]
+}
+
+{:ok, polymorph} =
+  GameBackend.Items.create_consumable_item(polymorph_params)
+
 map_config = %{
   name: "Araban",
   radius: 5520.0,

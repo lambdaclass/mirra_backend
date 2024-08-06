@@ -36,6 +36,13 @@ defmodule Arena.Entities do
         stamina_interval: character.stamina_interval,
         cooldown_multiplier: 1,
         recharging_stamina: false,
+        max_mana: character.base_mana,
+        mana: 50,
+        mana_recovery_strategy: character.mana_recovery_strategy,
+        mana_recovery_time_interval_ms: character.mana_recovery_time_interval_ms,
+        mana_recovery_time_amount: character.mana_recovery_time_amount,
+        mana_recovery_time_last_at: now,
+        mana_recovery_damage_multiplier: character.mana_recovery_damage_multiplier,
         last_natural_healing_update: now,
         natural_healing_interval: character.natural_healing_interval,
         last_damage_received: now,
@@ -384,7 +391,8 @@ defmodule Arena.Entities do
        visible_players: entity.aditional_info.visible_players,
        on_bush: entity.aditional_info.on_bush,
        forced_movement: entity.aditional_info.forced_movement,
-       bounty_completed: entity.aditional_info.bounty_completed
+       bounty_completed: entity.aditional_info.bounty_completed,
+       mana: entity.aditional_info.mana
      }}
   end
 
