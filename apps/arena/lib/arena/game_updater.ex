@@ -251,6 +251,7 @@ defmodule Arena.GameUpdater do
       # Players
       |> move_players()
       |> reduce_players_cooldowns(delta_time)
+      |> recover_mana()
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
@@ -1007,6 +1008,20 @@ defmodule Arena.GameUpdater do
       end)
 
     %{game_state | players: players}
+  end
+
+  defp recover_mana(game_state) do
+    if game_state.status == :RUNNING do
+      players =
+        Map.new(game_state.players, fn {player_id, player} ->
+          player = Player.recover_mana(player)
+          {player_id, player}
+        end)
+
+      %{game_state | players: players}
+    else
+      game_state
+    end
   end
 
   defp move_players(
