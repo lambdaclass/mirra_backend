@@ -2,12 +2,16 @@
   Edit Map configuration
   <:subtitle>Use this form to manage Map Configuration records in your database.</:subtitle>
   <:actions>
-    <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
-      <.button>Edit Map Obstacles</.button>
-    </.link>
-    <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
-      <.button>Edit Map Pools</.button>
-    </.link>
+    <%= unless Enum.empty?(@map_configuration.obstacles) do %>
+      <.link href={~p"/map_configurations/#{@map_configuration}/edit_obstacles"}>
+        <.button>Edit Map Obstacles</.button>
+      </.link>
+    <% end %>
+    <%= unless Enum.empty?(@map_configuration.pools) do %>
+      <.link href={~p"/map_configurations/#{@map_configuration}/edit_pools"}>
+        <.button>Edit Map Pools</.button>
+      </.link>
+    <% end %>
   </:actions>
 </.header>
 
