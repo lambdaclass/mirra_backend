@@ -62,6 +62,7 @@
       "duration_ms": 4000,
       "remove_on_action": true,
       "one_time_application": false,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "invisible": {
           "execute_multiple_times": true,
@@ -78,6 +79,7 @@
       "name": "singularity",
       "remove_on_action": false,
       "one_time_application": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "pull": {
           "force": 15.0,
@@ -96,6 +98,7 @@
       "remove_on_action": false,
       "one_time_application": true,
       "consume_projectile": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "buff_pool": {
           "stat_multiplier": 0.1,
@@ -110,6 +113,7 @@
       "duration_ms": 9000,
       "remove_on_action": false,
       "one_time_application": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "reduce_stamina_interval": {
           "decrease_by": 0.5,
@@ -136,6 +140,7 @@
       "duration_ms": 8000,
       "remove_on_action": false,
       "one_time_application": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "speed_boost": {
           "modifier": 0.5,
@@ -149,6 +154,7 @@
       "duration_ms": 7000,
       "remove_on_action": false,
       "one_time_application": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "damage_immunity": {
           "effect_delay_ms": 0,
@@ -160,6 +166,7 @@
       "name": "denial_of_service",
       "remove_on_action": false,
       "one_time_application": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "damage": {
           "damage": 17,
@@ -173,6 +180,7 @@
       "duration_ms": 9000,
       "remove_on_action": false,
       "one_time_application": true,
+      "allow_multiple_effects": true,
       "effect_mechanics": {
         "modify_radius": {
           "modifier": 0.4,
@@ -204,6 +212,19 @@
       "effect_mechanics": {
         "defense_change": {
           "modifier": 0.75,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
+      }
+    },
+    {
+      "name": "slow_field",
+      "remove_on_action": false,
+      "one_time_application": true,
+      "allow_multiple_effects": false,
+      "effect_mechanics": {
+        "speed_boost": {
+          "modifier": -0.50,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }

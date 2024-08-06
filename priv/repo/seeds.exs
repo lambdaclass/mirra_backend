@@ -227,10 +227,6 @@ Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 
-# Create user for Configurator app
-%{email: "admin@configurator.com", password: "letmepass1234"}
-|> Configurator.Accounts.register_user()
-
 default_version_params = %{
   name: "v1.0.0",
   current: true
@@ -259,6 +255,8 @@ singularity = %{
   "duration_ms" => 5000,
   "radius" => 450.0,
   "range" => 1200.0,
+  "shape" => "circle",
+  "vertices" => [],
   "effects_to_apply" => [
     "singularity"
   ]
@@ -374,19 +372,6 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "multi_shoot",
-        "angle_between" => 22.0,
-        "amount" => 3,
-        "speed" => 1.1,
-        "duration_ms" => 1000,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "damage" => 44,
-        "radius" => 40.0
-      }
-    ],
     "mechanics" => [multi_shoot],
     "effects_to_apply" => [],
     "version_id" => version.id
@@ -431,6 +416,8 @@ skills = [
         "duration_ms" => 2500,
         "radius" => 500.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "denial_of_service"
         ]
@@ -660,7 +647,7 @@ skills =
   |> Map.new()
 
 # Associate combo skills
-combo_skills =
+_combo_skills =
   [
     {"kenzu_quickslash", "kenzu_quickslash_second"},
     {"kenzu_quickslash_second", "kenzu_quickslash_third"}
@@ -800,7 +787,7 @@ golden_clock_params = %{
   version_id: version.id
 }
 
-{:ok, golden_clock} =
+{:ok, _golden_clock} =
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
 magic_boots_params = %{
@@ -812,7 +799,7 @@ magic_boots_params = %{
   version_id: version.id
 }
 
-{:ok, magic_boots} =
+{:ok, _magic_boots} =
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
 mirra_blessing_params = %{
@@ -824,7 +811,7 @@ mirra_blessing_params = %{
   version_id: version.id
 }
 
-{:ok, mirra_blessing} =
+{:ok, _mirra_blessing} =
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
 giant_fruit_params = %{
@@ -836,7 +823,7 @@ giant_fruit_params = %{
   version_id: version.id
 }
 
-{:ok, giant_fruit} =
+{:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
 polymorph_params = %{
@@ -847,7 +834,7 @@ polymorph_params = %{
   effects: ["polymorph_effect"]
 }
 
-{:ok, polymorph} =
+{:ok, _polymorph} =
   GameBackend.Items.create_consumable_item(polymorph_params)
 
 map_config = %{
@@ -1191,7 +1178,7 @@ map_config = %{
       }
     },
     %{
-      name: "middle stone north",
+      name: "middle stone south",
       position: %{
         x: 0.0,
         y: 0.0
@@ -1229,7 +1216,7 @@ map_config = %{
       ]
     },
     %{
-      name: "middle stone south",
+      name: "middle stone north",
       position: %{
         x: 0.0,
         y: 0.0
@@ -2034,6 +2021,7 @@ map_config = %{
     }
   ],
   bushes: [],
+  pools: [],
   version_id: version.id
 }
 

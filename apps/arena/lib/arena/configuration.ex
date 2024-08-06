@@ -160,6 +160,7 @@ defmodule Arena.Configuration do
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
         obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
+        pools: Enum.map(map_config.pools, &parse_pool/1),
         bushes: Enum.map(map_config.bushes, &parse_bush/1)
     }
   end
@@ -197,6 +198,15 @@ defmodule Arena.Configuration do
 
   defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
+  end
+
+  defp parse_pool(pool) do
+    %{
+      pool
+      | position: parse_position(pool.position),
+        vertices: Enum.map(pool.vertices, &parse_position/1),
+        radius: maybe_to_float(pool.radius)
+    }
   end
 
   defp parse_position(%{x: x, y: y}) do
