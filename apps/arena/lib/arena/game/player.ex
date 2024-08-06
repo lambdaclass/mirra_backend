@@ -3,6 +3,7 @@ defmodule Arena.Game.Player do
   Module for interacting with Player entity
   """
 
+  alias Arena.Entities
   alias Arena.Game.Crate
   alias Arena.GameUpdater
   alias Arena.GameTracker
@@ -62,6 +63,23 @@ defmodule Arena.Game.Player do
         | health: 0
       }
     end)
+  end
+
+  def revive(player, config) do
+    params = %{
+      id: player.id,
+      team: player.aditional_info.team,
+      player_name: player.name,
+      position:  Enum.random(config.map.initial_positions),
+      direction: %{x: 0.0, y: 0.0},
+      character_name: player.aditional_info.character_name,
+      config: config,
+      now: System.monotonic_time(:millisecond)
+    }
+
+    Entities.new_player(params)
+    ## TODO: check if this is needed or can be removed
+    |> put_in([:aditional_info, :kill_count], player.aditional_info.kill_count)
   end
 
   def trigger_natural_healings(players) do

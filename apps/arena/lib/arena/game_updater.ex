@@ -506,6 +506,9 @@ defmodule Arena.GameUpdater do
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
+    Process.send_after(self(), {:revive_player, victim_id}, 3000)##game_config.game.revive_time_ms)
+
+    {:noreply, %{state | game_state: game_state}}
 
     case Map.get(game_state.players, killer_id) do
       nil ->
@@ -520,6 +523,11 @@ defmodule Arena.GameUpdater do
     end
 
     {:noreply, %{state | game_state: game_state}}
+  end
+
+  def handle_info({:revive_player, player_id}, state) do
+    state = update_in(state, [:game_state, :players, player_id], fn player -> Player.revive(player, state.game_config) end)
+    {:noreply, state}
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
