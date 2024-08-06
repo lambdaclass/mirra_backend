@@ -3,6 +3,7 @@ defmodule ConfiguratorWeb.CharacterController do
 
   alias GameBackend.Units.Characters
   alias GameBackend.Units.Characters.Character
+  alias GameBackend.Configuration
 
   def index(conn, _params) do
     characters = Characters.get_curse_characters()
@@ -35,7 +36,8 @@ defmodule ConfiguratorWeb.CharacterController do
 
   def show(conn, %{"id" => id}) do
     character = Characters.get_character(id)
-    render(conn, :show, character: character)
+    version = Configuration.get_version!(character.version_id)
+    render(conn, :show, character: character, version: version)
   end
 
   def edit(conn, %{"id" => id}) do

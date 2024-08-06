@@ -195,6 +195,13 @@
           "execute_multiple_times": true
         }
       }
+    },
+    {
+      "name": "polymorph_effect",
+      "duration_ms": 9000,
+      "remove_on_action": true,
+      "one_time_application": true,
+      "effect_mechanics": {}
     }
   ],
   "crates": [

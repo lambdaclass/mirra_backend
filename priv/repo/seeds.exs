@@ -227,6 +227,14 @@ Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 
+default_version_params = %{
+  name: "v1.0.0",
+  current: true
+}
+
+{:ok, version} =
+  GameBackend.Configuration.create_version(default_version_params)
+
 ## Mechanics
 multi_shoot = %{
   "type" => "multi_shoot",
@@ -300,7 +308,8 @@ skills = [
         "offset" => 400
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "muflus_leap",
@@ -361,8 +370,22 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "multi_shoot",
+        "angle_between" => 22.0,
+        "amount" => 3,
+        "speed" => 1.1,
+        "duration_ms" => 1000,
+        "remove_on_collision" => true,
+        "projectile_offset" => 100,
+        "damage" => 44,
+        "radius" => 40.0
+      }
+    ],
     "mechanics" => [multi_shoot],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "h4ck_dash",
@@ -409,7 +432,8 @@ skills = [
         ]
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "uma_avenge",
@@ -433,7 +457,8 @@ skills = [
         "offset" => 200
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "uma_veil_radiance",
@@ -478,7 +503,8 @@ skills = [
         "duration_ms" => 250
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "valt_singularity",
@@ -493,7 +519,8 @@ skills = [
     "can_pick_destination" => true,
     "block_movement" => true,
     "mechanics" => [singularity],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "valt_warp",
@@ -516,7 +543,8 @@ skills = [
         "duration_ms" => 150
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "valt_antimatter",
@@ -531,7 +559,8 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [simple_shoot],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "kenzu_quickstrike",
@@ -548,7 +577,8 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [simple_shoot],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "kenzu_quickstrike_second",
@@ -565,7 +595,8 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [multi_shoot],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "kenzu_quickstrike_third",
@@ -582,7 +613,8 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [singularity],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   }
 ]
 
@@ -621,7 +653,8 @@ muflus_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["muflus_crush"],
   ultimate_skill_id: skills["muflus_leap"],
-  dash_skill_id: skills["muflus_dash"]
+  dash_skill_id: skills["muflus_dash"],
+  version_id: version.id
 }
 
 h4ck_params = %{
@@ -637,7 +670,8 @@ h4ck_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["h4ck_slingshot"],
   ultimate_skill_id: skills["h4ck_denial_of_service"],
-  dash_skill_id: skills["h4ck_dash"]
+  dash_skill_id: skills["h4ck_dash"],
+  version_id: version.id
 }
 
 uma_params = %{
@@ -653,7 +687,8 @@ uma_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["uma_avenge"],
   ultimate_skill_id: skills["uma_veil_radiance"],
-  dash_skill_id: skills["uma_sneak"]
+  dash_skill_id: skills["uma_sneak"],
+  version_id: version.id
 }
 
 valtimer_params = %{
@@ -669,7 +704,8 @@ valtimer_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["valt_antimatter"],
   ultimate_skill_id: skills["valt_singularity"],
-  dash_skill_id: skills["valt_warp"]
+  dash_skill_id: skills["valt_warp"],
+  version_id: version.id
 }
 
 kenzu_params = %{
@@ -685,7 +721,8 @@ kenzu_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["kenzu_quickstrike"],
   ultimate_skill_id: skills["valt_singularity"],
-  dash_skill_id: skills["valt_warp"]
+  dash_skill_id: skills["valt_warp"],
+  version_id: version.id
 }
 
 # Insert characters
@@ -715,7 +752,9 @@ game_configuration_1 = %{
   zone_enabled: true,
   bounties_options_amount: 3,
   match_timeout_ms: 300_000,
-  field_of_view_inside_bush: 500
+  field_of_view_inside_bush: 500,
+  version_id: version.id,
+  time_visible_in_bush_after_skill: 2000
 }
 
 {:ok, _game_configuration_1} =
@@ -726,7 +765,8 @@ golden_clock_params = %{
   name: "golden_clock",
   radius: 200.0,
   mechanics: %{},
-  effects: ["golden_clock_effect"]
+  effects: ["golden_clock_effect"],
+  version_id: version.id
 }
 
 {:ok, _golden_clock} =
@@ -737,7 +777,8 @@ magic_boots_params = %{
   name: "magic_boots",
   radius: 200.0,
   mechanics: %{},
-  effects: ["magic_boots_effect"]
+  effects: ["magic_boots_effect"],
+  version_id: version.id
 }
 
 {:ok, _magic_boots} =
@@ -748,7 +789,8 @@ mirra_blessing_params = %{
   name: "mirra_blessing",
   radius: 200.0,
   mechanics: %{},
-  effects: ["mirra_blessing_effect"]
+  effects: ["mirra_blessing_effect"],
+  version_id: version.id
 }
 
 {:ok, _mirra_blessing} =
@@ -759,11 +801,23 @@ giant_fruit_params = %{
   name: "giant",
   radius: 200.0,
   mechanics: %{},
-  effects: ["giant_effect"]
+  effects: ["giant_effect"],
+  version_id: version.id
 }
 
 {:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
+
+polymorph_params = %{
+  active: false,
+  name: "polymorph",
+  radius: 200.0,
+  mechanics: %{},
+  effects: ["polymorph_effect"]
+}
+
+{:ok, polymorph} =
+  GameBackend.Items.create_consumable_item(polymorph_params)
 
 map_config = %{
   name: "Araban",
@@ -1948,7 +2002,8 @@ map_config = %{
       ]
     }
   ],
-  bushes: []
+  bushes: [],
+  version_id: version.id
 }
 
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)

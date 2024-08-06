@@ -25,7 +25,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
 
   describe "create map_configuration" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/map_configurations", map_configuration: @create_attrs)
+      version = version_fixture()
+      conn = post(conn, ~p"/map_configurations", map_configuration: @create_attrs |> Map.put(:version_id, version.id))
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/map_configurations/#{id}"

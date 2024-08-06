@@ -1,6 +1,6 @@
 <.header>
   Character <%= @character.name %>
-  <:subtitle>This is a character record from your database.</:subtitle>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
     <.link href={~p"/characters/#{@character}/edit"}>
       <.button>Edit character</.button>
@@ -16,6 +16,12 @@
   <:item title="Base health"><%= @character.base_health %></:item>
   <:item title="Base stamina"><%= @character.base_stamina %></:item>
   <:item title="Stamina Interval"><%= @character.stamina_interval %></:item>
+  <:item title="Base mana"><%= @character.base_mana %></:item>
+  <:item title="Initial mana"><%= @character.initial_mana %></:item>
+  <:item title="Mana recovery strategy"><%= @character.mana_recovery_strategy %></:item>
+  <:item title="Time based mana recovery interval"><%= @character.mana_recovery_time_interval_ms %></:item>
+  <:item title="Time based mana recovery amount"><%= @character.mana_recovery_time_amount %></:item>
+  <:item title="Damage based mana recovery multiplier amount"><%= @character.mana_recovery_damage_multiplier %></:item>
   <:item title="Max inventory size"><%= @character.max_inventory_size %></:item>
   <:item title="Natural healing interval"><%= @character.natural_healing_interval %></:item>
   <:item title="Natural healing damage interval"><%= @character.natural_healing_damage_interval %></:item>

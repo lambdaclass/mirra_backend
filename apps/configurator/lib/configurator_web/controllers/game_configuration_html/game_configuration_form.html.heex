@@ -2,6 +2,12 @@
   <.error :if={@changeset.action}>
     Oops, something went wrong! Please check the errors below.
   </.error>
+  <.input
+    field={f[:version_id]}
+    type="select"
+    options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
+    label="Version"
+  />
   <.input field={f[:tick_rate_ms]} type="number" label="Tick rate ms" />
   <.input field={f[:bounty_pick_time_ms]} type="number" label="Bounty pick time ms" />
   <.input field={f[:start_game_time_ms]} type="number" label="Start game time ms" />
@@ -21,6 +27,7 @@
   <.input field={f[:bots_enabled]} type="checkbox" label="Bots enabled" />
   <.input field={f[:zone_enabled]} type="checkbox" label="Zone enabled" />
   <.input field={f[:field_of_view_inside_bush]} type="number" label="Field of view inside bush" />
+  <.input field={f[:time_visible_in_bush_after_skill]} type="number" label="Field of view inside bush" />
 
   <:actions>
     <.button>Save Game configuration</.button>
