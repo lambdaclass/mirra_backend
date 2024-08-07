@@ -20,7 +20,7 @@ defmodule GameBackend.Users.User do
     Unlock
   }
 
-  @derive {Jason.Encoder, only: [:username, :currencies, :prestige, :user_quests]}
+  @derive {Jason.Encoder, only: [:username, :currencies, :prestige, :user_quests, :quest_refresh_at]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
@@ -32,7 +32,6 @@ defmodule GameBackend.Users.User do
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
     field(:last_daily_quest_generation_at, :utc_datetime)
-    field(:prestige, :integer, virtual: true)
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -48,6 +47,10 @@ defmodule GameBackend.Users.User do
     has_many(:currency_caps, UserCurrencyCap)
 
     timestamps()
+
+    # Virtual fields for client display
+    field(:prestige, :integer, virtual: true)
+    field(:quest_refresh_at, :any, virtual: true)
   end
 
   @doc false

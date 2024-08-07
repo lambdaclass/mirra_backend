@@ -70,6 +70,12 @@ defmodule GameBackend.Users do
       {:error, :not_found}
   """
   def get_user_by_id_and_game_id(id, game_id) do
+    quest_refresh_at =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.add(1, :day)
+      |> NaiveDateTime.beginning_of_day()
+      |> NaiveDateTime.to_iso8601()
+
     q =
       from(u in User,
         where: u.id == ^id and u.game_id == ^game_id,
@@ -77,7 +83,7 @@ defmodule GameBackend.Users do
         on: u.id == unit.user_id,
         preload: [units: [:character, :items], currencies: :currency],
         group_by: u.id,
-        select: %{u | prestige: sum(unit.prestige)}
+        select: %{u | prestige: sum(unit.prestige), quest_refresh_at: ^quest_refresh_at}
       )
       |> quests_preloads()
       |> arena_match_results_preloads()
