@@ -325,7 +325,12 @@ defmodule Arena.Game.Skill do
 
     Process.send_after(self(), {:activate_pool, last_id}, pool_params.activation_delay)
 
-    pool_params = Map.merge(%{id: last_id, position: target_position, owner: player, skill_key: skill_params.skill_key, status: :WAITING}, pool_params)
+    pool_params =
+      Map.merge(
+        %{id: last_id, position: target_position, owner: player, skill_key: skill_params.skill_key, status: :WAITING},
+        pool_params
+      )
+
     pool = Entities.new_pool(pool_params)
 
     put_in(game_state, [:pools, last_id], pool)
