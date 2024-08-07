@@ -593,8 +593,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:block_actions, player_id}, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+  def handle_info({:block_actions, player_id, value}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end
 

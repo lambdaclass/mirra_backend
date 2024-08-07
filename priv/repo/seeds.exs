@@ -554,7 +554,7 @@ skills = [
     "version_id" => version.id
   },
   %{
-    "name" => "kenzu_quickstrike",
+    "name" => "kenzu_quickslash",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 0,
@@ -572,7 +572,7 @@ skills = [
     "version_id" => version.id
   },
   %{
-    "name" => "kenzu_quickstrike_second",
+    "name" => "kenzu_quickslash_second",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 2500,
@@ -590,7 +590,7 @@ skills = [
     "version_id" => version.id
   },
   %{
-    "name" => "kenzu_quickstrike_third",
+    "name" => "kenzu_quickslash_third",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 2500,
@@ -605,6 +605,33 @@ skills = [
     "block_movement" => true,
     "mechanics" => [singularity],
     "effects_to_apply" => [],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_whirlwind",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
+    "execution_duration_ms" => 5000,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => false,
+    "mechanics" => [
+      %{
+        "type" => "multi_circle_hit",
+        "damage" => 50,
+        "range" => 300.0,
+        "interval_ms" => 500,
+        "duration_ms" => 5000,
+        "offset" => 0
+      }
+    ],
+    "effects_to_apply" => [
+      "whirlwind"
+    ],
     "version_id" => version.id
   }
 ]
@@ -622,8 +649,8 @@ skills =
 # Associate combo skills
 _combo_skills =
   [
-    {"kenzu_quickstrike", "kenzu_quickstrike_second"},
-    {"kenzu_quickstrike_second", "kenzu_quickstrike_third"}
+    {"kenzu_quickslash", "kenzu_quickslash_second"},
+    {"kenzu_quickslash_second", "kenzu_quickslash_third"}
   ]
   |> Enum.each(fn {skill, next_skill} ->
     Repo.get(Skill, skills[skill])
@@ -710,8 +737,8 @@ kenzu_params = %{
   max_inventory_size: 1,
   natural_healing_interval: 1000,
   natural_healing_damage_interval: 3500,
-  basic_skill_id: skills["kenzu_quickstrike"],
-  ultimate_skill_id: skills["valt_singularity"],
+  basic_skill_id: skills["kenzu_quickslash"],
+  ultimate_skill_id: skills["kenzu_whirlwind"],
   dash_skill_id: skills["valt_warp"],
   version_id: version.id
 }
