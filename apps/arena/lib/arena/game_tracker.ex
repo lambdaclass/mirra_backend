@@ -60,7 +60,7 @@ defmodule Arena.GameTracker do
           controller: if(Enum.member?(human_clients, player_to_client[player.id]), do: :human, else: :bot),
           character: player.aditional_info.character_name,
           kills: [],
-          death: nil,
+          deaths: [],
           damage_taken: 0,
           damage_done: 0,
           health_healed: 0,
@@ -121,7 +121,7 @@ defmodule Arena.GameTracker do
   defp update_data(data, {:kill, killer, victim}) do
     data
     |> update_in([:players, killer.id, :kills], fn kills -> kills ++ [victim.character_name] end)
-    |> put_in([:players, victim.id, :death], killer.character_name)
+    |> update_in([:players, victim.id, :deaths], fn deaths -> deaths ++ [killer.character_name] end)
     |> put_in([:players, victim.id, :killed_by_bot], get_in(data, [:players, killer.id, :controller]) == :bot)
     |> put_in([:players, victim.id, :position], data.position_on_death)
     |> put_in([:position_on_death], data.position_on_death - 1)
@@ -129,7 +129,7 @@ defmodule Arena.GameTracker do
 
   defp update_data(data, {:kill_by_zone, victim_id}) do
     data
-    |> put_in([:players, victim_id, :death], "zone")
+    |> update_in([:players, victim_id, :deaths], fn deaths -> deaths ++ ["zone"] end)
     |> put_in([:players, victim_id, :killed_by_bot], false)
     |> put_in([:players, victim_id, :position], data.position_on_death)
     |> put_in([:position_on_death], data.position_on_death - 1)
@@ -168,9 +168,7 @@ defmodule Arena.GameTracker do
 
   defp generate_player_result(match_data, player_id, winner_id \\ nil) do
     duration = System.monotonic_time(:millisecond) - match_data.start_at
-
-    player_data =
-      Map.get(match_data.players, player_id)
+    player_data = Map.get(match_data.players, player_id)
 
     %{
       user_id: get_in(match_data, [:player_to_client, player_data.id]),
@@ -179,15 +177,14 @@ defmodule Arena.GameTracker do
       ##    https://github.com/lambdaclass/mirra_backend/issues/601
       result: if(winner_id && player_data.id == winner_id, do: "win", else: "loss"),
       kills: length(player_data.kills),
-      ## TODO: this only works because you can only die once
-      ##    https://github.com/lambdaclass/mirra_backend/issues/601
-      deaths: if(player_data.death == nil, do: 0, else: 1),
+      deaths: length(player_data.deaths),
       character: player_data.character,
       position: get_player_match_place(player_data, winner_id, match_data),
       damage_taken: player_data.damage_taken,
       damage_done: player_data.damage_done,
       health_healed: player_data.health_healed,
-      killed_by: player_data.death,
+      ## FIXME: This is not correct for the reviving mode, but maybe we can simply not have this or keep it as is
+      killed_by: List.first(player_data.deaths, nil),
       killed_by_bot: player_data.killed_by_bot,
       duration_ms: duration,
       bounty_quest_id: player_data.bounty_quest_id
