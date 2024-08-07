@@ -8,40 +8,39 @@ defmodule Configurator.Accounts do
   alias Configurator.Accounts.UserToken
 
   @doc """
-  Gets a user by email and password.
+  Finds a user by its email if it exists. Otherwise creates a new one.
 
   ## Examples
 
-      iex> get_user_by_email_and_password("foo@example.com", "correct_password")
-      %User{}
-
-      iex> get_user_by_email_and_password("foo@example.com", "invalid_password")
-      nil
-
-  """
-  def get_user_by_email_and_password(email, password)
-      when is_binary(email) and is_binary(password) do
-    user = Repo.get_by(User, email: email)
-    if User.valid_password?(user, password), do: user
-  end
-
-  ## User registration
-
-  @doc """
-  Registers a user.
-
-  ## Examples
-
-      iex> register_user(%{field: value})
+      iex> find_or_create_user("foo@example.com")
       {:ok, %User{}}
 
-      iex> register_user(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      iex> find_or_create_user("foo@example.com")
+      {:error, changeset}
 
   """
-  def register_user(attrs) do
+  def find_or_create_user(email) do
+    case Repo.get_by(User, email: email) do
+      nil -> create_user(email)
+      user -> {:ok, user}
+    end
+  end
+
+  @doc """
+  Creates a user by its email.
+
+  ## Examples
+
+      iex> create_user("foo@example.com")
+      {:ok, %User{}}
+
+      iex> create_user("foo@example.com")
+      {:error, changeset}
+
+  """
+  def create_user(email) do
     %User{}
-    |> User.registration_changeset(attrs)
+    |> User.changeset(%{email: email})
     |> Repo.insert()
   end
 

@@ -1,4 +1,4 @@
-name: Deploy to Brazil Arena staging
+name: "[STAGING-BRAZIL] Deploy to Brazil Arena Staging"
 on:
   workflow_dispatch:
 

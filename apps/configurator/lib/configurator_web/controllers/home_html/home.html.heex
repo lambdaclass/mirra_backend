@@ -1,11 +1,19 @@
-<.header>
-  Welcome to Champions of Mirra Configurator
-</.header>
+<%= if @current_user do %>
+  <.header>
+    Welcome to Champions of Mirra Configurator
+  </.header>
 
-<.list>
-  <:item title="Character settings"><.link href={~p"/characters"}>Link</.link></:item>
-  <:item title="Game settings"><.link href={~p"/game_configurations"}>Link</.link></:item>
-  <:item title="Map settings"><.link href={~p"/map_configurations"}>Link</.link></:item>
-  <:item title="Skill settings"><.link href={~p"/skills"}>Link</.link></:item>
-  <:item title="Consumable Items"><.link href={~p"/consumable_items"}>Link</.link></:item>
-</.list>
+  <.list>
+    <:item title="Versions"><.link href={~p"/versions"}>Link</.link></:item>
+    <:item title="Character settings"><.link href={~p"/characters"}>Link</.link></:item>
+    <:item title="Game settings"><.link href={~p"/game_configurations"}>Link</.link></:item>
+    <:item title="Map settings"><.link href={~p"/map_configurations"}>Link</.link></:item>
+    <:item title="Skill settings"><.link href={~p"/skills"}>Link</.link></:item>
+    <:item title="Consumable Items"><.link href={~p"/consumable_items"}>Link</.link></:item>
+  </.list>
+<% else %>
+  <p>You are not logged in, please login</p>
+  <.link href={~p"/auth/google"}>
+    <img src="https://developers.google.com/static/identity/images/branding_guideline_sample_lt_rd_lg.svg" />
+  </.link>
+<% end %>

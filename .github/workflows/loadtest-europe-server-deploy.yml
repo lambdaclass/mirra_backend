@@ -1,4 +1,4 @@
-name: Deploy to Europe Loadtest Server
+name: "[LOADTEST-SERVER-EUROPE] Deploy to Europe Loadtest Server"
 on:
   workflow_dispatch:
 

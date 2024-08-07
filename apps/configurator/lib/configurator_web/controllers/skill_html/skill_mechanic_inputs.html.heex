@@ -32,6 +32,9 @@
     multiple
     options={["singularity", "denial_of_service", "invisible"]}
   />
+  <.input field={fp[:shape]} type="select" label="Shape of entity to spawn" options={["circle", "polygon"]} />
+
+  <.input field={fp[:vertices]} type="text" label="Vertices" value={Jason.encode!(fp.data.vertices)} />
 
   <.button type="button" phx-click={show_modal("on-arrival-mechanic-modal")}>Edit on arrival mechanic</.button>
   <.modal id="on-arrival-mechanic-modal">

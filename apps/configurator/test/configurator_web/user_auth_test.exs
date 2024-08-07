@@ -231,7 +231,7 @@ defmodule ConfiguratorWeb.UserAuthTest do
       conn = conn |> fetch_flash() |> UserAuth.require_authenticated_user([])
       assert conn.halted
 
-      assert redirected_to(conn) == ~p"/users/log_in"
+      assert redirected_to(conn) == ~p"/"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "You must log in to access this page."
@@ -264,7 +264,7 @@ defmodule ConfiguratorWeb.UserAuthTest do
     end
 
     test "does not redirect if user is authenticated", %{conn: conn, user: user} do
-      conn = conn |> assign(:current_user, user) |> UserAuth.require_authenticated_user([])
+      conn = conn |> put_session(:current_user, user) |> UserAuth.require_authenticated_user([])
       refute conn.halted
       refute conn.status
     end
