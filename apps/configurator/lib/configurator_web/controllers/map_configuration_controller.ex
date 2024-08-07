@@ -37,6 +37,7 @@ defmodule ConfiguratorWeb.MapConfigurationController do
 
   def edit(conn, %{"id" => id}) do
     map_configuration = Configuration.get_map_configuration!(id)
+
     changeset = Configuration.change_map_configuration(map_configuration)
     render(conn, :edit, map_configuration: map_configuration, changeset: changeset)
   end
@@ -65,11 +66,72 @@ defmodule ConfiguratorWeb.MapConfigurationController do
     |> redirect(to: ~p"/map_configurations")
   end
 
+  def edit_obstacles(conn, %{"id" => id}) do
+    map_configuration = Configuration.get_map_configuration!(id)
+
+    changeset = Configuration.change_map_configuration(map_configuration)
+
+    render(conn, :edit_obstacles,
+      map_configuration: map_configuration,
+      changeset: changeset,
+      action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+    )
+  end
+
+  def update_obstacles(conn, %{"id" => id, "map_configuration" => map_configuration_params}) do
+    map_configuration = Configuration.get_map_configuration!(id)
+
+    case Configuration.update_map_configuration(map_configuration, map_configuration_params) do
+      {:ok, map_configuration} ->
+        conn
+        |> put_flash(:info, "Map configuration updated successfully.")
+        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, :edit_obstacles,
+          map_configuration: map_configuration,
+          changeset: changeset,
+          action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+        )
+    end
+  end
+
+  def edit_pools(conn, %{"id" => id}) do
+    map_configuration = Configuration.get_map_configuration!(id)
+
+    changeset = Configuration.change_map_configuration(map_configuration)
+
+    render(conn, :edit_pools,
+      map_configuration: map_configuration,
+      changeset: changeset,
+      action: ~p"/map_configurations/#{map_configuration}/update_pools"
+    )
+  end
+
+  def update_pools(conn, %{"id" => id, "map_configuration" => map_configuration_params}) do
+    map_configuration = Configuration.get_map_configuration!(id)
+
+    case Configuration.update_map_configuration(map_configuration, map_configuration_params) do
+      {:ok, map_configuration} ->
+        conn
+        |> put_flash(:info, "Map configuration updated successfully.")
+        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, :edit_pools,
+          map_configuration: map_configuration,
+          changeset: changeset,
+          action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+        )
+    end
+  end
+
   defp parse_json_params(map_configuration_params) do
     map_configuration_params
     |> Map.update("initial_positions", "", &parse_json/1)
     |> Map.update("obstacles", "", &parse_json/1)
     |> Map.update("bushes", "", &parse_json/1)
+    |> Map.update("pools", "", &parse_json/1)
   end
 
   defp parse_json(""), do: []

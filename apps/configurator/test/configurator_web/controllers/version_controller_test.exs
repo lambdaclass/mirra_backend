@@ -93,6 +93,7 @@ defmodule ConfiguratorWeb.VersionControllerTest do
       conn
       |> Phoenix.ConnTest.init_test_session(%{})
       |> Plug.Conn.put_session(:user_token, token)
+      |> Plug.Conn.put_session(:current_user, user)
 
     %{conn: conn}
   end

@@ -494,7 +494,14 @@ defmodule GameBackend.Configuration do
         {:ok, version}
       end
     end)
-    |> Multi.update(:former_version, Ecto.Changeset.change(former_version, %{current: false}))
+    |> Multi.run(:update_previous_version, fn _, _ ->
+      if former_version do
+        Ecto.Changeset.change(former_version, %{current: false})
+        |> Repo.update()
+      else
+        {:ok, :no_former_version}
+      end
+    end)
     |> Multi.update(:version, Ecto.Changeset.change(version, %{current: true}))
     |> Repo.transaction()
   end

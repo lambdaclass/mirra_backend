@@ -13,7 +13,7 @@ defmodule GameBackend.Configuration.Version do
 
   schema "versions" do
     field(:name, :string)
-    field(:current, :boolean)
+    field(:current, :boolean, default: false)
 
     has_many(:characters, Character)
     has_many(:consumable_items, ConsumableItem)

@@ -817,12 +817,14 @@ defmodule Arena.GameUpdater do
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
     {crates, last_id} = initialize_crates(config.crates, last_id)
     {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
+    {pools, last_id} = initialize_pools(config.map.pools, last_id)
 
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
     |> Map.put(:bushes, bushes)
     |> Map.put(:crates, crates)
+    |> Map.put(:pools, pools)
   end
 
   # Initialize obstacles
@@ -885,6 +887,24 @@ defmodule Arena.GameUpdater do
         )
 
       {crates_acc, last_id}
+    end)
+  end
+
+  defp initialize_pools(pools, last_id) do
+    Enum.reduce(pools, {Map.new(), last_id}, fn pool, {pools_acc, last_id} ->
+      last_id = last_id + 1
+
+      pools_acc =
+        Map.put(
+          pools_acc,
+          last_id,
+          Entities.new_pool(
+            pool
+            |> Map.merge(%{id: last_id, owner_id: 9999, skill_key: "0", status: :READY})
+          )
+        )
+
+      {pools_acc, last_id}
     end)
   end
 
@@ -1093,7 +1113,7 @@ defmodule Arena.GameUpdater do
 
     entities_to_collide_with =
       Player.alive_players(players)
-      |> Map.merge(Obstacle.get_collisionable_obstacles(obstacles))
+      |> Map.merge(Obstacle.get_collisionable_obstacles_for_projectiles(obstacles))
       |> Map.merge(crates)
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
@@ -1755,7 +1775,7 @@ defmodule Arena.GameUpdater do
         time_passed_since_spawn =
           now - pool.aditional_info.spawn_at
 
-        if time_passed_since_spawn >= pool.aditional_info.duration_ms do
+        if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
           acc
         else
           Map.put(acc, pool_id, pool)
