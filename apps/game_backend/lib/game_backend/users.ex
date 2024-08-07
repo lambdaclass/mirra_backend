@@ -79,9 +79,18 @@ defmodule GameBackend.Users do
         where: u.id == ^id and u.game_id == ^game_id,
         join: unit in Unit,
         on: u.id == unit.user_id,
+        join: arena_match_results in assoc(u, :arena_match_results),
+        left_join: won_arena_match_results in GameBackend.Matches.ArenaMatchResult,
+        on: won_arena_match_results.user_id == u.id and won_arena_match_results.result == ^"win",
         preload: [units: [:character, :items], currencies: :currency],
         group_by: u.id,
-        select: %{u | prestige: sum(unit.prestige)}
+        select: %{
+          u
+          | prestige: sum(unit.prestige),
+            most_played_character: max(arena_match_results.character),
+            total_kills: sum(arena_match_results.kills),
+            won_matches: count(won_arena_match_results)
+        }
       )
 
     if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}

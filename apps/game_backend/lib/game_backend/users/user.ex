@@ -20,7 +20,7 @@ defmodule GameBackend.Users.User do
     Unlock
   }
 
-  @derive {Jason.Encoder, only: [:username, :currencies, :prestige]}
+  @derive {Jason.Encoder, only: [:username, :currencies, :prestige, :most_played_character, :total_kills, :won_matches]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
