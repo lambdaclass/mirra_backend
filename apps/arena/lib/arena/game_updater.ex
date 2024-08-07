@@ -882,7 +882,14 @@ defmodule Arena.GameUpdater do
   defp initialize_pools(game_state, pools) do
     Enum.reduce(pools, game_state, fn pool, game_state_acc ->
       last_id = game_state_acc.last_id + 1
-      pool_params = Map.merge(pool, %{id: last_id, owner_id: 9999, skill_key: "0", status: :READY})
+
+      pool_params =
+        Map.merge(pool, %{
+          id: last_id,
+          owner: %{id: 9999, aditional_info: %{team: 9999}},
+          skill_key: "0",
+          status: :READY
+        })
 
       Map.put(game_state_acc, :last_id, last_id)
       |> put_in([:pools, last_id], Entities.new_pool(pool_params))
