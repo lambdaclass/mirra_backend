@@ -54,6 +54,24 @@ defmodule Configurator.ConfigurationFixtures do
   end
 
   @doc """
+  Generate a arena_server.
+  """
+  def arena_server_fixture(attrs \\ %{}) do
+    {:ok, arena_server} =
+      attrs
+      |> Enum.into(%{
+        ip: "some ip",
+        name: "some name",
+        url: "some url",
+        status: :active,
+        environment: :production
+      })
+      |> GameBackend.Configuration.create_arena_server()
+
+    arena_server
+  end
+
+  @doc """
   Generate a version.
   """
   def version_fixture(attrs \\ %{}) do

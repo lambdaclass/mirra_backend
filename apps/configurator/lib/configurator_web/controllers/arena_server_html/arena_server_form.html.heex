@@ -1,0 +1,25 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+  <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:ip]} type="text" label="Ip" />
+  <.input field={f[:url]} type="text" label="Url" />
+  <.input
+    field={f[:status]}
+    type="select"
+    label="Status"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.ArenaServers.ArenaServer, :status)}
+  />
+  <.input
+    field={f[:environment]}
+    type="select"
+    label="Environment"
+    prompt="Choose a value"
+    options={Ecto.Enum.values(GameBackend.ArenaServers.ArenaServer, :environment)}
+  />
+  <:actions>
+    <.button>Save Arena server</.button>
+  </:actions>
+</.simple_form>

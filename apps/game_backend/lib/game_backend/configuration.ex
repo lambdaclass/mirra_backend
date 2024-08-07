@@ -8,6 +8,7 @@ defmodule GameBackend.Configuration do
   alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
   alias GameBackend.CurseOfMirra.MapConfiguration
+  alias GameBackend.ArenaServers.ArenaServer
   alias GameBackend.Configuration.Version
   alias GameBackend.Repo
 
@@ -200,6 +201,53 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Returns the list of arena_servers.
+
+  ## Examples
+
+      iex> list_arena_servers()
+      [%ArenaServer{}, ...]
+
+  """
+  def list_arena_servers do
+    Repo.all(ArenaServer)
+  end
+
+  @doc """
+  Gets a single arena_server.
+
+  Raises `Ecto.NoResultsError` if the Arena server does not exist.
+
+  ## Examples
+
+      iex> get_arena_server!(123)
+      %ArenaServer{}
+
+      iex> get_arena_server!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_arena_server!(id), do: Repo.get!(ArenaServer, id)
+
+  @doc """
+  Creates a arena_server.
+
+  ## Examples
+
+      iex> create_arena_server(%{field: value})
+      {:ok, %ArenaServer{}}
+
+      iex> create_arena_server(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_arena_server(attrs \\ %{}) do
+    %ArenaServer{}
+    |> ArenaServer.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
   Returns the list of versions.
 
   ## Examples
@@ -247,6 +295,24 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Updates a arena_server.
+
+  ## Examples
+
+      iex> update_arena_server(arena_server, %{field: new_value})
+      {:ok, %ArenaServer{}}
+
+      iex> update_arena_server(arena_server, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_arena_server(%ArenaServer{} = arena_server, attrs) do
+    arena_server
+    |> ArenaServer.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
   Updates a version.
 
   ## Examples
@@ -262,6 +328,35 @@ defmodule GameBackend.Configuration do
     version
     |> Version.changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Deletes a arena_server.
+
+  ## Examples
+
+      iex> delete_arena_server(arena_server)
+      {:ok, %ArenaServer{}}
+
+      iex> delete_arena_server(arena_server)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_arena_server(%ArenaServer{} = arena_server) do
+    Repo.delete(arena_server)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking arena_server changes.
+
+  ## Examples
+
+      iex> change_arena_server(arena_server)
+      %Ecto.Changeset{data: %ArenaServer{}}
+
+  """
+  def change_arena_server(%ArenaServer{} = arena_server, attrs \\ %{}) do
+    ArenaServer.changeset(arena_server, attrs)
   end
 
   @doc """
