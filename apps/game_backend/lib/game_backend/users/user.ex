@@ -31,7 +31,7 @@ defmodule GameBackend.Users.User do
     field(:last_kaline_afk_reward_claim, :utc_datetime)
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
-    field(:prestige, :integer, virtual: true)
+    field(:highest_historical_prestige, :integer)
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -47,6 +47,12 @@ defmodule GameBackend.Users.User do
     has_many(:currency_caps, UserCurrencyCap)
 
     timestamps()
+
+    # Virtual fields for client rendering
+    field(:prestige, :integer, virtual: true)
+    field(:most_played_character, :string, virtual: true)
+    field(:total_kills, :integer, virtual: true)
+    field(:won_matches, :integer, virtual: true)
   end
 
   @doc false
