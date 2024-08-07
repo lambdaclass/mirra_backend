@@ -24,6 +24,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:speed, :decimal)
     field(:activation_delay, :integer)
     field(:trigger_delay, :integer)
+    field(:shape, Ecto.Enum, values: [:circle, :polygon])
+    field(:vertices, {:array, :map})
 
     field(:type, Ecto.Enum,
       values: [:circle_hit, :spawn_pool, :leap, :multi_shoot, :dash, :multi_circle_hit, :teleport, :simple_shoot]
@@ -63,7 +65,9 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :range,
       :remove_on_collision,
       :activation_delay,
-      :speed
+      :speed,
+      :shape,
+      :vertices
     ])
     |> cast_assoc(:apply_effects_to)
     |> cast_assoc(:passive_effects)

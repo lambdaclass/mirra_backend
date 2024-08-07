@@ -1,0 +1,19 @@
+<.header>
+  Arena server <%= @arena_server.id %>
+  <:subtitle>This is a arena_server record from your database.</:subtitle>
+  <:actions>
+    <.link href={~p"/arena_servers/#{@arena_server}/edit"}>
+      <.button>Edit arena_server</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @arena_server.name %></:item>
+  <:item title="Ip"><%= @arena_server.ip %></:item>
+  <:item title="Url"><%= @arena_server.url %></:item>
+  <:item title="Status"><%= @arena_server.status %></:item>
+  <:item title="Environment"><%= @arena_server.environment %></:item>
+</.list>
+
+<.back navigate={~p"/arena_servers"}>Back to arena_servers</.back>

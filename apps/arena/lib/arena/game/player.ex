@@ -218,7 +218,7 @@ defmodule Arena.Game.Player do
   def use_skill(player, skill_key, skill_params, %{game_state: game_state}) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
-        Process.send(self(), {:block_actions, player.id}, [])
+        Process.send(self(), {:block_actions, player.id, false}, [])
         game_state
 
       skill ->
@@ -238,7 +238,7 @@ defmodule Arena.Game.Player do
           end
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
-        Process.send_after(self(), {:block_actions, player.id}, execution_duration)
+        Process.send_after(self(), {:block_actions, player.id, false}, execution_duration)
 
         if skill.block_movement do
           send(self(), {:block_movement, player.id, true})

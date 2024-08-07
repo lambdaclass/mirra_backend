@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: staging-brazil
-      url: https://arena-brazil-staging.curseofmirra.com/
+      url: https://arena-brazil-staging.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4

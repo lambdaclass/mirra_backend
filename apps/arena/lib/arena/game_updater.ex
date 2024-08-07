@@ -597,8 +597,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:block_actions, player_id}, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+  def handle_info({:block_actions, player_id, value}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end
 
@@ -760,6 +760,7 @@ defmodule Arena.GameUpdater do
     |> initialize_obstacles(config.map.obstacles)
     |> initialize_crates(config.crates)
     |> initialize_bushes(config.map.bushes)
+    |> initialize_pools(config.map.pools)
   end
 
   defp new_game(game_id, config) do
@@ -875,6 +876,16 @@ defmodule Arena.GameUpdater do
 
       Map.put(game_state_acc, :last_id, last_id)
       |> put_in([:crates, last_id], Entities.new_crate(last_id, crate))
+    end)
+  end
+
+  defp initialize_pools(game_state, pools) do
+    Enum.reduce(pools, game_state, fn pool, game_state_acc ->
+      last_id = game_state_acc.last_id + 1
+      pool_params = Map.merge(pool, %{id: last_id, owner_id: 9999, skill_key: "0", status: :READY})
+
+      Map.put(game_state_acc, :last_id, last_id)
+      |> put_in([:pools, last_id], Entities.new_pool(pool_params))
     end)
   end
 
@@ -1083,7 +1094,7 @@ defmodule Arena.GameUpdater do
 
     entities_to_collide_with =
       Player.alive_players(players)
-      |> Map.merge(Obstacle.get_collisionable_obstacles(obstacles))
+      |> Map.merge(Obstacle.get_collisionable_obstacles_for_projectiles(obstacles))
       |> Map.merge(crates)
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
@@ -1754,7 +1765,7 @@ defmodule Arena.GameUpdater do
         time_passed_since_spawn =
           now - pool.aditional_info.spawn_at
 
-        if time_passed_since_spawn >= pool.aditional_info.duration_ms do
+        if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
           acc
         else
           Map.put(acc, pool_id, pool)

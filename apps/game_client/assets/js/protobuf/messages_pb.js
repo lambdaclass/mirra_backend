@@ -8250,7 +8250,8 @@ proto.Obstacle.toObject = function(includeInstance, msg) {
   var f, obj = {
     color: jspb.Message.getFieldWithDefault(msg, 1, ""),
     collisionable: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
-    status: jspb.Message.getFieldWithDefault(msg, 3, "")
+    status: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    type: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -8299,6 +8300,10 @@ proto.Obstacle.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setStatus(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setType(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -8346,6 +8351,13 @@ proto.Obstacle.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getType();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -8403,6 +8415,24 @@ proto.Obstacle.prototype.getStatus = function() {
  */
 proto.Obstacle.prototype.setStatus = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string type = 4;
+ * @return {string}
+ */
+proto.Obstacle.prototype.getType = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Obstacle} returns this
+ */
+proto.Obstacle.prototype.setType = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
