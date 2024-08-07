@@ -44,6 +44,8 @@ defmodule Arena.Entities do
         skills: character.skills,
         current_actions: [],
         kill_count: 0,
+        death_count: 0,
+        last_death_at: nil,
         available_stamina: character.base_stamina,
         max_stamina: character.base_stamina,
         stamina_interval: character.stamina_interval,

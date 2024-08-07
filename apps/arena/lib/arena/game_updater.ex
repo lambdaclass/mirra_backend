@@ -311,7 +311,7 @@ defmodule Arena.GameUpdater do
 
     send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
-    send(self(), {:end_game_check, Map.keys(state.game_state.players)})
+    send(self(), :end_game_check)
 
     unless state.game_config.game.bots_enabled do
       toggle_bots(self())
@@ -320,29 +320,24 @@ defmodule Arena.GameUpdater do
     {:noreply, put_in(state, [:game_state, :status], :RUNNING)}
   end
 
-  def handle_info({:end_game_check, last_players_ids}, state) do
-    case check_game_ended(state.game_state.players, last_players_ids) do
-      {:ongoing, players_ids} ->
-        Process.send_after(
-          self(),
-          {:end_game_check, players_ids},
-          state.game_config.game.end_game_interval_ms
-        )
+  def handle_info(:end_game_check, state) do
+    case check_game_ended(state.game_state) do
+      :ongoing ->
+        Process.send_after(self(), :end_game_check, state.game_config.game.end_game_interval_ms)
 
-      {:ended, winner} ->
-        state =
-          put_in(state, [:game_state, :status], :ENDED)
-          |> update_in([:game_state], fn game_state -> put_player_position(game_state, winner.id) end)
+      :ended ->
+        state = put_in(state, [:game_state, :status], :ENDED)
+        standings = calculate_standings(state.game_state)
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
-        broadcast_game_ended(winner, state.game_state)
-        GameTracker.finish_tracking(self(), winner.id)
+        broadcast_game_ended(state.game_state.game_id, state.game_state.players, standings)
+        GameTracker.finish_tracking(self(), standings)
 
         ## The idea of having this waiting period is in case websocket processes keep
         ## sending messages, this way we give some time before making them crash
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
-    end
+   end
 
     {:noreply, state}
   end
@@ -502,10 +497,11 @@ defmodule Arena.GameUpdater do
       game_state
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
       |> maybe_add_kill_to_player(killer_id)
+      |> add_death_to_player(victim_id)
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
-      |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
+    ## FIXME: properly do this
     Process.send_after(self(), {:revive_player, victim_id}, 3000)##game_config.game.revive_time_ms)
 
     {:noreply, %{state | game_state: game_state}}
@@ -730,14 +726,21 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_id, {:ping, encoded_state})
   end
 
-  defp broadcast_game_ended(winner, state) do
+  defp broadcast_game_ended(game_id, players, standings) do
+    ## This is only for backwards compatibility until actual modes are introduced
+    winner = Enum.find_value(standings, fn {player_id, position} ->
+      if position == 1 do
+        Map.get(players, player_id)
+      end
+    end)
+
     game_state = %GameFinished{
       winner: complete_entity(winner),
-      players: complete_entities(state.players)
+      players: complete_entities(players)
     }
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
+    PubSub.broadcast(Arena.PubSub, game_id, {:game_finished, encoded_state})
   end
 
   defp complete_entities(entities) do
@@ -1382,23 +1385,21 @@ defmodule Arena.GameUpdater do
   end
 
   # Check if game has ended
-  defp check_game_ended(players, last_players_ids) do
+  defp check_game_ended(game_state) do
     players_alive =
-      Map.values(players)
+      Map.values(game_state.players)
       |> Enum.filter(&Player.alive?/1)
 
     cond do
-      Enum.count(players_alive) == 1 && Enum.count(players) > 1 ->
-        {:ended, hd(players_alive)}
+      ## This is to avoid finishing the game in case a single player is testing
+      Enum.count(players_alive) == 1 && Enum.count(game_state.players) > 1 ->
+        :ended
 
       Enum.empty?(players_alive) ->
-        ## TODO: We probably should have a better tiebraker (e.g. most kills, less deaths, etc),
-        ##    but for now a random between the ones that were alive last is enough
-        player = Map.get(players, Enum.random(last_players_ids))
-        {:ended, player}
+        :ended
 
       true ->
-        {:ongoing, Enum.map(players_alive, & &1.id)}
+        :ongoing
     end
   end
 
@@ -1810,13 +1811,12 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp put_player_position(%{positions: positions} = game_state, player_id) do
-    next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)
-
-    {client_id, _player_id} =
-      Enum.find(game_state.client_to_player_map, fn {_, map_player_id} -> map_player_id == player_id end)
-
-    update_in(game_state, [:positions], fn positions -> Map.put(positions, client_id, "#{next_position}") end)
+  def calculate_standings(game_state) do
+    game_state.players
+    |> Map.values()
+    |> Enum.sort_by(& &1.aditional_info.last_death_at, :asc)
+    |> Enum.with_index(fn player, index -> {player.id, index + 1} end)
+    |> Map.new()
   end
 
   defp maybe_add_kill_to_player(%{players: players} = game_state, player_id) do
@@ -1827,6 +1827,13 @@ defmodule Arena.GameUpdater do
     else
       game_state
     end
+  end
+
+  defp add_death_to_player(game_state, player_id) do
+    update_in(game_state, [:players, player_id, :aditional_info], fn info ->
+      now = System.monotonic_time(:millisecond)
+      %{info | death_count: info.death_count + 1, last_death_at: now}
+    end)
   end
 
   defp handle_obstacles_transitions(%{status: :RUNNING} = game_state) do

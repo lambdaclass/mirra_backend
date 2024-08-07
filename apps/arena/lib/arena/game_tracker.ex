@@ -16,8 +16,8 @@ defmodule Arena.GameTracker do
     GenServer.call(__MODULE__, {:start_tracking, match_id, client_to_player_map, players, human_clients})
   end
 
-  def finish_tracking(match_pid, winner_id) do
-    GenServer.cast(__MODULE__, {:finish_tracking, match_pid, winner_id})
+  def finish_tracking(match_pid, standings) do
+    GenServer.cast(__MODULE__, {:finish_tracking, match_pid, standings})
   end
 
   @type player_id :: pos_integer()
@@ -85,15 +85,16 @@ defmodule Arena.GameTracker do
 
   def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
     match_data = get_in(state, [:matches, match_pid])
-    result = generate_player_result(match_data, player_id)
+    ## FIXME: instead of generating actual results generate some intermediate state
+    result = generate_player_result(match_data, player_id, %{})
 
     {:reply, result, state}
   end
 
   @impl true
-  def handle_cast({:finish_tracking, match_pid, winner_id}, state) do
+  def handle_cast({:finish_tracking, match_pid, standings}, state) do
     match_data = get_in(state, [:matches, match_pid])
-    results = generate_results(match_data, winner_id)
+    results = generate_results(match_data, standings)
     payload = Jason.encode!(%{results: results})
     send_request("/curse/match/#{match_data.match_id}", payload)
     matches = Map.delete(state.matches, match_pid)
@@ -155,18 +156,18 @@ defmodule Arena.GameTracker do
     put_in(data, [:players, player_id, :bounty_quest_id], bounty_quest_id)
   end
 
-  defp generate_results(match_data, winner_id) do
+  defp generate_results(match_data, standings) do
     Enum.filter(match_data.players, fn {_player_id, player_data} -> player_data.controller == :human end)
     |> Enum.map(fn {player_id, _player_data} ->
-      generate_player_result(match_data, player_id, winner_id)
+      generate_player_result(match_data, player_id, standings)
     end)
   end
 
-  defp generate_player_result(nil, _player_id) do
+  defp generate_player_result(nil, _player_id, _standings) do
     %{}
   end
 
-  defp generate_player_result(match_data, player_id, winner_id \\ nil) do
+  defp generate_player_result(match_data, player_id, standings) do
     duration = System.monotonic_time(:millisecond) - match_data.start_at
     player_data = Map.get(match_data.players, player_id)
 
@@ -175,11 +176,11 @@ defmodule Arena.GameTracker do
       ## TODO: way to track `abandon`, currently a bot taking over will endup with a result
       ##    GameUpdater should send an event when the abandon happens to mark the player
       ##    https://github.com/lambdaclass/mirra_backend/issues/601
-      result: if(winner_id && player_data.id == winner_id, do: "win", else: "loss"),
+      result: if(standings[player_data.id] == 1, do: "win", else: "loss"),
       kills: length(player_data.kills),
       deaths: length(player_data.deaths),
       character: player_data.character,
-      position: get_player_match_place(player_data, winner_id, match_data),
+      position: standings[player_data.id],
       damage_taken: player_data.damage_taken,
       damage_done: player_data.damage_done,
       health_healed: player_data.health_healed,
@@ -208,9 +209,4 @@ defmodule Arena.GameTracker do
         Process.send_after(self(), {:retry_request, path, payload, backoff + 1}, backoff * 500)
     end
   end
-
-  def get_player_match_place(%{id: winner_id}, winner_id, _match_data), do: 1
-  def get_player_match_place(%{position: position}, _winner_id, _match_data), do: position
-  # Default case for timeouts
-  def get_player_match_place(_player_info, _winner_id, match_data), do: match_data.position_on_death
 end
