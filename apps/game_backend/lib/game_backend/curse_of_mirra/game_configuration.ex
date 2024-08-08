@@ -28,10 +28,13 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :match_timeout_ms,
     :field_of_view_inside_bush,
     :time_visible_in_bush_after_skill,
+    :mode,
     :version_id
   ]
 
-  @derive {Jason.Encoder, only: @required}
+  @permitted @required ++ [:respawn_time_ms]
+
+  @derive {Jason.Encoder, only: @permitted}
   schema "game_configurations" do
     field(:tick_rate_ms, :integer)
     field(:bounty_pick_time_ms, :integer)
@@ -53,6 +56,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
     field(:time_visible_in_bush_after_skill, :integer)
+    field(:mode, Ecto.Enum, values: [:battle_royale, :solo_deathmatch])
+    field(:respawn_time_ms, :integer)
 
     belongs_to(:version, Version)
 
@@ -62,7 +67,20 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
   @doc false
   def changeset(game_configuration, attrs) do
     game_configuration
-    |> cast(attrs, @required)
+    |> cast(attrs, @permitted)
     |> validate_required(@required)
+    |> validate_mode()
+  end
+
+  def validate_mode(changeset) do
+    case get_field(changeset, :mode) do
+      :battle_royale ->
+        changeset
+      :solo_deathmatch ->
+        validate_required(changeset, [:respawn_time_ms])
+        |> validate_number(:respawn_time_ms, greater_than: 0)
+      _ ->
+        changeset
+    end
   end
 end

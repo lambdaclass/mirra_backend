@@ -9,7 +9,9 @@
 </.header>
 
 <.list>
+  <:item title="Mode"><%= @game_configuration.mode %></:item>
   <:item title="Tick rate ms"><%= @game_configuration.tick_rate_ms %></:item>
+  <:item title="Respawn interval ms"><%= @game_configuration.respawn_time_ms %></:item>
   <:item title="Bounty pick time ms"><%= @game_configuration.bounty_pick_time_ms %></:item>
   <:item title="Start game time ms"><%= @game_configuration.start_game_time_ms %></:item>
   <:item title="End game interval ms"><%= @game_configuration.end_game_interval_ms %></:item>

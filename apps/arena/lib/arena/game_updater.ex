@@ -502,7 +502,7 @@ defmodule Arena.GameUpdater do
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
     ## FIXME: properly do this
-    Process.send_after(self(), {:revive_player, victim_id}, 3000)##game_config.game.revive_time_ms)
+    # Process.send_after(self(), {:revive_player, victim_id}, 3000)##game_config.game.revive_time_ms)
 
     {:noreply, %{state | game_state: game_state}}
 

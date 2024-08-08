@@ -8,7 +8,9 @@
 </.header>
 
 <.table id="game_configurations" rows={@game_configurations} row_click={&JS.navigate(~p"/game_configurations/#{&1}")}>
+  <:col :let={game_configuration} label="Mode"><%= game_configuration.mode %></:col>
   <:col :let={game_configuration} label="Tick rate ms"><%= game_configuration.tick_rate_ms %></:col>
+  <:col :let={game_configuration} label="Respawn interval ms"><%= game_configuration.respawn_time_ms %></:col>
   <:col :let={game_configuration} label="Bounty pick time ms"><%= game_configuration.bounty_pick_time_ms %></:col>
   <:col :let={game_configuration} label="Start game time ms"><%= game_configuration.start_game_time_ms %></:col>
   <:col :let={game_configuration} label="End game interval ms"><%= game_configuration.end_game_interval_ms %></:col>

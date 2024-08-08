@@ -797,6 +797,7 @@ kenzu_params = %{
 end)
 
 game_configuration_1 = %{
+  mode: "battle_royale",
   tick_rate_ms: 30,
   bounty_pick_time_ms: 5000,
   start_game_time_ms: 10000,

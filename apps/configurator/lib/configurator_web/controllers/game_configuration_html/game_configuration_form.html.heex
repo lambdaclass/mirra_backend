@@ -8,7 +8,9 @@
     options={Enum.map(GameBackend.Configuration.list_versions(), fn version -> {version.name, version.id} end)}
     label="Version"
   />
+  <.input field={f[:mode]} type="select" label="Mode" prompt="Choose a value" options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameConfiguration, :mode)}/>
   <.input field={f[:tick_rate_ms]} type="number" label="Tick rate ms" />
+  <.input field={f[:respawn_time_ms]} type="number" label="Respawn interval ms" />
   <.input field={f[:bounty_pick_time_ms]} type="number" label="Bounty pick time ms" />
   <.input field={f[:start_game_time_ms]} type="number" label="Start game time ms" />
   <.input field={f[:end_game_interval_ms]} type="number" label="End game interval ms" />
