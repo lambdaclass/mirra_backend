@@ -511,8 +511,12 @@ defmodule Arena.Game.Player do
     player = put_in(player, [:aditional_info, :last_combo_timestamp], now)
 
     if combo_time_ms > skill.reset_combo_ms do
+      player = put_in(player, [:aditional_info, :current_basic_animation], 1)
+
       {player, Map.get(skill, :first_skill, skill)}
     else
+      player = put_in(player, [:aditional_info, :current_basic_animation], get_skill_animation(skill.name))
+
       {player, skill}
     end
   end
@@ -526,6 +530,7 @@ defmodule Arena.Game.Player do
       put_in(player, [:aditional_info, :skills, skill_key], first_skill)
     else
       next_skill = skill.next_skill |> Map.put(:first_skill, first_skill)
+
       put_in(player, [:aditional_info, :skills, skill_key], next_skill)
     end
   end
@@ -575,4 +580,9 @@ defmodule Arena.Game.Player do
   defp maybe_make_player_invincible(game_state, _, _) do
     game_state
   end
+
+  defp get_skill_animation("kenzu_quickslash_second"), do: 2
+  defp get_skill_animation("kenzu_quickslash_third"), do: 3
+
+  defp get_skill_animation(_skill_name), do: 1
 end

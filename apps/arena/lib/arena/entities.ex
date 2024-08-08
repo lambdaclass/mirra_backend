@@ -77,7 +77,8 @@ defmodule Arena.Entities do
         on_bush: false,
         bounties: [],
         selected_bounty: nil,
-        bounty_completed: false
+        bounty_completed: false,
+        current_basic_animation: 0
       },
       collides_with: []
     }
@@ -408,7 +409,8 @@ defmodule Arena.Entities do
        forced_movement: entity.aditional_info.forced_movement,
        bounty_completed: entity.aditional_info.bounty_completed,
        team: entity.aditional_info.team,
-       mana: entity.aditional_info.mana
+       mana: entity.aditional_info.mana,
+       current_basic_animation: entity.aditional_info.current_basic_animation
      }}
   end
 

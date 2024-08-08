@@ -301,6 +301,7 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
   field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
+  field(:is_combo, 10, type: :bool, json_name: "isCombo")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -540,7 +541,8 @@ defmodule Arena.Serialization.Player do
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
   field(:mana, 17, type: :uint64)
-  field(:team, 18, type: :uint64)
+  field(:current_basic_animation, 18, type: :uint32, json_name: "currentBasicAnimation")
+  field(:team, 19, type: :uint64)
 end
 
 defmodule Arena.Serialization.Effect do

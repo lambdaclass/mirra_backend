@@ -4802,7 +4802,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     targettingRange: jspb.Message.getFloatingPointFieldWithDefault(msg, 6, 0.0),
     staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
     targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
-    manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0)
+    manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0),
+    isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
   };
 
   if (includeInstance) {
@@ -4874,6 +4875,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 9:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setManaCost(value);
+      break;
+    case 10:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setIsCombo(value);
       break;
     default:
       reader.skipField();
@@ -4964,6 +4969,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeUint64(
       9,
+      f
+    );
+  }
+  f = message.getIsCombo();
+  if (f) {
+    writer.writeBool(
+      10,
       f
     );
   }
@@ -5129,6 +5141,24 @@ proto.ConfigSkill.prototype.getManaCost = function() {
  */
 proto.ConfigSkill.prototype.setManaCost = function(value) {
   return jspb.Message.setProto3IntField(this, 9, value);
+};
+
+
+/**
+ * optional bool is_combo = 10;
+ * @return {boolean}
+ */
+proto.ConfigSkill.prototype.getIsCombo = function() {
+  return /** @type {boolean} */ (jspb.Message.getBooleanFieldWithDefault(this, 10, false));
+};
+
+
+/**
+ * @param {boolean} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setIsCombo = function(value) {
+  return jspb.Message.setProto3BooleanField(this, 10, value);
 };
 
 
@@ -6995,7 +7025,8 @@ proto.Player.toObject = function(includeInstance, msg) {
     forcedMovement: jspb.Message.getBooleanFieldWithDefault(msg, 15, false),
     bountyCompleted: jspb.Message.getBooleanFieldWithDefault(msg, 16, false),
     mana: jspb.Message.getFieldWithDefault(msg, 17, 0),
-    team: jspb.Message.getFieldWithDefault(msg, 18, 0)
+    currentBasicAnimation: jspb.Message.getFieldWithDefault(msg, 18, 0),
+    team: jspb.Message.getFieldWithDefault(msg, 19, 0)
   };
 
   if (includeInstance) {
@@ -7108,6 +7139,10 @@ proto.Player.deserializeBinaryFromReader = function(msg, reader) {
       msg.setMana(value);
       break;
     case 18:
+      var value = /** @type {number} */ (reader.readUint32());
+      msg.setCurrentBasicAnimation(value);
+      break;
+    case 19:
       var value = /** @type {number} */ (reader.readUint64());
       msg.setTeam(value);
       break;
@@ -7259,10 +7294,17 @@ proto.Player.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getCurrentBasicAnimation();
+  if (f !== 0) {
+    writer.writeUint32(
+      18,
+      f
+    );
+  }
   f = message.getTeam();
   if (f !== 0) {
     writer.writeUint64(
-      18,
+      19,
       f
     );
   }
@@ -7659,10 +7701,10 @@ proto.Player.prototype.setMana = function(value) {
 
 
 /**
- * optional uint64 team = 18;
+ * optional uint32 current_basic_animation = 18;
  * @return {number}
  */
-proto.Player.prototype.getTeam = function() {
+proto.Player.prototype.getCurrentBasicAnimation = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 18, 0));
 };
 
@@ -7671,8 +7713,26 @@ proto.Player.prototype.getTeam = function() {
  * @param {number} value
  * @return {!proto.Player} returns this
  */
-proto.Player.prototype.setTeam = function(value) {
+proto.Player.prototype.setCurrentBasicAnimation = function(value) {
   return jspb.Message.setProto3IntField(this, 18, value);
+};
+
+
+/**
+ * optional uint64 team = 19;
+ * @return {number}
+ */
+proto.Player.prototype.getTeam = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 19, 0));
+};
+
+
+/**
+ * @param {number} value
+ * @return {!proto.Player} returns this
+ */
+proto.Player.prototype.setTeam = function(value) {
+  return jspb.Message.setProto3IntField(this, 19, value);
 };
 
 

@@ -7,6 +7,10 @@ defmodule Arena.Game.Skill do
   alias Arena.{Entities, Utils}
   alias Arena.Game.{Player, Crate}
 
+  def do_mechanic(game_state, _entity, nil, _skill_params) do
+    game_state
+  end
+
   def do_mechanic(game_state, entity, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
       do_mechanic(game_state_acc, entity, mechanic, skill_params)
