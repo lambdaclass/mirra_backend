@@ -363,6 +363,7 @@ message Zone {
   bool enabled = 2;
   int64 next_zone_change_timestamp = 3;
   bool shrinking = 4;
+  Position shrinking_center_position = 5;
 }
 
 message KillEntry {
