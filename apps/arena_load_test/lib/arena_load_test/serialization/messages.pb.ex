@@ -812,6 +812,11 @@ defmodule ArenaLoadTest.Serialization.Zone do
   field(:enabled, 2, type: :bool)
   field(:next_zone_change_timestamp, 3, type: :int64, json_name: "nextZoneChangeTimestamp")
   field(:shrinking, 4, type: :bool)
+
+  field(:shrinking_center_position, 5,
+    type: ArenaLoadTest.Serialization.Position,
+    json_name: "shrinkingCenterPosition"
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.KillEntry do

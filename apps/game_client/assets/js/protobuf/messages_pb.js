@@ -11429,7 +11429,8 @@ proto.Zone.toObject = function(includeInstance, msg) {
     radius: jspb.Message.getFloatingPointFieldWithDefault(msg, 1, 0.0),
     enabled: jspb.Message.getBooleanFieldWithDefault(msg, 2, false),
     nextZoneChangeTimestamp: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    shrinking: jspb.Message.getBooleanFieldWithDefault(msg, 4, false)
+    shrinking: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
+    shrinkingCenterPosition: (f = msg.getShrinkingCenterPosition()) && proto.Position.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -11481,6 +11482,11 @@ proto.Zone.deserializeBinaryFromReader = function(msg, reader) {
     case 4:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setShrinking(value);
+      break;
+    case 5:
+      var value = new proto.Position;
+      reader.readMessage(value,proto.Position.deserializeBinaryFromReader);
+      msg.setShrinkingCenterPosition(value);
       break;
     default:
       reader.skipField();
@@ -11537,6 +11543,14 @@ proto.Zone.serializeBinaryToWriter = function(message, writer) {
     writer.writeBool(
       4,
       f
+    );
+  }
+  f = message.getShrinkingCenterPosition();
+  if (f != null) {
+    writer.writeMessage(
+      5,
+      f,
+      proto.Position.serializeBinaryToWriter
     );
   }
 };
@@ -11611,6 +11625,43 @@ proto.Zone.prototype.getShrinking = function() {
  */
 proto.Zone.prototype.setShrinking = function(value) {
   return jspb.Message.setProto3BooleanField(this, 4, value);
+};
+
+
+/**
+ * optional Position shrinking_center_position = 5;
+ * @return {?proto.Position}
+ */
+proto.Zone.prototype.getShrinkingCenterPosition = function() {
+  return /** @type{?proto.Position} */ (
+    jspb.Message.getWrapperField(this, proto.Position, 5));
+};
+
+
+/**
+ * @param {?proto.Position|undefined} value
+ * @return {!proto.Zone} returns this
+*/
+proto.Zone.prototype.setShrinkingCenterPosition = function(value) {
+  return jspb.Message.setWrapperField(this, 5, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.Zone} returns this
+ */
+proto.Zone.prototype.clearShrinkingCenterPosition = function() {
+  return this.setShrinkingCenterPosition(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.Zone.prototype.hasShrinkingCenterPosition = function() {
+  return jspb.Message.getField(this, 5) != null;
 };
 
 
