@@ -120,6 +120,7 @@ message ConfigSkill {
   uint64 stamina_cost = 7;
   float targetting_offset = 8;
   uint64 mana_cost = 9;
+  bool is_combo = 10;
 }
 
 
@@ -212,6 +213,7 @@ message Player {
   bool forced_movement = 15;
   bool bounty_completed = 16;
   uint64 mana = 17;
+  uint32 current_basic_animation = 18;
 }
 
 message Effect {
