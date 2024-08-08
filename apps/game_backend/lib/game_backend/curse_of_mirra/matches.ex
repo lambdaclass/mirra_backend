@@ -19,7 +19,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> create_arena_match_results(match_id, results)
     |> maybe_create_unit_for_user(results)
     |> add_users_to_multi(results)
-    |> get_prestige_to_give_to_users(results)
     |> give_prestige(results)
     |> calculate_new_highest_historical_prestige(results)
     |> maybe_complete_quests()
@@ -48,11 +47,11 @@ defmodule GameBackend.CurseOfMirra.Matches do
     end)
   end
 
-  defp get_prestige_to_give_to_users(multi, results) do
+  defp give_prestige(multi, results) do
     prestige_config = Application.get_env(:game_backend, :arena_prestige)
 
     Enum.reduce(results, multi, fn result, transaction_acc ->
-      Multi.run(transaction_acc, {:get_prestige_reward_amount_for, result["user_id"]}, fn _repo, %{get_users: users} ->
+      Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, %{get_users: users} ->
         user = Enum.find(users, fn user -> user.id == result["user_id"] end)
 
         Enum.find(user.units, fn unit -> unit.character.name == result["character"] end)
@@ -62,24 +61,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
 
           unit ->
             reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
-
-            {:ok, {unit, reward}}
-        end
-      end)
-    end)
-  end
-
-  defp give_prestige(multi, results) do
-    prestige_config = Application.get_env(:game_backend, :arena_prestige)
-
-    Enum.reduce(results, multi, fn result, transaction_acc ->
-      Multi.run(transaction_acc, {:update_prestige, result["user_id"]}, fn repo, changes_so_far ->
-        Map.get(changes_so_far, {:get_prestige_reward_amount_for, result["user_id"]})
-        |> case do
-          nil ->
-            {:error, :unit_not_found}
-
-          {unit, reward} ->
             changes = calculate_rank_and_amount_changes(unit, reward, prestige_config[:ranks])
 
             Unit.curse_of_mirra_update_changeset(unit, changes)
@@ -90,23 +71,20 @@ defmodule GameBackend.CurseOfMirra.Matches do
   end
 
   defp calculate_new_highest_historical_prestige(multi, results) do
+    prestige_config = Application.get_env(:game_backend, :arena_prestige)
+
     Enum.reduce(results, multi, fn result, transaction_acc ->
       Multi.run(transaction_acc, {:maybe_update_new_highest_prestige, result["user_id"]}, fn _repo,
-                                                                                             %{get_users: users} =
-                                                                                               changes_so_far ->
+                                                                                             %{get_users: users} ->
         user = Enum.find(users, fn user -> user.id == result["user_id"] end)
 
-        Map.get(changes_so_far, {:get_prestige_reward_amount_for, result["user_id"]})
-        |> case do
-          nil ->
-            {:error, :unit_not_found}
+        unit = Enum.find(user.units, fn unit -> unit.character.name == result["character"] end)
+        reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
 
-          {_unit, reward} ->
-            if user.prestige + reward > user.prestige do
-              Users.update_user(user, %{highest_historical_prestige: user.prestige + reward})
-            else
-              {:ok, :not_new_highest}
-            end
+        if user.prestige + reward > user.highest_historical_prestige do
+          Users.update_user(user, %{highest_historical_prestige: user.prestige + reward})
+        else
+          {:ok, :not_new_highest}
         end
       end)
     end)
