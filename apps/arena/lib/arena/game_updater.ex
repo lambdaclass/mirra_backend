@@ -281,6 +281,8 @@ defmodule Arena.GameUpdater do
       |> activate_trap_mechanics()
       # Obstacles
       |> handle_obstacles_transitions()
+      # Others
+      |> respawn_players(state.game_config)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -501,10 +503,6 @@ defmodule Arena.GameUpdater do
       |> spawn_power_ups(game_config, victim, amount_of_power_ups)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
-    ## FIXME: properly do this
-    # Process.send_after(self(), {:revive_player, victim_id}, 3000)##game_config.game.revive_time_ms)
-
-    {:noreply, %{state | game_state: game_state}}
 
     case Map.get(game_state.players, killer_id) do
       nil ->
@@ -519,11 +517,6 @@ defmodule Arena.GameUpdater do
     end
 
     {:noreply, %{state | game_state: game_state}}
-  end
-
-  def handle_info({:revive_player, player_id}, state) do
-    state = update_in(state, [:game_state, :players, player_id], fn player -> Player.revive(player, state.game_config) end)
-    {:noreply, state}
   end
 
   def handle_info({:recharge_stamina, player_id}, state) do
@@ -1843,6 +1836,21 @@ defmodule Arena.GameUpdater do
   end
 
   defp handle_obstacles_transitions(game_state) do
+    game_state
+  end
+
+  defp respawn_players(game_state, %{game: %{mode: "solo_deathmatch"}} = config) do
+    Enum.reduce(game_state.players, game_state, fn {_, player}, game_state_acc ->
+      now = System.monotonic_time(:millisecond)
+      if not Player.alive?(player) and (now - player.aditional_info.last_death_at) >= config.game.respawn_time_ms do
+        update_in(game_state_acc, [:players, player.id], fn player -> Player.respawn(player, config) end)
+      else
+        game_state_acc
+      end
+    end)
+  end
+
+  defp respawn_players(game_state, _config) do
     game_state
   end
 

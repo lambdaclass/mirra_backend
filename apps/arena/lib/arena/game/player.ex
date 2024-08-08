@@ -65,7 +65,7 @@ defmodule Arena.Game.Player do
     end)
   end
 
-  def revive(player, config) do
+  def respawn(player, config) do
     params = %{
       id: player.id,
       team: player.aditional_info.team,
