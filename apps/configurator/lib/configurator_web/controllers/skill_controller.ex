@@ -5,6 +5,7 @@ defmodule ConfiguratorWeb.SkillController do
   alias GameBackend.Units.Skills.Mechanic
   alias GameBackend.Units.Skills.Skill
   alias GameBackend.Utils
+  alias GameBackend.Configuration
 
   def index(conn, _params) do
     skills = Skills.list_curse_skills()
@@ -32,7 +33,8 @@ defmodule ConfiguratorWeb.SkillController do
 
   def show(conn, %{"id" => id}) do
     skill = Skills.get_skill!(id)
-    render(conn, :show, skill: skill)
+    version = Configuration.get_version!(skill.version_id)
+    render(conn, :show, skill: skill, version: version)
   end
 
   def edit(conn, %{"id" => id}) do
@@ -43,6 +45,9 @@ defmodule ConfiguratorWeb.SkillController do
 
   def update(conn, %{"id" => id, "skill" => skill_params}) do
     skill = Skills.get_skill!(id)
+
+    skill_params =
+      update_in(skill_params, ["mechanics", "0", "vertices"], fn vertices -> Jason.decode!(vertices) end)
 
     case Skills.update_skill(skill, skill_params) do
       {:ok, skill} ->

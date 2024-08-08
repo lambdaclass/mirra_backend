@@ -1,0 +1,27 @@
+<.header>
+  Listing Arena servers
+  <:actions>
+    <.link href={~p"/arena_servers/new"}>
+      <.button>New Arena server</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="arena_servers" rows={@arena_servers} row_click={&JS.navigate(~p"/arena_servers/#{&1}")}>
+  <:col :let={arena_server} label="Name"><%= arena_server.name %></:col>
+  <:col :let={arena_server} label="Ip"><%= arena_server.ip %></:col>
+  <:col :let={arena_server} label="Url"><%= arena_server.url %></:col>
+  <:col :let={arena_server} label="Status"><%= arena_server.status %></:col>
+  <:col :let={arena_server} label="Environment"><%= arena_server.environment %></:col>
+  <:action :let={arena_server}>
+    <div class="sr-only">
+      <.link navigate={~p"/arena_servers/#{arena_server}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/arena_servers/#{arena_server}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={arena_server}>
+    <.link href={~p"/arena_servers/#{arena_server}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

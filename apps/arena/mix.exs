@@ -4,7 +4,7 @@ defmodule Arena.MixProject do
   def project do
     [
       app: :arena,
-      version: "0.1.0",
+      version: "0.1.14",
       build_path: "../../_build",
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
@@ -41,8 +41,9 @@ defmodule Arena.MixProject do
       {:phoenix_live_dashboard, "~> 0.8.2"},
       {:swoosh, "~> 1.3"},
       {:finch, "~> 0.13"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
+      {:telemetry_metrics_prometheus, "~> 1.1"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},

@@ -1,4 +1,4 @@
-name: Deploy to Brazil Arena testing
+name: "[TESTING-BRAZIL] Deploy to Brazil Arena testing"
 on:
   workflow_dispatch:
 
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing-brazil
-      url: https://arena-brazil-testing.curseofmirra.com/
+      url: https://arena-brazil-testing.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4

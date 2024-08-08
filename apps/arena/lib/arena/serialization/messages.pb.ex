@@ -133,6 +133,12 @@ defmodule Arena.Serialization.GameEvent do
   field(:ping_update, 4, type: Arena.Serialization.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: Arena.Serialization.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:ping, 6, type: Arena.Serialization.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: Arena.Serialization.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule Arena.Serialization.Ping do
@@ -172,6 +178,14 @@ defmodule Arena.Serialization.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule Arena.Serialization.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: Arena.Serialization.BountyInfo)
 end
 
 defmodule Arena.Serialization.GameJoined do
@@ -240,6 +254,8 @@ defmodule Arena.Serialization.ConfigCharacter do
     type: Arena.Serialization.ConfigCharacter.SkillsEntry,
     map: true
   )
+
+  field(:base_mana, 8, type: :uint64, json_name: "baseMana")
 end
 
 defmodule Arena.Serialization.ClientConfig do
@@ -284,6 +300,7 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
+  field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -522,6 +539,7 @@ defmodule Arena.Serialization.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 17, type: :uint64)
 end
 
 defmodule Arena.Serialization.Effect do
@@ -561,6 +579,7 @@ defmodule Arena.Serialization.Obstacle do
   field(:color, 1, type: :string)
   field(:collisionable, 2, type: :bool)
   field(:status, 3, type: :string)
+  field(:type, 4, type: :string)
 end
 
 defmodule Arena.Serialization.PowerUp do

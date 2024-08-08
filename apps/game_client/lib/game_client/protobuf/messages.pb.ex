@@ -133,6 +133,12 @@ defmodule GameClient.Protobuf.GameEvent do
   field(:ping_update, 4, type: GameClient.Protobuf.PingUpdate, json_name: "pingUpdate", oneof: 0)
   field(:toggle_bots, 5, type: GameClient.Protobuf.ToggleBots, json_name: "toggleBots", oneof: 0)
   field(:ping, 6, type: GameClient.Protobuf.Ping, oneof: 0)
+
+  field(:bounty_selected, 7,
+    type: GameClient.Protobuf.BountySelected,
+    json_name: "bountySelected",
+    oneof: 0
+  )
 end
 
 defmodule GameClient.Protobuf.Ping do
@@ -172,6 +178,14 @@ defmodule GameClient.Protobuf.PingUpdate do
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
   field(:latency, 1, type: :uint64)
+end
+
+defmodule GameClient.Protobuf.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: GameClient.Protobuf.BountyInfo)
 end
 
 defmodule GameClient.Protobuf.GameJoined do
@@ -240,6 +254,8 @@ defmodule GameClient.Protobuf.ConfigCharacter do
     type: GameClient.Protobuf.ConfigCharacter.SkillsEntry,
     map: true
   )
+
+  field(:base_mana, 8, type: :uint64, json_name: "baseMana")
 end
 
 defmodule GameClient.Protobuf.ClientConfig do
@@ -284,6 +300,7 @@ defmodule GameClient.Protobuf.ConfigSkill do
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
+  field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
 end
 
 defmodule GameClient.Protobuf.GameState.PlayersEntry do
@@ -522,6 +539,7 @@ defmodule GameClient.Protobuf.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 17, type: :uint64)
 end
 
 defmodule GameClient.Protobuf.Effect do
@@ -561,6 +579,7 @@ defmodule GameClient.Protobuf.Obstacle do
   field(:color, 1, type: :string)
   field(:collisionable, 2, type: :bool)
   field(:status, 3, type: :string)
+  field(:type, 4, type: :string)
 end
 
 defmodule GameClient.Protobuf.PowerUp do

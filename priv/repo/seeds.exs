@@ -1,4 +1,5 @@
 alias GameBackend.Units.Skills
+alias GameBackend.Units.Skills.Skill
 alias GameBackend.{Gacha, Repo, Users, Utils}
 alias GameBackend.Campaigns.Rewards.AfkRewardRate
 alias GameBackend.Users.{KalineTreeLevel, Upgrade}
@@ -226,9 +227,66 @@ Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 
-# Create user for Configurator app
-%{email: "admin@configurator.com", password: "letmepass1234"}
-|> Configurator.Accounts.register_user()
+default_version_params = %{
+  name: "v1.0.0",
+  current: true
+}
+
+{:ok, version} =
+  GameBackend.Configuration.create_version(default_version_params)
+
+## Mechanics
+multi_shoot = %{
+  "type" => "multi_shoot",
+  "angle_between" => 22.0,
+  "amount" => 3,
+  "speed" => 1.1,
+  "duration_ms" => 1000,
+  "remove_on_collision" => true,
+  "projectile_offset" => 100,
+  "damage" => 44,
+  "radius" => 40.0
+}
+
+singularity = %{
+  "type" => "spawn_pool",
+  "name" => "singularity",
+  "activation_delay" => 400,
+  "duration_ms" => 5000,
+  "radius" => 450.0,
+  "range" => 1200.0,
+  "shape" => "circle",
+  "vertices" => [],
+  "effects_to_apply" => [
+    "singularity"
+  ]
+}
+
+simple_shoot = %{
+  "type" => "simple_shoot",
+  "speed" => 1.8,
+  "duration_ms" => 1100,
+  "remove_on_collision" => true,
+  "projectile_offset" => 100,
+  "radius" => 100.0,
+  "damage" => 0,
+  "on_explode_mechanics" => [
+    %{
+      "type" => "circle_hit",
+      "damage" => 58,
+      "range" => 250.0,
+      "offset" => 0
+    }
+  ],
+  "on_collide_effects" => %{
+    "apply_effect_to_entity_type" => [
+      "pool"
+    ],
+    "effects" => [
+      "buff_singularity"
+    ]
+  }
+}
 
 ## Skills
 skills = [
@@ -252,7 +310,8 @@ skills = [
         "offset" => 400
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "muflus_leap",
@@ -313,20 +372,9 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "multi_shoot",
-        "angle_between" => 22.0,
-        "amount" => 3,
-        "speed" => 1.1,
-        "duration_ms" => 1000,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "damage" => 44,
-        "radius" => 40.0
-      }
-    ],
-    "effects_to_apply" => []
+    "mechanics" => [multi_shoot],
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "h4ck_dash",
@@ -368,12 +416,15 @@ skills = [
         "duration_ms" => 2500,
         "radius" => 500.0,
         "range" => 1200.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "denial_of_service"
         ]
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "uma_avenge",
@@ -397,7 +448,8 @@ skills = [
         "offset" => 200
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "uma_veil_radiance",
@@ -442,7 +494,8 @@ skills = [
         "duration_ms" => 250
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "valt_singularity",
@@ -456,20 +509,9 @@ skills = [
     "max_autoaim_range" => 1200,
     "can_pick_destination" => true,
     "block_movement" => true,
-    "mechanics" => [
-      %{
-        "type" => "spawn_pool",
-        "name" => "singularity",
-        "activation_delay" => 400,
-        "duration_ms" => 5000,
-        "radius" => 450.0,
-        "range" => 1200.0,
-        "effects_to_apply" => [
-          "singularity"
-        ]
-      }
-    ],
-    "effects_to_apply" => []
+    "mechanics" => [singularity],
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "valt_warp",
@@ -492,7 +534,8 @@ skills = [
         "duration_ms" => 150
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [],
+    "version_id" => version.id
   },
   %{
     "name" => "valt_antimatter",
@@ -506,34 +549,90 @@ skills = [
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
+    "mechanics" => [simple_shoot],
+    "effects_to_apply" => [],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_quickslash",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "reset_combo_ms" => 0,
+    "is_combo?" => true,
+    "execution_duration_ms" => 100,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1600,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [simple_shoot],
+    "effects_to_apply" => [],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_quickslash_second",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "reset_combo_ms" => 2500,
+    "is_combo?" => true,
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1600,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [multi_shoot],
+    "effects_to_apply" => [],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_quickslash_third",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "reset_combo_ms" => 2500,
+    "is_combo?" => true,
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1600,
+    "stamina_cost" => 1,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [singularity],
+    "effects_to_apply" => [],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_whirlwind",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 9000,
+    "execution_duration_ms" => 5000,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => false,
     "mechanics" => [
       %{
-        "type" => "simple_shoot",
-        "speed" => 1.8,
-        "duration_ms" => 1100,
-        "remove_on_collision" => true,
-        "projectile_offset" => 100,
-        "radius" => 100.0,
-        "damage" => 0,
-        "on_explode_mechanics" => [
-          %{
-            "type" => "circle_hit",
-            "damage" => 58,
-            "range" => 250.0,
-            "offset" => 0
-          }
-        ],
-        "on_collide_effects" => %{
-          "apply_effect_to_entity_type" => [
-            "pool"
-          ],
-          "effects" => [
-            "buff_singularity"
-          ]
-        }
+        "type" => "multi_circle_hit",
+        "damage" => 50,
+        "range" => 300.0,
+        "interval_ms" => 500,
+        "duration_ms" => 5000,
+        "offset" => 0
       }
     ],
-    "effects_to_apply" => []
+    "effects_to_apply" => [
+      "whirlwind"
+    ],
+    "version_id" => version.id
   }
 ]
 
@@ -546,6 +645,17 @@ skills =
     {skill.name, skill.id}
   end)
   |> Map.new()
+
+# Associate combo skills
+_combo_skills =
+  [
+    {"kenzu_quickslash", "kenzu_quickslash_second"},
+    {"kenzu_quickslash_second", "kenzu_quickslash_third"}
+  ]
+  |> Enum.each(fn {skill, next_skill} ->
+    Repo.get(Skill, skills[skill])
+    |> Skills.update_skill(%{next_skill_id: skills[next_skill]})
+  end)
 
 # Characters params
 muflus_params = %{
@@ -561,7 +671,8 @@ muflus_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["muflus_crush"],
   ultimate_skill_id: skills["muflus_leap"],
-  dash_skill_id: skills["muflus_dash"]
+  dash_skill_id: skills["muflus_dash"],
+  version_id: version.id
 }
 
 h4ck_params = %{
@@ -577,7 +688,8 @@ h4ck_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["h4ck_slingshot"],
   ultimate_skill_id: skills["h4ck_denial_of_service"],
-  dash_skill_id: skills["h4ck_dash"]
+  dash_skill_id: skills["h4ck_dash"],
+  version_id: version.id
 }
 
 uma_params = %{
@@ -593,7 +705,8 @@ uma_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["uma_avenge"],
   ultimate_skill_id: skills["uma_veil_radiance"],
-  dash_skill_id: skills["uma_sneak"]
+  dash_skill_id: skills["uma_sneak"],
+  version_id: version.id
 }
 
 valtimer_params = %{
@@ -609,11 +722,29 @@ valtimer_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["valt_antimatter"],
   ultimate_skill_id: skills["valt_singularity"],
-  dash_skill_id: skills["valt_warp"]
+  dash_skill_id: skills["valt_warp"],
+  version_id: version.id
+}
+
+kenzu_params = %{
+  name: "kenzu",
+  active: false,
+  base_speed: 1,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  basic_skill_id: skills["kenzu_quickslash"],
+  ultimate_skill_id: skills["kenzu_whirlwind"],
+  dash_skill_id: skills["valt_warp"],
+  version_id: version.id
 }
 
 # Insert characters
-[muflus_params, h4ck_params, uma_params, valtimer_params]
+[muflus_params, h4ck_params, uma_params, valtimer_params, kenzu_params]
 |> Enum.each(fn char_params ->
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")
@@ -639,7 +770,9 @@ game_configuration_1 = %{
   zone_enabled: true,
   bounties_options_amount: 3,
   match_timeout_ms: 300_000,
-  field_of_view_inside_bush: 500
+  field_of_view_inside_bush: 400,
+  version_id: version.id,
+  time_visible_in_bush_after_skill: 2000
 }
 
 {:ok, _game_configuration_1} =
@@ -650,10 +783,11 @@ golden_clock_params = %{
   name: "golden_clock",
   radius: 200.0,
   mechanics: %{},
-  effects: ["golden_clock_effect"]
+  effects: ["golden_clock_effect"],
+  version_id: version.id
 }
 
-{:ok, golden_clock} =
+{:ok, _golden_clock} =
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
 magic_boots_params = %{
@@ -661,10 +795,11 @@ magic_boots_params = %{
   name: "magic_boots",
   radius: 200.0,
   mechanics: %{},
-  effects: ["magic_boots_effect"]
+  effects: ["magic_boots_effect"],
+  version_id: version.id
 }
 
-{:ok, magic_boots} =
+{:ok, _magic_boots} =
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
 mirra_blessing_params = %{
@@ -672,10 +807,11 @@ mirra_blessing_params = %{
   name: "mirra_blessing",
   radius: 200.0,
   mechanics: %{},
-  effects: ["mirra_blessing_effect"]
+  effects: ["mirra_blessing_effect"],
+  version_id: version.id
 }
 
-{:ok, mirra_blessing} =
+{:ok, _mirra_blessing} =
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
 giant_fruit_params = %{
@@ -683,55 +819,55 @@ giant_fruit_params = %{
   name: "giant",
   radius: 200.0,
   mechanics: %{},
-  effects: ["giant_effect"]
+  effects: ["giant_effect"],
+  version_id: version.id
 }
 
-{:ok, giant_fruit} =
+{:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
+
+polymorph_params = %{
+  active: false,
+  name: "polymorph",
+  radius: 200.0,
+  mechanics: %{},
+  effects: ["polymorph_effect"]
+}
+
+{:ok, _polymorph} =
+  GameBackend.Items.create_consumable_item(polymorph_params)
 
 map_config = %{
   name: "Araban",
   radius: 5520.0,
   initial_positions: [
     %{
-      x: 4600.0,
-      y: 0.0
+      x: 5360.0,
+      y: -540.0
     },
     %{
-      x: -4600.0,
-      y: 0.0
+      x: -5130.0,
+      y: -920.0
     },
     %{
-      x: -1725.0,
-      y: 4025.0
+      x: 555.0,
+      y: 4314.0
     },
     %{
-      x: 1725.0,
-      y: -4025.0
+      x: 2750.0,
+      y: -4200.0
     },
     %{
-      x: 1725.0,
-      y: 4025.0
+      x: -3700.0,
+      y: 2700.0
     },
     %{
-      x: -1725.0,
-      y: -4025.0
+      x: 4250.0,
+      y: 3000.0
     },
     %{
-      x: 4000.0,
-      y: 2300.0
-    },
-    %{
-      x: -4000.0,
-      y: -2300.0
-    },
-    %{
-      x: -4000.0,
-      y: 2300.0
-    },
-    %{
-      x: 4000.0,
-      y: -2300.0
+      x: -1842.0,
+      y: -4505.0
     }
   ],
   obstacles: [
@@ -762,7 +898,7 @@ map_config = %{
       vertices: []
     },
     %{
-      name: "top_right_spikes",
+      name: "right_center_spikes",
       position: %{
         x: 0.0,
         y: 0.0
@@ -772,20 +908,20 @@ map_config = %{
       type: "dynamic",
       vertices: [
         %{
-          x: 2600.0,
-          y: 3350.0
+          x: 2967.0,
+          y: 1374.0
         },
         %{
-          x: 2250.0,
-          y: 3600.0
+          x: 2709.0,
+          y: 1163.0
         },
         %{
-          x: 3000.0,
-          y: 4550.0
+          x: 4041.0,
+          y: -378.0
         },
         %{
-          x: 3350.0,
-          y: 4300.0
+          x: 4283.0,
+          y: -190.0
         }
       ],
       base_status: "underground",
@@ -804,20 +940,20 @@ map_config = %{
               damage: 10,
               vertices: [
                 %{
-                  x: 2600.0,
-                  y: 3350.0
+                  x: 2967.0,
+                  y: 1374.0
                 },
                 %{
-                  x: 2350.0,
-                  y: 3700.0
+                  x: 2709.0,
+                  y: 1163.0
                 },
                 %{
-                  x: 3000.0,
-                  y: 4550.0
+                  x: 4041.0,
+                  y: -378.0
                 },
                 %{
-                  x: 3350.0,
-                  y: 4300.0
+                  x: 4283.0,
+                  y: -190.0
                 }
               ]
             }
@@ -829,7 +965,7 @@ map_config = %{
       }
     },
     %{
-      name: "left_spikes",
+      name: "left_bottom_spikes",
       position: %{
         x: 0.0,
         y: 0.0
@@ -839,20 +975,20 @@ map_config = %{
       type: "dynamic",
       vertices: [
         %{
-          x: -4000.0,
-          y: -1250.0
+          x: -2012.0,
+          y: -1905.0
         },
         %{
-          x: -4000.0,
-          y: -900.0
+          x: -1896.0,
+          y: -2200.0
         },
         %{
-          x: -5500.0,
-          y: -900.0
+          x: -670.0,
+          y: -1343.0
         },
         %{
-          x: -5500.0,
-          y: -1250.0
+          x: -910.0,
+          y: -1087.0
         }
       ],
       base_status: "underground",
@@ -871,20 +1007,20 @@ map_config = %{
               damage: 10,
               vertices: [
                 %{
-                  x: -4000.0,
-                  y: -1250.0
+                  x: -2012.0,
+                  y: -1905.0
                 },
                 %{
-                  x: -4000.0,
-                  y: -900.0
+                  x: -1896.0,
+                  y: -2200.0
                 },
                 %{
-                  x: -5500.0,
-                  y: -900.0
+                  x: -670.0,
+                  y: -1343.0
                 },
                 %{
-                  x: -5500.0,
-                  y: -1250.0
+                  x: -910.0,
+                  y: -1087.0
                 }
               ]
             }
@@ -906,20 +1042,20 @@ map_config = %{
       type: "dynamic",
       vertices: [
         %{
-          x: -1420.0,
-          y: 2235.0
+          x: -700.0,
+          y: 1285.0
         },
         %{
-          x: -1201.0,
-          y: 2585.0
+          x: -475.0,
+          y: 1051.0
         },
         %{
-          x: -180.0,
-          y: 1899.0
+          x: -1240.0,
+          y: 475.0
         },
         %{
-          x: -374.0,
-          y: 1545.0
+          x: -1446.0,
+          y: 726.0
         }
       ],
       base_status: "underground",
@@ -938,20 +1074,20 @@ map_config = %{
               damage: 10,
               vertices: [
                 %{
-                  x: -1420.0,
-                  y: 2235.0
+                  x: -700.0,
+                  y: -1285.0
                 },
                 %{
-                  x: -1201.0,
-                  y: 2585.0
+                  x: -475.0,
+                  y: -1051.0
                 },
                 %{
-                  x: -180.0,
-                  y: 1899.0
+                  x: -1240.0,
+                  y: -475.0
                 },
                 %{
-                  x: -374.0,
-                  y: 1545.0
+                  x: -1446.0,
+                  y: 726.0
                 }
               ]
             }
@@ -963,74 +1099,7 @@ map_config = %{
       }
     },
     %{
-      name: "bottom_right_spikes",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "dynamic",
-      vertices: [
-        %{
-          x: 2717.0,
-          y: -1951.0
-        },
-        %{
-          x: 2411.0,
-          y: -1687.0
-        },
-        %{
-          x: 3296.0,
-          y: -832.0
-        },
-        %{
-          x: 3601.0,
-          y: -1096.0
-        }
-      ],
-      base_status: "underground",
-      statuses_cycle: %{
-        underground: %{
-          transition_time_ms: 3000,
-          on_activation_mechanics: %{},
-          next_status: "raised",
-          time_until_transition_ms: 2000,
-          make_obstacle_collisionable: false
-        },
-        raised: %{
-          transition_time_ms: 3000,
-          on_activation_mechanics: %{
-            polygon_hit: %{
-              damage: 10,
-              vertices: [
-                %{
-                  x: 2717.0,
-                  y: -1951.0
-                },
-                %{
-                  x: 2411.0,
-                  y: -1687.0
-                },
-                %{
-                  x: 3296.0,
-                  y: -832.0
-                },
-                %{
-                  x: 3601.0,
-                  y: -1096.0
-                }
-              ]
-            }
-          },
-          next_status: "underground",
-          time_until_transition_ms: 2000,
-          make_obstacle_collisionable: true
-        }
-      }
-    },
-    %{
-      name: "middle stone north",
+      name: "middle stone south",
       position: %{
         x: 0.0,
         y: 0.0
@@ -1064,44 +1133,6 @@ map_config = %{
         %{
           x: -995.0,
           y: -989.0
-        }
-      ]
-    },
-    %{
-      name: "middle stone south",
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      radius: 0.0,
-      shape: "polygon",
-      type: "static",
-      statuses_cycle: %{},
-      base_status: "",
-      vertices: [
-        %{
-          x: -499.0,
-          y: 1844.0
-        },
-        %{
-          x: 222.0,
-          y: 1937.0
-        },
-        %{
-          x: 737.0,
-          y: 1770.0
-        },
-        %{
-          x: 831.0,
-          y: 1570.0
-        },
-        %{
-          x: 643.0,
-          y: 1485.0
-        },
-        %{
-          x: -425.0,
-          y: 1416.0
         }
       ]
     },
@@ -1870,9 +1901,561 @@ map_config = %{
           y: 5248.0
         }
       ]
+    },
+    %{
+      name: "left center water lake",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -2328.0,
+          y: 1114.0
+        },
+        %{
+          x: -1411.0,
+          y: 803.0
+        },
+        %{
+          x: -1031.0,
+          y: 373.0
+        },
+        %{
+          x: -1148.0,
+          y: 97.0
+        },
+        %{
+          x: -2179.0,
+          y: -560.0
+        },
+        %{
+          x: -2670.0,
+          y: -300.0
+        },
+        %{
+          x: -2645.0,
+          y: 882.0
+        }
+      ]
+    },
+    %{
+      name: "bridge water lake (left)",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -703.0,
+          y: 1262.0
+        },
+        %{
+          x: 714.0,
+          y: 1893.0
+        },
+        %{
+          x: 430.0,
+          y: 654.0
+        },
+        %{
+          x: -570.0,
+          y: 930.0
+        }
+      ]
+    },
+    %{
+      name: "bridge water lake (right)",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 1242.0,
+          y: 1731.0
+        },
+        %{
+          x: 2090.0,
+          y: -367.0
+        },
+        %{
+          x: 2034.0,
+          y: -610.0
+        },
+        %{
+          x: 1709.0,
+          y: -652.0
+        },
+        %{
+          x: 895.0,
+          y: 376.0
+        }
+      ]
+    },
+    %{
+      name: "bottom water lake",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "lake",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -1602.0,
+          y: -2789.0
+        },
+        %{
+          x: -3395.0,
+          y: -3642.0
+        },
+        %{
+          x: -3230.0,
+          y: -4064.0
+        },
+        %{
+          x: -1381.0,
+          y: -3036.0
+        }
+      ]
     }
   ],
-  bushes: []
+  bushes: [
+    %{
+      name: "bottom left cave bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -1975.0,
+          y: -2015.0
+        },
+        %{
+          x: -2523.0,
+          y: -1388.0
+        },
+        %{
+          x: -3188.0,
+          y: -1608.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top right cave bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 951.0,
+          y: 2881.0
+        },
+        %{
+          x: 1791.0,
+          y: 3176.0
+        },
+        %{
+          x: 2806.0,
+          y: 2050.0
+        },
+        %{
+          x: 2550.0,
+          y: 1384.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom left edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -3878.0,
+          y: -1941.0
+        },
+        %{
+          x: -3103.0,
+          y: -2400.0
+        },
+        %{
+          x: -4541.0,
+          y: -3590.0
+        },
+        %{
+          x: -5060.0,
+          y: -2672.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top left edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -5395.0,
+          y: 1807.0
+        },
+        %{
+          x: -4364.0,
+          y: 1902.0
+        },
+        %{
+          x: -4260.0,
+          y: 1506.0
+        },
+        %{
+          x: -4752.0,
+          y: 1010.0
+        },
+        %{
+          x: -5512.0,
+          y: 1101.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top left pass bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -3397.0,
+          y: 1450.0
+        },
+        %{
+          x: -2600.0,
+          y: 2039.0
+        },
+        %{
+          x: -2374.0,
+          y: 1759.0
+        },
+        %{
+          x: -3251.0,
+          y: 1225.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top center edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -140.0,
+          y: 5020.0
+        },
+        %{
+          x: 1203.0,
+          y: 5528.0
+        },
+        %{
+          x: 935.0,
+          y: 4892.0
+        },
+        %{
+          x: 81.0,
+          y: 4313.0
+        },
+        %{
+          x: -429.0,
+          y: 4344.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "top right edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 2334.0,
+          y: 3643.0
+        },
+        %{
+          x: 3166.0,
+          y: 4813.0
+        },
+        %{
+          x: 3862.0,
+          y: 4294.0
+        },
+        %{
+          x: 2894.0,
+          y: 3179.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "right edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 4250.0,
+          y: 2290.0
+        },
+        %{
+          x: 5190.0,
+          y: 2530.0
+        },
+        %{
+          x: 5620.0,
+          y: 1520.0
+        },
+        %{
+          x: 4240.0,
+          y: 1280.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "center right bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 2036.0,
+          y: -290.0
+        },
+        %{
+          x: 3706.0,
+          y: -289.0
+        },
+        %{
+          x: 4002.0,
+          y: -836.0
+        },
+        %{
+          x: 3482.0,
+          y: -1400.0
+        },
+        %{
+          x: 1945.0,
+          y: -568.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom center bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -1185.0,
+          y: -5604.0
+        },
+        %{
+          x: 209.0,
+          y: -5853.0
+        },
+        %{
+          x: 1668.0,
+          y: -3476.0
+        },
+        %{
+          x: 1690.0,
+          y: -2870.0
+        },
+        %{
+          x: 245.0,
+          y: -3986.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom center bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -769.0,
+          y: -841.0
+        },
+        %{
+          x: 141.0,
+          y: -1261.0
+        },
+        %{
+          x: 244.0,
+          y: -763.0
+        },
+        %{
+          x: -631.0,
+          y: -459.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    },
+    %{
+      name: "bottom right edge bushes",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 4000.0,
+          y: -2220.0
+        },
+        %{
+          x: 3512.0,
+          y: -2770.0
+        },
+        %{
+          x: 4731.0,
+          y: -3211.0
+        },
+        %{
+          x: 5258.0,
+          y: -2477.0
+        },
+        %{
+          x: 4715.0,
+          y: -2155.0
+        }
+      ],
+      radius: 0.0,
+      shape: "polygon"
+    }
+  ],
+  pools: [
+    %{
+      name: "sand pool south",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: 333.0,
+          y: -1024.0
+        },
+        %{
+          x: 197.0,
+          y: -2162.0
+        },
+        %{
+          x: 596.0,
+          y: -2284.0
+        },
+        %{
+          x: 1043.0,
+          y: -2814.0
+        },
+        %{
+          x: 1400.0,
+          y: -2822.0
+        },
+        %{
+          x: 2066.0,
+          y: -1680.0
+        },
+        %{
+          x: 1393.0,
+          y: -1184.0
+        }
+      ],
+      effects_to_apply: [
+        "slow_field"
+      ]
+    },
+    %{
+      name: "sand pool north",
+      radius: 0.0,
+      shape: "polygon",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      vertices: [
+        %{
+          x: -1061.0,
+          y: 3153.0
+        },
+        %{
+          x: 543.0,
+          y: 3340.0
+        },
+        %{
+          x: 883.0,
+          y: 2731.0
+        },
+        %{
+          x: -1236.0,
+          y: 2434.0
+        }
+      ],
+      effects_to_apply: [
+        "slow_field"
+      ]
+    }
+  ],
+  version_id: version.id
 }
 
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)

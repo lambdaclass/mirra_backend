@@ -1,4 +1,4 @@
-name: Deploy to Brazil Loadtest Server
+name: "[LOADTEST-SERVER-BRAZIL] Deploy to Brazil Loadtest Server"
 on:
   workflow_dispatch:
 
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing-brazil
-      url: https://loadtest-brazil-server.curseofmirra.com/
+      url: https://loadtest-brazil-server.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4

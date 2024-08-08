@@ -16,6 +16,7 @@ defmodule Gateway.Router do
     get "/get_bounties", QuestController, :get_bounties
 
     scope "/configuration" do
+      get "/current", ConfigurationController, :get_current_configuration
       get "/game", ConfigurationController, :get_game_configuration
       get "/characters", ConfigurationController, :get_characters_configuration
       get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
@@ -57,6 +58,8 @@ defmodule Gateway.Router do
     pipe_through :api
 
     get "/api/health", Controllers.HealthController, :check
+    get "/api/version", Controllers.HealthController, :version
+    get "/api/arena_servers", Controllers.ArenaServersController, :list_arena_servers
 
     get "/auth/:provider/token/:token_id/:client_id", Controllers.AuthController, :validate_token
     get "/auth/public-key", Controllers.AuthController, :public_key

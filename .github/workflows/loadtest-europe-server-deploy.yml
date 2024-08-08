@@ -1,4 +1,4 @@
-name: Deploy to Europe Loadtest Server
+name: "[LOADTEST-SERVER-EUROPE] Deploy to Europe Loadtest Server"
 on:
   workflow_dispatch:
 
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing-europe
-      url: https://loadtest-europe-server.curseofmirra.com/
+      url: https://loadtest-europe-server.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4

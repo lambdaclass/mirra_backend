@@ -36,7 +36,6 @@ defmodule Configurator.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:bcrypt_elixir, "~> 3.0"},
       {:game_backend, in_umbrella: true},
       {:phoenix, "~> 1.7.11"},
       {:phoenix_ecto, "~> 4.4"},
@@ -52,10 +51,11 @@ defmodule Configurator.MixProject do
       {:heroicons,
        github: "tailwindlabs/heroicons", tag: "v2.1.1", sparse: "optimized", app: false, compile: false, depth: 1},
       {:finch, "~> 0.13"},
-      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
       {:bandit, "~> 1.2"},
+      {:ueberauth_google, "~> 0.10"},
       {:game_backend, in_umbrella: true}
     ]
   end

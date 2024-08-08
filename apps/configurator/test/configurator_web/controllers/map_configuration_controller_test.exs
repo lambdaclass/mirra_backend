@@ -5,9 +5,9 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
   import Configurator.AccountsFixtures
   setup [:create_authenticated_conn]
 
-  @create_attrs %{name: "some_map", radius: "120.5", initial_positions: "", obstacles: "", bushes: ""}
-  @update_attrs %{name: "another_map", radius: "456.7", initial_positions: "", obstacles: "", bushes: ""}
-  @invalid_attrs %{name: nil, radius: nil, initial_positions: nil, obstacles: nil, bushes: nil}
+  @create_attrs %{name: "some_map", radius: "120.5", initial_positions: "", obstacles: "", bushes: "", pools: ""}
+  @update_attrs %{name: "another_map", radius: "456.7", initial_positions: "", obstacles: "", bushes: "", pools: ""}
+  @invalid_attrs %{name: nil, radius: nil, initial_positions: nil, obstacles: nil, bushes: nil, pools: nil}
 
   describe "index" do
     test "lists all map_configurations", %{conn: conn} do
@@ -25,7 +25,8 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
 
   describe "create map_configuration" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/map_configurations", map_configuration: @create_attrs)
+      version = version_fixture()
+      conn = post(conn, ~p"/map_configurations", map_configuration: @create_attrs |> Map.put(:version_id, version.id))
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/map_configurations/#{id}"
@@ -92,6 +93,7 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
       conn
       |> Phoenix.ConnTest.init_test_session(%{})
       |> Plug.Conn.put_session(:user_token, token)
+      |> Plug.Conn.put_session(:current_user, user)
 
     %{conn: conn}
   end
