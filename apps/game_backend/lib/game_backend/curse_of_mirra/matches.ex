@@ -20,7 +20,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> maybe_create_unit_for_user(results)
     |> add_users_to_multi(results)
     |> give_prestige(results)
-    |> calculate_new_highest_historical_prestige(results)
     |> maybe_complete_quests()
     |> Repo.transaction()
   end
@@ -63,28 +62,24 @@ defmodule GameBackend.CurseOfMirra.Matches do
             reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
             changes = calculate_rank_and_amount_changes(unit, reward, prestige_config[:ranks])
 
-            Unit.curse_of_mirra_update_changeset(unit, changes)
-            |> repo.update()
-        end
-      end)
-    end)
-  end
+            update_unit =
+              Unit.curse_of_mirra_update_changeset(unit, changes)
+              |> repo.update()
 
-  defp calculate_new_highest_historical_prestige(multi, results) do
-    prestige_config = Application.get_env(:game_backend, :arena_prestige)
+            update_highest_historical_prestige =
+              if user.prestige + reward > user.highest_historical_prestige do
+                Users.update_user(user, %{highest_historical_prestige: user.prestige + reward})
+              else
+                {:ok, :not_new_highest}
+              end
 
-    Enum.reduce(results, multi, fn result, transaction_acc ->
-      Multi.run(transaction_acc, {:maybe_update_new_highest_prestige, result["user_id"]}, fn _repo,
-                                                                                             %{get_users: users} ->
-        user = Enum.find(users, fn user -> user.id == result["user_id"] end)
+            case {update_unit, update_highest_historical_prestige} do
+              {{:ok, _}, {:ok, _}} ->
+                {:ok, :updated_prestige}
 
-        unit = Enum.find(user.units, fn unit -> unit.character.name == result["character"] end)
-        reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
-
-        if user.prestige + reward > user.highest_historical_prestige do
-          Users.update_user(user, %{highest_historical_prestige: user.prestige + reward})
-        else
-          {:ok, :not_new_highest}
+              _ ->
+                {:error, :failed_to_update_prestige}
+            end
         end
       end)
     end)
