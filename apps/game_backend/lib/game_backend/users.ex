@@ -76,24 +76,51 @@ defmodule GameBackend.Users do
   def get_user_by_id_and_game_id(id, game_id) do
     q =
       from(u in User,
+        as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
         join: unit in Unit,
         on: u.id == unit.user_id,
-        join: arena_match_results in assoc(u, :arena_match_results),
-        left_join: won_arena_match_results in GameBackend.Matches.ArenaMatchResult,
-        on: won_arena_match_results.user_id == u.id and won_arena_match_results.result == ^"win",
-        preload: [units: [:character, :items], currencies: :currency],
+        left_join: arena_match_results in assoc(u, :arena_match_results),
+        preload: [
+          [units: [:character, :items]],
+          [currencies: [:currency]]
+        ],
         group_by: u.id,
-        select: %{
-          u
-          | prestige: sum(unit.prestige),
-            most_played_character: max(arena_match_results.character),
-            total_kills: sum(arena_match_results.kills),
-            won_matches: count(won_arena_match_results)
+        select_merge: %{
+          prestige: sum(unit.prestige)
         }
       )
+      |> add_user_stats_to_user_query()
 
     if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  defp add_user_stats_to_user_query(base_query) do
+    kills_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(amr.kills),
+        where: parent_as(:user).id == amr.user_id
+      )
+
+    won_matches_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(),
+        where: parent_as(:user).id == amr.user_id and amr.result == ^"win"
+      )
+
+    most_played_character_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: max(amr.character),
+        where: parent_as(:user).id == amr.user_id
+      )
+
+    from(u in base_query,
+      select_merge: %{
+        most_played_character: subquery(most_played_character_subquery),
+        total_kills: subquery(kills_subquery),
+        won_matches: subquery(won_matches_subquery)
+      }
+    )
   end
 
   @doc """
