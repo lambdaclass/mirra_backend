@@ -78,17 +78,10 @@ defmodule GameBackend.Users do
       from(u in User,
         as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
-        join: unit in Unit,
-        on: u.id == unit.user_id,
-        left_join: arena_match_results in assoc(u, :arena_match_results),
         preload: [
           [units: [:character, :items]],
           [currencies: [:currency]]
-        ],
-        group_by: u.id,
-        select_merge: %{
-          prestige: sum(unit.prestige)
-        }
+        ]
       )
       |> add_user_stats_to_user_query()
 
@@ -114,11 +107,18 @@ defmodule GameBackend.Users do
         where: parent_as(:user).id == amr.user_id
       )
 
+    prestige_subquery =
+      from(unit in Unit,
+        where: parent_as(:user).id == unit.user_id,
+        select: sum(unit.prestige)
+      )
+
     from(u in base_query,
       select_merge: %{
         most_played_character: subquery(most_played_character_subquery),
         total_kills: subquery(kills_subquery),
-        won_matches: subquery(won_matches_subquery)
+        won_matches: subquery(won_matches_subquery),
+        prestige: subquery(prestige_subquery)
       }
     )
   end
@@ -154,6 +154,7 @@ defmodule GameBackend.Users do
 
     q =
       from(u in User,
+        as: :user,
         where: u.id in ^ids,
         preload: [
           arena_match_results: ^arena_match_result_subquery,
@@ -162,6 +163,7 @@ defmodule GameBackend.Users do
           user_quests: ^daily_quest_subquery
         ]
       )
+      |> add_user_stats_to_user_query
 
     repo.all(q)
   end
