@@ -288,6 +288,27 @@ simple_shoot = %{
   }
 }
 
+quickslash_1 = %{
+  "type" => "circle_hit",
+  "damage" => 60,
+  "range" => 350.0,
+  "offset" => 400
+}
+
+quickslash_2 = %{
+  "type" => "circle_hit",
+  "damage" => 65,
+  "range" => 350.0,
+  "offset" => 400
+}
+
+quickslash_3 = %{
+  "type" => "circle_hit",
+  "damage" => 80,
+  "range" => 350.0,
+  "offset" => 400
+}
+
 ## Skills
 skills = [
   %{
@@ -559,15 +580,15 @@ skills = [
     "cooldown_mechanism" => "stamina",
     "reset_combo_ms" => 0,
     "is_combo?" => true,
-    "execution_duration_ms" => 100,
-    "activation_delay_ms" => 0,
+    "execution_duration_ms" => 350,
+    "activation_delay_ms" => 150,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1600,
+    "max_autoaim_range" => 700,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [simple_shoot],
+    "mechanics" => [quickslash_1],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -575,17 +596,17 @@ skills = [
     "name" => "kenzu_quickslash_second",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 2500,
+    "reset_combo_ms" => 800,
     "is_combo?" => true,
     "execution_duration_ms" => 450,
-    "activation_delay_ms" => 0,
+    "activation_delay_ms" => 100,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1600,
+    "max_autoaim_range" => 700,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [multi_shoot],
+    "mechanics" => [quickslash_2],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -593,17 +614,17 @@ skills = [
     "name" => "kenzu_quickslash_third",
     "type" => "basic",
     "cooldown_mechanism" => "stamina",
-    "reset_combo_ms" => 2500,
+    "reset_combo_ms" => 800,
     "is_combo?" => true,
-    "execution_duration_ms" => 450,
-    "activation_delay_ms" => 0,
+    "execution_duration_ms" => 800,
+    "activation_delay_ms" => 100,
     "is_passive" => false,
     "autoaim" => true,
-    "max_autoaim_range" => 1600,
+    "max_autoaim_range" => 700,
     "stamina_cost" => 1,
     "can_pick_destination" => false,
     "block_movement" => true,
-    "mechanics" => [singularity],
+    "mechanics" => [quickslash_3],
     "effects_to_apply" => [],
     "version_id" => version.id
   },
@@ -632,6 +653,30 @@ skills = [
     "effects_to_apply" => [
       "whirlwind"
     ],
+    "version_id" => version.id
+  },
+  %{
+    "name" => "kenzu_pounce",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5000,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1300,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "leap",
+        "range" => 1300.0,
+        "speed" => 1.7,
+        "radius" => 600,
+        "on_arrival_mechanic" => %{}
+      }
+    ],
+    "effects_to_apply" => [],
     "version_id" => version.id
   }
 ]
@@ -739,7 +784,7 @@ kenzu_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["kenzu_quickslash"],
   ultimate_skill_id: skills["kenzu_whirlwind"],
-  dash_skill_id: skills["valt_warp"],
+  dash_skill_id: skills["kenzu_pounce"],
   version_id: version.id
 }
 
