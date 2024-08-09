@@ -678,6 +678,95 @@ skills = [
     ],
     "effects_to_apply" => [],
     "version_id" => version.id
+  },
+  %{
+    "name" => "otix_carbonthrow",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1400,
+    "stamina_cost" => 1,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "destination_shoot",
+        "speed" => 1.8,
+        "duration_ms" => 0,
+        "remove_on_collision" => false,
+        "projectile_offset" => 0,
+        "radius" => 100.0,
+        "damage" => 0,
+        "range" => 700,
+        "on_explode_mechanics" => [
+          %{
+            "type" => "circle_hit",
+            "damage" => 58,
+            "range" => 250.0,
+            "offset" => 0
+          }
+        ]
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "otix_magma_rush",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5500,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 4.0,
+        "duration_ms" => 250
+      }
+    ]
+  },
+  %{
+    "name" => "otix_inferno",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 10000,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "name" => "inferno",
+        "type" => "multiple_pool",
+        "interval_ms" => 100,
+        "activation_delay" => 250,
+        "duration_ms" => 4000,
+        "radius" => 200.0,
+        "effects_to_apply" => [
+          "inferno"
+        ],
+        "pools_angle" => [
+          45,
+          135,
+          225,
+          315
+        ],
+        "range" => 150.0,
+        "shape" => "circle",
+        "vertices" => []
+      }
+    ]
   }
 ]
 
