@@ -70,7 +70,7 @@ defmodule Arena.Game.Player do
       id: player.id,
       team: player.aditional_info.team,
       player_name: player.name,
-      position:  Enum.random(config.map.initial_positions),
+      position: Enum.random(config.map.initial_positions),
       direction: %{x: 0.0, y: 0.0},
       character_name: player.aditional_info.character_name,
       config: config,

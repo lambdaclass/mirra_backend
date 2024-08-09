@@ -77,10 +77,12 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     case get_field(changeset, :mode) do
       :battle_royale ->
         changeset
+
       :solo_deathmatch ->
         validate_required(changeset, [:respawn_time_ms, :match_duration_ms])
         |> validate_number(:respawn_time_ms, greater_than: 0)
         |> validate_number(:match_duration_ms, greater_than: 0)
+
       _ ->
         changeset
     end

@@ -339,7 +339,7 @@ defmodule Arena.GameUpdater do
         ## sending messages, this way we give some time before making them crash
         ## (sending to inexistant process will cause them to crash)
         Process.send_after(self(), :game_ended, state.game_config.game.shutdown_game_wait_ms)
-   end
+    end
 
     {:noreply, state}
   end
@@ -721,11 +721,12 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_game_ended(game_id, players, standings) do
     ## This is only for backwards compatibility until actual modes are introduced
-    winner = Enum.find_value(standings, fn {player_id, position} ->
-      if position == 1 do
-        Map.get(players, player_id)
-      end
-    end)
+    winner =
+      Enum.find_value(standings, fn {player_id, position} ->
+        if position == 1 do
+          Map.get(players, player_id)
+        end
+      end)
 
     game_state = %GameFinished{
       winner: complete_entity(winner),
@@ -1399,6 +1400,7 @@ defmodule Arena.GameUpdater do
   defp check_game_ended(game_state, %{game: %{mode: "solo_deathmatch"}} = config) do
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     time_since_start = now - game_state.start_game_timestamp
+
     case time_since_start >= config.game.match_duration_ms do
       true -> :ended
       false -> :ongoing
@@ -1859,7 +1861,8 @@ defmodule Arena.GameUpdater do
   defp respawn_players(game_state, %{game: %{mode: "solo_deathmatch"}} = config) do
     Enum.reduce(game_state.players, game_state, fn {_, player}, game_state_acc ->
       now = System.monotonic_time(:millisecond)
-      if not Player.alive?(player) and (now - player.aditional_info.last_death_at) >= config.game.respawn_time_ms do
+
+      if not Player.alive?(player) and now - player.aditional_info.last_death_at >= config.game.respawn_time_ms do
         update_in(game_state_acc, [:players, player.id], fn player -> Player.respawn(player, config) end)
       else
         game_state_acc
