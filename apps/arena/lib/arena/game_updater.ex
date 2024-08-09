@@ -774,7 +774,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
-        radius: 7000.0,
+        radius: config.game.zone_start_radius,
         enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
@@ -825,7 +825,7 @@ defmodule Arena.GameUpdater do
         game.external_wall,
         obstacles,
         %{x: 0.0, y: 0.0},
-        1000
+        config.game.zone_random_position_radius
       )
 
     game

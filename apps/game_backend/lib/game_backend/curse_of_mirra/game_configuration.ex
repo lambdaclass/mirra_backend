@@ -28,7 +28,9 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :match_timeout_ms,
     :field_of_view_inside_bush,
     :time_visible_in_bush_after_skill,
-    :version_id
+    :version_id,
+    :zone_start_radius,
+    :zone_random_position_radius
   ]
 
   @derive {Jason.Encoder, only: @required}
@@ -53,6 +55,8 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
     field(:time_visible_in_bush_after_skill, :integer)
+    field(:zone_start_radius, :float)
+    field(:zone_random_position_radius, :integer)
 
     belongs_to(:version, Version)
 

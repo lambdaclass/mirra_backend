@@ -817,7 +817,9 @@ game_configuration_1 = %{
   match_timeout_ms: 300_000,
   field_of_view_inside_bush: 400,
   version_id: version.id,
-  time_visible_in_bush_after_skill: 2000
+  time_visible_in_bush_after_skill: 2000,
+  zone_random_position_radius: 2000,
+  zone_start_radius: 14000
 }
 
 {:ok, _game_configuration_1} =
