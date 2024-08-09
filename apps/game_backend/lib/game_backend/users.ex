@@ -103,8 +103,11 @@ defmodule GameBackend.Users do
 
     most_played_character_subquery =
       from(amr in GameBackend.Matches.ArenaMatchResult,
-        select: max(amr.character),
-        where: parent_as(:user).id == amr.user_id
+        select: amr.character,
+        group_by: amr.character,
+        order_by: [desc: count(amr.character)],
+        where: parent_as(:user).id == amr.user_id,
+        limit: 1
       )
 
     prestige_subquery =
