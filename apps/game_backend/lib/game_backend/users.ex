@@ -624,39 +624,36 @@ defmodule GameBackend.Users do
     |> Multi.run(:get_user, fn _, _ ->
       get_user_by_id_and_game_id(user_id, curse_id)
     end)
-    |> Multi.run(:should_generate_quests, fn _, %{get_user: user} ->
-      today = Date.utc_today()
-
-      {:ok,
-       user.last_daily_quest_generation_at &&
-         Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) in [:eq]}
-    end)
     |> Multi.run(:maybe_generate_quests, fn
-      _, %{should_generate_quests: true, get_user: user} ->
-        quests_results = generate_daily_quests_for_user(user)
+      _, %{get_user: user} ->
+        today = Date.utc_today()
 
-        any_failed_quest? = Enum.find(quests_results, fn {result, _quest} -> result == :error end)
+        should_generate_quests? =
+          user.last_daily_quest_generation_at &&
+            Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) == :lt
 
-        case any_failed_quest? do
-          {:error, changeset} ->
-            {:error, changeset}
+        if should_generate_quests? do
+          quests_results = generate_daily_quests_for_user(user)
+          any_failed_quest = Enum.find(quests_results, fn {result, _quest} -> result == :error end)
 
-          _ ->
-            {:ok, :quests_generated}
+          user_changeset =
+            GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+
+          user_update = Repo.update(user_changeset)
+
+          case {any_failed_quest, user_update} do
+            {nil, {:ok, user}} ->
+              {:ok, {quests_results, user}}
+
+            {{:error, changeset}, _user_update} ->
+              {:error, changeset}
+
+            {_, {:error, user_changeset}} ->
+              {:error, user_changeset}
+          end
+        else
+          {:ok, :not_needed}
         end
-
-      _, _ ->
-        {:ok, :not_needed}
-    end)
-    |> Multi.run(:maybe_update_user_quest_generation, fn
-      _, %{should_generate_quests: true, get_user: user} ->
-        user_changeset =
-          GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
-
-        Repo.update(user_changeset)
-
-      _, _ ->
-        {:ok, :not_needed}
     end)
     |> Multi.run(:user, fn _, %{get_user: user} ->
       get_user_by_id_and_game_id(user.id, curse_id)
