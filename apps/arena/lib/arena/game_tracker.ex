@@ -85,7 +85,8 @@ defmodule Arena.GameTracker do
 
   def handle_call({:get_player_result, player_id}, {match_pid, _}, state) do
     match_data = get_in(state, [:matches, match_pid])
-    ## FIXME: instead of generating actual results generate some intermediate state
+    ## TODO: instead of generating actual results generate some intermediate state
+    ## https://github.com/lambdaclass/mirra_backend/issues/848
     result = generate_player_result(match_data, player_id, %{})
 
     {:reply, result, state}
@@ -184,7 +185,8 @@ defmodule Arena.GameTracker do
       damage_taken: player_data.damage_taken,
       damage_done: player_data.damage_done,
       health_healed: player_data.health_healed,
-      ## FIXME: This is not correct for the reviving mode, but maybe we can simply not have this or keep it as is
+      ## TODO: This is not correct for the reviving mode, for now it will be nil in for that case
+      ## https://github.com/lambdaclass/mirra_backend/issues/848
       killed_by: List.first(player_data.deaths, nil),
       killed_by_bot: player_data.killed_by_bot,
       duration_ms: duration,
