@@ -329,7 +329,7 @@ defmodule Arena.GameUpdater do
 
       :ended ->
         state = put_in(state, [:game_state, :status], :ENDED)
-        standings = calculate_standings(state.game_state)
+        standings = calculate_standings(state.game_state, state.game_config.game.mode)
 
         PubSub.broadcast(Arena.PubSub, state.game_state.game_id, :end_game_state)
         broadcast_game_ended(state.game_state.game_id, state.game_state.players, standings)
@@ -1813,10 +1813,18 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  def calculate_standings(game_state) do
+  def calculate_standings(game_state, "battle_royale") do
     game_state.players
     |> Map.values()
     |> Enum.sort_by(& &1.aditional_info.last_death_at, :asc)
+    |> Enum.with_index(fn player, index -> {player.id, index + 1} end)
+    |> Map.new()
+  end
+
+  def calculate_standings(game_state, "solo_deathmatch") do
+    game_state.players
+    |> Map.values()
+    |> Enum.sort_by(& &1.aditional_info.kill_count, :desc)
     |> Enum.with_index(fn player, index -> {player.id, index + 1} end)
     |> Map.new()
   end
