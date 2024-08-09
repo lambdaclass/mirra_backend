@@ -11,6 +11,7 @@
   <.input field={f[:mode]} type="select" label="Mode" prompt="Choose a value" options={Ecto.Enum.values(GameBackend.CurseOfMirra.GameConfiguration, :mode)}/>
   <.input field={f[:tick_rate_ms]} type="number" label="Tick rate ms" />
   <.input field={f[:respawn_time_ms]} type="number" label="Respawn interval ms" />
+  <.input field={f[:match_duration_ms]} type="number" label="Duration of the match ms" />
   <.input field={f[:bounty_pick_time_ms]} type="number" label="Bounty pick time ms" />
   <.input field={f[:start_game_time_ms]} type="number" label="Start game time ms" />
   <.input field={f[:end_game_interval_ms]} type="number" label="End game interval ms" />

@@ -32,7 +32,7 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :version_id
   ]
 
-  @permitted @required ++ [:respawn_time_ms]
+  @permitted @required ++ [:respawn_time_ms, :match_duration_ms]
 
   @derive {Jason.Encoder, only: @permitted}
   schema "game_configurations" do
@@ -58,6 +58,7 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:time_visible_in_bush_after_skill, :integer)
     field(:mode, Ecto.Enum, values: [:battle_royale, :solo_deathmatch])
     field(:respawn_time_ms, :integer)
+    field(:match_duration_ms, :integer)
 
     belongs_to(:version, Version)
 
@@ -77,8 +78,9 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
       :battle_royale ->
         changeset
       :solo_deathmatch ->
-        validate_required(changeset, [:respawn_time_ms])
+        validate_required(changeset, [:respawn_time_ms, :match_duration_ms])
         |> validate_number(:respawn_time_ms, greater_than: 0)
+        |> validate_number(:match_duration_ms, greater_than: 0)
       _ ->
         changeset
     end

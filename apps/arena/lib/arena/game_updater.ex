@@ -323,7 +323,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info(:end_game_check, state) do
-    case check_game_ended(state.game_state) do
+    case check_game_ended(state.game_state, state.game_config) do
       :ongoing ->
         Process.send_after(self(), :end_game_check, state.game_config.game.end_game_interval_ms)
 
@@ -1378,7 +1378,7 @@ defmodule Arena.GameUpdater do
   end
 
   # Check if game has ended
-  defp check_game_ended(game_state) do
+  defp check_game_ended(game_state, %{game: %{mode: "battle_royale"}}) do
     players_alive =
       Map.values(game_state.players)
       |> Enum.filter(&Player.alive?/1)
@@ -1393,6 +1393,15 @@ defmodule Arena.GameUpdater do
 
       true ->
         :ongoing
+    end
+  end
+
+  defp check_game_ended(game_state, %{game: %{mode: "solo_deathmatch"}} = config) do
+    now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    time_since_start = now - game_state.start_game_timestamp
+    case time_since_start >= config.game.match_duration_ms do
+      true -> :ended
+      false -> :ongoing
     end
   end
 
