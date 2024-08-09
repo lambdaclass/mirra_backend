@@ -774,7 +774,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
-        radius: config.map.radius,
+        radius: 7000.0,
         enabled: config.game.zone_enabled,
         shrinking: false,
         next_zone_change_timestamp:
@@ -819,12 +819,22 @@ defmodule Arena.GameUpdater do
     {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
     {pools, last_id} = initialize_pools(config.map.pools, last_id)
 
+    zone_shrinking_center_position =
+      random_position_in_map(
+        0.0,
+        game.external_wall,
+        obstacles,
+        %{x: 0.0, y: 0.0},
+        1000
+      )
+
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
     |> Map.put(:bushes, bushes)
     |> Map.put(:crates, crates)
     |> Map.put(:pools, pools)
+    |> put_in([:zone, :shrinking_center_position], zone_shrinking_center_position)
   end
 
   # Initialize obstacles
@@ -1280,7 +1290,7 @@ defmodule Arena.GameUpdater do
   defp apply_zone_damage_to_players(%{zone: %{enabled: true}} = game_state, zone_params) do
     players = game_state.players
     zone = game_state.zone
-    safe_zone = Entities.make_circular_area(0, %{x: 0.0, y: 0.0}, zone.radius)
+    safe_zone = Entities.make_circular_area(0, zone.shrinking_center_position, zone.radius)
     safe_ids = Physics.check_collisions(safe_zone, players)
     to_damage_ids = Map.keys(players) -- safe_ids
     now = System.monotonic_time(:millisecond)
