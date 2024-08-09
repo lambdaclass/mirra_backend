@@ -340,7 +340,13 @@ defmodule Arena.Game.Skill do
 
       pool_params =
         Map.merge(
-          %{id: last_id, position: pool_position, owner_id: entity.id, skill_key: skill_params.skill_key},
+          %{
+            id: last_id,
+            position: pool_position,
+            owner_id: entity.id,
+            skill_key: skill_params.skill_key,
+            status: :WAITING
+          },
           multiple_pool
         )
 
