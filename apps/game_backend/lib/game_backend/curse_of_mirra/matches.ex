@@ -62,20 +62,12 @@ defmodule GameBackend.CurseOfMirra.Matches do
             reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
             changes = calculate_rank_and_amount_changes(unit, reward, prestige_config[:ranks])
 
-            update_unit =
+            {:ok, _update_unit} =
               Unit.curse_of_mirra_update_changeset(unit, changes)
               |> repo.update()
 
-            update_highest_historical_prestige =
+            {:ok, _update_highest_historical_prestige} =
               maybe_update_highest_prestige_for_user(user, reward)
-
-            case {update_unit, update_highest_historical_prestige} do
-              {{:ok, _}, {:ok, _}} ->
-                {:ok, :updated_prestige}
-
-              _ ->
-                {:error, :failed_to_update_prestige}
-            end
         end
       end)
     end)
