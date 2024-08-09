@@ -87,7 +87,9 @@ defmodule Arena.Game.Effect do
   end
 
   defp apply_stat_modifier(player, {:defense_change, defense_change}) do
-    update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense -> bonus_defense + defense_change.modifier end)
+    update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense ->
+      min(1.0, bonus_defense + defense_change.modifier)
+    end)
   end
 
   defp apply_stat_modifier(player, {:reduce_stamina_interval, reduce_stamina_interval}) do
