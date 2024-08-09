@@ -1699,6 +1699,8 @@ defmodule Arena.GameUpdater do
       visible_players =
         Map.delete(players, player_id)
         |> Enum.reduce([], fn {candicandidate_player_id, candidate_player}, acc ->
+          same_team? = player.aditional_info.team == candidate_player.aditional_info.team
+
           candidate_bush_collisions =
             Enum.filter(candidate_player.collides_with, fn collided_id ->
               Map.has_key?(bushes, collided_id)
@@ -1715,7 +1717,7 @@ defmodule Arena.GameUpdater do
             now - candidate_player.aditional_info.last_skill_triggered_inside_bush <
               game_config.game.time_visible_in_bush_after_skill
 
-          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
+          if same_team? or Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
                enough_time_since_last_skill? do
             [candicandidate_player_id | acc]
           else
