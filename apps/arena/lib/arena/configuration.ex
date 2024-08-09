@@ -13,29 +13,28 @@ defmodule Arena.Configuration do
       |> File.read()
 
     config = Jason.decode!(config_json, [{:keys, :atoms}])
-    characters = parse_characters_config(get_characters_config())
     client_config = get_client_config()
-    game_config = get_game_configuration()
-    map_config = parse_map_config(get_map_config())
-    items_config = get_consumable_items_configuration()
 
     config
-    |> Map.put(:characters, characters)
-    |> Map.put(:game, game_config)
-    |> Map.put(:map, map_config)
-    |> Map.put(:characters, characters)
-    |> Map.put(:items, items_config)
+    |> Map.merge(get_current_game_configuration())
     |> Map.put(:client_config, client_config)
   end
 
-  defp get_map_config() do
+  defp get_current_game_configuration do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =
-      Finch.build(:get, "#{gateway_url}/curse/configuration/map", [{"content-type", "application/json"}])
+      Finch.build(:get, "#{gateway_url}/curse/configuration/current", [{"content-type", "application/json"}])
       |> Finch.request(Arena.Finch)
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
+    |> Map.update!(:map, fn maps ->
+      map = Enum.random(maps)
+      parse_map_config(map)
+    end)
+    |> Map.update!(:characters, fn characters ->
+      parse_characters_config(characters)
+    end)
   end
 
   defp get_client_config() do
@@ -46,36 +45,6 @@ defmodule Arena.Configuration do
     Jason.decode!(config_json, [{:keys, :atoms}])
   end
 
-  defp get_characters_config() do
-    gateway_url = Application.get_env(:arena, :gateway_url)
-
-    {:ok, payload} =
-      Finch.build(:get, "#{gateway_url}/curse/configuration/characters", [{"content-type", "application/json"}])
-      |> Finch.request(Arena.Finch)
-
-    Jason.decode!(payload.body, [{:keys, :atoms}])
-  end
-
-  defp get_game_configuration() do
-    gateway_url = Application.get_env(:arena, :gateway_url)
-
-    {:ok, payload} =
-      Finch.build(:get, "#{gateway_url}/curse/configuration/game", [{"content-type", "application/json"}])
-      |> Finch.request(Arena.Finch)
-
-    Jason.decode!(payload.body, [{:keys, :atoms}])
-  end
-
-  def get_consumable_items_configuration() do
-    gateway_url = Application.get_env(:arena, :gateway_url)
-
-    {:ok, payload} =
-      Finch.build(:get, "#{gateway_url}/curse/configuration/consumable_items", [{"content-type", "application/json"}])
-      |> Finch.request(Arena.Finch)
-
-    Jason.decode!(payload.body, [{:keys, :atoms}])
-  end
-
   defp parse_characters_config(characters) do
     Enum.map(characters, fn character ->
       character_skills = %{
@@ -84,7 +53,8 @@ defmodule Arena.Configuration do
         "3" => parse_skill_config(character.dash_skill)
       }
 
-      Map.put(character, :skills, character_skills)
+      %{character | mana_recovery_damage_multiplier: maybe_to_float(character.mana_recovery_damage_multiplier)}
+      |> Map.put(:skills, character_skills)
       |> Map.drop([:basic_skill, :ultimate_skill, :dash_skill])
     end)
   end
@@ -101,6 +71,11 @@ defmodule Arena.Configuration do
     %{skill_config | mechanics: mechanics}
   end
 
+  defp parse_skill_config(%{cooldown_mechanism: "mana", mana_cost: cost} = skill_config) when cost >= 0 do
+    mechanics = parse_mechanics_config(skill_config.mechanics)
+    %{skill_config | mechanics: mechanics}
+  end
+
   defp parse_skill_config(skill_config) do
     case skill_config.cooldown_mechanism do
       "stamina" ->
@@ -108,6 +83,9 @@ defmodule Arena.Configuration do
 
       "time" ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_ms should be a number greater than or equal to zero"
+
+      "mana" ->
+        raise "Invalid Skill config for `#{skill_config[:name]}` mana_cost should be a number greater than or equal to zero"
 
       _ ->
         raise "Invalid Skill config for `#{skill_config[:name]}` cooldown_mechanism is invalid, should be either `time` or `stamina`"
@@ -178,14 +156,13 @@ defmodule Arena.Configuration do
   ## The not so small problem we have is that our code expects floats so we still need to parse
   ## the strings, but end up with regular floats
   defp parse_map_config(map_config) do
-    ## We're looking to play in random maps
-    map_config = Enum.random(map_config)
-
     %{
       map_config
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
-        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1)
+        obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
+        pools: Enum.map(map_config.pools, &parse_pool/1),
+        bushes: Enum.map(map_config.bushes, &parse_bush/1)
     }
   end
 
@@ -196,6 +173,15 @@ defmodule Arena.Configuration do
         vertices: Enum.map(obstacle.vertices, &parse_position/1),
         radius: maybe_to_float(obstacle.radius),
         statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    }
+  end
+
+  defp parse_bush(bush) do
+    %{
+      bush
+      | position: parse_position(bush.position),
+        vertices: Enum.map(bush.vertices, &parse_position/1),
+        radius: maybe_to_float(bush.radius)
     }
   end
 
@@ -213,6 +199,15 @@ defmodule Arena.Configuration do
 
   defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
+  end
+
+  defp parse_pool(pool) do
+    %{
+      pool
+      | position: parse_position(pool.position),
+        vertices: Enum.map(pool.vertices, &parse_position/1),
+        radius: maybe_to_float(pool.radius)
+    }
   end
 
   defp parse_position(%{x: x, y: y}) do

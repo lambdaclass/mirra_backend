@@ -24,6 +24,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:speed, :decimal)
     field(:activation_delay, :integer)
     field(:trigger_delay, :integer)
+    field(:shape, Ecto.Enum, values: [:circle, :polygon])
+    field(:vertices, {:array, :map})
     field(:pools_angle, {:array, :float})
 
     field(:type, Ecto.Enum,
@@ -76,6 +78,8 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :remove_on_collision,
       :activation_delay,
       :speed,
+      :shape,
+      :vertices,
       :pools_angle
     ])
     |> cast_assoc(:apply_effects_to)

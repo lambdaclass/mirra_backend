@@ -254,6 +254,8 @@ defmodule Arena.Serialization.ConfigCharacter do
     type: Arena.Serialization.ConfigCharacter.SkillsEntry,
     map: true
   )
+
+  field(:base_mana, 8, type: :uint64, json_name: "baseMana")
 end
 
 defmodule Arena.Serialization.ClientConfig do
@@ -298,6 +300,8 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:targetting_range, 6, type: :float, json_name: "targettingRange")
   field(:stamina_cost, 7, type: :uint64, json_name: "staminaCost")
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
+  field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
+  field(:is_combo, 10, type: :bool, json_name: "isCombo")
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do
@@ -536,6 +540,8 @@ defmodule Arena.Serialization.Player do
   field(:on_bush, 14, type: :bool, json_name: "onBush")
   field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
   field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 17, type: :uint64)
+  field(:current_basic_animation, 18, type: :uint32, json_name: "currentBasicAnimation")
 end
 
 defmodule Arena.Serialization.Effect do
@@ -575,6 +581,7 @@ defmodule Arena.Serialization.Obstacle do
   field(:color, 1, type: :string)
   field(:collisionable, 2, type: :bool)
   field(:status, 3, type: :string)
+  field(:type, 4, type: :string)
 end
 
 defmodule Arena.Serialization.PowerUp do

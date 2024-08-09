@@ -7,6 +7,10 @@ defmodule Arena.Game.Skill do
   alias Arena.{Entities, Utils}
   alias Arena.Game.{Player, Crate}
 
+  def do_mechanic(game_state, _entity, nil, _skill_params) do
+    game_state
+  end
+
   def do_mechanic(game_state, entity, mechanics, skill_params) when is_list(mechanics) do
     Enum.reduce(mechanics, game_state, fn mechanic, game_state_acc ->
       do_mechanic(game_state_acc, entity, mechanic, skill_params)
@@ -61,6 +65,11 @@ defmodule Arena.Game.Skill do
     end)
 
     do_mechanic(game_state, entity, %{multi_cone_hit | type: "cone_hit"}, skill_params)
+  end
+
+  def do_mechanic(game_state, entity, %{type: "multi_circle_hit", amount: nil} = multi_circle_hit, skill_params) do
+    amount = div(multi_circle_hit.duration_ms, multi_circle_hit.interval_ms)
+    do_mechanic(game_state, entity, Map.put(multi_circle_hit, :amount, amount), skill_params)
   end
 
   def do_mechanic(game_state, entity, %{type: "multi_circle_hit"} = multi_circle_hit, skill_params) do
@@ -243,7 +252,13 @@ defmodule Arena.Game.Skill do
 
     pool_params =
       Map.merge(
-        %{id: last_id, position: target_position, owner_id: player.id, skill_key: skill_params.skill_key},
+        %{
+          id: last_id,
+          position: target_position,
+          owner_id: player.id,
+          skill_key: skill_params.skill_key,
+          status: :WAITING
+        },
         pool_params
       )
 

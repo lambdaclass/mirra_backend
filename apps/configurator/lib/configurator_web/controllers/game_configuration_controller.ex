@@ -28,7 +28,8 @@ defmodule ConfiguratorWeb.GameConfigurationController do
 
   def show(conn, %{"id" => id}) do
     game_configuration = Configuration.get_game_configuration!(id)
-    render(conn, :show, game_configuration: game_configuration)
+    version = Configuration.get_version!(game_configuration.version_id)
+    render(conn, :show, game_configuration: game_configuration, version: version)
   end
 
   def edit(conn, %{"id" => id}) do

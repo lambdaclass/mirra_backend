@@ -251,6 +251,7 @@ defmodule Arena.GameUpdater do
       # Players
       |> move_players()
       |> reduce_players_cooldowns(delta_time)
+      |> recover_mana()
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
       |> resolve_projectiles_effects_on_collisions(state.game_config)
@@ -592,8 +593,8 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:block_actions, player_id}, state) do
-    broadcast_player_block_actions(state.game_state.game_id, player_id, false)
+  def handle_info({:block_actions, player_id, value}, state) do
+    broadcast_player_block_actions(state.game_state.game_id, player_id, value)
     {:noreply, state}
   end
 
@@ -816,12 +817,14 @@ defmodule Arena.GameUpdater do
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
     {crates, last_id} = initialize_crates(config.crates, last_id)
     {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
+    {pools, last_id} = initialize_pools(config.map.pools, last_id)
 
     game
     |> Map.put(:last_id, last_id)
     |> Map.put(:obstacles, obstacles)
     |> Map.put(:bushes, bushes)
     |> Map.put(:crates, crates)
+    |> Map.put(:pools, pools)
   end
 
   # Initialize obstacles
@@ -884,6 +887,24 @@ defmodule Arena.GameUpdater do
         )
 
       {crates_acc, last_id}
+    end)
+  end
+
+  defp initialize_pools(pools, last_id) do
+    Enum.reduce(pools, {Map.new(), last_id}, fn pool, {pools_acc, last_id} ->
+      last_id = last_id + 1
+
+      pools_acc =
+        Map.put(
+          pools_acc,
+          last_id,
+          Entities.new_pool(
+            pool
+            |> Map.merge(%{id: last_id, owner_id: 9999, skill_key: "0", status: :READY})
+          )
+        )
+
+      {pools_acc, last_id}
     end)
   end
 
@@ -1009,6 +1030,20 @@ defmodule Arena.GameUpdater do
     %{game_state | players: players}
   end
 
+  defp recover_mana(game_state) do
+    if game_state.status == :RUNNING do
+      players =
+        Map.new(game_state.players, fn {player_id, player} ->
+          player = Player.recover_mana(player)
+          {player_id, player}
+        end)
+
+      %{game_state | players: players}
+    else
+      game_state
+    end
+  end
+
   defp move_players(
          %{
            players: players,
@@ -1078,7 +1113,7 @@ defmodule Arena.GameUpdater do
 
     entities_to_collide_with =
       Player.alive_players(players)
-      |> Map.merge(Obstacle.get_collisionable_obstacles(obstacles))
+      |> Map.merge(Obstacle.get_collisionable_obstacles_for_projectiles(obstacles))
       |> Map.merge(crates)
       |> Map.merge(pools)
       |> Map.merge(%{external_wall.id => external_wall})
@@ -1671,6 +1706,8 @@ defmodule Arena.GameUpdater do
   end
 
   defp update_visible_players(%{players: players, bushes: bushes} = game_state, game_config) do
+    now = System.monotonic_time(:millisecond)
+
     Enum.reduce(players, game_state, fn {player_id, player}, game_state ->
       bush_collisions =
         Enum.filter(player.collides_with, fn collided_id ->
@@ -1692,7 +1729,12 @@ defmodule Arena.GameUpdater do
             Physics.distance_between_entities(player, candidate_player) <=
               game_config.game.field_of_view_inside_bush
 
-          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) do
+          enough_time_since_last_skill? =
+            now - candidate_player.aditional_info.last_skill_triggered_inside_bush <
+              game_config.game.time_visible_in_bush_after_skill
+
+          if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
+               enough_time_since_last_skill? do
             [candicandidate_player_id | acc]
           else
             acc
@@ -1748,7 +1790,7 @@ defmodule Arena.GameUpdater do
         time_passed_since_spawn =
           now - pool.aditional_info.spawn_at
 
-        if time_passed_since_spawn >= pool.aditional_info.duration_ms do
+        if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
           acc
         else
           Map.put(acc, pool_id, pool)

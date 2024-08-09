@@ -1,6 +1,6 @@
 <.header>
   Skill: <%= @skill.name %>
-  <:subtitle>This is a skill record from your database.</:subtitle>
+  <:subtitle>Version: <%= @version.name %></:subtitle>
   <:actions>
     <.link href={~p"/skills/#{@skill}/edit"}>
       <.button>Edit skill</.button>
@@ -21,6 +21,7 @@
   <:item title="Is passive"><%= @skill.is_passive %></:item>
   <:item title="Max autoaim range"><%= @skill.max_autoaim_range %></:item>
   <:item title="Stamina cost"><%= @skill.stamina_cost %></:item>
+  <:item title="Mana cost"><%= @skill.mana_cost %></:item>
 </.list>
 
 <.header>

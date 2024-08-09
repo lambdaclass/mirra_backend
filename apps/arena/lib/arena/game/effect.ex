@@ -24,15 +24,25 @@ defmodule Arena.Game.Effect do
   end
 
   def put_effect_to_entity(game_state, entity, owner_id, start_action_removal_in_ms, effect) do
-    same_applied_effect =
-      Enum.find(entity.aditional_info.effects, fn entity_effect ->
-        entity_effect.owner_id == owner_id and entity_effect.name == effect.name
+    same_applied_effects =
+      Enum.filter(entity.aditional_info.effects, fn entity_effect ->
+        entity_effect.name == effect.name
       end)
 
-    if same_applied_effect && effect.one_time_application do
-      refresh_entity_applied_effect_expire_time(game_state, entity, same_applied_effect)
-    else
-      add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms)
+    same_effect_from_owner =
+      Enum.find(same_applied_effects, fn entity_effect ->
+        entity_effect.owner_id == owner_id
+      end)
+
+    cond do
+      same_effect_from_owner && effect.one_time_application ->
+        refresh_entity_applied_effect_expire_time(game_state, entity, same_effect_from_owner)
+
+      Enum.empty?(same_applied_effects) or effect.allow_multiple_effects ->
+        add_effect_to_entity(game_state, entity, effect, owner_id, start_action_removal_in_ms)
+
+      true ->
+        game_state
     end
   end
 
@@ -77,7 +87,9 @@ defmodule Arena.Game.Effect do
   end
 
   defp apply_stat_modifier(player, {:defense_change, defense_change}) do
-    update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense -> bonus_defense + defense_change.modifier end)
+    update_in(player, [:aditional_info, :bonus_defense], fn bonus_defense ->
+      min(1.0, bonus_defense + defense_change.modifier)
+    end)
   end
 
   defp apply_stat_modifier(player, {:reduce_stamina_interval, reduce_stamina_interval}) do

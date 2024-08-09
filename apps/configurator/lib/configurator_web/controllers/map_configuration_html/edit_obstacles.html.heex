@@ -1,0 +1,43 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+
+  <.header>
+    Obstacles
+  </.header>
+  <.inputs_for :let={obstacle_f} field={f[:obstacles]}>
+    <h2>Obstacle <%= obstacle_f.data.name %></h2>
+    <.input field={obstacle_f[:name]} type="text" label="Name" />
+    <.input field={obstacle_f[:radius]} type="number" label="Radius" step="any" />
+    <.input
+      field={obstacle_f[:type]}
+      type="select"
+      label="Type"
+      options={Ecto.Enum.values(GameBackend.CurseOfMirra.MapConfiguration.Obstacle, :type)}
+    />
+    <.input
+      field={obstacle_f[:shape]}
+      type="select"
+      label="Shape"
+      options={Ecto.Enum.values(GameBackend.CurseOfMirra.MapConfiguration.Pool, :shape)}
+    />
+    <.inputs_for :let={position_f} field={obstacle_f[:position]}>
+      <.input field={position_f[:x]} type="number" label="X" step="any" />
+      <.input field={position_f[:y]} type="number" label="Y" step="any" />
+    </.inputs_for>
+
+    <.button type="button" phx-click={show_modal("obstacle-vertices-#{obstacle_f.data.id}")}>Edit Vertices</.button>
+    <.modal id={"obstacle-vertices-#{obstacle_f.data.id}"}>
+      <.inputs_for :let={vertices_form} field={obstacle_f[:vertices]}>
+        <h3>Vertex</h3>
+        <.input field={vertices_form[:x]} type="number" label="X" step="any" />
+        <.input field={vertices_form[:y]} type="number" label="Y" step="any" />
+      </.inputs_for>
+    </.modal>
+  </.inputs_for>
+
+  <:actions>
+    <.button>Save Map Obstacles</.button>
+  </:actions>
+</.simple_form>

@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing-europe
-      url: https://loadtest-europe-client.curseofmirra.com/
+      url: https://loadtest-europe-client.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4

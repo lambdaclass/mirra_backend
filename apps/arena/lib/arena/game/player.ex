@@ -33,13 +33,21 @@ defmodule Arena.Game.Player do
     defense_multiplier = 1 - player.aditional_info.bonus_defense
     damage_taken = round(damage * defense_multiplier)
 
+    mana_to_recover =
+      if player.aditional_info.mana_recovery_strategy == "damage" do
+        round(damage / player.aditional_info.max_health * player.aditional_info.mana_recovery_damage_multiplier)
+      else
+        0
+      end
+
     send(self(), {:damage_taken, player.id, damage_taken})
 
     Map.update!(player, :aditional_info, fn info ->
       %{
         info
         | health: max(info.health - damage_taken, 0),
-          last_damage_received: System.monotonic_time(:millisecond)
+          last_damage_received: System.monotonic_time(:millisecond),
+          mana: min(info.mana + mana_to_recover, info.max_mana)
       }
     end)
   end
@@ -124,14 +132,35 @@ defmodule Arena.Game.Player do
     put_in(player, [:aditional_info, :stamina_interval], stamina_interval)
   end
 
+  def recover_mana(player) do
+    now = System.monotonic_time(:millisecond)
+    time_since_last = now - player.aditional_info.mana_recovery_time_last_at
+
+    if player.aditional_info.mana_recovery_strategy == "time" and
+         time_since_last >= player.aditional_info.mana_recovery_time_interval_ms do
+      change_mana(player, player.aditional_info.mana_recovery_time_amount)
+      |> put_in([:aditional_info, :mana_recovery_time_last_at], now)
+    else
+      player
+    end
+  end
+
+  def change_mana(player, mana_change) do
+    update_in(player, [:aditional_info, :mana], fn mana ->
+      max(mana + mana_change, 0) |> min(player.aditional_info.max_mana)
+    end)
+  end
+
   def get_skill_if_usable(player, skill_key) do
     skill = get_in(player, [:aditional_info, :skills, skill_key])
     skill_cooldown = get_in(player, [:aditional_info, :cooldowns, skill_key])
     available_stamina = player.aditional_info.available_stamina
+    available_mana = player.aditional_info.mana
 
     case skill do
       %{cooldown_mechanism: "time"} when is_nil(skill_cooldown) -> skill
       %{cooldown_mechanism: "stamina", stamina_cost: cost} when cost <= available_stamina -> skill
+      %{cooldown_mechanism: "mana", mana_cost: cost} when cost <= available_mana -> skill
       _ -> nil
     end
   end
@@ -179,7 +208,7 @@ defmodule Arena.Game.Player do
   def use_skill(player, skill_key, skill_params, %{game_state: game_state}) do
     case get_skill_if_usable(player, skill_key) do
       nil ->
-        Process.send(self(), {:block_actions, player.id}, [])
+        Process.send(self(), {:block_actions, player.id, false}, [])
         game_state
 
       skill ->
@@ -199,7 +228,7 @@ defmodule Arena.Game.Player do
           end
 
         execution_duration = calculate_duration(skill, player.position, skill_direction, auto_aim?)
-        Process.send_after(self(), {:block_actions, player.id}, execution_duration)
+        Process.send_after(self(), {:block_actions, player.id, false}, execution_duration)
 
         if skill.block_movement do
           send(self(), {:block_movement, player.id, true})
@@ -240,6 +269,13 @@ defmodule Arena.Game.Player do
           |> update_combo_sequence(skill_key, skill)
           |> maybe_face_player_towards_direction(skill_direction, skill.block_movement)
           |> put_in([:aditional_info, :last_skill_triggered], System.monotonic_time(:millisecond))
+          |> update_in([:aditional_info, :last_skill_triggered_inside_bush], fn last_skill_triggered_inside_bush ->
+            if player.aditional_info.on_bush do
+              System.monotonic_time(:millisecond)
+            else
+              last_skill_triggered_inside_bush
+            end
+          end)
 
         put_in(game_state, [:players, player.id], player)
         |> maybe_make_player_invincible(player.id, skill)
@@ -453,6 +489,10 @@ defmodule Arena.Game.Player do
     end
   end
 
+  defp apply_skill_cooldown(player, _skill_key, %{cooldown_mechanism: "mana", mana_cost: cost}) do
+    change_mana(player, -cost)
+  end
+
   defp maybe_reset_combo(player, %{is_combo?: false} = skill), do: {player, skill}
 
   defp maybe_reset_combo(player, skill) do
@@ -461,8 +501,12 @@ defmodule Arena.Game.Player do
     player = put_in(player, [:aditional_info, :last_combo_timestamp], now)
 
     if combo_time_ms > skill.reset_combo_ms do
+      player = put_in(player, [:aditional_info, :current_basic_animation], 1)
+
       {player, Map.get(skill, :first_skill, skill)}
     else
+      player = put_in(player, [:aditional_info, :current_basic_animation], get_skill_animation(skill.name))
+
       {player, skill}
     end
   end
@@ -476,6 +520,7 @@ defmodule Arena.Game.Player do
       put_in(player, [:aditional_info, :skills, skill_key], first_skill)
     else
       next_skill = skill.next_skill |> Map.put(:first_skill, first_skill)
+
       put_in(player, [:aditional_info, :skills, skill_key], next_skill)
     end
   end
@@ -525,4 +570,9 @@ defmodule Arena.Game.Player do
   defp maybe_make_player_invincible(game_state, _, _) do
     game_state
   end
+
+  defp get_skill_animation("kenzu_quickslash_second"), do: 2
+  defp get_skill_animation("kenzu_quickslash_third"), do: 3
+
+  defp get_skill_animation(_skill_name), do: 1
 end
