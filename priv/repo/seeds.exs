@@ -801,7 +801,8 @@ otix_params = %{
   natural_healing_damage_interval: 3500,
   basic_skill_id: skills["otix_carbonthrow"],
   ultimate_skill_id: skills["otix_inferno"],
-  dash_skill_id: skills["otix_magma_rush"]
+  dash_skill_id: skills["otix_magma_rush"],
+  version_id: version.id
 }
 
 # Insert characters
