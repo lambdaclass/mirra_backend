@@ -1,0 +1,23 @@
+<.header>
+  Listing Game modes
+  <:actions>
+    <.link href={~p"/game_modes/new"}>
+      <.button>New Game mode</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="game_modes" rows={@game_modes} row_click={&JS.navigate(~p"/game_modes/#{&1}")}>
+  <:col :let={game_mode} label="Name"><%= game_mode.name %></:col>
+  <:action :let={game_mode}>
+    <div class="sr-only">
+      <.link navigate={~p"/game_modes/#{game_mode}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/game_modes/#{game_mode}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={game_mode}>
+    <.link href={~p"/game_modes/#{game_mode}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>
