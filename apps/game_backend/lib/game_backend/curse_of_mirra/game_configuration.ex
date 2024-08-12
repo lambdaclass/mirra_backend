@@ -28,7 +28,13 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :match_timeout_ms,
     :field_of_view_inside_bush,
     :time_visible_in_bush_after_skill,
-    :version_id
+    :version_id,
+    :distance_to_power_up,
+    :power_up_damage_modifier,
+    :power_up_health_modifier,
+    :power_up_radius,
+    :power_up_activation_delay_ms,
+    :power_ups_per_kill
   ]
 
   @derive {Jason.Encoder, only: @required}
@@ -53,6 +59,13 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
     field(:time_visible_in_bush_after_skill, :integer)
+    field(:distance_to_power_up, :integer)
+    field(:power_up_damage_modifier, :float)
+    field(:power_up_health_modifier, :float)
+    field(:power_up_radius, :float)
+    field(:power_up_activation_delay_ms, :integer)
+
+    embeds_many(:power_ups_per_kill, __MODULE__.PowerUpPerKillAmount)
 
     belongs_to(:version, Version)
 
@@ -64,5 +77,25 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     game_configuration
     |> cast(attrs, @required)
     |> validate_required(@required)
+    |> cast_embed(:power_ups_per_kill)
+  end
+
+  defmodule PowerUpPerKillAmount do
+    @moduledoc """
+    Position embedded schema to be used by MapConfiguration
+    """
+    use GameBackend.Schema
+
+    @derive {Jason.Encoder, only: [:minimum_amount_of_power_ups, :amount_of_power_ups_to_drop]}
+    embedded_schema do
+      field(:minimum_amount_of_power_ups, :integer)
+      field(:amount_of_power_ups_to_drop, :integer)
+    end
+
+    def changeset(position, attrs) do
+      position
+      |> cast(attrs, [:minimum_amount_of_power_ups, :amount_of_power_ups_to_drop])
+      |> validate_required([:minimum_amount_of_power_ups, :amount_of_power_ups_to_drop])
+    end
   end
 end
