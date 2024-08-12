@@ -16,15 +16,17 @@ defmodule Arena.Configuration do
     client_config = get_client_config()
 
     config
-    |> Map.merge(get_current_game_configuration())
+    |> Map.merge(get_current_game_configuration_by_game_mode("battle_royale"))
     |> Map.put(:client_config, client_config)
   end
 
-  defp get_current_game_configuration do
+  defp get_current_game_configuration_by_game_mode(game_mode) do
     gateway_url = Application.get_env(:arena, :gateway_url)
 
     {:ok, payload} =
-      Finch.build(:get, "#{gateway_url}/curse/configuration/current", [{"content-type", "application/json"}])
+      Finch.build(:get, "#{gateway_url}/curse/configuration/#{game_mode}/current", [
+        {"content-type", "application/json"}
+      ])
       |> Finch.request(Arena.Finch)
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
