@@ -7,7 +7,7 @@ if [ -d "/tmp/mirra_backend${_SERVICE_SUFFIX}" ]; then
 fi
 
 cd /tmp
-git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME} mirra_backend${_SERVICE_SUFFIX}
+git clone git@github.com:lambdaclass/mirra_backend.git --branch ${BRANCH_NAME} mirra_backend${_SERVICE_SUFFIX}
 cd mirra_backend${_SERVICE_SUFFIX}
 
 chmod +x devops/entrypoint.sh
