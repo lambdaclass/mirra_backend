@@ -15,6 +15,8 @@ defmodule GameBackend.Configuration.Version do
     field(:name, :string)
     field(:current, :boolean, default: false)
 
+    belongs_to(:game_mode, GameBackend.Configuration.GameMode)
+
     has_many(:characters, Character)
     has_many(:consumable_items, ConsumableItem)
     has_many(:skills, Skill)
@@ -27,7 +29,7 @@ defmodule GameBackend.Configuration.Version do
   @doc false
   def changeset(version, attrs) do
     version
-    |> cast(attrs, [:name, :current])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :current, :game_mode_id])
+    |> validate_required([:name, :game_mode_id])
   end
 end
