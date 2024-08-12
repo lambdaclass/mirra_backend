@@ -12,7 +12,6 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:angle_between, :decimal)
     field(:damage, :integer)
     field(:duration_ms, :integer)
-    field(:effects_to_apply, {:array, :string})
     field(:interval_ms, :integer)
     field(:move_by, :decimal)
     field(:name, :string)
@@ -56,7 +55,6 @@ defmodule GameBackend.Units.Skills.Mechanic do
       :angle_between,
       :damage,
       :duration_ms,
-      :effects_to_apply,
       :interval_ms,
       :move_by,
       :name,

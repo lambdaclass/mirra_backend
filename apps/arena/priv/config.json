@@ -58,42 +58,6 @@
   },
   "effects": [
     {
-      "name": "invisible",
-      "duration_ms": 4000,
-      "remove_on_action": true,
-      "one_time_application": false,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "invisible": {
-          "execute_multiple_times": true,
-          "effect_delay_ms": 0
-        },
-        "speed_boost": {
-          "modifier": 0.25,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    },
-    {
-      "name": "singularity",
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "pull": {
-          "force": 15.0,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": true
-        },
-        "damage": {
-          "damage": 13,
-          "effect_delay_ms": 400,
-          "execute_multiple_times": true
-        }
-      }
-    },
-    {
       "name": "buff_singularity",
       "remove_on_action": false,
       "one_time_application": true,
@@ -103,45 +67,6 @@
         "buff_pool": {
           "stat_multiplier": 0.1,
           "additive_duration_add_ms": 1000,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    },
-    {
-      "name": "denial_of_service",
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "damage": {
-          "damage": 17,
-          "effect_delay_ms": 220,
-          "execute_multiple_times": true
-        }
-      }
-    },
-    {
-      "name": "whirlwind",
-      "duration_ms": 5000,
-      "remove_on_action": false,
-      "one_time_application": false,
-      "effect_mechanics": {
-        "defense_change": {
-          "modifier": 0.75,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    },
-    {
-      "name": "slow_field",
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": false,
-      "effect_mechanics": {
-        "speed_boost": {
-          "modifier": -0.50,
           "effect_delay_ms": 0,
           "execute_multiple_times": false
         }

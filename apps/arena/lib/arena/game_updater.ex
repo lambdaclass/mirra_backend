@@ -406,11 +406,11 @@ defmodule Arena.GameUpdater do
     {:noreply, state}
   end
 
-  def handle_info({:delayed_effect_application, player_id, effects_to_apply, execution_duration_ms}, state) do
+  def handle_info({:delayed_effect_application, player_id, effect_to_apply, execution_duration_ms}, state) do
     player = Map.get(state.game_state.players, player_id)
 
     game_state =
-      Skill.handle_skill_effects(state.game_state, player, effects_to_apply, execution_duration_ms, state.game_config)
+      Skill.handle_skill_effects(state.game_state, player, effect_to_apply, execution_duration_ms)
 
     {:noreply, %{state | game_state: game_state}}
   end

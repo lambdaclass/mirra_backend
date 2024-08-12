@@ -71,18 +71,18 @@ defmodule Arena.Configuration do
   defp parse_skill_config(%{cooldown_mechanism: "stamina", stamina_cost: cost} = skill_config) when cost >= 0 do
     skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics}
+    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "time", cooldown_ms: cooldown} = skill_config) when cooldown >= 0 do
     skill_config = parse_combo_config(skill_config)
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics}
+    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
   end
 
   defp parse_skill_config(%{cooldown_mechanism: "mana", mana_cost: cost} = skill_config) when cost >= 0 do
     mechanics = parse_mechanics_config(skill_config.mechanics)
-    %{skill_config | mechanics: mechanics}
+    %{skill_config | mechanics: mechanics, effect_to_apply: parse_effect(skill_config.effect_to_apply)}
   end
 
   defp parse_skill_config(skill_config) do
@@ -154,7 +154,8 @@ defmodule Arena.Configuration do
         range: maybe_to_float(mechanic.range),
         speed: maybe_to_float(mechanic.speed),
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
-        on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics)
+        on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
+        effect: parse_effect(mechanic.effect)
     }
   end
 
@@ -217,6 +218,10 @@ defmodule Arena.Configuration do
         radius: maybe_to_float(pool.radius),
         effect: parse_effect(pool.effect)
     }
+  end
+
+  defp parse_effect(nil) do
+    nil
   end
 
   defp parse_effect(effect) do

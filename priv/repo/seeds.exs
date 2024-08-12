@@ -235,6 +235,82 @@ default_version_params = %{
 {:ok, version} =
   GameBackend.Configuration.create_version(default_version_params)
 
+singularity_effect = %{
+  name: "singularity",
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "pull",
+      force: 15.0,
+      effect_delay_ms: 0,
+      execute_multiple_times: true
+    },
+    %{
+      name: "damage",
+      damage: 13,
+      effect_delay_ms: 400,
+      execute_multiple_times: true
+    }
+  ]
+}
+
+denial_of_service =
+  %{
+    name: "denial_of_service",
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "damage",
+        damage: 17,
+        effect_delay_ms: 220,
+        execute_multiple_times: true
+      }
+    ]
+  }
+
+invisible_effect =
+  %{
+    name: "invisible",
+    duration_ms: 4000,
+    remove_on_action: true,
+    one_time_application: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "invisible",
+        execute_multiple_times: true,
+        effect_delay_ms: 0
+      },
+      %{
+        name: "speed_boost",
+        modifier: 0.25,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
+whirlwind_effect =
+  %{
+    name: "whirlwind",
+    duration_ms: 5000,
+    remove_on_action: false,
+    one_time_application: false,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "defense_change",
+        modifier: 0.75,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
 ## Mechanics
 multi_shoot = %{
   "type" => "multi_shoot",
@@ -257,9 +333,7 @@ singularity = %{
   "range" => 1200.0,
   "shape" => "circle",
   "vertices" => [],
-  "effects_to_apply" => [
-    "singularity"
-  ]
+  "effect" => singularity_effect
 }
 
 simple_shoot = %{
@@ -310,21 +384,6 @@ quickslash_3 = %{
 }
 
 ## Skills
-denial_of_service =
-  %{
-    name: "denial_of_service",
-    remove_on_action: false,
-    one_time_application: true,
-    allow_multiple_effects: true,
-    effect_mechanics: [
-      %{
-        name: "damage",
-        damage: 17,
-        effect_delay_ms: 220,
-        execute_multiple_times: true
-      }
-    ]
-  }
 
 skills = [
   %{
@@ -456,7 +515,6 @@ skills = [
         "effect" => denial_of_service
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -481,7 +539,6 @@ skills = [
         "offset" => 200
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -504,9 +561,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "effects_to_apply" => [
-      "invisible"
-    ]
+    "effect_to_apply" => invisible_effect
   },
   %{
     "name" => "uma_sneak",
@@ -527,7 +582,6 @@ skills = [
         "duration_ms" => 250
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -543,7 +597,6 @@ skills = [
     "can_pick_destination" => true,
     "block_movement" => true,
     "mechanics" => [singularity],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -567,7 +620,6 @@ skills = [
         "duration_ms" => 150
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -583,7 +635,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [simple_shoot],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -601,7 +652,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [quickslash_1],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -619,7 +669,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [quickslash_2],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -637,7 +686,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [quickslash_3],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -662,9 +710,7 @@ skills = [
         "offset" => 0
       }
     ],
-    "effects_to_apply" => [
-      "whirlwind"
-    ],
+    "effect_to_apply" => whirlwind_effect,
     "version_id" => version.id
   },
   %{
@@ -688,7 +734,6 @@ skills = [
         "on_arrival_mechanic" => %{}
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   }
 ]
