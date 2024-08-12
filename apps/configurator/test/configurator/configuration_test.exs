@@ -138,7 +138,8 @@ defmodule Configurator.ConfigurationTest do
     end
 
     test "create_version/1 with valid data creates a version" do
-      valid_attrs = %{name: "some name"}
+      game_mode = game_mode_fixture()
+      valid_attrs = %{name: "some name", game_mode_id: game_mode.id}
 
       assert {:ok, %Version{} = version} = Configuration.create_version(valid_attrs)
       assert version.name == "some name"
@@ -171,6 +172,54 @@ defmodule Configurator.ConfigurationTest do
     test "change_version/1 returns a version changeset" do
       version = version_fixture()
       assert %Ecto.Changeset{} = Configuration.change_version(version)
+    end
+  end
+
+  describe "game_modes" do
+    alias GameBackend.Configuration.GameMode
+
+    import Configurator.ConfigurationFixtures
+
+    @invalid_attrs %{name: nil}
+    test "get_game_mode!/1 returns the game_mode with given id" do
+      game_mode = game_mode_fixture()
+      assert Configuration.get_game_mode!(game_mode.id) == game_mode
+    end
+
+    test "create_game_mode/1 with valid data creates a game_mode" do
+      valid_attrs = %{name: "some name"}
+
+      assert {:ok, %GameMode{} = game_mode} = Configuration.create_game_mode(valid_attrs)
+      assert game_mode.name == "some name"
+    end
+
+    test "create_game_mode/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Configuration.create_game_mode(@invalid_attrs)
+    end
+
+    test "update_game_mode/2 with valid data updates the game_mode" do
+      game_mode = game_mode_fixture()
+      update_attrs = %{name: "some updated name"}
+
+      assert {:ok, %GameMode{} = game_mode} = Configuration.update_game_mode(game_mode, update_attrs)
+      assert game_mode.name == "some updated name"
+    end
+
+    test "update_game_mode/2 with invalid data returns error changeset" do
+      game_mode = game_mode_fixture()
+      assert {:error, %Ecto.Changeset{}} = Configuration.update_game_mode(game_mode, @invalid_attrs)
+      assert game_mode == Configuration.get_game_mode!(game_mode.id)
+    end
+
+    test "delete_game_mode/1 deletes the game_mode" do
+      game_mode = game_mode_fixture()
+      assert {:ok, %GameMode{}} = Configuration.delete_game_mode(game_mode)
+      assert_raise Ecto.NoResultsError, fn -> Configuration.get_game_mode!(game_mode.id) end
+    end
+
+    test "change_game_mode/1 returns a game_mode changeset" do
+      game_mode = game_mode_fixture()
+      assert %Ecto.Changeset{} = Configuration.change_game_mode(game_mode)
     end
   end
 end

@@ -75,13 +75,30 @@ defmodule Configurator.ConfigurationFixtures do
   Generate a version.
   """
   def version_fixture(attrs \\ %{}) do
+    game_mode = game_mode_fixture()
+
     {:ok, version} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some name",
+        game_mode_id: game_mode.id
       })
       |> GameBackend.Configuration.create_version()
 
     version
+  end
+
+  @doc """
+  Generate a game_mode.
+  """
+  def game_mode_fixture(attrs \\ %{}) do
+    {:ok, game_mode} =
+      attrs
+      |> Enum.into(%{
+        name: "some name"
+      })
+      |> GameBackend.Configuration.create_game_mode()
+
+    game_mode
   end
 end
