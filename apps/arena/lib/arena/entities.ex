@@ -204,7 +204,7 @@ defmodule Arena.Entities do
       is_moving: false,
       aditional_info: %{
         name: config.name,
-        effects: config.effects,
+        effect: config.effect,
         mechanics: config.mechanics,
         pull_immunity: true
       }

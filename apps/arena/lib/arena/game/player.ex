@@ -354,17 +354,14 @@ defmodule Arena.Game.Player do
     player.aditional_info.inventory != nil
   end
 
-  def use_item(player, game_state, game_config) do
+  def use_item(player, game_state) do
     case player.aditional_info.inventory do
       nil ->
         game_state
 
       item ->
         game_state =
-          Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
-            effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
-            Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-          end)
+          Effect.put_effect_to_entity(game_state, player, player.id, item.effect)
           |> put_in([:players, player.id, :aditional_info, :inventory], nil)
 
         Item.do_mechanics(game_state, player, item.mechanics)

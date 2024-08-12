@@ -109,60 +109,6 @@
       }
     },
     {
-      "name": "golden_clock_effect",
-      "duration_ms": 9000,
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "reduce_stamina_interval": {
-          "decrease_by": 0.5,
-          "execute_multiple_times": false,
-          "effect_delay_ms": 0
-        },
-        "refresh_stamina": {
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        },
-        "reduce_cooldowns_duration": {
-          "multiplier": 0.5,
-          "execute_multiple_times": false,
-          "effect_delay_ms": 0
-        },
-        "refresh_cooldowns": {
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    },
-    {
-      "name": "magic_boots_effect",
-      "duration_ms": 8000,
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "speed_boost": {
-          "modifier": 0.5,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    },
-    {
-      "name": "mirra_blessing_effect",
-      "duration_ms": 7000,
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "damage_immunity": {
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    },
-    {
       "name": "denial_of_service",
       "remove_on_action": false,
       "one_time_application": true,
@@ -171,35 +117,6 @@
         "damage": {
           "damage": 17,
           "effect_delay_ms": 220,
-          "execute_multiple_times": true
-        }
-      }
-    },
-    {
-      "name": "giant_effect",
-      "duration_ms": 9000,
-      "remove_on_action": false,
-      "one_time_application": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "modify_radius": {
-          "modifier": 0.4,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        },
-        "damage_change": {
-          "modifier": 0.25,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": true
-        },
-        "speed_boost": {
-          "modifier": -0.25,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        },
-        "defense_change": {
-          "modifier": 0.4,
-          "effect_delay_ms": 0,
           "execute_multiple_times": true
         }
       }
@@ -229,13 +146,6 @@
           "execute_multiple_times": false
         }
       }
-    },
-    {
-      "name": "polymorph_effect",
-      "duration_ms": 9000,
-      "remove_on_action": true,
-      "one_time_application": true,
-      "effect_mechanics": {}
     }
   ],
   "crates": [

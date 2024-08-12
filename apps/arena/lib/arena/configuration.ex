@@ -35,6 +35,10 @@ defmodule Arena.Configuration do
     |> Map.update!(:characters, fn characters ->
       parse_characters_config(characters)
     end)
+    |> Map.update!(:items, fn items ->
+      parse_items_config(items)
+    end)
+    |> IO.inspect(limit: :infinity)
   end
 
   defp get_client_config() do
@@ -56,6 +60,12 @@ defmodule Arena.Configuration do
       %{character | mana_recovery_damage_multiplier: maybe_to_float(character.mana_recovery_damage_multiplier)}
       |> Map.put(:skills, character_skills)
       |> Map.drop([:basic_skill, :ultimate_skill, :dash_skill])
+    end)
+  end
+
+  defp parse_items_config(items) do
+    Enum.map(items, fn item ->
+      %{item | effect: parse_effect(item.effect)}
     end)
   end
 
@@ -207,6 +217,19 @@ defmodule Arena.Configuration do
         vertices: Enum.map(pool.vertices, &parse_position/1),
         radius: maybe_to_float(pool.radius)
     }
+  end
+
+  defp parse_effect(effect) do
+    Map.update!(effect, :effect_mechanics, fn effect_mechanics ->
+      Enum.map(effect_mechanics, fn effect_mechanic ->
+        %{
+          effect_mechanic
+          | decrease_by: maybe_to_float(effect_mechanic.decrease_by),
+            modifier: maybe_to_float(effect_mechanic.modifier),
+            force: maybe_to_float(effect_mechanic.force)
+        }
+      end)
+    end)
   end
 
   defp parse_position(%{x: x, y: y}) do

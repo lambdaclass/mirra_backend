@@ -310,6 +310,22 @@ quickslash_3 = %{
 }
 
 ## Skills
+denial_of_service =
+  %{
+    name: "denial_of_service",
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "damage",
+        damage: 17,
+        effect_delay_ms: 220,
+        execute_multiple_times: true
+      }
+    ]
+  }
+
 skills = [
   %{
     "name" => "muflus_crush",
@@ -331,7 +347,6 @@ skills = [
         "offset" => 400
       }
     ],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -394,7 +409,6 @@ skills = [
     "can_pick_destination" => false,
     "block_movement" => true,
     "mechanics" => [multi_shoot],
-    "effects_to_apply" => [],
     "version_id" => version.id
   },
   %{
@@ -439,9 +453,7 @@ skills = [
         "range" => 1200.0,
         "shape" => "circle",
         "vertices" => [],
-        "effects_to_apply" => [
-          "denial_of_service"
-        ]
+        "effect" => denial_of_service
       }
     ],
     "effects_to_apply" => [],
@@ -823,60 +835,169 @@ game_configuration_1 = %{
 {:ok, _game_configuration_1} =
   GameBackend.Configuration.create_game_configuration(game_configuration_1)
 
+golden_clock_effect = %{
+  name: "golden_clock_effect",
+  duration_ms: 9000,
+  remove_on_action: false,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "reduce_stamina_interval",
+      modifier: 0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "refresh_stamina",
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "reduce_cooldowns_duration",
+      modifier: 0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    },
+    %{
+      name: "refresh_cooldowns",
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  ]
+}
+
 golden_clock_params = %{
   active: true,
   name: "golden_clock",
   radius: 200.0,
   mechanics: %{},
-  effects: ["golden_clock_effect"],
+  effect: golden_clock_effect,
   version_id: version.id
 }
 
 {:ok, _golden_clock} =
   GameBackend.Items.create_consumable_item(golden_clock_params)
 
+magic_boots_effect =
+  %{
+    name: "magic_boots_effect",
+    duration_ms: 8000,
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "speed_boost",
+        modifier: 0.5,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
 magic_boots_params = %{
   active: true,
   name: "magic_boots",
   radius: 200.0,
   mechanics: %{},
-  effects: ["magic_boots_effect"],
+  effect: magic_boots_effect,
   version_id: version.id
 }
 
 {:ok, _magic_boots} =
   GameBackend.Items.create_consumable_item(magic_boots_params)
 
+mirra_blessing_effect =
+  %{
+    name: "mirra_blessing_effect",
+    duration_ms: 7000,
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "damage_immunity",
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
 mirra_blessing_params = %{
   active: true,
   name: "mirra_blessing",
   radius: 200.0,
   mechanics: %{},
-  effects: ["mirra_blessing_effect"],
+  effect: mirra_blessing_effect,
   version_id: version.id
 }
 
 {:ok, _mirra_blessing} =
   GameBackend.Items.create_consumable_item(mirra_blessing_params)
 
+giant_effect =
+  %{
+    name: "giant_effect",
+    duration_ms: 9000,
+    remove_on_action: false,
+    one_time_application: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "modify_radius",
+        modifier: 0.4,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      },
+      %{
+        name: "damage_change",
+        modifier: 0.25,
+        effect_delay_ms: 0,
+        execute_multiple_times: true
+      },
+      %{
+        name: "speed_boost",
+        modifier: -0.25,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      },
+      %{
+        name: "defense_change",
+        modifier: 0.4,
+        effect_delay_ms: 0,
+        execute_multiple_times: true
+      }
+    ]
+  }
+
 giant_fruit_params = %{
   active: true,
   name: "giant",
   radius: 200.0,
   mechanics: %{},
-  effects: ["giant_effect"],
+  effect: giant_effect,
   version_id: version.id
 }
 
 {:ok, _giant_fruit} =
   GameBackend.Items.create_consumable_item(giant_fruit_params)
 
+polymorph_effect = %{
+  name: "polymorph_effect",
+  duration_ms: 9000,
+  remove_on_action: true,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: []
+}
+
 polymorph_params = %{
   active: false,
   name: "polymorph",
   radius: 200.0,
   mechanics: %{},
-  effects: ["polymorph_effect"]
+  effect: polymorph_effect
 }
 
 {:ok, _polymorph} =

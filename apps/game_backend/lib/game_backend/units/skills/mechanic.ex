@@ -38,6 +38,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     belongs_to(:on_arrival_mechanic, __MODULE__)
     belongs_to(:parent_mechanic, __MODULE__, foreign_key: :parent_mechanic_id)
     embeds_one(:on_collide_effects, OnCollideEffects)
+    embeds_one(:effect, GameBackend.CurseOfMirra.Effect)
   end
 
   def mechanic_types(), do: [:apply_effects_to, :passive_effects]
@@ -75,6 +76,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
     |> cast_assoc(:on_arrival_mechanic, with: &assoc_changeset/2)
     |> cast_assoc(:on_explode_mechanics, with: &assoc_changeset/2)
     |> cast_embed(:on_collide_effects)
+    |> cast_embed(:effect)
   end
 
   defp assoc_changeset(struct, params) do
