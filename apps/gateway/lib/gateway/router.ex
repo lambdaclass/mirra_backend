@@ -17,11 +17,6 @@ defmodule Gateway.Router do
 
     scope "/configuration" do
       get "/:game_mode/current", ConfigurationController, :get_game_mode_configuration
-      get "/current", ConfigurationController, :get_current_configuration
-      get "/game", ConfigurationController, :get_game_configuration
-      get "/characters", ConfigurationController, :get_characters_configuration
-      get "/consumable_items", ConfigurationController, :get_consumable_items_configuration
-      get "/map", ConfigurationController, :get_map_configurations
     end
 
     scope "/stores" do

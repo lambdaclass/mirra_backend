@@ -4,8 +4,6 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
   """
   use Gateway, :controller
   alias GameBackend.Configuration
-  alias GameBackend.Items
-  alias GameBackend.Units.Characters
 
   action_fallback Gateway.Controllers.FallbackController
 
@@ -22,36 +20,6 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
       })
 
     send_resp(conn, 200, config)
-  end
-
-  def get_characters_configuration(conn, _params) do
-    case Characters.get_curse_characters() do
-      [] ->
-        {:error, :not_found}
-
-      characters ->
-        send_resp(
-          conn,
-          200,
-          Jason.encode!(encode_characters(characters))
-        )
-    end
-  end
-
-  @spec get_game_configuration(Plug.Conn.t(), any()) :: Plug.Conn.t()
-  def get_game_configuration(conn, _params) do
-    game_configuration = Configuration.get_latest_game_configuration()
-    send_resp(conn, 200, Jason.encode!(game_configuration))
-  end
-
-  def get_map_configurations(conn, _params) do
-    map_configuration = Configuration.list_map_configurations()
-    send_resp(conn, 200, Jason.encode!(map_configuration))
-  end
-
-  def get_consumable_items_configuration(conn, _params) do
-    consumable_items = Items.list_consumable_items() |> Enum.filter(& &1.active)
-    send_resp(conn, 200, Jason.encode!(consumable_items))
   end
 
   defp encode_characters(characters) when is_list(characters) do
