@@ -4,6 +4,8 @@ defmodule GameBackend.Configuration do
   """
   import Ecto.Query
   alias Ecto.Multi
+
+  alias GameBackend.Configuration.GameMode
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
@@ -514,5 +516,99 @@ defmodule GameBackend.Configuration do
   """
   def get_latest_game_configuration do
     Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
+  end
+
+  @doc """
+  Returns the list of game_modes.
+
+  ## Examples
+
+      iex> list_game_modes()
+      [%GameMode{}, ...]
+
+  """
+  def list_game_modes do
+    Repo.all(GameMode)
+  end
+
+  @doc """
+  Gets a single game_mode.
+
+  Raises `Ecto.NoResultsError` if the Game mode does not exist.
+
+  ## Examples
+
+      iex> get_game_mode!(123)
+      %GameMode{}
+
+      iex> get_game_mode!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_game_mode!(id), do: Repo.get!(GameMode, id)
+
+  @doc """
+  Creates a game_mode.
+
+  ## Examples
+
+      iex> create_game_mode(%{field: value})
+      {:ok, %GameMode{}}
+
+      iex> create_game_mode(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_game_mode(attrs \\ %{}) do
+    %GameMode{}
+    |> GameMode.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a game_mode.
+
+  ## Examples
+
+      iex> update_game_mode(game_mode, %{field: new_value})
+      {:ok, %GameMode{}}
+
+      iex> update_game_mode(game_mode, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_game_mode(%GameMode{} = game_mode, attrs) do
+    game_mode
+    |> GameMode.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a game_mode.
+
+  ## Examples
+
+      iex> delete_game_mode(game_mode)
+      {:ok, %GameMode{}}
+
+      iex> delete_game_mode(game_mode)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_game_mode(%GameMode{} = game_mode) do
+    Repo.delete(game_mode)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking game_mode changes.
+
+  ## Examples
+
+      iex> change_game_mode(game_mode)
+      %Ecto.Changeset{data: %GameMode{}}
+
+  """
+  def change_game_mode(%GameMode{} = game_mode, attrs \\ %{}) do
+    GameMode.changeset(game_mode, attrs)
   end
 end
