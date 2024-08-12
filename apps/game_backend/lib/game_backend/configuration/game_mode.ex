@@ -1,4 +1,7 @@
 defmodule GameBackend.Configuration.GameMode do
+  @moduledoc """
+  GameMode schema
+  """
   use GameBackend.Schema
   import Ecto.Changeset
 
