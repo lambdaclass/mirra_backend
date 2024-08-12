@@ -2500,6 +2500,152 @@ map_config = %{
       ]
     }
   ],
+  crates: [
+    %{
+      position: %{
+        x: 1500.0,
+        y: -4666.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: 5291.0,
+        y: -1404.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: 3381.0,
+        y: 2850.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: 948.0,
+        y: 3439.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: -3549.0,
+        y: 3663.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: -5490.0,
+        y: -370.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: -3988.0,
+        y: -3844.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: -380.0,
+        y: -1810.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: -3070.0,
+        y: -940.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: -1279.0,
+        y: 1660.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: 2090.0,
+        y: 1110.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{
+        x: 1600.0,
+        y: -975.0
+      },
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    }
+  ],
   version_id: version.id
 }
 

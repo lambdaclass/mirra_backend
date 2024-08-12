@@ -161,7 +161,8 @@ defmodule Arena.Configuration do
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
         obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
         pools: Enum.map(map_config.pools, &parse_pool/1),
-        bushes: Enum.map(map_config.bushes, &parse_bush/1)
+        bushes: Enum.map(map_config.bushes, &parse_bush/1),
+        crates: Enum.map(map_config.crates, &parse_crate/1)
     }
   end
 
@@ -181,6 +182,15 @@ defmodule Arena.Configuration do
       | position: parse_position(bush.position),
         vertices: Enum.map(bush.vertices, &parse_position/1),
         radius: maybe_to_float(bush.radius)
+    }
+  end
+
+  defp parse_crate(crate) do
+    %{
+      crate
+      | position: parse_position(crate.position),
+        vertices: Enum.map(crate.vertices, &parse_position/1),
+        radius: maybe_to_float(crate.radius)
     }
   end
 

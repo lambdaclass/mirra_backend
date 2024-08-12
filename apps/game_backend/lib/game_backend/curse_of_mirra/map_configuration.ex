@@ -6,7 +6,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
   import Ecto.Changeset
   alias GameBackend.Configuration.Version
 
-  @derive {Jason.Encoder, only: [:name, :radius, :initial_positions, :obstacles, :bushes, :pools]}
+  @derive {Jason.Encoder, only: [:name, :radius, :initial_positions, :obstacles, :bushes, :pools, :crates]}
   schema "map_configurations" do
     field(:name, :string)
     field(:radius, :decimal)
@@ -15,6 +15,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     embeds_many(:obstacles, __MODULE__.Obstacle, on_replace: :delete)
     embeds_many(:pools, __MODULE__.Pool, on_replace: :delete)
     embeds_many(:bushes, __MODULE__.Bush, on_replace: :delete)
+    embeds_many(:crates, __MODULE__.Crate, on_replace: :delete)
 
     belongs_to(:version, Version)
 
@@ -30,6 +31,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     |> cast_embed(:obstacles)
     |> cast_embed(:bushes)
     |> cast_embed(:pools)
+    |> cast_embed(:crates)
     |> unique_constraint(:name)
   end
 
@@ -108,24 +110,6 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
     end
   end
 
-  def validate_shape(changeset) do
-    case get_field(changeset, :shape) do
-      :polygon ->
-        if Enum.count(get_field(changeset, :vertices)) < 3 do
-          add_error(changeset, :shape, "A polygon requires at least 3 vertices")
-        else
-          changeset
-        end
-
-      :circle ->
-        changeset
-        |> validate_number(:radius, greater_than_or_equal_to: 0)
-
-      _ ->
-        changeset
-    end
-  end
-
   defmodule Bush do
     @moduledoc """
     Bush embedded schema to be used by MapConfiguration
@@ -147,6 +131,54 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
       |> cast_embed(:position)
       |> cast_embed(:vertices)
       |> validate_required([:name, :position, :radius, :shape])
+    end
+  end
+
+  defmodule Crate do
+    @moduledoc """
+    Crate embedded schema to be used by MapConfiguration
+    """
+    use GameBackend.Schema
+    alias GameBackend.CurseOfMirra.MapConfiguration
+
+    @derive {Jason.Encoder,
+             only: [:position, :radius, :shape, :vertices, :health, :amount_of_power_ups, :power_up_spawn_delay_ms]}
+    embedded_schema do
+      field(:radius, :decimal)
+      field(:shape, :string)
+      field(:health, :integer)
+      field(:amount_of_power_ups, :integer)
+      field(:power_up_spawn_delay_ms, :integer)
+
+      embeds_one(:position, Position)
+      embeds_many(:vertices, Position)
+    end
+
+    def changeset(position, attrs) do
+      position
+      |> cast(attrs, [:radius, :shape, :health, :amount_of_power_ups, :power_up_spawn_delay_ms])
+      |> cast_embed(:position)
+      |> cast_embed(:vertices)
+      |> validate_required([:position, :radius, :shape, :health, :amount_of_power_ups, :power_up_spawn_delay_ms])
+      |> MapConfiguration.validate_shape()
+    end
+  end
+
+  def validate_shape(changeset) do
+    case get_field(changeset, :shape) do
+      :polygon ->
+        if Enum.count(get_field(changeset, :vertices)) < 3 do
+          add_error(changeset, :shape, "A polygon requires at least 3 vertices")
+        else
+          changeset
+        end
+
+      :circle ->
+        changeset
+        |> validate_number(:radius, greater_than_or_equal_to: 0)
+
+      _ ->
+        changeset
     end
   end
 end
