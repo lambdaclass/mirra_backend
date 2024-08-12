@@ -227,9 +227,16 @@ Champions.Config.import_dungeon_levels_config()
 
 ##################### CURSE OF MIRRA #####################
 
+battle_royale = %{
+  name: "Battle Royale"
+}
+
+{:ok, battle_royale_mode} = GameBackend.Configuration.create_game_mode(battle_royale)
+
 default_version_params = %{
   name: "v1.0.0",
-  current: true
+  current: true,
+  game_mode_id: battle_royale_mode.id
 }
 
 {:ok, version} =
