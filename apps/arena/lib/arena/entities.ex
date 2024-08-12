@@ -104,14 +104,14 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_power_up(id, position, direction, owner_id, power_up) do
+  def new_power_up(id, position, direction, owner_id, game_config) do
     %{
       id: id,
       category: :power_up,
       shape: :circle,
       name: "Power Up" <> Integer.to_string(id),
       position: position,
-      radius: power_up.radius,
+      radius: game_config.power_up_radius,
       vertices: [],
       speed: 0.0,
       direction: direction,
@@ -121,8 +121,8 @@ defmodule Arena.Entities do
         status: :UNAVAILABLE,
         remove_on_collision: true,
         pull_immunity: true,
-        power_up_damage_modifier: power_up.power_up_damage_modifier,
-        power_up_health_modifier: power_up.power_up_health_modifier
+        power_up_damage_modifier: game_config.power_up_damage_modifier,
+        power_up_health_modifier: game_config.power_up_health_modifier
       }
     }
   end
