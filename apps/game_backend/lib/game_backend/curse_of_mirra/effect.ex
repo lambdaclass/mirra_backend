@@ -12,9 +12,11 @@ defmodule GameBackend.CurseOfMirra.Effect do
              :one_time_application,
              :allow_multiple_effects,
              :consume_projectile,
-             :effect_mechanics
+             :effect_mechanics,
+             :name
            ]}
   embedded_schema do
+    field(:name, :string)
     field(:duration_ms, :integer)
     field(:remove_on_action, :boolean)
     field(:one_time_application, :boolean)
@@ -30,12 +32,14 @@ defmodule GameBackend.CurseOfMirra.Effect do
       :remove_on_action,
       :one_time_application,
       :allow_multiple_effects,
-      :consume_projectile
+      :consume_projectile,
+      :name
     ])
     |> validate_required([
       :remove_on_action,
       :one_time_application,
-      :allow_multiple_effects
+      :allow_multiple_effects,
+      :name
     ])
     |> cast_embed(:effect_mechanics)
   end
@@ -49,7 +53,6 @@ defmodule GameBackend.CurseOfMirra.Effect do
     @derive {Jason.Encoder,
              only: [
                :name,
-               :decrease_by,
                :modifier,
                :execute_multiple_times,
                :damage,
@@ -58,7 +61,6 @@ defmodule GameBackend.CurseOfMirra.Effect do
              ]}
     embedded_schema do
       field(:name, :string)
-      field(:decrease_by, :decimal)
       field(:modifier, :decimal)
       field(:force, :decimal)
       field(:execute_multiple_times, :boolean)
@@ -70,7 +72,6 @@ defmodule GameBackend.CurseOfMirra.Effect do
       position
       |> cast(attrs, [
         :name,
-        :decrease_by,
         :modifier,
         :execute_multiple_times,
         :damage,

@@ -371,7 +371,7 @@ defmodule Arena.Game.Player do
   def invisible?(player) do
     get_in(player, [:aditional_info, :effects])
     |> Enum.any?(fn effect ->
-      Enum.any?(effect.effect_mechanics, fn {mechanic, _} -> mechanic == :invisible end)
+      Enum.any?(effect.effect_mechanics, fn mechanic -> mechanic.name == "invisible" end)
     end)
   end
 

@@ -38,7 +38,6 @@ defmodule Arena.Configuration do
     |> Map.update!(:items, fn items ->
       parse_items_config(items)
     end)
-    |> IO.inspect(limit: :infinity)
   end
 
   defp get_client_config() do
@@ -224,8 +223,7 @@ defmodule Arena.Configuration do
       Enum.map(effect_mechanics, fn effect_mechanic ->
         %{
           effect_mechanic
-          | decrease_by: maybe_to_float(effect_mechanic.decrease_by),
-            modifier: maybe_to_float(effect_mechanic.modifier),
+          | modifier: maybe_to_float(effect_mechanic.modifier),
             force: maybe_to_float(effect_mechanic.force)
         }
       end)
