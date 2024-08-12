@@ -13,5 +13,6 @@ defmodule GameBackend.Configuration.GameMode do
     game_mode
     |> cast(attrs, [:name])
     |> validate_required([:name])
+    |> unique_constraint(:name)
   end
 end

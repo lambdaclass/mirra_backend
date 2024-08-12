@@ -11,7 +11,9 @@ defmodule ConfiguratorWeb.VersionController do
 
   def new(conn, _params) do
     changeset = Configuration.change_version(%Version{})
-    render(conn, :new, changeset: changeset)
+    game_modes = Configuration.list_game_modes()
+
+    render(conn, :new, changeset: changeset, game_modes: game_modes)
   end
 
   def create(conn, %{"version" => version_params}) do
@@ -34,7 +36,9 @@ defmodule ConfiguratorWeb.VersionController do
   def edit(conn, %{"id" => id}) do
     version = Configuration.get_version!(id)
     changeset = Configuration.change_version(version)
-    render(conn, :edit, version: version, changeset: changeset)
+    game_modes = Configuration.list_game_modes()
+
+    render(conn, :edit, version: version, changeset: changeset, game_modes: game_modes)
   end
 
   def update(conn, %{"id" => id, "version" => version_params}) do

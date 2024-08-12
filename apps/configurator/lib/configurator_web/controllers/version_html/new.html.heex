@@ -3,6 +3,6 @@
   <:subtitle>Use this form to manage version records in your database.</:subtitle>
 </.header>
 
-<.version_form changeset={@changeset} action={~p"/versions"} />
+<.version_form changeset={@changeset} action={~p"/versions"} game_modes={@game_modes} />
 
 <.back navigate={~p"/versions"}>Back to versions</.back>

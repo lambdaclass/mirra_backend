@@ -8,6 +8,7 @@ defmodule ConfiguratorWeb.VersionHTML do
   """
   attr :changeset, Ecto.Changeset, required: true
   attr :action, :string, required: true
+  attr :game_modes, :list
 
   def version_form(assigns)
 end

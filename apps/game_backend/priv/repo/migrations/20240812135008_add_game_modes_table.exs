@@ -7,5 +7,7 @@ defmodule GameBackend.Repo.Migrations.AddGameModesTable do
 
       timestamps(type: :utc_datetime)
     end
+
+    create(unique_index(:game_modes, [:name]))
   end
 end

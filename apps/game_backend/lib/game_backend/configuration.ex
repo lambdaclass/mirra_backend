@@ -399,10 +399,10 @@ defmodule GameBackend.Configuration do
       %Version{}
   """
 
-  def get_current_version do
+  def get_current_version_from_game_mode(game_mode) do
     q =
       from(v in Version,
-        where: v.current,
+        where: v.current and v.game_mode_id == ^game_mode.id,
         preload: [
           :consumable_items,
           :skills,
@@ -486,7 +486,8 @@ defmodule GameBackend.Configuration do
       {:ok, %Version{}}
   """
   def mark_as_current_version(version) do
-    former_version = get_current_version()
+    game_mode = GameBackend.Configuration.get_game_mode!(version.game_mode_id)
+    former_version = get_current_version_from_game_mode(game_mode)
 
     Multi.new()
     |> Multi.run(:different_versions, fn _repo, _changes_so_far ->
@@ -610,5 +611,13 @@ defmodule GameBackend.Configuration do
   """
   def change_game_mode(%GameMode{} = game_mode, attrs \\ %{}) do
     GameMode.changeset(game_mode, attrs)
+  end
+
+  @doc """
+  Get game mode by name
+  """
+  def get_game_mode_by_name(game_mode) do
+    q = from(gm in GameMode, where: gm.name == ^game_mode)
+    Repo.one(q)
   end
 end

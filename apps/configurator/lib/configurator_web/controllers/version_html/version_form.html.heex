@@ -3,6 +3,8 @@
     Oops, something went wrong! Please check the errors below.
   </.error>
   <.input field={f[:name]} type="text" label="Name" />
+  <.input field={f[:game_mode_id]} type="select" options={Enum.map(@game_modes, &{&1.name, &1.id})} label="Game Mode" />
+
   <:actions>
     <.button>Save Version</.button>
   </:actions>

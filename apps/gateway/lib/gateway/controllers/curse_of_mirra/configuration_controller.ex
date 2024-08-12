@@ -9,8 +9,9 @@ defmodule Gateway.Controllers.CurseOfMirra.ConfigurationController do
 
   action_fallback Gateway.Controllers.FallbackController
 
-  def get_current_configuration(conn, _params) do
-    version = Configuration.get_current_version()
+  def get_game_mode_configuration(conn, %{"game_mode" => game_mode}) do
+    game_mode = Configuration.get_game_mode_by_name(game_mode) |> IO.inspect()
+    version = Configuration.get_current_version_from_game_mode(game_mode)
 
     config =
       Jason.encode!(%{
