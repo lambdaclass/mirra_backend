@@ -33,11 +33,10 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :power_up_damage_modifier,
     :power_up_health_modifier,
     :power_up_radius,
-    :power_up_activation_delay_ms,
-    :power_ups_per_kill
+    :power_up_activation_delay_ms
   ]
 
-  @derive {Jason.Encoder, only: @required}
+  @derive {Jason.Encoder, only: @required ++ [:power_ups_per_kill]}
   schema "game_configurations" do
     field(:tick_rate_ms, :integer)
     field(:bounty_pick_time_ms, :integer)
