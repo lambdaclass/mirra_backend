@@ -1003,6 +1003,22 @@ polymorph_params = %{
 {:ok, _polymorph} =
   GameBackend.Items.create_consumable_item(polymorph_params)
 
+slow_field_effect = %{
+  name: "slow_field_effect",
+  duration_ms: 9000,
+  remove_on_action: true,
+  one_time_application: true,
+  allow_multiple_effects: true,
+  effect_mechanics: [
+    %{
+      name: "speed_boost",
+      modifier: -0.5,
+      effect_delay_ms: 0,
+      execute_multiple_times: false
+    }
+  ]
+}
+
 map_config = %{
   name: "Araban",
   radius: 5520.0,
@@ -2586,9 +2602,7 @@ map_config = %{
           y: -1184.0
         }
       ],
-      effects_to_apply: [
-        "slow_field"
-      ]
+      effect: slow_field_effect
     },
     %{
       name: "sand pool north",
@@ -2616,9 +2630,7 @@ map_config = %{
           y: 2434.0
         }
       ],
-      effects_to_apply: [
-        "slow_field"
-      ]
+      effect: slow_field_effect
     }
   ],
   version_id: version.id

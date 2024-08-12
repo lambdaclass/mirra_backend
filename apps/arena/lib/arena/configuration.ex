@@ -214,7 +214,8 @@ defmodule Arena.Configuration do
       pool
       | position: parse_position(pool.position),
         vertices: Enum.map(pool.vertices, &parse_position/1),
-        radius: maybe_to_float(pool.radius)
+        radius: maybe_to_float(pool.radius),
+        effect: parse_effect(pool.effect)
     }
   end
 

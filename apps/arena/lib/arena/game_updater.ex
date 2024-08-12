@@ -265,7 +265,7 @@ defmodule Arena.GameUpdater do
       |> explode_projectiles()
       # Pools
       |> add_pools_collisions()
-      |> handle_pools(state.game_config)
+      |> handle_pools()
       |> remove_expired_pools(now)
       # Crates
       |> handle_destroyed_crates()
@@ -1627,13 +1627,13 @@ defmodule Arena.GameUpdater do
     end
   end
 
-  defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state, game_config) do
+  defp handle_pools(%{pools: pools, crates: crates, players: players} = game_state) do
     entities = Map.merge(crates, players)
 
     Enum.reduce(pools, game_state, fn {_pool_id, pool}, game_state ->
       Enum.reduce(entities, game_state, fn {entity_id, entity}, acc ->
         if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
-          add_pool_effects(acc, game_config, entity, pool)
+          add_pool_effects(acc, entity, pool)
         else
           Effect.remove_owner_effects(acc, entity_id, pool.id)
         end
@@ -1641,14 +1641,11 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp add_pool_effects(game_state, game_config, entity, pool) do
+  defp add_pool_effects(game_state, entity, pool) do
     if entity.id == pool.aditional_info.owner_id do
       game_state
     else
-      Enum.reduce(pool.aditional_info.effects_to_apply, game_state, fn effect_name, game_state ->
-        effect = Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-        Effect.put_effect_to_entity(game_state, entity, pool.id, effect)
-      end)
+      Effect.put_effect_to_entity(game_state, entity, pool.id, pool.aditional_info.effect_to_apply)
     end
   end
 
