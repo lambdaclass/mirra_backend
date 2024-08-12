@@ -145,7 +145,7 @@ defmodule GameBackend.CurseOfMirra.MapConfiguration do
              only: [:position, :radius, :shape, :vertices, :health, :amount_of_power_ups, :power_up_spawn_delay_ms]}
     embedded_schema do
       field(:radius, :decimal)
-      field(:shape, :string)
+      field(:shape, Ecto.Enum, values: [:circle, :polygon])
       field(:health, :integer)
       field(:amount_of_power_ups, :integer)
       field(:power_up_spawn_delay_ms, :integer)

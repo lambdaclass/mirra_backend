@@ -1,0 +1,39 @@
+<.simple_form :let={f} for={@changeset} action={@action}>
+  <.error :if={@changeset.action}>
+    Oops, something went wrong! Please check the errors below.
+  </.error>
+
+  <.header>
+    Crates
+  </.header>
+  <.inputs_for :let={crate_f} field={f[:crates]}>
+    <.input field={crate_f[:radius]} type="number" label="Radius" step="any" />
+    <.input field={crate_f[:health]} type="number" label="Health" step="any" />
+    <.input field={crate_f[:amount_of_power_ups]} type="number" label="Amount of power ups to drop" step="any" />
+    <.input field={crate_f[:power_up_spawn_delay_ms]} type="number" label="Power up spawn delay" step="any" />
+
+    <.input
+      field={crate_f[:shape]}
+      type="select"
+      label="Shape"
+      options={Ecto.Enum.values(GameBackend.CurseOfMirra.MapConfiguration.Crate, :shape)}
+    />
+    <.inputs_for :let={position_f} field={crate_f[:position]}>
+      <.input field={position_f[:x]} type="number" label="X" step="any" />
+      <.input field={position_f[:y]} type="number" label="Y" step="any" />
+    </.inputs_for>
+
+    <.button type="button" phx-click={show_modal("crate-vertices-#{crate_f.data.id}")}>Edit Vertices</.button>
+    <.modal id={"crate-vertices-#{crate_f.data.id}"}>
+      <.inputs_for :let={vertices_form} field={crate_f[:vertices]}>
+        <h3>Vertex</h3>
+        <.input field={vertices_form[:x]} type="number" label="X" step="any" />
+        <.input field={vertices_form[:y]} type="number" label="Y" step="any" />
+      </.inputs_for>
+    </.modal>
+  </.inputs_for>
+
+  <:actions>
+    <.button>Save Map Crates</.button>
+  </:actions>
+</.simple_form>

@@ -12,6 +12,11 @@
         <.button>Edit Map Pools</.button>
       </.link>
     <% end %>
+    <%= unless Enum.empty?(@map_configuration.crates) do %>
+      <.link href={~p"/map_configurations/#{@map_configuration}/edit_crates"}>
+        <.button>Edit Map Crates</.button>
+      </.link>
+    <% end %>
   </:actions>
 </.header>
 
