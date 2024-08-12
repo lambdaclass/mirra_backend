@@ -154,6 +154,7 @@ defmodule Arena.Configuration do
         range: maybe_to_float(mechanic.range),
         speed: maybe_to_float(mechanic.speed),
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
+        on_collide_effects: parse_on_collide_effects_config(mechanic.on_collide_effects),
         on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
         effect: parse_effect(mechanic.effect)
     }
@@ -230,10 +231,19 @@ defmodule Arena.Configuration do
         %{
           effect_mechanic
           | modifier: maybe_to_float(effect_mechanic.modifier),
-            force: maybe_to_float(effect_mechanic.force)
+            force: maybe_to_float(effect_mechanic.force),
+            stat_multiplier: maybe_to_float(effect_mechanic.stat_multiplier)
         }
       end)
     end)
+  end
+
+  defp parse_on_collide_effects_config(nil) do
+    nil
+  end
+
+  defp parse_on_collide_effects_config(on_collide_effect) do
+    %{on_collide_effect | effect: parse_effect(on_collide_effect.effect)}
   end
 
   defp parse_position(%{x: x, y: y}) do

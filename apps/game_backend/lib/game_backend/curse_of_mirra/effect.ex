@@ -57,7 +57,9 @@ defmodule GameBackend.CurseOfMirra.Effect do
                :execute_multiple_times,
                :damage,
                :effect_delay_ms,
-               :force
+               :force,
+               :additive_duration_add_ms,
+               :stat_multiplier
              ]}
     embedded_schema do
       field(:name, :string)
@@ -66,6 +68,8 @@ defmodule GameBackend.CurseOfMirra.Effect do
       field(:execute_multiple_times, :boolean)
       field(:damage, :integer)
       field(:effect_delay_ms, :integer)
+      field(:additive_duration_add_ms, :integer)
+      field(:stat_multiplier, :decimal)
     end
 
     def changeset(position, attrs) do
@@ -76,7 +80,9 @@ defmodule GameBackend.CurseOfMirra.Effect do
         :execute_multiple_times,
         :damage,
         :effect_delay_ms,
-        :force
+        :force,
+        :additive_duration_add_ms,
+        :stat_multiplier
       ])
       |> validate_required([
         :name,

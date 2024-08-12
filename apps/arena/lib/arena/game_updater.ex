@@ -254,7 +254,7 @@ defmodule Arena.GameUpdater do
       |> recover_mana()
       |> resolve_players_collisions_with_power_ups()
       |> resolve_players_collisions_with_items()
-      |> resolve_projectiles_effects_on_collisions(state.game_config)
+      |> resolve_projectiles_effects_on_collisions()
       |> apply_zone_damage_to_players(state.game_config.game)
       |> update_visible_players(state.game_config)
       |> update_bounties_states(state)
@@ -1233,28 +1233,24 @@ defmodule Arena.GameUpdater do
            obstacles: obstacles,
            pools: pools,
            crates: crates
-         } = game_state,
-         game_config
+         } = game_state
        ) do
     Enum.reduce(projectiles, game_state, fn {_projectile_id, projectile}, game_state ->
-      case get_in(projectile, [:aditional_info, :on_collide_effects]) do
+      case get_in(projectile, [:aditional_info, :on_collide_effect]) do
         nil ->
           game_state
 
-        on_collide_effects ->
+        on_collide_effect ->
           entities_map =
             Map.merge(pools, obstacles)
             |> Map.merge(players)
             |> Map.merge(projectiles)
             |> Map.merge(crates)
 
-          effects_to_apply =
-            get_effects_from_config(on_collide_effects.effects, game_config)
-
           entities_map
           |> Map.take(projectile.collides_with)
           |> get_entities_to_apply(projectile)
-          |> apply_effect_to_entities(effects_to_apply, game_state, projectile)
+          |> apply_effect_to_entities(on_collide_effect.effect, game_state, projectile)
       end
     end)
   end
@@ -1739,22 +1735,19 @@ defmodule Arena.GameUpdater do
           projectile.aditional_info.owner_id == entity.aditional_info.owner_id
 
       apply_to_entity_type? =
-        Atom.to_string(entity.category) in projectile.aditional_info.on_collide_effects.apply_effect_to_entity_type
+        Atom.to_string(entity.category) in projectile.aditional_info.on_collide_effect.apply_effect_to_entity_type
 
       apply_to_entity_type? and entity_owned_or_player?
     end)
   end
 
-  defp apply_effect_to_entities(entities, effects, game_state, projectile) do
+  defp apply_effect_to_entities(entities, effect, game_state, projectile) do
     Enum.reduce(entities, game_state, fn {_entity_id, entity}, game_state ->
       game_state =
-        Enum.reduce(effects, game_state, fn effect, game_state ->
-          Effect.put_effect_to_entity(game_state, entity, projectile.id, effect)
-        end)
+        Effect.put_effect_to_entity(game_state, entity, projectile.id, effect)
 
       remove_projectile_on_collision? =
-        Enum.any?(effects, fn effect -> effect.consume_projectile end) or
-          projectile.aditional_info.status == :CONSUMED
+        effect.consume_projectile or projectile.aditional_info.status == :CONSUMED
 
       if remove_projectile_on_collision? do
         consumed_projectile = put_in(projectile, [:aditional_info, :status], :CONSUMED)
@@ -1793,14 +1786,6 @@ defmodule Arena.GameUpdater do
   defp get_entity_path(%{category: :obstacle}), do: :obstacles
   defp get_entity_path(%{category: :trap}), do: :traps
   defp get_entity_path(%{category: :crate}), do: :crates
-
-  def get_effects_from_config([], _game_config), do: []
-
-  def get_effects_from_config(effect_list, game_config) do
-    Enum.map(effect_list, fn effect_name ->
-      Enum.find(game_config.effects, fn effect -> effect.name == effect_name end)
-    end)
-  end
 
   defp put_player_position(%{positions: positions} = game_state, player_id) do
     next_position = Application.get_env(:arena, :players_needed_in_match) - Enum.count(positions)

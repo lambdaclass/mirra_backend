@@ -56,23 +56,6 @@
       "activation_delay_ms": 500
     }
   },
-  "effects": [
-    {
-      "name": "buff_singularity",
-      "remove_on_action": false,
-      "one_time_application": true,
-      "consume_projectile": true,
-      "allow_multiple_effects": true,
-      "effect_mechanics": {
-        "buff_pool": {
-          "stat_multiplier": 0.1,
-          "additive_duration_add_ms": 1000,
-          "effect_delay_ms": 0,
-          "execute_multiple_times": false
-        }
-      }
-    }
-  ],
   "crates": [
     {
       "position": {

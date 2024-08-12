@@ -98,7 +98,7 @@ defmodule Arena.Entities do
         remove_on_collision: config_params.remove_on_collision,
         on_explode_mechanics: Map.get(config_params, :on_explode_mechanics),
         pull_immunity: true,
-        on_collide_effects: Map.get(config_params, :on_collide_effects)
+        on_collide_effect: Map.get(config_params, :on_collide_effects)
       },
       collides_with: []
     }

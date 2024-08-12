@@ -311,6 +311,24 @@ whirlwind_effect =
     ]
   }
 
+buff_singularity_effect =
+  %{
+    name: "buff_singularity",
+    remove_on_action: false,
+    one_time_application: true,
+    consume_projectile: true,
+    allow_multiple_effects: true,
+    effect_mechanics: [
+      %{
+        name: "buff_pool",
+        stat_multiplier: 0.1,
+        additive_duration_add_ms: 1000,
+        effect_delay_ms: 0,
+        execute_multiple_times: false
+      }
+    ]
+  }
+
 ## Mechanics
 multi_shoot = %{
   "type" => "multi_shoot",
@@ -356,9 +374,7 @@ simple_shoot = %{
     "apply_effect_to_entity_type" => [
       "pool"
     ],
-    "effects" => [
-      "buff_singularity"
-    ]
+    "effect" => buff_singularity_effect
   }
 }
 
