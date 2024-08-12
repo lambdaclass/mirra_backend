@@ -29,7 +29,11 @@ defmodule Arena.Configuration do
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
     |> Map.update!(:map, fn maps ->
-      map = Enum.random(maps)
+      map =
+        maps
+        |> Enum.filter(fn map -> map.active end)
+        |> Enum.random()
+
       parse_map_config(map)
     end)
     |> Map.update!(:characters, fn characters ->

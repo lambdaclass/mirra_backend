@@ -9,6 +9,7 @@
     label="Version"
   /> <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
+  <.input field={f[:active]} type="select" options={[true, false]} label="Active" />
   <.input
     field={f[:initial_positions]}
     type="textarea"
