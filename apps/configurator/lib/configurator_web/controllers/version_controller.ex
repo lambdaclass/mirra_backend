@@ -30,7 +30,8 @@ defmodule ConfiguratorWeb.VersionController do
 
   def show(conn, %{"id" => id}) do
     version = Configuration.get_version!(id)
-    render(conn, :show, version: version)
+    game_mode = Configuration.get_game_mode!(version.game_mode_id)
+    render(conn, :show, version: version, game_mode: game_mode)
   end
 
   def edit(conn, %{"id" => id}) do
