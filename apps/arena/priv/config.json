@@ -1,38 +1,4 @@
 {
-  "items": [
-    {
-      "name": "golden_clock",
-      "radius": 200.0,
-      "effects": [
-        "golden_clock_effect"
-      ],
-      "mechanics": {}
-    },
-    {
-      "name": "magic_boots",
-      "radius": 200.0,
-      "effects": [
-        "magic_boots_effect"
-      ],
-      "mechanics": {}
-    },
-    {
-      "name": "mirra_blessing",
-      "radius": 200.0,
-      "effects": [
-        "mirra_blessing_effect"
-      ],
-      "mechanics": {}
-    },
-    {
-      "name": "giant",
-      "radius": 200.0,
-      "effects": [
-        "giant_effect"
-      ],
-      "mechanics": {}
-    }
-  ],
   "power_ups": {
     "power_ups_per_kill": [
       {
