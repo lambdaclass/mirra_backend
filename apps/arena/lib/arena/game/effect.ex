@@ -177,18 +177,22 @@ defmodule Arena.Game.Effect do
     update_in(player, [:aditional_info, :effects], fn effects ->
       Enum.map(effects, fn current_effect ->
         if current_effect.id == effect.id do
-          effect
-          |> update_in([:effect_mechanics], fn effect_mechanics ->
-            Enum.map(effect_mechanics, fn effect_mechanic ->
-              if effect_mechanic.name == mechanic.name do
-                Map.put(effect_mechanic, :last_application_time, now)
-              else
-                effect_mechanic
-              end
-            end)
-          end)
+          update_effect_mechanic_value_in_effect(effect, mechanic, :last_application_time, now)
         else
           current_effect
+        end
+      end)
+    end)
+  end
+
+  defp update_effect_mechanic_value_in_effect(effect, mechanic, key, value) do
+    effect
+    |> update_in([:effect_mechanics], fn effect_mechanics ->
+      Enum.map(effect_mechanics, fn effect_mechanic ->
+        if effect_mechanic.name == mechanic.name do
+          Map.put(effect_mechanic, key, value)
+        else
+          effect_mechanic
         end
       end)
     end)
