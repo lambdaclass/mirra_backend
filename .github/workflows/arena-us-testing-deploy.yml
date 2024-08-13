@@ -1,6 +1,9 @@
 name: "[TESTING-US] Deploy to US Arena Testing"
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - add-us-testing-deploy-yaml
 
 jobs:
   build-deploy:
