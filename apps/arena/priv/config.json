@@ -383,6 +383,5 @@
       "amount_of_power_ups": 1,
       "power_up_spawn_delay_ms": 300
     }
-  ],
-  "traps": []
+  ]
 }

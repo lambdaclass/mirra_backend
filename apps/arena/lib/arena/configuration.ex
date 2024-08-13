@@ -35,6 +35,9 @@ defmodule Arena.Configuration do
     |> Map.update!(:characters, fn characters ->
       parse_characters_config(characters)
     end)
+    |> Map.update!(:items, fn items ->
+      parse_items_config(items)
+    end)
   end
 
   defp get_client_config() do
@@ -145,7 +148,8 @@ defmodule Arena.Configuration do
         range: maybe_to_float(mechanic.range),
         speed: maybe_to_float(mechanic.speed),
         on_arrival_mechanic: parse_mechanic_config(mechanic.on_arrival_mechanic),
-        on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics)
+        on_explode_mechanics: parse_mechanics_config(mechanic.on_explode_mechanics),
+        parent_mechanic: parse_mechanic_config(mechanic.parent_mechanic)
     }
   end
 
@@ -207,6 +211,16 @@ defmodule Arena.Configuration do
         vertices: Enum.map(pool.vertices, &parse_position/1),
         radius: maybe_to_float(pool.radius)
     }
+  end
+
+  defp parse_items_config(items) do
+    Enum.map(items, fn item ->
+      %{
+        item
+        | radius: maybe_to_float(item.radius),
+          mechanics: parse_mechanics_config(item.mechanics)
+      }
+    end)
   end
 
   defp parse_position(%{x: x, y: y}) do

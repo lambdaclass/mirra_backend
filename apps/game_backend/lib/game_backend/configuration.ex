@@ -402,7 +402,11 @@ defmodule GameBackend.Configuration do
       from(v in Version,
         where: v.current,
         preload: [
-          :consumable_items,
+          [
+            consumable_items: [
+              mechanics: [:on_arrival_mechanic, :on_explode_mechanics, :parent_mechanic]
+            ]
+          ],
           :skills,
           :map_configurations,
           :game_configuration,

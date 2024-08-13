@@ -6,16 +6,16 @@ defmodule GameBackend.Items.ConsumableItem do
   import Ecto.Changeset
 
   alias GameBackend.Configuration.Version
+  alias GameBackend.Units.Skills.Mechanic
 
-  @derive {Jason.Encoder, only: [:name, :radius, :effects, :mechanics]}
   schema "consumable_items" do
     field(:active, :boolean, default: false)
     field(:name, :string)
     field(:radius, :float)
     field(:effects, {:array, :string})
-    field(:mechanics, {:map, :map})
 
     belongs_to(:version, Version)
+    has_many(:mechanics, Mechanic)
 
     timestamps(type: :utc_datetime)
   end
@@ -23,7 +23,8 @@ defmodule GameBackend.Items.ConsumableItem do
   @doc false
   def changeset(consumable_item, attrs) do
     consumable_item
-    |> cast(attrs, [:name, :radius, :mechanics, :active, :effects, :version_id])
+    |> cast(attrs, [:name, :radius, :active, :effects, :version_id])
     |> validate_required([:name, :radius])
+    |> cast_assoc(:mechanics)
   end
 end

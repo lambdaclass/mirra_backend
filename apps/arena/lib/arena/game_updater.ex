@@ -935,7 +935,7 @@ defmodule Arena.GameUpdater do
       end)
 
     Enum.reduce(activated_traps, game_state, fn {_trap_id, trap}, game_state_acc ->
-      game_state = Trap.do_mechanics(game_state_acc, trap, trap.aditional_info.mechanics)
+      game_state = Trap.do_mechanic(game_state_acc, trap, trap.aditional_info.mechanic)
       trap = put_in(trap, [:aditional_info, :status], :USED)
       update_entity_in_game_state(game_state, trap)
     end)
