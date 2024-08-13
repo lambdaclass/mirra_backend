@@ -7,7 +7,7 @@ defmodule Arena.Configuration do
     Enum.find(config.characters, fn character -> character.name == name end)
   end
 
-  def get_game_config() do
+  def get_game_config(game_mode) do
     {:ok, config_json} =
       Application.app_dir(:arena, "priv/config.json")
       |> File.read()
@@ -16,7 +16,7 @@ defmodule Arena.Configuration do
     client_config = get_client_config()
 
     config
-    |> Map.merge(get_current_game_configuration_by_game_mode("battle_royale"))
+    |> Map.merge(get_current_game_configuration_by_game_mode(game_mode))
     |> Map.put(:client_config, client_config)
   end
 

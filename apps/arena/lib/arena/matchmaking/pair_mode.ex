@@ -98,7 +98,7 @@ defmodule Arena.Matchmaking.PairMode do
 
   defp get_bot_clients(missing_clients) do
     characters =
-      Arena.Configuration.get_game_config()
+      Arena.Configuration.get_game_config("pair_mode")
       |> Map.get(:characters)
       |> Enum.filter(fn character -> character.active end)
 

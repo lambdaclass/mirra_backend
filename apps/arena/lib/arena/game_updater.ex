@@ -68,7 +68,7 @@ defmodule Arena.GameUpdater do
 
   def init(%{clients: clients, bot_clients: bot_clients, game_params: game_params}) do
     game_id = self() |> :erlang.term_to_binary() |> Base58.encode()
-    game_config = Configuration.get_game_config()
+    game_config = Configuration.get_game_config("battle_royale")
     game_config = Map.put(game_config, :game, Map.merge(game_config.game, game_params))
 
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
