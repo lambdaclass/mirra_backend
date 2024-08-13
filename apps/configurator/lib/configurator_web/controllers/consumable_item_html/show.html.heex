@@ -5,6 +5,7 @@
     <.link href={~p"/consumable_items/#{@consumable_item}/edit"}>
       <.button>Edit Consumable item</.button>
     </.link>
+    <.effect_show effect={@consumable_item.effect} />
   </:actions>
 </.header>
 
@@ -20,10 +21,6 @@
   <div class="flex gap-5 py-4 border-b-2 items-center">
     <dt>Radius</dt>
     <dd><%= @consumable_item.radius %></dd>
-  </div>
-  <div class="flex gap-5 py-4 border-b-2 items-center">
-    <dt>Effects</dt>
-    <dd><%= @consumable_item.effects %></dd>
   </div>
 </div>
 

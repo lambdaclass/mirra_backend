@@ -12,12 +12,9 @@
   <.input field={f[:name]} type="text" label="Name" />
   <.input field={f[:radius]} type="number" label="Radius" step="any" />
   <.input field={f[:active]} type="checkbox" label="Active" />
-  <.input
-    field={f[:effects]}
-    type="select"
-    multiple
-    options={["golden_clock_effect", "magic_boots_effect", "mirra_blessing_effect", "giant_effect", "polymorph_effect"]}
-  />
+  <%= if @consumable_item.effect do %>
+    <.effect_form form={f} field={:effect} />
+  <% end %>
   <:actions>
     <.button>Save Consumable item</.button>
   </:actions>

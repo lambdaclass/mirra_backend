@@ -62,7 +62,25 @@ defmodule GameBackend.CurseOfMirra.Effect do
                :stat_multiplier
              ]}
     embedded_schema do
-      field(:name, :string)
+      field(:name, Ecto.Enum,
+        values: [
+          :damage_change,
+          :defense_change,
+          :reduce_stamina_interval,
+          :reduce_cooldowns_duration,
+          :speed_boost,
+          :modify_radius,
+          :damage_immunity,
+          :pull_immunity,
+          :pull,
+          :damage,
+          :buff_pool,
+          :refresh_stamina,
+          :refresh_cooldowns,
+          :invisible
+        ]
+      )
+
       field(:modifier, :decimal)
       field(:force, :decimal)
       field(:execute_multiple_times, :boolean)
