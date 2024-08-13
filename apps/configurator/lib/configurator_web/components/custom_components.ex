@@ -1,4 +1,8 @@
 defmodule ConfiguratorWeb.CustomComponents do
+  @moduledoc """
+  Custom components to render shared templates
+  """
+
   import ConfiguratorWeb.CoreComponents
   use Phoenix.Component
 
