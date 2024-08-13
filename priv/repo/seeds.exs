@@ -717,6 +717,11 @@ muflus_params = %{
   basic_skill_id: skills["muflus_crush"],
   ultimate_skill_id: skills["muflus_leap"],
   dash_skill_id: skills["muflus_dash"],
+  base_mana: 100,
+  initial_mana: 50,
+  mana_recovery_strategy: "time",
+  mana_recovery_time_interval_ms: 1000,
+  mana_recovery_time_amount: 10,
   version_id: version.id
 }
 
@@ -734,6 +739,11 @@ h4ck_params = %{
   basic_skill_id: skills["h4ck_slingshot"],
   ultimate_skill_id: skills["h4ck_denial_of_service"],
   dash_skill_id: skills["h4ck_dash"],
+  base_mana: 100,
+  initial_mana: 50,
+  mana_recovery_strategy: "time",
+  mana_recovery_time_interval_ms: 1000,
+  mana_recovery_time_amount: 10,
   version_id: version.id
 }
 
@@ -751,6 +761,11 @@ uma_params = %{
   basic_skill_id: skills["uma_avenge"],
   ultimate_skill_id: skills["uma_veil_radiance"],
   dash_skill_id: skills["uma_sneak"],
+  base_mana: 100,
+  initial_mana: 50,
+  mana_recovery_strategy: "time",
+  mana_recovery_time_interval_ms: 1000,
+  mana_recovery_time_amount: 10,
   version_id: version.id
 }
 
@@ -768,6 +783,11 @@ valtimer_params = %{
   basic_skill_id: skills["valt_antimatter"],
   ultimate_skill_id: skills["valt_singularity"],
   dash_skill_id: skills["valt_warp"],
+  base_mana: 100,
+  initial_mana: 50,
+  mana_recovery_strategy: "time",
+  mana_recovery_time_interval_ms: 1000,
+  mana_recovery_time_amount: 10,
   version_id: version.id
 }
 
@@ -785,6 +805,11 @@ kenzu_params = %{
   basic_skill_id: skills["kenzu_quickslash"],
   ultimate_skill_id: skills["kenzu_whirlwind"],
   dash_skill_id: skills["kenzu_pounce"],
+  base_mana: 100,
+  initial_mana: 50,
+  mana_recovery_strategy: "time",
+  mana_recovery_time_interval_ms: 1000,
+  mana_recovery_time_amount: 10,
   version_id: version.id
 }
 
