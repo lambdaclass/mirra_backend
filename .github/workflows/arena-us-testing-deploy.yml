@@ -10,7 +10,7 @@ jobs:
     name: Build and deploy to US testing
     runs-on: ubuntu-latest
     environment:
-      name: staging-brazil
+      name: testing-brazil
       url: https://arena-us-testing.championsofmirra.com/
 
     steps:
