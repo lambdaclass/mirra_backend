@@ -303,7 +303,15 @@ defmodule GameBackend.Items do
       ** (Ecto.NoResultsError)
 
   """
-  def get_consumable_item!(id), do: Repo.get!(ConsumableItem, id)
+  def get_consumable_item!(id) do
+    q =
+      from(ci in ConsumableItem,
+        where: ci.id == ^id,
+        preload: [[mechanics: :parent_mechanic]]
+      )
+
+    Repo.one!(q)
+  end
 
   @doc """
   Creates a consumable_item.
