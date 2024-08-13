@@ -199,10 +199,11 @@ defmodule Configurator.ConfigurationTest do
 
     test "update_game_mode/2 with valid data updates the game_mode" do
       game_mode = game_mode_fixture()
-      update_attrs = %{name: "some updated name"}
+      game_modes = Configuration.list_game_modes()
+      update_attrs = %{name: "some updated name" <> "#{Enum.count(game_modes)}"}
 
       assert {:ok, %GameMode{} = game_mode} = Configuration.update_game_mode(game_mode, update_attrs)
-      assert game_mode.name == "some updated name"
+      assert game_mode.name == "some updated name" <> "#{Enum.count(game_modes)}"
     end
 
     test "update_game_mode/2 with invalid data returns error changeset" do

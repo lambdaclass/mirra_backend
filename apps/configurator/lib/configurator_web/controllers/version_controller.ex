@@ -24,7 +24,8 @@ defmodule ConfiguratorWeb.VersionController do
         |> redirect(to: ~p"/versions/#{version}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        game_modes = Configuration.list_game_modes()
+        render(conn, :new, changeset: changeset, game_modes: game_modes)
     end
   end
 
@@ -52,7 +53,8 @@ defmodule ConfiguratorWeb.VersionController do
         |> redirect(to: ~p"/versions/#{version}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, version: version, changeset: changeset)
+        game_modes = Configuration.list_game_modes()
+        render(conn, :edit, version: version, changeset: changeset, game_modes: game_modes)
     end
   end
 

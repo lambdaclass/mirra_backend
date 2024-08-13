@@ -76,12 +76,11 @@ defmodule Configurator.ConfigurationFixtures do
   """
   def version_fixture(attrs \\ %{}) do
     game_mode = game_mode_fixture()
-    count = GameBackend.Configuration.list_game_modes() |> length()
 
     {:ok, version} =
       attrs
       |> Enum.into(%{
-        name: "some name" <> "#{count}",
+        name: "some name",
         game_mode_id: game_mode.id
       })
       |> GameBackend.Configuration.create_version()
@@ -93,10 +92,12 @@ defmodule Configurator.ConfigurationFixtures do
   Generate a game_mode.
   """
   def game_mode_fixture(attrs \\ %{}) do
+    count = GameBackend.Configuration.list_game_modes() |> length()
+
     {:ok, game_mode} =
       attrs
       |> Enum.into(%{
-        name: "some name"
+        name: "some name" <> "#{count}"
       })
       |> GameBackend.Configuration.create_game_mode()
 

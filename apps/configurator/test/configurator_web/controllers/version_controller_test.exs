@@ -26,7 +26,8 @@ defmodule ConfiguratorWeb.VersionControllerTest do
 
   describe "create version" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/versions", version: @create_attrs)
+      game_mode = game_mode_fixture()
+      conn = post(conn, ~p"/versions", version: @create_attrs |> Map.put(:game_mode_id, game_mode.id))
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/versions/#{id}"

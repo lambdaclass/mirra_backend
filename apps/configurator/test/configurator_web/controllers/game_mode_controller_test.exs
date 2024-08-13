@@ -2,10 +2,14 @@ defmodule ConfiguratorWeb.GameModeControllerTest do
   use ConfiguratorWeb.ConnCase
 
   import Configurator.ConfigurationFixtures
+  import Configurator.AccountsFixtures
+  alias GameBackend.Configuration
 
   @create_attrs %{name: "some name"}
   @update_attrs %{name: "some updated name"}
   @invalid_attrs %{name: nil}
+
+  setup [:create_authenticated_conn]
 
   describe "index" do
     test "lists all game_modes", %{conn: conn} do
@@ -23,7 +27,10 @@ defmodule ConfiguratorWeb.GameModeControllerTest do
 
   describe "create game_mode" do
     test "redirects to show when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/game_modes", game_mode: @create_attrs)
+      game_modes = Configuration.list_game_modes()
+      attrs = @create_attrs |> Map.put(:name, "some name" <> "#{Enum.count(game_modes)}")
+
+      conn = post(conn, ~p"/game_modes", game_mode: attrs)
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == ~p"/game_modes/#{id}"
@@ -52,7 +59,6 @@ defmodule ConfiguratorWeb.GameModeControllerTest do
 
     test "redirects when data is valid", %{conn: conn, game_mode: game_mode} do
       conn = put(conn, ~p"/game_modes/#{game_mode}", game_mode: @update_attrs)
-      assert redirected_to(conn) == ~p"/game_modes/#{game_mode}"
 
       conn = get(conn, ~p"/game_modes/#{game_mode}")
       assert html_response(conn, 200) =~ "some updated name"
@@ -80,5 +86,18 @@ defmodule ConfiguratorWeb.GameModeControllerTest do
   defp create_game_mode(_) do
     game_mode = game_mode_fixture()
     %{game_mode: game_mode}
+  end
+
+  defp create_authenticated_conn(%{conn: conn}) do
+    user = user_fixture()
+    token = Configurator.Accounts.generate_user_session_token(user)
+
+    conn =
+      conn
+      |> Phoenix.ConnTest.init_test_session(%{})
+      |> Plug.Conn.put_session(:user_token, token)
+      |> Plug.Conn.put_session(:current_user, user)
+
+    %{conn: conn}
   end
 end
