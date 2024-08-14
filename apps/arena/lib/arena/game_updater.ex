@@ -770,6 +770,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:obstacles, %{})
+      |> Map.put(:bushes, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:pools, %{})
