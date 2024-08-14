@@ -402,7 +402,8 @@ defmodule GameBackend.Configuration do
   def get_current_version_from_game_mode(game_mode) do
     q =
       from(v in Version,
-        where: v.current and v.game_mode_id == ^game_mode.id,
+        join: g in assoc(v, :game_mode),
+        where: v.current and g.name == ^game_mode,
         preload: [
           :consumable_items,
           :skills,
