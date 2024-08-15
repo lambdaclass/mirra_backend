@@ -204,11 +204,16 @@ defmodule Arena.GameSocketHandler do
       targetting_angle: mechanic[:angle],
       targetting_range: mechanic[:range],
       targetting_offset: mechanic[:offset] || mechanic[:projectile_offset],
-      is_combo: skill.is_combo?
+      is_combo: skill.is_combo?,
+      cooldown_mechanism: convert_cooldown_mechanism(skill.cooldown_mechanism)
     }
 
     {key, Map.merge(skill, extra_params)}
   end
+
+  defp convert_cooldown_mechanism("stamina"), do: :STAMINA
+  defp convert_cooldown_mechanism("time"), do: :TIME
+  defp convert_cooldown_mechanism("mana"), do: :MANA
 
   defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
     do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
