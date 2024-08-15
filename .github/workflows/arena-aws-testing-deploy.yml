@@ -1,4 +1,4 @@
-Add name: "[AWS] Deploy to AWS Arena Testing"
+name: "[AWS] Deploy to AWS Arena Testing"
 on:
   workflow_dispatch:
   push:
