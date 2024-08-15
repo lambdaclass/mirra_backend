@@ -1,3 +1,13 @@
+defmodule Arena.Serialization.SkillCooldownMechanism do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:TIME, 0)
+  field(:STAMINA, 1)
+  field(:MANA, 2)
+end
+
 defmodule Arena.Serialization.GameStatus do
   @moduledoc false
 
@@ -302,6 +312,12 @@ defmodule Arena.Serialization.ConfigSkill do
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
   field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
   field(:is_combo, 10, type: :bool, json_name: "isCombo")
+
+  field(:cooldown_mechanism, 11,
+    type: Arena.Serialization.SkillCooldownMechanism,
+    json_name: "cooldownMechanism",
+    enum: true
+  )
 end
 
 defmodule Arena.Serialization.GameState.PlayersEntry do

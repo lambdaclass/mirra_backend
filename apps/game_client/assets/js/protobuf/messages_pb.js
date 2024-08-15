@@ -72,6 +72,7 @@ goog.exportSymbol('proto.PowerUpstatus', null, global);
 goog.exportSymbol('proto.Projectile', null, global);
 goog.exportSymbol('proto.ProjectileStatus', null, global);
 goog.exportSymbol('proto.SelectBounty', null, global);
+goog.exportSymbol('proto.SkillCooldownMechanism', null, global);
 goog.exportSymbol('proto.ToggleBots', null, global);
 goog.exportSymbol('proto.ToggleZone', null, global);
 goog.exportSymbol('proto.Trap', null, global);
@@ -4803,7 +4804,8 @@ proto.ConfigSkill.toObject = function(includeInstance, msg) {
     staminaCost: jspb.Message.getFieldWithDefault(msg, 7, 0),
     targettingOffset: jspb.Message.getFloatingPointFieldWithDefault(msg, 8, 0.0),
     manaCost: jspb.Message.getFieldWithDefault(msg, 9, 0),
-    isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false)
+    isCombo: jspb.Message.getBooleanFieldWithDefault(msg, 10, false),
+    cooldownMechanism: jspb.Message.getFieldWithDefault(msg, 11, 0)
   };
 
   if (includeInstance) {
@@ -4879,6 +4881,10 @@ proto.ConfigSkill.deserializeBinaryFromReader = function(msg, reader) {
     case 10:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setIsCombo(value);
+      break;
+    case 11:
+      var value = /** @type {!proto.SkillCooldownMechanism} */ (reader.readEnum());
+      msg.setCooldownMechanism(value);
       break;
     default:
       reader.skipField();
@@ -4976,6 +4982,13 @@ proto.ConfigSkill.serializeBinaryToWriter = function(message, writer) {
   if (f) {
     writer.writeBool(
       10,
+      f
+    );
+  }
+  f = message.getCooldownMechanism();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      11,
       f
     );
   }
@@ -5159,6 +5172,24 @@ proto.ConfigSkill.prototype.getIsCombo = function() {
  */
 proto.ConfigSkill.prototype.setIsCombo = function(value) {
   return jspb.Message.setProto3BooleanField(this, 10, value);
+};
+
+
+/**
+ * optional SkillCooldownMechanism cooldown_mechanism = 11;
+ * @return {!proto.SkillCooldownMechanism}
+ */
+proto.ConfigSkill.prototype.getCooldownMechanism = function() {
+  return /** @type {!proto.SkillCooldownMechanism} */ (jspb.Message.getFieldWithDefault(this, 11, 0));
+};
+
+
+/**
+ * @param {!proto.SkillCooldownMechanism} value
+ * @return {!proto.ConfigSkill} returns this
+ */
+proto.ConfigSkill.prototype.setCooldownMechanism = function(value) {
+  return jspb.Message.setProto3EnumField(this, 11, value);
 };
 
 
@@ -12174,6 +12205,15 @@ proto.CurrencyReward.prototype.setAmount = function(value) {
   return jspb.Message.setProto3IntField(this, 2, value);
 };
 
+
+/**
+ * @enum {number}
+ */
+proto.SkillCooldownMechanism = {
+  TIME: 0,
+  STAMINA: 1,
+  MANA: 2
+};
 
 /**
  * @enum {number}

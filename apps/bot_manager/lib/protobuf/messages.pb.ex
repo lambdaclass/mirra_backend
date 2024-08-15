@@ -1,3 +1,13 @@
+defmodule BotManager.Protobuf.SkillCooldownMechanism do
+  @moduledoc false
+
+  use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:TIME, 0)
+  field(:STAMINA, 1)
+  field(:MANA, 2)
+end
+
 defmodule BotManager.Protobuf.GameStatus do
   @moduledoc false
 
@@ -302,6 +312,12 @@ defmodule BotManager.Protobuf.ConfigSkill do
   field(:targetting_offset, 8, type: :float, json_name: "targettingOffset")
   field(:mana_cost, 9, type: :uint64, json_name: "manaCost")
   field(:is_combo, 10, type: :bool, json_name: "isCombo")
+
+  field(:cooldown_mechanism, 11,
+    type: BotManager.Protobuf.SkillCooldownMechanism,
+    json_name: "cooldownMechanism",
+    enum: true
+  )
 end
 
 defmodule BotManager.Protobuf.GameState.PlayersEntry do
