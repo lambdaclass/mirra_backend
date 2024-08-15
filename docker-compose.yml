@@ -1,3 +1,5 @@
+version: '3.2'
+
 services:
   postgres:
     container_name: game_backend_db
@@ -11,24 +13,6 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - game_backend_data:/var/lib/postgresql/data/
-  prometheus:
-    container_name: prometheus
-    image: prom/prometheus:latest
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    ports:
-      - 9090:9090
-  grafana:
-    image: grafana/grafana-oss
-    container_name: grafana
-    ports:
-     - 9100:3000
-    volumes:
-      - grafana_data:/var/lib/grafana
 
 volumes:
   game_backend_data:
-  grafana_data:
