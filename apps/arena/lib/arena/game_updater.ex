@@ -241,6 +241,7 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     delta_time = now - game_state.server_timestamp
+    Logger.info("Delta time: #{delta_time}")
 
     game_state =
       game_state
