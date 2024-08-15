@@ -243,6 +243,8 @@ defmodule Arena.GameUpdater do
     delta_time = now - game_state.server_timestamp
     Logger.info("Delta time: #{delta_time}")
 
+    Logger.info("start time: #{now} ")
+
     game_state =
       game_state
       |> Map.put(:delta_time, delta_time / 1)
@@ -272,7 +274,6 @@ defmodule Arena.GameUpdater do
       |> remove_expired_pools(now)
       # Crates
       |> handle_destroyed_crates()
-      |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
       |> prepare_traps()
@@ -280,6 +281,12 @@ defmodule Arena.GameUpdater do
       |> activate_trap_mechanics()
       # Obstacles
       |> handle_obstacles_transitions()
+      |> Map.put(:server_timestamp, now)
+
+    end_time = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+
+    Logger.info("start time: #{end_time}")
+    Logger.info("total time: #{end_time - now}")
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
