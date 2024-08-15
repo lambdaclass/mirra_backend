@@ -818,7 +818,8 @@ game_configuration_1 = %{
   field_of_view_inside_bush: 400,
   version_id: version.id,
   time_visible_in_bush_after_skill: 2000,
-  zone_random_position_radius: 0, # Be careful when editing this field, you're going to activate the randomization of the zone.
+  # Be careful when editing this field, you're going to activate the randomization of the zone.
+  zone_random_position_radius: 0,
   zone_start_radius: 7000
 }
 
