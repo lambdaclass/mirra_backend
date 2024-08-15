@@ -241,9 +241,8 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     delta_time = now - game_state.server_timestamp
-    Logger.info("Delta time: #{delta_time}")
 
-    Logger.info("start time: #{now} ")
+    now_microseconds = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
     game_state =
       game_state
@@ -283,16 +282,14 @@ defmodule Arena.GameUpdater do
       |> handle_obstacles_transitions()
       |> Map.put(:server_timestamp, now)
 
-    end_time = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    end_time = DateTime.utc_now() |> DateTime.to_unix(:microsecond)
 
-    Logger.info("start time: #{end_time}")
-    Logger.info("total time: #{end_time - now}")
+    Logger.info("total time: #{end_time - now_microseconds}")
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
-    Logger.info("Tick duration: #{tick_duration}")
     :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
     {:noreply, %{state | game_state: game_state}}
   end
