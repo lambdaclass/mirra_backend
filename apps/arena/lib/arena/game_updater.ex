@@ -5,6 +5,8 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  require Logger
+  alias Plug.Debugger
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
@@ -282,6 +284,7 @@ defmodule Arena.GameUpdater do
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
+    Logger.info("Tick duration: #{tick_duration}")
     :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
     {:noreply, %{state | game_state: game_state}}
   end
