@@ -228,7 +228,8 @@ Champions.Config.import_dungeon_levels_config()
 ##################### CURSE OF MIRRA #####################
 
 battle_royale = %{
-  name: "battle_royale"
+  name: "battle_royale",
+  description: "Fight to be the last one standing in a shrinking arena."
 }
 
 {:ok, battle_royale_mode} = GameBackend.Configuration.create_game_mode(battle_royale)

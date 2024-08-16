@@ -7,6 +7,7 @@ defmodule GameBackend.Configuration.GameMode do
 
   schema "game_modes" do
     field(:name, :string)
+    field(:description, :string)
 
     timestamps(type: :utc_datetime)
   end
@@ -14,8 +15,8 @@ defmodule GameBackend.Configuration.GameMode do
   @doc false
   def changeset(game_mode, attrs) do
     game_mode
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :description])
+    |> validate_required([:name, :description])
     |> unique_constraint(:name)
   end
 end

@@ -9,6 +9,12 @@
 
 <.table id="game_modes" rows={@game_modes} row_click={&JS.navigate(~p"/game_modes/#{&1}")}>
   <:col :let={game_mode} label="Name"><%= game_mode.name %></:col>
+  <:col :let={game_mode} label="Description">
+    <.modal id={"#{game_mode.id}"}>
+      <%= game_mode.description %>
+    </.modal>
+    <.button type="button" phx-click={show_modal("#{game_mode.id}")}>Display description</.button>
+  </:col>
   <:action :let={game_mode}>
     <div class="sr-only">
       <.link navigate={~p"/game_modes/#{game_mode}"}>Show</.link>
