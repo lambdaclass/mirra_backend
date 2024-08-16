@@ -48,7 +48,12 @@ end
 # App configuration: arena #
 ############################
 
+metrics_endpoint_port =
+  (System.get_env("METRICS_ENDPOINT_PORT") || "9568")
+  |> String.to_integer()
+
 config :arena, :gateway_url, System.get_env("GATEWAY_URL") || "http://localhost:4001"
+config :arena, :metrics_endpoint_port, metrics_endpoint_port
 
 if System.get_env("PHX_SERVER") do
   config :arena, ArenaWeb.Endpoint, server: true
