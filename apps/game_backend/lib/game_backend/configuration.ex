@@ -403,7 +403,7 @@ defmodule GameBackend.Configuration do
     q =
       from(v in Version,
         join: g in assoc(v, :game_mode),
-        where: v.current and g.name == ^game_mode,
+        where: v.current,
         preload: [
           :consumable_items,
           :skills,
@@ -416,8 +416,17 @@ defmodule GameBackend.Configuration do
           ]
         ]
       )
+      |> filter_by_game_mode(game_mode)
 
     Repo.one(q)
+  end
+
+  defp filter_by_game_mode(base_query, %GameMode{} = game_mode) do
+    where(base_query, [_v, g], g.id == ^game_mode.id)
+  end
+
+  defp filter_by_game_mode(base_query, game_mode) do
+    where(base_query, [_v, g], g.name == ^game_mode)
   end
 
   @doc """
@@ -492,7 +501,7 @@ defmodule GameBackend.Configuration do
 
     Multi.new()
     |> Multi.run(:different_versions, fn _repo, _changes_so_far ->
-      if version.id == former_version.id do
+      if not is_nil(former_version) and version.id == former_version.id do
         {:error, "Version is already current one"}
       else
         {:ok, version}
