@@ -33,8 +33,7 @@ defmodule ConfiguratorWeb.SkillController do
 
   def show(conn, %{"id" => id}) do
     skill = Skills.get_skill!(id)
-    version = Configuration.get_version!(skill.version_id)
-    render(conn, :show, skill: skill, version: version)
+    render(conn, :show, skill: skill)
   end
 
   def edit(conn, %{"id" => id}) do
