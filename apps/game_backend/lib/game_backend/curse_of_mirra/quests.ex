@@ -346,7 +346,9 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end)
     |> Multi.update(:update_user_quest, updated_user_quest_changeset)
     |> Multi.run(:maybe_activate_quest, fn _, _ ->
-      Enum.find(user.user_quests, fn user_quest -> is_nil(user_quest.activated_at) end)
+      Enum.find(user.user_quests, fn deactivated_user_quest ->
+        is_nil(deactivated_user_quest.activated_at) && deactivated_user_quest.type == user_quest.type
+      end)
       |> case do
         nil ->
           {:ok, :no_quests_left}
