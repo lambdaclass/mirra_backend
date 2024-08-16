@@ -109,12 +109,14 @@ defmodule GameBackend.CurseOfMirra.Quests do
   """
   def get_user_quest(user_quest_id) do
     q = from(uq in UserQuest, preload: [:quest], where: uq.id == ^user_quest_id)
-    user_quest = Repo.one(q)
 
-    if user_quest do
-      {:ok, user_quest}
-    else
-      {:error, :not_found}
+    Repo.one(q)
+    |> case do
+      nil ->
+        {:error, :not_found}
+
+      user_quest ->
+        {:ok, user_quest}
     end
   end
 
@@ -326,7 +328,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end)
   end
 
-  def try_to_complete_quest_for_user(user, user_quest) do
+  def complete_user_quest(user, user_quest) do
     updated_user_quest_changeset =
       UserQuest.changeset(user_quest, %{
         completed: true,

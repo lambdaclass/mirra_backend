@@ -57,7 +57,7 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
   def complete_quest(conn, %{"user_id" => user_id, "quest_id" => user_quest_id}) do
     with {:ok, user} <- Users.get_user_by_id_and_game_id(user_id, Utils.get_game_id(:curse_of_mirra)),
          {:ok, user_quest} <- Quests.get_user_quest(user_quest_id),
-         {:ok, %{updated_user: updated_user}} <- Quests.try_to_complete_quest_for_user(user, user_quest) do
+         {:ok, %{updated_user: updated_user}} <- Quests.complete_user_quest(user, user_quest) do
       conn
       |> send_resp(200, Jason.encode!(updated_user))
     end
