@@ -96,7 +96,7 @@ defmodule GameBackend.Users do
   end
 
   @doc """
-  Get a list of GoogleUser based on their id with the necessary preloads
+  Get a list of User based on their id with the necessary preloads
   to process quests.
 
   - user_quests: status equals "available" and completed_at is nil
