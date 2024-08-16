@@ -97,7 +97,8 @@ defmodule Configurator.ConfigurationFixtures do
     {:ok, game_mode} =
       attrs
       |> Enum.into(%{
-        name: "some name" <> "#{count}"
+        name: "some name" <> "#{count}",
+        description: "some description"
       })
       |> GameBackend.Configuration.create_game_mode()
 

@@ -5,8 +5,8 @@ defmodule ConfiguratorWeb.GameModeControllerTest do
   import Configurator.AccountsFixtures
   alias GameBackend.Configuration
 
-  @create_attrs %{name: "some name"}
-  @update_attrs %{name: "some updated name"}
+  @create_attrs %{name: "some name", description: "some description"}
+  @update_attrs %{name: "some updated name", description: "some updated description"}
   @invalid_attrs %{name: nil}
 
   setup [:create_authenticated_conn]

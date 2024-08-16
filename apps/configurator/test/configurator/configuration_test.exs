@@ -187,7 +187,7 @@ defmodule Configurator.ConfigurationTest do
     end
 
     test "create_game_mode/1 with valid data creates a game_mode" do
-      valid_attrs = %{name: "some name"}
+      valid_attrs = %{name: "some name", description: "some description"}
 
       assert {:ok, %GameMode{} = game_mode} = Configuration.create_game_mode(valid_attrs)
       assert game_mode.name == "some name"
