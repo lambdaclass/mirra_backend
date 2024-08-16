@@ -48,7 +48,7 @@ end
 # App configuration: arena #
 ############################
 
-metrics_endpoint_port = "9568"
+metrics_endpoint_port = 9568
   # (System.get_env("METRICS_ENDPOINT_PORT") || "9568")
   # |> String.to_integer()
 
