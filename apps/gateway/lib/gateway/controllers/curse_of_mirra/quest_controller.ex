@@ -11,10 +11,11 @@ defmodule Gateway.Controllers.CurseOfMirra.QuestController do
   action_fallback Gateway.Controllers.FallbackController
 
   def reroll_daily_quest(conn, %{"quest_id" => user_quest_id}) do
-    {:ok, %{insert_quest: user_quest}} = Quests.reroll_daily_quest(user_quest_id)
-
-    conn
-    |> send_resp(200, user_quest.id)
+    with {:ok, daily_quest} <- Quests.get_user_quest(user_quest_id),
+         {:ok, %{insert_quest: new_daily_quest}} <- Quests.reroll_daily_quest(daily_quest) do
+      conn
+      |> send_resp(200, new_daily_quest.id)
+    end
   end
 
   def get_bounties(conn, _) do

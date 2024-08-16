@@ -589,7 +589,7 @@ defmodule GameBackend.Users do
 
   defp add_quest_progress_and_goal(_), do: nil
 
-  def insert_user_and_insert_daily_quests() do
+  def insert_curse_user_and_insert_daily_quests() do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     Multi.new()
@@ -599,11 +599,7 @@ defmodule GameBackend.Users do
     end)
     |> Multi.run(:generate_quests, fn
       _, %{insert_user: user} ->
-        quests_results = generate_daily_quests_for_user(user)
-
-        any_failed_quest? = Enum.find(quests_results, fn {result, _quest} -> result == :error end)
-
-        case any_failed_quest? do
+        case generate_daily_quests_for_user(user) do
           {:error, changeset} ->
             {:error, changeset}
 
@@ -617,13 +613,9 @@ defmodule GameBackend.Users do
     |> Repo.transaction()
   end
 
-  def get_user_and_maybe_insert_daily_quests(user_id) do
-    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
-
+  def maybe_generate_daily_quests_for_curse_user(user_id) do
     Multi.new()
-    |> Multi.run(:get_user, fn _, _ ->
-      get_user_by_id_and_game_id(user_id, curse_id)
-    end)
+    |> Multi.run(:get_user, fn _, _ -> get_user(user_id) end)
     |> Multi.run(:maybe_generate_quests, fn
       _, %{get_user: user} ->
         today = Date.utc_today()
@@ -633,17 +625,16 @@ defmodule GameBackend.Users do
             Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) == :lt
 
         if should_generate_quests? do
-          quests_results = generate_daily_quests_for_user(user)
-          any_failed_quest = Enum.find(quests_results, fn {result, _quest} -> result == :error end)
+          quest_insertion_result = generate_daily_quests_for_user(user)
 
-          user_changeset =
-            GameBackend.Users.User.changeset(user, %{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+          user_update =
+            user
+            |> GameBackend.Users.User.changeset(%{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+            |> Repo.update()
 
-          user_update = Repo.update(user_changeset)
-
-          case {any_failed_quest, user_update} do
-            {nil, {:ok, user}} ->
-              {:ok, {quests_results, user}}
+          case {quest_insertion_result, user_update} do
+            {{:ok, _}, {:ok, user}} ->
+              {:ok, user}
 
             {{:error, changeset}, _user_update} ->
               {:error, changeset}
@@ -654,9 +645,6 @@ defmodule GameBackend.Users do
         else
           {:ok, :not_needed}
         end
-    end)
-    |> Multi.run(:user, fn _, %{get_user: user} ->
-      get_user_by_id_and_game_id(user.id, curse_id)
     end)
     |> Repo.transaction()
   end
@@ -699,6 +687,11 @@ defmodule GameBackend.Users do
           Repo.insert(changeset)
       end)
 
-    active_quests ++ inactive_quests
+    (active_quests ++ inactive_quests)
+    |> Enum.find(fn {result, _quest} -> result == :error end)
+    |> case do
+      nil -> {:ok, :quests_inserted}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 end
