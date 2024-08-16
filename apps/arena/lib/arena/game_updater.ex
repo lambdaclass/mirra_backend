@@ -247,6 +247,7 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :update_game, state.game_config.game.tick_rate_ms)
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     delta_time = now - game_state.server_timestamp
+    old_game_state = game_state
 
     game_state =
       game_state
@@ -285,6 +286,8 @@ defmodule Arena.GameUpdater do
       |> activate_trap_mechanics()
       # Obstacles
       |> handle_obstacles_transitions()
+
+    IO.inspect(diff(old_game_state, game_state), label: "Game State Diff")
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -1872,6 +1875,53 @@ defmodule Arena.GameUpdater do
     |> Enum.reduce(game_state, fn {entity_id, _entity}, acc ->
       Effect.remove_owner_effects(acc, entity_id, pool.id)
     end)
+  end
+
+  @spec diff(t, t) :: :no_diff | {:ok, t} when t: any()
+  def diff(old, new) when is_map(old) and is_map(new) do
+    value = Enum.reduce(new, %{}, fn {key, new_value}, acc ->
+      case Map.has_key?(old, key) do
+        true ->
+          case diff(Map.get(old, key), new_value) do
+            :no_diff -> acc
+            {:ok, value_diff} -> Map.put(acc, key, value_diff)
+          end
+
+        false ->
+          Map.put(acc, key, new_value)
+      end
+    end)
+
+    case map_size(value) do
+      0 -> :no_diff
+      _ -> {:ok, value}
+    end
+  end
+
+  def diff(old, new) when is_list(old) and is_list(new) do
+    ## TODO: Figure out if there is a way to calculate the diff of lists
+    ## so far this involves figuring out both was is there and what is not there which is simple,
+    ## but how do you differentiate between a thing that hasn't changed and a thing that was removed?
+    ## For example this lists [1, 5, 8] and [1, 2, 6, 7, 8], what is the diff?
+    ##  - 2, 6, 7 were added
+    ##  - 5 was removed
+    ##  - 1, 8 were not changed
+    ## So, how do we give back this information? Because we have this representations
+    ##  - [2, 6, 7, 5] this represents all changes, but how do you know 5 was removed?
+    ##  - [2, 6, 7] this is only new things, but then how do we know 5 was removed?
+    ##
+    ## To complicate things further what about ordering? Is [1,2,3] and [3,2,1] the same list?
+    ## Since I don't have answers to these questions and the amount of lists we send back that could benefit
+    ## from a diff is a couple, I'll think returning the `new` one for now is good enough
+    {:ok, new}
+  end
+
+  ## At this point only simple values remain so a normal comparisson is enough
+  def diff(old, new) do
+    case old == new do
+      true -> :no_diff
+      false -> {:ok, new}
+    end
   end
 
   ##########################
