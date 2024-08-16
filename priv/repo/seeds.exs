@@ -738,7 +738,7 @@ skills = [
     "type" => "ultimate",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
-    "execution_duration_ms" => 250,
+    "execution_duration_ms" => 100,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
@@ -748,23 +748,16 @@ skills = [
     "mechanics" => [
       %{
         "name" => "inferno",
-        "type" => "multiple_pool",
-        "interval_ms" => 100,
+        "type" => "spawn_pool",
         "activation_delay" => 250,
-        "duration_ms" => 4000,
-        "radius" => 200.0,
+        "duration_ms" => 8000,
+        "radius" => 400.0,
+        "range" => 0.0,
+        "shape" => "circle",
+        "vertices" => [],
         "effects_to_apply" => [
           "inferno"
-        ],
-        "pools_angle" => [
-          45,
-          135,
-          225,
-          315
-        ],
-        "range" => 150.0,
-        "shape" => "circle",
-        "vertices" => []
+        ]
       }
     ]
   }
