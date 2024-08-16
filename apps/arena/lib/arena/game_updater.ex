@@ -1795,13 +1795,8 @@ defmodule Arena.GameUpdater do
         pools =
           Map.delete(game_state.pools, pool_id)
 
-        Enum.reduce(entities, game_state, fn {entity_id, _entity}, acc ->
-          if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
-            Effect.remove_owner_effects(acc, entity_id, pool.id)
-          else
-            acc
-          end
-        end)
+        game_state
+        |> remove_pool_effects_from_entities(pool, entities)
         |> Map.put(:pools, pools)
       else
         game_state
@@ -1856,6 +1851,16 @@ defmodule Arena.GameUpdater do
 
   defp handle_obstacles_transitions(game_state) do
     game_state
+  end
+
+  defp remove_pool_effects_from_entities(game_state, pool, entities) do
+    Enum.reduce(entities, game_state, fn {entity_id, _entity}, acc ->
+      if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
+        Effect.remove_owner_effects(acc, entity_id, pool.id)
+      else
+        acc
+      end
+    end)
   end
 
   ##########################
