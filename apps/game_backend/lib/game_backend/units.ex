@@ -239,7 +239,7 @@ defmodule GameBackend.Units do
   def get_unit_default_values(character_name) do
     %{
       level: 1,
-      prestige: 1,
+      prestige: 0,
       selected: false,
       character_id: Characters.get_character_id_by_name_and_game_id(character_name, Utils.get_game_id(:curse_of_mirra))
     }
