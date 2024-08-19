@@ -83,7 +83,8 @@ defmodule GameBackend.Users do
         preload: [
           [units: [:character, :items]],
           [currencies: [:currency]]
-        ]
+        ],
+        select: %{u | quest_refresh_at: ^quest_refresh_at}
       )
       |> quests_preloads()
       |> arena_match_results_preloads()
