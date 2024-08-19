@@ -6,7 +6,7 @@ defmodule Arena.Matchmaking.GameLauncher do
   use GenServer
 
   # Time to wait to start game with any amount of clients
-  @start_timeout_ms 10_000
+  @start_timeout_ms 4_000
   # The available names for bots to enter a match, we should change this in the future
   @bot_names [
     "TheBlackSwordman",

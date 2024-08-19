@@ -78,21 +78,60 @@ defmodule GameBackend.Users do
 
     q =
       from(u in User,
+        as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
-        join: unit in Unit,
-        on: u.id == unit.user_id,
-        preload: [units: [:character, :items], currencies: :currency],
-        group_by: u.id,
-        select: %{u | prestige: sum(unit.prestige), quest_refresh_at: ^quest_refresh_at}
+        preload: [
+          [units: [:character, :items]],
+          [currencies: [:currency]]
+        ]
       )
       |> quests_preloads()
       |> arena_match_results_preloads()
+      |> add_user_stats_to_user_query()
 
     user =
       Repo.one(q)
       |> add_quest_progress_and_goal()
 
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  defp add_user_stats_to_user_query(base_query) do
+    kills_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(amr.kills),
+        where: parent_as(:user).id == amr.user_id
+      )
+
+    won_matches_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(),
+        where: parent_as(:user).id == amr.user_id and amr.result == ^"win"
+      )
+
+    most_played_character_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: amr.character,
+        group_by: amr.character,
+        order_by: [desc: count(amr.character)],
+        where: parent_as(:user).id == amr.user_id,
+        limit: 1
+      )
+
+    prestige_subquery =
+      from(unit in Unit,
+        where: parent_as(:user).id == unit.user_id,
+        select: sum(unit.prestige)
+      )
+
+    from(u in base_query,
+      select_merge: %{
+        most_played_character: subquery(most_played_character_subquery),
+        total_kills: subquery(kills_subquery),
+        won_matches: subquery(won_matches_subquery),
+        prestige: subquery(prestige_subquery)
+      }
+    )
   end
 
   @doc """
@@ -112,6 +151,7 @@ defmodule GameBackend.Users do
   def get_users_with_quests_and_results(ids, repo \\ Repo) do
     q =
       from(u in User,
+        as: :user,
         where: u.id in ^ids,
         preload: [
           currencies: :currency,
@@ -120,6 +160,7 @@ defmodule GameBackend.Users do
       )
       |> quests_preloads()
       |> arena_match_results_preloads()
+      |> add_user_stats_to_user_query()
 
     repo.all(q)
   end
