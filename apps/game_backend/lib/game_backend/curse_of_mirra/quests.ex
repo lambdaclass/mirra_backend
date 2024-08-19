@@ -297,7 +297,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
   def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results) do
     arena_match_results =
-      if quest.type in ["daily", :daily] do
+      if quest.type == :daily do
         Enum.filter(arena_match_results, fn arena_match_result ->
           user_quest.activated_at &&
             NaiveDateTime.compare(arena_match_result.inserted_at, user_quest.activated_at) == :gt &&
