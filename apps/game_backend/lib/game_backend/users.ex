@@ -76,15 +76,54 @@ defmodule GameBackend.Users do
   def get_user_by_id_and_game_id(id, game_id) do
     q =
       from(u in User,
+        as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
-        join: unit in Unit,
-        on: u.id == unit.user_id,
-        preload: [units: [:character, :items], currencies: :currency],
-        group_by: u.id,
-        select: %{u | prestige: sum(unit.prestige)}
+        preload: [
+          [units: [:character, :items]],
+          [currencies: [:currency]]
+        ]
       )
+      |> add_user_stats_to_user_query()
 
     if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  defp add_user_stats_to_user_query(base_query) do
+    kills_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(amr.kills),
+        where: parent_as(:user).id == amr.user_id
+      )
+
+    won_matches_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(),
+        where: parent_as(:user).id == amr.user_id and amr.result == ^"win"
+      )
+
+    most_played_character_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: amr.character,
+        group_by: amr.character,
+        order_by: [desc: count(amr.character)],
+        where: parent_as(:user).id == amr.user_id,
+        limit: 1
+      )
+
+    prestige_subquery =
+      from(unit in Unit,
+        where: parent_as(:user).id == unit.user_id,
+        select: sum(unit.prestige)
+      )
+
+    from(u in base_query,
+      select_merge: %{
+        most_played_character: subquery(most_played_character_subquery),
+        total_kills: subquery(kills_subquery),
+        won_matches: subquery(won_matches_subquery),
+        prestige: subquery(prestige_subquery)
+      }
+    )
   end
 
   @doc """
@@ -118,6 +157,7 @@ defmodule GameBackend.Users do
 
     q =
       from(u in User,
+        as: :user,
         where: u.id in ^ids,
         preload: [
           arena_match_results: ^arena_match_result_subquery,
@@ -126,6 +166,7 @@ defmodule GameBackend.Users do
           user_quests: ^daily_quest_subquery
         ]
       )
+      |> add_user_stats_to_user_query
 
     repo.all(q)
   end

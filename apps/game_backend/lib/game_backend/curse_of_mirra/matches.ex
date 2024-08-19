@@ -62,8 +62,12 @@ defmodule GameBackend.CurseOfMirra.Matches do
             reward = match_prestige_reward(unit, result["position"], prestige_config[:rewards])
             changes = calculate_rank_and_amount_changes(unit, reward, prestige_config[:ranks])
 
-            Unit.curse_of_mirra_update_changeset(unit, changes)
-            |> repo.update()
+            {:ok, _update_unit} =
+              Unit.curse_of_mirra_update_changeset(unit, changes)
+              |> repo.update()
+
+            {:ok, _update_highest_historical_prestige} =
+              maybe_update_highest_prestige_for_user(user, reward)
         end
       end)
     end)
@@ -160,5 +164,13 @@ defmodule GameBackend.CurseOfMirra.Matches do
       )
 
     get_operation_result(updated_match, inserted_currency)
+  end
+
+  defp maybe_update_highest_prestige_for_user(user, reward) do
+    if user.prestige + reward > user.highest_historical_prestige do
+      Users.update_user(user, %{highest_historical_prestige: user.prestige + reward})
+    else
+      {:ok, :not_new_highest}
+    end
   end
 end
