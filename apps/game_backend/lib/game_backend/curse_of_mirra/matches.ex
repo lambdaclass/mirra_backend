@@ -115,26 +115,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
   defp rank_name_converter("champion"), do: 6
   defp rank_name_converter("grandmaster"), do: 7
 
-  defp complete_quest_and_insert_currency(user_quest, user_id) do
-    updated_match =
-      UserQuest.changeset(user_quest, %{
-        completed: true,
-        completed_at: DateTime.utc_now(),
-        status: "completed"
-      })
-      |> Repo.update()
-
-    inserted_currency =
-      Currencies.add_currency_by_name_and_game(
-        user_id,
-        user_quest.quest.reward["currency"],
-        Utils.get_game_id(:curse_of_mirra),
-        user_quest.quest.reward["amount"]
-      )
-
-    get_operation_result(updated_match, inserted_currency)
-  end
-
   defp maybe_update_highest_prestige_for_user(user, reward) do
     if user.prestige + reward > user.highest_historical_prestige do
       Users.update_user(user, %{highest_historical_prestige: user.prestige + reward})
