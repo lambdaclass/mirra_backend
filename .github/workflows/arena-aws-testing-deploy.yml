@@ -1,6 +1,9 @@
 name: "[STAGING-BRAZIL] Deploy to Brazil Arena Staging"
 on:
   workflow_dispatch:
+  push:
+    branches:
+    - add-aws-to-main
 
 jobs:
   build-deploy:
