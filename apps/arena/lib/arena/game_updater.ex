@@ -1881,18 +1881,19 @@ defmodule Arena.GameUpdater do
 
   @spec diff(t, t) :: :no_diff | {:ok, t} when t: any()
   def diff(old, new) when is_map(old) and is_map(new) do
-    value = Enum.reduce(new, %{}, fn {key, new_value}, acc ->
-      case Map.has_key?(old, key) do
-        true ->
-          case diff(Map.get(old, key), new_value) do
-            :no_diff -> acc
-            {:ok, value_diff} -> Map.put(acc, key, value_diff)
-          end
+    value =
+      Enum.reduce(new, %{}, fn {key, new_value}, acc ->
+        case Map.has_key?(old, key) do
+          true ->
+            case diff(Map.get(old, key), new_value) do
+              :no_diff -> acc
+              {:ok, value_diff} -> Map.put(acc, key, value_diff)
+            end
 
-        false ->
-          Map.put(acc, key, new_value)
-      end
-    end)
+          false ->
+            Map.put(acc, key, new_value)
+        end
+      end)
 
     case map_size(value) do
       0 -> :no_diff
