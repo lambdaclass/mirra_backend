@@ -1,9 +1,6 @@
 name: "[STAGING-BRAZIL] Deploy to Brazil Arena Staging"
 on:
   workflow_dispatch:
-  push:
-    branches:
-    - add-aws-to-main
 
 jobs:
   build-deploy:
@@ -55,8 +52,8 @@ jobs:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-          DBUS_SESSION_BUS_ADDRESS: unix:path=/run/user/1001/bus
-          XDG_RUNTIME_DIR: /run/user/1001
+          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
+          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
