@@ -7,7 +7,7 @@ jobs:
     name: Build and deploy to Brazil staging
     runs-on: ubuntu-latest
     environment:
-      name: testing-brazil
+      name: staging-brazil
       url: https://arena-brazil-staging.championsofmirra.com/
 
     steps:
