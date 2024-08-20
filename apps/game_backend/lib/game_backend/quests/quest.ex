@@ -11,7 +11,7 @@ defmodule GameBackend.Quests.Quest do
   @derive {Jason.Encoder, only: [:description, :conditions, :objective, :id, :reward]}
   schema "quests" do
     field(:description, :string)
-    field(:type, Ecto.Enum, values: [:daily, :bounty, :weekly])
+    field(:type, Ecto.Enum, values: [:daily, :bounty, :weekly, :meta])
     field(:objective, :map)
     field(:reward, :map)
     field(:config_id, :integer)

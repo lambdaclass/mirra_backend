@@ -295,7 +295,17 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results) do
+  def get_user_quest_progress(%UserQuest{quest: %Quest{type: :meta}}, _arena_match_results, user) do
+    naive_today = NaiveDateTime.utc_now()
+
+    user.user_quests
+    |> Enum.filter(fn %UserQuest{} = user_quest ->
+      NaiveDateTime.diff(user_quest.inserted_at, naive_today, :day) == 0 && user_quest.status == "completed"
+    end)
+    |> Enum.count()
+  end
+
+  def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results, _user) do
     arena_match_results =
       if quest.type == :daily do
         Enum.filter(arena_match_results, fn arena_match_result ->
@@ -333,7 +343,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     Multi.new()
     |> Multi.run(:check_quest_completed, fn _, _ ->
-      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results) do
+      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results, user) do
         {:ok, :quest_completed}
       else
         {:error, :unfinished_quest}
@@ -383,8 +393,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  def completed_quest?(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results) do
-    progress = get_user_quest_progress(user_quest, arena_match_results)
+  def completed_quest?(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results, user) do
+    progress = get_user_quest_progress(user_quest, arena_match_results, user)
     comparator = parse_comparator(quest.objective["comparison"])
 
     comparator.(progress, quest.objective["value"])

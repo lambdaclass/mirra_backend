@@ -182,7 +182,8 @@ defmodule GameBackend.Users do
         join: quest in assoc(user_quest, :quest),
         as: :quest,
         where:
-          (quest.type == ^"daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
+          (quest.type in ^["daily", "meta"] and user_quest.inserted_at > ^start_of_date and
+             user_quest.inserted_at < ^end_of_date) or
             (quest.type == ^"weekly" and user_quest.inserted_at > ^start_of_week_naive and
                user_quest.inserted_at < ^end_of_week_naive),
         preload: [:quest]
@@ -620,7 +621,7 @@ defmodule GameBackend.Users do
     updated_quests =
       Enum.map(user.user_quests, fn user_quest ->
         quest_progress =
-          Quests.get_user_quest_progress(user_quest, user.arena_match_results)
+          Quests.get_user_quest_progress(user_quest, user.arena_match_results, user)
 
         Map.put(user_quest, :progress, quest_progress)
         |> Map.put(:goal, user_quest.quest.objective["value"])
@@ -696,6 +697,22 @@ defmodule GameBackend.Users do
       Quests.get_user_missing_quests_by_type(user.id, "daily")
       |> Enum.shuffle()
 
+    meta_quest_params =
+      Quests.get_user_missing_quests_by_type(user.id, "meta")
+      |> Enum.shuffle()
+      |> hd()
+
+    attrs = %{
+      user_id: user.id,
+      quest_id: meta_quest_params.id,
+      status: "available",
+      activated_at: NaiveDateTime.utc_now()
+    }
+
+    changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+    meta_quest_result = Repo.insert(changeset)
+
     {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
 
     {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
@@ -729,7 +746,7 @@ defmodule GameBackend.Users do
           Repo.insert(changeset)
       end)
 
-    (active_quests ++ inactive_quests)
+    (active_quests ++ inactive_quests ++ [meta_quest_result])
     |> Enum.find(fn {result, _quest} -> result == :error end)
     |> case do
       nil -> {:ok, :quests_inserted}
