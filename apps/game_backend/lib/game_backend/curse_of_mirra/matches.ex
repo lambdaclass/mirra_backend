@@ -2,6 +2,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   @moduledoc """
   Matches
   """
+  require Logger
   alias GameBackend.Units
   alias GameBackend.Units.Unit
   alias GameBackend.CurseOfMirra.Quests
@@ -15,13 +16,18 @@ defmodule GameBackend.CurseOfMirra.Matches do
   alias GameBackend.Repo
 
   def create_arena_match_results(match_id, results) do
-    Multi.new()
-    |> create_arena_match_results(match_id, results)
-    |> maybe_create_unit_for_user(results)
-    |> add_users_to_multi(results)
-    |> give_prestige(results)
-    |> maybe_complete_quests()
-    |> Repo.transaction()
+    result =
+      Multi.new()
+      |> create_arena_match_results(match_id, results)
+      |> maybe_create_unit_for_user(results)
+      |> add_users_to_multi(results)
+      |> give_prestige(results)
+      |> maybe_complete_quests()
+      |> Repo.transaction()
+
+    Logger.info(result)
+
+    result
   end
 
   ####################
