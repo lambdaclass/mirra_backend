@@ -37,8 +37,7 @@ defmodule GameBackend.Units.Skills.Mechanic do
         :multi_circle_hit,
         :teleport,
         :simple_shoot,
-        :destination_shoot,
-        :multiple_pool
+        :destination_shoot
       ]
     )
 
