@@ -146,10 +146,10 @@ defmodule GameBackend.Users do
 
   ## Examples
 
-      iex> get_users_with_quests_and_results(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      iex> list_users_with_quests_and_results(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
       [%User{}]
   """
-  def get_users_with_quests_and_results(ids, repo \\ Repo) do
+  def list_users_with_quests_and_results(ids, repo \\ Repo) do
     q =
       from(u in User,
         as: :user,

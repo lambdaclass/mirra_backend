@@ -35,7 +35,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
     Multi.run(multi, :get_users, fn repo, _changes_so_far ->
       users =
         Enum.map(results, fn result -> result["user_id"] end)
-        |> Users.get_users_with_quests_and_results(repo)
+        |> Users.list_users_with_quests_and_results(repo)
 
       {:ok, users}
     end)
