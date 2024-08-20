@@ -377,42 +377,42 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category == :player do
     {:player,
      %Arena.Serialization.Player{
-       health: entity.aditional_info.health,
-       current_actions: entity.aditional_info.current_actions,
-       kill_count: entity.aditional_info.kill_count,
-       available_stamina: entity.aditional_info.available_stamina,
-       max_stamina: entity.aditional_info.max_stamina,
-       stamina_interval: entity.aditional_info.stamina_interval,
-       recharging_stamina: entity.aditional_info.recharging_stamina,
-       character_name: entity.aditional_info.character_name,
-       effects: entity.aditional_info.effects,
-       power_ups: entity.aditional_info.power_ups,
-       inventory: entity.aditional_info.inventory,
-       cooldowns: entity.aditional_info.cooldowns,
-       visible_players: entity.aditional_info.visible_players,
-       on_bush: entity.aditional_info.on_bush,
-       forced_movement: entity.aditional_info.forced_movement,
-       bounty_completed: entity.aditional_info.bounty_completed,
-       mana: entity.aditional_info.mana,
-       current_basic_animation: entity.aditional_info.current_basic_animation
+       health: get_in(entity, [:aditional_info, :health]),
+       current_actions: get_in(entity, [:aditional_info, :current_actions]),
+       kill_count: get_in(entity, [:aditional_info, :kill_count]),
+       available_stamina: get_in(entity, [:aditional_info, :available_stamina]),
+       max_stamina: get_in(entity, [:aditional_info, :max_stamina]),
+       stamina_interval: get_in(entity, [:aditional_info, :stamina_interval]),
+       recharging_stamina: get_in(entity, [:aditional_info, :recharging_stamina]),
+       character_name: get_in(entity, [:aditional_info, :character_name]),
+       effects: get_in(entity, [:aditional_info, :effects]),
+       power_ups: get_in(entity, [:aditional_info, :power_ups]),
+       inventory: get_in(entity, [:aditional_info, :inventory]),
+       cooldowns: get_in(entity, [:aditional_info, :cooldowns]),
+       visible_players: get_in(entity, [:aditional_info, :visible_players]),
+       on_bush: get_in(entity, [:aditional_info, :on_bush]),
+       forced_movement: get_in(entity, [:aditional_info, :forced_movement]),
+       bounty_completed: get_in(entity, [:aditional_info, :bounty_completed]),
+       mana: get_in(entity, [:aditional_info, :mana]),
+       current_basic_animation: get_in(entity, [:aditional_info, :current_basic_animation])
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :projectile do
     {:projectile,
      %Arena.Serialization.Projectile{
-       damage: entity.aditional_info.damage,
-       owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status,
-       skill_key: entity.aditional_info.skill_key
+       damage: get_in(entity, [:aditional_info, :damage]),
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       status: get_in(entity, [:aditional_info, :status]),
+       skill_key: get_in(entity, [:aditional_info, :skill_key])
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :power_up do
     {:power_up,
      %Arena.Serialization.PowerUp{
-       owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       status: get_in(entity, [:aditional_info, :status])
      }}
   end
 
@@ -420,35 +420,35 @@ defmodule Arena.Entities do
     {:obstacle,
      %Arena.Serialization.Obstacle{
        color: "red",
-       collisionable: entity.aditional_info.collisionable,
-       status: entity.aditional_info.status,
-       type: entity.aditional_info.type
+       collisionable: get_in(entity, [:aditional_info, :collisionable]),
+       status: get_in(entity, [:aditional_info, :status]),
+       type: get_in(entity, [:aditional_info, :type])
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :pool do
     {:pool,
      %Arena.Serialization.Pool{
-       owner_id: entity.aditional_info.owner_id,
-       status: entity.aditional_info.status,
-       effects: entity.aditional_info.effects,
-       skill_key: entity.aditional_info.skill_key
+       owner_id: get_in(entity, [:aditional_info, :owner_id]),
+       status: get_in(entity, [:aditional_info, :status]),
+       effects: get_in(entity, [:aditional_info, :effects]),
+       skill_key: get_in(entity, [:aditional_info, :skill_key])
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :item do
     {:item,
      %Arena.Serialization.Item{
-       name: entity.aditional_info.name
+       name: get_in(entity, [:aditional_info, :name])
      }}
   end
 
   def maybe_add_custom_info(entity) when entity.category == :crate do
     {:crate,
      %Arena.Serialization.Crate{
-       health: entity.aditional_info.health,
-       amount_of_power_ups: entity.aditional_info.amount_of_power_ups,
-       status: entity.aditional_info.status
+       health: get_in(entity, [:aditional_info, :health]),
+       amount_of_power_ups: get_in(entity, [:aditional_info, :amount_of_power_ups]),
+       status: get_in(entity, [:aditional_info, :status])
      }}
   end
 
