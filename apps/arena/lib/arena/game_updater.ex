@@ -287,11 +287,11 @@ defmodule Arena.GameUpdater do
       # Obstacles
       |> handle_obstacles_transitions()
 
-    broadcast_game_update(game_state)
+    broadcast_game_update(game_state, game_state.game_id)
     ## Uncomment the 2 lines and remove the broadcast_game_update/1 above this comment
     ## to enable sending the game diff
     # {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
-    # broadcast_game_update(state_diff)
+    # broadcast_game_update(state_diff, game_state.game_id)
 
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -690,7 +690,7 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
   end
 
-  defp broadcast_game_update(state) do
+  defp broadcast_game_update(state, game_id) do
     game_state = struct(GameState, state)
 
     encoded_state =
@@ -711,7 +711,7 @@ defmodule Arena.GameUpdater do
            })}
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
 
   defp broadcast_ping(state) do
