@@ -99,7 +99,8 @@ defmodule Arena.GameUpdater do
        bot_clients: bot_clients_ids,
        game_config: game_config,
        bounties_enabled?: bounties_enabled?,
-       game_state: game_state
+       game_state: game_state,
+       last_broadcasted_game_state: %{}
      }}
   end
 
@@ -286,11 +287,11 @@ defmodule Arena.GameUpdater do
       # Obstacles
       |> handle_obstacles_transitions()
 
-    ## Uncomment the 2 lines and remove the broadcast_game_update/1 call after this comments
-    ## to enable sending the game diff
-    # diff(state.last_broadcasted_game_state, game_state)
-    # |> broadcast_game_update()
     broadcast_game_update(game_state)
+    ## Uncomment the 2 lines and remove the broadcast_game_update/1 above this comment
+    ## to enable sending the game diff
+    # {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
+    # broadcast_game_update(state_diff)
 
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
@@ -690,31 +691,24 @@ defmodule Arena.GameUpdater do
   end
 
   defp broadcast_game_update(state) do
+    game_state = struct(GameState, state)
+
     encoded_state =
       GameEvent.encode(%GameEvent{
         event:
           {:update,
-           %GameState{
-             game_id: state.game_id,
-             players: complete_entities(state.players),
-             projectiles: complete_entities(state.projectiles),
-             power_ups: complete_entities(state.power_ups),
-             pools: complete_entities(state.pools),
-             bushes: complete_entities(state.bushes),
-             items: complete_entities(state.items),
-             server_timestamp: state.server_timestamp,
-             player_timestamps: state.player_timestamps,
-             zone: state.zone,
-             killfeed: state.killfeed,
-             damage_taken: state.damage_taken,
-             damage_done: state.damage_done,
-             status: state.status,
-             start_game_timestamp: state.start_game_timestamp,
-             obstacles: complete_entities(state.obstacles),
-             crates: complete_entities(state.crates),
-             traps: complete_entities(state.traps),
-             external_wall: complete_entity(state.external_wall)
-           }}
+           Map.merge(game_state, %{
+             players: complete_entities(state[:players]),
+             projectiles: complete_entities(state[:projectiles]),
+             power_ups: complete_entities(state[:power_ups]),
+             pools: complete_entities(state[:pools]),
+             bushes: complete_entities(state[:bushes]),
+             items: complete_entities(state[:items]),
+             obstacles: complete_entities(state[:obstacles]),
+             crates: complete_entities(state[:crates]),
+             traps: complete_entities(state[:traps]),
+             external_wall: complete_entity(state[:external_wall])
+           })}
       })
 
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
@@ -741,6 +735,8 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
+  defp complete_entities(nil), do: []
+
   defp complete_entities(entities) do
     entities
     |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
@@ -750,10 +746,12 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp complete_entity(nil), do: nil
+
   defp complete_entity(entity) do
-    Map.put(entity, :category, to_string(entity.category))
-    |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+    Map.update(entity, :category, nil, &to_string/1)
+    |> Map.update(:shape, nil, &to_string/1)
+    |> Map.put(:aditional_info, Entities.maybe_add_custom_info(entity))
   end
 
   ##########################
