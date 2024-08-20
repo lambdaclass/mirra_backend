@@ -693,7 +693,7 @@ skills = [
     "block_movement" => true,
     "mechanics" => [
       %{
-        "type" => "destination_shoot",
+        "type" => "simple_shoot",
         "speed" => 1.8,
         "duration_ms" => 0,
         "remove_on_collision" => false,
@@ -738,7 +738,7 @@ skills = [
     "type" => "ultimate",
     "cooldown_mechanism" => "time",
     "cooldown_ms" => 10000,
-    "execution_duration_ms" => 100,
+    "execution_duration_ms" => 1000,
     "activation_delay_ms" => 0,
     "is_passive" => false,
     "autoaim" => false,
