@@ -160,37 +160,26 @@ defmodule Arena.Configuration do
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
         obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
-        pools: Enum.map(map_config.pools, &parse_pool/1),
-        bushes: Enum.map(map_config.bushes, &parse_bush/1),
-        crates: Enum.map(map_config.crates, &parse_crate/1)
+        pools: Enum.map(map_config.pools, &parse_entity_values/1),
+        bushes: Enum.map(map_config.bushes, &parse_entity_values/1),
+        crates: Enum.map(map_config.crates, &parse_entity_values/1)
     }
   end
 
   defp parse_obstacle(obstacle) do
-    %{
-      obstacle
-      | position: parse_position(obstacle.position),
-        vertices: Enum.map(obstacle.vertices, &parse_position/1),
-        radius: maybe_to_float(obstacle.radius),
-        statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
-    }
+    obstacle
+    |> parse_entity_values()
+    |> Map.merge(%{
+      statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    })
   end
 
-  defp parse_bush(bush) do
+  defp parse_entity_values(entity) do
     %{
-      bush
-      | position: parse_position(bush.position),
-        vertices: Enum.map(bush.vertices, &parse_position/1),
-        radius: maybe_to_float(bush.radius)
-    }
-  end
-
-  defp parse_crate(crate) do
-    %{
-      crate
-      | position: parse_position(crate.position),
-        vertices: Enum.map(crate.vertices, &parse_position/1),
-        radius: maybe_to_float(crate.radius)
+      entity
+      | position: parse_position(entity.position),
+        vertices: Enum.map(entity.vertices, &parse_position/1),
+        radius: maybe_to_float(entity.radius)
     }
   end
 
@@ -208,15 +197,6 @@ defmodule Arena.Configuration do
 
   defp parse_raised_mechanics_config(%{polygon_hit: polygon_hit} = mechanics) do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
-  end
-
-  defp parse_pool(pool) do
-    %{
-      pool
-      | position: parse_position(pool.position),
-        vertices: Enum.map(pool.vertices, &parse_position/1),
-        radius: maybe_to_float(pool.radius)
-    }
   end
 
   defp parse_position(%{x: x, y: y}) do
