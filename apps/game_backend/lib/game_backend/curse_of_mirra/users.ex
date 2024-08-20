@@ -38,7 +38,8 @@ defmodule GameBackend.CurseOfMirra.Users do
       username: username,
       level: level,
       experience: experience,
-      units: units
+      units: units,
+      last_daily_quest_generation_at: NaiveDateTime.utc_now()
     }
   end
 end
