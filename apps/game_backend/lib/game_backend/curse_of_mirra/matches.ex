@@ -4,11 +4,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
   """
   alias GameBackend.Units
   alias GameBackend.Units.Unit
-  alias GameBackend.CurseOfMirra.Quests
-  alias GameBackend.Users.Currencies
-  alias GameBackend.Quests.UserQuest
 
-  alias GameBackend.Utils
   alias GameBackend.Users
   alias Ecto.Multi
   alias GameBackend.Matches.ArenaMatchResult
@@ -20,7 +16,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     |> maybe_create_unit_for_user(results)
     |> add_users_to_multi(results)
     |> give_prestige(results)
-    |> maybe_complete_quests()
     |> Repo.transaction()
   end
 
@@ -40,7 +35,7 @@ defmodule GameBackend.CurseOfMirra.Matches do
     Multi.run(multi, :get_users, fn repo, _changes_so_far ->
       users =
         Enum.map(results, fn result -> result["user_id"] end)
-        |> Users.get_users_with_todays_daily_quests(repo)
+        |> Users.list_users_with_quests_and_results(repo)
 
       {:ok, users}
     end)
@@ -70,29 +65,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
               maybe_update_highest_prestige_for_user(user, reward)
         end
       end)
-    end)
-  end
-
-  defp maybe_complete_quests(multi) do
-    Multi.run(multi, :insert_completed_quests_result, fn _,
-                                                         %{
-                                                           get_users: users
-                                                         } ->
-      correctly_updated_list =
-        Enum.map(users, fn
-          user ->
-            Quests.get_user_daily_quests_completed(user)
-            |> Enum.map(fn %UserQuest{} = daily_quest ->
-              complete_quest_and_insert_currency(daily_quest, user.id)
-            end)
-        end)
-        |> List.flatten()
-
-      if Enum.empty?(correctly_updated_list) or Enum.all?(correctly_updated_list, fn {result, _} -> result == :ok end) do
-        {:ok, nil}
-      else
-        {:error, nil}
-      end
     end)
   end
 
@@ -135,9 +107,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
     %{prestige: amount}
   end
 
-  defp get_operation_result({:ok, _}, {:ok, _}), do: {:ok, nil}
-  defp get_operation_result(_, _), do: {:error, nil}
-
   defp rank_name_converter("bronze"), do: 1
   defp rank_name_converter("silver"), do: 2
   defp rank_name_converter("gold"), do: 3
@@ -145,26 +114,6 @@ defmodule GameBackend.CurseOfMirra.Matches do
   defp rank_name_converter("diamond"), do: 5
   defp rank_name_converter("champion"), do: 6
   defp rank_name_converter("grandmaster"), do: 7
-
-  defp complete_quest_and_insert_currency(user_quest, user_id) do
-    updated_match =
-      UserQuest.changeset(user_quest, %{
-        completed: true,
-        completed_at: DateTime.utc_now(),
-        status: "completed"
-      })
-      |> Repo.update()
-
-    inserted_currency =
-      Currencies.add_currency_by_name_and_game(
-        user_id,
-        user_quest.quest.reward["currency"],
-        Utils.get_game_id(:curse_of_mirra),
-        user_quest.quest.reward["amount"]
-      )
-
-    get_operation_result(updated_match, inserted_currency)
-  end
 
   defp maybe_update_highest_prestige_for_user(user, reward) do
     if user.prestige + reward > user.highest_historical_prestige do

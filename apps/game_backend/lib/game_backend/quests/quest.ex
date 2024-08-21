@@ -8,9 +8,10 @@ defmodule GameBackend.Quests.Quest do
   use GameBackend.Schema
   import Ecto.Changeset
 
+  @derive {Jason.Encoder, only: [:description, :conditions, :objective, :id, :reward]}
   schema "quests" do
     field(:description, :string)
-    field(:type, :string)
+    field(:type, Ecto.Enum, values: [:daily, :bounty, :weekly])
     field(:objective, :map)
     field(:reward, :map)
     field(:config_id, :integer)
@@ -34,6 +35,5 @@ defmodule GameBackend.Quests.Quest do
     changeset
     |> cast(attrs, @permitted)
     |> validate_required(@required)
-    |> validate_inclusion(:type, ["daily", "bounty"])
   end
 end
