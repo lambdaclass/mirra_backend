@@ -256,7 +256,7 @@
         "type": "meta",
         "objective": {
             "match_tracking_field": "quest",
-            "value": 2,
+            "value": 6,
             "comparison": "greater_or_equal",
             "scope": "match"
         },
