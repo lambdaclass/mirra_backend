@@ -291,6 +291,7 @@ defmodule Arena.GameUpdater do
     ## Uncomment the 2 lines and remove the broadcast_game_update/1 above this comment
     ## to enable sending the game diff
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
+    IO.inspect(get_in(state_diff, [:players, 1]), label: "State diff")
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## TODO: properly handle this case
@@ -705,16 +706,16 @@ defmodule Arena.GameUpdater do
         event:
           {:update,
            Map.merge(game_state, %{
-             players: complete_entities(state[:players]),
-             projectiles: complete_entities(state[:projectiles]),
-             power_ups: complete_entities(state[:power_ups]),
-             pools: complete_entities(state[:pools]),
-             bushes: complete_entities(state[:bushes]),
-             items: complete_entities(state[:items]),
-             obstacles: complete_entities(state[:obstacles]),
-             crates: complete_entities(state[:crates]),
-             traps: complete_entities(state[:traps]),
-             external_wall: complete_entity(state[:external_wall])
+             players: complete_entities(state[:players], :player),
+             projectiles: complete_entities(state[:projectiles], :projectile),
+             power_ups: complete_entities(state[:power_ups], :power_up),
+             pools: complete_entities(state[:pools], :pool),
+             bushes: complete_entities(state[:bushes], :bush),
+             items: complete_entities(state[:items], :item),
+             obstacles: complete_entities(state[:obstacles], :obstacle),
+             crates: complete_entities(state[:crates], :crate),
+             traps: complete_entities(state[:traps], :trap),
+             external_wall: complete_entity(state[:external_wall], :obstacle)
            })}
       })
 
@@ -734,31 +735,31 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_game_ended(winner, state) do
     game_state = %GameFinished{
-      winner: complete_entity(winner),
-      players: complete_entities(state.players)
+      winner: complete_entity(winner, :player),
+      players: complete_entities(state.players, :player)
     }
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
-  defp complete_entities(nil), do: []
+  defp complete_entities(nil, _), do: []
 
-  defp complete_entities(entities) do
+  defp complete_entities(entities, category) do
     entities
     |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
-      entity = complete_entity(entity)
+      entity = complete_entity(entity, category)
 
       Map.put(entities, entity_id, entity)
     end)
   end
 
-  defp complete_entity(nil), do: nil
+  defp complete_entity(nil, _), do: nil
 
-  defp complete_entity(entity) do
+  defp complete_entity(entity, category) do
     Map.update(entity, :category, nil, &to_string/1)
     |> Map.update(:shape, nil, &to_string/1)
-    |> Map.put(:aditional_info, Entities.maybe_add_custom_info(entity))
+    |> Map.put(:aditional_info, Entities.maybe_add_custom_info(Map.put(entity, :category, category)))
   end
 
   ##########################
