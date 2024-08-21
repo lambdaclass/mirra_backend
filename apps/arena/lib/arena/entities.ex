@@ -452,9 +452,14 @@ defmodule Arena.Entities do
      }}
   end
 
-  def maybe_add_custom_info(_entity) do
+  def maybe_add_custom_info(entity) when entity.category in [:bush, :trap] do
     nil
   end
+
+
+  # def maybe_add_custom_info(_entity) do
+  #   nil
+  # end
 
   defp get_shape("polygon"), do: :polygon
   defp get_shape("circle"), do: :circle
