@@ -1,24 +1,9 @@
 defmodule Arena.Matchmaking.QuickGameMode do
   @moduledoc false
+  alias Arena.Matchmaking.GameLauncher
   alias Arena.Utils
-  alias Ecto.UUID
 
   use GenServer
-
-  # The available names for bots to enter a match, we should change this in the future
-  @bot_names [
-    "TheBlackSwordman",
-    "SlashJava",
-    "SteelBallRun",
-    "Jeff",
-    "Messi",
-    "Stone Ocean",
-    "Jeepers Creepers",
-    "Bob",
-    "El javo",
-    "Alberso",
-    "Thomas"
-  ]
 
   # API
   def start_link(_) do
@@ -70,51 +55,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
     {:noreply, state}
   end
 
-  defp get_bot_clients(missing_clients) do
-    characters =
-      Arena.Configuration.get_game_config()
-      |> Map.get(:characters)
-      |> Enum.filter(fn character -> character.active end)
-
-    Enum.map(1..missing_clients//1, fn i ->
-      client_id = UUID.generate()
-
-      %{client_id: client_id, character_name: Enum.random(characters).name, name: Enum.at(@bot_names, i), type: :bot}
-    end)
-  end
-
-  defp spawn_bot_for_player(bot_clients, game_id) do
-    Enum.each(bot_clients, fn %{client_id: bot_client_id} ->
-      send(self(), {:spawn_bot_for_player, bot_client_id, game_id})
-    end)
-  end
-
-  # Receives a list of clients.
-  # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
-    bot_clients =
-      if Application.get_env(:arena, :spawn_bots) do
-        get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
-      else
-        []
-      end
-
-    ## For Battle Royale (quick game mode) there are no teams so we assing each player to a different team
-    {teams, _} =
-      Enum.reduce(clients ++ bot_clients, {[], 1}, fn client, {team_acc, team_id} ->
-        client = Map.put(client, :team, team_id)
-        {[client | team_acc], team_id + 1}
-      end)
-
-    {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{teams: teams, game_params: game_params})
-
-    game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
-
-    spawn_bot_for_player(bot_clients, game_id)
-
-    Enum.each(clients, fn %{from_pid: from_pid} ->
-      Process.send(from_pid, {:join_game, game_id}, [])
-      Process.send(from_pid, :leave_waiting_game, [])
-    end)
+    GameLauncher.create_game_for_clients(clients, game_params)
   end
 end

@@ -125,7 +125,7 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
-  defp create_game_for_clients(clients, game_params \\ %{}) do
+  def create_game_for_clients(clients, game_params \\ %{}) do
     bot_clients =
       if Application.get_env(:arena, :spawn_bots) do
         get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
@@ -133,12 +133,7 @@ defmodule Arena.Matchmaking.GameLauncher do
         []
       end
 
-    ## For Battle Royale there are no teams so we assing each player to a different team
-    {teams, _} =
-      Enum.reduce(clients ++ bot_clients, {[], 1}, fn client, {team_acc, team_id} ->
-        client = Map.put(client, :team, team_id)
-        {[client | team_acc], team_id + 1}
-      end)
+    teams = split_into_teams(clients ++ bot_clients)
 
     {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{teams: teams, game_params: game_params})
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
@@ -148,5 +143,16 @@ defmodule Arena.Matchmaking.GameLauncher do
       Process.send(from_pid, {:join_game, game_id}, [])
       Process.send(from_pid, :leave_waiting_game, [])
     end)
+  end
+
+  ## For Battle Royale there are no teams so we assign each player to a different team
+  defp split_into_teams(clients) do
+    {teams, _} =
+      Enum.reduce(clients, {[], 1}, fn client, {team_acc, team_id} ->
+        client = Map.put(client, :team, team_id)
+        {[client | team_acc], team_id + 1}
+      end)
+
+    teams
   end
 end

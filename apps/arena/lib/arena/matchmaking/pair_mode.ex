@@ -133,13 +133,7 @@ defmodule Arena.Matchmaking.PairMode do
         []
       end
 
-    ## For pair mode we group players in teams of 2
-    {teams, _} =
-      Enum.chunk_every(clients ++ bot_clients, 2)
-      |> Enum.reduce({[], 1}, fn pair, {team_acc, team_id} ->
-        pair_with_team = Enum.map(pair, fn client -> Map.put(client, :team, team_id) end)
-        {pair_with_team ++ team_acc, team_id + 1}
-      end)
+    teams = split_into_teams(clients ++ bot_clients)
 
     {:ok, game_pid} = GenServer.start(Arena.GameUpdater, %{teams: teams, game_params: game_params})
     game_id = game_pid |> :erlang.term_to_binary() |> Base58.encode()
@@ -149,5 +143,17 @@ defmodule Arena.Matchmaking.PairMode do
       Process.send(from_pid, {:join_game, game_id}, [])
       Process.send(from_pid, :leave_waiting_game, [])
     end)
+  end
+
+  ## For pair mode we group players in teams of 2
+  defp split_into_teams(clients) do
+    {teams, _} =
+      Enum.chunk_every(clients, 2)
+      |> Enum.reduce({[], 1}, fn pair, {team_acc, team_id} ->
+        pair_with_team = Enum.map(pair, fn client -> Map.put(client, :team, team_id) end)
+        {pair_with_team ++ team_acc, team_id + 1}
+      end)
+
+    teams
   end
 end
