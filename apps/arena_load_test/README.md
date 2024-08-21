@@ -5,6 +5,8 @@ Application to load test the Arena backend implementation. It simulates *N* clie
 ## How to do run our load tests?
 
 ```bash
+# We will disable user auth until we find a proper fix for it.
+export OVERRIDE_JWT=true
 # arena_target_host is the region of the server that's running the Arena application.
 # Brazil for example.
 # TARGET_SERVER is localhost:4000 if not explicited
