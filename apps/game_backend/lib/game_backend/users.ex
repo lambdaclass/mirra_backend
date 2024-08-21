@@ -618,6 +618,9 @@ defmodule GameBackend.Users do
   end
 
   defp add_quest_progress_and_goal(%User{} = user) do
+    today = Date.utc_today()
+    start_of_week = Date.beginning_of_week(today, :sunday)
+
     updated_quests =
       Enum.map(user.user_quests, fn user_quest ->
         quest_progress =
@@ -627,7 +630,25 @@ defmodule GameBackend.Users do
         |> Map.put(:goal, user_quest.quest.objective["value"])
       end)
 
-    Map.put(user, :user_quests, updated_quests)
+    daily_quests_week_progress =
+      Enum.map(Date.range(start_of_week, today), fn date ->
+        completed_quests_amount =
+          Enum.count(user.user_quests, fn user_quest ->
+            user_quest.status == "completed" && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+          end)
+
+        %{
+          completed_quests_amount: completed_quests_amount,
+          # We'll hardcore this value for the time being since we don't have any spec for the specific amount, that's
+          # described in the meta quest but we could have more than one in the future
+          target_quests_amount: 6,
+          date: date
+        }
+      end)
+
+    user
+    |> Map.put(:user_quests, updated_quests)
+    |> Map.put(:daily_quests_week_progress, daily_quests_week_progress)
   end
 
   defp add_quest_progress_and_goal(_), do: nil
