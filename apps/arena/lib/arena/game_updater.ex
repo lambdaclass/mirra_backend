@@ -74,7 +74,6 @@ defmodule Arena.GameUpdater do
     game_state = new_game(game_id, clients ++ bot_clients, game_config)
     match_id = Ecto.UUID.generate()
 
-    send(self(), :update_game)
     send(self(), :send_ping)
 
     if game_config.game.bounty_pick_time_ms > 0 do
@@ -311,6 +310,7 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
+    send(self(), :update_game)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
