@@ -287,17 +287,24 @@ defmodule Arena.GameUpdater do
       # Obstacles
       |> handle_obstacles_transitions()
 
-    broadcast_game_update(game_state, game_state.game_id)
+    # broadcast_game_update(game_state, game_state.game_id)
     ## Uncomment the 2 lines and remove the broadcast_game_update/1 above this comment
     ## to enable sending the game diff
-    # {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
-    # broadcast_game_update(state_diff, game_state.game_id)
+    {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
+    broadcast_game_update(state_diff, game_state.game_id)
+
+    ## TODO: properly handle this case
+    last_broadcasted_game_state =
+      case get_in(state, [:game_state, :status]) do
+        :RUNNING -> game_state
+        _ -> %{}
+      end
 
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
     :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
-    {:noreply, %{state | game_state: game_state, last_broadcasted_game_state: game_state}}
+    {:noreply, %{state | game_state: game_state, last_broadcasted_game_state: last_broadcasted_game_state}}
   end
 
   def handle_info(:send_ping, state) do
