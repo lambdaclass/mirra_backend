@@ -14,8 +14,7 @@ defmodule ArenaWeb.Telemetry do
       {:telemetry_poller, measurements: periodic_measurements(), period: 10_000},
       # Add reporters as children of your supervision tree.
       # {Telemetry.Metrics.ConsoleReporter, metrics: metrics()},
-      ## TODO: default port 9568, we probably need to make this dynamic to accomodate multiple apps
-      {TelemetryMetricsPrometheus, [metrics: metrics()]}
+      {TelemetryMetricsPrometheus, [metrics: metrics(), port: Application.get_env(:arena, :metrics_endpoint_port)]}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

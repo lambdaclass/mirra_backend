@@ -2,10 +2,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
   @moduledoc """
     Module to work with quest logic
   """
+  alias GameBackend.Users
+  alias GameBackend.CurseOfMirra.Quests
   alias GameBackend.Utils
   alias GameBackend.Users.Currencies.CurrencyCost
   alias GameBackend.Users.Currencies
-  alias GameBackend.Users.User
   alias GameBackend.Quests.UserQuest
   alias GameBackend.Repo
   alias GameBackend.Quests.Quest
@@ -75,8 +76,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
         left_join: uq in UserQuest,
         on: q.id == uq.quest_id and uq.user_id == ^user_id,
         where:
-          (is_nil(uq) or uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date or not is_nil(uq.completed_at) or
-             uq.status != "available") and
+          (is_nil(uq) or uq.inserted_at < ^start_of_date or uq.inserted_at > ^end_of_date or uq.status != "available") and
             q.type == ^type,
         distinct: q.id
       )
@@ -111,6 +111,13 @@ defmodule GameBackend.CurseOfMirra.Quests do
     q = from(uq in UserQuest, preload: [:quest], where: uq.id == ^user_quest_id)
 
     Repo.one(q)
+    |> case do
+      nil ->
+        {:error, :not_found}
+
+      user_quest ->
+        {:ok, user_quest}
+    end
   end
 
   @doc """
@@ -157,53 +164,43 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def add_daily_quests_to_user_id(user_id, amount) do
+  def add_quests_to_user_id_by_type(user_id, type, amount) do
     available_quests =
-      get_user_missing_quests_by_type(user_id, "daily")
+      get_user_missing_quests_by_type(user_id, type)
       |> Enum.shuffle()
 
-    if amount > Enum.count(available_quests) do
-      {:error, :not_enough_quests_in_config}
-    else
-      {multi, _quests} =
-        Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
-          _index, {multi, [quest | next_quests]} ->
-            attrs = %{
-              user_id: user_id,
-              quest_id: quest.id,
-              status: "available"
-            }
+    amount_of_quest_available = Enum.count(available_quests)
 
-            changeset = UserQuest.changeset(%UserQuest{}, attrs)
+    cond do
+      type not in Ecto.Enum.values(GameBackend.Quests.Quest, :type) ->
+        {:error, :quest_type_not_implemented}
 
-            multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+      amount > amount_of_quest_available ->
+        {:error, "Not enough quests, requested: #{amount} available: #{amount_of_quest_available}"}
 
-            {multi, next_quests}
-        end)
+      true ->
+        {multi, _quests} =
+          Enum.reduce(1..amount, {Multi.new(), available_quests}, fn
+            _index, {multi, [quest | next_quests]} ->
+              attrs = %{
+                user_id: user_id,
+                quest_id: quest.id,
+                status: "available"
+              }
 
-      Repo.transaction(multi)
+              changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+              multi = Multi.insert(multi, {:insert_user_quest, user_id, quest.id}, changeset)
+
+              {multi, next_quests}
+          end)
+
+        Repo.transaction(multi)
     end
   end
 
-  def get_user_daily_quests_completed(%User{
-        arena_match_results: arena_match_results,
-        user_quests: user_quests
-      }) do
-    user_quests
-    |> Enum.reduce([], fn user_quest, acc ->
-      if completed_quest?(user_quest, arena_match_results) and user_quest.quest.type == "daily" do
-        [user_quest | acc]
-      else
-        acc
-      end
-    end)
-  end
-
-  def reroll_daily_quest(daily_quest_id) do
+  def reroll_daily_quest(daily_quest) do
     reroll_configurations = Application.get_env(:game_backend, :quest_reroll_config)
-
-    daily_quest =
-      get_user_quest(daily_quest_id)
 
     amount_of_rerolled_daily_quests =
       get_user_today_rerolled_daily_quests(daily_quest.user_id)
@@ -298,6 +295,79 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
+  def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results) do
+    arena_match_results =
+      if quest.type == :daily do
+        Enum.filter(arena_match_results, fn arena_match_result ->
+          user_quest.activated_at &&
+            NaiveDateTime.compare(arena_match_result.inserted_at, user_quest.activated_at) == :gt &&
+            NaiveDateTime.diff(arena_match_result.inserted_at, user_quest.inserted_at, :day) == 0
+        end)
+      else
+        arena_match_results
+      end
+
+    arena_match_results
+    |> filter_results_that_meet_quest_conditions(quest.conditions)
+    |> Enum.reduce(0, fn arena_match_result, acc ->
+      type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
+      # We won't accumulate progress if the objective has a wrong field getter
+      accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
+      |> case do
+        nil ->
+          acc
+
+        progress ->
+          acc + progress
+      end
+    end)
+  end
+
+  def complete_user_quest(user, user_quest) do
+    updated_user_quest_changeset =
+      UserQuest.changeset(user_quest, %{
+        completed: true,
+        completed_at: DateTime.utc_now(),
+        status: "completed"
+      })
+
+    Multi.new()
+    |> Multi.run(:check_quest_completed, fn _, _ ->
+      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results) do
+        {:ok, :quest_completed}
+      else
+        {:error, :unfinished_quest}
+      end
+    end)
+    |> Multi.update(:update_user_quest, updated_user_quest_changeset)
+    |> Multi.run(:maybe_activate_quest, fn _, _ ->
+      Enum.find(user.user_quests, fn deactivated_user_quest ->
+        is_nil(deactivated_user_quest.activated_at) && deactivated_user_quest.quest.type == user_quest.quest.type
+      end)
+      |> case do
+        nil ->
+          {:ok, :no_quests_left}
+
+        user_quest ->
+          user_quest
+          |> UserQuest.changeset(%{activated_at: NaiveDateTime.utc_now()})
+          |> GameBackend.Repo.update()
+      end
+    end)
+    |> Multi.run(:add_currency, fn _, _ ->
+      Currencies.add_currency_by_name_and_game(
+        user.id,
+        user_quest.quest.reward["currency"],
+        Utils.get_game_id(:curse_of_mirra),
+        user_quest.quest.reward["amount"]
+      )
+    end)
+    |> Multi.run(:updated_user, fn _, _ ->
+      Users.get_user_by_id_and_game_id(user.id, user.game_id)
+    end)
+    |> Repo.transaction()
+  end
+
   #####################
   #      helpers      #
   #####################
@@ -313,23 +383,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  def completed_quest?(%UserQuest{quest: %Quest{} = quest}, arena_match_results) do
-    progress =
-      arena_match_results
-      |> filter_results_that_meet_quest_conditions(quest.conditions)
-      |> Enum.reduce(0, fn arena_match_result, acc ->
-        type = arena_match_result_field_to_atom(quest.objective["match_tracking_field"])
-        # We won't accumulate progress if the objective has a wrong field getter
-        accumulate_objective_progress_by_scope(quest.objective["scope"], Map.get(arena_match_result, type))
-        |> case do
-          nil ->
-            acc
-
-          progress ->
-            acc + progress
-        end
-      end)
-
+  def completed_quest?(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results) do
+    progress = get_user_quest_progress(user_quest, arena_match_results)
     comparator = parse_comparator(quest.objective["comparison"])
 
     comparator.(progress, quest.objective["value"])

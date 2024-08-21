@@ -9,11 +9,17 @@ defmodule GameBackend.Quests.UserQuest do
   alias GameBackend.Quests.Quest
   alias GameBackend.Users.User
 
+  @derive {Jason.Encoder, only: [:id, :quest, :status, :progress, :goal, :activated_at]}
   schema "user_quests" do
     field(:completed_at, :utc_datetime)
     field(:status, :string)
+    field(:activated_at, :utc_datetime)
+
     belongs_to(:quest, Quest)
     belongs_to(:user, User)
+
+    field(:progress, :integer, virtual: true)
+    field(:goal, :integer, virtual: true)
 
     timestamps()
   end
@@ -24,7 +30,7 @@ defmodule GameBackend.Quests.UserQuest do
     :status
   ]
 
-  @permitted [:completed_at] ++ @required
+  @permitted [:completed_at, :activated_at] ++ @required
 
   def changeset(changeset, attrs) do
     changeset
