@@ -31,6 +31,33 @@
   <.input field={f[:field_of_view_inside_bush]} type="number" label="Field of view inside bush" />
   <.input field={f[:time_visible_in_bush_after_skill]} type="number" label="Field of view inside bush" />
 
+  <h2>Power Ups</h2>
+  <.input field={f[:distance_to_power_up]} type="number" label="Power Up spawn range" step="any" />
+  <.input field={f[:power_up_damage_modifier]} type="number" label="Power Up damage modifier" step="any" />
+  <.input field={f[:power_up_health_modifier]} type="number" label="Power Up health modifier" step="any" />
+  <.input field={f[:power_up_radius]} type="number" label="Power Up radius" step="any" />
+  <.input field={f[:power_up_activation_delay_ms]} type="number" label="Power Up activation delay" step="any" />
+  <.inputs_for :let={power_ups_per_kill_f} field={f[:power_ups_per_kill]}>
+    <div class=" w-full rounded overflow-hidden shadow-lg">
+      <div class="px-6 py-4">
+        <.input
+          field={power_ups_per_kill_f[:minimum_amount_of_power_ups]}
+          type="number"
+          label="Minimum amount of power ups"
+          step="any"
+        />
+      </div>
+      <div class="px-6 py-4">
+        <.input
+          field={power_ups_per_kill_f[:amount_of_power_ups_to_drop]}
+          type="number"
+          label="Amount of power ups to drop"
+          step="any"
+        />
+      </div>
+    </div>
+  </.inputs_for>
+
   <:actions>
     <.button>Save Game configuration</.button>
   </:actions>

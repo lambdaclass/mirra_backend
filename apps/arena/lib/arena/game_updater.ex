@@ -497,7 +497,7 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
 
     game_state =
       game_state
@@ -1559,12 +1559,12 @@ defmodule Arena.GameUpdater do
          victim,
          amount
        ) do
-    distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
+    distance_to_power_up = game_config.game.distance_to_power_up
 
     Enum.reduce(1..amount//1, game_state, fn _, game_state ->
       random_position =
         random_position_in_map(
-          game_config.power_ups.power_up.radius,
+          game_config.game.power_up_radius,
           game_state.external_wall,
           game_state.obstacles,
           victim.position,
@@ -1579,10 +1579,10 @@ defmodule Arena.GameUpdater do
           random_position,
           victim.direction,
           victim.id,
-          game_config.power_ups.power_up
+          game_config.game
         )
 
-      Process.send_after(self(), {:activate_power_up, last_id}, game_config.power_ups.power_up.activation_delay_ms)
+      Process.send_after(self(), {:activate_power_up, last_id}, game_config.game.power_up_activation_delay_ms)
 
       game_state
       |> put_in([:power_ups, last_id], power_up)
@@ -1591,12 +1591,12 @@ defmodule Arena.GameUpdater do
   end
 
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
-    Enum.sort_by(power_ups_per_kill, fn %{minimum_amount: minimum} -> minimum end, :desc)
-    |> Enum.find(fn %{minimum_amount: minimum} ->
+    Enum.sort_by(power_ups_per_kill, fn %{minimum_amount_of_power_ups: minimum} -> minimum end, :desc)
+    |> Enum.find(fn %{minimum_amount_of_power_ups: minimum} ->
       minimum <= power_ups
     end)
     |> case do
-      %{amount_of_drops: amount} -> amount
+      %{amount_of_power_ups_to_drop: amount} -> amount
       _ -> 0
     end
   end
