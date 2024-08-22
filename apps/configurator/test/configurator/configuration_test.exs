@@ -8,7 +8,7 @@ defmodule Configurator.ConfigurationTest do
 
     import Configurator.ConfigurationFixtures
 
-    @invalid_attrs %{radius: nil, initial_positions: nil, obstacles: nil, bushes: nil}
+    @invalid_attrs %{radius: nil, initial_positions: nil, obstacles: nil, bushes: nil, active: nil}
 
     test "get_map_configuration!/1 returns the map_configuration with given id" do
       map_configuration = map_configuration_fixture()
@@ -17,7 +17,15 @@ defmodule Configurator.ConfigurationTest do
 
     test "create_map_configuration/1 with valid data creates a map_configuration" do
       version = version_fixture()
-      valid_attrs = %{radius: "120.5", initial_positions: [], obstacles: [], bushes: [], version_id: version.id}
+
+      valid_attrs = %{
+        radius: "120.5",
+        initial_positions: [],
+        obstacles: [],
+        bushes: [],
+        version_id: version.id,
+        active: true
+      }
 
       assert {:ok, %MapConfiguration{} = map_configuration} = Configuration.create_map_configuration(valid_attrs)
       assert map_configuration.radius == Decimal.new("120.5")
