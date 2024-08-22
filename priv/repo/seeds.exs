@@ -842,7 +842,26 @@ game_configuration_1 = %{
   match_timeout_ms: 300_000,
   field_of_view_inside_bush: 400,
   version_id: version.id,
-  time_visible_in_bush_after_skill: 2000
+  time_visible_in_bush_after_skill: 2000,
+  distance_to_power_up: 400,
+  power_up_damage_modifier: 0.08,
+  power_up_health_modifier: 0.08,
+  power_up_radius: 200.0,
+  power_up_activation_delay_ms: 500,
+  power_ups_per_kill: [
+    %{
+      minimum_amount_of_power_ups: 0,
+      amount_of_power_ups_to_drop: 1
+    },
+    %{
+      minimum_amount_of_power_ups: 2,
+      amount_of_power_ups_to_drop: 2
+    },
+    %{
+      minimum_amount_of_power_ups: 6,
+      amount_of_power_ups_to_drop: 3
+    }
+  ]
 }
 
 {:ok, _game_configuration_1} =
@@ -3083,5 +3102,27 @@ map_config = %{
 {:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)
 
 GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
+
+brazil_arena_server =
+  %{
+    name: "BRAZIL",
+    ip: "",
+    url: "arena-brazil-staging.championsofmirra.com",
+    status: "active",
+    environment: "production"
+  }
+
+GameBackend.Configuration.create_arena_server(brazil_arena_server)
+
+europe_arena_server =
+  %{
+    name: "EUROPE",
+    ip: "",
+    url: "arena-europe-testing.championsofmirra.com",
+    status: "active",
+    environment: "production"
+  }
+
+GameBackend.Configuration.create_arena_server(europe_arena_server)
 
 ################### END CURSE OF MIRRA ###################
