@@ -2111,48 +2111,6 @@ map_config = %{
       ]
     },
     %{
-      name: "center left water lake",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2885.0,
-          y: 452.0
-        },
-        %{
-          x: -2665.0,
-          y: 925.0
-        },
-        %{
-          x: -1596.0,
-          y: 1545.0
-        },
-        %{
-          x: -1344.0,
-          y: 1553.0
-        },
-        %{
-          x: -1324.0,
-          y: 762.0
-        },
-        %{
-          x: -1628.0,
-          y: 408.0
-        },
-        %{
-          x: -2695.0,
-          y: 313.0
-        }
-      ]
-    },
-    %{
       name: "bottom left water lake SW",
       radius: 0.0,
       shape: "polygon",
