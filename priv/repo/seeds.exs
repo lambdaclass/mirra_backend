@@ -926,9 +926,10 @@ polymorph_params = %{
 {:ok, _polymorph} =
   GameBackend.Items.create_consumable_item(polymorph_params)
 
-map_config = %{
+araban_map_config = %{
   name: "Araban",
   radius: 5520.0,
+  active: true,
   initial_positions: [
     %{
       x: 5400,
@@ -3099,7 +3100,172 @@ map_config = %{
   version_id: version.id
 }
 
-{:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)
+merliot_map_config = %{
+  name: "Merliot",
+  radius: 10000.0,
+  active: false,
+  initial_positions: [
+    %{
+      x: 5360.0,
+      y: -540.0
+    },
+    %{
+      x: -5130.0,
+      y: -920.0
+    },
+    %{
+      x: 555.0,
+      y: 4314.0
+    },
+    %{
+      x: 2750.0,
+      y: -4200.0
+    },
+    %{
+      x: -3700.0,
+      y: 2700.0
+    },
+    %{
+      x: 4250.0,
+      y: 3000.0
+    },
+    %{
+      x: -1842.0,
+      y: -4505.0
+    }
+  ],
+  obstacles: [
+    %{
+      name: "East wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 6400.0,
+          y: 6800.0
+        },
+        %{
+          x: 6800.0,
+          y: 6800.0
+        },
+        %{
+          x: 6800.0,
+          y: -6800.0
+        },
+        %{
+          x: 6400.0,
+          y: -6800.0
+        }
+      ]
+    },
+    %{
+      name: "North wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 6400.0,
+          y: 6400.0
+        },
+        %{
+          x: 6400.0,
+          y: 6800.0
+        },
+        %{
+          x: -6400.0,
+          y: 6800.0
+        },
+        %{
+          x: -6400.0,
+          y: 6400.0
+        }
+      ]
+    },
+    %{
+      name: "West wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -6400.0,
+          y: 6800.0
+        },
+        %{
+          x: -6800.0,
+          y: 6800.0
+        },
+        %{
+          x: -6800.0,
+          y: -6800.0
+        },
+        %{
+          x: -6400.0,
+          y: -6800.0
+        }
+      ]
+    },
+    %{
+      name: "South wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -6400.0,
+          y: -6400.0
+        },
+        %{
+          x: 6400.0,
+          y: -6400.0
+        },
+        %{
+          x: 6400.0,
+          y: -6800.0
+        },
+        %{
+          x: -6400.0,
+          y: -6800.0
+        }
+      ]
+    }
+  ],
+  bushes: [],
+  pools: [],
+  version_id: version.id
+}
+
+{:ok, _araban_map_configuration} =
+  GameBackend.Configuration.create_map_configuration(araban_map_config)
+
+{:ok, _merliot_map_configuration} =
+  GameBackend.Configuration.create_map_configuration(merliot_map_config)
 
 GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
 
