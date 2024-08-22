@@ -1,14 +1,17 @@
-name: "[CENTRAL-EUROPE] Deploy to Europe Central testing"
+name: "[CENTRAL-STAGING] Deploy to Europe Central Staging"
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - add-new-central-testing-server
 
 jobs:
   build-deploy:
-    name: Build and deploy to Europe testing
+    name: Build and deploy to Europe staging
     runs-on: ubuntu-latest
     environment:
       name: central
-      url: https://central-europe-testing.championsofmirra.com/
+      url: https://central-europe-staging.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
