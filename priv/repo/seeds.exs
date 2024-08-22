@@ -2920,4 +2920,26 @@ map_config = %{
 
 GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
 
+brazil_arena_server =
+  %{
+    name: "BRAZIL",
+    ip: "",
+    url: "arena-brazil-staging.championsofmirra.com",
+    status: "active",
+    environment: "production"
+  }
+
+GameBackend.Configuration.create_arena_server(brazil_arena_server)
+
+europe_arena_server =
+  %{
+    name: "EUROPE",
+    ip: "",
+    url: "arena-europe-testing.championsofmirra.com",
+    status: "active",
+    environment: "production"
+  }
+
+GameBackend.Configuration.create_arena_server(europe_arena_server)
+
 ################### END CURSE OF MIRRA ###################
