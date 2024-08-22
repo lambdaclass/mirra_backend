@@ -20,7 +20,18 @@ defmodule GameBackend.Users.User do
     Unlock
   }
 
-  @derive {Jason.Encoder, only: [:username, :currencies, :prestige]}
+  @derive {Jason.Encoder,
+           only: [
+             :username,
+             :currencies,
+             :prestige,
+             :most_played_character,
+             :total_kills,
+             :won_matches,
+             :highest_historical_prestige,
+             :user_quests,
+             :quest_refresh_at
+           ]}
   schema "users" do
     field(:game_id, :integer)
     field(:username, :string)
@@ -31,7 +42,8 @@ defmodule GameBackend.Users.User do
     field(:last_kaline_afk_reward_claim, :utc_datetime)
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
-    field(:prestige, :integer, virtual: true)
+    field(:highest_historical_prestige, :integer)
+    field(:last_daily_quest_generation_at, :utc_datetime)
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -47,6 +59,13 @@ defmodule GameBackend.Users.User do
     has_many(:currency_caps, UserCurrencyCap)
 
     timestamps()
+
+    # Virtual fields for client rendering
+    field(:prestige, :integer, virtual: true)
+    field(:most_played_character, :string, virtual: true)
+    field(:total_kills, :integer, virtual: true)
+    field(:won_matches, :integer, virtual: true)
+    field(:quest_refresh_at, :any, virtual: true)
   end
 
   @doc false
@@ -64,7 +83,9 @@ defmodule GameBackend.Users.User do
       :level,
       :experience,
       :profile_picture,
-      :google_user_id
+      :google_user_id,
+      :last_daily_quest_generation_at,
+      :highest_historical_prestige
     ])
     |> cast_assoc(:unlocks)
     |> assoc_constraint(:google_user)

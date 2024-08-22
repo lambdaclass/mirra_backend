@@ -36,8 +36,13 @@ defmodule Gateway.Router do
       put "/currency", CurrencyController, :modify_currency
       get "/claim_daily_reward", UserController, :claim_daily_reward
       get "/get_daily_reward_status", UserController, :get_daily_reward_status
-      get "/quest/:quest_id/reroll_daily_quest", QuestController, :reroll_daily_quest
-      get "/quest/:quest_id/complete_bounty", QuestController, :complete_bounty
+
+      scope "/quest" do
+        post "/add_quests", QuestController, :add_quests
+        get "/:quest_id/reroll_daily_quest", QuestController, :reroll_daily_quest
+        get "/:quest_id/complete_bounty", QuestController, :complete_bounty
+        get "/:quest_id/complete_quest", QuestController, :complete_quest
+      end
 
       scope "/items" do
         put "/equip", ItemController, :equip

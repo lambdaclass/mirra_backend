@@ -7,7 +7,7 @@ if [ -d "/tmp/mirra_backend${_SERVICE_SUFFIX}" ]; then
 fi
 
 cd /tmp
-git clone https://github.com/lambdaclass/mirra_backend.git --branch ${BRANCH_NAME} mirra_backend${_SERVICE_SUFFIX}
+git clone git@github.com:lambdaclass/mirra_backend.git --branch ${BRANCH_NAME} mirra_backend${_SERVICE_SUFFIX}
 cd mirra_backend${_SERVICE_SUFFIX}
 
 chmod +x devops/entrypoint.sh
@@ -57,6 +57,7 @@ PORT=${PORT}
 RELEASE_NODE=${RELEASE_NODE}
 _SERVICE_SUFFIX=${_SERVICE_SUFFIX}
 GATEWAY_URL=${GATEWAY_URL}
+METRICS_ENDPOINT_PORT=${METRICS_ENDPOINT_PORT}
 OVERRIDE_JWT=${OVERRIDE_JWT}
 GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 BOT_MANAGER_PORT=${BOT_MANAGER_PORT}

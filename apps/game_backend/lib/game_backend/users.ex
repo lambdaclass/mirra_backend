@@ -10,6 +10,7 @@ defmodule GameBackend.Users do
   """
 
   import Ecto.Query, warn: false
+  alias GameBackend.CurseOfMirra.Quests
   alias Ecto.Multi
   alias GameBackend.CurseOfMirra.Users, as: CurseUsers
   alias GameBackend.Matches.ArenaMatchResult
@@ -35,11 +36,6 @@ defmodule GameBackend.Users do
     %User{}
     |> User.changeset(attrs)
     |> Repo.insert()
-  end
-
-  def create_guest_user() do
-    CurseUsers.create_user_params()
-    |> register_user()
   end
 
   @doc """
@@ -74,60 +70,146 @@ defmodule GameBackend.Users do
       {:error, :not_found}
   """
   def get_user_by_id_and_game_id(id, game_id) do
+    quest_refresh_at =
+      NaiveDateTime.utc_now()
+      |> NaiveDateTime.add(1, :day)
+      |> NaiveDateTime.beginning_of_day()
+      |> NaiveDateTime.to_iso8601()
+
     q =
       from(u in User,
+        as: :user,
         where: u.id == ^id and u.game_id == ^game_id,
-        join: unit in Unit,
-        on: u.id == unit.user_id,
-        preload: [units: [:character, :items], currencies: :currency],
-        group_by: u.id,
-        select: %{u | prestige: sum(unit.prestige)}
+        preload: [
+          [units: [:character, :items]],
+          [currencies: [:currency]]
+        ],
+        select: %{u | quest_refresh_at: ^quest_refresh_at}
+      )
+      |> quests_preloads()
+      |> arena_match_results_preloads()
+      |> add_user_stats_to_user_query()
+
+    user =
+      Repo.one(q)
+      |> add_quest_progress_and_goal()
+
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  defp add_user_stats_to_user_query(base_query) do
+    kills_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(amr.kills),
+        where: parent_as(:user).id == amr.user_id
       )
 
-    if user = Repo.one(q), do: {:ok, user}, else: {:error, :not_found}
+    won_matches_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: count(),
+        where: parent_as(:user).id == amr.user_id and amr.result == ^"win"
+      )
+
+    most_played_character_subquery =
+      from(amr in GameBackend.Matches.ArenaMatchResult,
+        select: amr.character,
+        group_by: amr.character,
+        order_by: [desc: count(amr.character)],
+        where: parent_as(:user).id == amr.user_id,
+        limit: 1
+      )
+
+    prestige_subquery =
+      from(unit in Unit,
+        where: parent_as(:user).id == unit.user_id,
+        select: sum(unit.prestige)
+      )
+
+    from(u in base_query,
+      select_merge: %{
+        most_played_character: subquery(most_played_character_subquery),
+        total_kills: subquery(kills_subquery),
+        won_matches: subquery(won_matches_subquery),
+        prestige: subquery(prestige_subquery)
+      }
+    )
   end
 
   @doc """
-  Get a list of GoogleUser based on their id with the necessary preloads
-  to process daily quests.
+  Get a list of User based on their id with the necessary preloads
+  to process quests.
+
+  - user_quests: status equals "available" and completed_at is nil
+    - quest where the type is daily and it was inserted the same day of the query run
+    - quest where the type is weekly and it didn't pass more than 6 days from the last sunday since they were inserted
+  - arena_match_results: it didn't pass more than 6 days from the last sunday since they were inserted
 
   ## Examples
 
-      iex> get_users_with_todays_daily_quests(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
-      [%GoogleUser{}]
+      iex> list_users_with_quests_and_results(["51646f3a-d9e9-4ce6-8341-c90b8cad3bdf"])
+      [%User{}]
   """
-  def get_users_with_todays_daily_quests(ids, repo \\ Repo) do
+  def list_users_with_quests_and_results(ids, repo \\ Repo) do
+    q =
+      from(u in User,
+        as: :user,
+        where: u.id in ^ids,
+        preload: [
+          currencies: :currency,
+          units: :character
+        ]
+      )
+      |> quests_preloads()
+      |> arena_match_results_preloads()
+      |> add_user_stats_to_user_query()
+
+    repo.all(q)
+  end
+
+  defp quests_preloads(base_query) do
     naive_today = NaiveDateTime.utc_now()
     start_of_date = NaiveDateTime.beginning_of_day(naive_today)
     end_of_date = NaiveDateTime.end_of_day(naive_today)
 
-    arena_match_result_subquery =
-      from(amr in ArenaMatchResult,
-        where: amr.inserted_at > ^start_of_date and amr.inserted_at < ^end_of_date
-      )
+    start_of_week = Date.beginning_of_week(NaiveDateTime.to_date(naive_today), :sunday)
+    end_of_week = Date.add(start_of_week, 6)
+    {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
+    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
 
-    daily_quest_subquery =
+    quests_subquery =
       from(user_quest in UserQuest,
-        join: q in assoc(user_quest, :quest),
+        as: :user_quest,
+        join: quest in assoc(user_quest, :quest),
+        as: :quest,
         where:
-          user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date and
-            is_nil(user_quest.completed_at) and
-            user_quest.status == ^"available" and q.type == "daily",
+          (quest.type == ^"daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
+            (quest.type == ^"weekly" and user_quest.inserted_at > ^start_of_week_naive and
+               user_quest.inserted_at < ^end_of_week_naive),
         preload: [:quest]
       )
 
-    q =
-      from(u in User,
-        where: u.id in ^ids,
-        preload: [
-          arena_match_results: ^arena_match_result_subquery,
-          currencies: :currency,
-          units: :character,
-          user_quests: ^daily_quest_subquery
-        ]
+    from(u in base_query,
+      preload: [
+        user_quests: ^quests_subquery
+      ]
+    )
+  end
+
+  defp arena_match_results_preloads(base_query) do
+    date_today = Date.utc_today()
+    start_of_week = Date.beginning_of_week(date_today, :sunday)
+    end_of_week = Date.add(start_of_week, 6)
+    {:ok, start_of_week_naive} = NaiveDateTime.new(start_of_week, ~T[00:00:00])
+    {:ok, end_of_week_naive} = NaiveDateTime.new(end_of_week, ~T[23:59:59])
+
+    arena_match_result_subquery =
+      from(amr in ArenaMatchResult,
+        where: amr.inserted_at > ^start_of_week_naive and amr.inserted_at < ^end_of_week_naive
       )
 
-    repo.all(q)
+    from(u in base_query,
+      preload: [arena_match_results: ^arena_match_result_subquery]
+    )
   end
 
   @doc """
@@ -532,5 +614,126 @@ defmodule GameBackend.Users do
       )
 
     Repo.all(q)
+  end
+
+  defp add_quest_progress_and_goal(%User{} = user) do
+    updated_quests =
+      Enum.map(user.user_quests, fn user_quest ->
+        quest_progress =
+          Quests.get_user_quest_progress(user_quest, user.arena_match_results)
+
+        Map.put(user_quest, :progress, quest_progress)
+        |> Map.put(:goal, user_quest.quest.objective["value"])
+      end)
+
+    Map.put(user, :user_quests, updated_quests)
+  end
+
+  defp add_quest_progress_and_goal(_), do: nil
+
+  def insert_curse_user_and_insert_daily_quests() do
+    curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
+
+    Multi.new()
+    |> Multi.run(:insert_user, fn _, _ ->
+      CurseUsers.create_user_params()
+      |> register_user()
+    end)
+    |> Multi.run(:generate_quests, fn
+      _, %{insert_user: user} ->
+        case generate_daily_quests_for_user(user) do
+          {:error, changeset} ->
+            {:error, changeset}
+
+          _ ->
+            {:ok, :quests_generated}
+        end
+    end)
+    |> Multi.run(:user, fn _, %{insert_user: user} ->
+      get_user_by_id_and_game_id(user.id, curse_id)
+    end)
+    |> Repo.transaction()
+  end
+
+  def maybe_generate_daily_quests_for_curse_user(user_id) do
+    Multi.new()
+    |> Multi.run(:get_user, fn _, _ -> get_user(user_id) end)
+    |> Multi.run(:maybe_generate_quests, fn
+      _, %{get_user: user} ->
+        today = Date.utc_today()
+
+        should_generate_quests? =
+          user.last_daily_quest_generation_at &&
+            Date.compare(NaiveDateTime.to_date(user.last_daily_quest_generation_at), today) == :lt
+
+        if should_generate_quests? do
+          quest_insertion_result = generate_daily_quests_for_user(user)
+
+          user_update =
+            user
+            |> GameBackend.Users.User.changeset(%{last_daily_quest_generation_at: NaiveDateTime.utc_now()})
+            |> Repo.update()
+
+          case {quest_insertion_result, user_update} do
+            {{:ok, _}, {:ok, user}} ->
+              {:ok, user}
+
+            {{:error, changeset}, _user_update} ->
+              {:error, changeset}
+
+            {_, {:error, user_changeset}} ->
+              {:error, user_changeset}
+          end
+        else
+          {:ok, :not_needed}
+        end
+    end)
+    |> Repo.transaction()
+  end
+
+  defp generate_daily_quests_for_user(user) do
+    available_quests =
+      Quests.get_user_missing_quests_by_type(user.id, "daily")
+      |> Enum.shuffle()
+
+    {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
+
+    {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
+
+    active_quests =
+      Enum.map(active_quests_params, fn
+        quest_params ->
+          attrs = %{
+            user_id: user.id,
+            quest_id: quest_params.id,
+            status: "available",
+            activated_at: NaiveDateTime.utc_now()
+          }
+
+          changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+          Repo.insert(changeset)
+      end)
+
+    inactive_quests =
+      Enum.map(inactive_quests_params, fn
+        quest_params ->
+          attrs = %{
+            user_id: user.id,
+            quest_id: quest_params.id,
+            status: "available"
+          }
+
+          changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+          Repo.insert(changeset)
+      end)
+
+    (active_quests ++ inactive_quests)
+    |> Enum.find(fn {result, _quest} -> result == :error end)
+    |> case do
+      nil -> {:ok, :quests_inserted}
+      {:error, changeset} -> {:error, changeset}
+    end
   end
 end

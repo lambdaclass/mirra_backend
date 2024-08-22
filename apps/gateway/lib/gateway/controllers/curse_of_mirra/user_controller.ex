@@ -38,7 +38,7 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
   end
 
   def create_guest_user(conn, %{"client_id" => client_id}) do
-    with {:ok, user} <- Users.create_guest_user() do
+    with {:ok, %{user: user}} <- Users.insert_curse_user_and_insert_daily_quests() do
       gateway_jwt = TokenManager.generate_user_token(user, client_id)
       send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt}))
     end
