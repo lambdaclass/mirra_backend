@@ -76,7 +76,12 @@ defmodule Arena.GameUpdater do
 
     send(self(), :update_game)
     send(self(), :send_ping)
-    Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
+
+    if game_config.game.bounty_pick_time_ms > 0 do
+      Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
+    else
+      Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    end
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -294,6 +299,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:selecting_bounty, state) do
     Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
+    Process.send_after(self(), :pick_default_bounty_for_missing_players, state.game_config.game.start_game_time_ms)
 
     {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
@@ -305,7 +311,6 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
-    send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 

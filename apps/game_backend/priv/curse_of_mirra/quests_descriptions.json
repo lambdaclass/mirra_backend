@@ -6,7 +6,7 @@
         "objective": {
             "match_tracking_field": "result",
             "value": 3,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "match"
         },
         "conditions": [
@@ -33,7 +33,7 @@
         "objective": {
             "match_tracking_field": "kills",
             "value": 44,
-            "comparison": "greater",
+            "comparison": "greater_or_equal",
             "scope": "day"
         },
         "conditions": [],
@@ -44,7 +44,7 @@
     },
     {
         "config_id": 3,
-        "description": "This is curse of mirra, lose a match",
+        "description": "This is champions of mirra, lose a match",
         "type": "daily",
         "objective": {
             "match_tracking_field": "result",
@@ -113,6 +113,141 @@
         "reward": {
             "currency": "Gold",
             "amount": 10
+        }
+    },
+    {
+        "config_id": 7,
+        "description": "Win 30 matches with Uma",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 30,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "uma",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 5000
+        }
+    },
+    {
+        "config_id": 8,
+        "description": "Get 100 kills",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "kills",
+            "value": 100,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 3000
+        }
+    },
+    {
+        "config_id": 9,
+        "description": "Deal 10.000 damage",
+        "type": "weekly",
+        "objective": {
+            "match_tracking_field": "damage_done",
+            "value": 10000,
+            "comparison": "greater_or_equal",
+            "scope": "day"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10000
+        }
+    },
+    {
+        "config_id": 10,
+        "description": "Finish a match in less than 1 minute",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 1,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "duration_ms",
+                "value": 60000,
+                "comparison": "lesser_or_equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    },
+    {
+        "config_id": 11,
+        "description": "Win three matches with Uma",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 3,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "uma",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
+        }
+    },
+    {
+        "config_id": 12,
+        "description": "Win three matches with Valtimer",
+        "type": "daily",
+        "objective": {
+            "match_tracking_field": "result",
+            "value": 3,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [
+            {
+                "match_tracking_field": "character",
+                "value": "valtimer",
+                "comparison": "equal"
+            },
+            {
+                "match_tracking_field": "result",
+                "value": "win",
+                "comparison": "equal"
+            }
+        ],
+        "reward": {
+            "currency": "Gold",
+            "amount": 444
         }
     }
 ]
