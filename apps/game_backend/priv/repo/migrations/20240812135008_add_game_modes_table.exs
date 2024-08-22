@@ -4,6 +4,7 @@ defmodule GameBackend.Repo.Migrations.AddGameModesTable do
   def change do
     create table(:game_modes) do
       add :name, :string
+      add :description, :text
 
       timestamps(type: :utc_datetime)
     end
