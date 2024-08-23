@@ -3068,6 +3068,7 @@ brazil_arena_server =
     name: "BRAZIL",
     ip: "",
     url: "arena-brazil-staging.championsofmirra.com",
+    gateway_url: "https://central-europe-staging.championsofmirra.com",
     status: "active",
     environment: "production"
   }
@@ -3079,6 +3080,7 @@ europe_arena_server =
     name: "EUROPE",
     ip: "",
     url: "arena-europe-testing.championsofmirra.com",
+    gateway_url: "https://central-europe-staging.championsofmirra.com",
     status: "active",
     environment: "production"
   }
