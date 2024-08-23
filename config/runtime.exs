@@ -392,7 +392,12 @@ end
 # App configuration: Bot Manager  #
 ###################################
 
-bot_manager_port = String.to_integer(System.get_env("BOT_MANAGER_PORT") || "4003")
+bot_manager_port =
+  if System.get_env("BOT_MANAGER_PORT") in [nil, ""] do
+    4003
+  else
+    System.get_env("BOT_MANAGER_PORT") |> String.to_integer()
+  end
 
 config :bot_manager, :end_point_configuration,
   scheme: :http,

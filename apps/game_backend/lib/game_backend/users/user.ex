@@ -28,7 +28,9 @@ defmodule GameBackend.Users.User do
              :most_played_character,
              :total_kills,
              :won_matches,
-             :highest_historical_prestige
+             :highest_historical_prestige,
+             :user_quests,
+             :quest_refresh_at
            ]}
   schema "users" do
     field(:game_id, :integer)
@@ -41,6 +43,7 @@ defmodule GameBackend.Users.User do
     field(:last_dungeon_afk_reward_claim, :utc_datetime)
     field(:profile_picture, :string)
     field(:highest_historical_prestige, :integer)
+    field(:last_daily_quest_generation_at, :utc_datetime)
 
     belongs_to(:dungeon_settlement_level, DungeonSettlementLevel)
     belongs_to(:kaline_tree_level, KalineTreeLevel)
@@ -62,6 +65,7 @@ defmodule GameBackend.Users.User do
     field(:most_played_character, :string, virtual: true)
     field(:total_kills, :integer, virtual: true)
     field(:won_matches, :integer, virtual: true)
+    field(:quest_refresh_at, :any, virtual: true)
   end
 
   @doc false
@@ -80,6 +84,7 @@ defmodule GameBackend.Users.User do
       :experience,
       :profile_picture,
       :google_user_id,
+      :last_daily_quest_generation_at,
       :highest_historical_prestige
     ])
     |> cast_assoc(:unlocks)

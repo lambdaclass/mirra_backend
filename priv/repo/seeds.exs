@@ -842,7 +842,26 @@ game_configuration_1 = %{
   match_timeout_ms: 300_000,
   field_of_view_inside_bush: 400,
   version_id: version.id,
-  time_visible_in_bush_after_skill: 2000
+  time_visible_in_bush_after_skill: 2000,
+  distance_to_power_up: 400,
+  power_up_damage_modifier: 0.08,
+  power_up_health_modifier: 0.08,
+  power_up_radius: 200.0,
+  power_up_activation_delay_ms: 500,
+  power_ups_per_kill: [
+    %{
+      minimum_amount_of_power_ups: 0,
+      amount_of_power_ups_to_drop: 1
+    },
+    %{
+      minimum_amount_of_power_ups: 2,
+      amount_of_power_ups_to_drop: 2
+    },
+    %{
+      minimum_amount_of_power_ups: 6,
+      amount_of_power_ups_to_drop: 3
+    }
+  ]
 }
 
 {:ok, _game_configuration_1} =
@@ -907,9 +926,10 @@ polymorph_params = %{
 {:ok, _polymorph} =
   GameBackend.Items.create_consumable_item(polymorph_params)
 
-map_config = %{
+araban_map_config = %{
   name: "Araban",
   radius: 5520.0,
+  active: true,
   initial_positions: [
     %{
       x: 5400,
@@ -2111,48 +2131,6 @@ map_config = %{
       ]
     },
     %{
-      name: "center left water lake",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2885.0,
-          y: 452.0
-        },
-        %{
-          x: -2665.0,
-          y: 925.0
-        },
-        %{
-          x: -1596.0,
-          y: 1545.0
-        },
-        %{
-          x: -1344.0,
-          y: 1553.0
-        },
-        %{
-          x: -1324.0,
-          y: 762.0
-        },
-        %{
-          x: -1628.0,
-          y: 408.0
-        },
-        %{
-          x: -2695.0,
-          y: 313.0
-        }
-      ]
-    },
-    %{
       name: "bottom left water lake SW",
       radius: 0.0,
       shape: "polygon",
@@ -2916,8 +2894,195 @@ map_config = %{
   version_id: version.id
 }
 
-{:ok, _map_configuration_1} = GameBackend.Configuration.create_map_configuration(map_config)
+merliot_map_config = %{
+  name: "Merliot",
+  radius: 10000.0,
+  active: false,
+  initial_positions: [
+    %{
+      x: 5360.0,
+      y: -540.0
+    },
+    %{
+      x: -5130.0,
+      y: -920.0
+    },
+    %{
+      x: 555.0,
+      y: 4314.0
+    },
+    %{
+      x: 2750.0,
+      y: -4200.0
+    },
+    %{
+      x: -3700.0,
+      y: 2700.0
+    },
+    %{
+      x: 4250.0,
+      y: 3000.0
+    },
+    %{
+      x: -1842.0,
+      y: -4505.0
+    }
+  ],
+  obstacles: [
+    %{
+      name: "East wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 6400.0,
+          y: 6800.0
+        },
+        %{
+          x: 6800.0,
+          y: 6800.0
+        },
+        %{
+          x: 6800.0,
+          y: -6800.0
+        },
+        %{
+          x: 6400.0,
+          y: -6800.0
+        }
+      ]
+    },
+    %{
+      name: "North wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: 6400.0,
+          y: 6400.0
+        },
+        %{
+          x: 6400.0,
+          y: 6800.0
+        },
+        %{
+          x: -6400.0,
+          y: 6800.0
+        },
+        %{
+          x: -6400.0,
+          y: 6400.0
+        }
+      ]
+    },
+    %{
+      name: "West wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -6400.0,
+          y: 6800.0
+        },
+        %{
+          x: -6800.0,
+          y: 6800.0
+        },
+        %{
+          x: -6800.0,
+          y: -6800.0
+        },
+        %{
+          x: -6400.0,
+          y: -6800.0
+        }
+      ]
+    },
+    %{
+      name: "South wall",
+      position: %{
+        x: 0.0,
+        y: 0.0
+      },
+      radius: 0.0,
+      shape: "polygon",
+      type: "static",
+      base_status: "",
+      statuses_cycle: %{},
+      vertices: [
+        %{
+          x: -6400.0,
+          y: -6400.0
+        },
+        %{
+          x: 6400.0,
+          y: -6400.0
+        },
+        %{
+          x: 6400.0,
+          y: -6800.0
+        },
+        %{
+          x: -6400.0,
+          y: -6800.0
+        }
+      ]
+    }
+  ],
+  bushes: [],
+  pools: [],
+  version_id: version.id
+}
+
+{:ok, _araban_map_configuration} =
+  GameBackend.Configuration.create_map_configuration(araban_map_config)
+
+{:ok, _merliot_map_configuration} =
+  GameBackend.Configuration.create_map_configuration(merliot_map_config)
 
 GameBackend.CurseOfMirra.Config.import_quest_descriptions_config()
+
+brazil_arena_server =
+  %{
+    name: "BRAZIL",
+    ip: "",
+    url: "arena-brazil-staging.championsofmirra.com",
+    status: "active",
+    environment: "production"
+  }
+
+GameBackend.Configuration.create_arena_server(brazil_arena_server)
+
+europe_arena_server =
+  %{
+    name: "EUROPE",
+    ip: "",
+    url: "arena-europe-testing.championsofmirra.com",
+    status: "active",
+    environment: "production"
+  }
+
+GameBackend.Configuration.create_arena_server(europe_arena_server)
 
 ################### END CURSE OF MIRRA ###################

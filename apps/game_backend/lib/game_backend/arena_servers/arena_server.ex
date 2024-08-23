@@ -20,6 +20,6 @@ defmodule GameBackend.ArenaServers.ArenaServer do
   def changeset(arena_server, attrs) do
     arena_server
     |> cast(attrs, [:name, :ip, :url, :status, :environment])
-    |> validate_required([:name, :ip, :url, :status, :environment])
+    |> validate_required([:name, :url, :status, :environment])
   end
 end
