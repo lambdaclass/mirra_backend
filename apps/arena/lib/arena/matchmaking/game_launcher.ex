@@ -61,7 +61,7 @@ defmodule Arena.Matchmaking.GameLauncher do
 
   @impl true
   def handle_info(:launch_game?, %{clients: clients} = state) do
-    Process.send_after(self(), :launch_game?, 300)
+    Process.send_after(self(), :launch_game?, 30)
     diff = System.monotonic_time(:millisecond) - state.batch_start_at
 
     if length(clients) >= Application.get_env(:arena, :players_needed_in_match) or
