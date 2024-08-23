@@ -620,6 +620,7 @@ defmodule GameBackend.Users do
   defp add_quest_progress_and_goal(%User{} = user) do
     today = Date.utc_today()
     start_of_week = Date.beginning_of_week(today, :sunday)
+    end_of_week = Date.add(start_of_week, 6)
 
     updated_quests =
       Enum.map(user.user_quests, fn user_quest ->
@@ -631,7 +632,7 @@ defmodule GameBackend.Users do
       end)
 
     daily_quests_week_progress =
-      Enum.map(Date.range(start_of_week, today), fn date ->
+      Enum.map(Date.range(start_of_week, end_of_week), fn date ->
         completed_quests_amount =
           Enum.count(user.user_quests, fn user_quest ->
             user_quest.status == "completed" && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
