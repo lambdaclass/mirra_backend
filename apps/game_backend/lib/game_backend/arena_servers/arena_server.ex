@@ -5,7 +5,7 @@ defmodule GameBackend.ArenaServers.ArenaServer do
   use GameBackend.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:name, :ip, :url, :status, :environment]}
+  @derive {Jason.Encoder, only: [:name, :ip, :url, :gateway_url, :status, :environment]}
   schema "arena_servers" do
     field(:name, :string)
     field(:ip, :string)
