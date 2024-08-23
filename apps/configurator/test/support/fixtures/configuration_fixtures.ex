@@ -64,6 +64,7 @@ defmodule Configurator.ConfigurationFixtures do
         ip: "some ip",
         name: "some name",
         url: "some url",
+        gateway_url: "some GATEWAY url",
         status: :active,
         environment: :production
       })
