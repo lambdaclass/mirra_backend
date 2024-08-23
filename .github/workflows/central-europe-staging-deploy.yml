@@ -1,9 +1,6 @@
 name: "[CENTRAL-STAGING] Deploy to Europe Central Staging"
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - add-new-central-testing-server
 
 jobs:
   build-deploy:
