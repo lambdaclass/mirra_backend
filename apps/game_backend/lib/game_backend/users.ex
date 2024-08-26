@@ -635,7 +635,8 @@ defmodule GameBackend.Users do
       Enum.map(Date.range(start_of_week, end_of_week), fn date ->
         completed_quests_amount =
           Enum.count(user.user_quests, fn user_quest ->
-            user_quest.status == "completed" && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+            user_quest.status == "completed" && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0 &&
+              user_quest.quest.type == :daily
           end)
 
         %{
