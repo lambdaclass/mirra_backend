@@ -77,7 +77,9 @@ defmodule Arena.GameUpdater do
     send(self(), :update_game)
     send(self(), :send_ping)
 
-    if game_config.game.bounty_pick_time_ms > 0 do
+    bounties_enabled? = game_config.game.bounty_pick_time_ms > 0
+
+    if bounties_enabled? do
       Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
     else
       Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
@@ -96,6 +98,7 @@ defmodule Arena.GameUpdater do
        clients: clients_ids,
        bot_clients: bot_clients_ids,
        game_config: game_config,
+       bounties_enabled?: bounties_enabled?,
        game_state: game_state
      }}
   end
@@ -1333,6 +1336,10 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp update_bounties_states(game_state, %{bounties_enabled?: false}) do
+    game_state
+  end
+
   defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
     # We only want to run this check for actual players, and we are saving their id in state.clients
     game_state.client_to_player_map
@@ -1344,6 +1351,7 @@ defmodule Arena.GameUpdater do
            Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
              GameTracker.get_player_result(player_id)
            ]) do
+        # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
         spawn(fn ->
           path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
           gateway_url = Application.get_env(:arena, :gateway_url)
