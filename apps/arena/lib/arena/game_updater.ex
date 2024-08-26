@@ -5,6 +5,7 @@ defmodule Arena.GameUpdater do
   """
 
   use GenServer
+  require Logger
   alias Arena.Game.Obstacle
   alias Arena.Game.Bounties
   alias Arena.GameBountiesFetcher
