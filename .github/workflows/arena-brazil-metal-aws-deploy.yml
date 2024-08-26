@@ -1,9 +1,9 @@
 name: "[AWS-TESTING-BRAZIL] Deploy to Brazil Arena Testing"
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - latitude-chile
+  #push:
+  #  branches:
+  #    - latitude-chile
 
 jobs:
   build-deploy:
