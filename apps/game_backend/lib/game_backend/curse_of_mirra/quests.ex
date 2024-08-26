@@ -299,7 +299,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     user.user_quests
     |> Enum.count(fn %UserQuest{} = user_quest ->
       NaiveDateTime.diff(user_quest.inserted_at, meta_quest.inserted_at, :day) == 0 && user_quest.status == "completed" &&
-        user_quest.quest.type == "daily"
+        user_quest.quest.type == :daily
     end)
   end
 
