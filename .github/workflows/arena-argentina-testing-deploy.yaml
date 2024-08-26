@@ -1,9 +1,6 @@
 name: "[MACMINI-TESTING-ARGENTINA] Deploy to Argentina Office Arena Testing"
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - deploy-macos
 
 jobs:
   build-deploy:
