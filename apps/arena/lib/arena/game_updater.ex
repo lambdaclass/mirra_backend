@@ -88,7 +88,7 @@ defmodule Arena.GameUpdater do
 
     :ok = GameTracker.start_tracking(match_id, game_state.client_to_player_map, game_state.players, clients_ids)
 
-    :telemetry.execute([:arena, :game], %{count: 1})
+    # :telemetry.execute([:arena, :game], %{count: 1})
 
     {:ok,
      %{
@@ -101,8 +101,8 @@ defmodule Arena.GameUpdater do
   end
 
   def terminate(_, _state) do
-    :telemetry.execute([:arena, :game], %{count: -1})
-    :telemetry.execute([:arena, :game, :tick], %{duration: 0, duration_measure: 0})
+    # :telemetry.execute([:arena, :game], %{count: -1})
+    # :telemetry.execute([:arena, :game, :tick], %{duration: 0, duration_measure: 0})
     :ok
   end
 
@@ -286,8 +286,11 @@ defmodule Arena.GameUpdater do
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
+    newnow = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
+    Logger.info("Tick duration: #{newnow - now}")
+
     tick_duration = System.monotonic_time() - tick_duration_start_at
-    :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
+    # :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
     {:noreply, %{state | game_state: game_state}}
   end
 

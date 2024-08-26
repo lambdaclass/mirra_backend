@@ -56,7 +56,7 @@ defmodule Arena.GameSocketHandler do
         event: {:joined, %GameJoined{player_id: player_id, config: to_broadcast_config(config), bounties: bounties}}
       })
 
-    :telemetry.execute([:arena, :clients], %{count: 1})
+    # :telemetry.execute([:arena, :clients], %{count: 1})
     {:reply, {:binary, encoded_msg}, state}
   end
 
@@ -169,7 +169,7 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def terminate(_reason, _req, %{game_finished: false, player_alive: true} = state) do
-    :telemetry.execute([:arena, :clients], %{count: -1})
+    # :telemetry.execute([:arena, :clients], %{count: -1})
 
     if Application.get_env(:arena, :spawn_bots) do
       spawn(fn ->
@@ -182,7 +182,7 @@ defmodule Arena.GameSocketHandler do
   end
 
   def terminate(_reason, _req, _state) do
-    :telemetry.execute([:arena, :clients], %{count: -1})
+    # :telemetry.execute([:arena, :clients], %{count: -1})
     :ok
   end
 
