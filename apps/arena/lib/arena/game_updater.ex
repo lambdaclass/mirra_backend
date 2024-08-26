@@ -268,23 +268,116 @@ defmodule Arena.GameUpdater do
       DateTime.utc_now()
       |> DateTime.to_unix(:millisecond)
 
+    start_move =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
     game_state =
       game_state
       |> move_players()
+
+    end_move =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_cooldowns =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> reduce_players_cooldowns(delta_time)
+
+    end_cooldowns =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_mana =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> recover_mana()
+
+    end_mana =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_power_ups =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> resolve_players_collisions_with_power_ups()
+
+    end_power_ups =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_items =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> resolve_players_collisions_with_items()
+
+    end_items =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_effects_on_collisions =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> resolve_projectiles_effects_on_collisions(state.game_config)
+
+    end_effects_on_collisions =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_zone_damage =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> apply_zone_damage_to_players(state.game_config.game)
+
+    end_zone_damage =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_visible_players =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> update_visible_players(state.game_config)
+
+    end_visible_players =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    start_bounties =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
+
+    game_state =
+      game_state
       |> update_bounties_states(state)
+
+    end_bounties =
+      DateTime.utc_now()
+      |> DateTime.to_unix(:millisecond)
 
     end_players = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     # Projectiles
-    start_projectile =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
 
     game_state =
       game_state
@@ -292,68 +385,22 @@ defmodule Arena.GameUpdater do
       |> move_projectiles()
       |> resolve_projectiles_collisions()
       |> explode_projectiles()
-
-    end_projectile =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    # Pools
-    start_pools =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    game_state =
-      game_state
+      # Pools
       |> add_pools_collisions()
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
-
-    end_pools =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    # Crates
-    start_crates =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    game_state =
-      game_state
+      # Crates
       |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
-
-    end_crates =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    # Traps
-    start_traps =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    game_state =
-      game_state
+      # Traps
       |> remove_activated_traps()
       |> prepare_traps()
       |> handle_trap_collisions()
       |> activate_trap_mechanics()
 
-    end_traps =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
+      # Obstacles
 
-    # Obstacles
-    start_obstacles =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    game_state =
-      game_state
       |> handle_obstacles_transitions()
-
-    end_obstacles =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
 
     broadcast_game_update(game_state)
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
@@ -362,13 +409,16 @@ defmodule Arena.GameUpdater do
     Logger.info("Tick duration: #{newnow - now}")
 
     if newnow - now > 100 do
-      Logger.info("Effects duration: #{start_effects - end_effects}")
-      Logger.info("Players duration: #{start_players - end_players}")
-      Logger.info("Projectiles duration: #{start_projectile - end_projectile}")
-      Logger.info("Pools duration: #{start_pools - end_pools}")
-      Logger.info("Traps duration: #{start_traps - end_traps}")
-      Logger.info("Crates duration: #{start_crates - end_crates}")
-      Logger.info("Obstacles duration: #{start_obstacles - end_obstacles}")
+      Logger.info("Players duration: #{end_players - start_players}")
+      Logger.info("Players move duration: #{end_move - start_move}")
+      Logger.info("Players cooldowns duration: #{end_cooldowns - start_cooldowns}")
+      Logger.info("Players mana duration: #{end_mana - start_mana}")
+      Logger.info("Players power ups duration: #{end_power_ups - start_power_ups}")
+      Logger.info("Players items duration: #{end_items - start_items}")
+      Logger.info("Players effects con collisions duration: #{end_effects_on_collisions - start_effects_on_collisions}")
+      Logger.info("Players zone damage duration: #{end_zone_damage - start_zone_damage}")
+      Logger.info("Players visible players duration: #{end_visible_players - start_visible_players}")
+      Logger.info("Players bounties duration: #{end_bounties - start_bounties}")
     end
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
