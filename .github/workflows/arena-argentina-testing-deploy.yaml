@@ -1,4 +1,4 @@
-name: "[MACMINI-TESTING-ARGENTINA] Deploy to Argentina Arena Testing"
+name: "[MACMINI-TESTING-ARGENTINA] Deploy to Argentina Office Arena Testing"
 on:
   workflow_dispatch:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Argentina Testing
+    name: Build and deploy to Argentina Office Testing
     runs-on: ubuntu-latest
     environment:
       name: testing-brazil
