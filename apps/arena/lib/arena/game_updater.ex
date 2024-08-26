@@ -251,10 +251,6 @@ defmodule Arena.GameUpdater do
       |> Map.put(:delta_time, delta_time / 1)
 
     # Effects
-    start_effects =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
     game_state =
       game_state
       |> remove_expired_effects()
@@ -262,7 +258,6 @@ defmodule Arena.GameUpdater do
       |> reset_players_effects()
       |> Effect.apply_effect_mechanic_to_entities()
 
-    end_effects = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     # Players
     start_players =
       DateTime.utc_now()
@@ -364,18 +359,6 @@ defmodule Arena.GameUpdater do
       DateTime.utc_now()
       |> DateTime.to_unix(:millisecond)
 
-    start_bounties =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
-    game_state =
-      game_state
-      |> update_bounties_states(state)
-
-    end_bounties =
-      DateTime.utc_now()
-      |> DateTime.to_unix(:millisecond)
-
     end_players = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
     # Projectiles
 
@@ -418,7 +401,6 @@ defmodule Arena.GameUpdater do
       Logger.info("Players effects con collisions duration: #{end_effects_on_collisions - start_effects_on_collisions}")
       Logger.info("Players zone damage duration: #{end_zone_damage - start_zone_damage}")
       Logger.info("Players visible players duration: #{end_visible_players - start_visible_players}")
-      Logger.info("Players bounties duration: #{end_bounties - start_bounties}")
     end
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
