@@ -88,12 +88,12 @@ defmodule Arena.Matchmaking.QuickGameMode do
   # Receives a list of clients.
   # Fills the given list with bots clients, creates a game and tells every client to join that game.
   defp create_game_for_clients(clients, game_params \\ %{}) do
-    bot_clients =
-      if Application.get_env(:arena, :spawn_bots) do
-        get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
-      else
-        []
-      end
+    bot_clients = []
+      # if Application.get_env(:arena, :spawn_bots) do
+      #   get_bot_clients(Application.get_env(:arena, :players_needed_in_match) - Enum.count(clients))
+      # else
+      #   []
+      # end
 
     {:ok, game_pid} =
       GenServer.start(Arena.GameUpdater, %{

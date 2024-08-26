@@ -8,16 +8,16 @@ syntax = "proto3";
  * Direction is a vector with a magnitude of 1
  */
 message Direction {
-  float x = 1;
-  float y = 2;
+  optional float x = 1;
+  optional float y = 2;
 }
 
 /*
  * Position of an entity in the arena
  */
 message Position {
-  float x = 1;
-  float y = 2;
+  optional float x = 1;
+  optional float y = 2;
 }
 
 message LobbyEvent {
@@ -128,18 +128,18 @@ message ConfigSkill {
  * Game State
  */
 message GameState {
-  string game_id = 1;
+  optional string game_id = 1;
   map<uint64, Entity> players = 2;
   map<uint64, Entity> projectiles = 3;
   map<uint64, int64> player_timestamps = 4;
-  int64 server_timestamp = 5;
+  optional int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
-  GameStatus status = 11;
-  int64 start_game_timestamp = 12;
+  optional GameStatus status = 11;
+  optional int64 start_game_timestamp = 12;
   map<uint64, Entity> items = 13;
   map<uint64, Entity> obstacles = 14;
   map<uint64, Entity> pools = 15;
@@ -171,17 +171,17 @@ enum GameStatus {
  * is_moving: true if the entity is moving
  */
 message Entity {
-  uint64 id = 1;
-  string category = 2;
-  string shape = 3;
-  string name = 4;
+  optional uint64 id = 1;
+  optional string category = 2;
+  optional string shape = 3;
+  optional string name = 4;
   Position position = 5;
-  float radius = 6;
+  optional float radius = 6;
   repeated Position vertices = 7;
   repeated uint64 collides_with = 8;
-  float speed = 9;
+  optional float speed = 9;
   Direction direction = 10;
-  bool is_moving = 11;
+  optional bool is_moving = 11;
   oneof aditional_info {
     Player player = 12;
     Projectile projectile = 13;
@@ -196,24 +196,25 @@ message Entity {
 }
 
 message Player {
-  uint64 health = 1;
-  uint64 kill_count = 2;
+  optional uint64 health = 1;
+  optional uint64 kill_count = 2;
   repeated PlayerAction current_actions = 3;
-  uint64 available_stamina = 4;
-  uint64 max_stamina = 5;
-  uint64 stamina_interval = 6;
-  bool recharging_stamina = 7;
-  string character_name = 8;
-  uint64 power_ups = 9;
+  optional uint64 available_stamina = 4;
+  optional uint64 max_stamina = 5;
+  optional uint64 stamina_interval = 6;
+  optional bool recharging_stamina = 7;
+  optional string character_name = 8;
+  optional uint64 power_ups = 9;
   repeated Effect effects = 10;
   Item inventory = 11;
   map<string, uint64> cooldowns = 12;
   repeated uint64 visible_players = 13;
-  bool on_bush = 14;
-  bool forced_movement = 15;
-  bool bounty_completed = 16;
-  uint64 mana = 17;
-  uint32 current_basic_animation = 18;
+  optional bool on_bush = 14;
+  optional bool forced_movement = 15;
+  optional bool bounty_completed = 16;
+  optional uint64 mana = 17;
+  optional uint32 current_basic_animation = 18;
+  uint32 last_field = 19;
 }
 
 message Effect {
@@ -223,14 +224,14 @@ message Effect {
 }
 
 message Item {
-  string name = 2;
+  optional string name = 2;
 }
 
 message Projectile {
-  uint64 damage = 1;
-  uint64 owner_id = 2;
-  ProjectileStatus status = 3;
-  string skill_key = 4;
+  optional uint64 damage = 1;
+  optional uint64 owner_id = 2;
+  optional ProjectileStatus status = 3;
+  optional string skill_key = 4;
 }
 
 enum ProjectileStatus {
@@ -240,21 +241,21 @@ enum ProjectileStatus {
 }
 
 message Obstacle {
-  string color = 1;
-  bool collisionable = 2;
-  string status = 3;
-  string type = 4;
+  optional string color = 1;
+  optional bool collisionable = 2;
+  optional string status = 3;
+  optional string type = 4;
 }
 
 message PowerUp {
-  uint64 owner_id = 1;
-  PowerUpstatus status = 2;
+  optional uint64 owner_id = 1;
+  optional PowerUpstatus status = 2;
 }
 
 message Crate {
-  uint64 health = 1;
-  uint64 amount_of_power_ups = 2;
-  CrateStatus status = 3;
+  optional uint64 health = 1;
+  optional uint64 amount_of_power_ups = 2;
+  optional CrateStatus status = 3;
 }
 
 enum CrateStatus {
@@ -269,19 +270,19 @@ enum  PowerUpstatus {
 }
 
 message Pool {
-  uint64 owner_id = 1;
-  PoolStatus status = 2;
+  optional uint64 owner_id = 1;
+  optional PoolStatus status = 2;
   repeated Effect effects = 3;
-  string skill_key = 4;
+  optional string skill_key = 4;
 }
 
 message Bush {
 }
 
 message Trap {
-  uint64 owner_id = 1;
-  string name = 2;
-  TrapStatus status = 3;
+  optional uint64 owner_id = 1;
+  optional string name = 2;
+  optional TrapStatus status = 3;
 }
 
 message PlayerAction {
@@ -361,10 +362,10 @@ message Pong {
 }
 
 message Zone {
-  float radius = 1;
-  bool enabled = 2;
-  int64 next_zone_change_timestamp = 3;
-  bool shrinking = 4;
+  optional float radius = 1;
+  optional bool enabled = 2;
+  optional int64 next_zone_change_timestamp = 3;
+  optional bool shrinking = 4;
 }
 
 message KillEntry {
