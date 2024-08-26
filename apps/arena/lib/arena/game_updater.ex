@@ -312,7 +312,7 @@ defmodule Arena.GameUpdater do
     broadcast_enable_incomming_messages(state.game_state.game_id)
 
     Process.send_after(self(), :start_zone_shrink, state.game_config.game.zone_shrink_start_ms)
-    Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
+    # Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
     send(self(), :natural_healing)
