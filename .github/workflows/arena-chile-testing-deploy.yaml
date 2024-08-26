@@ -1,9 +1,9 @@
 name: "[LATITUDE-TESTING-BRAZIL] Deploy to Brazil Arena Testing"
 on:
   workflow_dispatch:
-  #push:
-  #  branches:
-  #    - latitude-chile
+  push:
+    branches:
+      - latitude-chile
 
 jobs:
   build-deploy:
@@ -56,7 +56,7 @@ jobs:
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
-          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+          BRANCH_NAME: "20240826_backend_tests"
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
