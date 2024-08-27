@@ -1201,12 +1201,12 @@ defmodule Arena.GameUpdater do
 
         collided_entity = decide_collided_entity(projectile, collides_with, external_wall.id, players_acc, crates_acc)
 
-        collsionable_entities =
-          Map.merge(players, crates)
+        collisionable_entities =
+          Map.merge(players_acc, crates_acc)
 
         process_projectile_collision(
           projectile,
-          Map.get(collsionable_entities, collided_entity),
+          Map.get(collisionable_entities, collided_entity),
           Map.get(obstacles, collided_entity),
           collided_entity == external_wall.id,
           accs
