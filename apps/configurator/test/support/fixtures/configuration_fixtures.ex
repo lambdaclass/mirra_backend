@@ -46,7 +46,8 @@ defmodule Configurator.ConfigurationFixtures do
         initial_positions: [],
         obstacles: [],
         radius: "120.5",
-        version_id: version.id
+        version_id: version.id,
+        active: true
       })
       |> GameBackend.Configuration.create_map_configuration()
 
@@ -63,6 +64,7 @@ defmodule Configurator.ConfigurationFixtures do
         ip: "some ip",
         name: "some name",
         url: "some url",
+        gateway_url: "some GATEWAY url",
         status: :active,
         environment: :production
       })

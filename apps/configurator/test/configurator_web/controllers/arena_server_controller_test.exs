@@ -7,11 +7,19 @@ defmodule ConfiguratorWeb.ArenaServerControllerTest do
 
   setup [:create_authenticated_conn]
 
-  @create_attrs %{name: "some name", ip: "some ip", url: "some url", status: :active, environment: :production}
+  @create_attrs %{
+    name: "some name",
+    ip: "some ip",
+    url: "some url",
+    gateway_url: "some gateway url",
+    status: :active,
+    environment: :production
+  }
   @update_attrs %{
     name: "some updated name",
     ip: "some updated ip",
     url: "some updated url",
+    gateway_url: "some updated GATEWAY url",
     status: :inactive,
     environment: :development
   }
