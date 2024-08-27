@@ -119,7 +119,7 @@ config :arena, ArenaWeb.Endpoint,
 config :arena, Arena.Mailer, adapter: Swoosh.Adapters.Local
 
 # Amount of clients needed to start a game
-config :arena, :players_needed_in_match, 7
+config :arena, :players_needed_in_match, 6
 config :arena, :spawn_bots, false
 
 ################################
