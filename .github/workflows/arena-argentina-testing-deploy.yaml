@@ -7,7 +7,7 @@ jobs:
     name: Build and deploy to Argentina Office Testing
     runs-on: ubuntu-latest
     environment:
-      name: testing-brazil
+      name: testing-argentina
 
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
       - name: Create ssh private key file from env var
         env:
           SSH_KEY: ${{ secrets.MACMINI_SSH_KEY }}
-          SSH_HOST: ${{ vars.TS_ARENA_MACMINI_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_MACMINI }}
         run: |
           set -ex
           mkdir -p ~/.ssh
@@ -33,19 +33,19 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: lambdaclass
-          SSH_HOST: ${{ vars.TS_ARENA_MACMINI_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_MACMINI }}
         run: |
           set -ex
           rsync -avz devops/deploy-macos.sh ${SSH_USERNAME}@${SSH_HOST}:/Users/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_MACMINI_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_MACMINI }}
           SSH_USERNAME: lambdaclass
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.MACMINI_HOST }}
+          PHX_HOST: ${{ vars.HOST_MACMINI }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
@@ -54,8 +54,6 @@ jobs:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
-          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
           BRANCH_NAME: "20240826_backend_tests_add_deploy_macos"
         run: |
           set -ex
@@ -73,6 +71,4 @@ jobs:
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
-                DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
-                XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
                 /Users/${SSH_USERNAME}/deploy-script/deploy-macos.sh
