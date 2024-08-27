@@ -639,11 +639,23 @@ defmodule GameBackend.Users do
               user_quest.quest.type == :daily
           end)
 
+        meta_quest_value =
+          Enum.find(user.user_quests, fn user_quest ->
+            user_quest.quest.type == :daily && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+          end)
+          |> case do
+            nil ->
+              # We'll hardcore this value for the time being since we don't have any spec for the specific amount, that's
+              # described in the meta quest but we could have more than one in the future
+              6
+
+            meta_quest ->
+              meta_quest.quest.objective["value"]
+          end
+
         %{
           completed_quests_amount: completed_quests_amount,
-          # We'll hardcore this value for the time being since we don't have any spec for the specific amount, that's
-          # described in the meta quest but we could have more than one in the future
-          target_quests_amount: 6,
+          target_quests_amount: meta_quest_value,
           date: date
         }
       end)
