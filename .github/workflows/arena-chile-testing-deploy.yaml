@@ -1,4 +1,4 @@
-name: "[LATITUDE-TESTING-BRAZIL] Deploy to Brazil Arena Testing"
+name: "[LATITUDE-TESTING-CHILE] Deploy to Chile-1 Arena Testing"
 on:
   workflow_dispatch:
   push:
@@ -7,10 +7,10 @@ on:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Chile Testing
+    name: Build and deploy to Chile-1 Testing
     runs-on: ubuntu-latest
     environment:
-      name: testing-brazil
+      name: testing-chile
 
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
 
       - name: Add host keys
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_CHILE_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_LATITUDE }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -33,19 +33,19 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_ARENA_CHILE_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_LATITUDE }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_CHILE_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_LATITUDE }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.CHILE_HOST }}
+          PHX_HOST: ${{ vars.HOST_LATITUDE }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
@@ -56,7 +56,7 @@ jobs:
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
-          BRANCH_NAME: "20240826_backend_tests"
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
           ssh ${SSH_USERNAME}@${SSH_HOST} \
