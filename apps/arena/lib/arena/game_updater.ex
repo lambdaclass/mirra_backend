@@ -824,7 +824,7 @@ defmodule Arena.GameUpdater do
       end)
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
-    {crates, last_id} = initialize_crates(config.crates, last_id)
+    {crates, last_id} = initialize_crates(config.map.crates, last_id)
     {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
     {pools, last_id} = initialize_pools(config.map.pools, last_id)
 
