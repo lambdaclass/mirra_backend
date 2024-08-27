@@ -25,7 +25,7 @@
     <dt>Effects</dt>
     <dd><%= @consumable_item.effects %></dd>
   </div>
-  <.button type="button" phx-click={show_modal("mechanic_modal")}>Edit Mechanic</.button>
+  <.button type="button" phx-click={show_modal("mechanic_modal")}>Show Mechanic</.button>
   <.modal id="mechanic_modal">
     <%= for mechanic <- @consumable_item.mechanics do %>
       <.list>
