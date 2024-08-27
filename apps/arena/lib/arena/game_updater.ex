@@ -292,8 +292,9 @@ defmodule Arena.GameUpdater do
     ## to enable sending the game diff
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
     ## Uncomment here to only send diff for `players` field
-    state_diff = Map.put(game_state, :players, state_diff[:players])
-    # state_diff2 = put_in(game_state, [:players, 1, :position], get_in(state_diff, [:players, 1, :position]))
+    state_diff =
+      Map.put(game_state, :players, state_diff[:players])
+      |> Map.put(:projectiles, state_diff[:projectiles])
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## TODO: properly handle this case
