@@ -6,6 +6,16 @@
   <.input field={f[:ip]} type="text" label="Ip" />
   <.input field={f[:url]} type="text" label="Url" />
   <.input
+    field={f[:gateway_url]}
+    type="select"
+    label="Gateway Url"
+    prompt="Choose a value"
+    options={[
+      "https://central-europe-testing.championsofmirra.com",
+      "https://central-europe-staging.championsofmirra.com"
+    ]}
+  />
+  <.input
     field={f[:status]}
     type="select"
     label="Status"

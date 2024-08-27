@@ -214,6 +214,24 @@ defmodule GameBackend.Configuration do
   end
 
   @doc """
+  Returns the list of arena_servers that has the field "status" with a value of "active".
+
+  ## Examples
+
+      iex> list_active_arena_servers()
+      [%ArenaServer{status: "active"}, ...]
+
+  """
+  def list_active_arena_servers do
+    q =
+      from(as in ArenaServer,
+        where: as.status == ^"active"
+      )
+
+    Repo.all(q)
+  end
+
+  @doc """
   Gets a single arena_server.
 
   Raises `Ecto.NoResultsError` if the Arena server does not exist.

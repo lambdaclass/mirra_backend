@@ -31,6 +31,24 @@
   <:item title="Time Visible After performing skill inside of bush">
     <%= @game_configuration.time_visible_in_bush_after_skill %>
   </:item>
+  <:item title="Power Up spawn range"><%= @game_configuration.distance_to_power_up %></:item>
+  <:item title="Power Up damage modifier"><%= @game_configuration.power_up_damage_modifier %></:item>
+  <:item title="Power Up health modifier"><%= @game_configuration.power_up_health_modifier %></:item>
+  <:item title="Power Up radius"><%= @game_configuration.power_up_radius %></:item>
+  <:item title="Power Up activation delay"><%= @game_configuration.power_up_activation_delay_ms %></:item>
 </.list>
+<.button type="button" phx-click={show_modal("show_power_ups_per_kill_config")}>Power up per kill config</.button>
+
+<.modal id="show_power_ups_per_kill_config">
+  <.header>
+    Power Up per kill config
+  </.header>
+  <%= for power_ups_per_kill <- @game_configuration.power_ups_per_kill do %>
+    <.list>
+      <:item title="Minimum amount of power ups"><%= power_ups_per_kill.minimum_amount_of_power_ups %></:item>
+      <:item title="Power ups to drop"><%= power_ups_per_kill.amount_of_power_ups_to_drop %></:item>
+    </.list>
+  <% end %>
+</.modal>
 
 <.back navigate={~p"/game_configurations"}>Back to game_configurations</.back>
