@@ -1,9 +1,6 @@
 name: "[VULTR-TESTING-CHILE-2] Deploy to Chile-2 Arena Testing"
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - latitude-chile
 
 jobs:
   build-deploy:

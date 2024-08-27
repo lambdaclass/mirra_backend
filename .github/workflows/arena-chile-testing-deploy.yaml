@@ -1,9 +1,6 @@
 name: "[LATITUDE-TESTING-CHILE] Deploy to Chile-1 Arena Testing"
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - latitude-chile
 
 jobs:
   build-deploy:
