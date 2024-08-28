@@ -45,6 +45,7 @@ export RELEASE=$RELEASE
 export TARGET_SERVER=$TARGET_SERVER
 export LOADTEST_EUROPE_HOST=$LOADTEST_EUROPE_HOST
 export LOADTEST_BRAZIL_HOST=$LOADTEST_BRAZIL_HOST
+export LOADTEST_CHILE_HOST=$LOADTEST_CHILE_HOST
 
 /Users/lambdaclass/arena/mirra_backend/_build/prod/rel/arena/bin/arena stop
 
