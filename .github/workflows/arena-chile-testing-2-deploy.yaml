@@ -1,4 +1,4 @@
-name: "[VULTR-TESTING-CHILE-2] Deploy to Chile-2 Arena Testing"
+name: "[TESTING-CHILE-2] Deploy to Chile Vultr Arena Testing"
 on:
   workflow_dispatch:
 
