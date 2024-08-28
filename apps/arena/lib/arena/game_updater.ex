@@ -1732,8 +1732,11 @@ defmodule Arena.GameUpdater do
             now - candidate_player.aditional_info.last_skill_triggered_inside_bush <
               game_config.game.time_visible_in_bush_after_skill
 
+          player_has_item_effect? =
+            candidate_player.aditional_info.item_effect_duration > now
+
           if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
-               enough_time_since_last_skill? do
+               enough_time_since_last_skill? or player_has_item_effect? do
             [candicandidate_player_id | acc]
           else
             acc
