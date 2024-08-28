@@ -417,6 +417,16 @@ defmodule Arena.Game.Player do
     |> Effect.apply_stat_effects()
   end
 
+  def player_executing_skill(player) do
+    Enum.any?(player.aditional_info.current_actions, fn current_action ->
+      Atom.to_string(current_action.action)
+      |> case do
+        "EXECUTING_SKILL" <> _number -> true
+        _ -> false
+      end
+    end)
+  end
+
   ####################
   # Internal helpers #
   ####################

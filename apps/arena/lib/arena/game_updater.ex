@@ -1735,14 +1735,7 @@ defmodule Arena.GameUpdater do
           player_has_item_effect? =
             candidate_player.aditional_info.item_effect_duration > now
 
-          player_is_executing_skill? =
-            Enum.any?(candidate_player.aditional_info.current_actions, fn current_action ->
-              Atom.to_string(current_action.action)
-              |> case do
-                "EXECUTING_SKILL" <> _number -> true
-                _ -> false
-              end
-            end)
+          player_is_executing_skill? = Player.player_executing_skill(candidate_player)
 
           if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
                enough_time_since_last_skill? or player_has_item_effect? or player_is_executing_skill? do
