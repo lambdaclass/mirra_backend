@@ -76,7 +76,14 @@ defmodule Arena.GameUpdater do
 
     send(self(), :update_game)
     send(self(), :send_ping)
-    Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
+
+    bounties_enabled? = game_config.game.bounty_pick_time_ms > 0
+
+    if bounties_enabled? do
+      Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
+    else
+      Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
+    end
 
     clients_ids = Enum.map(clients, fn {client_id, _, _, _} -> client_id end)
     bot_clients_ids = Enum.map(bot_clients, fn {client_id, _, _, _} -> client_id end)
@@ -91,6 +98,7 @@ defmodule Arena.GameUpdater do
        clients: clients_ids,
        bot_clients: bot_clients_ids,
        game_config: game_config,
+       bounties_enabled?: bounties_enabled?,
        game_state: game_state
      }}
   end
@@ -294,6 +302,7 @@ defmodule Arena.GameUpdater do
 
   def handle_info(:selecting_bounty, state) do
     Process.send_after(self(), :game_start, state.game_config.game.start_game_time_ms)
+    Process.send_after(self(), :pick_default_bounty_for_missing_players, state.game_config.game.start_game_time_ms)
 
     {:noreply, put_in(state, [:game_state, :status], :SELECTING_BOUNTY)}
   end
@@ -305,7 +314,6 @@ defmodule Arena.GameUpdater do
     Process.send_after(self(), :spawn_item, state.game_config.game.item_spawn_interval_ms)
     Process.send_after(self(), :match_timeout, state.game_config.game.match_timeout_ms)
 
-    send(self(), :pick_default_bounty_for_missing_players)
     send(self(), :natural_healing)
     send(self(), {:end_game_check, Map.keys(state.game_state.players)})
 
@@ -492,7 +500,7 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
-    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.power_ups.power_ups_per_kill)
+    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
 
     game_state =
       game_state
@@ -765,6 +773,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:obstacles, %{})
+      |> Map.put(:bushes, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:pools, %{})
@@ -815,7 +824,7 @@ defmodule Arena.GameUpdater do
       end)
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
-    {crates, last_id} = initialize_crates(config.crates, last_id)
+    {crates, last_id} = initialize_crates(config.map.crates, last_id)
     {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
     {pools, last_id} = initialize_pools(config.map.pools, last_id)
 
@@ -1192,12 +1201,12 @@ defmodule Arena.GameUpdater do
 
         collided_entity = decide_collided_entity(projectile, collides_with, external_wall.id, players_acc, crates_acc)
 
-        collsionable_entities =
-          Map.merge(players, crates)
+        collisionable_entities =
+          Map.merge(players_acc, crates_acc)
 
         process_projectile_collision(
           projectile,
-          Map.get(collsionable_entities, collided_entity),
+          Map.get(collisionable_entities, collided_entity),
           Map.get(obstacles, collided_entity),
           collided_entity == external_wall.id,
           accs
@@ -1327,6 +1336,10 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp update_bounties_states(game_state, %{bounties_enabled?: false}) do
+    game_state
+  end
+
   defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
     # We only want to run this check for actual players, and we are saving their id in state.clients
     game_state.client_to_player_map
@@ -1338,6 +1351,7 @@ defmodule Arena.GameUpdater do
            Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
              GameTracker.get_player_result(player_id)
            ]) do
+        # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
         spawn(fn ->
           path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
           gateway_url = Application.get_env(:arena, :gateway_url)
@@ -1559,12 +1573,12 @@ defmodule Arena.GameUpdater do
          victim,
          amount
        ) do
-    distance_to_power_up = game_config.power_ups.power_up.distance_to_power_up
+    distance_to_power_up = game_config.game.distance_to_power_up
 
     Enum.reduce(1..amount//1, game_state, fn _, game_state ->
       random_position =
         random_position_in_map(
-          game_config.power_ups.power_up.radius,
+          game_config.game.power_up_radius,
           game_state.external_wall,
           game_state.obstacles,
           victim.position,
@@ -1579,10 +1593,10 @@ defmodule Arena.GameUpdater do
           random_position,
           victim.direction,
           victim.id,
-          game_config.power_ups.power_up
+          game_config.game
         )
 
-      Process.send_after(self(), {:activate_power_up, last_id}, game_config.power_ups.power_up.activation_delay_ms)
+      Process.send_after(self(), {:activate_power_up, last_id}, game_config.game.power_up_activation_delay_ms)
 
       game_state
       |> put_in([:power_ups, last_id], power_up)
@@ -1591,12 +1605,12 @@ defmodule Arena.GameUpdater do
   end
 
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
-    Enum.sort_by(power_ups_per_kill, fn %{minimum_amount: minimum} -> minimum end, :desc)
-    |> Enum.find(fn %{minimum_amount: minimum} ->
+    Enum.sort_by(power_ups_per_kill, fn %{minimum_amount_of_power_ups: minimum} -> minimum end, :desc)
+    |> Enum.find(fn %{minimum_amount_of_power_ups: minimum} ->
       minimum <= power_ups
     end)
     |> case do
-      %{amount_of_drops: amount} -> amount
+      %{amount_of_power_ups_to_drop: amount} -> amount
       _ -> 0
     end
   end
