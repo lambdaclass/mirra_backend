@@ -1,5 +1,8 @@
 name: "[LOADTEST-CLIENT-CHILE] Deploy to Chile Loadtest Client"
 on:
+  push:
+    branches:
+      - add-loadtest-client-chile
   workflow_dispatch:
     inputs:
       release:
