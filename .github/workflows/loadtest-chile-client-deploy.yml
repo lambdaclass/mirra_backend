@@ -1,8 +1,5 @@
 name: "[LOADTEST-CLIENT-CHILE] Deploy to Chile Loadtest Client"
 on:
-  push:
-    branches:
-      - add-loadtest-client-chile
   workflow_dispatch:
     inputs:
       release:
@@ -63,8 +60,7 @@ jobs:
           SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: arena_load_test
-          # RELEASE: ${{ inputs.release }}
+          RELEASE: ${{ inputs.release }}
           TARGET_SERVER: ${{ inputs.target_server }}
           LOADTEST_EUROPE_HOST: ${{ vars.LOADTEST_EUROPE_HOST }}
           LOADTEST_BRAZIL_HOST: ${{ vars.LOADTEST_BRAZIL_HOST }}
