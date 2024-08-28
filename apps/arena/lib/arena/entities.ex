@@ -65,7 +65,8 @@ defmodule Arena.Entities do
         bounties: [],
         selected_bounty: nil,
         bounty_completed: false,
-        current_basic_animation: 0
+        current_basic_animation: 0,
+        item_effect_duration: now
       },
       collides_with: []
     }
