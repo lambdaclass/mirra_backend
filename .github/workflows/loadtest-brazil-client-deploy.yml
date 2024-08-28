@@ -15,6 +15,7 @@ on:
         options:
           - Brazil
           - Europe
+          - Chile
 
 jobs:
   build-deploy:
@@ -63,6 +64,7 @@ jobs:
           TARGET_SERVER: ${{ inputs.target_server }}
           LOADTEST_EUROPE_HOST: ${{ vars.LOADTEST_EUROPE_HOST }}
           LOADTEST_BRAZIL_HOST: ${{ vars.LOADTEST_BRAZIL_HOST }}
+          LOADTEST_CHILE_HOST: ${{ vars.LOADTEST_CHILE_HOST }}
           PHX_SERVER: ${{ vars.PHX_SERVER }}
           PHX_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
@@ -83,6 +85,7 @@ jobs:
                 TARGET_SERVER=${TARGET_SERVER} \
                 LOADTEST_EUROPE_HOST=${LOADTEST_EUROPE_HOST} \
                 LOADTEST_BRAZIL_HOST=${LOADTEST_BRAZIL_HOST} \
+                LOADTEST_CHILE_HOST=${LOADTEST_CHILE_HOST} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
                 PORT=${PORT} \
