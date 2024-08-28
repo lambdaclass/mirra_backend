@@ -38,6 +38,7 @@ jobs:
       - name: Execute deploy script
         env:
           SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
+          OVERRIDE_JWT: 'true'
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
@@ -59,6 +60,7 @@ jobs:
           ssh ${SSH_USERNAME}@${SSH_HOST} \
                 BRANCH_NAME=${BRANCH_NAME} \
                 MIX_ENV=${MIX_ENV} \
+                OVERRIDE_JWT=${OVERRIDE_JWT} \
                 RELEASE=${RELEASE} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
