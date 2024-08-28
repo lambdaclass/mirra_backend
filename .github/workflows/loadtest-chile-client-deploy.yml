@@ -63,7 +63,8 @@ jobs:
           SSH_HOST: ${{ vars.TS_LOADTEST_CLIENT_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: ${{ inputs.release }}
+          RELEASE: arena_load_test
+          # RELEASE: ${{ inputs.release }}
           TARGET_SERVER: ${{ inputs.target_server }}
           LOADTEST_EUROPE_HOST: ${{ vars.LOADTEST_EUROPE_HOST }}
           LOADTEST_BRAZIL_HOST: ${{ vars.LOADTEST_BRAZIL_HOST }}
