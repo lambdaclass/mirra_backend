@@ -5,7 +5,6 @@ defmodule ConfiguratorWeb.SkillController do
   alias GameBackend.Units.Skills.Mechanic
   alias GameBackend.Units.Skills.Skill
   alias GameBackend.Utils
-  alias GameBackend.Configuration
 
   def index(conn, _params) do
     skills = Skills.list_curse_skills()

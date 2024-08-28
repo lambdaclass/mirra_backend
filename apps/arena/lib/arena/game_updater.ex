@@ -1798,20 +1798,24 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp remove_expired_pools(%{pools: pools} = game_state, now) do
-    pools =
-      Enum.reduce(pools, %{}, fn {pool_id, pool}, acc ->
-        time_passed_since_spawn =
-          now - pool.aditional_info.spawn_at
+  defp remove_expired_pools(%{pools: pools, crates: crates, players: players} = game_state, now) do
+    entities = Map.merge(crates, players)
 
-        if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
-          acc
-        else
-          Map.put(acc, pool_id, pool)
-        end
-      end)
+    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+      time_passed_since_spawn =
+        now - pool.aditional_info.spawn_at
 
-    Map.put(game_state, :pools, pools)
+      if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
+        pools =
+          Map.delete(game_state.pools, pool_id)
+
+        game_state
+        |> remove_pool_effects_from_entities(pool, entities)
+        |> Map.put(:pools, pools)
+      else
+        game_state
+      end
+    end)
   end
 
   def update_entity_in_game_state(game_state, entity) do
@@ -1861,6 +1865,16 @@ defmodule Arena.GameUpdater do
 
   defp handle_obstacles_transitions(game_state) do
     game_state
+  end
+
+  defp remove_pool_effects_from_entities(game_state, pool, entities) do
+    Enum.reduce(entities, game_state, fn {entity_id, _entity}, acc ->
+      if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
+        Effect.remove_owner_effects(acc, entity_id, pool.id)
+      else
+        acc
+      end
+    end)
   end
 
   ##########################
