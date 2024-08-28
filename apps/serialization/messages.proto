@@ -49,17 +49,17 @@ message Ping {
   int64 timestamp_now = 1;
 }
 
-message GameFinished {
-  Entity winner = 1;
-  map<uint64, Entity> players = 2;
-}
-
 message PingUpdate {
   uint64 latency = 1;
 }
 
 message BountySelected {
   BountyInfo bounty = 1;
+}
+
+message GameFinished {
+  Entity winner = 1;
+  map<uint64, Entity> players = 2;
 }
 
 message GameJoined {
@@ -128,18 +128,19 @@ message ConfigSkill {
  * Game State
  */
 message GameState {
-  optional string game_id = 1;
+  string game_id = 1;
   map<uint64, Entity> players = 2;
   map<uint64, Entity> projectiles = 3;
   map<uint64, int64> player_timestamps = 4;
-  optional int64 server_timestamp = 5;
+  int64 server_timestamp = 5;
   Zone zone = 6;
   repeated KillEntry killfeed = 7;
+  // This two fields can be combined and then we have a nullable field
   map<uint64, uint64> damage_taken = 8;
   map<uint64, uint64> damage_done = 9;
   map<uint64, Entity> power_ups = 10;
-  optional GameStatus status = 11;
-  optional int64 start_game_timestamp = 12;
+  GameStatus status = 11;
+  int64 start_game_timestamp = 12;
   map<uint64, Entity> items = 13;
   map<uint64, Entity> obstacles = 14;
   map<uint64, Entity> pools = 15;
@@ -214,7 +215,6 @@ message Player {
   optional bool bounty_completed = 16;
   optional uint64 mana = 17;
   optional uint32 current_basic_animation = 18;
-  uint32 last_field = 19;
 }
 
 message Effect {
@@ -230,32 +230,33 @@ message Item {
 message Projectile {
   optional uint64 damage = 1;
   optional uint64 owner_id = 2;
-  optional ProjectileStatus status = 3;
+  ProjectileStatus status = 3;
   optional string skill_key = 4;
 }
 
 enum ProjectileStatus {
-  ACTIVE = 0;
-  EXPLODED = 1;
-  CONSUMED = 2;
+  UNDEFINED = 0;
+  ACTIVE = 1;
+  EXPLODED = 2;
+  CONSUMED = 3;
 }
 
 message Obstacle {
-  optional string color = 1;
-  optional bool collisionable = 2;
-  optional string status = 3;
-  optional string type = 4;
+  string color = 1;
+  bool collisionable = 2;
+  string status = 3;
+  string type = 4;
 }
 
 message PowerUp {
-  optional uint64 owner_id = 1;
-  optional PowerUpstatus status = 2;
+  uint64 owner_id = 1;
+  PowerUpstatus status = 2;
 }
 
 message Crate {
-  optional uint64 health = 1;
-  optional uint64 amount_of_power_ups = 2;
-  optional CrateStatus status = 3;
+  uint64 health = 1;
+  uint64 amount_of_power_ups = 2;
+  CrateStatus status = 3;
 }
 
 enum CrateStatus {
@@ -270,26 +271,26 @@ enum  PowerUpstatus {
 }
 
 message Pool {
-  optional uint64 owner_id = 1;
-  optional PoolStatus status = 2;
+  uint64 owner_id = 1;
+  PoolStatus status = 2;
   repeated Effect effects = 3;
-  optional string skill_key = 4;
+  string skill_key = 4;
 }
 
 message Bush {
 }
 
 message Trap {
-  optional uint64 owner_id = 1;
-  optional string name = 2;
-  optional TrapStatus status = 3;
+  uint64 owner_id = 1;
+  string name = 2;
+  TrapStatus status = 3;
 }
 
 message PlayerAction {
-    PlayerActionType action = 1;
-    uint64 duration = 2;
-    Position destination = 3;
-    Position direction = 4;
+  PlayerActionType action = 1;
+  uint64 duration = 2;
+  Position destination = 3;
+  Position direction = 4;
 }
 
 enum PlayerActionType {
@@ -301,14 +302,14 @@ enum PlayerActionType {
     EXECUTING_SKILL_3 = 5;
 }
 
-enum TrapStatus{
+enum TrapStatus {
   PENDING = 0;
   PREPARED = 1;
   TRIGGERED = 2;
   USED = 3;
 }
 
-enum PoolStatus{
+enum PoolStatus {
   WAITING = 0;
   READY = 1;
 }
@@ -362,10 +363,10 @@ message Pong {
 }
 
 message Zone {
-  optional float radius = 1;
-  optional bool enabled = 2;
-  optional int64 next_zone_change_timestamp = 3;
-  optional bool shrinking = 4;
+  float radius = 1;
+  bool enabled = 2;
+  int64 next_zone_change_timestamp = 3;
+  bool shrinking = 4;
 }
 
 message KillEntry {

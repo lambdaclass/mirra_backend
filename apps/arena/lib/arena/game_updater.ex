@@ -300,7 +300,10 @@ defmodule Arena.GameUpdater do
     ## TODO: properly handle this case
     last_broadcasted_game_state =
       case get_in(state, [:game_state, :status]) do
-        :RUNNING -> game_state
+        :RUNNING ->
+          # IO.inspect(state_diff[:zone], label: "zone")
+          # IO.inspect(get_in(state_diff, [:players, 1, :position]), label: "player_1_pos")
+          game_state
         _ -> %{}
       end
 

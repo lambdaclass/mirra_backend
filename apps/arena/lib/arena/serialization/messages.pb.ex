@@ -14,9 +14,10 @@ defmodule Arena.Serialization.ProjectileStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :ACTIVE, 0
-  field :EXPLODED, 1
-  field :CONSUMED, 2
+  field :UNDEFINED, 0
+  field :ACTIVE, 1
+  field :EXPLODED, 2
+  field :CONSUMED, 3
 end
 
 defmodule Arena.Serialization.CrateStatus do
@@ -148,6 +149,22 @@ defmodule Arena.Serialization.Ping do
   field :timestamp_now, 1, type: :int64, json_name: "timestampNow"
 end
 
+defmodule Arena.Serialization.PingUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :latency, 1, type: :uint64
+end
+
+defmodule Arena.Serialization.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :bounty, 1, type: Arena.Serialization.BountyInfo
+end
+
 defmodule Arena.Serialization.GameFinished.PlayersEntry do
   @moduledoc false
 
@@ -168,22 +185,6 @@ defmodule Arena.Serialization.GameFinished do
     repeated: true,
     type: Arena.Serialization.GameFinished.PlayersEntry,
     map: true
-end
-
-defmodule Arena.Serialization.PingUpdate do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field :latency, 1, type: :uint64
-end
-
-defmodule Arena.Serialization.BountySelected do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field :bounty, 1, type: Arena.Serialization.BountyInfo
 end
 
 defmodule Arena.Serialization.GameJoined do
@@ -412,7 +413,7 @@ defmodule Arena.Serialization.GameState do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :game_id, 1, proto3_optional: true, type: :string, json_name: "gameId"
+  field :game_id, 1, type: :string, json_name: "gameId"
   field :players, 2, repeated: true, type: Arena.Serialization.GameState.PlayersEntry, map: true
 
   field :projectiles, 3,
@@ -426,7 +427,7 @@ defmodule Arena.Serialization.GameState do
     json_name: "playerTimestamps",
     map: true
 
-  field :server_timestamp, 5, proto3_optional: true, type: :int64, json_name: "serverTimestamp"
+  field :server_timestamp, 5, type: :int64, json_name: "serverTimestamp"
   field :zone, 6, type: Arena.Serialization.Zone
   field :killfeed, 7, repeated: true, type: Arena.Serialization.KillEntry
 
@@ -448,13 +449,8 @@ defmodule Arena.Serialization.GameState do
     json_name: "powerUps",
     map: true
 
-  field :status, 11, proto3_optional: true, type: Arena.Serialization.GameStatus, enum: true
-
-  field :start_game_timestamp, 12,
-    proto3_optional: true,
-    type: :int64,
-    json_name: "startGameTimestamp"
-
+  field :status, 11, type: Arena.Serialization.GameStatus, enum: true
+  field :start_game_timestamp, 12, type: :int64, json_name: "startGameTimestamp"
   field :items, 13, repeated: true, type: Arena.Serialization.GameState.ItemsEntry, map: true
 
   field :obstacles, 14,
@@ -539,8 +535,6 @@ defmodule Arena.Serialization.Player do
     proto3_optional: true,
     type: :uint32,
     json_name: "currentBasicAnimation"
-
-  field :last_field, 19, type: :uint32, json_name: "lastField"
 end
 
 defmodule Arena.Serialization.Effect do
@@ -568,7 +562,7 @@ defmodule Arena.Serialization.Projectile do
 
   field :damage, 1, proto3_optional: true, type: :uint64
   field :owner_id, 2, proto3_optional: true, type: :uint64, json_name: "ownerId"
-  field :status, 3, proto3_optional: true, type: Arena.Serialization.ProjectileStatus, enum: true
+  field :status, 3, type: Arena.Serialization.ProjectileStatus, enum: true
   field :skill_key, 4, proto3_optional: true, type: :string, json_name: "skillKey"
 end
 
@@ -577,10 +571,10 @@ defmodule Arena.Serialization.Obstacle do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :color, 1, proto3_optional: true, type: :string
-  field :collisionable, 2, proto3_optional: true, type: :bool
-  field :status, 3, proto3_optional: true, type: :string
-  field :type, 4, proto3_optional: true, type: :string
+  field :color, 1, type: :string
+  field :collisionable, 2, type: :bool
+  field :status, 3, type: :string
+  field :type, 4, type: :string
 end
 
 defmodule Arena.Serialization.PowerUp do
@@ -588,8 +582,8 @@ defmodule Arena.Serialization.PowerUp do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :owner_id, 1, proto3_optional: true, type: :uint64, json_name: "ownerId"
-  field :status, 2, proto3_optional: true, type: Arena.Serialization.PowerUpstatus, enum: true
+  field :owner_id, 1, type: :uint64, json_name: "ownerId"
+  field :status, 2, type: Arena.Serialization.PowerUpstatus, enum: true
 end
 
 defmodule Arena.Serialization.Crate do
@@ -597,14 +591,9 @@ defmodule Arena.Serialization.Crate do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :health, 1, proto3_optional: true, type: :uint64
-
-  field :amount_of_power_ups, 2,
-    proto3_optional: true,
-    type: :uint64,
-    json_name: "amountOfPowerUps"
-
-  field :status, 3, proto3_optional: true, type: Arena.Serialization.CrateStatus, enum: true
+  field :health, 1, type: :uint64
+  field :amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps"
+  field :status, 3, type: Arena.Serialization.CrateStatus, enum: true
 end
 
 defmodule Arena.Serialization.Pool do
@@ -612,10 +601,10 @@ defmodule Arena.Serialization.Pool do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :owner_id, 1, proto3_optional: true, type: :uint64, json_name: "ownerId"
-  field :status, 2, proto3_optional: true, type: Arena.Serialization.PoolStatus, enum: true
+  field :owner_id, 1, type: :uint64, json_name: "ownerId"
+  field :status, 2, type: Arena.Serialization.PoolStatus, enum: true
   field :effects, 3, repeated: true, type: Arena.Serialization.Effect
-  field :skill_key, 4, proto3_optional: true, type: :string, json_name: "skillKey"
+  field :skill_key, 4, type: :string, json_name: "skillKey"
 end
 
 defmodule Arena.Serialization.Bush do
@@ -629,9 +618,9 @@ defmodule Arena.Serialization.Trap do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :owner_id, 1, proto3_optional: true, type: :uint64, json_name: "ownerId"
-  field :name, 2, proto3_optional: true, type: :string
-  field :status, 3, proto3_optional: true, type: Arena.Serialization.TrapStatus, enum: true
+  field :owner_id, 1, type: :uint64, json_name: "ownerId"
+  field :name, 2, type: :string
+  field :status, 3, type: Arena.Serialization.TrapStatus, enum: true
 end
 
 defmodule Arena.Serialization.PlayerAction do
@@ -747,15 +736,10 @@ defmodule Arena.Serialization.Zone do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :radius, 1, proto3_optional: true, type: :float
-  field :enabled, 2, proto3_optional: true, type: :bool
-
-  field :next_zone_change_timestamp, 3,
-    proto3_optional: true,
-    type: :int64,
-    json_name: "nextZoneChangeTimestamp"
-
-  field :shrinking, 4, proto3_optional: true, type: :bool
+  field :radius, 1, type: :float
+  field :enabled, 2, type: :bool
+  field :next_zone_change_timestamp, 3, type: :int64, json_name: "nextZoneChangeTimestamp"
+  field :shrinking, 4, type: :bool
 end
 
 defmodule Arena.Serialization.KillEntry do
