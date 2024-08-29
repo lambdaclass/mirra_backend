@@ -50,7 +50,7 @@ message Ping {
 }
 
 message GameFinished {
-  Entity winner = 1;
+  map<uint64, Entity> winners = 1;
   map<uint64, Entity> players = 2;
 }
 
