@@ -293,8 +293,8 @@ defmodule Arena.GameUpdater do
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
     ## Uncomment here to only send diff for `players` field
     state_diff =
-      Map.put(game_state, :players, state_diff[:players])
-      |> Map.put(:projectiles, state_diff[:projectiles])
+      Map.put(game_state, :obstacles, state_diff[:obstacles])
+
     broadcast_game_update(state_diff, game_state.game_id)
 
     ## TODO: properly handle this case
@@ -727,6 +727,7 @@ defmodule Arena.GameUpdater do
 
     # %GameEvent{event: {:update, %{players: %{1 => %{position: decoded_position}}}}} = GameEvent.decode(encoded_state)
     # IO.inspect(decoded_position, label: "decoded position")
+    IO.inspect(byte_size(encoded_state), label: "full byte_size")
 
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
@@ -1931,7 +1932,31 @@ defmodule Arena.GameUpdater do
     ## To complicate things further what about ordering? Is [1,2,3] and [3,2,1] the same list?
     ## Since I don't have answers to these questions and the amount of lists we send back that could benefit
     ## from a diff is a couple, I'll think returning the `new` one for now is good enough
-    {:ok, new}
+
+    ## Following somen discussions we are going to have special handling for certain cases and essentially
+    ## check the lists for exact matches (returning :no_diff) or for differences (returning the entire new list)
+    case {old, new} do
+      # ## Lists of the same scalars we can compare directly. One assumption we currently do here is that lists
+      # ## are homogeneous, all elements are of same type (they should, but FYI)
+      # {[elem | _], [elem | _]} when is_atom(elem) or is_binary(elem) or is_boolean(elem) or is_number(elem) ->
+      #   case old === new do
+      #     true -> :no_diff
+      #     false -> {:ok, new}
+      #   end
+
+      # ## Lists containing %{x: _, y: _} are treated as points (vertices) and this case we know we can
+      # ## do ===/2 comparison and it will verify the exactness. At the moment we don't want to do this
+      # ## for all lists of maps cause the exactness of this comparison of maps hasn't been verified by us
+      # {[%{x: _, y: _} | _], [%{x: _, y: _} | _]} ->
+      #   case old === new do
+      #     true -> :no_diff
+      #     false -> {:ok, new}
+      #   end
+
+      ## Anything else we still consider to risky to try and compare, so we return the new list
+      _ ->
+        {:ok, new}
+    end
   end
 
   ## At this point only simple values remain so a normal comparisson is enough

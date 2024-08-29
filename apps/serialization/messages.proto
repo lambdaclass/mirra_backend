@@ -242,10 +242,10 @@ enum ProjectileStatus {
 }
 
 message Obstacle {
-  string color = 1;
-  bool collisionable = 2;
-  string status = 3;
-  string type = 4;
+  optional string color = 1;
+  optional bool collisionable = 2;
+  optional string status = 3;
+  optional string type = 4;
 }
 
 message PowerUp {

@@ -571,10 +571,10 @@ defmodule Arena.Serialization.Obstacle do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :color, 1, type: :string
-  field :collisionable, 2, type: :bool
-  field :status, 3, type: :string
-  field :type, 4, type: :string
+  field :color, 1, proto3_optional: true, type: :string
+  field :collisionable, 2, proto3_optional: true, type: :bool
+  field :status, 3, proto3_optional: true, type: :string
+  field :type, 4, proto3_optional: true, type: :string
 end
 
 defmodule Arena.Serialization.PowerUp do
