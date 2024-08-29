@@ -20,6 +20,10 @@ message Position {
   optional float y = 2;
 }
 
+message ListPositionPB {
+  repeated Position positions = 1;
+}
+
 message LobbyEvent {
   oneof event {
     LeaveLobby leave = 1;
@@ -178,7 +182,7 @@ message Entity {
   optional string name = 4;
   Position position = 5;
   optional float radius = 6;
-  repeated Position vertices = 7;
+  optional ListPositionPB vertices = 7;
   repeated uint64 collides_with = 8;
   optional float speed = 9;
   Direction direction = 10;

@@ -770,6 +770,7 @@ defmodule Arena.GameUpdater do
   defp complete_entity(entity, category) do
     Map.update(entity, :category, nil, &to_string/1)
     |> Map.update(:shape, nil, &to_string/1)
+    |> Map.update(:vertices, nil, fn vertices -> %{positions: vertices} end)
     |> Map.put(:aditional_info, Entities.maybe_add_custom_info(Map.put(entity, :category, category)))
   end
 
@@ -1937,6 +1938,8 @@ defmodule Arena.GameUpdater do
     ## Following somen discussions we are going to have special handling for certain cases and essentially
     ## check the lists for exact matches (returning :no_diff) or for differences (returning the entire new list)
     case {old, new} do
+      ## TODO: to enable this we need a fix similar to the ListPositionPB in protobuf for the other fields
+      #
       # ## Lists of the same scalars we can compare directly. One assumption we currently do here is that lists
       # ## are homogeneous, all elements are of same type (they should, but FYI)
       # {[elem | _], [elem | _]} when is_atom(elem) or is_binary(elem) or is_boolean(elem) or is_number(elem) ->
@@ -1945,14 +1948,15 @@ defmodule Arena.GameUpdater do
       #     false -> {:ok, new}
       #   end
 
-      # ## Lists containing %{x: _, y: _} are treated as points (vertices) and this case we know we can
-      # ## do ===/2 comparison and it will verify the exactness. At the moment we don't want to do this
-      # ## for all lists of maps cause the exactness of this comparison of maps hasn't been verified by us
-      # {[%{x: _, y: _} | _], [%{x: _, y: _} | _]} ->
-      #   case old === new do
-      #     true -> :no_diff
-      #     false -> {:ok, new}
-      #   end
+      ## Lists containing %{x: _, y: _} are treated as points (vertices) and this case we know we can
+      ## do ===/2 comparison and it will verify the exactness. At the moment we don't want to do this
+      ## for all lists of maps cause the exactness of this comparison of maps hasn't been
+      ## verified (is it a deep === comparison for all keys and values?) and we don't know the performance impact
+      {[%{x: _, y: _} | _], [%{x: _, y: _} | _]} ->
+        case old === new do
+          true -> :no_diff
+          false -> {:ok, new}
+        end
 
       ## Anything else we still consider to risky to try and compare, so we return the new list
       _ ->

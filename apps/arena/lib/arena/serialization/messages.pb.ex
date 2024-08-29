@@ -90,6 +90,14 @@ defmodule Arena.Serialization.Position do
   field :y, 2, proto3_optional: true, type: :float
 end
 
+defmodule Arena.Serialization.ListPositionPB do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field :positions, 1, repeated: true, type: Arena.Serialization.Position
+end
+
 defmodule Arena.Serialization.LobbyEvent do
   @moduledoc false
 
@@ -478,7 +486,7 @@ defmodule Arena.Serialization.Entity do
   field :name, 4, proto3_optional: true, type: :string
   field :position, 5, type: Arena.Serialization.Position
   field :radius, 6, proto3_optional: true, type: :float
-  field :vertices, 7, repeated: true, type: Arena.Serialization.Position
+  field :vertices, 7, proto3_optional: true, type: Arena.Serialization.ListPositionPB
   field :collides_with, 8, repeated: true, type: :uint64, json_name: "collidesWith"
   field :speed, 9, proto3_optional: true, type: :float
   field :direction, 10, type: Arena.Serialization.Direction
