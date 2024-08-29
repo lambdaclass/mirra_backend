@@ -294,6 +294,7 @@ defmodule Arena.GameUpdater do
     ## Uncomment here to only send diff for `players` field
     state_diff =
       Map.put(game_state, :obstacles, state_diff[:obstacles])
+      |> Map.put(:bushes, state_diff[:bushes])
 
     broadcast_game_update(state_diff, game_state.game_id)
 
