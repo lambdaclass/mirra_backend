@@ -641,7 +641,7 @@ defmodule GameBackend.Users do
 
         meta_quest_value =
           Enum.find(user.user_quests, fn user_quest ->
-            user_quest.quest.type == :daily && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+            user_quest.quest.type == :meta && Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
           end)
           |> case do
             nil ->
