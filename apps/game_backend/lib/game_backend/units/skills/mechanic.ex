@@ -28,7 +28,17 @@ defmodule GameBackend.Units.Skills.Mechanic do
     field(:vertices, {:array, :map})
 
     field(:type, Ecto.Enum,
-      values: [:circle_hit, :spawn_pool, :leap, :multi_shoot, :dash, :multi_circle_hit, :teleport, :simple_shoot]
+      values: [
+        :circle_hit,
+        :spawn_pool,
+        :leap,
+        :multi_shoot,
+        :dash,
+        :multi_circle_hit,
+        :teleport,
+        :simple_shoot,
+        :destination_shoot
+      ]
     )
 
     belongs_to(:skill, Skill)

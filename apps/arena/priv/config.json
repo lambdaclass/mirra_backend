@@ -179,6 +179,24 @@
       "remove_on_action": true,
       "one_time_application": true,
       "effect_mechanics": {}
+    },
+    {
+      "name": "inferno",
+      "remove_on_action": false,
+      "one_time_application": true,
+      "allow_multiple_effects": false,
+      "effect_mechanics": {
+        "damage": {
+          "damage": 13,
+          "effect_delay_ms": 400,
+          "execute_multiple_times": true
+        },
+        "speed_boost": {
+          "modifier": -0.60,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
+      }
     }
   ],
   "traps": []
