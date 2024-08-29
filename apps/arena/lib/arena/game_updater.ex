@@ -1868,12 +1868,9 @@ defmodule Arena.GameUpdater do
   end
 
   defp remove_pool_effects_from_entities(game_state, pool, entities) do
-    Enum.reduce(entities, game_state, fn {entity_id, _entity}, acc ->
-      if entity_id in pool.collides_with and pool.aditional_info.status == :READY do
-        Effect.remove_owner_effects(acc, entity_id, pool.id)
-      else
-        acc
-      end
+    Map.take(entities, pool.collides_with)
+    |> Enum.reduce(game_state, fn {entity_id, _entity}, acc ->
+      Effect.remove_owner_effects(acc, entity_id, pool.id)
     end)
   end
 
