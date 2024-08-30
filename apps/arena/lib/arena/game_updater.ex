@@ -287,11 +287,8 @@ defmodule Arena.GameUpdater do
       # Obstacles
       |> handle_obstacles_transitions()
 
-    # broadcast_game_update(game_state, game_state.game_id)
-    ## Uncomment the 2 lines and remove the broadcast_game_update/1 above this comment
-    ## to enable sending the game diff
     {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
-    ## Uncomment here to only send diff for `players` field
+
     state_diff =
       Map.put(game_state, :obstacles, state_diff[:obstacles])
       |> Map.put(:bushes, state_diff[:bushes])
@@ -302,10 +299,7 @@ defmodule Arena.GameUpdater do
     ## TODO: properly handle this case
     last_broadcasted_game_state =
       case get_in(state, [:game_state, :status]) do
-        :RUNNING ->
-          # IO.inspect(state_diff[:zone], label: "zone")
-          # IO.inspect(get_in(state_diff, [:players, 1, :position]), label: "player_1_pos")
-          game_state
+        :RUNNING -> game_state
         _ -> %{}
       end
 
@@ -726,8 +720,6 @@ defmodule Arena.GameUpdater do
              external_wall: complete_entity(state[:external_wall], :obstacle)
            })}
       })
-
-    IO.inspect(byte_size(encoded_state), label: "full byte_size")
 
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
@@ -1937,8 +1929,7 @@ defmodule Arena.GameUpdater do
     ## Following somen discussions we are going to have special handling for certain cases and essentially
     ## check the lists for exact matches (returning :no_diff) or for differences (returning the entire new list)
     case {old, new} do
-      ## TODO: to enable this we need a fix similar to the ListPositionPB in protobuf for the other fields
-      #
+      # ## TODO: to enable this we need a fix similar to the ListPositionPB in protobuf for the other fields
       # ## Lists of the same scalars we can compare directly. One assumption we currently do here is that lists
       # ## are homogeneous, all elements are of same type (they should, but FYI)
       # {[elem | _], [elem | _]} when is_atom(elem) or is_binary(elem) or is_boolean(elem) or is_number(elem) ->

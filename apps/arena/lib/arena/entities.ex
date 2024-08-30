@@ -456,11 +456,6 @@ defmodule Arena.Entities do
     nil
   end
 
-
-  # def maybe_add_custom_info(_entity) do
-  #   nil
-  # end
-
   defp get_shape("polygon"), do: :polygon
   defp get_shape("circle"), do: :circle
   defp get_shape("line"), do: :line
