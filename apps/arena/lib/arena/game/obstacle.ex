@@ -85,7 +85,7 @@ defmodule Arena.Game.Obstacle do
     random_ms =
       Enum.random(
         Integer.floor_div(-time_until_transition_ms, 2)..Integer.floor_div(
-          next_status_params.time_until_transition_ms,
+          time_until_transition_ms,
           2
         )
       )
