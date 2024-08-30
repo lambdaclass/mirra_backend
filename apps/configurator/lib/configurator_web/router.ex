@@ -62,6 +62,8 @@ defmodule ConfiguratorWeb.Router do
     put "/map_configurations/:id/update_obstacles", MapConfigurationController, :update_obstacles
     get "/map_configurations/:id/edit_pools", MapConfigurationController, :edit_pools
     put "/map_configurations/:id/update_pools", MapConfigurationController, :update_pools
+    get "/map_configurations/:id/edit_crates", MapConfigurationController, :edit_crates
+    put "/map_configurations/:id/update_crates", MapConfigurationController, :update_crates
     resources "/consumable_items", ConsumableItemController
     resources "/arena_servers", ArenaServerController
 

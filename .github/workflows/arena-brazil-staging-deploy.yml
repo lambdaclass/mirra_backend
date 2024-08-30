@@ -22,7 +22,7 @@ jobs:
 
       - name: Add host keys
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
+          SSH_HOST: ${{ vars.AWS_TS_ARENA_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -31,14 +31,14 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
+          SSH_HOST: ${{ vars.AWS_TS_ARENA_HOST }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
+          SSH_HOST: ${{ vars.AWS_TS_ARENA_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena

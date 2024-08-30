@@ -1,4 +1,4 @@
-defmodule Configurator.Repo.Migrations.CreateArenaServers do
+defmodule GameBackend.Repo.Migrations.CreateArenaServers do
   use Ecto.Migration
 
   def change do
