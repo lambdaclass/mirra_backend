@@ -12,6 +12,7 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
     obstacles: "",
     bushes: "",
     pools: "",
+    crates: "",
     active: true
   }
   @update_attrs %{
@@ -21,9 +22,19 @@ defmodule ConfiguratorWeb.MapConfigurationControllerTest do
     obstacles: "",
     bushes: "",
     pools: "",
+    crates: "",
     active: false
   }
-  @invalid_attrs %{name: nil, radius: nil, initial_positions: nil, obstacles: nil, bushes: nil, pools: nil, active: nil}
+  @invalid_attrs %{
+    name: nil,
+    radius: nil,
+    initial_positions: nil,
+    obstacles: nil,
+    bushes: nil,
+    pools: nil,
+    crates: nil,
+    active: nil
+  }
 
   describe "index" do
     test "lists all map_configurations", %{conn: conn} do
