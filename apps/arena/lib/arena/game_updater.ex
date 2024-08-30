@@ -295,6 +295,7 @@ defmodule Arena.GameUpdater do
     state_diff =
       Map.put(game_state, :obstacles, state_diff[:obstacles])
       |> Map.put(:bushes, state_diff[:bushes])
+      |> Map.put(:crates, state_diff[:crates])
 
     broadcast_game_update(state_diff, game_state.game_id)
 
@@ -726,8 +727,6 @@ defmodule Arena.GameUpdater do
            })}
       })
 
-    # %GameEvent{event: {:update, %{players: %{1 => %{position: decoded_position}}}}} = GameEvent.decode(encoded_state)
-    # IO.inspect(decoded_position, label: "decoded position")
     IO.inspect(byte_size(encoded_state), label: "full byte_size")
 
     PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})

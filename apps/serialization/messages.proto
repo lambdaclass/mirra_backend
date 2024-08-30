@@ -239,7 +239,7 @@ message Projectile {
 }
 
 enum ProjectileStatus {
-  UNDEFINED = 0;
+  PROJECTILE_STATUS_UNDEFINED = 0;
   ACTIVE = 1;
   EXPLODED = 2;
   CONSUMED = 3;
@@ -258,14 +258,15 @@ message PowerUp {
 }
 
 message Crate {
-  uint64 health = 1;
-  uint64 amount_of_power_ups = 2;
+  optional uint64 health = 1;
+  optional uint64 amount_of_power_ups = 2;
   CrateStatus status = 3;
 }
 
 enum CrateStatus {
-  FINE = 0;
-  DESTROYED = 1;
+  CRATE_STATUS_UNDEFINED = 0;
+  FINE = 1;
+  DESTROYED = 2;
 }
 
 enum  PowerUpstatus {

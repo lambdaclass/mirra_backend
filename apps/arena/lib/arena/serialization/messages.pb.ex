@@ -14,7 +14,7 @@ defmodule Arena.Serialization.ProjectileStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :UNDEFINED, 0
+  field :PROJECTILE_STATUS_UNDEFINED, 0
   field :ACTIVE, 1
   field :EXPLODED, 2
   field :CONSUMED, 3
@@ -25,8 +25,9 @@ defmodule Arena.Serialization.CrateStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :FINE, 0
-  field :DESTROYED, 1
+  field :CRATE_STATUS_UNDEFINED, 0
+  field :FINE, 1
+  field :DESTROYED, 2
 end
 
 defmodule Arena.Serialization.PowerUpstatus do
@@ -599,8 +600,13 @@ defmodule Arena.Serialization.Crate do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field :health, 1, type: :uint64
-  field :amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps"
+  field :health, 1, proto3_optional: true, type: :uint64
+
+  field :amount_of_power_ups, 2,
+    proto3_optional: true,
+    type: :uint64,
+    json_name: "amountOfPowerUps"
+
   field :status, 3, type: Arena.Serialization.CrateStatus, enum: true
 end
 
