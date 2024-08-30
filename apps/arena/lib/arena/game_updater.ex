@@ -296,7 +296,8 @@ defmodule Arena.GameUpdater do
 
     broadcast_game_update(state_diff, game_state.game_id)
 
-    ## TODO: properly handle this case
+    ## We need this check cause there is some unexpected behaviour from the client
+    ## when we start sending deltas before the game state changes to RUNNING
     last_broadcasted_game_state =
       case get_in(state, [:game_state, :status]) do
         :RUNNING -> game_state

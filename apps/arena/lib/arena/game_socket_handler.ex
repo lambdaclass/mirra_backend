@@ -5,7 +5,6 @@ defmodule Arena.GameSocketHandler do
   require Logger
   alias Arena.Authentication.GatewaySigner
   alias Arena.Authentication.GatewayTokenManager
-  alias Arena.Utils
   alias Arena.Serialization
   alias Arena.GameUpdater
   alias Arena.Serialization.GameEvent
