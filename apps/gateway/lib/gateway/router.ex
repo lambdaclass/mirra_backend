@@ -27,10 +27,10 @@ defmodule Gateway.Router do
       get "/:store_name/list_items", StoreController, :list_items
     end
 
-    post "/users", UserController, :create_guest_user
     get "/users/leaderboard", UserController, :get_users_leaderboard
 
     resources "/users", UserController, only: [:show]
+    post "/users/login_or_create_user", UserController, :log_in_or_create_user
 
     scope "/users/:user_id/" do
       put "/currency", CurrencyController, :modify_currency

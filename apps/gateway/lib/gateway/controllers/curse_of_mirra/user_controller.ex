@@ -37,15 +37,17 @@ defmodule Gateway.Controllers.CurseOfMirra.UserController do
     end
   end
 
-  def create_guest_user(conn, %{"client_id" => client_id}) do
-    with {:ok, %{user: user}} <- Users.insert_curse_user_and_insert_daily_quests() do
-      gateway_jwt = TokenManager.generate_user_token(user, client_id)
-      send_resp(conn, 200, Jason.encode!(%{user_id: user.id, gateway_jwt: gateway_jwt}))
-    end
-  end
-
   def get_users_leaderboard(conn, _params) do
     users = Users.get_users_sorted_by_total_unit_prestige()
     send_resp(conn, 200, Jason.encode!(%{users: users}))
+  end
+
+  def log_in_or_create_user(conn, %{"client_id" => client_id}) do
+    game_id = Utils.get_game_id(:curse_of_mirra)
+
+    with {:ok, user} <- Users.get_or_create_curse_user_by_client_id_and_game_id(client_id, game_id) do
+      gateway_jwt = TokenManager.generate_user_token(user, client_id)
+      send_resp(conn, 200, Jason.encode!(%{user: user, gateway_jwt: gateway_jwt}))
+    end
   end
 end
