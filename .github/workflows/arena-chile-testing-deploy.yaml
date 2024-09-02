@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testing-chile
+      url: https://arena-chile-testing.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
