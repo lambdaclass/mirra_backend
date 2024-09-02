@@ -1,4 +1,4 @@
-name: "[STAGING-BRAZIL] Deploy to Brazil Arena Staging"
+name: "[TESTING-BRAZIL] Deploy to Brazil Arena Testing AWS"
 on:
   workflow_dispatch:
 
@@ -7,8 +7,8 @@ jobs:
     name: Build and deploy to Brazil staging
     runs-on: ubuntu-latest
     environment:
-      name: staging-brazil
-      url: https://arena-brazil-staging.championsofmirra.com/
+      name: testing-brazil
+      url: https://arena-brazil-testing-aws.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
@@ -43,7 +43,7 @@ jobs:
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.HOST }}
+          PHX_HOST: ${{ vars.AWS_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
@@ -52,8 +52,8 @@ jobs:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
-          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
+          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS_AWS }}
+          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR_AWS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
