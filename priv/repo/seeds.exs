@@ -944,7 +944,7 @@ game_configuration_1 = %{
   time_visible_in_bush_after_skill: 2000,
   # Be careful when editing this field, you're going to activate the randomization of the zone.
   zone_random_position_radius: 0,
-  zone_start_radius: 7000,
+  zone_start_radius: 6500,
   distance_to_power_up: 400,
   power_up_damage_modifier: 0.08,
   power_up_health_modifier: 0.08,
