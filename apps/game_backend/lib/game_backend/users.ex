@@ -57,6 +57,24 @@ defmodule GameBackend.Users do
   end
 
   @doc """
+  Gets a single user by client_id.
+  Returns {:ok, User}.
+  Returns {:error, :not_found} if no user is found.
+
+  ## Examples
+
+      iex> get_user("51646f3a-d9e9-4ce6-8341-c90b8cad3bdf")
+      {:ok, %User{}}
+
+      iex> get_user("9483ae81-f3e8-4050-acea-13940d47d8ed")
+      {:error, :not_found}
+  """
+  def get_user_by_client_id(client_id) do
+    user = Repo.get_by(User, client_id: client_id) |> preload()
+    if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  @doc """
   Gets a single user with the same game_id.
   Returns {:ok, User}.
   Returns {:error, :not_found} if no user is found.
@@ -70,6 +88,22 @@ defmodule GameBackend.Users do
       {:error, :not_found}
   """
   def get_user_by_id_and_game_id(id, game_id) do
+    from(u in User,
+      as: :user,
+      where: u.id == ^id and u.game_id == ^game_id
+    )
+    |> get_user_with_preloads_and_quests_progress()
+  end
+
+  def get_user_by_client_id_and_game_id(client_id, game_id) do
+    from(u in User,
+      as: :user,
+      where: u.client_id == ^client_id and u.game_id == ^game_id
+    )
+    |> get_user_with_preloads_and_quests_progress()
+  end
+
+  defp get_user_with_preloads_and_quests_progress(base_query) do
     quest_refresh_at =
       NaiveDateTime.utc_now()
       |> NaiveDateTime.add(1, :day)
@@ -77,15 +111,12 @@ defmodule GameBackend.Users do
       |> NaiveDateTime.to_iso8601()
 
     q =
-      from(u in User,
-        as: :user,
-        where: u.id == ^id and u.game_id == ^game_id,
-        preload: [
-          [units: [:character, :items]],
-          [currencies: [:currency]]
-        ],
-        select: %{u | quest_refresh_at: ^quest_refresh_at}
-      )
+      base_query
+      |> preload([u], [
+        [units: [:character, :items]],
+        [currencies: [:currency]]
+      ])
+      |> select([u], %{u | quest_refresh_at: ^quest_refresh_at})
       |> quests_preloads()
       |> arena_match_results_preloads()
       |> add_user_stats_to_user_query()
@@ -95,6 +126,20 @@ defmodule GameBackend.Users do
       |> add_quest_progress_and_goal()
 
     if user, do: {:ok, user}, else: {:error, :not_found}
+  end
+
+  def get_or_create_curse_user_by_client_id_and_game_id(client_id, game_id) do
+    q = from(u in User, where: u.client_id == ^client_id and u.game_id == ^game_id)
+
+    if Repo.exists?(q) do
+      maybe_generate_daily_quests_for_curse_user(client_id)
+      get_user_by_client_id_and_game_id(client_id, game_id)
+    else
+      case insert_curse_user_and_insert_daily_quests(client_id) do
+        {:ok, %{user: user}} -> {:ok, user}
+        result -> result
+      end
+    end
   end
 
   defp add_user_stats_to_user_query(base_query) do
@@ -631,12 +676,13 @@ defmodule GameBackend.Users do
 
   defp add_quest_progress_and_goal(_), do: nil
 
-  def insert_curse_user_and_insert_daily_quests() do
+  def insert_curse_user_and_insert_daily_quests(client_id) do
     curse_id = GameBackend.Utils.get_game_id(:curse_of_mirra)
 
     Multi.new()
     |> Multi.run(:insert_user, fn _, _ ->
       CurseUsers.create_user_params()
+      |> Map.put(:client_id, client_id)
       |> register_user()
     end)
     |> Multi.run(:generate_quests, fn
@@ -655,9 +701,9 @@ defmodule GameBackend.Users do
     |> Repo.transaction()
   end
 
-  def maybe_generate_daily_quests_for_curse_user(user_id) do
+  def maybe_generate_daily_quests_for_curse_user(client_id) do
     Multi.new()
-    |> Multi.run(:get_user, fn _, _ -> get_user(user_id) end)
+    |> Multi.run(:get_user, fn _, _ -> get_user_by_client_id(client_id) end)
     |> Multi.run(:maybe_generate_quests, fn
       _, %{get_user: user} ->
         today = Date.utc_today()
