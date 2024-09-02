@@ -452,6 +452,15 @@ defmodule Arena.Entities do
      }}
   end
 
+  def maybe_add_custom_info(entity) when entity.category == :trap do
+    {:trap,
+     %Arena.Serialization.Trap{
+       name: entity.aditional_info.name,
+       owner_id: entity.aditional_info.owner_id,
+       status: entity.aditional_info.status
+     }}
+  end
+
   def maybe_add_custom_info(_entity) do
     nil
   end
