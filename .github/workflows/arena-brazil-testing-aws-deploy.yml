@@ -1,13 +1,14 @@
-name: "[TESTING-CHILE-2] Deploy to Chile Vultr Arena Testing"
+name: "[TESTING-BRAZIL] Deploy to Brazil Arena Testing AWS"
 on:
   workflow_dispatch:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Chile-2 Testing
+    name: Build and deploy to Brazil staging
     runs-on: ubuntu-latest
     environment:
-      name: testing-chile
+      name: testing-brazil
+      url: https://arena-brazil-testing-aws.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +22,7 @@ jobs:
 
       - name: Add host keys
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
+          SSH_HOST: ${{ vars.AWS_TS_ARENA_HOST }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -30,19 +31,19 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
+          SSH_HOST: ${{ vars.AWS_TS_ARENA_HOST }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
+          SSH_HOST: ${{ vars.AWS_TS_ARENA_HOST }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.HOST_VULTR }}
+          PHX_HOST: ${{ vars.AWS_HOST }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
@@ -51,8 +52,8 @@ jobs:
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
-          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
-          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
+          DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS_AWS }}
+          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR_AWS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
