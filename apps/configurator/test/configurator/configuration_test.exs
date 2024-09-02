@@ -82,7 +82,14 @@ defmodule Configurator.ConfigurationTest do
     end
 
     test "create_arena_server/1 with valid data creates a arena_server" do
-      valid_attrs = %{name: "some name", ip: "some ip", url: "some url", status: :active, environment: :production}
+      valid_attrs = %{
+        name: "some name",
+        ip: "some ip",
+        url: "some url",
+        gateway_url: "some GATEWAY url",
+        status: :active,
+        environment: :production
+      }
 
       assert {:ok, %ArenaServer{} = arena_server} = Configuration.create_arena_server(valid_attrs)
       assert arena_server.name == "some name"

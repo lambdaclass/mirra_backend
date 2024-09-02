@@ -77,7 +77,9 @@ defmodule Arena.GameUpdater do
     send(self(), :update_game)
     send(self(), :send_ping)
 
-    if game_config.game.bounty_pick_time_ms > 0 do
+    bounties_enabled? = game_config.game.bounty_pick_time_ms > 0
+
+    if bounties_enabled? do
       Process.send_after(self(), :selecting_bounty, game_config.game.bounty_pick_time_ms)
     else
       Process.send_after(self(), :game_start, game_config.game.start_game_time_ms)
@@ -96,6 +98,7 @@ defmodule Arena.GameUpdater do
        clients: clients_ids,
        bot_clients: bot_clients_ids,
        game_config: game_config,
+       bounties_enabled?: bounties_enabled?,
        game_state: game_state
      }}
   end
@@ -770,6 +773,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:items, %{})
       |> Map.put(:player_timestamps, %{})
       |> Map.put(:obstacles, %{})
+      |> Map.put(:bushes, %{})
       |> Map.put(:server_timestamp, 0)
       |> Map.put(:client_to_player_map, %{})
       |> Map.put(:pools, %{})
@@ -820,7 +824,7 @@ defmodule Arena.GameUpdater do
       end)
 
     {obstacles, last_id} = initialize_obstacles(config.map.obstacles, game.last_id)
-    {crates, last_id} = initialize_crates(config.crates, last_id)
+    {crates, last_id} = initialize_crates(config.map.crates, last_id)
     {bushes, last_id} = initialize_bushes(config.map.bushes, last_id)
     {pools, last_id} = initialize_pools(config.map.pools, last_id)
 
@@ -1207,12 +1211,12 @@ defmodule Arena.GameUpdater do
 
         collided_entity = decide_collided_entity(projectile, collides_with, external_wall.id, players_acc, crates_acc)
 
-        collsionable_entities =
-          Map.merge(players, crates)
+        collisionable_entities =
+          Map.merge(players_acc, crates_acc)
 
         process_projectile_collision(
           projectile,
-          Map.get(collsionable_entities, collided_entity),
+          Map.get(collisionable_entities, collided_entity),
           Map.get(obstacles, collided_entity),
           collided_entity == external_wall.id,
           accs
@@ -1342,6 +1346,10 @@ defmodule Arena.GameUpdater do
     end)
   end
 
+  defp update_bounties_states(game_state, %{bounties_enabled?: false}) do
+    game_state
+  end
+
   defp update_bounties_states(%{status: :RUNNING} = game_state, state) do
     # We only want to run this check for actual players, and we are saving their id in state.clients
     game_state.client_to_player_map
@@ -1353,6 +1361,7 @@ defmodule Arena.GameUpdater do
            Bounties.completed_bounty?(player.aditional_info.selected_bounty, [
              GameTracker.get_player_result(player_id)
            ]) do
+        # TODO: WE SHOULDN'T DO REQUEST IN THE MIDDLE OF THE GAME UPDATES
         spawn(fn ->
           path = "/curse/users/#{client_id}/quest/#{player.aditional_info.selected_bounty.id}/complete_bounty"
           gateway_url = Application.get_env(:arena, :gateway_url)
@@ -1453,7 +1462,12 @@ defmodule Arena.GameUpdater do
          {projectiles_acc, players_acc, crate_acc}
        )
        when not is_nil(obstacle) or collided_with_external_wall? do
-    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+    projectile =
+      if projectile.aditional_info.remove_on_collision do
+        put_in(projectile, [:aditional_info, :status], :EXPLODED)
+      else
+        projectile
+      end
 
     {
       Map.put(projectiles_acc, projectile.id, projectile),
@@ -1479,7 +1493,12 @@ defmodule Arena.GameUpdater do
       {:damage_done, projectile.aditional_info.owner_id, real_damage}
     )
 
-    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+    projectile =
+      if projectile.aditional_info.remove_on_collision do
+        put_in(projectile, [:aditional_info, :status], :EXPLODED)
+      else
+        projectile
+      end
 
     unless Player.alive?(player) do
       send(self(), {:to_killfeed, projectile.aditional_info.owner_id, player.id})
@@ -1504,7 +1523,12 @@ defmodule Arena.GameUpdater do
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
     crate = Crate.take_damage(crate, real_damage)
 
-    projectile = put_in(projectile, [:aditional_info, :status], :EXPLODED)
+    projectile =
+      if projectile.aditional_info.remove_on_collision do
+        put_in(projectile, [:aditional_info, :status], :EXPLODED)
+      else
+        projectile
+      end
 
     {
       Map.put(projectiles_acc, projectile.id, projectile),
@@ -1784,20 +1808,24 @@ defmodule Arena.GameUpdater do
     end)
   end
 
-  defp remove_expired_pools(%{pools: pools} = game_state, now) do
-    pools =
-      Enum.reduce(pools, %{}, fn {pool_id, pool}, acc ->
-        time_passed_since_spawn =
-          now - pool.aditional_info.spawn_at
+  defp remove_expired_pools(%{pools: pools, crates: crates, players: players} = game_state, now) do
+    entities = Map.merge(crates, players)
 
-        if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
-          acc
-        else
-          Map.put(acc, pool_id, pool)
-        end
-      end)
+    Enum.reduce(pools, game_state, fn {pool_id, pool}, game_state ->
+      time_passed_since_spawn =
+        now - pool.aditional_info.spawn_at
 
-    Map.put(game_state, :pools, pools)
+      if pool.aditional_info.duration_ms != nil && time_passed_since_spawn >= pool.aditional_info.duration_ms do
+        pools =
+          Map.delete(game_state.pools, pool_id)
+
+        game_state
+        |> remove_pool_effects_from_entities(pool, entities)
+        |> Map.put(:pools, pools)
+      else
+        game_state
+      end
+    end)
   end
 
   def update_entity_in_game_state(game_state, entity) do
@@ -1847,6 +1875,13 @@ defmodule Arena.GameUpdater do
 
   defp handle_obstacles_transitions(game_state) do
     game_state
+  end
+
+  defp remove_pool_effects_from_entities(game_state, pool, entities) do
+    Map.take(entities, pool.collides_with)
+    |> Enum.reduce(game_state, fn {entity_id, _entity}, acc ->
+      Effect.remove_owner_effects(acc, entity_id, pool.id)
+    end)
   end
 
   ##########################

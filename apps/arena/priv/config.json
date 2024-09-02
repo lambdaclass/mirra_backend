@@ -179,224 +179,24 @@
       "remove_on_action": true,
       "one_time_application": true,
       "effect_mechanics": {}
-    }
-  ],
-  "crates": [
-    {
-      "position": {
-        "x": 5500.0,
-        "y": 200.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
     },
     {
-      "position": {
-        "x": 3900.0,
-        "y": -2300.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 2400.0,
-        "y": -4800.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -1241.0,
-        "y": -3554.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -4200.0,
-        "y": -3500.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -5400.0,
-        "y": -1000.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -4200.0,
-        "y": 3200.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -1400.0,
-        "y": 4600.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 1300.0,
-        "y": 4600.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 3500.0,
-        "y": 2600.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 1700.0,
-        "y": 2200.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 3000.0,
-        "y": 300.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 1200.0,
-        "y": -2600.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -2500.0,
-        "y": -1200.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -1900.0,
-        "y": 1700.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 100.0,
-        "y": 600.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": 700.0,
-        "y": -100.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
-    },
-    {
-      "position": {
-        "x": -500.0,
-        "y": -100.0
-      },
-      "shape": "circle",
-      "radius": 150.0,
-      "health": 250,
-      "vertices": [],
-      "amount_of_power_ups": 1,
-      "power_up_spawn_delay_ms": 300
+      "name": "inferno",
+      "remove_on_action": false,
+      "one_time_application": true,
+      "allow_multiple_effects": false,
+      "effect_mechanics": {
+        "damage": {
+          "damage": 13,
+          "effect_delay_ms": 400,
+          "execute_multiple_times": true
+        },
+        "speed_boost": {
+          "modifier": -0.60,
+          "effect_delay_ms": 0,
+          "execute_multiple_times": false
+        }
+      }
     }
   ],
   "traps": []

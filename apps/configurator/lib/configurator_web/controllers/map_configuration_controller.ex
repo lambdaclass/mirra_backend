@@ -126,12 +126,43 @@ defmodule ConfiguratorWeb.MapConfigurationController do
     end
   end
 
+  def edit_crates(conn, %{"id" => id}) do
+    map_configuration = Configuration.get_map_configuration!(id)
+
+    changeset = Configuration.change_map_configuration(map_configuration)
+
+    render(conn, :edit_crates,
+      map_configuration: map_configuration,
+      changeset: changeset,
+      action: ~p"/map_configurations/#{map_configuration}/update_crates"
+    )
+  end
+
+  def update_crates(conn, %{"id" => id, "map_configuration" => map_configuration_params}) do
+    map_configuration = Configuration.get_map_configuration!(id)
+
+    case Configuration.update_map_configuration(map_configuration, map_configuration_params) do
+      {:ok, map_configuration} ->
+        conn
+        |> put_flash(:info, "Map configuration updated successfully.")
+        |> redirect(to: ~p"/map_configurations/#{map_configuration}")
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, :edit_crates,
+          map_configuration: map_configuration,
+          changeset: changeset,
+          action: ~p"/map_configurations/#{map_configuration}/update_obstacles"
+        )
+    end
+  end
+
   defp parse_json_params(map_configuration_params) do
     map_configuration_params
     |> Map.update("initial_positions", "", &parse_json/1)
     |> Map.update("obstacles", "", &parse_json/1)
     |> Map.update("bushes", "", &parse_json/1)
     |> Map.update("pools", "", &parse_json/1)
+    |> Map.update("crates", "", &parse_json/1)
   end
 
   defp parse_json(""), do: []

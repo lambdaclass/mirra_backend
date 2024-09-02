@@ -80,6 +80,16 @@ defmodule Arena.Game.Obstacle do
 
     now = DateTime.utc_now() |> DateTime.to_unix(:millisecond)
 
+    time_until_transition_ms = next_status_params.time_until_transition_ms
+
+    random_ms =
+      Enum.random(
+        Integer.floor_div(-time_until_transition_ms, 2)..Integer.floor_div(
+          time_until_transition_ms,
+          2
+        )
+      )
+
     obstacle =
       update_in(obstacle, [:aditional_info], fn aditional_info ->
         aditional_info
@@ -87,7 +97,7 @@ defmodule Arena.Game.Obstacle do
         |> Map.put(:status, obstacle.aditional_info.next_status)
         |> Map.put(:collisionable, next_status_params.make_obstacle_collisionable)
         |> Map.put(:collide_with_projectiles, next_status_params.make_obstacle_collisionable)
-        |> Map.put(:time_until_transition_start, now + next_status_params.time_until_transition_ms)
+        |> Map.put(:time_until_transition_start, now + time_until_transition_ms + random_ms)
       end)
 
     Enum.reduce(next_status_params.on_activation_mechanics, game_state, fn mechanic, game_state ->

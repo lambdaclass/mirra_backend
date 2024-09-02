@@ -678,6 +678,88 @@ skills = [
     ],
     "effects_to_apply" => [],
     "version_id" => version.id
+  },
+  %{
+    "name" => "otix_carbonthrow",
+    "type" => "basic",
+    "cooldown_mechanism" => "stamina",
+    "execution_duration_ms" => 450,
+    "activation_delay_ms" => 150,
+    "is_passive" => false,
+    "autoaim" => true,
+    "max_autoaim_range" => 1400,
+    "stamina_cost" => 1,
+    "can_pick_destination" => true,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "simple_shoot",
+        "speed" => 1.8,
+        "duration_ms" => 0,
+        "remove_on_collision" => false,
+        "projectile_offset" => 0,
+        "radius" => 250.0,
+        "damage" => 0,
+        "range" => 700,
+        "on_explode_mechanics" => [
+          %{
+            "type" => "circle_hit",
+            "damage" => 58,
+            "range" => 250.0,
+            "offset" => 0
+          }
+        ]
+      }
+    ],
+    "effects_to_apply" => []
+  },
+  %{
+    "name" => "otix_magma_rush",
+    "type" => "dash",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 5500,
+    "execution_duration_ms" => 250,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "type" => "dash",
+        "speed" => 4.0,
+        "duration_ms" => 250
+      }
+    ]
+  },
+  %{
+    "name" => "otix_inferno",
+    "type" => "ultimate",
+    "cooldown_mechanism" => "time",
+    "cooldown_ms" => 10000,
+    "execution_duration_ms" => 1000,
+    "activation_delay_ms" => 0,
+    "is_passive" => false,
+    "autoaim" => false,
+    "max_autoaim_range" => 0,
+    "can_pick_destination" => false,
+    "block_movement" => true,
+    "mechanics" => [
+      %{
+        "name" => "inferno",
+        "type" => "spawn_pool",
+        "activation_delay" => 250,
+        "duration_ms" => 8000,
+        "radius" => 400.0,
+        "range" => 0.0,
+        "shape" => "circle",
+        "vertices" => [],
+        "effects_to_apply" => [
+          "inferno"
+        ]
+      }
+    ]
   }
 ]
 
@@ -813,8 +895,25 @@ kenzu_params = %{
   version_id: version.id
 }
 
+otix_params = %{
+  name: "otix",
+  active: false,
+  base_speed: 0.68,
+  base_size: 100.0,
+  base_health: 400,
+  base_stamina: 3,
+  stamina_interval: 2000,
+  max_inventory_size: 1,
+  natural_healing_interval: 1000,
+  natural_healing_damage_interval: 3500,
+  basic_skill_id: skills["otix_carbonthrow"],
+  ultimate_skill_id: skills["otix_inferno"],
+  dash_skill_id: skills["otix_magma_rush"],
+  version_id: version.id
+}
+
 # Insert characters
-[muflus_params, h4ck_params, uma_params, valtimer_params, kenzu_params]
+[muflus_params, h4ck_params, uma_params, valtimer_params, kenzu_params, otix_params]
 |> Enum.each(fn char_params ->
   Map.put(char_params, :game_id, curse_of_mirra_id)
   |> Map.put(:faction, "none")
@@ -2134,48 +2233,6 @@ araban_map_config = %{
       ]
     },
     %{
-      name: "center left water lake",
-      radius: 0.0,
-      shape: "polygon",
-      type: :lake,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: 0.0,
-        y: 0.0
-      },
-      vertices: [
-        %{
-          x: -2885.0,
-          y: 452.0
-        },
-        %{
-          x: -2665.0,
-          y: 925.0
-        },
-        %{
-          x: -1596.0,
-          y: 1545.0
-        },
-        %{
-          x: -1344.0,
-          y: 1553.0
-        },
-        %{
-          x: -1324.0,
-          y: 762.0
-        },
-        %{
-          x: -1628.0,
-          y: 408.0
-        },
-        %{
-          x: -2695.0,
-          y: 313.0
-        }
-      ]
-    },
-    %{
       name: "bottom left water lake SW",
       radius: 0.0,
       shape: "polygon",
@@ -2935,6 +2992,170 @@ araban_map_config = %{
       ]
     }
   ],
+  crates: [
+    %{
+      position: %{x: 5500.0, y: 200.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 3900.0, y: -2300.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 2400.0, y: -4800.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -1241.0, y: -3554.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -4200.0, y: -3500.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -5400.0, y: -1000.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -4200.0, y: 3200.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -1400.0, y: 4600.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 1300.0, y: 4600.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 3500.0, y: 2600.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 1700.0, y: 2200.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 3000.0, y: 300.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 1200.0, y: -2600.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -2500.0, y: -1200.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -1900.0, y: 1700.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 100.0, y: 600.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: 700.0, y: -100.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    },
+    %{
+      position: %{x: -500.0, y: -100.0},
+      shape: "circle",
+      radius: 150.0,
+      health: 250,
+      vertices: [],
+      amount_of_power_ups: 1,
+      power_up_spawn_delay_ms: 300
+    }
+  ],
   pools: [],
   version_id: version.id
 }
@@ -3113,6 +3334,7 @@ brazil_arena_server =
     name: "BRAZIL",
     ip: "",
     url: "arena-brazil-staging.championsofmirra.com",
+    gateway_url: "https://central-europe-staging.championsofmirra.com",
     status: "active",
     environment: "production"
   }
@@ -3124,6 +3346,7 @@ europe_arena_server =
     name: "EUROPE",
     ip: "",
     url: "arena-europe-testing.championsofmirra.com",
+    gateway_url: "https://central-europe-staging.championsofmirra.com",
     status: "active",
     environment: "production"
   }

@@ -5,15 +5,19 @@ Application to load test the Arena backend implementation. It simulates *N* clie
 ## How to do run our load tests?
 
 ```bash
-# arena_server_ip is the IP of the server that's running the Arena application
-# SERVER_HOST is localhost:4000 if not explicited
-export SERVER_HOST=${arena_server_ip}:4000
+# We will disable user auth until we find a proper fix for it.
+export OVERRIDE_JWT=true
+# arena_target_host is the region of the server that's running the Arena application.
+# Brazil for example.
+# TARGET_SERVER is localhost:4000 if not explicited
+export TARGET_SERVER=${arena_target_host}
 make run
 ```
 
 Inside the Elixir shell:
 ```elixir
 # number_of_simulated_players must be a positive integer
+number_of_simulated_players = 5000
 ArenaLoadTest.SocketSupervisor.spawn_players(number_of_simulated_players)
 ```
 
