@@ -52,7 +52,7 @@ defmodule Arena.Entities do
         character_name: character.name,
         forced_movement: false,
         power_ups: 0,
-        power_up_damage_modifier: config.power_ups.power_up.power_up_damage_modifier,
+        power_up_damage_modifier: config.game.power_up_damage_modifier,
         inventory: nil,
         damage_immunity: false,
         pull_immunity: false,
@@ -104,14 +104,14 @@ defmodule Arena.Entities do
     }
   end
 
-  def new_power_up(id, position, direction, owner_id, power_up) do
+  def new_power_up(id, position, direction, owner_id, game_config) do
     %{
       id: id,
       category: :power_up,
       shape: :circle,
       name: "Power Up" <> Integer.to_string(id),
       position: position,
-      radius: power_up.radius,
+      radius: game_config.power_up_radius,
       vertices: [],
       speed: 0.0,
       direction: direction,
@@ -121,8 +121,8 @@ defmodule Arena.Entities do
         status: :UNAVAILABLE,
         remove_on_collision: true,
         pull_immunity: true,
-        power_up_damage_modifier: power_up.power_up_damage_modifier,
-        power_up_health_modifier: power_up.power_up_health_modifier
+        power_up_damage_modifier: game_config.power_up_damage_modifier,
+        power_up_health_modifier: game_config.power_up_health_modifier
       }
     }
   end
@@ -455,7 +455,6 @@ defmodule Arena.Entities do
   def maybe_add_custom_info(entity) when entity.category in [:bush, :trap] do
     nil
   end
-
 
   # def maybe_add_custom_info(_entity) do
   #   nil

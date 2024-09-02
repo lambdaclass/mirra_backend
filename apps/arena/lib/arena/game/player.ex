@@ -538,7 +538,7 @@ defmodule Arena.Game.Player do
       y: position.y + direction.y
     }
 
-    Physics.calculate_duration(position, target_position, leap.speed)
+    Physics.calculate_duration(position, target_position, leap.speed, leap.range)
   end
 
   defp calculate_duration(%{mechanics: [_]} = skill, _, _, _) do

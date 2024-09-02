@@ -29,11 +29,18 @@ defmodule Arena.Configuration do
 
     Jason.decode!(payload.body, [{:keys, :atoms}])
     |> Map.update!(:map, fn maps ->
-      map = Enum.random(maps)
+      map =
+        maps
+        |> Enum.filter(fn map -> map.active end)
+        |> Enum.random()
+
       parse_map_config(map)
     end)
     |> Map.update!(:characters, fn characters ->
       parse_characters_config(characters)
+    end)
+    |> Map.update!(:game, fn game ->
+      parse_game_config(game)
     end)
   end
 
@@ -160,27 +167,26 @@ defmodule Arena.Configuration do
       | radius: maybe_to_float(map_config.radius),
         initial_positions: Enum.map(map_config.initial_positions, &parse_position/1),
         obstacles: Enum.map(map_config.obstacles, &parse_obstacle/1),
-        pools: Enum.map(map_config.pools, &parse_pool/1),
-        bushes: Enum.map(map_config.bushes, &parse_bush/1)
+        pools: Enum.map(map_config.pools, &parse_entity_values/1),
+        bushes: Enum.map(map_config.bushes, &parse_entity_values/1),
+        crates: Enum.map(map_config.crates, &parse_entity_values/1)
     }
   end
 
   defp parse_obstacle(obstacle) do
-    %{
-      obstacle
-      | position: parse_position(obstacle.position),
-        vertices: Enum.map(obstacle.vertices, &parse_position/1),
-        radius: maybe_to_float(obstacle.radius),
-        statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
-    }
+    obstacle
+    |> parse_entity_values()
+    |> Map.merge(%{
+      statuses_cycle: parse_status_cycle(obstacle.statuses_cycle)
+    })
   end
 
-  defp parse_bush(bush) do
+  defp parse_entity_values(entity) do
     %{
-      bush
-      | position: parse_position(bush.position),
-        vertices: Enum.map(bush.vertices, &parse_position/1),
-        radius: maybe_to_float(bush.radius)
+      entity
+      | position: parse_position(entity.position),
+        vertices: Enum.map(entity.vertices, &parse_position/1),
+        radius: maybe_to_float(entity.radius)
     }
   end
 
@@ -200,17 +206,17 @@ defmodule Arena.Configuration do
     %{mechanics | polygon_hit: %{polygon_hit | vertices: Enum.map(polygon_hit.vertices, &parse_position/1)}}
   end
 
-  defp parse_pool(pool) do
-    %{
-      pool
-      | position: parse_position(pool.position),
-        vertices: Enum.map(pool.vertices, &parse_position/1),
-        radius: maybe_to_float(pool.radius)
-    }
-  end
-
   defp parse_position(%{x: x, y: y}) do
     %{x: maybe_to_float(x), y: maybe_to_float(y)}
+  end
+
+  defp parse_game_config(game_config) do
+    %{
+      game_config
+      | power_up_damage_modifier: maybe_to_float(game_config.power_up_damage_modifier),
+        power_up_health_modifier: maybe_to_float(game_config.power_up_health_modifier),
+        power_up_radius: maybe_to_float(game_config.power_up_radius)
+    }
   end
 
   defp maybe_to_float(nil), do: nil

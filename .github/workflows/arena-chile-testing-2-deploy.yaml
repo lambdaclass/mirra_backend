@@ -1,14 +1,13 @@
-name: "[CENTRAL-TESTING] Deploy to Europe Central testing"
+name: "[TESTING-CHILE-2] Deploy to Chile Vultr Arena Testing"
 on:
   workflow_dispatch:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Europe testing
+    name: Build and deploy to Chile-2 Testing
     runs-on: ubuntu-latest
     environment:
-      name: central
-      url: https://central-europe-testing.championsofmirra.com/
+      name: testing-chile
 
     steps:
       - uses: actions/checkout@v4
@@ -20,44 +19,40 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
           tags: tag:ci
 
-      - name: Create ssh private key file from env var
+      - name: Add host keys
         env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          SSH_HOST: ${{ vars.TS_CENTRAL_TESTING_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
-          sed -E 's/(-+(BEGIN|END) OPENSSH PRIVATE KEY-+) *| +/\1\n/g' <<< "$SSH_KEY" > ~/.ssh/id_ed25519
-          chmod 400 ~/.ssh/id_ed25519
           retries=5; until ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts || [ $retries -eq 0 ]; do ((retries--)); sleep 5; done
 
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_CENTRAL_TESTING_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_CENTRAL_TESTING_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_VULTR }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
-          RELEASE: central_backend
+          RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.HOST }}
+          PHX_HOST: ${{ vars.HOST_VULTR }}
           PORT: ${{ vars.ARENA_PORT }}
-          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
-          CONFIGURATOR_HOST: ${{ vars.CONFIGURATOR_HOST }}
-          CONFIGURATOR_GOOGLE_CLIENT_ID: ${{ vars.CONFIGURATOR_GOOGLE_CLIENT_ID }}
-          CONFIGURATOR_GOOGLE_CLIENT_SECRET: ${{ secrets.CONFIGURATOR_GOOGLE_CLIENT_SECRET }}
+          GATEWAY_URL: ${{ vars.GATEWAY_URL }}
+          BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}
+          BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-          JWT_PRIVATE_KEY_BASE_64: ${{ secrets.JWT_PRIVATE_KEY_BASE_64 }}
           NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
+          XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
         run: |
           set -ex
@@ -67,15 +62,14 @@ jobs:
                 RELEASE=${RELEASE} \
                 PHX_SERVER=${PHX_SERVER} \
                 PHX_HOST=${PHX_HOST} \
+                BOT_MANAGER_HOST=${BOT_MANAGER_HOST} \
                 PORT=${PORT} \
-                GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID} \
-                CONFIGURATOR_HOST=${CONFIGURATOR_HOST} \
-                CONFIGURATOR_GOOGLE_CLIENT_ID=${CONFIGURATOR_GOOGLE_CLIENT_ID} \
-                CONFIGURATOR_GOOGLE_CLIENT_SECRET=${CONFIGURATOR_GOOGLE_CLIENT_SECRET} \
+                GATEWAY_URL=${GATEWAY_URL} \
+                BOT_MANAGER_PORT=${BOT_MANAGER_PORT} \
                 DATABASE_URL=${DATABASE_URL} \
                 SECRET_KEY_BASE=${SECRET_KEY_BASE} \
-                JWT_PRIVATE_KEY_BASE_64=${JWT_PRIVATE_KEY_BASE_64} \
                 NEWRELIC_APP_NAME=${NEWRELIC_APP_NAME} \
                 NEWRELIC_KEY=${NEWRELIC_KEY} \
                 DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS} \
+                XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR} \
                 /home/${SSH_USERNAME}/deploy-script/deploy.sh

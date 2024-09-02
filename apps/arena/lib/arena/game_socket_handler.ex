@@ -28,6 +28,7 @@ defmodule Arena.GameSocketHandler do
         _ ->
           :cowboy_req.binding(:client_id, req)
       end
+      |> maybe_override_jwt(System.get_env("OVERRIDE_JWT"), req)
 
     game_id = :cowboy_req.binding(:game_id, req)
     game_pid = game_id |> Base58.decode() |> :erlang.binary_to_term([:safe])
@@ -269,4 +270,8 @@ defmodule Arena.GameSocketHandler do
   defp handle_decoded_message(message, _) do
     Logger.info("Unexpected message: #{inspect(message)}")
   end
+
+  # This is to override jwt validation for human clients in loadtests.
+  defp maybe_override_jwt(_client_id, "true", req), do: :cowboy_req.binding(:client_id, req)
+  defp maybe_override_jwt(client_id, _override_jwt?, _req), do: client_id
 end
