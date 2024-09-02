@@ -4,6 +4,8 @@ defmodule GameBackend.Configuration do
   """
   import Ecto.Query
   alias Ecto.Multi
+
+  alias GameBackend.Configuration.GameMode
   alias GameBackend.CurseOfMirra.GameConfiguration
   alias GameBackend.Items.ConsumableItem
   alias GameBackend.Units.Characters.Character
@@ -415,9 +417,10 @@ defmodule GameBackend.Configuration do
       %Version{}
   """
 
-  def get_current_version do
+  def get_current_version_from_game_mode(game_mode) do
     q =
       from(v in Version,
+        join: g in assoc(v, :game_mode),
         where: v.current,
         preload: [
           :consumable_items,
@@ -431,8 +434,17 @@ defmodule GameBackend.Configuration do
           ]
         ]
       )
+      |> filter_by_game_mode(game_mode)
 
     Repo.one(q)
+  end
+
+  defp filter_by_game_mode(base_query, %GameMode{} = game_mode) do
+    where(base_query, [_v, g], g.id == ^game_mode.id)
+  end
+
+  defp filter_by_game_mode(base_query, game_mode) do
+    where(base_query, [_v, g], g.name == ^game_mode)
   end
 
   @doc """
@@ -502,11 +514,12 @@ defmodule GameBackend.Configuration do
       {:ok, %Version{}}
   """
   def mark_as_current_version(version) do
-    former_version = get_current_version()
+    game_mode = GameBackend.Configuration.get_game_mode!(version.game_mode_id)
+    former_version = get_current_version_from_game_mode(game_mode)
 
     Multi.new()
     |> Multi.run(:different_versions, fn _repo, _changes_so_far ->
-      if version.id == former_version.id do
+      if not is_nil(former_version) and version.id == former_version.id do
         {:error, "Version is already current one"}
       else
         {:ok, version}
@@ -532,5 +545,107 @@ defmodule GameBackend.Configuration do
   """
   def get_latest_game_configuration do
     Repo.one(from(g in GameConfiguration, order_by: [desc: g.inserted_at], limit: 1))
+  end
+
+  @doc """
+  Returns the list of game_modes.
+
+  ## Examples
+
+      iex> list_game_modes()
+      [%GameMode{}, ...]
+
+  """
+  def list_game_modes do
+    Repo.all(GameMode)
+  end
+
+  @doc """
+  Gets a single game_mode.
+
+  Raises `Ecto.NoResultsError` if the Game mode does not exist.
+
+  ## Examples
+
+      iex> get_game_mode!(123)
+      %GameMode{}
+
+      iex> get_game_mode!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_game_mode!(id), do: Repo.get!(GameMode, id)
+
+  @doc """
+  Creates a game_mode.
+
+  ## Examples
+
+      iex> create_game_mode(%{field: value})
+      {:ok, %GameMode{}}
+
+      iex> create_game_mode(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_game_mode(attrs \\ %{}) do
+    %GameMode{}
+    |> GameMode.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a game_mode.
+
+  ## Examples
+
+      iex> update_game_mode(game_mode, %{field: new_value})
+      {:ok, %GameMode{}}
+
+      iex> update_game_mode(game_mode, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_game_mode(%GameMode{} = game_mode, attrs) do
+    game_mode
+    |> GameMode.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a game_mode.
+
+  ## Examples
+
+      iex> delete_game_mode(game_mode)
+      {:ok, %GameMode{}}
+
+      iex> delete_game_mode(game_mode)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_game_mode(%GameMode{} = game_mode) do
+    Repo.delete(game_mode)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking game_mode changes.
+
+  ## Examples
+
+      iex> change_game_mode(game_mode)
+      %Ecto.Changeset{data: %GameMode{}}
+
+  """
+  def change_game_mode(%GameMode{} = game_mode, attrs \\ %{}) do
+    GameMode.changeset(game_mode, attrs)
+  end
+
+  @doc """
+  Get game mode by name
+  """
+  def get_game_mode_by_name(game_mode) do
+    q = from(gm in GameMode, where: gm.name == ^game_mode)
+    Repo.one(q)
   end
 end

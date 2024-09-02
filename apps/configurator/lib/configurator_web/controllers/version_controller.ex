@@ -11,7 +11,9 @@ defmodule ConfiguratorWeb.VersionController do
 
   def new(conn, _params) do
     changeset = Configuration.change_version(%Version{})
-    render(conn, :new, changeset: changeset)
+    game_modes = Configuration.list_game_modes()
+
+    render(conn, :new, changeset: changeset, game_modes: game_modes)
   end
 
   def create(conn, %{"version" => version_params}) do
@@ -22,19 +24,23 @@ defmodule ConfiguratorWeb.VersionController do
         |> redirect(to: ~p"/versions/#{version}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        game_modes = Configuration.list_game_modes()
+        render(conn, :new, changeset: changeset, game_modes: game_modes)
     end
   end
 
   def show(conn, %{"id" => id}) do
     version = Configuration.get_version!(id)
-    render(conn, :show, version: version)
+    game_mode = Configuration.get_game_mode!(version.game_mode_id)
+    render(conn, :show, version: version, game_mode: game_mode)
   end
 
   def edit(conn, %{"id" => id}) do
     version = Configuration.get_version!(id)
     changeset = Configuration.change_version(version)
-    render(conn, :edit, version: version, changeset: changeset)
+    game_modes = Configuration.list_game_modes()
+
+    render(conn, :edit, version: version, changeset: changeset, game_modes: game_modes)
   end
 
   def update(conn, %{"id" => id, "version" => version_params}) do
@@ -47,7 +53,8 @@ defmodule ConfiguratorWeb.VersionController do
         |> redirect(to: ~p"/versions/#{version}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, version: version, changeset: changeset)
+        game_modes = Configuration.list_game_modes()
+        render(conn, :edit, version: version, changeset: changeset, game_modes: game_modes)
     end
   end
 

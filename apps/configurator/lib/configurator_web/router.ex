@@ -66,6 +66,7 @@ defmodule ConfiguratorWeb.Router do
     put "/map_configurations/:id/update_crates", MapConfigurationController, :update_crates
     resources "/consumable_items", ConsumableItemController
     resources "/arena_servers", ArenaServerController
+    resources "/game_modes", GameModeController
 
     scope "/versions" do
       resources "/", VersionController

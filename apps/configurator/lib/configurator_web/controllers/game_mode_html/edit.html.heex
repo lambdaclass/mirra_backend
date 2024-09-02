@@ -1,0 +1,8 @@
+<.header>
+  Edit Game mode <%= @game_mode.id %>
+  <:subtitle>Use this form to manage game_mode records in your database.</:subtitle>
+</.header>
+
+<.game_mode_form changeset={@changeset} action={~p"/game_modes/#{@game_mode}"} />
+
+<.back navigate={~p"/game_modes"}>Back to game_modes</.back>

@@ -68,7 +68,7 @@ defmodule Arena.Matchmaking.QuickGameMode do
 
   defp get_bot_clients(missing_clients) do
     characters =
-      Arena.Configuration.get_game_config()
+      Arena.Configuration.get_game_config("battle_royale")
       |> Map.get(:characters)
       |> Enum.filter(fn character -> character.active end)
 
