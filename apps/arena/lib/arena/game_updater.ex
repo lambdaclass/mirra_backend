@@ -1912,33 +1912,10 @@ defmodule Arena.GameUpdater do
   end
 
   def diff(old, new) when is_list(old) and is_list(new) do
-    ## TODO: Figure out if there is a way to calculate the diff of lists
-    ## so far this involves figuring out both was is there and what is not there which is simple,
-    ## but how do you differentiate between a thing that hasn't changed and a thing that was removed?
-    ## For example this lists [1, 5, 8] and [1, 2, 6, 7, 8], what is the diff?
-    ##  - 2, 6, 7 were added
-    ##  - 5 was removed
-    ##  - 1, 8 were not changed
-    ## So, how do we give back this information? Because we have this representations
-    ##  - [2, 6, 7, 5] this represents all changes, but how do you know 5 was removed?
-    ##  - [2, 6, 7] this is only new things, but then how do we know 5 was removed?
-    ##
-    ## To complicate things further what about ordering? Is [1,2,3] and [3,2,1] the same list?
-    ## Since I don't have answers to these questions and the amount of lists we send back that could benefit
-    ## from a diff is a couple, I'll think returning the `new` one for now is good enough
-
-    ## Following somen discussions we are going to have special handling for certain cases and essentially
-    ## check the lists for exact matches (returning :no_diff) or for differences (returning the entire new list)
+    ## TODO: Since we don't know a way to calculate the diff of lists, we'll just handle
+    ## specific cases or return always the new list.
+    ## More info in -> https://github.com/lambdaclass/mirra_backend/issues/897
     case {old, new} do
-      # ## TODO: to enable this we need a fix similar to the ListPositionPB in protobuf for the other fields
-      # ## Lists of the same scalars we can compare directly. One assumption we currently do here is that lists
-      # ## are homogeneous, all elements are of same type (they should, but FYI)
-      # {[elem | _], [elem | _]} when is_atom(elem) or is_binary(elem) or is_boolean(elem) or is_number(elem) ->
-      #   case old === new do
-      #     true -> :no_diff
-      #     false -> {:ok, new}
-      #   end
-
       ## Lists containing %{x: _, y: _} are treated as points (vertices) and this case we know we can
       ## do ===/2 comparison and it will verify the exactness. At the moment we don't want to do this
       ## for all lists of maps cause the exactness of this comparison of maps hasn't been
@@ -1949,7 +1926,6 @@ defmodule Arena.GameUpdater do
           false -> {:ok, new}
         end
 
-      ## Anything else we still consider to risky to try and compare, so we return the new list
       _ ->
         {:ok, new}
     end
