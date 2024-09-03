@@ -295,10 +295,11 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def get_user_quest_progress(%UserQuest{quest: %Quest{type: :meta} = meta_quest}, user) do
+  def get_user_quest_progress(%UserQuest{quest: %Quest{type: :milestone} = milestone_quest}, user) do
     user.user_quests
     |> Enum.count(fn %UserQuest{} = user_quest ->
-      NaiveDateTime.diff(user_quest.inserted_at, meta_quest.inserted_at, :day) == 0 and user_quest.status == "completed" and
+      NaiveDateTime.diff(user_quest.inserted_at, milestone_quest.inserted_at, :day) == 0 and
+        user_quest.status == "completed" and
         user_quest.quest.type == :daily
     end)
   end

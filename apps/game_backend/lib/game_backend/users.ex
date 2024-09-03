@@ -182,7 +182,7 @@ defmodule GameBackend.Users do
         join: quest in assoc(user_quest, :quest),
         as: :quest,
         where:
-          (quest.type in ^["daily", "meta"] and user_quest.inserted_at > ^start_of_date and
+          (quest.type in ^["daily", "milestone"] and user_quest.inserted_at > ^start_of_date and
              user_quest.inserted_at < ^end_of_date) or
             (quest.type == ^"weekly" and user_quest.inserted_at > ^start_of_week_naive and
                user_quest.inserted_at < ^end_of_week_naive),
@@ -639,23 +639,23 @@ defmodule GameBackend.Users do
               user_quest.quest.type == :daily
           end)
 
-        meta_quest_value =
+        milestone_quest_value =
           Enum.find(user.user_quests, fn user_quest ->
-            user_quest.quest.type == :meta and Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+            user_quest.quest.type == :milestone and Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
           end)
           |> case do
             nil ->
               # We'll hardcore this value for the time being since we don't have any spec for the specific amount, that's
-              # described in the meta quest but we could have more than one in the future
+              # described in the milestone quest but we could have more than one in the future
               6
 
-            meta_quest ->
-              meta_quest.quest.objective["value"]
+            milestone_quest ->
+              milestone_quest.quest.objective["value"]
           end
 
         %{
           completed_quests_amount: completed_quests_amount,
-          target_quests_amount: meta_quest_value,
+          target_quests_amount: milestone_quest_value,
           date: date
         }
       end)
@@ -732,20 +732,20 @@ defmodule GameBackend.Users do
       Quests.get_user_missing_quests_by_type(user.id, "daily")
       |> Enum.shuffle()
 
-    meta_quest_params =
-      Quests.get_user_missing_quests_by_type(user.id, "meta")
+    milestone_quest_params =
+      Quests.get_user_missing_quests_by_type(user.id, "milestone")
       |> Enum.random()
 
     attrs = %{
       user_id: user.id,
-      quest_id: meta_quest_params.id,
+      quest_id: milestone_quest_params.id,
       status: "available",
       activated_at: NaiveDateTime.utc_now()
     }
 
     changeset = UserQuest.changeset(%UserQuest{}, attrs)
 
-    meta_quest_result = Repo.insert(changeset)
+    milestone_quest_result = Repo.insert(changeset)
 
     {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
 
@@ -780,7 +780,7 @@ defmodule GameBackend.Users do
           Repo.insert(changeset)
       end)
 
-    (active_quests ++ inactive_quests ++ [meta_quest_result])
+    (active_quests ++ inactive_quests ++ [milestone_quest_result])
     |> Enum.find(fn {result, _quest} -> result == :error end)
     |> case do
       nil -> {:ok, :quests_inserted}

@@ -253,7 +253,7 @@
     {
         "config_id": 13,
         "description": "Complete 6 Daily Quests",
-        "type": "meta",
+        "type": "milestone",
         "objective": {
             "match_tracking_field": "quest",
             "value": 6,
