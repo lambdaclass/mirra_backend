@@ -295,7 +295,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
     |> Repo.transaction()
   end
 
-  def get_user_quest_progress(%UserQuest{quest: %Quest{type: :meta} = meta_quest}, _arena_match_results, user) do
+  def get_user_quest_progress(%UserQuest{quest: %Quest{type: :meta} = meta_quest}, user) do
     user.user_quests
     |> Enum.count(fn %UserQuest{} = user_quest ->
       NaiveDateTime.diff(user_quest.inserted_at, meta_quest.inserted_at, :day) == 0 && user_quest.status == "completed" &&
@@ -303,16 +303,16 @@ defmodule GameBackend.CurseOfMirra.Quests do
     end)
   end
 
-  def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results, _user) do
+  def get_user_quest_progress(%UserQuest{quest: %Quest{} = quest} = user_quest, user) do
     arena_match_results =
       if quest.type == :daily do
-        Enum.filter(arena_match_results, fn arena_match_result ->
+        Enum.filter(user.arena_match_results, fn arena_match_result ->
           user_quest.activated_at &&
             NaiveDateTime.compare(arena_match_result.inserted_at, user_quest.activated_at) == :gt &&
             NaiveDateTime.diff(arena_match_result.inserted_at, user_quest.inserted_at, :day) == 0
         end)
       else
-        arena_match_results
+        user.arena_match_results
       end
 
     arena_match_results
@@ -341,7 +341,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     Multi.new()
     |> Multi.run(:check_quest_completed, fn _, _ ->
-      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user.arena_match_results, user) do
+      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user) do
         {:ok, :quest_completed}
       else
         {:error, :unfinished_quest}
@@ -391,8 +391,8 @@ defmodule GameBackend.CurseOfMirra.Quests do
   defp accumulate_objective_progress_by_scope("day", value), do: value
   defp accumulate_objective_progress_by_scope("match", _value), do: 1
 
-  def completed_quest?(%UserQuest{quest: %Quest{} = quest} = user_quest, arena_match_results, user) do
-    progress = get_user_quest_progress(user_quest, arena_match_results, user)
+  def completed_quest?(%UserQuest{quest: %Quest{} = quest} = user_quest, user) do
+    progress = get_user_quest_progress(user_quest, user)
     comparator = parse_comparator(quest.objective["comparison"])
 
     comparator.(progress, quest.objective["value"])

@@ -625,7 +625,7 @@ defmodule GameBackend.Users do
     updated_quests =
       Enum.map(user.user_quests, fn user_quest ->
         quest_progress =
-          Quests.get_user_quest_progress(user_quest, user.arena_match_results, user)
+          Quests.get_user_quest_progress(user_quest, user)
 
         Map.put(user_quest, :progress, quest_progress)
         |> Map.put(:goal, user_quest.quest.objective["value"])
