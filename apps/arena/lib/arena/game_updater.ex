@@ -1733,9 +1733,9 @@ defmodule Arena.GameUpdater do
               game_config.game.time_visible_in_bush_after_skill
 
           player_has_item_effect? =
-            candidate_player.aditional_info.item_effect_duration > now
+            candidate_player.aditional_info.item_effects_expires_at > now
 
-          player_is_executing_skill? = Player.player_executing_skill(candidate_player)
+          player_is_executing_skill? = Player.player_executing_skill?(candidate_player)
 
           if Enum.empty?(candidate_bush_collisions) or (players_in_same_bush? and players_close_enough?) or
                enough_time_since_last_skill? or player_has_item_effect? or player_is_executing_skill? do

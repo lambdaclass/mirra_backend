@@ -365,7 +365,7 @@ defmodule Arena.Game.Player do
             effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
 
             Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
-            |> maybe_update_player_item_effect_duration(player, effect)
+            |> maybe_update_player_item_effects_expires_at(player, effect)
           end)
           |> put_in([:players, player.id, :aditional_info, :inventory], nil)
 
@@ -417,7 +417,7 @@ defmodule Arena.Game.Player do
     |> Effect.apply_stat_effects()
   end
 
-  def player_executing_skill(player) do
+  def player_executing_skill?(player) do
     Enum.any?(player.aditional_info.current_actions, fn current_action ->
       Atom.to_string(current_action.action)
       |> case do
@@ -588,22 +588,18 @@ defmodule Arena.Game.Player do
 
   defp get_skill_animation(_skill_name), do: 1
 
-  defp maybe_update_player_item_effect_duration(game_state, player, %{duration_ms: duration_ms} = _effect)
+  defp maybe_update_player_item_effects_expires_at(game_state, player, %{duration_ms: duration_ms} = _effect)
        when not is_nil(duration_ms) do
     duration =
       System.monotonic_time(:millisecond) + duration_ms
 
     game_state
-    |> update_in([:players, player.id, :aditional_info, :item_effect_duration], fn item_duration ->
-      if item_duration < duration do
-        duration
-      else
-        item_duration
-      end
+    |> update_in([:players, player.id, :aditional_info, :item_effects_expires_at], fn item_duration ->
+      max(item_duration, duration)
     end)
   end
 
-  defp maybe_update_player_item_effect_duration(game_state, _player, _effect) do
+  defp maybe_update_player_item_effects_expires_at(game_state, _player, _effect) do
     game_state
   end
 end
