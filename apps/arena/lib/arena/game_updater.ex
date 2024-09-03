@@ -99,7 +99,8 @@ defmodule Arena.GameUpdater do
        bot_clients: bot_clients_ids,
        game_config: game_config,
        bounties_enabled?: bounties_enabled?,
-       game_state: game_state
+       game_state: game_state,
+       last_broadcasted_game_state: %{}
      }}
   end
 
@@ -286,12 +287,28 @@ defmodule Arena.GameUpdater do
       # Obstacles
       |> handle_obstacles_transitions()
 
-    broadcast_game_update(game_state)
+    {:ok, state_diff} = diff(state.last_broadcasted_game_state, game_state)
+
+    state_diff =
+      Map.put(game_state, :obstacles, state_diff[:obstacles])
+      |> Map.put(:bushes, state_diff[:bushes])
+      |> Map.put(:crates, state_diff[:crates])
+
+    broadcast_game_update(state_diff, game_state.game_id)
+
+    ## We need this check cause there is some unexpected behaviour from the client
+    ## when we start sending deltas before the game state changes to RUNNING
+    last_broadcasted_game_state =
+      case get_in(state, [:game_state, :status]) do
+        :RUNNING -> game_state
+        _ -> %{}
+      end
+
     game_state = %{game_state | killfeed: [], damage_taken: %{}, damage_done: %{}}
 
     tick_duration = System.monotonic_time() - tick_duration_start_at
     :telemetry.execute([:arena, :game, :tick], %{duration: tick_duration, duration_measure: tick_duration})
-    {:noreply, %{state | game_state: game_state}}
+    {:noreply, %{state | game_state: game_state, last_broadcasted_game_state: last_broadcasted_game_state}}
   end
 
   def handle_info(:send_ping, state) do
@@ -684,35 +701,28 @@ defmodule Arena.GameUpdater do
     PubSub.broadcast(Arena.PubSub, game_id, :enable_incomming_messages)
   end
 
-  defp broadcast_game_update(state) do
+  defp broadcast_game_update(state, game_id) do
+    game_state = struct(GameState, state)
+
     encoded_state =
       GameEvent.encode(%GameEvent{
         event:
           {:update,
-           %GameState{
-             game_id: state.game_id,
-             players: complete_entities(state.players),
-             projectiles: complete_entities(state.projectiles),
-             power_ups: complete_entities(state.power_ups),
-             pools: complete_entities(state.pools),
-             bushes: complete_entities(state.bushes),
-             items: complete_entities(state.items),
-             server_timestamp: state.server_timestamp,
-             player_timestamps: state.player_timestamps,
-             zone: state.zone,
-             killfeed: state.killfeed,
-             damage_taken: state.damage_taken,
-             damage_done: state.damage_done,
-             status: state.status,
-             start_game_timestamp: state.start_game_timestamp,
-             obstacles: complete_entities(state.obstacles),
-             crates: complete_entities(state.crates),
-             traps: complete_entities(state.traps),
-             external_wall: complete_entity(state.external_wall)
-           }}
+           Map.merge(game_state, %{
+             players: complete_entities(state[:players], :player),
+             projectiles: complete_entities(state[:projectiles], :projectile),
+             power_ups: complete_entities(state[:power_ups], :power_up),
+             pools: complete_entities(state[:pools], :pool),
+             bushes: complete_entities(state[:bushes], :bush),
+             items: complete_entities(state[:items], :item),
+             obstacles: complete_entities(state[:obstacles], :obstacle),
+             crates: complete_entities(state[:crates], :crate),
+             traps: complete_entities(state[:traps], :trap),
+             external_wall: complete_entity(state[:external_wall], :obstacle)
+           })}
       })
 
-    PubSub.broadcast(Arena.PubSub, state.game_id, {:game_update, encoded_state})
+    PubSub.broadcast(Arena.PubSub, game_id, {:game_update, encoded_state})
   end
 
   defp broadcast_ping(state) do
@@ -728,27 +738,32 @@ defmodule Arena.GameUpdater do
 
   defp broadcast_game_ended(winner, state) do
     game_state = %GameFinished{
-      winner: complete_entity(winner),
-      players: complete_entities(state.players)
+      winner: complete_entity(winner, :player),
+      players: complete_entities(state.players, :player)
     }
 
     encoded_state = GameEvent.encode(%GameEvent{event: {:finished, game_state}})
     PubSub.broadcast(Arena.PubSub, state.game_id, {:game_finished, encoded_state})
   end
 
-  defp complete_entities(entities) do
+  defp complete_entities(nil, _), do: []
+
+  defp complete_entities(entities, category) do
     entities
     |> Enum.reduce(%{}, fn {entity_id, entity}, entities ->
-      entity = complete_entity(entity)
+      entity = complete_entity(entity, category)
 
       Map.put(entities, entity_id, entity)
     end)
   end
 
-  defp complete_entity(entity) do
-    Map.put(entity, :category, to_string(entity.category))
-    |> Map.put(:shape, to_string(entity.shape))
-    |> Map.put(:aditional_info, entity |> Entities.maybe_add_custom_info())
+  defp complete_entity(nil, _), do: nil
+
+  defp complete_entity(entity, category) do
+    Map.update(entity, :category, nil, &to_string/1)
+    |> Map.update(:shape, nil, &to_string/1)
+    |> Map.update(:vertices, nil, fn vertices -> %{positions: vertices} end)
+    |> Map.put(:aditional_info, Entities.maybe_add_custom_info(Map.put(entity, :category, category)))
   end
 
   ##########################
@@ -1872,6 +1887,56 @@ defmodule Arena.GameUpdater do
     |> Enum.reduce(game_state, fn {entity_id, _entity}, acc ->
       Effect.remove_owner_effects(acc, entity_id, pool.id)
     end)
+  end
+
+  @spec diff(t, t) :: :no_diff | {:ok, t} when t: any()
+  def diff(old, new) when is_map(old) and is_map(new) do
+    value =
+      Enum.reduce(new, %{}, fn {key, new_value}, acc ->
+        case Map.has_key?(old, key) do
+          true ->
+            case diff(Map.get(old, key), new_value) do
+              :no_diff -> acc
+              {:ok, value_diff} -> Map.put(acc, key, value_diff)
+            end
+
+          false ->
+            Map.put(acc, key, new_value)
+        end
+      end)
+
+    case map_size(value) do
+      0 -> :no_diff
+      _ -> {:ok, value}
+    end
+  end
+
+  def diff(old, new) when is_list(old) and is_list(new) do
+    ## TODO: Since we don't know a way to calculate the diff of lists, we'll just handle
+    ## specific cases or return always the new list.
+    ## More info in -> https://github.com/lambdaclass/mirra_backend/issues/897
+    case {old, new} do
+      ## Lists containing %{x: _, y: _} are treated as points (vertices) and this case we know we can
+      ## do ===/2 comparison and it will verify the exactness. At the moment we don't want to do this
+      ## for all lists of maps cause the exactness of this comparison of maps hasn't been
+      ## verified (is it a deep === comparison for all keys and values?) and we don't know the performance impact
+      {[%{x: _, y: _} | _], [%{x: _, y: _} | _]} ->
+        case old === new do
+          true -> :no_diff
+          false -> {:ok, new}
+        end
+
+      _ ->
+        {:ok, new}
+    end
+  end
+
+  ## At this point only simple values remain so a normal comparisson is enough
+  def diff(old, new) do
+    case old == new do
+      true -> :no_diff
+      false -> {:ok, new}
+    end
   end
 
   ##########################
