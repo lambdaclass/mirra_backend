@@ -298,7 +298,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
   def get_user_quest_progress(%UserQuest{quest: %Quest{type: :meta} = meta_quest}, user) do
     user.user_quests
     |> Enum.count(fn %UserQuest{} = user_quest ->
-      NaiveDateTime.diff(user_quest.inserted_at, meta_quest.inserted_at, :day) == 0 && user_quest.status == "completed" &&
+      NaiveDateTime.diff(user_quest.inserted_at, meta_quest.inserted_at, :day) == 0 and user_quest.status == "completed" and
         user_quest.quest.type == :daily
     end)
   end
@@ -341,7 +341,7 @@ defmodule GameBackend.CurseOfMirra.Quests do
 
     Multi.new()
     |> Multi.run(:check_quest_completed, fn _, _ ->
-      if user_quest.status == "available" && Quests.completed_quest?(user_quest, user) do
+      if user_quest.status == "available" and Quests.completed_quest?(user_quest, user) do
         {:ok, :quest_completed}
       else
         {:error, :unfinished_quest}
