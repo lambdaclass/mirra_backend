@@ -1,14 +1,14 @@
-name: "[LEGACY-LATITUDE-STAGING-BRAZIL] Deploy to Brazil Arena Staging"
+name: "[TESTING-CHILE] Deploy to Chile Arena Testing Latitude"
 on:
   workflow_dispatch:
 
 jobs:
   build-deploy:
-    name: Build and deploy to Brazil staging
+    name: Build and deploy to Chile Testing
     runs-on: ubuntu-latest
     environment:
-      name: staging-brazil
-      url: https://legacy-arena-brazil-staging.championsofmirra.com/
+      name: testing-chile
+      url: https://arena-chile-testing.championsofmirra.com/
 
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +22,7 @@ jobs:
 
       - name: Add host keys
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_LATITUDE }}
         run: |
           set -ex
           mkdir -p ~/.ssh/
@@ -31,19 +31,19 @@ jobs:
       - name: Copy deploy script
         env:
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
-          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_LATITUDE }}
         run: |
           set -ex
           rsync -avz --mkpath devops/deploy.sh ${SSH_USERNAME}@${SSH_HOST}:/home/${SSH_USERNAME}/deploy-script/
 
       - name: Execute deploy script
         env:
-          SSH_HOST: ${{ vars.TS_ARENA_HOST }}
+          SSH_HOST: ${{ vars.TS_ARENA_HOST_LATITUDE }}
           SSH_USERNAME: ${{ vars.SSH_USERNAME }}
           MIX_ENV: ${{ vars.MIX_ENV }}
           RELEASE: arena
           PHX_SERVER: ${{ vars.PHX_SERVER }}
-          PHX_HOST: ${{ vars.HOST }}
+          PHX_HOST: ${{ vars.HOST_LATITUDE }}
           PORT: ${{ vars.ARENA_PORT }}
           GATEWAY_URL: ${{ vars.GATEWAY_URL }}
           BOT_MANAGER_PORT: ${{ vars.BOT_MANAGER_PORT }}

@@ -14,9 +14,10 @@ defmodule ArenaLoadTest.Serialization.ProjectileStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:ACTIVE, 0)
-  field(:EXPLODED, 1)
-  field(:CONSUMED, 2)
+  field(:PROJECTILE_STATUS_UNDEFINED, 0)
+  field(:ACTIVE, 1)
+  field(:EXPLODED, 2)
+  field(:CONSUMED, 3)
 end
 
 defmodule ArenaLoadTest.Serialization.CrateStatus do
@@ -24,8 +25,9 @@ defmodule ArenaLoadTest.Serialization.CrateStatus do
 
   use Protobuf, enum: true, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:FINE, 0)
-  field(:DESTROYED, 1)
+  field(:CRATE_STATUS_UNDEFINED, 0)
+  field(:FINE, 1)
+  field(:DESTROYED, 2)
 end
 
 defmodule ArenaLoadTest.Serialization.PowerUpstatus do
@@ -76,8 +78,8 @@ defmodule ArenaLoadTest.Serialization.Direction do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :float)
-  field(:y, 2, type: :float)
+  field(:x, 1, proto3_optional: true, type: :float)
+  field(:y, 2, proto3_optional: true, type: :float)
 end
 
 defmodule ArenaLoadTest.Serialization.Position do
@@ -85,8 +87,16 @@ defmodule ArenaLoadTest.Serialization.Position do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:x, 1, type: :float)
-  field(:y, 2, type: :float)
+  field(:x, 1, proto3_optional: true, type: :float)
+  field(:y, 2, proto3_optional: true, type: :float)
+end
+
+defmodule ArenaLoadTest.Serialization.ListPositionPB do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:positions, 1, repeated: true, type: ArenaLoadTest.Serialization.Position)
 end
 
 defmodule ArenaLoadTest.Serialization.LobbyEvent do
@@ -160,6 +170,22 @@ defmodule ArenaLoadTest.Serialization.Ping do
   field(:timestamp_now, 1, type: :int64, json_name: "timestampNow")
 end
 
+defmodule ArenaLoadTest.Serialization.PingUpdate do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:latency, 1, type: :uint64)
+end
+
+defmodule ArenaLoadTest.Serialization.BountySelected do
+  @moduledoc false
+
+  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
+
+  field(:bounty, 1, type: ArenaLoadTest.Serialization.BountyInfo)
+end
+
 defmodule ArenaLoadTest.Serialization.GameFinished.PlayersEntry do
   @moduledoc false
 
@@ -181,22 +207,6 @@ defmodule ArenaLoadTest.Serialization.GameFinished do
     type: ArenaLoadTest.Serialization.GameFinished.PlayersEntry,
     map: true
   )
-end
-
-defmodule ArenaLoadTest.Serialization.PingUpdate do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:latency, 1, type: :uint64)
-end
-
-defmodule ArenaLoadTest.Serialization.BountySelected do
-  @moduledoc false
-
-  use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
-
-  field(:bounty, 1, type: ArenaLoadTest.Serialization.BountyInfo)
 end
 
 defmodule ArenaLoadTest.Serialization.GameJoined do
@@ -530,17 +540,17 @@ defmodule ArenaLoadTest.Serialization.Entity do
 
   oneof(:aditional_info, 0)
 
-  field(:id, 1, type: :uint64)
-  field(:category, 2, type: :string)
-  field(:shape, 3, type: :string)
-  field(:name, 4, type: :string)
+  field(:id, 1, proto3_optional: true, type: :uint64)
+  field(:category, 2, proto3_optional: true, type: :string)
+  field(:shape, 3, proto3_optional: true, type: :string)
+  field(:name, 4, proto3_optional: true, type: :string)
   field(:position, 5, type: ArenaLoadTest.Serialization.Position)
-  field(:radius, 6, type: :float)
-  field(:vertices, 7, repeated: true, type: ArenaLoadTest.Serialization.Position)
+  field(:radius, 6, proto3_optional: true, type: :float)
+  field(:vertices, 7, proto3_optional: true, type: ArenaLoadTest.Serialization.ListPositionPB)
   field(:collides_with, 8, repeated: true, type: :uint64, json_name: "collidesWith")
-  field(:speed, 9, type: :float)
+  field(:speed, 9, proto3_optional: true, type: :float)
   field(:direction, 10, type: ArenaLoadTest.Serialization.Direction)
-  field(:is_moving, 11, type: :bool, json_name: "isMoving")
+  field(:is_moving, 11, proto3_optional: true, type: :bool, json_name: "isMoving")
   field(:player, 12, type: ArenaLoadTest.Serialization.Player, oneof: 0)
   field(:projectile, 13, type: ArenaLoadTest.Serialization.Projectile, oneof: 0)
   field(:obstacle, 14, type: ArenaLoadTest.Serialization.Obstacle, oneof: 0)
@@ -566,8 +576,8 @@ defmodule ArenaLoadTest.Serialization.Player do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:health, 1, type: :uint64)
-  field(:kill_count, 2, type: :uint64, json_name: "killCount")
+  field(:health, 1, proto3_optional: true, type: :uint64)
+  field(:kill_count, 2, proto3_optional: true, type: :uint64, json_name: "killCount")
 
   field(:current_actions, 3,
     repeated: true,
@@ -575,12 +585,12 @@ defmodule ArenaLoadTest.Serialization.Player do
     json_name: "currentActions"
   )
 
-  field(:available_stamina, 4, type: :uint64, json_name: "availableStamina")
-  field(:max_stamina, 5, type: :uint64, json_name: "maxStamina")
-  field(:stamina_interval, 6, type: :uint64, json_name: "staminaInterval")
-  field(:recharging_stamina, 7, type: :bool, json_name: "rechargingStamina")
-  field(:character_name, 8, type: :string, json_name: "characterName")
-  field(:power_ups, 9, type: :uint64, json_name: "powerUps")
+  field(:available_stamina, 4, proto3_optional: true, type: :uint64, json_name: "availableStamina")
+  field(:max_stamina, 5, proto3_optional: true, type: :uint64, json_name: "maxStamina")
+  field(:stamina_interval, 6, proto3_optional: true, type: :uint64, json_name: "staminaInterval")
+  field(:recharging_stamina, 7, proto3_optional: true, type: :bool, json_name: "rechargingStamina")
+  field(:character_name, 8, proto3_optional: true, type: :string, json_name: "characterName")
+  field(:power_ups, 9, proto3_optional: true, type: :uint64, json_name: "powerUps")
   field(:effects, 10, repeated: true, type: ArenaLoadTest.Serialization.Effect)
   field(:inventory, 11, type: ArenaLoadTest.Serialization.Item)
 
@@ -591,11 +601,16 @@ defmodule ArenaLoadTest.Serialization.Player do
   )
 
   field(:visible_players, 13, repeated: true, type: :uint64, json_name: "visiblePlayers")
-  field(:on_bush, 14, type: :bool, json_name: "onBush")
-  field(:forced_movement, 15, type: :bool, json_name: "forcedMovement")
-  field(:bounty_completed, 16, type: :bool, json_name: "bountyCompleted")
-  field(:mana, 17, type: :uint64)
-  field(:current_basic_animation, 18, type: :uint32, json_name: "currentBasicAnimation")
+  field(:on_bush, 14, proto3_optional: true, type: :bool, json_name: "onBush")
+  field(:forced_movement, 15, proto3_optional: true, type: :bool, json_name: "forcedMovement")
+  field(:bounty_completed, 16, proto3_optional: true, type: :bool, json_name: "bountyCompleted")
+  field(:mana, 17, proto3_optional: true, type: :uint64)
+
+  field(:current_basic_animation, 18,
+    proto3_optional: true,
+    type: :uint32,
+    json_name: "currentBasicAnimation"
+  )
 end
 
 defmodule ArenaLoadTest.Serialization.Effect do
@@ -613,7 +628,7 @@ defmodule ArenaLoadTest.Serialization.Item do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:name, 2, type: :string)
+  field(:name, 2, proto3_optional: true, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.Projectile do
@@ -621,10 +636,10 @@ defmodule ArenaLoadTest.Serialization.Projectile do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:damage, 1, type: :uint64)
-  field(:owner_id, 2, type: :uint64, json_name: "ownerId")
+  field(:damage, 1, proto3_optional: true, type: :uint64)
+  field(:owner_id, 2, proto3_optional: true, type: :uint64, json_name: "ownerId")
   field(:status, 3, type: ArenaLoadTest.Serialization.ProjectileStatus, enum: true)
-  field(:skill_key, 4, type: :string, json_name: "skillKey")
+  field(:skill_key, 4, proto3_optional: true, type: :string, json_name: "skillKey")
 end
 
 defmodule ArenaLoadTest.Serialization.Obstacle do
@@ -632,10 +647,10 @@ defmodule ArenaLoadTest.Serialization.Obstacle do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:color, 1, type: :string)
-  field(:collisionable, 2, type: :bool)
-  field(:status, 3, type: :string)
-  field(:type, 4, type: :string)
+  field(:color, 1, proto3_optional: true, type: :string)
+  field(:collisionable, 2, proto3_optional: true, type: :bool)
+  field(:status, 3, proto3_optional: true, type: :string)
+  field(:type, 4, proto3_optional: true, type: :string)
 end
 
 defmodule ArenaLoadTest.Serialization.PowerUp do
@@ -652,8 +667,14 @@ defmodule ArenaLoadTest.Serialization.Crate do
 
   use Protobuf, syntax: :proto3, protoc_gen_elixir_version: "0.12.0"
 
-  field(:health, 1, type: :uint64)
-  field(:amount_of_power_ups, 2, type: :uint64, json_name: "amountOfPowerUps")
+  field(:health, 1, proto3_optional: true, type: :uint64)
+
+  field(:amount_of_power_ups, 2,
+    proto3_optional: true,
+    type: :uint64,
+    json_name: "amountOfPowerUps"
+  )
+
   field(:status, 3, type: ArenaLoadTest.Serialization.CrateStatus, enum: true)
 end
 
