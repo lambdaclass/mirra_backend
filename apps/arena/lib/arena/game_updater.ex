@@ -456,6 +456,7 @@ defmodule Arena.GameUpdater do
         [:game_state, :zone, :next_zone_change_timestamp],
         now + state.game_config.game.zone_stop_interval_ms
       )
+      |> put_in([:game_state, :zone, :enabled], true)
 
     {:noreply, state}
   end
@@ -784,7 +785,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
         radius: config.game.zone_start_radius,
-        enabled: config.game.zone_enabled,
+        enabled: false,
         shrinking: false,
         next_zone_change_timestamp:
           initial_timestamp + config.game.zone_shrink_start_ms + config.game.start_game_time_ms +
