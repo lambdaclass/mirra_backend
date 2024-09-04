@@ -518,7 +518,6 @@ defmodule Arena.GameUpdater do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
     killer = Map.get(game_state.players, killer_id)
-    amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
 
     game_state =
       game_state
