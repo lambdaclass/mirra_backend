@@ -1061,19 +1061,6 @@ araban_map_config = %{
   ],
   obstacles: [
     %{
-      name: "door",
-      radius: 1800.05,
-      shape: "circle",
-      type: :static,
-      base_status: nil,
-      statuses_cycle: %{},
-      position: %{
-        x: -6957.6,
-        y: -1657.85
-      },
-      vertices: []
-    },
-    %{
       name: "sand_cascade",
       radius: 365.55,
       shape: "circle",
