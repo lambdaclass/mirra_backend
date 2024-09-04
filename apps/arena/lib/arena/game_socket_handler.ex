@@ -11,6 +11,7 @@ defmodule Arena.GameSocketHandler do
   alias Arena.Serialization.GameEvent
   alias Arena.Serialization.GameJoined
   alias Arena.Serialization.BountySelected
+  alias Arena.Serialization.Pong
 
   @behaviour :cowboy_websocket
 
@@ -73,26 +74,17 @@ defmodule Arena.GameSocketHandler do
 
   @impl true
   def websocket_handle({:binary, message}, state) do
-    Serialization.GameAction.decode(message)
-    |> handle_decoded_message(state)
-
-    {:ok, state}
+    case Serialization.GameAction.decode(message)
+         |> handle_decoded_message(state) do
+      {:reply, game_state} -> {:reply, {:binary, game_state}, state}
+      _ -> {:ok, state}
+    end
   end
 
   # Enable incomming messages
   @impl true
   def websocket_info(:enable_incomming_messages, state) do
     {:ok, Map.put(state, :enable, true)}
-  end
-
-  @impl true
-  def websocket_info({:ping, game_state}, state) do
-    {:reply, {:binary, game_state}, state}
-  end
-
-  @impl true
-  def websocket_info({:ping_update, game_state}, state) do
-    {:reply, {:binary, game_state}, state}
   end
 
   @impl true
@@ -214,8 +206,14 @@ defmodule Arena.GameSocketHandler do
   defp handle_decoded_message(%{action_type: {:select_bounty, bounty_params}}, state),
     do: GameUpdater.select_bounty(state.game_pid, state.player_id, bounty_params.bounty_quest_id)
 
-  defp handle_decoded_message(%{action_type: {:pong, pong_params}}, state),
-    do: GameUpdater.pong(state.game_pid, self(), pong_params.ping_timestamp)
+  defp handle_decoded_message(%{action_type: {:ping, ping_params}}, state) do
+    encoded_state =
+      GameEvent.encode(%GameEvent{
+        event: {:pong, %Pong{timestamp: ping_params.timestamp}}
+      })
+
+    {:reply, encoded_state}
+  end
 
   defp handle_decoded_message(%{action_type: {:toggle_zone, _zone_params}}, state),
     do: GameUpdater.toggle_zone(state.game_pid)

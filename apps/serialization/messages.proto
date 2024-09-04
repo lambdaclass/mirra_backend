@@ -42,19 +42,14 @@ message GameEvent {
     GameJoined joined = 1;
     GameState update = 2;
     GameFinished finished = 3;
-    PingUpdate ping_update = 4;
-    ToggleBots toggle_bots = 5;
-    Ping ping = 6;
-    BountySelected bounty_selected = 7;
+    ToggleBots toggle_bots = 4;
+    Pong pong = 5;
+    BountySelected bounty_selected = 6;
   }
 }
 
-message Ping {
-  int64 timestamp_now = 1;
-}
-
-message PingUpdate {
-  uint64 latency = 1;
+message Pong {
+  int64 timestamp = 1;
 }
 
 message BountySelected {
@@ -357,13 +352,13 @@ message GameAction {
     ToggleZone toggle_zone = 6;
     ToggleBots toggle_bots = 7;
     ChangeTickrate change_tickrate = 8;
-    Pong pong = 9;
+    Ping ping = 9;
   }
   int64 timestamp = 3;
 }
 
-message Pong {
-  int64 ping_timestamp = 1;
+message Ping {
+  int64 timestamp = 1;
 }
 
 message Zone {
