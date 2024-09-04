@@ -249,5 +249,21 @@
             "currency": "Gold",
             "amount": 444
         }
+    },
+    {
+        "config_id": 13,
+        "description": "Complete 6 Daily Quests",
+        "type": "milestone",
+        "objective": {
+            "match_tracking_field": "quest",
+            "value": 6,
+            "comparison": "greater_or_equal",
+            "scope": "match"
+        },
+        "conditions": [],
+        "reward": {
+            "currency": "Gold",
+            "amount": 10000
+        }
     }
 ]

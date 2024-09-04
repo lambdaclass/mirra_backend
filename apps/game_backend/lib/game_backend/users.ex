@@ -182,7 +182,8 @@ defmodule GameBackend.Users do
         join: quest in assoc(user_quest, :quest),
         as: :quest,
         where:
-          (quest.type == ^"daily" and user_quest.inserted_at > ^start_of_date and user_quest.inserted_at < ^end_of_date) or
+          (quest.type in ^["daily", "milestone"] and user_quest.inserted_at > ^start_of_date and
+             user_quest.inserted_at < ^end_of_date) or
             (quest.type == ^"weekly" and user_quest.inserted_at > ^start_of_week_naive and
                user_quest.inserted_at < ^end_of_week_naive),
         preload: [:quest]
@@ -617,16 +618,51 @@ defmodule GameBackend.Users do
   end
 
   defp add_quest_progress_and_goal(%User{} = user) do
+    today = Date.utc_today()
+    start_of_week = Date.beginning_of_week(today, :sunday)
+    end_of_week = Date.add(start_of_week, 6)
+
     updated_quests =
       Enum.map(user.user_quests, fn user_quest ->
         quest_progress =
-          Quests.get_user_quest_progress(user_quest, user.arena_match_results)
+          Quests.get_user_quest_progress(user_quest, user)
 
         Map.put(user_quest, :progress, quest_progress)
         |> Map.put(:goal, user_quest.quest.objective["value"])
       end)
 
-    Map.put(user, :user_quests, updated_quests)
+    daily_quests_week_progress =
+      Enum.map(Date.range(start_of_week, end_of_week), fn date ->
+        completed_quests_amount =
+          Enum.count(user.user_quests, fn user_quest ->
+            user_quest.status == "completed" and Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0 and
+              user_quest.quest.type == :daily
+          end)
+
+        milestone_quest_value =
+          Enum.find(user.user_quests, fn user_quest ->
+            user_quest.quest.type == :milestone and Date.diff(date, NaiveDateTime.to_date(user_quest.inserted_at)) == 0
+          end)
+          |> case do
+            nil ->
+              # We'll hardcore this value for the time being since we don't have any spec for the specific amount, that's
+              # described in the milestone quest but we could have more than one in the future
+              6
+
+            milestone_quest ->
+              milestone_quest.quest.objective["value"]
+          end
+
+        %{
+          completed_quests_amount: completed_quests_amount,
+          target_quests_amount: milestone_quest_value,
+          date: date
+        }
+      end)
+
+    user
+    |> Map.put(:user_quests, updated_quests)
+    |> Map.put(:daily_quests_week_progress, daily_quests_week_progress)
   end
 
   defp add_quest_progress_and_goal(_), do: nil
@@ -696,6 +732,21 @@ defmodule GameBackend.Users do
       Quests.get_user_missing_quests_by_type(user.id, "daily")
       |> Enum.shuffle()
 
+    milestone_quest_params =
+      Quests.get_user_missing_quests_by_type(user.id, "milestone")
+      |> Enum.random()
+
+    attrs = %{
+      user_id: user.id,
+      quest_id: milestone_quest_params.id,
+      status: "available",
+      activated_at: NaiveDateTime.utc_now()
+    }
+
+    changeset = UserQuest.changeset(%UserQuest{}, attrs)
+
+    milestone_quest_result = Repo.insert(changeset)
+
     {active_quests_params, remaining_quests} = Enum.split(available_quests, 3)
 
     {inactive_quests_params, _remaining_quests} = Enum.split(remaining_quests, 3)
@@ -729,7 +780,7 @@ defmodule GameBackend.Users do
           Repo.insert(changeset)
       end)
 
-    (active_quests ++ inactive_quests)
+    (active_quests ++ inactive_quests ++ [milestone_quest_result])
     |> Enum.find(fn {result, _quest} -> result == :error end)
     |> case do
       nil -> {:ok, :quests_inserted}
