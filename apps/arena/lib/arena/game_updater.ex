@@ -517,13 +517,14 @@ defmodule Arena.GameUpdater do
       ) do
     entry = %{killer_id: killer_id, victim_id: victim_id}
     victim = Map.get(game_state.players, victim_id)
+    killer = Map.get(game_state.players, killer_id)
     amount_of_power_ups = get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
 
     game_state =
       game_state
       |> update_in([:killfeed], fn killfeed -> [entry | killfeed] end)
       |> maybe_add_kill_to_player(killer_id)
-      |> spawn_power_ups(game_config, victim, amount_of_power_ups)
+      |> grant_power_up_to_killer(game_config, killer, victim)
       |> put_player_position(victim_id)
 
     broadcast_player_dead(state.game_state.game_id, victim_id)
@@ -1617,6 +1618,39 @@ defmodule Arena.GameUpdater do
       |> put_in([:power_ups, last_id], power_up)
       |> put_in([:last_id], last_id)
     end)
+  end
+
+  defp grant_power_up_to_killer(game_state, game_config, killer, victim) do
+    amount_of_power_ups =
+      get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
+
+    updated_killer =
+      update_in(killer, [:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
+      |> IO.inspect(label: :wea)
+
+    updated_killer =
+      update_in(updated_killer, [:aditional_info], fn additional_info ->
+        Enum.reduce(1..amount_of_power_ups, additional_info, fn _times, additional_info ->
+          additional_info
+          |> Map.update(:health, additional_info.health, fn current_health ->
+            Utils.increase_value_by_base_percentage(
+              current_health,
+              additional_info.base_health,
+              game_config.game.power_up_health_modifier
+            )
+          end)
+          |> Map.update(:max_health, additional_info.max_health, fn max_health ->
+            Utils.increase_value_by_base_percentage(
+              max_health,
+              additional_info.base_health,
+              game_config.game.power_up_health_modifier
+            )
+          end)
+        end)
+      end)
+
+    players = Map.get(game_state, :players) |> Map.put(killer.id, updated_killer)
+    Map.put(game_state, :players, players)
   end
 
   defp get_amount_of_power_ups(%{aditional_info: %{power_ups: power_ups}}, power_ups_per_kill) do
