@@ -276,8 +276,6 @@ defmodule Arena.GameUpdater do
       |> add_pools_collisions()
       |> handle_pools(state.game_config)
       |> remove_expired_pools(now)
-      # Crates
-      |> handle_destroyed_crates()
       |> Map.put(:server_timestamp, now)
       # Traps
       |> remove_activated_traps()
@@ -672,6 +670,44 @@ defmodule Arena.GameUpdater do
   def handle_info({:activate_pool, pool_id}, state) do
     state =
       put_in(state, [:game_state, :pools, pool_id, :aditional_info, :status], :READY)
+
+    {:noreply, state}
+  end
+
+  def handle_info({:crate_destroyed, player_id, crate_id}, state) do
+    game_state = state.game_state
+    crate = get_in(state.game_state, [:crates, crate_id])
+    player = get_in(state.game_state, [:players, player_id])
+
+    amount_of_power_ups = crate.aditional_info.amount_of_power_ups
+    player = update_in(player, [:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
+
+    player =
+      update_in(player, [:aditional_info], fn additional_info ->
+        Enum.reduce(1..amount_of_power_ups, additional_info, fn _times, additional_info ->
+          additional_info
+          |> Map.update(:health, additional_info.health, fn current_health ->
+            Utils.increase_value_by_base_percentage(
+              current_health,
+              additional_info.base_health,
+              state.game_config.game.power_up_health_modifier
+            )
+          end)
+          |> Map.update(:max_health, additional_info.max_health, fn max_health ->
+            Utils.increase_value_by_base_percentage(
+              max_health,
+              additional_info.base_health,
+              state.game_config.game.power_up_health_modifier
+            )
+          end)
+        end)
+      end)
+
+    players = Map.get(game_state, :players) |> Map.put(player.id, player)
+    crates = Map.get(game_state, :crates) |> Map.put(crate.id, crate)
+
+    game_state = Map.put(game_state, :players, players) |> Map.put(:crates, crates)
+    state = Map.put(state, :game_state, game_state)
 
     {:noreply, state}
   end
@@ -1332,25 +1368,6 @@ defmodule Arena.GameUpdater do
     %{game_state | players: updated_players}
   end
 
-  defp handle_destroyed_crates(%{crates: crates} = game_state) do
-    Enum.reduce(crates, game_state, fn {crate_id, crate}, game_state ->
-      if Crate.alive?(crate) or crate.aditional_info.status == :DESTROYED do
-        game_state
-      else
-        amount_of_power_ups = crate.aditional_info.amount_of_power_ups
-
-        Process.send_after(
-          self(),
-          {:delayed_power_up_spawn, crate, amount_of_power_ups},
-          crate.aditional_info.power_up_spawn_delay_ms
-        )
-
-        game_state
-        |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
-      end
-    end)
-  end
-
   defp update_bounties_states(game_state, %{bounties_enabled?: false}) do
     game_state
   end
@@ -1625,7 +1642,6 @@ defmodule Arena.GameUpdater do
 
     updated_killer =
       update_in(killer, [:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
-      |> IO.inspect(label: :wea)
 
     updated_killer =
       update_in(updated_killer, [:aditional_info], fn additional_info ->
