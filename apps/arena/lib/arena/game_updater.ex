@@ -675,6 +675,7 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:crate_destroyed, player_id, crate_id}, state) do
+    IO.puts("llega?")
     game_state = state.game_state
     crate = get_in(state.game_state, [:crates, crate_id])
     player = get_in(state.game_state, [:players, player_id])
@@ -1524,6 +1525,10 @@ defmodule Arena.GameUpdater do
     real_damage = Player.calculate_real_damage(attacking_player, projectile.aditional_info.damage)
     crate = Crate.take_damage(crate, real_damage)
 
+    unless Crate.alive?(crate) do
+      send(self(), {:crate_destroyed, attacking_player.id, crate.id})
+    end
+
     projectile =
       if projectile.aditional_info.remove_on_collision do
         put_in(projectile, [:aditional_info, :status], :EXPLODED)
@@ -1619,7 +1624,7 @@ defmodule Arena.GameUpdater do
     amount_of_power_ups =
       get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
 
-  updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
+    updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
 
     players = Map.get(game_state, :players) |> Map.put(killer.id, updated_killer)
     Map.put(game_state, :players, players)
