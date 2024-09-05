@@ -65,7 +65,7 @@ jobs:
           BOT_MANAGER_HOST: ${{ vars.LOADTEST_CLIENT_HOST }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
-          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+          NEWRELIC_APP_NAME: "${{ vars.NEWRELIC_APP_NAME }}-${{ inputs.sub_env }}"
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           XDG_RUNTIME_DIR: ${{ vars.XDG_RUNTIME_DIR }}
