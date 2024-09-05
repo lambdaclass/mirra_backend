@@ -679,34 +679,13 @@ defmodule Arena.GameUpdater do
     crate = get_in(state.game_state, [:crates, crate_id])
     player = get_in(state.game_state, [:players, player_id])
 
-    amount_of_power_ups = crate.aditional_info.amount_of_power_ups
-    player = update_in(player, [:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
+    player = Player.power_up_boost(player, crate.aditional_info.amount_of_power_ups, state.game_config)
 
-    player =
-      update_in(player, [:aditional_info], fn additional_info ->
-        Enum.reduce(1..amount_of_power_ups, additional_info, fn _times, additional_info ->
-          additional_info
-          |> Map.update(:health, additional_info.health, fn current_health ->
-            Utils.increase_value_by_base_percentage(
-              current_health,
-              additional_info.base_health,
-              state.game_config.game.power_up_health_modifier
-            )
-          end)
-          |> Map.update(:max_health, additional_info.max_health, fn max_health ->
-            Utils.increase_value_by_base_percentage(
-              max_health,
-              additional_info.base_health,
-              state.game_config.game.power_up_health_modifier
-            )
-          end)
-        end)
-      end)
+    game_state =
+      game_state
+      |> put_in([:players, player_id], player)
+      |> put_in([:crates, crate_id, :aditional_info, :status], :DESTROYED)
 
-    players = Map.get(game_state, :players) |> Map.put(player.id, player)
-    crates = Map.get(game_state, :crates) |> Map.put(crate.id, crate)
-
-    game_state = Map.put(game_state, :players, players) |> Map.put(:crates, crates)
     state = Map.put(state, :game_state, game_state)
 
     {:noreply, state}
@@ -1640,29 +1619,7 @@ defmodule Arena.GameUpdater do
     amount_of_power_ups =
       get_amount_of_power_ups(victim, game_config.game.power_ups_per_kill)
 
-    updated_killer =
-      update_in(killer, [:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
-
-    updated_killer =
-      update_in(updated_killer, [:aditional_info], fn additional_info ->
-        Enum.reduce(1..amount_of_power_ups, additional_info, fn _times, additional_info ->
-          additional_info
-          |> Map.update(:health, additional_info.health, fn current_health ->
-            Utils.increase_value_by_base_percentage(
-              current_health,
-              additional_info.base_health,
-              game_config.game.power_up_health_modifier
-            )
-          end)
-          |> Map.update(:max_health, additional_info.max_health, fn max_health ->
-            Utils.increase_value_by_base_percentage(
-              max_health,
-              additional_info.base_health,
-              game_config.game.power_up_health_modifier
-            )
-          end)
-        end)
-      end)
+  updated_killer = Player.power_up_boost(killer, amount_of_power_ups, game_config)
 
     players = Map.get(game_state, :players) |> Map.put(killer.id, updated_killer)
     Map.put(game_state, :players, players)

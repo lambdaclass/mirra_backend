@@ -427,6 +427,30 @@ defmodule Arena.Game.Player do
     end)
   end
 
+  def power_up_boost(player, amount_of_power_ups, game_config) do
+    player
+    |> update_in([:aditional_info, :power_ups], fn amount -> amount + amount_of_power_ups end)
+    |> update_in([:aditional_info], fn additional_info ->
+      Enum.reduce(1..amount_of_power_ups, additional_info, fn _times, additional_info ->
+        additional_info
+        |> Map.update(:health, additional_info.health, fn current_health ->
+          Utils.increase_value_by_base_percentage(
+            current_health,
+            additional_info.base_health,
+            game_config.game.power_up_health_modifier
+          )
+        end)
+        |> Map.update(:max_health, additional_info.max_health, fn max_health ->
+          Utils.increase_value_by_base_percentage(
+            max_health,
+            additional_info.base_health,
+            game_config.game.power_up_health_modifier
+          )
+        end)
+      end)
+    end)
+  end
+
   ####################
   # Internal helpers #
   ####################
