@@ -55,7 +55,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE }}
           JWT_PRIVATE_KEY_BASE_64: ${{ secrets.JWT_PRIVATE_KEY_BASE_64 }}
-          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME }}
+          NEWRELIC_APP_NAME: ${{ vars.NEWRELIC_APP_NAME_TESTING }}
           NEWRELIC_KEY: ${{ secrets.NEWRELIC_KEY }}
           DBUS_SESSION_BUS_ADDRESS: ${{ vars.DBUS_SESSION_BUS_ADDRESS }}
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
