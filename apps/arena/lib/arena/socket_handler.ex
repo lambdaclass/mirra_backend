@@ -55,9 +55,8 @@ defmodule Arena.SocketHandler do
   def websocket_handle({:binary, message}, state) do
     case LeaveLobby.decode(message) do
       %LeaveLobby{} ->
-        :ok = state.matchmaking_queue.leave(state.client_id)
-        left_msg = LobbyEvent.encode(%LobbyEvent{event: {:left, %LeftLobby{}}})
-        {[{:binary, left_msg}, :close], state}
+        state.matchmaking_queue.leave(state.client_id)
+        {:stop, state}
 
       _ ->
         {:ok, state}
