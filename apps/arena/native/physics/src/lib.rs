@@ -1,7 +1,7 @@
 #![allow(non_snake_case)] // rustler macros generate non snake case names and dont use this allow themselves
 
-mod collision_detection;
-mod map;
+pub mod collision_detection;
+pub mod map;
 
 use crate::collision_detection::ear_clipping;
 use crate::map::{Category, Direction, Entity, Position};
@@ -80,7 +80,7 @@ fn move_entity_to_direction(
 #[rustler::nif()]
 /// Check players inside the player_id radius
 /// Return a list of the players id inside the radius Vec<player_id>
-fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
+pub fn check_collisions(entity: Entity, entities: HashMap<u64, Entity>) -> Vec<u64> {
     let mut entity: Entity = entity;
     let ent = entities.into_values().collect();
 

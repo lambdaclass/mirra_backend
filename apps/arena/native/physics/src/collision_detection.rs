@@ -6,11 +6,11 @@ pub mod sat;
  * If the distance between the point and the center of the circle is less
  * than the radius of the circle, a collision has occured
  */
-pub(crate) fn point_circle_collision(point: &Entity, circle: &Entity) -> bool {
+pub fn point_circle_collision(point: &Entity, circle: &Entity) -> bool {
     let distance = calculate_distance(&point.position, &circle.position);
     distance <= circle.radius
 }
-pub(crate) fn point_polygon_collision(point: &Entity, polygon: &Entity) -> bool {
+pub fn point_polygon_collision(point: &Entity, polygon: &Entity) -> bool {
     let mut collision = false;
     for current in 0..polygon.vertices.len() {
         let mut next = current + 1;
@@ -41,7 +41,7 @@ pub(crate) fn point_polygon_collision(point: &Entity, polygon: &Entity) -> bool 
  * of the line is less than the radius of the circle, a collision has occured
  * Also that closest point should be on the segment
  */
-pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
+pub fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
     // Check if the vertices are inside the circle
     let point_1 = Entity::new_point(0, line.vertices[0]);
     let inside_1 = point_circle_collision(&point_1, circle);
@@ -84,7 +84,7 @@ pub(crate) fn line_circle_collision(line: &Entity, circle: &Entity) -> bool {
  * If the distance between the centers of the circles is less than
  * the sum of the radius, a collision has occured
  */
-pub(crate) fn circle_circle_collision(circle_1: &Entity, circle_2: &Entity) -> bool {
+pub fn circle_circle_collision(circle_1: &Entity, circle_2: &Entity) -> bool {
     let distance = calculate_distance(&circle_1.position, &circle_2.position);
     distance <= circle_1.radius + circle_2.radius
 }
@@ -93,7 +93,7 @@ pub(crate) fn circle_circle_collision(circle_1: &Entity, circle_2: &Entity) -> b
  * Determines if a collision has occured between a circle and a polygon
  *
  */
-pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> bool {
+pub fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> bool {
     // For each line in the polygon, check if there is a collision between the line and the circle
     // If there is a collision, return true
     for current in 0..polygon.vertices.len() {
@@ -123,7 +123,7 @@ pub(crate) fn circle_polygon_collision(circle: &Entity, polygon: &Entity) -> boo
  * is equal (with a little bufer) to the distance between vertex 1 and vertex 2,
  * a collision has occured
  */
-pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
+pub fn line_point_colision(line: &Entity, point: &Entity) -> bool {
     let d1 = calculate_distance(&point.position, &line.vertices[0]);
     let d2 = calculate_distance(&point.position, &line.vertices[1]);
     let line_length = calculate_distance(&line.vertices[0], &line.vertices[1]);
@@ -136,7 +136,7 @@ pub(crate) fn line_point_colision(line: &Entity, point: &Entity) -> bool {
 /*
  * Determines if a collision has occured between a point and a polygon
  */
-pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
+pub fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
     let mut collision = false;
     for current in 0..polygon.vertices.len() {
         let mut next = current + 1;
@@ -161,26 +161,21 @@ pub(crate) fn point_polygon_colision(point: &Entity, polygon: &Entity) -> bool {
     collision
 }
 
-pub(crate) fn line_polygon_collision(line: &Entity, polygon: &Entity) -> bool {
-    for current_vertex_index in 0..polygon.vertices.len() {
-        let mut next_vertex_index = current_vertex_index + 1;
-        if next_vertex_index == polygon.vertices.len() {
-            next_vertex_index = 0
-        };
-        let current_vertex = polygon.vertices[current_vertex_index];
-        let next_vertex = polygon.vertices[next_vertex_index];
-
-        let polygon_line = Entity::new_line(1, vec![current_vertex, next_vertex]);
-
-        if line_line_collision(line, &polygon_line) {
-            return true;
-        }
-    }
-
-    false
+pub fn line_polygon_collision(line: &Entity, polygon: &Entity) -> bool {
+    let mut line_collisions = vec![false; polygon.vertices.len() + 1];
+    let mut lines: Vec<_> = (1..polygon.vertices.len())
+        .map(|i| [polygon.vertices[i-1], polygon.vertices[i]])
+        .flatten()
+        .collect();
+    line_multiline_collision(
+        &[line.vertices[0], line.vertices[1]],
+        &lines,
+        &mut line_collisions,
+    );
+    line_collisions.iter().any(|c| *c)
 }
 
-pub(crate) fn line_line_collision(line: &Entity, other_line: &Entity) -> bool {
+pub fn line_line_collision(line: &Entity, other_line: &Entity) -> bool {
     let line_first_vertex = line.vertices[0];
     let line_second_vertex = line.vertices[1];
     let other_line_first_vertex = other_line.vertices[0];
@@ -205,6 +200,40 @@ pub(crate) fn line_line_collision(line: &Entity, other_line: &Entity) -> bool {
                 * (line_second_vertex.y - line_first_vertex.y));
 
     (0.0..=1.0).contains(&uA) && (0.0..=1.0).contains(&uB)
+}
+
+pub fn line_multiline_collision(line: &[Position], other_lines: &[Position], collisions: &mut [bool]) {
+    debug_assert_eq!(line.len(), 2);
+    debug_assert_eq!(other_lines.len() % 2, 0);
+    debug_assert_eq!(other_lines.len() / 2, collisions.len());
+
+    let line_first_vertex = line[0];
+    let line_second_vertex = line[1];
+
+    for (i, other_line) in other_lines.chunks_exact(2).enumerate() {
+        let other_line_first_vertex = other_line[0];
+        let other_line_second_vertex = other_line[1];
+
+        let uA = ((other_line_second_vertex.x - other_line_first_vertex.x)
+            * (line_first_vertex.y - other_line_first_vertex.y)
+            - (other_line_second_vertex.y - other_line_first_vertex.y)
+                * (line_first_vertex.x - other_line_first_vertex.x))
+            / ((other_line_second_vertex.y - other_line_first_vertex.y)
+                * (line_second_vertex.x - line_first_vertex.x)
+                - (other_line_second_vertex.x - other_line_first_vertex.x)
+                    * (line_second_vertex.y - line_first_vertex.y));
+
+        let uB = ((line_second_vertex.x - line_first_vertex.x)
+            * (line_first_vertex.y - other_line_first_vertex.y)
+            - (line_second_vertex.y - line_first_vertex.y)
+                * (line_first_vertex.x - other_line_first_vertex.x))
+            / ((other_line_second_vertex.y - other_line_first_vertex.y)
+                * (line_second_vertex.x - line_first_vertex.x)
+                - (other_line_second_vertex.x - other_line_first_vertex.x)
+                    * (line_second_vertex.y - line_first_vertex.y));
+
+        collisions[i] = (0.0..=1.0).contains(&uA) && (0.0..=1.0).contains(&uB);
+    }
 }
 
 /*

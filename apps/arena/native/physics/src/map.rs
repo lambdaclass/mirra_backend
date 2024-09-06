@@ -61,6 +61,10 @@ pub enum Category {
 }
 
 impl Position {
+    pub fn new(x: f32, y: f32) -> Position {
+        Position{x, y}
+    }
+
     pub fn normalize(&mut self) {
         let length = (self.x.powi(2) + self.y.powi(2)).sqrt();
         self.x /= length;
@@ -147,7 +151,7 @@ impl Entity {
         }
     }
 
-    pub fn collides_with(&mut self, entities: &Vec<Entity>) -> Vec<u64> {
+    pub fn collides_with(&self, entities: &Vec<Entity>) -> Vec<u64> {
         let mut result = Vec::new();
 
         for entity in entities {
@@ -184,7 +188,6 @@ impl Entity {
                         result.push(entity.id);
                     }
                 }
-
                 (Shape::Line, Shape::Polygon) => {
                     if line_polygon_collision(self, entity) {
                         result.push(entity.id);
