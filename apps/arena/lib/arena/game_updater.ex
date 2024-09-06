@@ -675,7 +675,6 @@ defmodule Arena.GameUpdater do
   end
 
   def handle_info({:crate_destroyed, player_id, crate_id}, state) do
-    IO.puts("llega?")
     game_state = state.game_state
     crate = get_in(state.game_state, [:crates, crate_id])
     player = get_in(state.game_state, [:players, player_id])
@@ -1619,6 +1618,8 @@ defmodule Arena.GameUpdater do
       |> put_in([:last_id], last_id)
     end)
   end
+
+  defp grant_power_up_to_killer(game_state, _game_config, nil = _killer, _victim), do: game_state
 
   defp grant_power_up_to_killer(game_state, game_config, killer, victim) do
     amount_of_power_ups =
