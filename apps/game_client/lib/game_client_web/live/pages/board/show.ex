@@ -110,7 +110,7 @@ defmodule GameClientWeb.BoardLive.Show do
   end
 
   defp handle_game_event({noop_event, _}, socket)
-       when noop_event in [:toggle_bots, :ping, :ping_update, :bounty_selected] do
+       when noop_event in [:toggle_bots, :bounty_selected] do
     {:noreply, socket}
   end
 
