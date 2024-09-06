@@ -799,7 +799,7 @@ defmodule Arena.GameUpdater do
       |> Map.put(:crates, %{})
       |> Map.put(:external_wall, Entities.new_external_wall(0, config.map.radius))
       |> Map.put(:zone, %{
-        radius: config.game.zone_start_radius,
+        radius: config.map.radius,
         enabled: false,
         shrinking: false,
         next_zone_change_timestamp:

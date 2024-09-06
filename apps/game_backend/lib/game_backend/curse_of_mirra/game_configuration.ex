@@ -29,7 +29,6 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     :field_of_view_inside_bush,
     :time_visible_in_bush_after_skill,
     :version_id,
-    :zone_start_radius,
     :zone_random_position_radius,
     :distance_to_power_up,
     :power_up_damage_modifier,
@@ -60,7 +59,6 @@ defmodule GameBackend.CurseOfMirra.GameConfiguration do
     field(:match_timeout_ms, :integer)
     field(:field_of_view_inside_bush, :integer)
     field(:time_visible_in_bush_after_skill, :integer)
-    field(:zone_start_radius, :float)
     field(:zone_random_position_radius, :integer)
     field(:distance_to_power_up, :integer)
     field(:power_up_damage_modifier, :float)
