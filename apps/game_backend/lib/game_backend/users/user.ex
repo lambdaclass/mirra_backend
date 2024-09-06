@@ -30,7 +30,8 @@ defmodule GameBackend.Users.User do
              :won_matches,
              :highest_historical_prestige,
              :user_quests,
-             :quest_refresh_at
+             :quest_refresh_at,
+             :daily_quests_week_progress
            ]}
   schema "users" do
     field(:game_id, :integer)
@@ -66,6 +67,7 @@ defmodule GameBackend.Users.User do
     field(:total_kills, :integer, virtual: true)
     field(:won_matches, :integer, virtual: true)
     field(:quest_refresh_at, :any, virtual: true)
+    field(:daily_quests_week_progress, :any, virtual: true)
   end
 
   @doc false

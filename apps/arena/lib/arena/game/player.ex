@@ -363,7 +363,9 @@ defmodule Arena.Game.Player do
         game_state =
           Enum.reduce(item.effects, game_state, fn effect_name, game_state_acc ->
             effect = Enum.find(game_config.effects, fn %{name: name} -> name == effect_name end)
+
             Effect.put_effect_to_entity(game_state_acc, player, player.id, effect)
+            |> maybe_update_player_item_effects_expires_at(player, effect)
           end)
           |> put_in([:players, player.id, :aditional_info, :inventory], nil)
 
@@ -413,6 +415,16 @@ defmodule Arena.Game.Player do
     |> put_in([:aditional_info, :damage_immunity], false)
     |> put_in([:aditional_info, :pull_immunity], false)
     |> Effect.apply_stat_effects()
+  end
+
+  def player_executing_skill?(player) do
+    Enum.any?(player.aditional_info.current_actions, fn current_action ->
+      Atom.to_string(current_action.action)
+      |> case do
+        "EXECUTING_SKILL" <> _number -> true
+        _ -> false
+      end
+    end)
   end
 
   ####################
@@ -575,4 +587,19 @@ defmodule Arena.Game.Player do
   defp get_skill_animation("kenzu_quickslash_third"), do: 3
 
   defp get_skill_animation(_skill_name), do: 1
+
+  defp maybe_update_player_item_effects_expires_at(game_state, player, %{duration_ms: duration_ms} = _effect)
+       when not is_nil(duration_ms) do
+    duration =
+      System.monotonic_time(:millisecond) + duration_ms
+
+    game_state
+    |> update_in([:players, player.id, :aditional_info, :item_effects_expires_at], fn item_duration ->
+      max(item_duration, duration)
+    end)
+  end
+
+  defp maybe_update_player_item_effects_expires_at(game_state, _player, _effect) do
+    game_state
+  end
 end
