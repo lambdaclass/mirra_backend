@@ -3317,7 +3317,7 @@ brazil_arena_server =
   %{
     name: "BRAZIL",
     ip: "",
-    url: "arena-brazil-staging.championsofmirra.com",
+    url: "arena-brazil-testing-aws.championsofmirra.com",
     gateway_url: "https://central-europe-staging.championsofmirra.com",
     status: "active",
     environment: "production"
